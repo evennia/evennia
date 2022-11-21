@@ -1,31 +1,26 @@
 # Extending the REST API
 
-> *This tutorial assumes you have a basic understanding of the `web` folder structure. If you don't, please read [the page on the website](https://www.evennia.com/docs/1.0-dev/Components/Website.html) and make sure you understand it before you come back!*
-
-For this guide, we'll be adding an `inventory` action to the `characters` endpoint, showing all objects being _worn_ and _carried_ by a character.
-
-> "worn versus carried" isn't built into core Evennia, but it's a common thing to add. This guide uses a `.db.worn` attribute to identify gear, but will explain how to reference your own mechanic too.
-
-The first thing you should do is review the [REST API](https://www.evennia.com/docs/1.0-dev/Components/Web-API.html) documentation page. It's not very long, but it covers how to turn the API on and which parts of django you should be familiar with.
-
-Once you've read that and successfully visited `/api/characters/`, it's time to get started!
+```{sidebar}
+Concepts like _worn_ or _carried_ aren't built into core Evennia, but it's a common thing to add. This guide uses a `.db.worn` attribute to identify gear, but will explain how to reference your own mechanic too.
+```
+By default, the Evennia [REST API](../Components/Web-API.md) provides endpoints for the standard entities.  One such endpoint is `/api/characters/`, returning information about Characters. In this tutorial, we'll extend it by adding an `inventory` action to the `/characters` endpoint, showing all objects being _worn_ and _carried_ by a character.
 
 ## Creating your own viewset
 
-The first thing you'll need to do is define your own views module. Create a blank file: `mygame/web/api/views.py`
+```{sidebar} Views and templates
+A *view* is the python code that tells django what data to put on a page, while a *template* tells django how to display that data. For more in-depth information, you can read the django [docs for views](https://docs.djangoproject.com/en/4.1/topics/http/views/) and [docs for templates](https://docs.djangoproject.com/en/4.1/topics/templates/).
+```
+The first thing you'll need to do is define your own `views.py` module. 
 
-> A *view* is the python code that tells django what data to put on a page, while a *template* tells django how to display that data. For more in-depth information, you can read the django documentation. ([docs for views](https://docs.djangoproject.com/en/4.1/topics/http/views/), [docs for templates](https://docs.djangoproject.com/en/4.1/topics/templates/))
+Create a blank file: `mygame/web/api/views.py`
 
-The default REST API endpoints are controlled by classes in `evennia/web/api/views.py` - you could copy that entire file directly and use it, but we're going to focus on changing the minimum.
+The default REST API endpoints are controlled by classes in `evennia/web/api/views.py` - you could copy that entire file and use it, but we're going to focus on changing the minimum.
 
-To start, we'll reimplement the default `characters` endpoint: a child view of the `objects` endpoint that can only access characters.
+To start, we'll reimplement the default [CharacterViewSet](CharacterViewSet) that handles requests from the `characters/` endpoint. This is a child of the `objects` endpoint that can only access characters.
 
 ```python
-"""
-mygame/web/api/views.py
+# in mygame/web/api/views.py
 
-Customized views for the REST API
-"""
 # we'll need these from django's rest framework to make our view work
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -49,8 +44,9 @@ class CharacterViewSet(ObjectDBViewSet):
 
 Now that we have a viewset of our own, we can create our own urls module and change the `characters` endpoint path to point to ours.
 
-> Evennia's [Game website](https://www.evennia.com/docs/1.0-dev/Components/Website.html) page demonstrates how to use the `urls.py` module for the main website - if you haven't gone over that page yet, now is a good time.
-
+```{sidebar}
+Evennia's [Game website](../Components/Website.md) page demonstrates how to use the `urls.py` module for the main website - if you haven't gone over that page yet, now is a good time.
+```
 The API routing is more complicated than the website or webclient routing, so you need to copy the entire module from evennia into your game instead of patching on changes. Copy the file from `evennia/web/api/urls.py` to your folder, `mygame/web/api/urls.py` and open it in your editor.
 
 Import your new views module, then find and update the `characters` path to use your own viewset.
@@ -136,7 +132,9 @@ Head back over to your character view class - it's time to start adding our inve
 
 The usual "page" in a REST API is called an *endpoint* and is what you typically access. e.g. `/api/characters/` is the "characters" endpoint, and `/api/characters/:id` is the endpoint for individual characters.
 
-> The `:` in an API path means that it's a variable - you don't directly access that exact path. Instead, you'd take your character ID (e.g. 1) and use that instead: `/api/characters/1`
+```{sidebar} What is that colon?
+The `:` in an API path means that it's a *variable* - you don't directly access that exact path. Instead, you'd take your character ID (e.g. 1) and use that instead: `/api/characters/1`
+```
 
 However, an endpoint can also have one or more *detail* views, which function like a sub-point. We'll be adding *inventory* as a detail to our character endpoint, which will look like `/api/characters/:id/inventory`
 
@@ -183,11 +181,12 @@ Get your character's ID - it's the same as your dbref but without the # - and th
 
 ## Creating a Serializer
 
-A simple string isn't very useful, though. What we want is the character's actual inventory - and for that, we need to set up our own serializer.
+A simple string isn't very useful, though. What we want is the character's actual inventory - and for that, we need to set up our own *serializer*.
 
+```{sidebar} Django serializers
+You can get a more in-depth look at django serializers in [the django REST framework serializer docs](https://www.django-rest-framework.org/api-guide/serializers/).
+```
 Generally speaking, a *serializer* turns a set of data into a specially formatted string that can be sent in a data stream - usually JSON. Django REST serializers are special classes and functions which take python objects and convert them into API-ready formats. So, just like for the viewset, django and evennia have done a lot of the heavy lifting for us already.
-
-> You can get a more in-depth look at django serializers on [the django REST framework serializer docs](https://www.django-rest-framework.org/api-guide/serializers/)
 
 Instead of writing our own serializer, we'll inherit from evennia's pre-existing serializers and extend them for our own purpose. To do that, create a new file `mygame/web/api/serializers.py` and start by adding in the imports you'll need.
 
@@ -422,8 +421,10 @@ One last `evennia reboot` - now you should be able to get `/api/characters/1/inv
 
 ## Next Steps
 
+```{sidebar} Django REST Framework
+For a more in-depth look at the django REST framework, you can go through [their tutorial](https://www.django-rest-framework.org/tutorial/1-serialization/) or straight to [the django REST framework API docs](https://www.django-rest-framework.org/api-guide/requests/).
+```
 That's it! You've learned how to customize your own REST endpoint for Evennia, add new endpoint details, and serialize data from your game's objects for the REST API. With those tools, you can take any in-game data you want and make it available - or even modifiable - with the API.
 
 If you want a challenge, try taking what you learned and implementing a new `desc` detail that will let you `GET` the existing character desc _or_ `PUT` a new desc. (Tip: check out how evennia's REST permissions module works, and the `set_attribute` methods in the default evennia REST API views.)
 
-> For a more in-depth look at the django REST framework, you can go through [their tutorial](https://www.django-rest-framework.org/tutorial/1-serialization/) or straight to [the django REST framework API docs](https://www.django-rest-framework.org/api-guide/requests/)

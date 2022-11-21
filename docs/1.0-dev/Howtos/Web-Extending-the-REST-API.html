@@ -16,7 +16,9 @@
     <script src="../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parsing command arguments, theory and best practices" href="Parsing-commands-tutorial.html" />
+    <link rel="prev" title="Help System Tutorial" href="Web-Help-System-Tutorial.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Parsing-commands-tutorial.html" title="Parsing command arguments, theory and best practices"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Web-Help-System-Tutorial.html" title="Help System Tutorial"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Extending the REST API</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -65,10 +74,16 @@
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Web-Help-System-Tutorial.html"
+                        title="previous chapter">Help System Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Parsing-commands-tutorial.html"
+                        title="next chapter">Parsing command arguments, theory and best practices</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Howtos/Extending-the-REST-API.md.txt"
+      <li><a href="../_sources/Howtos/Web-Extending-the-REST-API.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -84,7 +99,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Extending-the-REST-API.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Web-Extending-the-REST-API.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -97,28 +112,22 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="extending-the-rest-api">
 <h1>Extending the REST API<a class="headerlink" href="#extending-the-rest-api" title="Permalink to this headline">¶</a></h1>
-<blockquote>
-<div><p><em>This tutorial assumes you have a basic understanding of the <code class="docutils literal notranslate"><span class="pre">web</span></code> folder structure. If you don’t, please read <a class="reference external" href="https://www.evennia.com/docs/1.0-dev/Components/Website.html">the page on the website</a> and make sure you understand it before you come back!</em></p>
-</div></blockquote>
-<p>For this guide, we’ll be adding an <code class="docutils literal notranslate"><span class="pre">inventory</span></code> action to the <code class="docutils literal notranslate"><span class="pre">characters</span></code> endpoint, showing all objects being <em>worn</em> and <em>carried</em> by a character.</p>
-<blockquote>
-<div><p>“worn versus carried” isn’t built into core Evennia, but it’s a common thing to add. This guide uses a <code class="docutils literal notranslate"><span class="pre">.db.worn</span></code> attribute to identify gear, but will explain how to reference your own mechanic too.</p>
-</div></blockquote>
-<p>The first thing you should do is review the <a class="reference external" href="https://www.evennia.com/docs/1.0-dev/Components/Web-API.html">REST API</a> documentation page. It’s not very long, but it covers how to turn the API on and which parts of django you should be familiar with.</p>
-<p>Once you’ve read that and successfully visited <code class="docutils literal notranslate"><span class="pre">/api/characters/</span></code>, it’s time to get started!</p>
+<aside class="sidebar">
+<p>Concepts like <em>worn</em> or <em>carried</em> aren’t built into core Evennia, but it’s a common thing to add. This guide uses a <code class="docutils literal notranslate"><span class="pre">.db.worn</span></code> attribute to identify gear, but will explain how to reference your own mechanic too.</p>
+</aside>
+<p>By default, the Evennia <a class="reference internal" href="../Components/Web-API.html"><span class="doc std std-doc">REST API</span></a> provides endpoints for the standard entities.  One such endpoint is <code class="docutils literal notranslate"><span class="pre">/api/characters/</span></code>, returning information about Characters. In this tutorial, we’ll extend it by adding an <code class="docutils literal notranslate"><span class="pre">inventory</span></code> action to the <code class="docutils literal notranslate"><span class="pre">/characters</span></code> endpoint, showing all objects being <em>worn</em> and <em>carried</em> by a character.</p>
 <section id="creating-your-own-viewset">
 <h2>Creating your own viewset<a class="headerlink" href="#creating-your-own-viewset" title="Permalink to this headline">¶</a></h2>
-<p>The first thing you’ll need to do is define your own views module. Create a blank file: <code class="docutils literal notranslate"><span class="pre">mygame/web/api/views.py</span></code></p>
-<blockquote>
-<div><p>A <em>view</em> is the python code that tells django what data to put on a page, while a <em>template</em> tells django how to display that data. For more in-depth information, you can read the django documentation. (<a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/http/views/">docs for views</a>, <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/templates/">docs for templates</a>)</p>
-</div></blockquote>
-<p>The default REST API endpoints are controlled by classes in <code class="docutils literal notranslate"><span class="pre">evennia/web/api/views.py</span></code> - you could copy that entire file directly and use it, but we’re going to focus on changing the minimum.</p>
-<p>To start, we’ll reimplement the default <code class="docutils literal notranslate"><span class="pre">characters</span></code> endpoint: a child view of the <code class="docutils literal notranslate"><span class="pre">objects</span></code> endpoint that can only access characters.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">mygame/web/api/views.py</span>
+<aside class="sidebar">
+<p class="sidebar-title">Views and templates</p>
+<p>A <em>view</em> is the python code that tells django what data to put on a page, while a <em>template</em> tells django how to display that data. For more in-depth information, you can read the django <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/http/views/">docs for views</a> and <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/templates/">docs for templates</a>.</p>
+</aside>
+<p>The first thing you’ll need to do is define your own <code class="docutils literal notranslate"><span class="pre">views.py</span></code> module.</p>
+<p>Create a blank file: <code class="docutils literal notranslate"><span class="pre">mygame/web/api/views.py</span></code></p>
+<p>The default REST API endpoints are controlled by classes in <code class="docutils literal notranslate"><span class="pre">evennia/web/api/views.py</span></code> - you could copy that entire file and use it, but we’re going to focus on changing the minimum.</p>
+<p>To start, we’ll reimplement the default <a class="reference internal" href="../api/evennia.web.api.views.html#evennia.web.api.views.CharacterViewSet" title="evennia.web.api.views.CharacterViewSet"><span class="xref myst py py-class">CharacterViewSet</span></a> that handles requests from the <code class="docutils literal notranslate"><span class="pre">characters/</span></code> endpoint. This is a child of the <code class="docutils literal notranslate"><span class="pre">objects</span></code> endpoint that can only access characters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/api/views.py</span>
 
-<span class="sd">Customized views for the REST API</span>
-<span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># we&#39;ll need these from django&#39;s rest framework to make our view work</span>
 <span class="kn">from</span> <span class="nn">rest_framework.decorators</span> <span class="kn">import</span> <span class="n">action</span>
 <span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
@@ -142,9 +151,9 @@
 <section id="setting-up-the-urls">
 <h2>Setting up the urls<a class="headerlink" href="#setting-up-the-urls" title="Permalink to this headline">¶</a></h2>
 <p>Now that we have a viewset of our own, we can create our own urls module and change the <code class="docutils literal notranslate"><span class="pre">characters</span></code> endpoint path to point to ours.</p>
-<blockquote>
-<div><p>Evennia’s <a class="reference external" href="https://www.evennia.com/docs/1.0-dev/Components/Website.html">Game website</a> page demonstrates how to use the <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> module for the main website - if you haven’t gone over that page yet, now is a good time.</p>
-</div></blockquote>
+<aside class="sidebar">
+<p>Evennia’s <a class="reference internal" href="../Components/Website.html"><span class="doc std std-doc">Game website</span></a> page demonstrates how to use the <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> module for the main website - if you haven’t gone over that page yet, now is a good time.</p>
+</aside>
 <p>The API routing is more complicated than the website or webclient routing, so you need to copy the entire module from evennia into your game instead of patching on changes. Copy the file from <code class="docutils literal notranslate"><span class="pre">evennia/web/api/urls.py</span></code> to your folder, <code class="docutils literal notranslate"><span class="pre">mygame/web/api/urls.py</span></code> and open it in your editor.</p>
 <p>Import your new views module, then find and update the <code class="docutils literal notranslate"><span class="pre">characters</span></code> path to use your own viewset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/api/urls.py</span>
@@ -222,9 +231,10 @@
 <h2>Adding a new detail<a class="headerlink" href="#adding-a-new-detail" title="Permalink to this headline">¶</a></h2>
 <p>Head back over to your character view class - it’s time to start adding our inventory.</p>
 <p>The usual “page” in a REST API is called an <em>endpoint</em> and is what you typically access. e.g. <code class="docutils literal notranslate"><span class="pre">/api/characters/</span></code> is the “characters” endpoint, and <code class="docutils literal notranslate"><span class="pre">/api/characters/:id</span></code> is the endpoint for individual characters.</p>
-<blockquote>
-<div><p>The <code class="docutils literal notranslate"><span class="pre">:</span></code> in an API path means that it’s a variable - you don’t directly access that exact path. Instead, you’d take your character ID (e.g. 1) and use that instead: <code class="docutils literal notranslate"><span class="pre">/api/characters/1</span></code></p>
-</div></blockquote>
+<aside class="sidebar">
+<p class="sidebar-title">What is that colon?</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">:</span></code> in an API path means that it’s a <em>variable</em> - you don’t directly access that exact path. Instead, you’d take your character ID (e.g. 1) and use that instead: <code class="docutils literal notranslate"><span class="pre">/api/characters/1</span></code></p>
+</aside>
 <p>However, an endpoint can also have one or more <em>detail</em> views, which function like a sub-point. We’ll be adding <em>inventory</em> as a detail to our character endpoint, which will look like <code class="docutils literal notranslate"><span class="pre">/api/characters/:id/inventory</span></code></p>
 <p>With the django REST framework, adding a new detail is as simple as adding a decorated method to the view set class - the <code class="docutils literal notranslate"><span class="pre">&#64;action</span></code> decorator. Since checking your inventory is just data retrieval, we’ll only want to permit the <code class="docutils literal notranslate"><span class="pre">GET</span></code> method, and we’re adding this action as an API detail, so our decorator will look like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;get&quot;</span><span class="p">])</span>
@@ -267,11 +277,12 @@
 </section>
 <section id="creating-a-serializer">
 <h2>Creating a Serializer<a class="headerlink" href="#creating-a-serializer" title="Permalink to this headline">¶</a></h2>
-<p>A simple string isn’t very useful, though. What we want is the character’s actual inventory - and for that, we need to set up our own serializer.</p>
+<p>A simple string isn’t very useful, though. What we want is the character’s actual inventory - and for that, we need to set up our own <em>serializer</em>.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Django serializers</p>
+<p>You can get a more in-depth look at django serializers in <a class="reference external" href="https://www.django-rest-framework.org/api-guide/serializers/">the django REST framework serializer docs</a>.</p>
+</aside>
 <p>Generally speaking, a <em>serializer</em> turns a set of data into a specially formatted string that can be sent in a data stream - usually JSON. Django REST serializers are special classes and functions which take python objects and convert them into API-ready formats. So, just like for the viewset, django and evennia have done a lot of the heavy lifting for us already.</p>
-<blockquote>
-<div><p>You can get a more in-depth look at django serializers on <a class="reference external" href="https://www.django-rest-framework.org/api-guide/serializers/">the django REST framework serializer docs</a></p>
-</div></blockquote>
 <p>Instead of writing our own serializer, we’ll inherit from evennia’s pre-existing serializers and extend them for our own purpose. To do that, create a new file <code class="docutils literal notranslate"><span class="pre">mygame/web/api/serializers.py</span></code> and start by adding in the imports you’ll need.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># the base serializing library for the framework</span>
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">serializers</span>
@@ -484,11 +495,12 @@
 </section>
 <section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Django REST Framework</p>
+<p>For a more in-depth look at the django REST framework, you can go through <a class="reference external" href="https://www.django-rest-framework.org/tutorial/1-serialization/">their tutorial</a> or straight to <a class="reference external" href="https://www.django-rest-framework.org/api-guide/requests/">the django REST framework API docs</a>.</p>
+</aside>
 <p>That’s it! You’ve learned how to customize your own REST endpoint for Evennia, add new endpoint details, and serialize data from your game’s objects for the REST API. With those tools, you can take any in-game data you want and make it available - or even modifiable - with the API.</p>
 <p>If you want a challenge, try taking what you learned and implementing a new <code class="docutils literal notranslate"><span class="pre">desc</span></code> detail that will let you <code class="docutils literal notranslate"><span class="pre">GET</span></code> the existing character desc <em>or</em> <code class="docutils literal notranslate"><span class="pre">PUT</span></code> a new desc. (Tip: check out how evennia’s REST permissions module works, and the <code class="docutils literal notranslate"><span class="pre">set_attribute</span></code> methods in the default evennia REST API views.)</p>
-<blockquote>
-<div><p>For a more in-depth look at the django REST framework, you can go through <a class="reference external" href="https://www.django-rest-framework.org/tutorial/1-serialization/">their tutorial</a> or straight to <a class="reference external" href="https://www.django-rest-framework.org/api-guide/requests/">the django REST framework API docs</a></p>
-</div></blockquote>
 </section>
 </section>
 
@@ -507,7 +519,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Parsing-commands-tutorial.html" title="Parsing command arguments, theory and best practices"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Web-Help-System-Tutorial.html" title="Help System Tutorial"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Extending the REST API</a></li> 
       </ul>
         <div class="develop">develop branch</div>

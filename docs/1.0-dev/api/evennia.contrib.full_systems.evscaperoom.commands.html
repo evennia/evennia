@@ -211,7 +211,7 @@ the operation will be general or on the room.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['q', 'chicken out', 'abort', 'quit']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['chicken out', 'abort', 'q', 'quit']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -235,7 +235,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'q chicken out abort quit', 'category': 'evscaperoom', 'key': 'give up', 'no_prefix': ' q chicken out abort quit', 'tags': '', 'text': '\n    Give up\n\n    Usage:\n      give up\n\n    Abandons your attempts at escaping and of ever winning the pie-eating contest.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chicken out abort q quit', 'category': 'evscaperoom', 'key': 'give up', 'no_prefix': ' chicken out abort q quit', 'tags': '', 'text': '\n    Give up\n\n    Usage:\n      give up\n\n    Abandons your attempts at escaping and of ever winning the pie-eating contest.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -256,7 +256,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -290,7 +290,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'evscaperoom', 'key': 'look', 'no_prefix': ' ls l', 'tags': '', 'text': '\n    Look at the room, an object or the currently focused object\n\n    Usage:\n      look [obj]\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'evscaperoom', 'key': 'look', 'no_prefix': ' l ls', 'tags': '', 'text': '\n    Look at the room, an object or the currently focused object\n\n    Usage:\n      look [obj]\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -371,7 +371,7 @@ shout</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['whisper', ';', 'shout']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [';', 'whisper', 'shout']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -400,7 +400,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'whisper ; shout', 'category': 'general', 'key': 'say', 'no_prefix': ' whisper ; shout', 'tags': '', 'text': '\n    Perform an communication action.\n\n    Usage:\n      say &lt;text&gt;\n      whisper\n      shout\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '; whisper shout', 'category': 'general', 'key': 'say', 'no_prefix': ' ; whisper shout', 'tags': '', 'text': '\n    Perform an communication action.\n\n    Usage:\n      say &lt;text&gt;\n      whisper\n      shout\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -428,7 +428,7 @@ emote /me points to /box and /lever.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [':', 'pose']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['pose', ':']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -467,7 +467,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ': pose', 'category': 'general', 'key': 'emote', 'no_prefix': ' : pose', 'tags': '', 'text': '\n    Perform a free-form emote. Use /me to\n    include yourself in the emote and /name\n    to include other objects or characters.\n    Use &quot;...&quot; to enact speech.\n\n    Usage:\n        emote &lt;emote&gt;\n        :&lt;emote\n\n    Example:\n        emote /me smiles at /peter\n        emote /me points to /box and /lever.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'pose :', 'category': 'general', 'key': 'emote', 'no_prefix': ' pose :', 'tags': '', 'text': '\n    Perform a free-form emote. Use /me to\n    include yourself in the emote and /name\n    to include other objects or characters.\n    Use &quot;...&quot; to enact speech.\n\n    Usage:\n        emote &lt;emote&gt;\n        :&lt;emote\n\n    Example:\n        emote /me smiles at /peter\n        emote /me points to /box and /lever.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -490,7 +490,7 @@ looks and what actions is available.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['examine', 'unfocus', 'e', 'ex']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['ex', 'unfocus', 'e', 'examine']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -519,7 +519,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'examine unfocus e ex', 'category': 'evscaperoom', 'key': 'focus', 'no_prefix': ' examine unfocus e ex', 'tags': '', 'text': '\n    Focus your attention on a target.\n\n    Usage:\n      focus &lt;obj&gt;\n\n    Once focusing on an object, use look to get more information about how it\n    looks and what actions is available.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ex unfocus e examine', 'category': 'evscaperoom', 'key': 'focus', 'no_prefix': ' ex unfocus e examine', 'tags': '', 'text': '\n    Focus your attention on a target.\n\n    Usage:\n      focus &lt;obj&gt;\n\n    Once focusing on an object, use look to get more information about how it\n    looks and what actions is available.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -581,7 +581,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGet.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['inv', 'give', 'inventory', 'i']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['give', 'inventory', 'inv', 'i']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -605,7 +605,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGet.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'inv give inventory i', 'category': 'evscaperoom', 'key': 'get', 'no_prefix': ' inv give inventory i', 'tags': '', 'text': '\n    Use focus / examine instead.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'give inventory inv i', 'category': 'evscaperoom', 'key': 'get', 'no_prefix': ' give inventory inv i', 'tags': '', 'text': '\n    Use focus / examine instead.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -626,7 +626,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;dig', '&#64;open']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;open', '&#64;dig']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -649,7 +649,7 @@ to all the variables defined therein.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;dig &#64;open', 'category': 'general', 'key': 'open', 'no_prefix': ' dig open', 'tags': '', 'text': '\n    Interact with an object in focus.\n\n    Usage:\n       &lt;action&gt; [arg]\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;open &#64;dig', 'category': 'general', 'key': 'open', 'no_prefix': ' open dig', 'tags': '', 'text': '\n    Interact with an object in focus.\n\n    Usage:\n       &lt;action&gt; [arg]\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
