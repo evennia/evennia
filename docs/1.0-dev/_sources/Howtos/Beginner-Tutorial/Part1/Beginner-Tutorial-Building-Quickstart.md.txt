@@ -1,6 +1,6 @@
 # Using commands and building stuff
 
-In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with
+In this lesson, we will test out what we can do in-game out-of-the-box. Evennia ships with
 [around 90 default commands](../../../Components/Default-Commands.md), and while you can override those as you please,
 the defaults can be quite useful.
 
@@ -41,7 +41,7 @@ The most common comman is
 
 This will show you the description of the current location. `l` is an alias.
 
-When targeting objects in commands you have two special labels you can use, `here` for the current
+When targeting objects in commands, you have two special labels you can use, `here` for the current
 room or `me`/`self` to point back to yourself. So
 
     look me
@@ -53,15 +53,15 @@ will give you your own description. `look here` is, in this case, the same as pl
 
 If you just installed Evennia, your very first player account is called user #1, also known as the
 _superuser_ or _god user_. This user is very powerful, so powerful that it will override many game
-restrictions such as locks. This can be useful, but it also hides some functionality that you might
+restrictions (such as locks). This can be useful, but it also hides some functionality that you might
 want to test.
 
-To temporarily step down from your superuser position you can use the `quell` command in-game:
+To temporarily step down from your superuser position, you can use the `quell` command in-game:
 
     quell
 
 This will make you start using the permission of your current character's level instead of your
-superuser level. If you didn't change any settings your game Character should have an _Developer_
+superuser level. If you didn't change any settings, your game Character should have an _Developer_
 level permission - high as can be without bypassing locks like the superuser does. This will work
 fine for the examples on this page. Use
 
@@ -71,7 +71,7 @@ to get superuser status again when you are done.
 
 ## Creating an Object
 
-Basic objects can be anything -- swords, flowers and non-player characters. They are created using
+Basic objects can be anything -- swords, flowers, and non-player characters. They are created using
 the `create` command:
 
     create box
@@ -81,7 +81,7 @@ This created a new 'box' (of the default object type) in your inventory. Use the
 
     name box = very large box;box;very;crate
 
-```{warning} MUD clients and semi-colon
+```{warning} MUD clients and semi-colon: 
 Some traditional MUD clients use the semi-colon `;` to separate client inputs. If so,
 the above line will give an error. You need to change your client to use another command-separator
 or to put it in 'verbatim' mode. If you still have trouble, use the Evennia web client instead.
@@ -91,12 +91,12 @@ or to put it in 'verbatim' mode. If you still have trouble, use the Evennia web 
 
 We now renamed the box to _very large box_ (and this is what we will see when looking at it), but we
 will also recognize it by any of the other names we give - like _crate_ or simply _box_ as before.
-We could have given these aliases directly after the name in the `create` command, this is true for
+We could have given these aliases directly after the name in the `create` command. This is true for
 all creation commands - you can always tag on a list of `;`-separated aliases to the name of your
 new object. If you had wanted to not change the name itself, but to only add aliases, you could have
 used the `alias` command.
 
-We are currently carrying the box. Let's drop it (there is also a short cut to create and drop in
+We are currently carrying the box. Let's drop it (there is also a shortcut to create and drop in
 one go by using the `/drop` switch, for example `create/drop box`).
 
     drop box
@@ -117,7 +117,7 @@ The description you get is not very exciting. Let's add some flavor.
 
     desc box = This is a large and very heavy box.
 
-If you try the `get` command we will pick up the box. So far so good, but if we really want this to
+If you try the `get` command, we will pick up the box. So far so good, but if we really want this to
 be a large and heavy box, people should _not_ be able to run off with it that easily. To prevent
 this we need to lock it down. This is done by assigning a _Lock_  to it. Make sure the box was
 dropped in the room, then try this:
@@ -131,7 +131,7 @@ up anyway. Make sure you are quelling your superuser powers and try to get the b
     > get box
     You can't get that.
 
-Think thís default error message looks dull? The `get` command looks for an [Attribute](../../../Components/Attributes.md)
+Think this default error message looks dull? The `get` command looks for an [Attribute](../../../Components/Attributes.md)
 named `get_err_msg` for returning a nicer error message (we just happen to know this, you would need
 to peek into the
 [code](https://github.com/evennia/evennia/blob/master/evennia/commands/default/general.py#L235) for
@@ -221,7 +221,7 @@ You know you want to.
 
 ## Making Yourself a House
 
-The main command for shaping the game world is `dig`. For example, if you are standing in Limbo you
+The main command for shaping the game world is `dig`. For example, if you are standing in Limbo, you
 can dig a route to your new house location like this:
 
     dig house = large red door;door;in,to the outside;out

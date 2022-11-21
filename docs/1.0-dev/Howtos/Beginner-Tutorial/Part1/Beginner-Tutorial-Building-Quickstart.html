@@ -117,7 +117,7 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="using-commands-and-building-stuff">
 <h1><span class="section-number">1. </span>Using commands and building stuff<a class="headerlink" href="#using-commands-and-building-stuff" title="Permalink to this headline">¶</a></h1>
-<p>In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with
+<p>In this lesson, we will test out what we can do in-game out-of-the-box. Evennia ships with
 <a class="reference internal" href="../../../Components/Default-Commands.html"><span class="doc std std-doc">around 90 default commands</span></a>, and while you can override those as you please,
 the defaults can be quite useful.</p>
 <p>Connect and log into your new game and you will end up in the “Limbo” location. This
@@ -156,7 +156,7 @@ the preceeding &#64;.</p>
 </pre></div>
 </div>
 <p>This will show you the description of the current location. <code class="docutils literal notranslate"><span class="pre">l</span></code> is an alias.</p>
-<p>When targeting objects in commands you have two special labels you can use, <code class="docutils literal notranslate"><span class="pre">here</span></code> for the current
+<p>When targeting objects in commands, you have two special labels you can use, <code class="docutils literal notranslate"><span class="pre">here</span></code> for the current
 room or <code class="docutils literal notranslate"><span class="pre">me</span></code>/<code class="docutils literal notranslate"><span class="pre">self</span></code> to point back to yourself. So</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>look me
 </pre></div>
@@ -167,14 +167,14 @@ room or <code class="docutils literal notranslate"><span class="pre">me</span></
 <h2><span class="section-number">1.3. </span>Stepping Down From Godhood<a class="headerlink" href="#stepping-down-from-godhood" title="Permalink to this headline">¶</a></h2>
 <p>If you just installed Evennia, your very first player account is called user #1, also known as the
 <em>superuser</em> or <em>god user</em>. This user is very powerful, so powerful that it will override many game
-restrictions such as locks. This can be useful, but it also hides some functionality that you might
+restrictions (such as locks). This can be useful, but it also hides some functionality that you might
 want to test.</p>
-<p>To temporarily step down from your superuser position you can use the <code class="docutils literal notranslate"><span class="pre">quell</span></code> command in-game:</p>
+<p>To temporarily step down from your superuser position, you can use the <code class="docutils literal notranslate"><span class="pre">quell</span></code> command in-game:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>quell
 </pre></div>
 </div>
 <p>This will make you start using the permission of your current character’s level instead of your
-superuser level. If you didn’t change any settings your game Character should have an <em>Developer</em>
+superuser level. If you didn’t change any settings, your game Character should have an <em>Developer</em>
 level permission - high as can be without bypassing locks like the superuser does. This will work
 fine for the examples on this page. Use</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unquell
@@ -184,7 +184,7 @@ fine for the examples on this page. Use</p>
 </section>
 <section id="creating-an-object">
 <h2><span class="section-number">1.4. </span>Creating an Object<a class="headerlink" href="#creating-an-object" title="Permalink to this headline">¶</a></h2>
-<p>Basic objects can be anything – swords, flowers and non-player characters. They are created using
+<p>Basic objects can be anything – swords, flowers, and non-player characters. They are created using
 the <code class="docutils literal notranslate"><span class="pre">create</span></code> command:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create box
 </pre></div>
@@ -196,18 +196,18 @@ the <code class="docutils literal notranslate"><span class="pre">create</span></
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>MUD clients and semi-colon
+<p>MUD clients and semi-colon:
 Some traditional MUD clients use the semi-colon <code class="docutils literal notranslate"><span class="pre">;</span></code> to separate client inputs. If so,
 the above line will give an error. You need to change your client to use another command-separator
 or to put it in ‘verbatim’ mode. If you still have trouble, use the Evennia web client instead.</p>
 </div>
 <p>We now renamed the box to <em>very large box</em> (and this is what we will see when looking at it), but we
 will also recognize it by any of the other names we give - like <em>crate</em> or simply <em>box</em> as before.
-We could have given these aliases directly after the name in the <code class="docutils literal notranslate"><span class="pre">create</span></code> command, this is true for
+We could have given these aliases directly after the name in the <code class="docutils literal notranslate"><span class="pre">create</span></code> command. This is true for
 all creation commands - you can always tag on a list of <code class="docutils literal notranslate"><span class="pre">;</span></code>-separated aliases to the name of your
 new object. If you had wanted to not change the name itself, but to only add aliases, you could have
 used the <code class="docutils literal notranslate"><span class="pre">alias</span></code> command.</p>
-<p>We are currently carrying the box. Let’s drop it (there is also a short cut to create and drop in
+<p>We are currently carrying the box. Let’s drop it (there is also a shortcut to create and drop in
 one go by using the <code class="docutils literal notranslate"><span class="pre">/drop</span></code> switch, for example <code class="docutils literal notranslate"><span class="pre">create/drop</span> <span class="pre">box</span></code>).</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>drop box
 </pre></div>
@@ -227,7 +227,7 @@ You see nothing special.
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>desc box = This is a large and very heavy box.
 </pre></div>
 </div>
-<p>If you try the <code class="docutils literal notranslate"><span class="pre">get</span></code> command we will pick up the box. So far so good, but if we really want this to
+<p>If you try the <code class="docutils literal notranslate"><span class="pre">get</span></code> command, we will pick up the box. So far so good, but if we really want this to
 be a large and heavy box, people should <em>not</em> be able to run off with it that easily. To prevent
 this we need to lock it down. This is done by assigning a <em>Lock</em>  to it. Make sure the box was
 dropped in the room, then try this:</p>
@@ -241,7 +241,7 @@ up anyway. Make sure you are quelling your superuser powers and try to get the b
 You can&#39;t get that.
 </pre></div>
 </div>
-<p>Think thís default error message looks dull? The <code class="docutils literal notranslate"><span class="pre">get</span></code> command looks for an <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a>
+<p>Think this default error message looks dull? The <code class="docutils literal notranslate"><span class="pre">get</span></code> command looks for an <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a>
 named <code class="docutils literal notranslate"><span class="pre">get_err_msg</span></code> for returning a nicer error message (we just happen to know this, you would need
 to peek into the
 <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/commands/default/general.py#L235">code</a> for
@@ -323,7 +323,7 @@ inside <a class="reference internal" href="../../../api/evennia.contrib.tutorial
 </section>
 <section id="making-yourself-a-house">
 <h2><span class="section-number">1.7. </span>Making Yourself a House<a class="headerlink" href="#making-yourself-a-house" title="Permalink to this headline">¶</a></h2>
-<p>The main command for shaping the game world is <code class="docutils literal notranslate"><span class="pre">dig</span></code>. For example, if you are standing in Limbo you
+<p>The main command for shaping the game world is <code class="docutils literal notranslate"><span class="pre">dig</span></code>. For example, if you are standing in Limbo, you
 can dig a route to your new house location like this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dig house = large red door;door;in,to the outside;out
 </pre></div>
