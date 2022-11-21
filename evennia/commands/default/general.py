@@ -4,7 +4,6 @@ General Character commands usually available to all characters
 import re
 
 from django.conf import settings
-
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
 
@@ -324,7 +323,10 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     if replstring == old_replstring:
                         string += f"\nIdentical {nicktypestr.lower()} already set."
                     else:
-                        string += f"\n{nicktypestr} '|w{old_nickstring}|n' updated to map to '|w{replstring}|n'."
+                        string += (
+                            f"\n{nicktypestr} '|w{old_nickstring}|n' updated to map to"
+                            f" '|w{replstring}|n'."
+                        )
                 else:
                     string += f"\n{nicktypestr} '|w{nickstring}|n' mapped to '|w{replstring}|n'."
                 try:

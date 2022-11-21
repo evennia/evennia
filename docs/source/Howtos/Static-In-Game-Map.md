@@ -412,5 +412,5 @@ easily new game defining features can be added to Evennia.
 
 You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
 not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
-Tutorial), [fill your world with NPC's](./Tutorial-Aggressive-NPCs.md) or 
+Tutorial), [fill your world with NPC's](./Tutorial-NPC-Reacting.md) or 
 [implement a combat system](./Turn-based-Combat-System.md).

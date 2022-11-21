@@ -1,36 +1,33 @@
-# Default Exit Errors
+# Return custom errors on missing Exits
 
-Evennia allows for exits to have any name. The command "kitchen" is a valid exit name as well as "jump out the window"
-or "north". An exit actually consists of two parts: an [Exit Object](../Components/Objects.md) and
+
+    > north
+    Ouch! You bump into a wall!
+    > out 
+     But you are already outside ...? 
+     
+Evennia allows for exits to have any name. The command "kitchen" is a valid exit name as well as "jump out the window" or "north". An exit actually consists of two parts: an [Exit Object](../Components/Objects.md) and
 an [Exit Command](../Components/Commands.md) stored on said exit object. The command has the same key and aliases as the
 exit-object, which is why you can see the exit in the room and just write its name to traverse it.
 
-So if you try to enter the name of a non-existing exit, Evennia treats is the same way as if you were trying to 
-use a non-existing command:
+So if you try to enter the name of a non-existing exit, Evennia treats is the same way as if you were trying to  use a non-existing command:
 
      > jump out the window
      Command 'jump out the window' is not available. Type "help" for help.
 
-Many games don't need this type of freedom however. They define only the cardinal directions as valid exit names (
-Evennia's `tunnel` command also offers this functionality). In this case, the error starts to look less logical:
+Many games don't need this type of freedom. They define only the cardinal directions as valid exit names ( Evennia's `tunnel` command also offers this functionality). In this case, the error starts to look less logical:
 
      > west
      Command 'west' is not available. Maybe you meant "set" or "reset"?
 
-Since we for our particular game *know* that west is an exit direction, it would be better if the error message just
-told us that we couldn't go there.
+Since we for our particular game *know* that west is an exit direction, it would be better if the error message just told us that we couldn't go there.
     
      > west 
      You cannot move west.
 
+The way to do this is to give Evennia an _alternative_ Command to use when no Exit-Command is found in the room. See [Adding Commands](Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md) for more info about the  process of adding new Commands to Evennia.
 
-## Adding default error commands
-
-The way to do this is to give Evennia an _alternative_ Command to use when no Exit-Command is found
-in the room. See [Adding Commands](Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md) for more info about the 
-process of adding new Commands to Evennia.
-
-In this example all we'll do is echo an error message.
+In this example we will just echo an error message, but you could do everything (maybe you lose health if you bump into a wall?)
 
 ```python
 # for example in a file mygame/commands/movecommands.py
@@ -75,9 +72,7 @@ class MovementFailCmdSet(CmdSet):
         self.add(CmdExitErrorSouth()) 
 ```
 
-We pack our commands in a new little cmdset; if we add this to our 
-`CharacterCmdSet`, we can just add more errors to `MovementFailCmdSet` 
-later without having to change code in two places.
+We pack our commands in a new little cmdset; if we add this to our  `CharacterCmdSet`, we can just add more errors to `MovementFailCmdSet`  later without having to change code in two places.
 
 ```python
 # in mygame/commands/default_cmdsets.py
@@ -93,15 +88,12 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(movecommands.MovementFailCmdSet)
 ```
 
-`reload` the server. What happens henceforth is that if you are in a room with an Exitobject (let's say it's "north"),
-the proper Exit-command will _overload_ your error command (also named "north"). But if you enter a direction without
-having a matching exit for it, you will fall back to your default error commands:
+`reload` the server. What happens henceforth is that if you are in a room with an Exitobject (let's say it's "north"), the proper Exit-command will _overload_ your error command (also named "north"). But if you enter a direction without having a matching exit for it, you will fall back to your default error commands:
 
      > east
      You cannot move east.
 
-Further expansions by the exit system (including manipulating the way the Exit command itself is created) can be done by
-modifying the [Exit typeclass](../Components/Typeclasses.md) directly.
+Further expansions by the exit system (including manipulating the way the Exit command itself is created) can be done by modifying the [Exit typeclass](../Components/Typeclasses.md) directly.
 
 ## Why not a single command?
 
@@ -118,13 +110,8 @@ class CmdExitError(default_cmds.MuxCommand):
     #[...]
 ```
 
-The reason is that this would *not* work. Understanding why is important.
+This would *not* work the way we want. Understanding why is important.
 
-Evennia's [command system](../Components/Commands.md) compares commands by key and/or aliases. If _any_ key or alias
-match, the two commands are considered _identical_. When the cmdsets merge, priority will then decide which of these
-'identical' commandss replace which.
+Evennia's [command system](../Components/Commands.md) compares commands by key and/or aliases. If _any_ key or alias match, the two commands are considered _identical_. When the cmdsets merge, priority will then decide which of these 'identical' commandss replace which.
 
-So the above example would work fine as long as there were _no Exits at all_ in the room. But when we enter
-a room with an exit "north", its Exit-command (which has a higher priority) will override the single `CmdExitError`
-with its alias 'north'. So the `CmdExitError` will be gone and while "north" will work, we'll again get the normal 
-"Command not recognized" error for the other directions.
+So the above example would work fine as long as there were _no Exits at all_ in the room. But when we enter a room with an exit "north", its Exit-command (which has a higher priority) will override the single `CmdExitError` with its alias 'north'. So the `CmdExitError` will be gone and while "north" will work, we'll again get the normal  "Command not recognized" error for the other directions.
