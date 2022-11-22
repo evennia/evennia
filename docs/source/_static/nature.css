@@ -83,9 +83,21 @@ blockquote {
   font-style: italic;
   color: #797979;
   background-color: #e1e8e2;
-  padding: 3px;
   border: 1px solid #c7cdc8;
   padding-left: 14px;
+  padding-right: 15px;
+  margin-left: 0;
+  width: 96%; 
+  border-left-style: dotted;
+  border-left-width: medium;
+}
+
+blockquote:before { 
+    content: "!";
+    float: left;
+    font-size: 230%;
+    opacity: 0.3;
+    padding-right: 5px;
 }
 
 div.sphinxsidebar {

@@ -15,5 +15,4 @@ These envvars will only be used on the _very first_ server start and then ignore
 
 ```
 EVENNIA_SUPERUSER_USERNAME=myname EVENNIA_SUPERUSER_PASSWORD=mypwd evennia start
-
 ```

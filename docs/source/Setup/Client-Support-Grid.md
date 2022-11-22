@@ -21,7 +21,7 @@ Legend:
 | [MUSHclient][4] (Win)     | 4.94      | NAWS reports full text area                                    |
 | [Zmud][5] (Win)           | 7.21      | *UNTESTED*                                                     |
 | [Cmud][6] (Win)           | v3        | *UNTESTED*                                                     |
-| [Potato][7]_              | 2.0.0b16  | No MXP, MCCP support. Win 32bit does not understand            |
+| [Potato][7]              | 2.0.0b16  | No MXP, MCCP support. Win 32bit does not understand            |
 |                           |           | "localhost", must use `127.0.0.1`.                             |
 | [Mudlet][8]               | 3.4+      | No known issues. Some older versions showed <> as html         |
 |                           |           | under MXP.                                                     |

@@ -1,4 +1,4 @@
-# RSS
+# Connect Evennia channels to RSS
 
 
 [RSS](https://en.wikipedia.org/wiki/RSS) is a format for easily tracking updates on websites. The
@@ -25,7 +25,7 @@ Start/reload Evennia as a privileged user. You should now have a new command ava
 
      @rss2chan <evennia_channel> = <rss_url>
 
-### Setting up RSS, step by step
+## Setting up RSS, step by step
 
 You can connect RSS to any Evennia channel, but for testing, let's set up a new channel "rss".
 
@@ -44,4 +44,4 @@ switch:
      @rss2chan/delete rss = https://github.com/evennia/evennia/commits/master.atom
 
 You can connect any number of RSS feeds to a channel this way. You could also connect them to the
-same channels as [IRC](./IRC.md) to have the feed echo to external chat channels as well.
+same channels as [Channels-to-IRC](./Channels-to-IRC.md) to have the feed echo to external chat channels as well.
