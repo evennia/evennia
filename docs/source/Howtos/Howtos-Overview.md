@@ -7,7 +7,9 @@ All Evennia tutorials. They will often refer to the [components](../Components/C
 Recommended starting point! This will take you from absolute beginner to making
 a small but full game with Evennia. Other tutorials and howto's tend to assume you are already familiar with the concepts explained in the Beginning tutorial.
 
-> The latter parts of the beginner tutorial are still being worked on.
+```{note}
+Part 3 and onwards are still under development.
+```
 
 ```{toctree}
 :maxdepth: 3
