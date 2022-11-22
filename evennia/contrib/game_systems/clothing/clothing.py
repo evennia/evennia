@@ -72,14 +72,15 @@ with which to test the system:
     wear shirt
 
 """
-
+from collections import defaultdict
+from django.conf import settings
 from evennia import DefaultCharacter, DefaultObject, default_cmds
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.utils import evtable, list_to_string
+from evennia.utils import at_search_result, evtable, inherits_from, iter_to_str
 
 # Options start here.
 # Maximum character length of 'wear style' strings, or None for unlimited.
-WEARSTYLE_MAXLENGTH = 50
+WEARSTYLE_MAXLENGTH = getattr(settings, 'CLOTHING_WEARSTYLE_MAXLENGTH', 50)
 
 # The rest of these options have to do with clothing types. ContribClothing types are optional,
 # but can be used to give better control over how different items of clothing behave. You
@@ -88,7 +89,7 @@ WEARSTYLE_MAXLENGTH = 50
 
 # The order in which clothing types appear on the description. Untyped clothing or clothing
 # with a type not given in this list goes last.
-CLOTHING_TYPE_ORDER = [
+CLOTHING_TYPE_ORDER = getattr(settings, 'CLOTHING_TYPE_ORDERED', [
     "hat",
     "jewelry",
     "top",
@@ -100,28 +101,26 @@ CLOTHING_TYPE_ORDER = [
     "socks",
     "shoes",
     "accessory",
-]
+])
 # The maximum number of each type of clothes that can be worn. Unlimited if untyped or not specified.
-CLOTHING_TYPE_LIMIT = {"hat": 1, "gloves": 1, "socks": 1, "shoes": 1}
+CLOTHING_TYPE_LIMIT = getattr(settings, 'CLOTHING_TYPE_LIMIT', {"hat": 1, "gloves": 1, "socks": 1, "shoes": 1})
 # The maximum number of clothing items that can be worn, or None for unlimited.
-CLOTHING_OVERALL_LIMIT = 20
+CLOTHING_OVERALL_LIMIT = getattr(settings, 'CLOTHING_OVERALL_LIMIT', 20)
 # What types of clothes will automatically cover what other types of clothes when worn.
 # Note that clothing only gets auto-covered if it's already worn when you put something
 # on that auto-covers it - for example, it's perfectly possible to have your underpants
 # showing if you put them on after your pants!
-CLOTHING_TYPE_AUTOCOVER = {
+CLOTHING_TYPE_AUTOCOVER = getattr(settings, 'CLOTHING_TYPE_AUTOCOVER', {
     "top": ["undershirt"],
     "bottom": ["underpants"],
     "fullbody": ["undershirt", "underpants"],
     "shoes": ["socks"],
-}
+})
 # Types of clothes that can't be used to cover other clothes.
-CLOTHING_TYPE_CANT_COVER_WITH = ["jewelry"]
+CLOTHING_TYPE_CANT_COVER_WITH = getattr(settings, 'CLOTHING_TYPE_AUTOCOVER', ["jewelry"])
 
 
 # HELPER FUNCTIONS START HERE
-
-
 def order_clothes_list(clothes_list):
     """
     Orders a given clothes list by the order specified in CLOTHING_TYPE_ORDER.
@@ -245,26 +244,23 @@ class ContribClothing(DefaultObject):
         """
         # Set clothing as worn
         self.db.worn = wearstyle
-        # Auto-cover appropirate clothing types, as specified above
+        # Auto-cover appropriate clothing types
         to_cover = []
-        if self.db.clothing_type and self.db.clothing_type in CLOTHING_TYPE_AUTOCOVER:
-            for garment in get_worn_clothes(wearer):
-                if (
-                    garment.db.clothing_type
-                    and garment.db.clothing_type in CLOTHING_TYPE_AUTOCOVER[self.db.clothing_type]
-                ):
-                    to_cover.append(garment)
-                    garment.db.covered_by = self
-        # Return if quiet
-        if quiet:
-            return
+        if clothing_type := self.db.clothing_type:
+            if autocover_types := CLOTHING_TYPE_AUTOCOVER.get(clothing_type):
+                to_cover.extend( [ garment for garment in get_worn_clothes(wearer) if garment.db.clothing_type in autocover_types ] )
+        for garment in to_cover:
+            garment.db.covered_by = self
+
         # Echo a message to the room
-        message = "%s puts on %s" % (wearer, self.name)
-        if wearstyle is not True:
-            message = "%s wears %s %s" % (wearer, self.name, wearstyle)
-        if to_cover:
-            message = message + ", covering %s" % list_to_string(to_cover)
-        wearer.location.msg_contents(message + ".")
+        if not quiet:
+            if type(wearstyle) is str:
+                message = f"$You() $conj(wear) {self.name} {wearstyle}"
+            else:
+                message = f"$You() $conj(put) on {self.name}"
+            if to_cover:
+                message += ", covering {iter_to_str(to_cover)}"
+            wearer.location.msg_contents(message + ".", from_obj=wearer)
 
     def remove(self, wearer, quiet=False):
         """
@@ -277,24 +273,19 @@ class ContribClothing(DefaultObject):
             quiet (bool): If false, does not message the room
         """
         self.db.worn = False
-        remove_message = "%s removes %s." % (wearer, self.name)
         uncovered_list = []
 
         # Check to see if any other clothes are covered by this object.
         for thing in wearer.contents:
-            # If anything is covered by
             if thing.db.covered_by == self:
                 thing.db.covered_by = False
                 uncovered_list.append(thing.name)
-        if len(uncovered_list) > 0:
-            remove_message = "%s removes %s, revealing %s." % (
-                wearer,
-                self.name,
-                list_to_string(uncovered_list),
-            )
         # Echo a message to the room
         if not quiet:
-            wearer.location.msg_contents(remove_message)
+            remove_message = f"$You() $conj(remove) {self.name}"
+            if len(uncovered_list) > 0:
+                remove_message += f", revealing {iter_to_str(uncovered_list)}"
+            wearer.location.msg_contents(remove_message + ".", from_obj=wearer)
 
     def at_get(self, getter):
         """
@@ -304,6 +295,19 @@ class ContribClothing(DefaultObject):
         """
         self.db.worn = False
 
+    def at_pre_move(self, destination, **kwargs):
+        """
+        Called just before starting to move this object to
+        destination. Return False to abort move.
+
+        Notes:
+            If this method returns False/None, the move is cancelled
+            before it is even started.
+        """
+        # Covered clothing cannot be removed, dropped, or otherwise relocated
+        if self.db.covered_by:
+            return False
+        return True
 
 class ClothedCharacter(DefaultCharacter):
     """
@@ -312,45 +316,69 @@ class ClothedCharacter(DefaultCharacter):
     character typeclass.
     """
 
-    def return_appearance(self, looker):
+    def get_display_desc(self, looker, **kwargs):
         """
-        This formats a description. It is the hook a 'look' command
-        should call.
+        Get the 'desc' component of the object description. Called by `return_appearance`.
 
         Args:
             looker (Object): Object doing the looking.
-
-        Notes:
-            The name of every clothing item carried and worn by the character
-            is appended to their description. If the clothing's db.worn value
-            is set to True, only the name is appended, but if the value is a
-            string, the string is appended to the end of the name, to allow
-            characters to specify how clothing is worn.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The desc display string.
         """
-        if not looker:
-            return ""
-        # get description, build string
-        string = "|c%s|n\n" % self.get_display_name(looker)
         desc = self.db.desc
-        worn_string_list = []
-        clothes_list = get_worn_clothes(self, exclude_covered=True)
+        
+        outfit_list = []
         # Append worn, uncovered clothing to the description
-        for garment in clothes_list:
-            # If 'worn' is True, just append the name
-            if garment.db.worn is True:
-                worn_string_list.append(garment.name)
-            # Otherwise, append the name and the string value of 'worn'
-            elif garment.db.worn:
-                worn_string_list.append("%s %s" % (garment.name, garment.db.worn))
-        if desc:
-            string += "%s" % desc
-        # Append worn clothes.
-        if worn_string_list:
-            string += "|/|/%s is wearing %s." % (self, list_to_string(worn_string_list))
-        else:
-            string += "|/|/%s is not wearing anything." % self
-        return string
+        for garment in get_worn_clothes(self, exclude_covered=True):
+            wearstyle = garment.db.worn
+            if type(wearstyle) is str:
+                outfit_list.append(f"{garment.name} {wearstyle}")
+            else:
+                outfit_list.append(garment.name)
 
+        # Create outfit string
+        if outfit_list:
+            outfit = f"{self.get_display_name(looker, **kwargs)} is wearing {iter_to_str(outfit_list)}."
+        else:
+            outfit = f"{self.get_display_name(looker, **kwargs)} is wearing nothing."
+
+        # Add on to base description
+        if desc:
+            desc += f"\n\n{outfit}"
+        else:
+            desc = outfit
+        
+        return desc
+
+    def get_display_things(self, looker, **kwargs):
+        """
+        Get the 'things' component of the object's contents. Called by `return_appearance`.
+
+        Args:
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: A string describing the things in object.
+        """
+        def _filter_visible(obj_list):
+            return (obj for obj in obj_list if obj != looker and obj.access(looker, "view") and not obj.db.worn)
+
+        # sort and handle same-named things
+        things = _filter_visible(self.contents_get(content_type="object"))
+
+        grouped_things = defaultdict(list)
+        for thing in things:
+            grouped_things[thing.get_display_name(looker, **kwargs)].append(thing)
+
+        thing_names = []
+        for thingname, thinglist in sorted(grouped_things.items()):
+            nthings = len(thinglist)
+            thing = thinglist[0]
+            singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
+            thing_names.append(singular if nthings == 1 else plural)
+        thing_names = iter_to_str(thing_names)
+        return f"\n{self.get_display_name(looker, **kwargs)} is carrying {thing_names}" if thing_names else ""    
 
 # COMMANDS START HERE
 
@@ -360,11 +388,12 @@ class CmdWear(MuxCommand):
     Puts on an item of clothing you are holding.
 
     Usage:
-      wear <obj> [wear style]
+      wear <obj> [=] [wear style]
 
     Examples:
-      wear shirt
+      wear red shirt
       wear scarf wrapped loosely about the shoulders
+      wear blue hat = at a jaunty angle
 
     All the clothes you are wearing are appended to your description.
     If you provide a 'wear style' after the command, the message you
@@ -375,55 +404,66 @@ class CmdWear(MuxCommand):
     help_category = "clothing"
 
     def func(self):
-        """
-        This performs the actual command.
-        """
         if not self.args:
-            self.caller.msg("Usage: wear <obj> [wear style]")
+            self.caller.msg("Usage: wear <obj> [=] [wear style]")
             return
-        clothing = self.caller.search(self.arglist[0], candidates=self.caller.contents)
-        wearstyle = True
-        if not clothing:
-            self.caller.msg("Thing to wear must be in your inventory.")
-            return
-        if not clothing.is_typeclass(ContribClothing, exact=False):
-            self.caller.msg("That's not clothes!")
-            return
+        if not self.rhs:
+            # check if the whole string is an object
+            clothing = self.caller.search(self.lhs, candidates=self.caller.contents, quiet=True)
+            if not clothing:
+                # split out the first word as the object and the rest as the wearstyle
+                argslist = self.lhs.split()
+                self.lhs = argslist[0]
+                self.rhs = " ".join(argslist[1:])
+                clothing = self.caller.search(self.lhs, candidates=self.caller.contents)
+            else:
+                # pass the result through the search-result hook
+                clothing = at_search_result(clothing, self.caller, self.lhs)
 
+        else:
+            # it had an explicit separator - just do a normal search for the lhs
+            clothing = self.caller.search(self.lhs, candidates=self.caller.contents)
+
+        if not clothing:
+            return
+        if not inherits_from(clothing, ContribClothing):
+            self.caller.msg(f"{clothing.name} isn't something you can wear.")
+            return
+        
+        if clothing.db.worn:
+            if not self.rhs:
+                # If no wearstyle was provided and the clothing is already being worn, do nothing
+                self.caller.msg(f"You're already wearing your {clothing.name}.")
+                return
+            elif len(self.rhs) > WEARSTYLE_MAXLENGTH:
+                self.caller.msg(
+                    f"Please keep your wear style message to less than {WEARSTYLE_MAXLENGTH} characters."
+                )
+                return
+            else:
+                # Adjust the wearstyle
+                clothing.db.worn = self.rhs
+                self.caller.location.msg_contents(f"$You() $conj(wear) {clothing.name} {self.rhs}.", from_obj=self.caller)
+                return
+        
+        already_worn = get_worn_clothes(self.caller)
+        
         # Enforce overall clothing limit.
-        if CLOTHING_OVERALL_LIMIT and len(get_worn_clothes(self.caller)) >= CLOTHING_OVERALL_LIMIT:
+        if CLOTHING_OVERALL_LIMIT and len(already_worn) >= CLOTHING_OVERALL_LIMIT:
             self.caller.msg("You can't wear any more clothes.")
             return
 
         # Apply individual clothing type limits.
-        if clothing.db.clothing_type and not clothing.db.worn:
-            type_count = single_type_count(get_worn_clothes(self.caller), clothing.db.clothing_type)
-            if clothing.db.clothing_type in list(CLOTHING_TYPE_LIMIT.keys()):
-                if type_count >= CLOTHING_TYPE_LIMIT[clothing.db.clothing_type]:
+        if clothing_type := clothing.db.type:
+            if clothing_type in CLOTHING_TYPE_LIMIT:
+                type_count = single_type_count(already_worn, clothing_type)
+                if type_count >= CLOTHING_TYPE_LIMIT[clothing_type]:
                     self.caller.msg(
-                        "You can't wear any more clothes of the type '%s'."
-                        % clothing.db.clothing_type
+                        "You can't wear any more clothes of the type '{clothing_type}'."
                     )
                     return
 
-        if clothing.db.worn and len(self.arglist) == 1:
-            self.caller.msg("You're already wearing %s!" % clothing.name)
-            return
-        if len(self.arglist) > 1:  # If wearstyle arguments given
-            wearstyle_list = self.arglist  # Split arguments into a list of words
-            del wearstyle_list[0]  # Leave first argument (the clothing item) out of the wearstyle
-            wearstring = " ".join(
-                str(e) for e in wearstyle_list
-            )  # Join list of args back into one string
-            if (
-                WEARSTYLE_MAXLENGTH and len(wearstring) > WEARSTYLE_MAXLENGTH
-            ):  # If length of wearstyle exceeds limit
-                self.caller.msg(
-                    "Please keep your wear style message to less than %i characters."
-                    % WEARSTYLE_MAXLENGTH
-                )
-            else:
-                wearstyle = wearstring
+        wearstyle = self.rhs or True
         clothing.wear(self.caller, wearstyle)
 
 
@@ -443,18 +483,15 @@ class CmdRemove(MuxCommand):
     help_category = "clothing"
 
     def func(self):
-        """
-        This performs the actual command.
-        """
         clothing = self.caller.search(self.args, candidates=self.caller.contents)
         if not clothing:
-            self.caller.msg("Thing to remove must be carried or worn.")
+            self.caller.msg("You don't have anything like that.")
             return
         if not clothing.db.worn:
             self.caller.msg("You're not wearing that!")
             return
-        if clothing.db.covered_by:
-            self.caller.msg("You have to take off %s first." % clothing.db.covered_by.name)
+        if covered := clothing.db.covered_by:
+            self.caller.msg(f"You have to take off {covered} first.")
             return
         clothing.remove(self.caller)
 
@@ -464,7 +501,7 @@ class CmdCover(MuxCommand):
     Covers a worn item of clothing with another you're holding or wearing.
 
     Usage:
-        cover <obj> [with] <obj>
+        cover <worn obj> with <obj>
 
     When you cover a clothing item, it is hidden and no longer appears in
     your description until it's uncovered or the item covering it is removed.
@@ -473,54 +510,44 @@ class CmdCover(MuxCommand):
 
     key = "cover"
     help_category = "clothing"
+    rhs_split = (" with ","=")
 
     def func(self):
-        """
-        This performs the actual command.
-        """
+        if not len(self.args) or not self.rhs:
+            self.caller.msg("Usage: cover <worn clothing> with <clothing object>")
+            return
 
-        if len(self.arglist) < 2:
-            self.caller.msg("Usage: cover <worn clothing> [with] <clothing object>")
-            return
-        # Get rid of optional 'with' syntax
-        if self.arglist[1].lower() == "with" and len(self.arglist) > 2:
-            del self.arglist[1]
-        to_cover = self.caller.search(self.arglist[0], candidates=self.caller.contents)
-        cover_with = self.caller.search(self.arglist[1], candidates=self.caller.contents)
+        to_cover = self.caller.search(self.lhs, candidates = get_worn_clothes(self.caller))
+        cover_with = self.caller.search(self.rhs, candidates=self.caller.contents)
         if not to_cover or not cover_with:
-            return
-        if not to_cover.is_typeclass(ContribClothing, exact=False):
-            self.caller.msg("%s isn't clothes!" % to_cover.name)
-            return
-        if not cover_with.is_typeclass(ContribClothing, exact=False):
-            self.caller.msg("%s isn't clothes!" % cover_with.name)
-            return
-        if cover_with.db.clothing_type:
-            if cover_with.db.clothing_type in CLOTHING_TYPE_CANT_COVER_WITH:
-                self.caller.msg("You can't cover anything with that!")
-                return
-        if not to_cover.db.worn:
-            self.caller.msg("You're not wearing %s!" % to_cover.name)
             return
         if to_cover == cover_with:
             self.caller.msg("You can't cover an item with itself!")
             return
-        if cover_with.db.covered_by:
-            self.caller.msg("%s is covered by something else!" % cover_with.name)
+
+        if not inherits_from(cover_with, ContribClothing):
+            self.caller.msg(f"{cover_with.name} isn't something you can wear.")
+            rturn
+
+        if cover_with.db.clothing_type in CLOTHING_TYPE_CANT_COVER_WITH:
+            self.caller.msg(f"You can't cover anything with {cover_with.name}.")
             return
-        if to_cover.db.covered_by:
+
+        if covered_by := cover_with.db.covered_by:
+            self.caller.msg(f"{cover_with.name} is already covered by {covered_by.name}.")
+            return
+        if covered_by := to_cover.db.covered_by:
             self.caller.msg(
-                "%s is already covered by %s." % (cover_with.name, to_cover.db.covered_by.name)
+                f"{to_cover.name} is already covered by {covered_by.name}."
             )
             return
+
+        # Put on the item to cover with if it's not on already
         if not cover_with.db.worn:
-            cover_with.wear(
-                self.caller, True
-            )  # Put on the item to cover with if it's not on already
-        self.caller.location.msg_contents(
-            "%s covers %s with %s." % (self.caller, to_cover.name, cover_with.name)
-        )
+            cover_with.wear(self.caller, True)  
         to_cover.db.covered_by = cover_with
+
+        self.caller.location.msg_contents(f"$You() $conj(cover) {to_cover.name} with {cover_with.name}.", from_obj=self.caller)
 
 
 class CmdUncover(MuxCommand):
@@ -548,126 +575,19 @@ class CmdUncover(MuxCommand):
             self.caller.msg("Usage: uncover <worn clothing object>")
             return
 
-        to_uncover = self.caller.search(self.args, candidates=self.caller.contents)
-        if not to_uncover:
+        clothing = self.caller.search(self.args, candidates=get_worn_clothes(self.caller))
+        if not clothing:
             return
-        if not to_uncover.db.worn:
-            self.caller.msg("You're not wearing %s!" % to_uncover.name)
+        if covered_by := clothing.db.covered_by:
+            if covered_by.db.covered_by:
+                self.caller.msg(f"{clothing.name} is under too many layers to uncover.")
+                return
+            clothing.db.covered_by = None
+            self.caller.location.msg_contents(f"$You() $conj(uncover) {clothing.name}.", from_obj=self.caller)
+
+        else:
+            self.caller.msg(f"{clothing.name} isn't covered by anything.")
             return
-        if not to_uncover.db.covered_by:
-            self.caller.msg("%s isn't covered by anything!" % to_uncover.name)
-            return
-        covered_by = to_uncover.db.covered_by
-        if covered_by.db.covered_by:
-            self.caller.msg("%s is under too many layers to uncover." % (to_uncover.name))
-            return
-        self.caller.location.msg_contents("%s uncovers %s." % (self.caller, to_uncover.name))
-        to_uncover.db.covered_by = None
-
-
-class CmdDrop(MuxCommand):
-    """
-    drop something
-
-    Usage:
-      drop <obj>
-
-    Lets you drop an object from your inventory into the
-    location you are currently in.
-    """
-
-    key = "drop"
-    locks = "cmd:all()"
-    arg_regex = r"\s|$"
-
-    def func(self):
-        """Implement command"""
-
-        caller = self.caller
-        if not self.args:
-            caller.msg("Drop what?")
-            return
-
-        # Because the DROP command by definition looks for items
-        # in inventory, call the search function using location = caller
-        obj = caller.search(
-            self.args,
-            location=caller,
-            nofound_string="You aren't carrying %s." % self.args,
-            multimatch_string="You carry more than one %s:" % self.args,
-        )
-        if not obj:
-            return
-
-        # This part is new!
-        # You can't drop clothing items that are covered.
-        if obj.db.covered_by:
-            caller.msg("You can't drop that because it's covered by %s." % obj.db.covered_by)
-            return
-        # Remove clothes if they're dropped.
-        if obj.db.worn:
-            obj.remove(caller, quiet=True)
-
-        obj.move_to(caller.location, quiet=True, move_type="drop")
-        caller.msg("You drop %s." % (obj.name,))
-        caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
-        # Call the object script's at_drop() method.
-        obj.at_drop(caller)
-
-
-class CmdGive(MuxCommand):
-    """
-    give away something to someone
-
-    Usage:
-      give <inventory obj> = <target>
-
-    Gives an items from your inventory to another character,
-    placing it in their inventory.
-    """
-
-    key = "give"
-    locks = "cmd:all()"
-    arg_regex = r"\s|$"
-
-    def func(self):
-        """Implement give"""
-
-        caller = self.caller
-        if not self.args or not self.rhs:
-            caller.msg("Usage: give <inventory object> = <target>")
-            return
-        to_give = caller.search(
-            self.lhs,
-            location=caller,
-            nofound_string="You aren't carrying %s." % self.lhs,
-            multimatch_string="You carry more than one %s:" % self.lhs,
-        )
-        target = caller.search(self.rhs)
-        if not (to_give and target):
-            return
-        if target == caller:
-            caller.msg("You keep %s to yourself." % to_give.key)
-            return
-        if not to_give.location == caller:
-            caller.msg("You are not holding %s." % to_give.key)
-            return
-        # This is new! Can't give away something that's worn.
-        if to_give.db.covered_by:
-            caller.msg(
-                "You can't give that away because it's covered by %s." % to_give.db.covered_by
-            )
-            return
-        # Remove clothes if they're given.
-        if to_give.db.worn:
-            to_give.remove(caller)
-        to_give.move_to(caller.location, quiet=True, move_type="remove")
-        # give object
-        caller.msg("You give %s to %s." % (to_give.key, target.key))
-        to_give.move_to(target, quiet=True, move_type="give")
-        target.msg("%s gives you %s." % (caller.key, to_give.key))
-        # Call the object script's at_give() method.
-        to_give.at_give(caller, target)
 
 
 class CmdInventory(MuxCommand):
@@ -695,23 +615,34 @@ class CmdInventory(MuxCommand):
             self.caller.msg("You are not carrying or wearing anything.")
             return
 
+        message_list = []
+
         items = self.caller.contents
 
         carry_table = evtable.EvTable(border="header")
         wear_table = evtable.EvTable(border="header")
-        for item in items:
-            if not item.db.worn:
-                carry_table.add_row("|C%s|n" % item.name, item.db.desc or "")
+        
+        carried = [ obj for obj in items if not obj.db.worn ]
+        worn = [ obj for obj in items if obj.db.worn ]
+
+        message_list.append("|wYou are carrying:|n")
+        for item in carried:
+            carry_table.add_row(item.get_display_name(self.caller), item.get_display_desc(self.caller))
         if carry_table.nrows == 0:
-            carry_table.add_row("|CNothing.|n", "")
-        string = "|wYou are carrying:\n%s" % carry_table
-        for item in items:
-            if item.db.worn:
-                wear_table.add_row("|C%s|n" % item.name, item.db.desc or "")
+            carry_table.add_row("Nothing.", "")
+        message_list.append(str(carry_table))
+
+        message_list.append("|wYou are wearing:|n")
+        for item in worn:
+            item_name = item.get_display_name(self.caller)
+            if item.db.covered_by:
+                item_name += " (hidden)"
+            wear_table.add_row(item_name, item.get_display_desc(self.caller))
         if wear_table.nrows == 0:
-            wear_table.add_row("|CNothing.|n", "")
-        string += "|/|wYou are wearing:\n%s" % wear_table
-        self.caller.msg(string)
+            wear_table.add_row("Nothing.", "")
+        message_list.append(str(wear_table))
+
+        self.caller.msg("\n".join(message_list))
 
 
 class ClothedCharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -736,6 +667,4 @@ class ClothedCharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdRemove())
         self.add(CmdCover())
         self.add(CmdUncover())
-        self.add(CmdGive())
-        self.add(CmdDrop())
         self.add(CmdInventory())
