@@ -60,6 +60,9 @@ _multiversion-check-env:
 _clean_api_index:
 	rm source/api/*
 
+_clean_api_rsts:
+	rm source/api/*.rst
+
 # remove superfluos 'module' and 'package' text from api headers
 _reformat_apidoc_headers:
 	for f in source/api/*.rst; do\
@@ -112,7 +115,6 @@ pdf:
 
 quick:
 	make _check-env
-	make _quick_autodoc-index
 	make _html-build
 	@echo ""
 	@echo "Documentation built (single version, no autodocs)."
@@ -128,7 +130,7 @@ local:
 	make _autodoc-index
 	make _html-build
 	@echo ""
-	@echo "Documentation built (single version)."
+	@echo "Documentation built (single version + autodocs)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
 # build only that which updated since last run (no clean or index-creation)
@@ -136,7 +138,7 @@ localupdate:
 	make _check-env
 	make _html-build
 	@echo ""
-	@echo "Documentation built (single version, only updates, no auto-index)."
+	@echo "Documentation built (single version, only updates, no autodocs)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
 # note that this should be done for each relevant multiversion branch.

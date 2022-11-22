@@ -4,11 +4,9 @@ Evennia development can be made without any Internet connection beyond fetching 
 point however, you are likely to want to make your game visible online, either as part opening it to
 the public or to allow other developers or beta testers access to it.
 
-## Connecting from the outside
+## Connecting to Evennia across the Internet
 
-Accessing your Evennia server from the outside is not hard on its own. Any issues are usually due to
-the various security measures your computer, network or hosting service has. These will generally
-(and correctly) block outside access to servers on your machine unless you tell them otherwise.
+Accessing your Evennia server from the outside is not hard on its own. Any issues are usually due to the various security measures your computer, network or hosting service has. These will generally (and correctly) block outside access to servers on your machine unless you tell them otherwise. 
 
 We will start by showing how to host your server on your own local computer. Even if you plan to
 host your "real" game on a remote host later, setting it up locally is useful practice. We cover
@@ -26,41 +24,24 @@ Evennia will by default accept incoming connections on all interfaces (`0.0.0.0`
 anyone knowing the ports to use and has the IP address to your machine should be able to connect to
 your game.
 
- - Make sure Evennia is installed and that you have activated the virtualenv. Start the server with
-`evennia start --log`. The `--log` (or `-l`) will make sure that the logs are echoed to the
-terminal.
-> Note: If you need to close the log-view, use `Ctrl-C`. Use just `evennia --log` on its own to
+```{sidebar} Closing the log view
+ If you need to close the log-view, use `Ctrl-C`. Use just `evennia --log` on its own to
 start tailing the logs again.
- - Make sure you can connect with your web browser to `http://localhost:4001` or, alternatively,
-`http://127.0.0.1:4001` which is the same thing. You should get your Evennia web site and be able to
-play the game in the web client. Also check so that you can connect with a mud client to host
-`localhost`, port `4000` or host `127.0.0.1`, port `4000`.
-- [Google for "my ip"](https://www.google.se/search?q=my+ip) or use any online service to figure out
-what your "outward-facing" IP address is. For our purposes, let's say your outward-facing IP is
-`203.0.113.0`.
- - Next try your outward-facing IP by opening `http://203.0.113.0:4001` in a browser. If this works,
-that's it! Also try telnet, with the server set to `203.0.113.0` and port `4000`. However, most
-likely it will *not* work. If so, read on.
- - If your computer has a firewall, it may be blocking the ports we need (it may also block telnet
-overall). If so, you need to open the outward-facing ports to in/out communication. See the
-manual/instructions for your firewall software on how to do this. To test you could also temporarily
-turn off your firewall entirely to see if that was indeed the problem.
- - Another common problem for not being able to connect is that you are using a hardware router
-(like a wifi router). The router sits 'between' your computer and the Internet. So the IP you find
-with Google is the *router's* IP, not that of your computer. To resolve this you need to configure
-your router to *forward* data it gets on its ports to the IP and ports of your computer sitting in
-your private network. How to do this depends on the make of your router; you usually configure it
-using a normal web browser. In the router interface, look for "Port forwarding" or maybe "Virtual
-server". If that doesn't work, try to temporarily wire your computer directly to the Internet outlet
-(assuming your computer has the ports for it). You'll need to check for your IP again. If that
-works, you know the problem is the router.
+```
+ - Make sure Evennia is installed and that you have activated the virtualenv. Start the server with `evennia start --log`. The `--log` (or `-l`) will make sure that the logs are echoed to the terminal.
+ - Make sure you can connect with your web browser to `http://localhost:4001` or, alternatively, `http://127.0.0.1:4001` which is the same thing. You should get your Evennia web site and be able to play the game in the web client. Also check so that you can connect with a mud client to host `localhost`, port `4000` or host `127.0.0.1`, port `4000`.
+- [Google for "my ip"](https://www.google.se/search?q=my+ip) or use any online service to figure out what your "outward-facing" IP address is. For our purposes, let's say your outward-facing IP is `203.0.113.0`.
+ - Next try your outward-facing IP by opening `http://203.0.113.0:4001` in a browser. If this works, that's it! Also try telnet, with the server set to `203.0.113.0` and port `4000`. However, most likely it will *not* work. If so, read on.
+ - If your computer has a firewall, it may be blocking the ports we need (it may also block telnet overall). If so, you need to open the outward-facing ports to in/out communication. See the manual/instructions for your firewall software on how to do this. To test you could also temporarily turn off your firewall entirely to see if that was indeed the problem.
+ - Another common problem for not being able to connect is that you are using a hardware router (like a wifi router). The router sits 'between' your computer and the Internet. So the IP you find with Google is the *router's* IP, not that of your computer. To resolve this you need to configure your router to *forward* data it gets on its ports to the IP and ports of your computer sitting in your private network. How to do this depends on the make of your router; you usually configure it using a normal web browser. In the router interface, look for "Port forwarding" or maybe "Virtual server". If that doesn't work, try to temporarily wire your computer directly to the Internet outlet (assuming your computer has the ports for it). You'll need to check for your IP again. If that works, you know the problem is the router.
 
-> Note: If you need to reconfigure a router, the router's Internet-facing ports do *not* have to
-have to have the same numbers as your computer's (and Evennia's) ports! For example, you might want
+```{note}
+If you need to reconfigure a router, the router's Internet-facing ports do *not* have to have to have the same numbers as your computer's (and Evennia's) ports! For example, you might want
 to connect Evennia's outgoing port 4001 to an outgoing router port 80 - this is the port HTTP
 requests use and web browsers automatically look for - if you do that you could go to
 `http://203.0.113.0` without having to add the port at the end. This would collide with any other
 web services you are running through this router though.
+```
 
 ### Settings example
 
@@ -208,12 +189,10 @@ To register, stand in your game dir, run
 
 and follow the instructions. See the [Game index page](./Evennia-Game-Index.md) for more details.
 
-## SSL
+## SSL and HTTPS
 
 SSL can be very useful for web clients. It will protect the credentials and gameplay of your users
-over a web client if they are in a public place, and your websocket can also be switched to WSS for
-the same benefit. SSL certificates used to cost money on a yearly basis, but there is now a program
-that issues them for free with assisted setup to make the entire process less painful.
+over a web client if they are in a public place, and your websocket can also be switched to WSS for the same benefit. SSL certificates used to cost money on a yearly basis, but there is now a program that issues them for free with assisted setup to make the entire process less painful.
 
 Options that may be useful in combination with an SSL proxy:
 
@@ -252,13 +231,12 @@ or through a TXT record in your DNS. Which one you will want to do is a personal
 also be based on your hosting choice. In a controlled/cPanel environment, you will most likely have
 to use DNS verification.
 
-## Relevant SSL Proxy Setup Information
+### Relevant SSL Proxy Setup Information
 - [Apache webserver configuration](./Apache-Config.md) (optional)
 - [HAProxy Config](./HAProxy-Config.md)
 
-## Hosting locally or remotely?
 
-### Using your own computer as a server
+## Hosting Evennia from your own computer
 
 What we showed above is by far the simplest and probably cheapest option: Run Evennia on your own
 home computer. Moreover, since Evennia is its own web server, you don't need to install anything
@@ -322,7 +300,7 @@ from FreeDNS. The `&` means we run in the background (might not  be valid in oth
 systems). `inadyn` will henceforth check for changes every 60 seconds. You should put the `inadyn`
 command string in a startup script somewhere so it kicks into gear whenever your computer starts.
 
-### Remote hosting
+## Hosting Evennia on a remote server
 
 Your normal "web hotel" will probably not be enough to run Evennia. A web hotel is normally aimed at
 a very specific usage - delivering web pages, at the most with some dynamic content. The "Python
@@ -376,7 +354,7 @@ from [the virtualenv pypi](https://pypi.python.org/pypi/virtualenv). Using `virt
 install everything without actually needing to have further `root` access. Ports might be an issue,
 so make sure you know which ports are available to use and reconfigure Evennia accordingly.
 
-### Hosting options
+## Hosting options and suggestions
 
 To find commercial solutions, browse the web for "shell access", "VPS" or "Cloud services" in your
 region. You may find useful offers for "low cost" VPS hosting on [Low End Box][7]. The associated
@@ -394,11 +372,11 @@ Evennia users:
 | [Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's "fixed cost" offering.|
 | [Azure App Services][12] | Cloud | Free | Free tier with limited regions for hobbyists. |
 | [Huawei Cloud][13] | Cloud | on demand | Similar to Amazon. Free 12-month tier with limited regions. |
-| [Genesis MUD hosting][4] | Shell account | $8/month | Dedicated MUD host with very limited memory offerings. As for 2017, runs a 13 years old Python version (2.4) so you'd need to either convince them to update or compile yourself. Note that Evennia needs *at least* the "Deluxe" package (50MB RAM) and probably *a lot* higher for a production game. This host is *not* recommended for Evennia.|
 | [Host1Plus][5] | VPS & Cloud | $4/month | $4-$8/month depending on length of sign-up period.
 | [Scaleway][6] | Cloud | &euro;3/month / on-demand | EU based (Paris, Amsterdam). Smallest option provides 2GB RAM. |
 | [Prgmr][10] | VPS | $5/month | 1 month free with a year prepay. You likely want some experience with servers with this option as they don't have a lot of support.|
 | [Linode][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM|
+| [Genesis MUD hosting][4] | Shell account | $8/month | Dedicated MUD host with very limited memory offerings. May run very old Python versions. Evennia needs *at least* the "Deluxe" package (50MB RAM) and probably *a lot* higher for a production game. While it's sometimes mentioned in a MUD context, this host is *not* recommended for Evennia.|
 
 *Please help us expand this list.*
 
@@ -417,7 +395,7 @@ Evennia users:
 [13]: https://activity.huaweicloud.com/intl/en-us/free_packages/index.html
 
 
-## Cloud9
+### Cloud9
 
 If you are interested in running Evennia in the online dev environment [Cloud9](https://c9.io/), you
 can spin it up through their normal online setup using the Evennia Linux install instructions. The
