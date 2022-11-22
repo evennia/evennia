@@ -1,4 +1,4 @@
-# Choosing An SQL Server
+# Choosing a database 
 
 
 This page gives an overview of the supported SQL databases as well as instructions on install:
@@ -7,9 +7,7 @@ This page gives an overview of the supported SQL databases as well as instructio
  - PostgreSQL
  - MySQL / MariaDB
 
-Since Evennia uses [Django](https://djangoproject.com), most of our notes are based off of what we
-know from the community and their documentation. While the information below may be useful, you can
-always find the most up-to-date and "correct" information at Django's [Notes about supported
+Since Evennia uses [Django](https://djangoproject.com), most of our notes are based off of what we know from the community and their documentation. While the information below may be useful, you can always find the most up-to-date and "correct" information at Django's [Notes about supported
 Databases](https://docs.djangoproject.com/en/dev/ref/databases/#ref-databases) page.
 
 ## SQLite3
@@ -17,39 +15,23 @@ Databases](https://docs.djangoproject.com/en/dev/ref/databases/#ref-databases) p
 [SQLite3](https://sqlite.org/) is a light weight single-file database. It is our default database
 and Evennia will set this up for you automatically if you give no other options. SQLite stores the
 database in a single file (`mygame/server/evennia.db3`). This means it's very easy to reset this
-database - just delete (or move) that `evennia.db3` file and run `evennia migrate` again! No server
-process is needed and the administrative overhead and resource consumption is tiny. It is also very
-fast since it's run in-memory. For the vast majority of Evennia installs it will probably be all
+database - just delete (or move) that `evennia.db3` file and run `evennia migrate` again! No server process is needed and the administrative overhead and resource consumption is tiny. It is also very fast since it's run in-memory. For the vast majority of Evennia installs it will probably be all
 that's ever needed.
 
 SQLite will generally be much faster than MySQL/PostgreSQL but its performance comes with two
 drawbacks:
 
-* SQLite [ignores length constraints by design](https://www.sqlite.org/faq.html#q9); it is possible
-to store very large strings and numbers in fields that technically should not accept them. This is
-not something you will notice; your game will read and write them and function normally, but this
-*can* create some data migration problems requiring careful thought if you do need to change
-databases later.
-* SQLite can scale well to storage of millions of objects, but if you end up with a thundering herd
-of users trying to access your MUD and web site at the same time, or you find yourself writing long-
-running functions to update large numbers of objects on a live game, either will yield errors and
-interference. SQLite does not work reliably with multiple concurrent threads or processes accessing
-its records. This has to do with file-locking clashes of the database file. So for a production
-server making heavy use of process- or thread pools (or when using a third-party webserver like
-Apache), a proper database is a more appropriate choice.
+* SQLite [ignores length constraints by design](https://www.sqlite.org/faq.html#q9); it is possible to store very large strings and numbers in fields that technically should not accept them. This is not something you will notice; your game will read and write them and function normally, but this *can* create some data migration problems requiring careful thought if you do need to change databases later.
+* SQLite can scale well to storage of millions of objects, but if you end up with a thundering herd of users trying to access your MUD and web site at the same time, or you find yourself writing long- running functions to update large numbers of objects on a live game, either will yield errors and interference. SQLite does not work reliably with multiple concurrent threads or processes accessing its records. This has to do with file-locking clashes of the database file. So for a production server making heavy use of process- or thread pools, a proper database is a more appropriate choice.
 
 ### Install of SQlite3
 
-This is installed and configured as part of Evennia. The database file is created as
-`mygame/server/evennia.db3` when you run
+This is installed and configured as part of Evennia. The database file is created as `mygame/server/evennia.db3` when you run
 
     evennia migrate
 
-without changing any database options. An optional requirement is the `sqlite3` client program -
-this is required if you want to inspect the database data manually. A shortcut for using it with the
-evennia database is `evennia dbshell`. Linux users should look for the `sqlite3` package for their
-distro while Mac/Windows should get the [sqlite-tools package from this
-page](https://sqlite.org/download.html).
+without changing any database options. An optional requirement is the `sqlite3` client program - this is required if you want to inspect the database data manually. A shortcut for using it with the
+evennia database is `evennia dbshell`. Linux users should look for the `sqlite3` package for their distro while Mac/Windows should get the [sqlite-tools package from this page](https://sqlite.org/download.html).
 
 To inspect the default Evennia database (once it's been created), go to your game dir and do
 
@@ -61,6 +43,14 @@ To inspect the default Evennia database (once it's been created), go to your gam
 
 This will bring you into the sqlite command line. Use `.help` for instructions and `.quit` to exit.
 See [here](https://gist.github.com/vincent178/10889334) for a cheat-sheet of commands.
+
+### Resetting SQLite3 database 
+
+To reset your database and start from scratch, simply stop Evennia and delete the `mygame/server/evennia.db3`. Then run `evennia migrate` again. 
+
+```{sidebar} Hint
+Make a copy of the `evennia.db3` file once you created your superuser. When you want to reset, you can just stop evennia and copy that file back over `evennia.db3`. That way you don't have to run migrations and create the superuser every time! 
+```
 
 ## PostgreSQL
 

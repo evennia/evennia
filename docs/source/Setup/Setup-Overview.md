@@ -24,14 +24,11 @@ Start-Stop-Reload
 
 Settings
 Settings-Default
-Choosing-An-SQL-Server
-Evennia-Game-Index
-IRC
-Grapevine
-RSS
-How-to-connect-Evennia-to-Twitter
-Client-Support-Grid
-
+Choosing-a-Database
+Channels-to-IRC
+Channels-to-Grapevine
+Channels-to-RSS
+Channels-to-Twitter
 ```
 
 ## Going public 
@@ -39,9 +36,11 @@ Client-Support-Grid
 ```{toctree} 
 :maxdepth: 2
 
+Evennia-Game-Index
 Online-Setup
-Security
-HAProxy-Config
-Apache-Config
+Client-Support-Grid
+Security-Practices
+Config-HAProxy
+Config-Apache
 
 ```

@@ -1,4 +1,4 @@
-# Grapevine
+# Connect Evennia channels to Grapevine
 
 
 [Grapevine](https://grapevine.haus) is a new chat network for `MU*`*** games. By

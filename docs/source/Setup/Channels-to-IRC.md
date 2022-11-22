@@ -1,4 +1,4 @@
-# IRC
+# Connect Evennia channels to IRC
 
 [IRC (Internet Relay Chat)](https://en.wikipedia.org/wiki/Internet_Relay_Chat) is a long standing
 chat protocol used by many open-source projects for communicating in real time. By connecting one of

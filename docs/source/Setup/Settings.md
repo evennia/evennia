@@ -1,4 +1,4 @@
-# Game Settings and Configuration directory
+# Changing Game Settings
 
 Evennia runs out of the box without any changes to its settings. But there are several important
 ways to customize the server and expand it with your own plugins.
@@ -25,11 +25,9 @@ You should never edit `evennia/settings_default.py`. Rather you should copy&past
 variables you want to change into your `settings.py` and edit them there. This will overload the
 previously imported defaults.
 
-> Warning: It may be tempting to copy everything from `settings_default.py` into your own settings
-file. There is a reason we don't do this out of the box though: it makes it directly clear what
-changes you did. Also, if you limit your copying to the things you really need you will directly be
-able to take advantage of upstream changes and additions to Evennia for anything you didn't
-customize.
+```{warning} Don't copy everything!
+It may be tempting to copy *everything* from `settings_default.py` into your own settings file just to have it all in one place. Don't do this. By copying only what you need, you can easier track what you changed.
+```
 
 In code, the settings is accessed through 
 
@@ -41,9 +39,7 @@ In code, the settings is accessed through
     servername = settings.SERVER_NAME
 ```
 
-Each setting appears as a property on the imported `settings` object.  You can also explore all
-possible options with `evennia.settings_full` (this also includes advanced Django defaults that are
-not touched in default Evennia).
+Each setting appears as a property on the imported `settings` object.  You can also explore all possible options with `evennia.settings_full` (this also includes advanced Django defaults that are not touched in default Evennia).
 
 > When importing `settings` into your code like this, it will be *read
 only*. You *cannot* edit your settings from your code! The only way to change an Evennia setting is
@@ -85,12 +81,5 @@ services to the Server instead. More info can be found
 Some other Evennia systems can be customized by plugin modules but has no explicit template in
 `conf/`:
 
-- *cmdparser.py* - a custom module can be used to totally replace Evennia's default command parser.
-All this does is to split the incoming string into "command name" and "the rest". It also handles
-things like error messages for no-matches and multiple-matches among other things that makes this
-more complex than it sounds. The default parser is *very* generic, so you are most often best served
-by modifying things further down the line (on the command parse level) than here.
-- *at_search.py* - this allows for replacing the way Evennia handles search results. It allows to
-change how errors are echoed and how multi-matches are resolved and reported (like how the default
-understands that "2-ball" should match the second "ball" object if there are two of them in the
-room).
+- *cmdparser.py* - a custom module can be used to totally replace Evennia's default command parser. All this does is to split the incoming string into "command name" and "the rest". It also handles things like error messages for no-matches and multiple-matches among other things that makes this more complex than it sounds. The default parser is *very* generic, so you are most often best served by modifying things further down the line (on the command parse level) than here.
+- *at_search.py* - this allows for replacing the way Evennia handles search results. It allows to change how errors are echoed and how multi-matches are resolved and reported (like how the default understands that "2-ball" should match the second "ball" object if there are two of them in the room).

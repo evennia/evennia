@@ -1,4 +1,4 @@
-# Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together
+# Configuring HAProxy
 
 A modern public-facing website should these days be served via encrypted
 connections. So `https:` rather than `http:` for the website and
