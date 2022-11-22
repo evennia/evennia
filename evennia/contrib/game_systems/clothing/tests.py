@@ -23,11 +23,14 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         # Make a test scarf
         self.test_scarf = create_object(clothing.ContribClothing, key="test scarf")
         self.test_scarf.db.clothing_type = "accessory"
-    
+
     def test_clothingcommands(self):
         # Test inventory command.
         self.call(
-            clothing.CmdInventory(), "", "You are not carrying or wearing anything.", caller=self.wearer
+            clothing.CmdInventory(),
+            "",
+            "You are not carrying or wearing anything.",
+            caller=self.wearer,
         )
 
         # Test wear command
@@ -57,7 +60,10 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         # Test remove command.
         self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=self.wearer)
         self.call(
-            clothing.CmdRemove(), "hat", "You have to take off test scarf first.", caller=self.wearer
+            clothing.CmdRemove(),
+            "hat",
+            "You have to take off test scarf first.",
+            caller=self.wearer,
         )
         self.call(
             clothing.CmdRemove(),
@@ -68,7 +74,9 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         # Test uncover command.
         self.test_scarf.wear(self.wearer, True)
         self.test_hat.db.covered_by = self.test_scarf
-        self.call(clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=self.wearer)
+        self.call(
+            clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=self.wearer
+        )
         self.call(clothing.CmdUncover(), "hat", "You uncover test hat.", caller=self.wearer)
 
 
@@ -90,7 +98,7 @@ class TestClothingFunc(BaseEvenniaTest):
         self.test_pants = create_object(clothing.ContribClothing, key="test pants")
         self.test_pants.db.clothing_type = "bottom"
         self.test_pants.location = self.wearer
-    
+
     def test_clothingfunctions(self):
         self.test_hat.wear(self.wearer, "on the head")
         self.assertEqual(self.test_hat.db.worn, "on the head")
@@ -108,7 +116,8 @@ class TestClothingFunc(BaseEvenniaTest):
 
         clothes_list = [self.test_shirt, self.test_hat, self.test_pants]
         self.assertEqual(
-            clothing.order_clothes_list(clothes_list), [self.test_hat, self.test_shirt, self.test_pants]
+            clothing.order_clothes_list(clothes_list),
+            [self.test_hat, self.test_shirt, self.test_pants],
         )
 
         self.test_hat.wear(self.wearer, True)
