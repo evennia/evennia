@@ -136,3 +136,30 @@ class TestWilderness(BaseEvenniaTest):
         for direction, correct_loc in directions.items():
             new_loc = wilderness.get_new_coordinates(loc, direction)
             self.assertEqual(new_loc, correct_loc, direction)
+
+    def test_preserve_items(self):
+        wilderness.create_wilderness()
+        w = self.get_wilderness_script()
+
+        # move char and obj to wilderness
+        wilderness.enter_wilderness(self.char1)
+        wilderness.enter_wilderness(self.obj1)
+
+        # move to a new room
+        w.move_obj(self.char1, (1, 1))
+        # the room should be remapped and 0,0 should not exist
+        self.assertTrue((0, 0) not in w.db.rooms)
+        self.assertEqual(1, len(w.db.rooms))
+        # verify obj1 moved to None
+        self.assertIsNone(self.obj1.location)
+
+        # now change to preserve items
+        w.preserve_items = True
+        wilderness.enter_wilderness(self.obj1, (1, 1))
+        # move the character again
+        w.move_obj(self.char1, (0, 1))
+        # check that the previous room was preserved
+        self.assertIn((1, 1), w.db.rooms)
+        self.assertEqual(2, len(w.db.rooms))
+        # and verify that obj1 is still at 1,1
+        self.assertEqual(self.obj1.location, w.db.rooms[(1, 1)])
