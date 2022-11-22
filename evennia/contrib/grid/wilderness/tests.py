@@ -36,14 +36,14 @@ class TestWilderness(BaseEvenniaTest):
         wilderness.enter_wilderness(self.char1)
         self.assertIsInstance(self.char1.location, wilderness.WildernessRoom)
         w = self.get_wilderness_script()
-        self.assertEqual(w.db.itemcoordinates[self.char1], (0, 0))
+        self.assertEqual(w.itemcoordinates[self.char1], (0, 0))
 
     def test_enter_wilderness_custom_coordinates(self):
         wilderness.create_wilderness()
         wilderness.enter_wilderness(self.char1, coordinates=(1, 2))
         self.assertIsInstance(self.char1.location, wilderness.WildernessRoom)
         w = self.get_wilderness_script()
-        self.assertEqual(w.db.itemcoordinates[self.char1], (1, 2))
+        self.assertEqual(w.itemcoordinates[self.char1], (1, 2))
 
     def test_enter_wilderness_custom_name(self):
         name = "customnname"
@@ -133,6 +133,6 @@ class TestWilderness(BaseEvenniaTest):
             "west": (0, 1),
             "northwest": (0, 2),
         }
-        for (direction, correct_loc) in directions.items():  # Not compatible with Python 3
+        for direction, correct_loc in directions.items():
             new_loc = wilderness.get_new_coordinates(loc, direction)
             self.assertEqual(new_loc, correct_loc, direction)
