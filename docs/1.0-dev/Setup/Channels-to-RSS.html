@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>RSS &#8212; Evennia 1.0-dev documentation</title>
+    <title>Connect Evennia channels to RSS &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="How to connect Evennia to Twitter" href="How-to-connect-Evennia-to-Twitter.html" />
-    <link rel="prev" title="Grapevine" href="Grapevine.html" /> 
+    <link rel="next" title="Connect Evennia to Twitter" href="Channels-to-Twitter.html" />
+    <link rel="prev" title="Connect Evennia channels to Grapevine" href="Channels-to-Grapevine.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,14 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="How-to-connect-Evennia-to-Twitter.html" title="How to connect Evennia to Twitter"
+          <a href="Channels-to-Twitter.html" title="Connect Evennia to Twitter"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Grapevine.html" title="Grapevine"
+          <a href="Channels-to-Grapevine.html" title="Connect Evennia channels to Grapevine"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">RSS</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Connect Evennia channels to RSS</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,25 +62,23 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">RSS</a><ul>
-<li><a class="reference internal" href="#configuring-rss">Configuring RSS</a><ul>
+<li><a class="reference internal" href="#">Connect Evennia channels to RSS</a><ul>
+<li><a class="reference internal" href="#configuring-rss">Configuring RSS</a></li>
 <li><a class="reference internal" href="#setting-up-rss-step-by-step">Setting up RSS, step by step</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Grapevine.html"
-                        title="previous chapter">Grapevine</a></p>
+  <p class="topless"><a href="Channels-to-Grapevine.html"
+                        title="previous chapter">Connect Evennia channels to Grapevine</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="How-to-connect-Evennia-to-Twitter.html"
-                        title="next chapter">How to connect Evennia to Twitter</a></p>
+  <p class="topless"><a href="Channels-to-Twitter.html"
+                        title="next chapter">Connect Evennia to Twitter</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Setup/RSS.md.txt"
+      <li><a href="../_sources/Setup/Channels-to-RSS.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -96,7 +94,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="RSS.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Channels-to-RSS.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -107,8 +105,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="rss">
-<h1>RSS<a class="headerlink" href="#rss" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="connect-evennia-channels-to-rss">
+<h1>Connect Evennia channels to RSS<a class="headerlink" href="#connect-evennia-channels-to-rss" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/RSS">RSS</a> is a format for easily tracking updates on websites. The
 principle is simple - whenever a site is updated, a small text file is updated. An RSS reader can
 then regularly go online, check this file for updates and let the user know what’s new.</p>
@@ -130,8 +128,9 @@ module.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @rss2chan &lt;evennia_channel&gt; = &lt;rss_url&gt;
 </pre></div>
 </div>
+</section>
 <section id="setting-up-rss-step-by-step">
-<h3>Setting up RSS, step by step<a class="headerlink" href="#setting-up-rss-step-by-step" title="Permalink to this headline">¶</a></h3>
+<h2>Setting up RSS, step by step<a class="headerlink" href="#setting-up-rss-step-by-step" title="Permalink to this headline">¶</a></h2>
 <p>You can connect RSS to any Evennia channel, but for testing, let’s set up a new channel “rss”.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @ccreate rss = RSS feeds are echoed to this channel!
 </pre></div>
@@ -149,8 +148,7 @@ switch:</p>
 </pre></div>
 </div>
 <p>You can connect any number of RSS feeds to a channel this way. You could also connect them to the
-same channels as <a class="reference internal" href="IRC.html"><span class="doc std std-doc">IRC</span></a> to have the feed echo to external chat channels as well.</p>
-</section>
+same channels as <a class="reference internal" href="Channels-to-IRC.html"><span class="doc std std-doc">Channels-to-IRC</span></a> to have the feed echo to external chat channels as well.</p>
 </section>
 </section>
 
@@ -170,14 +168,14 @@ same channels as <a class="reference internal" href="IRC.html"><span class="doc 
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="How-to-connect-Evennia-to-Twitter.html" title="How to connect Evennia to Twitter"
+          <a href="Channels-to-Twitter.html" title="Connect Evennia to Twitter"
              >next</a> |</li>
         <li class="right" >
-          <a href="Grapevine.html" title="Grapevine"
+          <a href="Channels-to-Grapevine.html" title="Connect Evennia channels to Grapevine"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">RSS</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Connect Evennia channels to RSS</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

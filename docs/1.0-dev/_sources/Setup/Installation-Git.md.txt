@@ -56,9 +56,7 @@ environment is active. You _don't_ need to actually be in or near the `evenv` fo
 the environment to be active.
 
 > Remember that you need to re-activate the virtualenv like this *every time* you
-> start a new terminal/console to get access to the Python packages (notably the
-> important `evennia` program) you installed in the virtualenv!
-
+> start a new terminal/console. Otherwise the `evennia` command will not be available.
 
 ## Linux Install
 
@@ -152,7 +150,7 @@ Next you can continue initializing your game from the regular [Installation inst
 
 ## Windows Install
 
-> If you are running Windows10, consider using the _Windows Subsystem for Linux_
+> If you are running Windows10+, consider using the _Windows Subsystem for Linux_
 > ([WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) instead. Just set up WSL with an Ubuntu image and follow the Linux install instructions above.
 
 The Evennia server itself is a command line program. In the Windows launch
@@ -178,8 +176,7 @@ mkdir muddev
 cd muddev
 ```
 
-> Hint: If `cd` isn't working you can use `pushd` instead to force the
-> directory change.
+> If `cd` isn't working you can use `pushd` instead to force the directory change.
 
 Next we fetch Evennia itself:
 

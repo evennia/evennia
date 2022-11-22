@@ -164,8 +164,7 @@ environment is active. You <em>don’t</em> need to actually be in or near the <
 the environment to be active.</p>
 <blockquote>
 <div><p>Remember that you need to re-activate the virtualenv like this <em>every time</em> you
-start a new terminal/console to get access to the Python packages (notably the
-important <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program) you installed in the virtualenv!</p>
+start a new terminal/console. Otherwise the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command will not be available.</p>
 </div></blockquote>
 </section>
 <section id="linux-install">
@@ -241,7 +240,7 @@ folder) and do</p>
 <section id="windows-install">
 <h2>Windows Install<a class="headerlink" href="#windows-install" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>If you are running Windows10, consider using the <em>Windows Subsystem for Linux</em>
+<div><p>If you are running Windows10+, consider using the <em>Windows Subsystem for Linux</em>
 (<a class="reference external" href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">WSL</a>) instead. Just set up WSL with an Ubuntu image and follow the Linux install instructions above.</p>
 </div></blockquote>
 <p>The Evennia server itself is a command line program. In the Windows launch
@@ -266,8 +265,7 @@ new folder for all your Evennia development (let’s call it <code class="docuti
 </pre></div>
 </div>
 <blockquote>
-<div><p>Hint: If <code class="docutils literal notranslate"><span class="pre">cd</span></code> isn’t working you can use <code class="docutils literal notranslate"><span class="pre">pushd</span></code> instead to force the
-directory change.</p>
+<div><p>If <code class="docutils literal notranslate"><span class="pre">cd</span></code> isn’t working you can use <code class="docutils literal notranslate"><span class="pre">pushd</span></code> instead to force the directory change.</p>
 </div></blockquote>
 <p>Next we fetch Evennia itself:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">evennia</span><span class="o">/</span><span class="n">evennia</span><span class="o">.</span><span class="n">git</span>

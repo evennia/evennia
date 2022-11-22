@@ -2,7 +2,7 @@
 
 
 This tutorial will create a simple script that will send a tweet to your already configured twitter
-account. Please see: [How to connect Evennia to Twitter](../Setup/How-to-connect-Evennia-to-Twitter.md) if you
+account. Please see: [How to connect Evennia to Twitter](../Setup/Channels-to-Twitter.md) if you
 haven't already done so.
 
 The script could be expanded to cover a variety of statistics you might wish to tweet about

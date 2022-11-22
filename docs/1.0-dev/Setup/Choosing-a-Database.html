@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Choosing An SQL Server &#8212; Evennia 1.0-dev documentation</title>
+    <title>Choosing a database &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Evennia Game Index" href="Evennia-Game-Index.html" />
+    <link rel="next" title="Connect Evennia channels to IRC" href="Channels-to-IRC.html" />
     <link rel="prev" title="Evennia Default settings file" href="Settings-Default.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,14 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Evennia-Game-Index.html" title="Evennia Game Index"
+          <a href="Channels-to-IRC.html" title="Connect Evennia channels to IRC"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Settings-Default.html" title="Evennia Default settings file"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Choosing An SQL Server</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Choosing a database</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,9 +62,10 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Choosing An SQL Server</a><ul>
+<li><a class="reference internal" href="#">Choosing a database</a><ul>
 <li><a class="reference internal" href="#sqlite3">SQLite3</a><ul>
 <li><a class="reference internal" href="#install-of-sqlite3">Install of SQlite3</a></li>
+<li><a class="reference internal" href="#resetting-sqlite3-database">Resetting SQLite3 database</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#postgresql">PostgreSQL</a><ul>
@@ -87,12 +88,12 @@
   <p class="topless"><a href="Settings-Default.html"
                         title="previous chapter">Evennia Default settings file</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Evennia-Game-Index.html"
-                        title="next chapter">Evennia Game Index</a></p>
+  <p class="topless"><a href="Channels-to-IRC.html"
+                        title="next chapter">Connect Evennia channels to IRC</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Setup/Choosing-An-SQL-Server.md.txt"
+      <li><a href="../_sources/Setup/Choosing-a-Database.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -108,7 +109,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Choosing-An-SQL-Server.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Choosing-a-Database.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -119,55 +120,37 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="choosing-an-sql-server">
-<h1>Choosing An SQL Server<a class="headerlink" href="#choosing-an-sql-server" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="choosing-a-database">
+<h1>Choosing a database<a class="headerlink" href="#choosing-a-database" title="Permalink to this headline">¶</a></h1>
 <p>This page gives an overview of the supported SQL databases as well as instructions on install:</p>
 <ul class="simple">
 <li><p>SQLite3 (default)</p></li>
 <li><p>PostgreSQL</p></li>
 <li><p>MySQL / MariaDB</p></li>
 </ul>
-<p>Since Evennia uses <a class="reference external" href="https://djangoproject.com">Django</a>, most of our notes are based off of what we
-know from the community and their documentation. While the information below may be useful, you can
-always find the most up-to-date and “correct” information at Django’s <a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/databases/#ref-databases">Notes about supported
+<p>Since Evennia uses <a class="reference external" href="https://djangoproject.com">Django</a>, most of our notes are based off of what we know from the community and their documentation. While the information below may be useful, you can always find the most up-to-date and “correct” information at Django’s <a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/databases/#ref-databases">Notes about supported
 Databases</a> page.</p>
 <section id="sqlite3">
 <h2>SQLite3<a class="headerlink" href="#sqlite3" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://sqlite.org/">SQLite3</a> is a light weight single-file database. It is our default database
 and Evennia will set this up for you automatically if you give no other options. SQLite stores the
 database in a single file (<code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>). This means it’s very easy to reset this
-database - just delete (or move) that <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> file and run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> again! No server
-process is needed and the administrative overhead and resource consumption is tiny. It is also very
-fast since it’s run in-memory. For the vast majority of Evennia installs it will probably be all
+database - just delete (or move) that <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> file and run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> again! No server process is needed and the administrative overhead and resource consumption is tiny. It is also very fast since it’s run in-memory. For the vast majority of Evennia installs it will probably be all
 that’s ever needed.</p>
 <p>SQLite will generally be much faster than MySQL/PostgreSQL but its performance comes with two
 drawbacks:</p>
 <ul class="simple">
-<li><p>SQLite <a class="reference external" href="https://www.sqlite.org/faq.html#q9">ignores length constraints by design</a>; it is possible
-to store very large strings and numbers in fields that technically should not accept them. This is
-not something you will notice; your game will read and write them and function normally, but this
-<em>can</em> create some data migration problems requiring careful thought if you do need to change
-databases later.</p></li>
-<li><p>SQLite can scale well to storage of millions of objects, but if you end up with a thundering herd
-of users trying to access your MUD and web site at the same time, or you find yourself writing long-
-running functions to update large numbers of objects on a live game, either will yield errors and
-interference. SQLite does not work reliably with multiple concurrent threads or processes accessing
-its records. This has to do with file-locking clashes of the database file. So for a production
-server making heavy use of process- or thread pools (or when using a third-party webserver like
-Apache), a proper database is a more appropriate choice.</p></li>
+<li><p>SQLite <a class="reference external" href="https://www.sqlite.org/faq.html#q9">ignores length constraints by design</a>; it is possible to store very large strings and numbers in fields that technically should not accept them. This is not something you will notice; your game will read and write them and function normally, but this <em>can</em> create some data migration problems requiring careful thought if you do need to change databases later.</p></li>
+<li><p>SQLite can scale well to storage of millions of objects, but if you end up with a thundering herd of users trying to access your MUD and web site at the same time, or you find yourself writing long- running functions to update large numbers of objects on a live game, either will yield errors and interference. SQLite does not work reliably with multiple concurrent threads or processes accessing its records. This has to do with file-locking clashes of the database file. So for a production server making heavy use of process- or thread pools, a proper database is a more appropriate choice.</p></li>
 </ul>
 <section id="install-of-sqlite3">
 <h3>Install of SQlite3<a class="headerlink" href="#install-of-sqlite3" title="Permalink to this headline">¶</a></h3>
-<p>This is installed and configured as part of Evennia. The database file is created as
-<code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code> when you run</p>
+<p>This is installed and configured as part of Evennia. The database file is created as <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code> when you run</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia migrate
 </pre></div>
 </div>
-<p>without changing any database options. An optional requirement is the <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> client program -
-this is required if you want to inspect the database data manually. A shortcut for using it with the
-evennia database is <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">dbshell</span></code>. Linux users should look for the <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> package for their
-distro while Mac/Windows should get the <a class="reference external" href="https://sqlite.org/download.html">sqlite-tools package from this
-page</a>.</p>
+<p>without changing any database options. An optional requirement is the <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> client program - this is required if you want to inspect the database data manually. A shortcut for using it with the
+evennia database is <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">dbshell</span></code>. Linux users should look for the <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> package for their distro while Mac/Windows should get the <a class="reference external" href="https://sqlite.org/download.html">sqlite-tools package from this page</a>.</p>
 <p>To inspect the default Evennia database (once it’s been created), go to your game dir and do</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    sqlite3 server/evennia.db3
     <span class="c1"># or</span>
@@ -176,6 +159,14 @@ page</a>.</p>
 </div>
 <p>This will bring you into the sqlite command line. Use <code class="docutils literal notranslate"><span class="pre">.help</span></code> for instructions and <code class="docutils literal notranslate"><span class="pre">.quit</span></code> to exit.
 See <a class="reference external" href="https://gist.github.com/vincent178/10889334">here</a> for a cheat-sheet of commands.</p>
+</section>
+<section id="resetting-sqlite3-database">
+<h3>Resetting SQLite3 database<a class="headerlink" href="#resetting-sqlite3-database" title="Permalink to this headline">¶</a></h3>
+<p>To reset your database and start from scratch, simply stop Evennia and delete the <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>. Then run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> again.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Hint</p>
+<p>Make a copy of the <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> file once you created your superuser. When you want to reset, you can just stop evennia and copy that file back over <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code>. That way you don’t have to run migrations and create the superuser every time!</p>
+</aside>
 </section>
 </section>
 <section id="postgresql">
@@ -440,14 +431,14 @@ others. If you try other databases out, consider expanding this page with instru
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Evennia-Game-Index.html" title="Evennia Game Index"
+          <a href="Channels-to-IRC.html" title="Connect Evennia channels to IRC"
              >next</a> |</li>
         <li class="right" >
           <a href="Settings-Default.html" title="Evennia Default settings file"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Choosing An SQL Server</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Choosing a database</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

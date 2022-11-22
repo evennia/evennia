@@ -4,13 +4,22 @@
 If you are converting an existing game from a previous Evennia version, [see here](./Installation-Upgrade.md).
 ```
 
-Installing Evennia doesn't make anything visible online. Apart from installation and updating, you can develop your game without any internet connection.
+## Requirements
 
+```{sidebar} Develop in isolation
+Installing Evennia doesn't make anything visible online. Apart from installation and updating, you can develop your game without any internet connection if you want to.
+```
 - Evennia requires [Python](https://www.python.org/downloads/) 3.9, 3.10 or 3.11 (recommended)
 	- Windows: In the installer, make sure you select `add python to path`.  If you have multiple versions of Python installed, use `py` command instead of `python` to have Windows automatically use the latest.
-- Using a light-weight  [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended_ in order to keep your Evennia installation independent from the system libraries. Using virtualenvs is common Python praxis.
+- Using a light-weight  [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended_ in order to keep your Evennia installation independent from the system libraries. Using virtualenvs like this is common Python praxis.
 - Don't install Evennia as administrator or superuser. 
 - If you run into trouble, see [installation troubleshooting](./Installation-Troubleshooting.md).
+
+## Install with `pip`
+
+The fastest way to install Evennia is to use the `pip` installer that comes with Python.
+You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
+
 
 Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you install Evennia with
 
@@ -25,23 +34,25 @@ To update Evennia later, do
 
     pip install --upgrade evennia
 
-> Windows users only: You now need to run `python -m evennia` once. This should permanently make the `evennia` command available in your environment.
+```{note} **Windows users only -** 
+You now need to run `python -m evennia` once. This should permanently make the `evennia` command available in your environment.
+```
 
 Once installed, make sure the `evennia` command works.  Use `evennia -h` for usage help. If you are using a  virtualenv, make sure it's active whenever you need to use the `evennia` command later.
-
-> You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
 
 ## Initialize a new game
 
 We will create a new "game dir" for you do create your game in. Here (and in
 the rest of the Evennia documentation) we refer to this game dir as  `mygame`, but you should of course name your game whatever you like.
 
+```{sidebar} Game-dir vs game-name
+The game-dir you create doesn't have to match the name of your game. You can set the name of your game later by editing `mygame/server/conf/settings.py`.
+```
+
     evennia --init mygame
 
 This will create a new folder `mygame` (or whatever you chose) in your current location. This
 contains empty templates and all the default settings needed to start the server.
-
-> The game dir doesn't need to have the exact same name as your game. You can set the name of your game later by editing `mygame/server/conf/settings.py`.
 
 ## Start the new game
 

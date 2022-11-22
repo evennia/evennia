@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together &#8212; Evennia 1.0-dev documentation</title>
+    <title>Configuring HAProxy &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Apache Config" href="Apache-Config.html" />
-    <link rel="prev" title="Security" href="Security.html" /> 
+    <link rel="next" title="Tutorials and Howto’s" href="../Howtos/Howtos-Overview.html" />
+    <link rel="prev" title="Security Hints and Practices" href="Security-Practices.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,14 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Apache-Config.html" title="Apache Config"
+          <a href="../Howtos/Howtos-Overview.html" title="Tutorials and Howto’s"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Security.html" title="Security"
+          <a href="Security-Practices.html" title="Security Hints and Practices"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Configuring HAProxy</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,7 +62,7 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together</a><ul>
+<li><a class="reference internal" href="#">Configuring HAProxy</a><ul>
 <li><a class="reference internal" href="#getting-certificates">Getting certificates</a></li>
 <li><a class="reference internal" href="#installing-and-configuring-haproxy">Installing and configuring HAProxy</a></li>
 <li><a class="reference internal" href="#putting-it-all-together">Putting it all together</a></li>
@@ -71,15 +71,15 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Security.html"
-                        title="previous chapter">Security</a></p>
+  <p class="topless"><a href="Security-Practices.html"
+                        title="previous chapter">Security Hints and Practices</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Apache-Config.html"
-                        title="next chapter">Apache Config</a></p>
+  <p class="topless"><a href="../Howtos/Howtos-Overview.html"
+                        title="next chapter">Tutorials and Howto’s</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Setup/HAProxy-Config.md.txt"
+      <li><a href="../_sources/Setup/Config-HAProxy.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -95,7 +95,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="HAProxy-Config.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Config-HAProxy.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -106,8 +106,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="making-evennia-https-and-wss-secure-websockets-play-nicely-together">
-<h1>Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together<a class="headerlink" href="#making-evennia-https-and-wss-secure-websockets-play-nicely-together" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="configuring-haproxy">
+<h1>Configuring HAProxy<a class="headerlink" href="#configuring-haproxy" title="Permalink to this headline">¶</a></h1>
 <p>A modern public-facing website should these days be served via encrypted
 connections. So <code class="docutils literal notranslate"><span class="pre">https:</span></code> rather than <code class="docutils literal notranslate"><span class="pre">http:</span></code> for the website and
 <code class="docutils literal notranslate"><span class="pre">wss:</span></code> rather than vs <code class="docutils literal notranslate"><span class="pre">ws:</span></code> for websocket connections used by webclient.</p>
@@ -350,14 +350,14 @@ uncommented in the config file, it will now start as a background process.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Apache-Config.html" title="Apache Config"
+          <a href="../Howtos/Howtos-Overview.html" title="Tutorials and Howto’s"
              >next</a> |</li>
         <li class="right" >
-          <a href="Security.html" title="Security"
+          <a href="Security-Practices.html" title="Security Hints and Practices"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Configuring HAProxy</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

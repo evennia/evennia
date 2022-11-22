@@ -63,6 +63,8 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#install-with-pip">Install with <code class="docutils literal notranslate"><span class="pre">pip</span></code></a></li>
 <li><a class="reference internal" href="#initialize-a-new-game">Initialize a new game</a></li>
 <li><a class="reference internal" href="#start-the-new-game">Start the new game</a></li>
 <li><a class="reference internal" href="#restarting-and-stopping">Restarting and stopping</a></li>
@@ -116,17 +118,27 @@
 <p class="admonition-title">Important</p>
 <p>If you are converting an existing game from a previous Evennia version, <a class="reference internal" href="Installation-Upgrade.html"><span class="doc std std-doc">see here</span></a>.</p>
 </div>
-<p>Installing Evennia doesn’t make anything visible online. Apart from installation and updating, you can develop your game without any internet connection.</p>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Develop in isolation</p>
+<p>Installing Evennia doesn’t make anything visible online. Apart from installation and updating, you can develop your game without any internet connection if you want to.</p>
+</aside>
 <ul class="simple">
 <li><p>Evennia requires <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9, 3.10 or 3.11 (recommended)</p>
 <ul>
 <li><p>Windows: In the installer, make sure you select <code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">python</span> <span class="pre">to</span> <span class="pre">path</span></code>.  If you have multiple versions of Python installed, use <code class="docutils literal notranslate"><span class="pre">py</span></code> command instead of <code class="docutils literal notranslate"><span class="pre">python</span></code> to have Windows automatically use the latest.</p></li>
 </ul>
 </li>
-<li><p>Using a light-weight  <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">Python virtual environment</span></a> is optional, but <em>highly recommended</em> in order to keep your Evennia installation independent from the system libraries. Using virtualenvs is common Python praxis.</p></li>
+<li><p>Using a light-weight  <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">Python virtual environment</span></a> is optional, but <em>highly recommended</em> in order to keep your Evennia installation independent from the system libraries. Using virtualenvs like this is common Python praxis.</p></li>
 <li><p>Don’t install Evennia as administrator or superuser.</p></li>
 <li><p>If you run into trouble, see <a class="reference internal" href="Installation-Troubleshooting.html"><span class="doc std std-doc">installation troubleshooting</span></a>.</p></li>
 </ul>
+</section>
+<section id="install-with-pip">
+<h2>Install with <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#install-with-pip" title="Permalink to this headline">¶</a></h2>
+<p>The fastest way to install Evennia is to use the <code class="docutils literal notranslate"><span class="pre">pip</span></code> installer that comes with Python.
+You can also  <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">clone Evennia from github</span></a>  or use <a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">docker</span></a>.  Some users have also experimented with <a class="reference internal" href="Installation-Android.html"><span class="doc std std-doc">installing Evennia on Android</span></a>.</p>
 <p>Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you install Evennia with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia
 </pre></div>
@@ -140,25 +152,26 @@ install all extra dependencies with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install --upgrade evennia
 </pre></div>
 </div>
-<blockquote>
-<div><p>Windows users only: You now need to run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">evennia</span></code> once. This should permanently make the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command available in your environment.</p>
-</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Windows users only -</strong>
+You now need to run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">evennia</span></code> once. This should permanently make the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command available in your environment.</p>
+</div>
 <p>Once installed, make sure the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command works.  Use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-h</span></code> for usage help. If you are using a  virtualenv, make sure it’s active whenever you need to use the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command later.</p>
-<blockquote>
-<div><p>You can also  <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">clone Evennia from github</span></a>  or use <a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">docker</span></a>.  Some users have also experimented with <a class="reference internal" href="Installation-Android.html"><span class="doc std std-doc">installing Evennia on Android</span></a>.</p>
-</div></blockquote>
+</section>
 <section id="initialize-a-new-game">
 <h2>Initialize a new game<a class="headerlink" href="#initialize-a-new-game" title="Permalink to this headline">¶</a></h2>
 <p>We will create a new “game dir” for you do create your game in. Here (and in
 the rest of the Evennia documentation) we refer to this game dir as  <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, but you should of course name your game whatever you like.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Game-dir vs game-name</p>
+<p>The game-dir you create doesn’t have to match the name of your game. You can set the name of your game later by editing <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>.</p>
+</aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia --init mygame
 </pre></div>
 </div>
 <p>This will create a new folder <code class="docutils literal notranslate"><span class="pre">mygame</span></code> (or whatever you chose) in your current location. This
 contains empty templates and all the default settings needed to start the server.</p>
-<blockquote>
-<div><p>The game dir doesn’t need to have the exact same name as your game. You can set the name of your game later by editing <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>.</p>
-</div></blockquote>
 </section>
 <section id="start-the-new-game">
 <h2>Start the new game<a class="headerlink" href="#start-the-new-game" title="Permalink to this headline">¶</a></h2>

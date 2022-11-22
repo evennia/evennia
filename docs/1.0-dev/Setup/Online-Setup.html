@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Security" href="Security.html" />
-    <link rel="prev" title="Client Support Grid" href="Client-Support-Grid.html" /> 
+    <link rel="next" title="Client Support Grid" href="Client-Support-Grid.html" />
+    <link rel="prev" title="Evennia Game Index" href="Evennia-Game-Index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Security.html" title="Security"
+          <a href="Client-Support-Grid.html" title="Client Support Grid"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Client-Support-Grid.html" title="Client Support Grid"
+          <a href="Evennia-Game-Index.html" title="Evennia Game Index"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
@@ -63,7 +63,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Online Setup</a><ul>
-<li><a class="reference internal" href="#connecting-to-evennia-across-the-internet">Connecting to Evennia across the Internet</a><ul>
+<li><a class="reference internal" href="#connecting-to-evennia-over-the-internet">Connecting to Evennia over the Internet</a><ul>
 <li><a class="reference internal" href="#settings-example">Settings example</a></li>
 <li><a class="reference internal" href="#telnet">Telnet</a></li>
 <li><a class="reference internal" href="#web-server">Web server</a></li>
@@ -95,11 +95,11 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Client-Support-Grid.html"
-                        title="previous chapter">Client Support Grid</a></p>
+  <p class="topless"><a href="Evennia-Game-Index.html"
+                        title="previous chapter">Evennia Game Index</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Security.html"
-                        title="next chapter">Security</a></p>
+  <p class="topless"><a href="Client-Support-Grid.html"
+                        title="next chapter">Client Support Grid</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -132,26 +132,20 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="online-setup">
 <h1>Online Setup<a class="headerlink" href="#online-setup" title="Permalink to this headline">¶</a></h1>
-<p>Evennia development can be made without any Internet connection beyond fetching updates. At some
-point however, you are likely to want to make your game visible online, either as part opening it to
-the public or to allow other developers or beta testers access to it.</p>
-<section id="connecting-to-evennia-across-the-internet">
-<h2>Connecting to Evennia across the Internet<a class="headerlink" href="#connecting-to-evennia-across-the-internet" title="Permalink to this headline">¶</a></h2>
+<p>Evennia development can be made without any Internet connection beyond fetching updates. At some point however, you are likely to want to make your game visible online, either as part opening it to the public or to allow other developers or beta testers access to it.</p>
+<section id="connecting-to-evennia-over-the-internet">
+<h2>Connecting to Evennia over the Internet<a class="headerlink" href="#connecting-to-evennia-over-the-internet" title="Permalink to this headline">¶</a></h2>
 <p>Accessing your Evennia server from the outside is not hard on its own. Any issues are usually due to the various security measures your computer, network or hosting service has. These will generally (and correctly) block outside access to servers on your machine unless you tell them otherwise.</p>
 <p>We will start by showing how to host your server on your own local computer. Even if you plan to
 host your “real” game on a remote host later, setting it up locally is useful practice. We cover
 remote hosting later in this document.</p>
-<p>Out of the box, Evennia uses three ports for outward communication. If your computer has a firewall,
-these should be open for in/out communication (and only these, other ports used by Evennia are
-internal to your computer only).</p>
+<p>Out of the box, Evennia uses three ports for outward communication. If your computer has a firewall, these should be open for in/out communication (and only these, other ports used by Evennia are internal to your computer only).</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">4000</span></code>, telnet, for traditional mud clients</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">4001</span></code>, HTTP for the website)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">4002</span></code>, websocket, for the web client</p></li>
 </ul>
-<p>Evennia will by default accept incoming connections on all interfaces (<code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code>) so in principle
-anyone knowing the ports to use and has the IP address to your machine should be able to connect to
-your game.</p>
+<p>Evennia will by default accept incoming connections on all interfaces (<code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code>) so in principle anyone knowing the ports to use and has the IP address to your machine should be able to connect to your game.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Closing the log view</p>
 <p>If you need to close the log-view, use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>. Use just <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--log</span></code> on its own to
@@ -167,20 +161,12 @@ start tailing the logs again.</p>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you need to reconfigure a router, the router’s Internet-facing ports do <em>not</em> have to have to have the same numbers as your computer’s (and Evennia’s) ports! For example, you might want
-to connect Evennia’s outgoing port 4001 to an outgoing router port 80 - this is the port HTTP
-requests use and web browsers automatically look for - if you do that you could go to
-<code class="docutils literal notranslate"><span class="pre">http://203.0.113.0</span></code> without having to add the port at the end. This would collide with any other
-web services you are running through this router though.</p>
+<p>If you need to reconfigure a router, the router’s Internet-facing ports do <em>not</em> have to have to have the same numbers as your computer’s (and Evennia’s) ports! For example, you might want to connect Evennia’s outgoing port 4001 to an outgoing router port 80 - this is the port HTTP requests use and web browsers automatically look for - if you do that you could go to <code class="docutils literal notranslate"><span class="pre">http://203.0.113.0</span></code> without having to add the port at the end. This would collide with any other web services you are running through this router though.</p>
 </div>
 <section id="settings-example">
 <h3>Settings example<a class="headerlink" href="#settings-example" title="Permalink to this headline">¶</a></h3>
-<p>You can connect Evennia to the Internet without any changes to your settings. The default settings
-are easy to use but are not necessarily the safest. You can customize your online presence in your
-<a class="reference internal" href="Settings.html#settings-file"><span class="std std-doc">settings file</span></a>. To have Evennia recognize changed port settings you have
-to do a full <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code> to also restart the Portal and not just the Server component.</p>
-<p>Below is an example of a simple set of settings, mostly using the defaults. Evennia will require
-access to five computer ports, of which three (only) should be open to the outside world. Below we
+<p>You can connect Evennia to the Internet without any changes to your settings. The default settings are easy to use but are not necessarily the safest. You can customize your online presence in your <a class="reference internal" href="Settings.html#settings-file"><span class="std std-doc">settings file</span></a>. To have Evennia recognize changed port settings you have to do a full <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code> to also restart the Portal and not just the Server component.</p>
+<p>Below is an example of a simple set of settings, mostly using the defaults. Evennia will require access to five computer ports, of which three (only) should be open to the outside world. Below we
 continue to assume that our server address is <code class="docutils literal notranslate"><span class="pre">203.0.113.0</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
 
@@ -222,9 +208,7 @@ continue to assume that our server address is <code class="docutils literal notr
 <span class="n">TELNET_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">TELNET_*</span></code> settings are the most important ones for getting a traditional base game going. Which
-IP addresses you have available depends on your server hosting solution (see the next sections).
-Some hosts will restrict which ports you are allowed you use so make sure to check.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">TELNET_*</span></code> settings are the most important ones for getting a traditional base game going. Which IP addresses you have available depends on your server hosting solution (see the next sections). Some hosts will restrict which ports you are allowed you use so make sure to check.</p>
 </section>
 <section id="web-server">
 <h3>Web server<a class="headerlink" href="#web-server" title="Permalink to this headline">¶</a></h3>
@@ -247,8 +231,8 @@ Some hosts will restrict which ports you are allowed you use so make sure to che
 <p>The web server is always configured with two ports at a time. The <em>outgoing</em> port (<code class="docutils literal notranslate"><span class="pre">4001</span></code> by
 default) is the port external connections can use. If you don’t want users to have to specify the
 port when they connect, you should set this to <code class="docutils literal notranslate"><span class="pre">80</span></code> - this however only works if you are not running
-any other web server on the machine.
-The <em>internal</em> port (<code class="docutils literal notranslate"><span class="pre">4005</span></code> by default) is used internally by Evennia to communicate between the
+any other web server on the machine.</p>
+<p>The <em>internal</em> port (<code class="docutils literal notranslate"><span class="pre">4005</span></code> by default) is used internally by Evennia to communicate between the
 Server and the Portal. It should not be available to the outside world. You usually only need to
 change the outgoing port unless the default internal port is clashing with some other program.</p>
 </section>
@@ -267,9 +251,7 @@ change the outgoing port unless the default internal port is clashing with some 
 <span class="n">WEBSOCKET_CLIENT_PORT</span> <span class="o">=</span> <span class="mi">4002</span>
 </pre></div>
 </div>
-<p>The websocket-based web client needs to be able to call back to the server, and these settings must
-be changed for it to find where to look. If it cannot find the server you will get an warning in
-your browser’s Console (in the dev tools of the browser), and the client will revert to the AJAX-
+<p>The websocket-based web client needs to be able to call back to the server, and these settings must be changed for it to find where to look. If it cannot find the server you will get an warning in your browser’s Console (in the dev tools of the browser), and the client will revert to the AJAX-
 based of the client instead, which tends to be slower.</p>
 </section>
 <section id="other-ports">
@@ -286,9 +268,7 @@ based of the client instead, which tends to be slower.</p>
 <span class="n">AMP_PORT</span> <span class="o">=</span> <span class="mi">4006</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">AMP_PORT</span></code> is required to work, since this is the internal port linking Evennia’s
-<a class="reference internal" href="../Components/Portal-And-Server.html"><span class="doc std std-doc">Server and Portal</span></a> components together. The other ports are encrypted ports that may be
-useful for custom protocols but are otherwise not used.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">AMP_PORT</span></code> is required to work, since this is the internal port linking Evennia’s <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="doc std std-doc">Server and Portal</span></a> components together. The other ports are encrypted ports that may be useful for custom protocols but are otherwise not used.</p>
 </section>
 <section id="lockdown-mode">
 <h3>Lockdown mode<a class="headerlink" href="#lockdown-mode" title="Permalink to this headline">¶</a></h3>
@@ -300,11 +280,7 @@ again, your game will only be accessible from localhost.</p>
 </section>
 <section id="registering-with-the-evennia-game-directory">
 <h3>Registering with the Evennia game directory<a class="headerlink" href="#registering-with-the-evennia-game-directory" title="Permalink to this headline">¶</a></h3>
-<p>Once your game is online you should make sure to register it with the <a class="reference external" href="http://games.evennia.com/">Evennia Game
-Index</a>. Registering with the index will help  people find your server,
-drum up interest for your game and also shows people that Evennia is being used. You can do this
-even if you are just starting development - if you don’t give any telnet/web address it will appear
-as <em>Not yet public</em> and just be a teaser. If so, pick <em>pre-alpha</em> as the development status.</p>
+<p>Once your game is online you should make sure to register it with the <a class="reference external" href="http://games.evennia.com/">Evennia Game Index</a>. Registering with the index will help  people find your server, drum up interest for your game and also shows people that Evennia is being used. You can do this even if you are just starting development - if you don’t give any telnet/web address it will appear as <em>Not yet public</em> and just be a teaser. If so, pick <em>pre-alpha</em> as the development status.</p>
 <p>To register, stand in your game dir, run</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia connections
 </pre></div>
@@ -329,39 +305,26 @@ over a web client if they are in a public place, and your websocket can also be 
 </div>
 <section id="lets-encrypt">
 <h3>Let’s Encrypt<a class="headerlink" href="#lets-encrypt" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://letsencrypt.org">Let’s Encrypt</a> is a certificate authority offering free certificates to
-secure a website with HTTPS. To get started issuing a certificate for your web server using Let’s
-Encrypt, see these links:</p>
+<p><a class="reference external" href="https://letsencrypt.org">Let’s Encrypt</a> is a certificate authority offering free certificates to secure a website with HTTPS. To get started issuing a certificate for your web server using Let’s Encrypt, see these links:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://letsencrypt.org/getting-started/">Let’s Encrypt - Getting Started</a></p></li>
-<li><p>The <a class="reference external" href="https://certbot.eff.org/">CertBot Client</a> is a program for automatically obtaining a
-certificate, use it and maintain it with your website.</p></li>
+<li><p>The <a class="reference external" href="https://certbot.eff.org/">CertBot Client</a> is a program for automatically obtaining a certificate, use it and maintain it with your website.</p></li>
 </ul>
-<p>Also, on Freenode visit the #letsencrypt channel for assistance from the community. For an
-additional resource, Let’s Encrypt has a very active <a class="reference external" href="https://community.letsencrypt.org/">community
-forum</a>.</p>
-<p>[A blog where someone sets up Let’s Encrypt](<a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-">https://www.digitalocean.com/community/tutorials/how-</a>
-to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04)</p>
-<p>The only process missing from all of the above documentation is how to pass verification. This is
-how Let’s Encrypt verifies that you have control over your domain (not necessarily ownership, it’s
-Domain Validation (DV)). This can be done either with configuring a certain path on your web server
-or through a TXT record in your DNS. Which one you will want to do is a personal preference, but can
-also be based on your hosting choice. In a controlled/cPanel environment, you will most likely have
-to use DNS verification.</p>
+<p>Also, on Freenode visit the #letsencrypt channel for assistance from the community. For an additional resource, Let’s Encrypt has a very active <a class="reference external" href="https://community.letsencrypt.org/">community forum</a>.</p>
+<p>[A blog where someone sets up Let’s Encrypt](<a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-">https://www.digitalocean.com/community/tutorials/how-</a> to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04)</p>
+<p>The only process missing from all of the above documentation is how to pass verification. This is how Let’s Encrypt verifies that you have control over your domain (not necessarily ownership, it’s Domain Validation (DV)). This can be done either with configuring a certain path on your web server or through a TXT record in your DNS. Which one you will want to do is a personal preference, but can also be based on your hosting choice. In a controlled/cPanel environment, you will most likely have to use DNS verification.</p>
 </section>
 <section id="relevant-ssl-proxy-setup-information">
 <h3>Relevant SSL Proxy Setup Information<a class="headerlink" href="#relevant-ssl-proxy-setup-information" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference internal" href="Apache-Config.html"><span class="doc std std-doc">Apache webserver configuration</span></a> (optional)</p></li>
-<li><p><a class="reference internal" href="HAProxy-Config.html"><span class="doc std std-doc">HAProxy Config</span></a></p></li>
+<li><p><a class="reference internal" href="Config-Apache-Proxy.html"><span class="doc std std-doc">Apache webserver configuration</span></a> (optional)</p></li>
+<li><p><a class="reference internal" href="Config-HAProxy.html"><span class="doc std std-doc">HAProxy Config</span></a></p></li>
 </ul>
 </section>
 </section>
 <section id="hosting-evennia-from-your-own-computer">
 <h2>Hosting Evennia from your own computer<a class="headerlink" href="#hosting-evennia-from-your-own-computer" title="Permalink to this headline">¶</a></h2>
-<p>What we showed above is by far the simplest and probably cheapest option: Run Evennia on your own
-home computer. Moreover, since Evennia is its own web server, you don’t need to install anything
-extra to have a website.</p>
+<p>What we showed above is by far the simplest and probably cheapest option: Run Evennia on your own home computer. Moreover, since Evennia is its own web server, you don’t need to install anything extra to have a website.</p>
 <p><strong>Advantages</strong></p>
 <ul class="simple">
 <li><p>Free (except for internet costs and the electrical bill).</p></li>
@@ -377,18 +340,11 @@ and as mentioned, the electrical bill must be considered.</p></li>
 <li><p>No support or safety - if your house burns down, so will your game. Also, you are yourself
 responsible for doing regular backups.</p></li>
 <li><p>Potentially not as easy if you don’t know how to open ports in your firewall or router.</p></li>
-<li><p>Home IP numbers are often dynamically allocated, so for permanent online time you need to set up a
-DNS to always re-point to the right place (see below).</p></li>
-<li><p>You are personally responsible for any use/misuse of your internet connection– though unlikely
-(but not impossible) if running your server somehow causes issues for other customers on the
-network, goes against your ISP’s terms of service (many ISPs insist on upselling you to a business-
-tier connection) or you are the subject of legal action by a copyright holder, you may find your
-main internet connection terminated as a consequence.</p></li>
+<li><p>Home IP numbers are often dynamically allocated, so for permanent online time you need to set up a DNS to always re-point to the right place (see below). - You are personally responsible for any use/misuse of your internet connection– though unlikely (but not impossible) if running your server somehow causes issues for other customers on the network, goes against your ISP’s terms of service (many ISPs insist on upselling you to a business- tier connection) or you are the subject of legal action by a copyright holder, you may find your main internet connection terminated as a consequence.</p></li>
 </ul>
 <section id="setting-up-your-own-machine-as-a-server">
 <h3>Setting up your own machine as a server<a class="headerlink" href="#setting-up-your-own-machine-as-a-server" title="Permalink to this headline">¶</a></h3>
-<p><span class="xref myst">The first section</span> of this page describes how to do this
-and allow users to connect to the IP address of your machine/router.</p>
+<p><a class="reference internal" href="#connecting-to-evennia-over-the-internet"><span class="std std-doc">The first section</span></a> of this page describes how to do this and allow users to connect to the IP address of your machine/router.</p>
 <p>A complication with using a specific IP address like this is that your home IP might not remain the
 same. Many ISPs (Internet Service Providers) allocates a <em>dynamic</em> IP to you which could change at
 any time. When that happens, that IP you told people to go to will be worthless. Also, that long
@@ -581,10 +537,10 @@ sufficient resources to operate a Cloud9 development environment without charge.
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Security.html" title="Security"
+          <a href="Client-Support-Grid.html" title="Client Support Grid"
              >next</a> |</li>
         <li class="right" >
-          <a href="Client-Support-Grid.html" title="Client Support Grid"
+          <a href="Evennia-Game-Index.html" title="Evennia Game Index"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Game Settings and Configuration directory &#8212; Evennia 1.0-dev documentation</title>
+    <title>Changing Game Settings &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -37,7 +37,7 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Game Settings and Configuration directory</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Changing Game Settings</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,7 +62,7 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Game Settings and Configuration directory</a><ul>
+<li><a class="reference internal" href="#">Changing Game Settings</a><ul>
 <li><a class="reference internal" href="#settings-file">Settings file</a></li>
 <li><a class="reference internal" href="#other-files-in-the-server-conf-directory">Other files in the <code class="docutils literal notranslate"><span class="pre">server/conf</span></code> directory</a></li>
 </ul>
@@ -105,8 +105,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="game-settings-and-configuration-directory">
-<h1>Game Settings and Configuration directory<a class="headerlink" href="#game-settings-and-configuration-directory" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="changing-game-settings">
+<h1>Changing Game Settings<a class="headerlink" href="#changing-game-settings" title="Permalink to this headline">¶</a></h1>
 <p>Evennia runs out of the box without any changes to its settings. But there are several important
 ways to customize the server and expand it with your own plugins.</p>
 <p>All game-specific settings are located in the <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/</span></code> directory.</p>
@@ -125,13 +125,11 @@ commonly changed settings, this is not something you need to worry about).</p>
 <p>You should never edit <code class="docutils literal notranslate"><span class="pre">evennia/settings_default.py</span></code>. Rather you should copy&amp;paste the select
 variables you want to change into your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> and edit them there. This will overload the
 previously imported defaults.</p>
-<blockquote>
-<div><p>Warning: It may be tempting to copy everything from <code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code> into your own settings
-file. There is a reason we don’t do this out of the box though: it makes it directly clear what
-changes you did. Also, if you limit your copying to the things you really need you will directly be
-able to take advantage of upstream changes and additions to Evennia for anything you didn’t
-customize.</p>
-</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Don’t copy everything!
+It may be tempting to copy <em>everything</em> from <code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code> into your own settings file just to have it all in one place. Don’t do this. By copying only what you need, you can easier track what you changed.</p>
+</div>
 <p>In code, the settings is accessed through</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
      <span class="c1"># or (shorter):</span>
@@ -140,9 +138,7 @@ customize.</p>
     <span class="n">servername</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVER_NAME</span>
 </pre></div>
 </div>
-<p>Each setting appears as a property on the imported <code class="docutils literal notranslate"><span class="pre">settings</span></code> object.  You can also explore all
-possible options with <code class="docutils literal notranslate"><span class="pre">evennia.settings_full</span></code> (this also includes advanced Django defaults that are
-not touched in default Evennia).</p>
+<p>Each setting appears as a property on the imported <code class="docutils literal notranslate"><span class="pre">settings</span></code> object.  You can also explore all possible options with <code class="docutils literal notranslate"><span class="pre">evennia.settings_full</span></code> (this also includes advanced Django defaults that are not touched in default Evennia).</p>
 <blockquote>
 <div><p>When importing <code class="docutils literal notranslate"><span class="pre">settings</span></code> into your code like this, it will be <em>read
 only</em>. You <em>cannot</em> edit your settings from your code! The only way to change an Evennia setting is
@@ -185,15 +181,8 @@ services to the Server instead. More info can be found
 <p>Some other Evennia systems can be customized by plugin modules but has no explicit template in
 <code class="docutils literal notranslate"><span class="pre">conf/</span></code>:</p>
 <ul class="simple">
-<li><p><em><a class="reference external" href="http://cmdparser.py">cmdparser.py</a></em> - a custom module can be used to totally replace Evennia’s default command parser.
-All this does is to split the incoming string into “command name” and “the rest”. It also handles
-things like error messages for no-matches and multiple-matches among other things that makes this
-more complex than it sounds. The default parser is <em>very</em> generic, so you are most often best served
-by modifying things further down the line (on the command parse level) than here.</p></li>
-<li><p><em>at_search.py</em> - this allows for replacing the way Evennia handles search results. It allows to
-change how errors are echoed and how multi-matches are resolved and reported (like how the default
-understands that “2-ball” should match the second “ball” object if there are two of them in the
-room).</p></li>
+<li><p><em><a class="reference external" href="http://cmdparser.py">cmdparser.py</a></em> - a custom module can be used to totally replace Evennia’s default command parser. All this does is to split the incoming string into “command name” and “the rest”. It also handles things like error messages for no-matches and multiple-matches among other things that makes this more complex than it sounds. The default parser is <em>very</em> generic, so you are most often best served by modifying things further down the line (on the command parse level) than here.</p></li>
+<li><p><em>at_search.py</em> - this allows for replacing the way Evennia handles search results. It allows to change how errors are echoed and how multi-matches are resolved and reported (like how the default understands that “2-ball” should match the second “ball” object if there are two of them in the room).</p></li>
 </ul>
 </section>
 </section>
@@ -221,7 +210,7 @@ room).</p></li>
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Game Settings and Configuration directory</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Changing Game Settings</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>
