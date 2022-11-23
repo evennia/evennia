@@ -27,8 +27,14 @@ Debugging.md
 Unit-Testing.md
 Profiling.md
 Quirks.md
-Changelog.md
+```
 
+## Evennia Changelog
+
+```
+:maxdepth: 2
+
+Changelog.md
 ```
 
 ## Third-party integrations

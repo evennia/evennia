@@ -39,8 +39,8 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 - [Contribs](Contribs/Contribs-Overview.md) - game-specific code and snippets to use for your game
 - [How to contribute to these docs](./Contributing-Docs.md) - if you want to help out
-- [Links](./Links.md) - useful links
-- [Licensing](./Licensing.md) - Evennia licensing info (BSD)
+- [MU- and Evennia Links](./Links.md) - useful external links for extra reading
+- [BSD License](./Licensing.md) - Evennia licensing FAQ
 
 ----
 

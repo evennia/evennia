@@ -90,18 +90,14 @@
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#code-docstrings">Code docstrings</a></li>
-<li><a class="reference internal" href="#technical">Technical</a></li>
+<li><a class="reference internal" href="#writing-code-docstrings-for-autodocs">Writing Code docstrings for autodocs</a></li>
 <li><a class="reference internal" href="#building-the-docs-locally">Building the docs locally</a><ul>
 <li><a class="reference internal" href="#building-only-the-main-documentation">Building only the main documentation</a></li>
 <li><a class="reference internal" href="#building-the-main-documentation-and-api-docs">Building the main documentation and API docs</a><ul>
 <li><a class="reference internal" href="#building-with-another-gamedir">Building with another gamedir</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#building-for-release">Building for release</a><ul>
-<li><a class="reference internal" href="#release">Release</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#building-multiversion-docs">Building multiversion docs</a></li>
 </ul>
 </li>
 </ul>
@@ -146,28 +142,19 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="contributing-to-evennia-docs">
 <h1>Contributing to Evennia Docs<a class="headerlink" href="#contributing-to-evennia-docs" title="Permalink to this headline">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This system is still WIP and many things are bound to change!</p>
-</div>
-<p>Contributing to the docs is is like <a class="reference internal" href="Contributing.html"><span class="doc std std-doc">contributing to the rest of Evennia</span></a>: Check out the branch of Evennia
-you want to edit the documentation for. Create your own work-branch, make your changes to files
-in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code> and make a PR for it!</p>
-<p>The documentation source files are <code class="docutils literal notranslate"><span class="pre">*.md</span></code> (Markdown) files found in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code>.
-Markdown files are simple text files that can be edited with a normal text editor. They can also
-contain raw HTML directives (but that is very rarely needed). They use
-the <a class="reference external" href="https://spec.commonmark.org/current/">Markdown</a> syntax with <a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/syntax/reference.html">MyST extensions</a>.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>You do <em>not</em> need to be able to test/build the docs locally to contribute a documentation PR.
-We’ll resolve any issues when we merge and build documentation. If you still want to build
-the docs for yourself, instructions are <a class="reference internal" href="#building-the-docs-locally"><span class="std std-doc">at the end of this document</span></a>.</p>
-</div>
+<aside class="sidebar">
+<p class="sidebar-title">Building the docs locally?</p>
+<p>You do <em>not</em> need to be able to test/build the docs locally to contribute a documentation PR. We’ll resolve any issues when we merge and build documentation. If you really want to build the docs for yourself, instructions are <a class="reference internal" href="#building-the-docs-locally"><span class="std std-doc">at the end of this document</span></a>.</p>
+</aside>
+<ul class="simple">
+<li><p>You can contribute to docs by creating a <a class="reference external" href="https://github.com/evennia/evennia/issues/new/choose">Documentation issue</a>.</p></li>
+<li><p>You can contribute to docs by making a <a class="reference internal" href="Contributing.html"><span class="doc std std-doc">PR</span></a> like for any other code. The sources are found in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code>.</p></li>
+</ul>
+<p>The documentation source files are <code class="docutils literal notranslate"><span class="pre">*.md</span></code> (Markdown) files. Markdown files are simple text files that can be edited with a normal text editor. They can also contain raw HTML directives (but that is very rarely needed). They use the <a class="reference external" href="https://spec.commonmark.org/current/">Markdown</a> syntax with <a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/syntax/reference.html">MyST extensions</a>.</p>
 <section id="source-file-structure">
 <h2>Source file structure<a class="headerlink" href="#source-file-structure" title="Permalink to this headline">¶</a></h2>
 <p>The sources are organized into several rough categories, with only a few administrative documents
-at the root of <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code>. The folders are named in singular form since they will
-primarily be accessed as link refs (e.g. <code class="docutils literal notranslate"><span class="pre">Component/Accounts</span></code>)</p>
+at the root of <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">source/Components/</span></code> are docs describing separate Evennia building blocks, that is, things
 that you can import and use. This extends and elaborates on what can be found out by reading
@@ -179,25 +166,21 @@ and back.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">source/Setup/</span></code> holds detailed docs on installing, running and maintaining the Evennia server and
 the infrastructure around it.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">source/Coding/</span></code> has help on how to interact with, use and navigate the Evennia codebase itself.
-This also has non-Evennia-specific help on general development concepts and how to set up a sane
-development environment.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Contribs/</span></code> holds documentation specifically for packages in the <code class="docutils literal notranslate"><span class="pre">evennia/contribs/</span></code> folder.
-Any contrib-specific tutorials will be found here instead of in <code class="docutils literal notranslate"><span class="pre">Howtos</span></code></p></li>
+This also has non-Evennia-specific help on general development concepts and how to set up a sane development environment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source/Contribs/</span></code> holds documentation specifically for packages in the <code class="docutils literal notranslate"><span class="pre">evennia/contribs/</span></code> folder. Any contrib-specific tutorials will be found here instead of in <code class="docutils literal notranslate"><span class="pre">Howtos</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">source/Howtos/</span></code> holds docs that describe how to achieve a specific goal, effect or
 result in Evennia. This is often on a tutorial or FAQ form and will refer to the rest of the
 documentation for further reading.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Howtos/Starting/</span></code> holds all documents part of the initial tutorial sequence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source/Howtos/Beginner-Tutorial/</span></code> holds all documents part of the initial tutorial sequence.</p></li>
 </ul>
 </li>
 </ul>
 <p>Other files and folders:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">source/api/</span></code> contains the auto-generated API documentation as <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files. Don’t edit these
-files manually, your changes will be lost. To refer to these files, use <code class="docutils literal notranslate"><span class="pre">api:</span></code> followed by
-the Python path, for example <code class="docutils literal notranslate"><span class="pre">[rpsystem</span> <span class="pre">contrib](evennia.contrib.rpsystem)</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/_templates</span></code> and <code class="docutils literal notranslate"><span class="pre">source/_static</span></code> should not be modified unless adding a new doc-page
-feature or changing the look of the HTML documentation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source/api/</span></code> contains the auto-generated API documentation as <code class="docutils literal notranslate"><span class="pre">.html</span></code> files. Don’t edit these
+files manually, they are auto-generated from sources.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source/_templates</span></code> and <code class="docutils literal notranslate"><span class="pre">source/_static</span></code> hold files for the doc itself. They should only be modified if wanting to change the look and structure of the documentation generation itself.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">conf.py</span></code> holds the Sphinx configuration. It should usually not be modified except to update
 the Evennia version on a new branch.</p></li>
 </ul>
@@ -216,8 +199,7 @@ supports a few alternative forms for some of these, we try to stick to the below
 </section>
 <section id="headings">
 <h3>Headings<a class="headerlink" href="#headings" title="Permalink to this headline">¶</a></h3>
-<p>We use <code class="docutils literal notranslate"><span class="pre">#</span></code> to indicate sections/headings. The more <code class="docutils literal notranslate"><span class="pre">#</span></code> the more of a sub-heading it is (will get
-smaller and smaller font).</p>
+<p>We use <code class="docutils literal notranslate"><span class="pre">#</span></code> to indicate sections/headings. The more <code class="docutils literal notranslate"><span class="pre">#</span></code> the more of a sub-heading it is (will get smaller and smaller font).</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">Heading</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">SubHeading</span></code></p></li>
@@ -225,9 +207,7 @@ smaller and smaller font).</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">####</span> <span class="pre">SubSubSubHeading</span></code></p></li>
 </ul>
 <blockquote>
-<div><p>Don’t use the same heading/subheading name more than once in one page. While Markdown
-does not prevent it, it will make it impossible to refer to that heading uniquely.
-The Evennia documentation preparser will detect this and give you an error.</p>
+<div><p>Don’t use the same heading/subheading name more than once in one page. While Markdown does not prevent it, it will make it impossible to refer to that heading uniquely. The Evennia documentation preparser will detect this and give an error.</p>
 </div></blockquote>
 </section>
 <section id="lists">
@@ -302,35 +282,36 @@ a single dash <code class="docutils literal notranslate"><span class="pre">-</sp
 </li>
 </ul>
 <blockquote>
-<div><p>It’s fine to not include the <code class="docutils literal notranslate"><span class="pre">.md</span></code> file ending in the reference. The Evennia doc-build process
-will correct for this (and also insert any needed relative paths in the reference).</p>
+<div><p>It’s fine to not include the <code class="docutils literal notranslate"><span class="pre">.md</span></code> file ending in the reference. The Evennia doc preparser will correct for this (and also insert any needed relative paths in the reference).</p>
 </div></blockquote>
 </section>
 <section id="api-links">
 <h4>API links<a class="headerlink" href="#api-links" title="Permalink to this headline">¶</a></h4>
 <p>The documentation contains auto-generated documentation for all of Evennia’s source code. You
 can direct the reader to the sources by just giving the python-path to the location of the
-resource under the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> repository:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  [DefaultObject](evennia.objects.objects.DefaultObject)
+resource by just starting with an <code class="docutils literal notranslate"><span class="pre">evennia.</span></code> prefix:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  [DefaultObject](evennia.objects.objects.DefaultObject) &lt;- like this!
 </pre></div>
 </div>
 <p><a class="reference internal" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><span class="xref myst py py-class">DefaultObject</span></a>  &lt;- like this!</p>
-<p>Note that you can’t refer to files in the <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder this way. The game folder is generated
-dynamically and is not part of the api docs. Refer to the parent classes in <code class="docutils literal notranslate"><span class="pre">evennia</span></code> where possible.</p>
+<blockquote>
+<div><p>Note that you can’t refer to files in the <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder this way. The game folder is generated
+dynamically and is not part of the api docs. The closest is <code class="docutils literal notranslate"><span class="pre">evennia.game_template</span></code>, which is what is copied to create the game dir on <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--init</span></code>.</p>
+</div></blockquote>
 </section>
 <section id="external-links">
 <h4>External links<a class="headerlink" href="#external-links" title="Permalink to this headline">¶</a></h4>
-<p>These are links to resources outside of the documentation. We also provide some convenient shortcuts.</p>
+<p>These are links to resources outside of the documentation. We also provide some convenient shortcuts</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">evennia</span><span class="o">.</span><span class="n">com</span><span class="p">](</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">evennia</span><span class="o">.</span><span class="n">com</span><span class="p">)</span> <span class="o">-</span> <span class="n">link</span> <span class="n">to</span> <span class="n">an</span> <span class="n">external</span> <span class="n">website</span><span class="o">.</span>
+</pre></div>
+</div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">[linkname](https://evennia.com)</span></code> - link to an external website.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">[linkname](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py)</span></code> - this is a shortcut to point to a location in the
-official Evennia repository on Github. Note that you must use <code class="docutils literal notranslate"><span class="pre">/</span></code> and give the full file name. By
-default this is code in the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">[linkname](https://github.com/evennia/evennia/issues/new/choose)</span></code> - this is a shortcut to the Evennia github issue-creation page.</p></li>
+<li><p>By using <code class="docutils literal notranslate"><span class="pre">(github:evennia/objects/objects.py)</span></code> as link target, you can point to a place on the Evennia github page (master branch).</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">(github:develop/evennia/objects/objects.py</span></code> to target <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">(github:issue)</span></code> to point to the github issue-creation page.</p></li>
 </ul>
 <blockquote>
-<div><p>Note that if you want to refer to code, it’s usually better to <a class="reference internal" href="#api-links"><span class="std std-doc">link to the API</span></a> as
-described above.</p>
+<div><p>Note that if you want to refer to code, it’s usually better to <a class="reference internal" href="#api-links"><span class="std std-doc">link to the API</span></a> rather than point to github.</p>
 </div></blockquote>
 </section>
 </section>
@@ -664,47 +645,29 @@ same as Markdown.</p>
 </section>
 </section>
 </section>
-<section id="code-docstrings">
-<h2>Code docstrings<a class="headerlink" href="#code-docstrings" title="Permalink to this headline">¶</a></h2>
-<p>The source code docstrings will be parsed as Markdown. When writing a module docstring, you can use Markdown formatting,
-including header levels down to 4th level (<code class="docutils literal notranslate"><span class="pre">####</span> <span class="pre">SubSubSubHeader</span></code>). After the module documentation it’s
-a good idea to end with four dashes <code class="docutils literal notranslate"><span class="pre">----</span></code>. This will create a visible line between the documentation and the
-class/function docs to follow. See for example <a class="reference internal" href="api/evennia.contrib.rpg.traits.html#evennia-contrib-rpg-traits"><span class="std std-ref">the Traits docs</span></a>.</p>
-<p>All non-private classes, methods and functions must have a Google-style docstring, as per the
-[Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted
-into pretty api docs.</p>
-</section>
-<section id="technical">
-<h2>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h2>
-<p>Evennia leverages <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> with the <a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/syntax/reference.html">MyST</a> extension, which allows us
-to write our docs in light-weight Markdown (more specifically <a class="reference external" href="https://spec.commonmark.org/current/">CommonMark</a>, like on github)
-rather than Sphinx’ normal ReST syntax. The <code class="docutils literal notranslate"><span class="pre">MyST</span></code> parser allows for some extra syntax to
-make us able to express more complex displays than plain Markdown can.</p>
-<p>For <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc">autodoc-generation</a> generation, we use the sphinx-<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">napoleon</a>
-extension to understand our friendly Google-style docstrings used in classes and functions etc.</p>
+<section id="writing-code-docstrings-for-autodocs">
+<h2>Writing Code docstrings for autodocs<a class="headerlink" href="#writing-code-docstrings-for-autodocs" title="Permalink to this headline">¶</a></h2>
+<p>The source code docstrings will be parsed as Markdown. When writing a module docstring, you can use Markdown formatting, including header levels down to 4th level (<code class="docutils literal notranslate"><span class="pre">####</span> <span class="pre">SubSubSubHeader</span></code>).</p>
+<p>After the module documentation it’s a good idea to end with four dashes <code class="docutils literal notranslate"><span class="pre">----</span></code>. This will create a visible line between the documentation and the class/function docs to follow. See for example <a class="reference internal" href="api/evennia.contrib.rpg.traits.html#evennia-contrib-rpg-traits"><span class="std std-ref">the Traits docs</span></a>.</p>
+<p>All non-private classes, methods and functions must have a Google-style docstring, as per the [Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted into pretty api docs.</p>
 </section>
 <section id="building-the-docs-locally">
 <h2>Building the docs locally<a class="headerlink" href="#building-the-docs-locally" title="Permalink to this headline">¶</a></h2>
-<p>The sources in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code> are built into a documentation using the
-<a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> static generator system. To do this locally you need to use a
-system with <code class="docutils literal notranslate"><span class="pre">make</span></code> (Linux/Unix/Mac or <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows-WSL</a>). Lacking
-that, you could in principle also run the sphinx build-commands manually - read
-the <code class="docutils literal notranslate"><span class="pre">evennia/docs/Makefile</span></code> to see which commands are run by the <code class="docutils literal notranslate"><span class="pre">make</span></code>-commands
-referred to in this document.</p>
-<p>You don’t necessarily <em>have</em> to build the docs locally to contribute. Markdown is
-not hard and is very readable on its raw text-form.</p>
-<p>You can furthermore get a good feel for how things will look using a
-Markdown-viewer like <a class="reference external" href="https://github.com/joeyespo/grip">Grip</a>. Editors like <a class="reference external" href="https://github.com/retext-project/retext">ReText</a> or IDE’s like
-<a class="reference external" href="https://www.jetbrains.com/pycharm/">PyCharm</a> also have native Markdown previews. Building the docs locally is
-however the only way to make sure the outcome is exactly as you expect. The process
-will also find any mistakes you made, like making a typo in a link.</p>
+<p>Evennia leverages <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> with the <a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/syntax/reference.html">MyST</a> extension, which allows us to write our docs in light-weight Markdown (more specifically <a class="reference external" href="https://spec.commonmark.org/current/">CommonMark</a>, like on github) rather than Sphinx’ normal ReST syntax. The <code class="docutils literal notranslate"><span class="pre">MyST</span></code> parser allows for some extra syntax to make us able to express more complex displays than plain Markdown can.</p>
+<p>For <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc">autodoc-generation</a> generation, we use the sphinx-<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">napoleon</a> extension to understand our friendly Google-style docstrings used in classes and functions etc.</p>
+<p>The sources in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code> are built into a documentation using the Sphinx static generator system together with Evennia-custom <em>pre-parsers</em> (also included in the repo).</p>
+<p>To do this locally you need to use a system with <code class="docutils literal notranslate"><span class="pre">make</span></code> (Linux/Unix/Mac or <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows-WSL</a>). Lacking that, you could in principle also run the sphinx build-commands manually - read the <code class="docutils literal notranslate"><span class="pre">evennia/docs/Makefile</span></code> to see which commands are run by the <code class="docutils literal notranslate"><span class="pre">make</span></code>-commands referred to in this document.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>As mentioned at the top, you don’t <em>have</em> to build the docs locally to contribute. Markdown is not hard and can be written decently without seeing it processed. We can polish it before merging.</p>
+<p>You can furthermore get a good feel for how things will look using a Markdown-viewer like <a class="reference external" href="https://github.com/joeyespo/grip">Grip</a>. Editors like <a class="reference external" href="https://github.com/retext-project/retext">ReText</a> or IDE’s like <a class="reference external" href="https://www.jetbrains.com/pycharm/">PyCharm</a> also have native Markdown previews.</p>
+<p>That said, building the docs locally is the only way to make sure the outcome is exactly as you expect. The processor will also find any mistakes you made, like making a typo in a link.</p>
+</div>
 <section id="building-only-the-main-documentation">
 <h3>Building only the main documentation<a class="headerlink" href="#building-only-the-main-documentation" title="Permalink to this headline">¶</a></h3>
-<p>This is the fastest way to compile and view your changes. It will only build
-the main documentation pages and not the API auto-docs or versions.  All is
-done in your terminal/console.</p>
+<p>This is the fastest way to compile and view your changes. It will only build the main documentation pages and not the API auto-docs or versions.  All is done in your terminal/console.</p>
 <ul>
-<li><p>(Optional, but recommended): Activate a virtualenv with Python 3.7.</p></li>
+<li><p>(Optional, but recommended): Activate a virtualenv with Python 3.11.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to into the <code class="docutils literal notranslate"><span class="pre">evennia/docs</span></code> folder.</p></li>
 <li><p>Install the documentation-build requirements:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">install</span>
@@ -719,36 +682,26 @@ done in your terminal/console.</p>
 </div>
 </li>
 <li><p>Note any errors from files you have edited.</p></li>
-<li><p>The html-based documentation will appear in the new
-folder <code class="docutils literal notranslate"><span class="pre">evennia/docs/build/html/</span></code>.</p></li>
-<li><p>Use a web browser to open <code class="docutils literal notranslate"><span class="pre">file://&lt;path-to-folder&gt;/evennia/docs/build/html/index.html</span></code> and view
-the docs. Note that you will get errors if clicking a link to the auto-docs, because you didn’t
-build them!</p></li>
+<li><p>The html-based documentation will appear in the new folder <code class="docutils literal notranslate"><span class="pre">evennia/docs/build/html/</span></code>.</p></li>
+<li><p>Use a web browser to open <code class="docutils literal notranslate"><span class="pre">file://&lt;path-to-folder&gt;/evennia/docs/build/html/index.html</span></code> and view the docs. Note that you will get errors if clicking a link to the auto-docs, because you didn’t build them!</p></li>
 </ul>
 </section>
 <section id="building-the-main-documentation-and-api-docs">
 <h3>Building the main documentation and API docs<a class="headerlink" href="#building-the-main-documentation-and-api-docs" title="Permalink to this headline">¶</a></h3>
-<p>The full documentation includes both the doc pages and the API documentation
-generated from the Evennia source. For this you must install Evennia and
-initialize a new game with a default database (you don’t need to have any server
-running)</p>
+<p>The full documentation includes both the doc pages and the API documentation generated from the Evennia source. For this you must install Evennia and initialize a new game with a default database (you don’t need to have any server running)</p>
 <ul>
-<li><p>It’s recommended that you use a virtualenv. Install your cloned version of Evennia into
-by pointing to the repo folder (the one containing <code class="docutils literal notranslate"><span class="pre">/docs</span></code>):</p>
+<li><p>It’s recommended that you use a virtualenv. Install your cloned version of Evennia into by pointing to the repo folder (the one containing <code class="docutils literal notranslate"><span class="pre">/docs</span></code>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
 </li>
-<li><p>Make sure you are in the parent folder <em>containing</em> your <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> repo (so <em>two</em> levels
-up from <code class="docutils literal notranslate"><span class="pre">evennia/docs/</span></code>).</p></li>
-<li><p>Create a new game folder called exactly <code class="docutils literal notranslate"><span class="pre">gamedir</span></code> at the same level as your <code class="docutils literal notranslate"><span class="pre">evennia</span></code>
-repo with</p>
+<li><p>Make sure you are in the parent folder <em>containing</em> your <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> repo (so <em>two</em> levels up from <code class="docutils literal notranslate"><span class="pre">evennia/docs/</span></code>).</p></li>
+<li><p>Create a new game folder called exactly <code class="docutils literal notranslate"><span class="pre">gamedir</span></code> at the same level as your <code class="docutils literal notranslate"><span class="pre">evennia</span></code> repo with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">init</span> <span class="n">gamedir</span>
 </pre></div>
 </div>
 </li>
-<li><p>Then <code class="docutils literal notranslate"><span class="pre">cd</span></code> into it and create a new, empty database. You don’t need to start the
-game or do any further changes after this.</p>
+<li><p>Then <code class="docutils literal notranslate"><span class="pre">cd</span></code> into it and create a new, empty database. You don’t need to start the game or do any further changes after this.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">migrate</span>
 </pre></div>
 </div>
@@ -763,8 +716,7 @@ game or do any further changes after this.</p>
 </div>
 </li>
 </ul>
-<p>(If you are already working on a game, you may of course have your ‘real’ game folder there as
-well. We won’t touch that.)</p>
+<p>(If you are already working on a game, you may of course have your ‘real’ game folder there as well. We won’t touch that.)</p>
 <ul>
 <li><p>Go to <code class="docutils literal notranslate"><span class="pre">evennia/docs/</span></code> and install the doc-building requirements (you only need to do this once):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">install</span>
@@ -778,61 +730,29 @@ well. We won’t touch that.)</p>
 </pre></div>
 </div>
 </li>
-<li><p>The rendered files will appear in a new folder <code class="docutils literal notranslate"><span class="pre">evennia/docs/build/html/</span></code>.
-Note any errors from files you have edited.</p></li>
-<li><p>Point your web browser to <code class="docutils literal notranslate"><span class="pre">file://&lt;path-to-folder&gt;/evennia/docs/build/html/index.html</span></code> to
-view the full docs.</p></li>
+<li><p>The rendered files will appear in a new folder <code class="docutils literal notranslate"><span class="pre">evennia/docs/build/html/</span></code>. Note any errors from files you have edited.</p></li>
+<li><p>Point your web browser to <code class="docutils literal notranslate"><span class="pre">file://&lt;path-to-folder&gt;/evennia/docs/build/html/index.html</span></code> to view the full docs.</p></li>
 </ul>
 <section id="building-with-another-gamedir">
 <h4>Building with another gamedir<a class="headerlink" href="#building-with-another-gamedir" title="Permalink to this headline">¶</a></h4>
-<p>If you for some reason want to use another location of your <code class="docutils literal notranslate"><span class="pre">gamedir/</span></code>, or want it
-named something else (maybe you already use the name ‘gamedir’ for your development …),
-you can do so by setting the <code class="docutils literal notranslate"><span class="pre">EVGAMEDIR</span></code> environment variable to the absolute path
-of your alternative game dir. For example:</p>
+<p>If you for some reason want to use another location of your <code class="docutils literal notranslate"><span class="pre">gamedir/</span></code>, or want it named something else (maybe you already use the name ‘gamedir’ for your development …), you can do so by setting the <code class="docutils literal notranslate"><span class="pre">EVGAMEDIR</span></code> environment variable to the absolute path of your alternative game dir. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EVGAMEDIR</span><span class="o">=/</span><span class="n">my</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">mygamedir</span> <span class="n">make</span> <span class="n">local</span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="building-for-release">
-<h3>Building for release<a class="headerlink" href="#building-for-release" title="Permalink to this headline">¶</a></h3>
-<p>The full Evennia documentation contains docs from many Evennia
-versions, old and new. This is done by pulling documentation from Evennia’s old release
-branches and building them all so readers can choose which one to view. Only
-specific official Evennia branches will be built, so you can’t use this to
-build your own testing branch.</p>
+<section id="building-multiversion-docs">
+<h3>Building multiversion docs<a class="headerlink" href="#building-multiversion-docs" title="Permalink to this headline">¶</a></h3>
+<p>The full Evennia documentation contains docs from many Evennia versions, old and new. This is done by pulling documentation from Evennia’s old release branches and building them all so readers can choose which one to view. Only specific official Evennia branches will be built, so you can’t use this to build your own testing branch.</p>
 <ul>
-<li><p>All local changes must have been committed to git first, since the versioned
-docs are built by looking at the git tree.</p></li>
+<li><p>All local changes must have been committed to git first, since the versioned docs are built by looking at the git tree.</p></li>
 <li><p>To build for local checking, run (<code class="docutils literal notranslate"><span class="pre">mv</span></code> stands for “multi-version”):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">mv</span><span class="o">-</span><span class="n">local</span>
 </pre></div>
 </div>
 </li>
 </ul>
-<p>This is as close to the ‘real’ version of the docs as you can get locally. The different versions
-will be found under <code class="docutils literal notranslate"><span class="pre">evennia/docs/build/versions/</span></code>. During deploy a symlink <code class="docutils literal notranslate"><span class="pre">latest</span></code> will point
-to the latest version of the docs.</p>
-<section id="release">
-<h4>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h4>
-<p>Releasing the official docs requires git-push access the the Evennia <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch
-on <code class="docutils literal notranslate"><span class="pre">github</span></code>. So there is no risk of you releasing your local changes accidentally.</p>
-<ul>
-<li><p>To deploy docs in two steps</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">mv</span><span class="o">-</span><span class="n">local</span>
-<span class="n">make</span> <span class="n">deploy</span>
-</pre></div>
-</div>
-</li>
-<li><p>If you know what you are doing you can also do build + deploy in one step:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">release</span>
-</pre></div>
-</div>
-</li>
-</ul>
-<p>After deployment finishes, the updated live documentation will be
-available at <a class="reference external" href="https://evennia.github.io/evennia/latest/">https://evennia.github.io/evennia/latest/</a>.</p>
-</section>
+<p>This is as close to the ‘real’ version of the docs as you can get locally. The different versions will be found under <code class="docutils literal notranslate"><span class="pre">evennia/docs/build/versions/</span></code>. During deploy a symlink <code class="docutils literal notranslate"><span class="pre">latest</span></code> will point to the latest version of the docs.</p>
 </section>
 </section>
 </section>
