@@ -113,13 +113,13 @@ or the original github wiki. You have been warned.</p>
 <h1>Evennia Documentation<a class="headerlink" href="#evennia-documentation" title="Permalink to this headline">¶</a></h1>
 <p>This is the manual of <a class="reference external" href="https://www.evennia.com">Evennia</a>, the open source Python <code class="docutils literal notranslate"><span class="pre">MU*</span></code> creation system. Use the Search bar on the left to find or discover interesting articles.</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="Evennia-Introduction.html"><span class="doc std std-doc">Evennia Introduction</span></a> - what is this?</p></li>
+<li><p><a class="reference internal" href="Evennia-Introduction.html"><span class="doc std std-doc">Introduction</span></a> - what is this Evennia thing?</p></li>
 <li><p><a class="reference internal" href="Contributing.html"><span class="doc std std-doc">Getting help and Contribute</span></a> - when you get stuck or want to chip in</p></li>
 </ul>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="Setup/Setup-Overview.html#installation-and-running"><span class="std std-doc">Installation and running</span></a> - getting started!</p></li>
+<li><p><a class="reference internal" href="Setup/Setup-Overview.html#installation-and-running"><span class="std std-doc">Setup Quickstart</span></a> - installing Evennia and get going</p></li>
 <li><p><a class="reference internal" href="Setup/Start-Stop-Reload.html"><span class="doc std std-doc">Starting, Stopping and Reloading</span></a>  - how to manage the Evennia server</p></li>
 <li><p><a class="reference internal" href="Setup/Setup-Overview.html#configuration"><span class="std std-doc">Configuration</span></a> - how to set up your server the way you like it</p></li>
 <li><p><a class="reference internal" href="Setup/Setup-Overview.html#going-public"><span class="std std-doc">Going public</span></a> - taking your game online</p></li>
@@ -137,18 +137,18 @@ or the original github wiki. You have been warned.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="Components/Components-Overview.html"><span class="doc std std-doc">Core components</span></a> - the core building blocks of Evennia</p></li>
 <li><p><a class="reference internal" href="Concepts/Concepts-Overview.html"><span class="doc std std-doc">Concepts</span></a> - larger-scale concepts and features</p></li>
+<li><p><a class="reference internal" href="Coding/Coding-Overview.html"><span class="doc std std-doc">Coding</span></a> - coding and development hints and resources</p></li>
 <li><p><a class="reference internal" href="Evennia-API.html"><span class="doc std std-doc">API</span></a> - the full API-reference, generated from source</p></li>
 <li><p><a class="reference internal" href="Components/Default-Commands.html"><span class="doc std std-doc">Default Commands</span></a> - list of game commands included out of the box</p></li>
-<li><p><a class="reference internal" href="Coding/Coding-Overview.html"><span class="doc std std-doc">Coding</span></a> - coding and development hints and resources</p></li>
 </ul>
 </section>
 <section id="contributions-and-info">
 <h2>Contributions and Info<a class="headerlink" href="#contributions-and-info" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="Contribs/Contribs-Overview.html"><span class="doc std std-doc">Contribs</span></a> - game-specific code and snippets to use for your game</p></li>
-<li><p><a class="reference internal" href="Contributing-Docs.html"><span class="doc std std-doc">How to contribute to these docs</span></a> - if you want to help out</p></li>
-<li><p><a class="reference internal" href="Links.html"><span class="doc std std-doc">MU- and Evennia Links</span></a> - useful external links for extra reading</p></li>
-<li><p><a class="reference internal" href="Licensing.html"><span class="doc std std-doc">BSD License</span></a> - Evennia licensing FAQ</p></li>
+<li><p><a class="reference internal" href="Contributing-Docs.html"><span class="doc std std-doc">Documentation - how to contribute</span></a> - if you want to help out</p></li>
+<li><p><a class="reference internal" href="Links.html"><span class="doc std std-doc">Links</span></a> - useful external links for extra reading</p></li>
+<li><p><a class="reference internal" href="Licensing.html"><span class="doc std std-doc">License</span></a> - Evennia licensing FAQ</p></li>
 </ul>
 </section>
 <hr class="docutils" />
@@ -374,7 +374,12 @@ or the original github wiki. You have been warned.</p>
 <li class="toctree-l3"><a class="reference internal" href="Coding/Quirks.html">Quirks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Coding/Coding-Overview.html#evennia-changelog">Evennia Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding/Coding-Overview.html#evennia-changelog">Evennia Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Coding/Changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Coding/Changelog.html#overview-changelogs">Overview-Changelogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Coding/Changelog.html#older">Older</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Coding/Coding-Overview.html#third-party-integrations">Third-party integrations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Coding/Continuous-Integration.html">Continuous Integration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Coding/Setting-up-PyCharm.html">Setting up PyCharm with Evennia</a></li>
@@ -547,23 +552,21 @@ or the original github wiki. You have been warned.</p>
 <li class="toctree-l1"><a class="reference internal" href="Links.html">Links</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Links.html#official-evennia-resources">Official Evennia resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Links.html#evennia-community">Evennia Community</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Links.html#third-party-evennia-tools">Third-party Evennia tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Links.html#evennia-based-projects">Evennia-Based Projects</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Links.html#code-bases">Code bases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Links.html#third-party">Third-party</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Links.html#other">Other</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Links.html#general-mu-resources">General MU* resources</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Links.html#tools">Tools</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Links.html#informational">Informational</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Links.html#community">Community</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Links.html#interesting-communities">Interesting Communities</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Links.html#general-game-dev-resources">General Game-Dev Resources</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Links.html#id1">Tools</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Links.html#frameworks">Frameworks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Links.html#learning-python">Learning Python</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Links.html#blogs">Blogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Links.html#general-rpg">General RPG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Links.html#literature">Literature</a></li>
 </ul>
 </li>
