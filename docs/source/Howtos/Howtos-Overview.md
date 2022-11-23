@@ -1,11 +1,10 @@
 # Tutorials and Howto's
 
+## Beginner Tutorial
+
 ```{sidebar} Want more details about something?
 See the documentation about the Evennia core [Components](../Components/Components-Overview.md) and important [Concepts](../Concepts/Concepts-Overview.md).
 ```
-
-## Beginner Tutorial
-
 Recommended starting point! This will take you from absolute beginner to making
 a small but full game with Evennia. Other tutorials and howto's tend to assume you are already familiar with the concepts explained in the Beginning tutorial.
 

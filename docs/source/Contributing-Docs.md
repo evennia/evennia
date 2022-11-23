@@ -1,30 +1,17 @@
 # Contributing to Evennia Docs
 
-
-```{warning}
-This system is still WIP and many things are bound to change!
+```{sidebar} Building the docs locally?
+You do _not_ need to be able to test/build the docs locally to contribute a documentation PR. We'll resolve any issues when we merge and build documentation. If you really want to build the docs for yourself, instructions are [at the end of this document](#building-the-docs-locally).
 ```
+- You can contribute to docs by creating a [Documentation issue](github:issue).
+- You can contribute to docs by making a [PR](./Contributing.md) like for any other code. The sources are found in `evennia/docs/source/`.
 
-Contributing to the docs is is like [contributing to the rest of Evennia][contributing]: Check out the branch of Evennia
-you want to edit the documentation for. Create your own work-branch, make your changes to files
-in `evennia/docs/source/` and make a PR for it!
-
-The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
-Markdown files are simple text files that can be edited with a normal text editor. They can also
-contain raw HTML directives (but that is very rarely needed). They use
-the [Markdown][commonmark] syntax with [MyST extensions][MyST].
-
-```{important}
-You do _not_ need to be able to test/build the docs locally to contribute a documentation PR.
-We'll resolve any issues when we merge and build documentation. If you still want to build
-the docs for yourself, instructions are [at the end of this document](#building-the-docs-locally).
-```
+The documentation source files are `*.md` (Markdown) files. Markdown files are simple text files that can be edited with a normal text editor. They can also contain raw HTML directives (but that is very rarely needed). They use the [Markdown][commonmark] syntax with [MyST extensions][MyST].
 
 ## Source file structure
 
 The sources are organized into several rough categories, with only a few administrative documents
-at the root of `evennia/docs/source/`. The folders are named in singular form since they will
-primarily be accessed as link refs (e.g. `Component/Accounts`)
+at the root of `evennia/docs/source/`. 
 
 - `source/Components/` are docs describing separate Evennia building blocks, that is, things
   that you can import and use. This extends and elaborates on what can be found out by reading
@@ -36,22 +23,18 @@ primarily be accessed as link refs (e.g. `Component/Accounts`)
 - `source/Setup/` holds detailed docs on installing, running and maintaining the Evennia server and
   the infrastructure around it.
 - `source/Coding/` has help on how to interact with, use and navigate the Evennia codebase itself.
-  This also has non-Evennia-specific help on general development concepts and how to set up a sane
-  development environment.
-- `source/Contribs/` holds documentation specifically for packages in the `evennia/contribs/` folder.
-  Any contrib-specific tutorials will be found here instead of in `Howtos`
+  This also has non-Evennia-specific help on general development concepts and how to set up a sane development environment.
+- `source/Contribs/` holds documentation specifically for packages in the `evennia/contribs/` folder. Any contrib-specific tutorials will be found here instead of in `Howtos`
 - `source/Howtos/` holds docs that describe how to achieve a specific goal, effect or
   result in Evennia. This is often on a tutorial or FAQ form and will refer to the rest of the
   documentation for further reading.
-  - `source/Howtos/Starting/` holds all documents part of the initial tutorial sequence.
+  - `source/Howtos/Beginner-Tutorial/` holds all documents part of the initial tutorial sequence.
 
 
  Other files and folders:
-  - `source/api/` contains the auto-generated API documentation as `.rst` files. Don't edit these
-    files manually, your changes will be lost. To refer to these files, use `api:` followed by
-    the Python path, for example `[rpsystem contrib](evennia.contrib.rpsystem)`.
-  - `source/_templates` and `source/_static` should not be modified unless adding a new doc-page
-    feature or changing the look of the HTML documentation.
+  - `source/api/` contains the auto-generated API documentation as `.html` files. Don't edit these
+    files manually, they are auto-generated from sources.
+  - `source/_templates` and `source/_static` hold files for the doc itself. They should only be modified if wanting to change the look and structure of the documentation generation itself. 
   - `conf.py` holds the Sphinx configuration. It should usually not be modified except to update
     the Evennia version on a new branch.
 
@@ -70,17 +53,14 @@ We generally use underscores for italics and double-asterisks for bold:
 
 ### Headings
 
-We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get
-smaller and smaller font).
+We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get smaller and smaller font).
 
 - `# Heading`
 - `## SubHeading`
 - `### SubSubHeading`
 - `#### SubSubSubHeading`
 
-> Don't use the same heading/subheading name more than once in one page. While Markdown
-does not prevent it, it will make it impossible to refer to that heading uniquely.
-The Evennia documentation preparser will detect this and give you an error.
+> Don't use the same heading/subheading name more than once in one page. While Markdown does not prevent it, it will make it impossible to refer to that heading uniquely. The Evennia documentation preparser will detect this and give an error.
 
 ### Lists
 
@@ -153,35 +133,34 @@ Some more text...
       [menus](Menu-Stuff.md#menu-items)
       [example](Menu-Stuff.md#a-yesno-example)
 
-> It's fine to not include the `.md` file ending in the reference. The Evennia doc-build process
-> will correct for this (and also insert any needed relative paths in the reference).
+> It's fine to not include the `.md` file ending in the reference. The Evennia doc preparser will correct for this (and also insert any needed relative paths in the reference).
 
 #### API links
 
 The documentation contains auto-generated documentation for all of Evennia's source code. You
 can direct the reader to the sources by just giving the python-path to the location of the
-resource under the `evennia/` repository:
+resource by just starting with an `evennia.` prefix:
 
-      [DefaultObject](evennia.objects.objects.DefaultObject)
+      [DefaultObject](evennia.objects.objects.DefaultObject) <- like this!
 
 [DefaultObject](evennia.objects.objects.DefaultObject)  <- like this!
 
-Note that you can't refer to files in the `mygame` folder this way. The game folder is generated
-dynamically and is not part of the api docs. Refer to the parent classes in `evennia` where possible.
+> Note that you can't refer to files in the `mygame` folder this way. The game folder is generated
+dynamically and is not part of the api docs. The closest is `evennia.game_template`, which is what is copied to create the game dir on `evennia --init`. 
 
 #### External links
 
-These are links to resources outside of the documentation. We also provide some convenient shortcuts.
+These are links to resources outside of the documentation. We also provide some convenient shortcuts
 
-- `[linkname](https://evennia.com)` - link to an external website.
-- `[linkname](github:evennia/objects/objects.py)` - this is a shortcut to point to a location in the
-  official Evennia repository on Github. Note that you must use `/` and give the full file name. By
-  default this is code in the `master` branch.
-- `[linkname](github:develop/evennia/objects.objects.py` - this points to code in the `develop` branch.
-- `[make an issue](github:issue)` - this is a shortcut to the Evennia github issue-creation page.
+```
+[evennia.com](https://evennia.com) - link to an external website.
+```
 
-> Note that if you want to refer to code, it's usually better to [link to the API](#api-links) as
-> described above.
+- By using `(github:evennia/objects/objects.py)` as link target, you can point to a place on the Evennia github page (master branch). 
+- Use `(github:develop/evennia/objects/objects.py` to target `develop` branch.
+- Use `(github:issue)` to point to the github issue-creation page.
+
+ > Note that if you want to refer to code, it's usually better to [link to the API](#api-links) rather than point to github.
 
 ### Urls/References in one place
 
@@ -531,52 +510,37 @@ same as Markdown.
 
 [Here is a ReST formatting cheat sheet](https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html).
 
-## Code docstrings
+## Writing Code docstrings for autodocs
 
-The source code docstrings will be parsed as Markdown. When writing a module docstring, you can use Markdown formatting,
-including header levels down to 4th level (`#### SubSubSubHeader`). After the module documentation it's
-a good idea to end with four dashes `----`. This will create a visible line between the documentation and the
-class/function docs to follow. See for example [the Traits docs](evennia.contrib.rpg.traits).
+The source code docstrings will be parsed as Markdown. When writing a module docstring, you can use Markdown formatting, including header levels down to 4th level (`#### SubSubSubHeader`). 
 
-All non-private classes, methods and functions must have a Google-style docstring, as per the
-[Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted
-into pretty api docs.
+After the module documentation it's a good idea to end with four dashes `----`. This will create a visible line between the documentation and the class/function docs to follow. See for example [the Traits docs](evennia.contrib.rpg.traits).
 
-## Technical
-
-Evennia leverages [Sphinx][sphinx] with the [MyST][MyST] extension, which allows us
-to write our docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github)
-rather than Sphinx' normal ReST syntax. The `MyST` parser allows for some extra syntax to
-make us able to express more complex displays than plain Markdown can.
-
-For [autodoc-generation][sphinx-autodoc] generation, we use the sphinx-[napoleon][sphinx-napoleon]
-extension to understand our friendly Google-style docstrings used in classes and functions etc.
+All non-private classes, methods and functions must have a Google-style docstring, as per the [Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted into pretty api docs. 
 
 ## Building the docs locally
 
-The sources in `evennia/docs/source/` are built into a documentation using the
-[Sphinx][sphinx] static generator system. To do this locally you need to use a
-system with `make` (Linux/Unix/Mac or [Windows-WSL][Windows-WSL]). Lacking
-that, you could in principle also run the sphinx build-commands manually - read
-the `evennia/docs/Makefile` to see which commands are run by the `make`-commands
-referred to in this document.
+Evennia leverages [Sphinx][sphinx] with the [MyST][MyST] extension, which allows us to write our docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github) rather than Sphinx' normal ReST syntax. The `MyST` parser allows for some extra syntax to make us able to express more complex displays than plain Markdown can.
 
-You don't necessarily _have_ to build the docs locally to contribute. Markdown is
-not hard and is very readable on its raw text-form.
+For [autodoc-generation][sphinx-autodoc] generation, we use the sphinx-[napoleon][sphinx-napoleon] extension to understand our friendly Google-style docstrings used in classes and functions etc.
 
-You can furthermore get a good feel for how things will look using a
-Markdown-viewer like [Grip][grip]. Editors like [ReText][retext] or IDE's like
-[PyCharm][pycharm] also have native Markdown previews. Building the docs locally is
-however the only way to make sure the outcome is exactly as you expect. The process
-will also find any mistakes you made, like making a typo in a link.
+The sources in `evennia/docs/source/` are built into a documentation using the Sphinx static generator system together with Evennia-custom _pre-parsers_ (also included in the repo). 
 
+To do this locally you need to use a system with `make` (Linux/Unix/Mac or [Windows-WSL][Windows-WSL]). Lacking that, you could in principle also run the sphinx build-commands manually - read the `evennia/docs/Makefile` to see which commands are run by the `make`-commands referred to in this document.
+
+```{important}
+As mentioned at the top, you don't _have_ to build the docs locally to contribute. Markdown is not hard and can be written decently without seeing it processed. We can polish it before merging.
+
+You can furthermore get a good feel for how things will look using a Markdown-viewer like [Grip][grip]. Editors like [ReText][retext] or IDE's like [PyCharm][pycharm] also have native Markdown previews. 
+
+That said, building the docs locally is the only way to make sure the outcome is exactly as you expect. The processor will also find any mistakes you made, like making a typo in a link.
+
+```
 ### Building only the main documentation
 
-This is the fastest way to compile and view your changes. It will only build
-the main documentation pages and not the API auto-docs or versions.  All is
-done in your terminal/console.
+This is the fastest way to compile and view your changes. It will only build the main documentation pages and not the API auto-docs or versions.  All is done in your terminal/console.
 
-- (Optional, but recommended): Activate a virtualenv with Python 3.7.
+- (Optional, but recommended): Activate a virtualenv with Python 3.11.
 - `cd` to into the `evennia/docs` folder.
 - Install the documentation-build requirements:
 
@@ -591,38 +555,29 @@ done in your terminal/console.
     ```
     make quick
     ```
+    
 - Note any errors from files you have edited.
-- The html-based documentation will appear in the new
-  folder `evennia/docs/build/html/`.
-- Use a web browser to open `file://<path-to-folder>/evennia/docs/build/html/index.html` and view
-  the docs. Note that you will get errors if clicking a link to the auto-docs, because you didn't
-  build them!
+- The html-based documentation will appear in the new folder `evennia/docs/build/html/`.
+- Use a web browser to open `file://<path-to-folder>/evennia/docs/build/html/index.html` and view the docs. Note that you will get errors if clicking a link to the auto-docs, because you didn't build them!
 
 ### Building the main documentation and API docs
 
-The full documentation includes both the doc pages and the API documentation
-generated from the Evennia source. For this you must install Evennia and
-initialize a new game with a default database (you don't need to have any server
-running)
+The full documentation includes both the doc pages and the API documentation generated from the Evennia source. For this you must install Evennia and initialize a new game with a default database (you don't need to have any server running)
 
-- It's recommended that you use a virtualenv. Install your cloned version of Evennia into
-  by pointing to the repo folder (the one containing `/docs`):
+- It's recommended that you use a virtualenv. Install your cloned version of Evennia into by pointing to the repo folder (the one containing `/docs`):
 
     ```
     pip install -e evennia
     ```
 
-- Make sure you are in the parent folder _containing_ your `evennia/` repo (so _two_ levels
-  up from `evennia/docs/`).
-- Create a new game folder called exactly `gamedir` at the same level as your `evennia`
-  repo with
+- Make sure you are in the parent folder _containing_ your `evennia/` repo (so _two_ levels up from `evennia/docs/`).
+- Create a new game folder called exactly `gamedir` at the same level as your `evennia` repo with
 
     ```
     evennia --init gamedir
     ```
 
-- Then `cd` into it and create a new, empty database. You don't need to start the
-  game or do any further changes after this.
+- Then `cd` into it and create a new, empty database. You don't need to start the game or do any further changes after this.
 
     ```
     evennia migrate
@@ -638,8 +593,7 @@ running)
       ----- gamedir/
     ```
 
-(If you are already working on a game, you may of course have your 'real' game folder there as
-well. We won't touch that.)
+(If you are already working on a game, you may of course have your 'real' game folder there as well. We won't touch that.)
 
 - Go to `evennia/docs/` and install the doc-building requirements (you only need to do this once):
 
@@ -655,63 +609,29 @@ well. We won't touch that.)
     make local
     ```
 
-- The rendered files will appear in a new folder `evennia/docs/build/html/`.
-  Note any errors from files you have edited.
-- Point your web browser to `file://<path-to-folder>/evennia/docs/build/html/index.html` to
-  view the full docs.
+- The rendered files will appear in a new folder `evennia/docs/build/html/`. Note any errors from files you have edited.
+- Point your web browser to `file://<path-to-folder>/evennia/docs/build/html/index.html` to view the full docs.
 
 #### Building with another gamedir
 
-If you for some reason want to use another location of your `gamedir/`, or want it
-named something else (maybe you already use the name 'gamedir' for your development ...),
-you can do so by setting the `EVGAMEDIR` environment variable to the absolute path
-of your alternative game dir. For example:
+If you for some reason want to use another location of your `gamedir/`, or want it named something else (maybe you already use the name 'gamedir' for your development ...), you can do so by setting the `EVGAMEDIR` environment variable to the absolute path of your alternative game dir. For example:
 
 ```
 EVGAMEDIR=/my/path/to/mygamedir make local
 ```
 
-### Building for release
+### Building multiversion docs
 
-The full Evennia documentation contains docs from many Evennia
-versions, old and new. This is done by pulling documentation from Evennia's old release
-branches and building them all so readers can choose which one to view. Only
-specific official Evennia branches will be built, so you can't use this to
-build your own testing branch.
+The full Evennia documentation contains docs from many Evennia versions, old and new. This is done by pulling documentation from Evennia's old release branches and building them all so readers can choose which one to view. Only specific official Evennia branches will be built, so you can't use this to build your own testing branch.
 
-- All local changes must have been committed to git first, since the versioned
-  docs are built by looking at the git tree.
+- All local changes must have been committed to git first, since the versioned docs are built by looking at the git tree.
 - To build for local checking, run (`mv` stands for "multi-version"):
 
     ```
     make mv-local
     ```
 
-This is as close to the 'real' version of the docs as you can get locally. The different versions
-will be found under `evennia/docs/build/versions/`. During deploy a symlink `latest` will point
-to the latest version of the docs.
-
-#### Release
-
-Releasing the official docs requires git-push access the the Evennia `gh-pages` branch
-on `github`. So there is no risk of you releasing your local changes accidentally.
-
-- To deploy docs in two steps
-
-    ```
-    make mv-local
-    make deploy
-    ```
-
-- If you know what you are doing you can also do build + deploy in one step:
-
-     ```
-     make release
-     ```
-
-After deployment finishes, the updated live documentation will be
-available at https://evennia.github.io/evennia/latest/.
-
+This is as close to the 'real' version of the docs as you can get locally. The different versions will be found under `evennia/docs/build/versions/`. During deploy a symlink `latest` will point to the latest version of the docs.
 
 [sphinx]: https://www.sphinx-doc.org/en/master/
 [MyST]: https://myst-parser.readthedocs.io/en/latest/syntax/reference.html
