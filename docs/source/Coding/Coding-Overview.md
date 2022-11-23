@@ -31,7 +31,7 @@ Quirks.md
 
 ## Evennia Changelog
 
-```
+```{toctree}
 :maxdepth: 2
 
 Changelog.md

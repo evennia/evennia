@@ -12,12 +12,12 @@
 
 This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles.
 
-- [Evennia Introduction](./Evennia-Introduction.md) - what is this? 
+- [Introduction](./Evennia-Introduction.md) - what is this Evennia thing? 
 - [Getting help and Contribute](./Contributing.md) - when you get stuck or want to chip in
 
 ## Setup
 
-- [Installation and running](Setup/Setup-Overview.md#installation-and-running) - getting started!
+- [Setup Quickstart](Setup/Setup-Overview.md#installation-and-running) - installing Evennia and get going
 - [Starting, Stopping and Reloading](Setup/Start-Stop-Reload.md)  - how to manage the Evennia server
 - [Configuration](Setup/Setup-Overview.md#configuration) - how to set up your server the way you like it
 - [Going public](Setup/Setup-Overview.md#going-public) - taking your game online
@@ -31,16 +31,16 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 - [Core components](Components/Components-Overview.md) - the core building blocks of Evennia
 - [Concepts](Concepts/Concepts-Overview.md) - larger-scale concepts and features
+- [Coding](Coding/Coding-Overview.md) - coding and development hints and resources
 - [API](./Evennia-API.md) - the full API-reference, generated from source
 - [Default Commands](Components/Default-Commands.md) - list of game commands included out of the box
-- [Coding](Coding/Coding-Overview.md) - coding and development hints and resources
 
 ## Contributions and Info
 
 - [Contribs](Contribs/Contribs-Overview.md) - game-specific code and snippets to use for your game
-- [How to contribute to these docs](./Contributing-Docs.md) - if you want to help out
-- [MU- and Evennia Links](./Links.md) - useful external links for extra reading
-- [BSD License](./Licensing.md) - Evennia licensing FAQ
+- [Documentation - how to contribute](./Contributing-Docs.md) - if you want to help out
+- [Links](./Links.md) - useful external links for extra reading
+- [License](./Licensing.md) - Evennia licensing FAQ
 
 ----
 
