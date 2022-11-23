@@ -52,7 +52,7 @@ Evennia comes with a default set of commands for the Python newbies and for thos
 
 ### I know basic Python, or I am willing to learn
 
-Evennia's source code is [extensively documented](https://www.evennia.com/docs/latest). But while Python is considered a very easy programming language to get into, you do have a learning curve to climb if you are new to programming. Evennia's [Starting-tutorial](Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.md) has a [basic introduction to Python](Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Python-basic-introduction.md) but you should probably also sit down  with a full Python beginner's tutorial at some point (there are plenty of them on the web if you look around). See also our [link page](./Links.md) for some reading suggestions.
+Evennia's source code is [extensively documented](https://www.evennia.com/docs/latest). But while Python is considered a very easy programming language to get into, you do have a learning curve to climb if you are new to programming. Evennia's [Starting-tutorial](Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Overview.md) has a [basic introduction to Python](Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Python-basic-introduction.md) but you should probably also sit down  with a full Python beginner's tutorial at some point (there are plenty of them on the web if you look around). See also our [link page](./Links.md) for some reading suggestions.
 
 To code your dream game in Evennia you don't need to be a Python guru, but you do need to be able to read example code containing at least these basic Python features:
 
@@ -78,6 +78,6 @@ presence (a website and a mud web client) to play around with ...
 
 ## Where to from here?
 
-It's recommended you jump into the [Beginner Tutorial](Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.md). You can either follow it or jump around to lessons that seem interesting.  You can also read the lead developer's [dev blog](https://www.evennia.com/devblog/index.html) for many tidbits and snippets about Evennia's development and structure.
+It's recommended you jump into the [Beginner Tutorial](Howtos/Beginner-Tutorial/Beginner-Tutorial-Overview.md). You can either follow it or jump around to lessons that seem interesting.  You can also read the lead developer's [dev blog](https://www.evennia.com/devblog/index.html) for many tidbits and snippets about Evennia's development and structure.
 
 Sometimes it's easier to ask for help. Get engaged in the Evennia community by joining our [Discord](https://discord.gg/AJJpcRUhtF) for direct support. Make an introductory post to our [Discussion forum](https://github.com/evennia/evennia/discussions)  and say hi!.

@@ -6,7 +6,7 @@ make your game, also if you never coded before. If you are an experienced coder,
 
 ## Setting up a workflow
 
-See also the [Beginner Tutorial](../Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.md).
+See also the [Beginner Tutorial](../Howtos/Beginner-Tutorial/Beginner-Tutorial-Overview.md).
 
 ```{toctree}
 :maxdepth: 2

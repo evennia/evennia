@@ -1,53 +1,44 @@
-# Dynamic In Game Map
+# Show a dynamic map of rooms
 
-## Introduction
+```{sidebar}
+See also the [Mapbuilder](../Contribs/Contrib-Mapbuilder.md) and [XYZGrid](../Contribs/Contrib-XYZGrid.md) contribs, which offer alternative ways of both creating and displaying room maps.
+```
+An often desired feature in a MUD is to show an in-game map to help navigation.
 
-An often desired feature in a MUD is to show an in-game map to help navigation. The [Static in-game
-map](../Contribs/Contrib-Mapbuilder.md) tutorial solves this by creating a *static* map, meaning the map is pre-
-drawn once and for all - the rooms are then created to match that map. When walking around, parts of
-the static map is then cut out and displayed next to the room description.
+```
+Forest path
 
-In this tutorial we'll instead do it the other way around; We will dynamically draw the map based on
-the relationships we find between already existing rooms.
+         [.]   [.]
+[.][.][@][.][.][.]
+         [.]   [.][.][.]
+
+The trees are looming over the narrow forest path.
+
+Exits: East, West
+```
 
 ## The Grid of Rooms
 
 There are at least two requirements needed for this tutorial to work.
 
-1. The structure of your mud has to follow a logical layout. Evennia supports the layout of your
-world to be 'logically' impossible with rooms looping to themselves or exits leading to the other
-side of the map. Exits can also be named anything, from "jumping out the window" to "into the fifth
-dimension". This tutorial assumes you can only move in the cardinal directions (N, E, S and W).
-2. Rooms must be connected and linked together for the map to be generated correctly. Vanilla
-Evennia comes with a admin command [tunnel](evennia.commands.default.building.CmdTunnel) that allows a
-user to create rooms in the cardinal directions, but additional work is needed to assure that rooms
-are connected. For example, if you `tunnel east` and then immediately do `tunnel west` you'll find
-that you have created two completely stand-alone rooms. So care is needed if you want to create a
-"logical" layout. In this tutorial we assume you have such a grid of rooms that we can generate the
-map from.
+1. The structure of your mud has to follow a logical layout. Evennia supports the layout of your world to be 'logically' impossible with rooms looping to themselves or exits leading to the other side of the map. Exits can also be named anything, from "jumping out the window" to "into the fifth dimension". This tutorial assumes you can only move in the cardinal directions (N, E, S and W).
+2. Rooms must be connected and linked together for the map to be generated correctly. Vanilla Evennia comes with a admin command [tunnel](evennia.commands.default.building.CmdTunnel) that allows a user to create rooms in the cardinal directions, but additional work is needed to assure that rooms are connected. For example, if you `tunnel east` and then immediately do `tunnel west` you'll find that you have created two completely stand-alone rooms. So care is needed if you want to create a "logical" layout. In this tutorial we assume you have such a grid of rooms that we can generate the map from.
 
 ## Concept
 
-Before getting into the code, it is beneficial to understand and conceptualize how this is going to
-work. The idea is analogous to a worm that starts at your current position. It chooses a direction
-and 'walks' outward from it, mapping its route as it goes. Once it has traveled a pre-set distance
-it stops and starts over in another direction. An important note is that we want a system which is
-easily callable and not too complicated. Therefore we will wrap this entire code into a custom
-Python class (not a typeclass as this doesn't use any core objects from evennia itself).
-
-We are going to create something that displays like this when you type 'look':
+Before getting into the code, it is beneficial to understand and conceptualize how this is going to work. The idea is analogous to a worm that starts at your current position. It chooses a direction and 'walks' outward from it, mapping its route as it goes. Once it has traveled a pre-set distance it stops and starts over in another direction. An important note is that we want a system which is easily callable and not too complicated. Therefore we will wrap this entire code into a custom Python class (not a typeclass as this doesn't use any core objects from evennia itself).  We are going to create something that displays like this when you type 'look':
 
 ```
-    Hallway
+Hallway
 
-          [.]   [.]
-          [@][.][.][.][.]
-          [.]   [.]   [.]
+      [.]   [.]
+      [@][.][.][.][.]
+      [.]   [.]   [.]
 
-    The distant echoes of the forgotten
-    wail throughout the empty halls.
+The distant echoes of the forgotten
+wail throughout the empty halls.
 
-    Exits: North, East, South
+Exits: North, East, South
 ```
 
 Your current location is defined by `[@]` while the `[.]`s are other rooms that the "worm" has seen
@@ -55,12 +46,7 @@ since departing from your location.
 
 ## Setting up the Map Display
 
-First we must define the components for displaying the map. For the "worm" to know what symbol to
-draw on the map we will have it check an Attribute on the room it visits called `sector_type`. For
-this tutorial we understand two symbols - a normal room and the room with us in it. We also define a
-fallback symbol for rooms without said Attribute - that way the map will still work even if we
-didn't prepare the room correctly. Assuming your game folder is named `mygame`, we create this code
-in `mygame/world/map.py.`
+First we must define the components for displaying the map. For the "worm" to know what symbol to draw on the map we will have it check an Attribute on the room it visits called `sector_type`. For this tutorial we understand two symbols - a normal room and the room with us in it. We also define a fallback symbol for rooms without said Attribute - that way the map will still work even if we didn't prepare the room correctly. Assuming your game folder is named `mygame`, we create this code in `mygame/world/map.py.`
 
 ```python
 # in mygame/world/map.py
@@ -91,18 +77,11 @@ class Map(object):
 ```
 
 - `self.caller` is normally your Character object, the one using the map.
-- `self.max_width/length` determine the max width and length of the map that will be generated. Note
-that it's important that these variables are set to *odd* numbers to make sure the display area has
-a center point.
-- ` self.worm_has_mapped` is building off the worm analogy above. This dictionary will store all
-rooms the "worm" has mapped as well as its relative position within the grid. This is the most
-important variable as it acts as a 'checker' and 'address book' that is able to tell us where the
-worm has been and what it has mapped so far.
+- `self.max_width/length` determine the max width and length of the map that will be generated. Note that it's important that these variables are set to *odd* numbers to make sure the display area has a center point.
+- ` self.worm_has_mapped` is building off the worm analogy above. This dictionary will store all rooms the "worm" has mapped as well as its relative position within the grid. This is the most important variable as it acts as a 'checker' and 'address book' that is able to tell us where the worm has been and what it has mapped so far.
 - `self.curX/Y` are coordinates representing the worm's current location on the grid.
 
-
-Before any sort of mapping can actually be done we need to create an empty display area and do some
-sanity checks on it by using the following methods.
+ Before any sort of mapping can actually be done we need to create an empty display area and do some sanity checks on it by using the following methods.
 
 ```python
 # in mygame/world/map.py
@@ -127,8 +106,7 @@ class Map(object):
             else False
 ```
 
-Before we can set our worm on its way, we need to know some of the computer science behind all this
-called 'Graph Traversing'. In Pseudo code what we are trying to accomplish is this:
+Before we can set our worm on its way, we need to know some of the computer science behind all this called 'Graph Traversing'. In Pseudo code what we are trying to accomplish is this:
 
 ```python
 # pseudo code
@@ -151,13 +129,9 @@ def draw_room_on_map(room, max_distance):
 The beauty of Python is that our actual code of doing this doesn't differ much if at all from this
 Pseudo code example.
 
-- `max_distance` is a variable indicating to our Worm how many rooms AWAY from your current location
-will it map. Obviously the larger the number the more time it will take if your current location has
-many many rooms around you.
+- `max_distance` is a variable indicating to our Worm how many rooms AWAY from your current location will it map. Obviously the larger the number the more time it will take if your current location has many many rooms around you.
 
-The first hurdle here is what value to use for 'max_distance'. There is no reason for the worm to
-travel further than what is actually displayed to you. For example, if your current location is
-placed in the center of a display area of size `max_length = max_width = 9`, then the worm need only
+The first hurdle here is what value to use for 'max_distance'. There is no reason for the worm to travel further than what is actually displayed to you. For example, if your current location is placed in the center of a display area of size `max_length = max_width = 9`, then the worm need only
 go `4` spaces in either direction:
 
 ```
@@ -165,31 +139,23 @@ go `4` spaces in either direction:
  4  3  2  1  0  1  2  3  4
 ```
 
-The `max_distance` can be set dynamically based on the size of the display area. As your width/length
-changes it becomes a simple algebraic linear relationship which is simply `max_distance =
-(min(max_width, max_length) -1) / 2`.
+The `max_distance` can be set dynamically based on the size of the display area. As your width/length changes it becomes a simple algebraic linear relationship which is simply `max_distance = (min(max_width, max_length) -1) / 2`.
 
 ## Building the Mapper
 
-Now we can start to fill our Map object with some methods. We are still missing a few methods that
-are very important:
+Now we can start to fill our Map object with some methods. We are still missing a few methods that are very important:
 
 * `self.draw(self, room)` - responsible for actually drawing room to grid.
-* `self.has_drawn(self, room)` - checks to see if the room has been mapped and worm has already been
-here.
-* `self.median(self, number)` - a simple utility method that finds the median (middle point) from 0,
-n
-* `self.update_pos(self, room, exit_name)` - updates the worm's physical position by reassigning
-self.curX/Y. .accordingly
-* `self.start_loc_on_grid(self)` - the very first initial draw on the grid representing your
-location in the middle of the grid
+* `self.has_drawn(self, room)` - checks to see if the room has been mapped and worm has already been here.
+* `self.median(self, number)` - a simple utility method that finds the median (middle point) from `0, n`
+* `self.update_pos(self, room, exit_name)` - updates the worm's physical position by reassigning `self.curX/Y` accordingly.
+* `self.start_loc_on_grid(self)` - the very first initial draw on the grid representing your location in the middle of the grid.
 * `self.show_map` - after everything is done convert the map into a readable string
 * `self.draw_room_on_map(self, room, max_distance)` - the main method that ties it all together.
 
 
 Now that we know which methods we need, let's refine our initial `__init__(self)` to pass some
 conditional statements and set it up to start building the display.
-
 
 ```python
 #mygame/world/map.py
@@ -213,11 +179,9 @@ class Map(object):
 
 ```
 
-Here we check to see if the parameters for the grid are okay, then we create an empty canvas and map
-our initial location as the first room!
+Here we check to see if the parameters for the grid are okay, then we create an empty canvas and map our initial location as the first room!
 
-As mentioned above, the code for the `self.draw_room_on_map()` is not much different than the Pseudo
-code. The method is shown below:
+As mentioned above, the code for the `self.draw_room_on_map()` is not much different than the Pseudo code. The method is shown below:
 
 ```python
 # in mygame/world/map.py, in the Map class
@@ -352,24 +316,11 @@ class Room(DefaultRoom):
         return string
 ```
 
-Obviously this method of generating maps doesn't take into account of any doors or exits that are
-hidden.. etc.. but hopefully it serves as a good base to start with. Like previously mentioned, it
-is very important to have a solid foundation on rooms before implementing this. You can try this on
-vanilla evennia by using @tunnel and essentially you can just create a long straight/edgy non-
-looping rooms that will show on your in-game map.
+Obviously this method of generating maps doesn't take into account of any doors or exits that are hidden.. etc.. but hopefully it serves as a good base to start with. Like previously mentioned, it is very important to have a solid foundation on rooms before implementing this. You can try this on vanilla evennia by using @tunnel and essentially you can just create a long straight/edgy non- looping rooms that will show on your in-game map. 
 
-The above example will display the map above the room description. You could also use an
-[EvTable](github:evennia.utils.evtable) to place description and map next to each other. Some other
-things you can do is to have a [Command](../Components/Commands.md) that displays with a larger radius, maybe with a
-legend and other features.
+The above example will display the map above the room description. You could also use an [EvTable](github:evennia.utils.evtable) to place description and map next to each other. Some other things you can do is to have a [Command](../Components/Commands.md) that displays with a larger radius, maybe with a legend and other features.
 
-Below is the whole `map.py` for your reference. You need to update your `Room` typeclass (see above)
-to actually call it. Remember that to see different symbols for a location you also need to set the
-`sector_type` Attribute on the room to one of the keys in the `SYMBOLS` dictionary. So in this
-example, to make a room be mapped as `[.]` you would set the room's `sector_type` to
-`"SECT_INSIDE"`. Try it out with `@set here/sector_type = "SECT_INSIDE"`. If you wanted all new
-rooms to have a given sector symbol, you could change the default in the `SYMBOLS` dictionary below,
-or you could add the Attribute in the Room's `at_object_creation` method.
+Below is the whole `map.py` for your reference. You need to update your `Room` typeclass (see above) to actually call it. Remember that to see different symbols for a location you also need to set the `sector_type` Attribute on the room to one of the keys in the `SYMBOLS` dictionary. So in this example, to make a room be mapped as `[.]` you would set the room's `sector_type` to `"SECT_INSIDE"`. Try it out with `@set here/sector_type = "SECT_INSIDE"`. If you wanted all new rooms to have a given sector symbol, you could change the default in the `SYMBOLS` dictionary below, or you could add the Attribute in the Room's `at_object_creation` method.
 
 ```python
 # mygame/world/map.py

@@ -1,6 +1,8 @@
 # Tutorials and Howto's
 
-All Evennia tutorials. They will often refer to the [components](../Components/Components-Overview.md) or [concepts](../Concepts/Concepts-Overview.md) if you want to dive deeper. 
+```{sidebar} Want more details about something?
+See the documentation about the Evennia core [Components](../Components/Components-Overview.md) and important [Concepts](../Concepts/Concepts-Overview.md).
+```
 
 ## Beginner Tutorial
 
@@ -13,43 +15,30 @@ Part 3 and onwards are still under development.
 
 ```{toctree}
 :maxdepth: 3
-./Beginner-Tutorial/Beginner-Tutorial-Intro
-./Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro
-./Beginner-Tutorial/Part2/Beginner-Tutorial-Part2-Intro
-./Beginner-Tutorial/Part3/Beginner-Tutorial-Part3-Intro
-./Beginner-Tutorial/Part4/Beginner-Tutorial-Part4-Intro
-./Beginner-Tutorial/Part5/Beginner-Tutorial-Part5-Intro
+./Beginner-Tutorial/Beginner-Tutorial-Overview
+./Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Overview
+./Beginner-Tutorial/Part2/Beginner-Tutorial-Part2-Overview
+./Beginner-Tutorial/Part3/Beginner-Tutorial-Part3-Overview
+./Beginner-Tutorial/Part4/Beginner-Tutorial-Part4-Overview
+./Beginner-Tutorial/Part5/Beginner-Tutorial-Part5-Overview
 ```
 
 
 ## Howto's
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 Howto-Command-Prompt.md
 Howto-Command-Cooldown.md
 Howto-Command-Duration.md
 Howto-Default-Exit-Errors.md
 Howto-Add-Object-Weight.md
-```
-## Mobs and NPCs
-
-```{toctree}
-:maxdepth: 1
-
 Tutorial-NPC-Listening.md
 Tutorial-NPC-Reacting.md
 Tutorial-NPC-Merchants.md
-```
-
-## Vehicles
-
-```{toctree}
-:maxdepth: 1
-
-Building-a-mech-tutorial.md
-Tutorial-Vehicles.md
+Tutorial-Building-a-Mech.md
+Tutorial-Building-a-Train.md
 ```
 
 ## Systems
@@ -57,37 +46,38 @@ Tutorial-Vehicles.md
 :maxdepth: 1
 
 Tutorial-Persistent-Handler.md
-Gametime-Tutorial.md
-Weather-Tutorial.md
+Howto-Game-Time.md
+Tutorial-Weather-Effects.md
 Tutorial-Coordinates.md
-Dynamic-In-Game-Map.md
-Static-In-Game-Map.md
-Tutorial-Tweeting-Game-Stats.md
+Tutorial-Displaying-Room-Map.md
 ```
 
 ## Web-related tutorials
 
+_Some of these will likely move into the Beginner tutorial later_.
+
 ```{toctree}
 :maxdepth: 1
 
+Web-Changing-Webpage.md
 Web-Add-a-wiki.md
 Web-Character-Generation.md
 Web-Character-View-Tutorial.md
 Web-Help-System-Tutorial.md
 Web-Extending-the-REST-API
-
+Web-Tweeting-Game-Stats.md
 ```
 ## Deep-dives
 
 ```{toctree}
 :maxdepth: 1
 
-Parsing-commands-tutorial.md
+Tutorial-Parsing-Commands.md
 Tutorial-Understanding-Color-Tags.md
 Evennia-for-roleplaying-sessions.md
 Evennia-for-Diku-Users.md
 Evennia-for-MUSH-Users.md
-Arxcode-Installation.md
+Tutorial-Using-Arxcode.md
 ```
 
 ## Old tutorials

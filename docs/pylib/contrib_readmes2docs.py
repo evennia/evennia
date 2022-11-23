@@ -16,54 +16,61 @@ _SOURCE_DIR = pathjoin(_EVENNIA_PATH, "evennia", "contrib")
 _OUT_DIR = pathjoin(_DOCS_PATH, "source", "Contribs")
 _OUT_INDEX_FILE = pathjoin(_OUT_DIR, "Contribs-Overview.md")
 
+_FILENAME_MAP = {"rpsystem": "RPSystem", "xyzgrid": "XYZGrid", "awsstorage": "AWSStorage"}
+
+# ---------------------------------------------------------------------------------------------
+
 _FILE_STRUCTURE = """{header}
 {categories}
 {footer}"""
 
 _CATEGORY_DESCS = {
     "base_systems": """
-This category contains systems that are not necessarily tied to a specific
-in-game mechanic but is useful for the game as a whole. Examples include
+Systems that are not necessarily tied to a specific
+in-game mechanic but which are useful for the game as a whole. Examples include
 login systems, new command syntaxes, and build helpers.
     """,
     "full_systems": """
-This category contains 'complete' game engines that can be used directly
-to start creating content without no further additions (unless you want to).
+'Complete' game engines that can be used directly to start creating content
+without no further additions (unless you want to).
 """,
     "game_systems": """
-This category holds code implementing in-game gameplay systems like
-crafting, mail, combat and more. Each system is meant to be adopted
-piecemeal and adopted for your game. This does not include
-roleplaying-specific systems, those are found in the `rpg` folder.
+In-game gameplay systems like crafting, mail, combat and more.
+Each system is meant to be adopted piecemeal and adopted for your game.
+This does not include roleplaying-specific systems, those are found in
+the `rpg` category.
 """,
     "grid": """
-Systems related to the game world's topology and structure. This has
-contribs related to rooms, exits and map building.
+Systems related to the game world's topology and structure. Contribs related
+to rooms, exits and map building.
 """,
     "rpg": """
-These are systems specifically related to roleplaying
+Systems specifically related to roleplaying
 and rule implementation like character traits, dice rolling and emoting.
 """,
     "tutorials": """
 Helper resources specifically meant to teach a development concept or
 to exemplify an Evennia system. Any extra resources tied to documentation
-tutorials are found here. Also the home of the Tutorial World demo adventure.
+tutorials are found here. Also the home of the Tutorial-World and Evadventure
+demo codes.
 """,
     "utils": """
-Miscellaneous, optional tools for manipulating text, auditing connections
-and more.
+Miscellaneous, tools for manipulating text, security auditing, and more.
 """,
 }
 
 
-_FILENAME_MAP = {"rpsystem": "RPSystem", "xyzgrid": "XYZGrid", "awsstorage": "AWSStorage"}
-
 HEADER = """# Contribs
 
+```{{sidebar}} More contributions
+Additional Evennia code snippets and contributions can be found
+in the [Community Contribs & Snippets][forum] forum.
+```
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all contribs currently included.
+This page is auto-generated and summarizes all **{ncontribs}** contribs currently included
+with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
 
@@ -73,10 +80,13 @@ Each contrib contains installation instructions for how to integrate it
 with your other code. If you want to tweak the code of a contrib, just
 copy its entire folder to your game directory and modify/use it from there.
 
-> Hint: Additional (potentially un-maintained) code snippets from the community can be found
-in our discussion forum's [Community Contribs & Snippets](https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets) category.
-
 If you want to contribute yourself, see [here](Contributing)!
+
+[forum]: https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets
+
+## Index
+{category_index}
+{index}
 """
 
 
@@ -99,7 +109,7 @@ _{category_desc}_
 """
 
 BLURB = """
-### Contrib: `{name}`
+### `{name}`
 
 _{credits}_
 
@@ -126,6 +136,18 @@ will be overwritten.</small>
 """
 
 
+def build_table(datalist, ncols):
+    """Build a Markdown table-grid for compact display"""
+
+    nlen = len(datalist)
+    table_heading = "| " * (ncols) + "|"
+    table_sep = "|---" * (ncols) + "|"
+    table = ""
+    for ir in range(0, nlen, ncols):
+        table += "| " + " | ".join(datalist[ir : ir + ncols]) + " |\n"
+    return f"{table_heading}\n{table_sep}\n{table}"
+
+
 def readmes2docs(directory=_SOURCE_DIR):
     """
     Parse directory for README files and convert them to doc pages.
@@ -133,6 +155,8 @@ def readmes2docs(directory=_SOURCE_DIR):
     """
 
     ncount = 0
+    index = []
+    category_index = []
     categories = defaultdict(list)
 
     glob_path = f"{directory}{sep}*{sep}*{sep}README.md"
@@ -140,6 +164,9 @@ def readmes2docs(directory=_SOURCE_DIR):
     for file_path in glob(glob_path):
         # paths are e.g. evennia/contrib/utils/auditing/README.md
         _, category, name, _ = file_path.rsplit(sep, 3)
+
+        index.append(f"[{name}](#{name.lower()})")
+        category_index.append(f"[{category}](#{category.lower()})")
 
         pypath = f"evennia.contrib.{category}.{name}"
 
@@ -171,7 +198,7 @@ def readmes2docs(directory=_SOURCE_DIR):
         categories[category].append((name, credits, blurb, filename, pypath))
         ncount += 1
 
-    # build the index with blurbs
+    # build the list of categories with blurbs
 
     category_sections = []
     for category in sorted(categories):
@@ -195,8 +222,17 @@ def readmes2docs(directory=_SOURCE_DIR):
             )
         )
 
+    # build the header, with two tables and a count
+    header = HEADER.format(
+        ncontribs=len(index),
+        category_index=build_table(sorted(set(category_index)), 7),
+        index=build_table(sorted(index), 5),
+    )
+
+    # build the final file
+
     text = _FILE_STRUCTURE.format(
-        header=HEADER, categories="\n".join(category_sections), footer=INDEX_FOOTER
+        header=header, categories="\n".join(category_sections), footer=INDEX_FOOTER
     )
 
     with open(_OUT_INDEX_FILE, "w") as fil:

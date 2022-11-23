@@ -1,11 +1,8 @@
 # Installing with Docker
 
-Evennia releases [docker images](https://hub.docker.com/r/evennia/evennia/) which makes
-running an Evennia-based game in a Docker container easy. 
+Evennia releases [docker images](https://hub.docker.com/r/evennia/evennia/) as part of regular commits and releases. This makes running an Evennia-based game in a Docker container easy. 
 
-First, install the `docker` program so you can run the Evennia container. You can get it freely from
-[docker.com](https://www.docker.com/). Linux users can likely also get it through their normal
-package manager.
+First, install the `docker` program so you can run the Evennia container. You can get it freely from [docker.com](https://www.docker.com/). Linux users can likely also get it through their normal package manager.
 
 To fetch the latest evennia docker image, run: 
 
@@ -30,11 +27,7 @@ the docker container:
 evennia|docker /usr/src/game $
 ```
 
-This is a normal shell prompt. We are in the `/usr/src/game` location inside the docker container.
-If you had anything in the folder you started from, you should see it here (with `ls`) since we
-mounted the current directory to `usr/src/game` (with `-v` above). You have the `evennia` command
-available and can now proceed to create a new game as per the normal [game setup](./Installation.md)
-instructions (no virtualenv needed).
+This is a normal shell prompt. We are in the `/usr/src/game` location inside the docker container. If you had anything in the folder you started from, you should see it here (with `ls`) since we mounted the current directory to `usr/src/game` (with `-v` above). You have the `evennia` command available and can now proceed to create a new game as per the normal [game setup](./Installation.md) instructions (no virtualenv needed). 
 
 You can run Evennia from inside this container if you want to, it's like you are root in a little
 isolated Linux environment. To exit the container and all processes in there, press `Ctrl-D`. If you
@@ -54,8 +47,7 @@ on your drive.
 
 ## Running your game as a docker image
 
-If you run the  `docker` command given in the previous section from your game dir you can then
-easily start Evennia and have a running server without any further fuss.
+If you run the  `docker` command given in the previous section from your game dir you can then easily start Evennia and have a running server without any further fuss. 
 
 But apart from ease of install, the primary benefit to running an Evennia-based game in a container is  to simplify its deployment into a public production environment. Most cloud-based hosting
 providers these days support the ability to run container-based applications. This makes deploying
@@ -63,7 +55,7 @@ or updating your game as simple as building a new container image locally, pushi
 
 ### Start Evennia and run through docker
 
-For remote or automated deployment you may want to start Evennia immediately as soon as the docker container comes up. If you already have a game folder with a database set up you can also start the docker container and pass commands directly to it. The command you pass will be the main process to run in the container. From your game dir, run for example this command:
+For remote or automated deployment you may want to start Evennia immediately as soon as the docker container comes up. If you already have a game folder with a database set up you can also start the docker container and pass commands directly to it. The command you pass will be the main process to run in the container. From your game dir, run for example this command: 
 
     docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game evennia/evennia evennia start -l
 
@@ -92,16 +84,13 @@ To build the image:
     docker build -t mydhaccount/mygame .
 ```
 
-(don't forget the period at the end, it will use the `Dockerfile` from the current location). Here
-`mydhaccount` is the name of your `dockerhub` account. If you don't have a dockerhub account you can build the image locally only (name the container whatever you like in that case, like just `mygame`).
+(don't forget the period at the end, it will use the `Dockerfile` from the current location). Here `mydhaccount` is the name of your `dockerhub` account. If you don't have a dockerhub account you can build the image locally only (name the container whatever you like in that case, like just `mygame`).
 
-Docker images are stored centrally on your computer. You can see which ones you have available
-locally with `docker images`. Once built, you have a couple of options to run your game.
+Docker images are stored centrally on your computer. You can see which ones you have available locally with `docker images`. Once built, you have a couple of options to run your game.
 
 ### Run container from your game image for development
 
-To run the container based on your game image locally for development, mount the local game
-directory as before:
+To run the container based on your game image locally for development, mount the local game directory as before:
 
 ```
 docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 -v $PWD:/usr/src/game --user $UID:$GID
@@ -160,11 +149,9 @@ container will get a new container id to reference.
 
 ## How it Works
 
-The `evennia/evennia` docker image holds the evennia library and all of its dependencies. It also has an `ONBUILD` directive which is triggered during builds of images derived from it. This
-`ONBUILD` directive handles setting up a volume and copying your game directory code into the proper location within the container.
+The `evennia/evennia` docker image holds the evennia library and all of its dependencies. It also has an `ONBUILD` directive which is triggered during builds of images derived from it. This `ONBUILD` directive handles setting up a volume and copying your game directory code into the proper location within the container.
 
-In most cases, the Dockerfile for an Evennia-based game will only need the `FROM evennia/evennia:latest` directive, and optionally a `MAINTAINER` directive if you plan to publish
-your image on Docker Hub and would like to provide contact info.
+In most cases, the Dockerfile for an Evennia-based game will only need the `FROM evennia/evennia:latest` directive, and optionally a `MAINTAINER` directive if you plan to publish your image on Docker Hub and would like to provide contact info. 
 
 For more information on Dockerfile directives, see the [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/).
 
@@ -222,8 +209,7 @@ services:
     volumes: 
       - .:/usr/src/game
 ```
-With this file in the game directory next to the `Dockerfile`, starting the container is as simple
-as
+With this file in the game directory next to the `Dockerfile`, starting the container is as simple as
 ```
 docker-compose up
 ```

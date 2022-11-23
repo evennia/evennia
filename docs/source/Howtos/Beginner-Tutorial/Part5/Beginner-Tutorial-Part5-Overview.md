@@ -1,4 +1,5 @@
-# Part 4: Using what we created
+# Part 5: Showing the world
+
 
 ```{sidebar} Beginner Tutorial Parts
 - [Introduction](../Beginner-Tutorial-Intro.md)
@@ -9,17 +10,14 @@
 <br>Planning our tutorial game and what to think about when planning your own in the future.
 - Part 3: [How we get there](../Part3/Beginner-Tutorial-Part3-Intro.md)
 <br>Getting down to the meat of extending Evennia to make our game
-- **Part 4: [Using what we created](./Beginner-Tutorial-Part4-Intro.md)**
+- Part 4: [Using what we created](../Part4/Beginner-Tutorial-Part4-Intro.md)
 <br>Building a tech-demo and world content to go with our code
-- Part 5: [Showing the world](../Part5/Beginner-Tutorial-Part5-Intro.md)
+- **Part 5: [Showing the world](./Beginner-Tutorial-Part5-Intro.md)**
 <br>Taking our new game online and let players try it out
 ```
-
-We now have the code underpinnings of everything we need. We have also tested the various components
-and has a simple tech-demo to show it all works together. But there is no real coherence to it at this
-point - we need to actually make a world.
-In part four we will expand our tech demo into a more full-fledged (if small) game by use of batchcommand
-and batchcode processors.
+You have a working game! In part five we will look at the web-components of Evennia and how to modify them
+to fit your game. We will also look at hosting your game and if you feel up to it we'll also go through how
+to bring your game online so you can invite your first players.
 
 ## Lessons
 
@@ -28,7 +26,5 @@ _TODO_
 ```{toctree} 
 :numbered:
 :maxdepth: 2
-../../../Unimplemented.md
+Add-a-simple-new-web-page.md
 ```
-
-

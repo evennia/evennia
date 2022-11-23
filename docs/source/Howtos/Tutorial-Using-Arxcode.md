@@ -1,4 +1,4 @@
-# Arxcode installing help
+# Using the Arxcode game dir
 
 ```{warning} Arxcode is separately maintained.
 

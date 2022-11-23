@@ -1,31 +1,17 @@
-# Web Tutorial
+# Changing the Game Website
 
 
-Evennia uses the [Django](https://www.djangoproject.com/) web framework as the basis of both its
-database configuration and the website it provides. While a full understanding of Django requires
-reading the Django documentation, we have provided this tutorial to get you running with the basics
-and how they pertain to Evennia. This text details getting everything set up. The 
-[Web-based Character view Tutorial](../../Web-Character-View-Tutorial.md) gives a more explicit example of making a
-custom web page connected to your game, and you may want to read that after finishing this guide.
+Evennia uses the [Django](https://www.djangoproject.com/) web framework as the basis of both its database configuration and the website it provides. While a full understanding of Django requires reading the Django documentation, we have provided this tutorial to get you running with the basics and how they pertain to Evennia. This text details getting everything set up. The  [Web-based Character view Tutorial](./Web-Character-View-Tutorial.md) gives a more explicit example of making a custom web page connected to your game, and you may want to read that after finishing this guide.
 
 ## A Basic Overview
 
-Django is a web framework. It gives you a set of development tools for building a website quickly
-and easily.
+Django is a web framework. It gives you a set of development tools for building a website quickly and easily.
 
 Django projects are split up into *apps* and these apps all contribute to one project. For instance,
 you might have an app for conducting polls, or an app for showing news posts or, like us, one for
 creating a web client.
 
-Each of these applications has a `urls.py` file, which specifies what
-[URL](https://en.wikipedia.org/wiki/Uniform_resource_locator)s are used by the app, a `views.py` file
-for the code that the URLs activate, a `templates` directory for displaying the results of that code
-in [HTML](https://en.wikipedia.org/wiki/Html) for the user, and a `static` folder that holds assets
-like [CSS](https://en.wikipedia.org/wiki/CSS), [Javascript](https://en.wikipedia.org/wiki/Javascript),
-and Image files (You may note your mygame/web folder does not have a `static` or `template` folder.
-This is intended and explained further below). Django applications may also have a `models.py` file
-for storing information in the database. We will not change any models here, take a look at the 
-[New Models](../../../Concepts/New-Models.md) page (as well as the [Django docs](https://docs.djangoproject.com/en/1.7/topics/db/models/) on models) if you are interested.
+Each of these applications has a `urls.py` file, which specifies what [URL](https://en.wikipedia.org/wiki/Uniform_resource_locator)s are used by the app, a `views.py` file for the code that the URLs activate, a `templates` directory for displaying the results of that code in [HTML](https://en.wikipedia.org/wiki/Html) for the user, and a `static` folder that holds assets like [CSS](https://en.wikipedia.org/wiki/CSS), [Javascript](https://en.wikipedia.org/wiki/Javascript), and Image files (You may note your mygame/web folder does not have a `static` or `template` folder. This is intended and explained further below). Django applications may also have a `models.py` file for storing information in the database. We will not change any models here, take a look at the  [New Models](../Concepts/New-Models.md) page (as well as the [Django docs](https://docs.djangoproject.com/en/1.7/topics/db/models/) on models) if you are interested.
 
 There is also a root `urls.py` that determines the URL structure for the entire project. A starter
 `urls.py` is included in the default game template, and automatically imports all of Evennia's
@@ -80,32 +66,18 @@ evennia collectstatic
 
 to only update the static files without any other changes.
 
-> **Note**: Evennia will collect static files automatically during startup. So if `evennia
-collectstatic` reports finding 0 files to collect, make sure you didn't start the engine at some
-point - if so the collector has already done its work! To make sure, connect to the website and
-check so the logo has actually changed to your own version.
+> Evennia will collect static files automatically during startup. So if `evennia collectstatic` reports finding 0 files to collect, make sure you didn't start the engine at some point - if so the collector has already done its work! To make sure, connect to the website and check so the logo has actually changed to your own version. 
 
-> **Note**: Sometimes the static asset collector can get confused. If no matter what you do, your
-overridden files aren't getting copied over the defaults, try removing the target file (or
-everything) in the `web/static` directory, and re-running `collectstatic` to gather everything from
-scratch.
+> Sometimes the static asset collector can get confused. If no matter what you do, your overridden files aren't getting copied over the defaults, try removing the target file (or everything) in the `web/static` directory, and re-running `collectstatic` to gather everything from scratch.
 
 ## Changing the Front Page's Text
 
-The default front page for Evennia contains information about the Evennia project. You'll probably
-want to replace this information with information about your own project. Changing the page template
-is done in a similar way to changing static resources.
+The default front page for Evennia contains information about the Evennia project. You'll probably want to replace this information with information about your own project. Changing the page template is done in a similar way to changing static resources.
 
-Like static files, Django looks through a series of template folders to find the file it wants. The
-difference is that Django does not copy all of the template files into one place, it just searches
-through the template folders until it finds a template that matches what it's looking for. This
-means that when you edit a template, the changes are instant. You don't have to reload the server or
+Like static files, Django looks through a series of template folders to find the file it wants. The difference is that Django does not copy all of the template files into one place, it just searches through the template folders until it finds a template that matches what it's looking for. This means that when you edit a template, the changes are instant. You don't have to reload the server or
 run any extra commands to see these changes - reloading the web page in your browser is enough.
 
-To replace the index page's text, we'll need to find the template for it. We'll go into more detail
-about how to determine which template is used for rendering a page in the 
-[Web-based Character view Tutorial](../../Web-Character-View-Tutorial.md). For now, you should know that the template we want to change
-is stored in `evennia/web/website/templates/website/index.html`.
+To replace the index page's text, we'll need to find the template for it. We'll go into more detail about how to determine which template is used for rendering a page in the  [Web-based Character view Tutorial](./Web-Character-View-Tutorial.md). For now, you should know that the template we want to change is stored in `evennia/web/website/templates/website/index.html`. 
 
 To replace this template file, you will put your changed template inside the
 `web/template_overrides/website` directory in your game folder. In the same way as with static
@@ -119,8 +91,4 @@ original file already has all the markup and tags, ready for editing.
 
 ## Further reading
 
-For further hints on working with the web presence, you could now continue to the 
-[Web-based Character view Tutorial](../../Web-Character-View-Tutorial.md) where you learn to make a web page that
-displays in-game character stats. You can also look at [Django's own
-tutorial](https://docs.djangoproject.com/en/1.7/intro/tutorial01/) to get more insight in how Django
-works and what possibilities exist.
+For further hints on working with the web presence, you could now continue to the  [Web-based Character view Tutorial](./Web-Character-View-Tutorial.md) where you learn to make a web page that displays in-game character stats. You can also look at [Django's own tutorial](https://docs.djangoproject.com/en/1.7/intro/tutorial01/) to get more insight in how Django works and what possibilities exist.

@@ -1,12 +1,6 @@
-# Static In Game Map
+# Creating rooms from an ascii map
 
-
-## Introduction
-
-This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also
-details how to use the [Batch code processor](../Components/Batch-Code-Processor.md) for advanced building. There is
-also the [Dynamic in-game map tutorial](./Dynamic-In-Game-Map.md) that works in the opposite direction,
-by generating a map from an existing grid of rooms.
+This tutorial describes the creation of an in-game map display based on a pre-drawn map.  It goes with the [Mapbuilder contrib](./Contrib-Mapbuilder.md).   It also details how to use the [Batch code processor](../Components/Batch-Code-Processor.md) for advanced building. 
 
 Evennia does not require its rooms to be positioned in a "logical" way. Your exits could be named
 anything. You could make an exit "west" that leads to a room described to be in the far north. You
@@ -41,7 +35,7 @@ map we designed before.
     ```
 
 We will henceforth assume your game folder is name named `mygame` and that you haven't modified the
-default commands. We will also not be using [Colors](../Concepts/Colors.md) for our map since they
+dkefault commands. We will also not be using [Colors](../Concepts/Colors.md) for our map since they
 don't show in the documentation wiki.
 
 ## Planning the Map
@@ -84,7 +78,7 @@ In this section we will try to create an actual "map" object that an account can
 at.
 
 Evennia offers a range of [default commands](../Components/Default-Commands.md) for 
-[creating objects and rooms in-game](Beginner-Tutorial/Part1/Beginner-Tutorial-Building-Quickstart.md). While readily accessible, these commands are made to do very
+[creating objects and rooms in-game](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Building-Quickstart.md). While readily accessible, these commands are made to do very
 specific, restricted things and will thus not offer as much flexibility to experiment (for an
 advanced exception see [the FuncParser](../Components/FuncParser.md)). Additionally, entering long
 descriptions and properties over and over in the game client can become tedious; especially when
@@ -412,5 +406,5 @@ easily new game defining features can be added to Evennia.
 
 You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
 not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
-Tutorial), [fill your world with NPC's](./Tutorial-NPC-Reacting.md) or 
-[implement a combat system](./Turn-based-Combat-System.md).
+Tutorial), [fill your world with NPC's](../Howtos/Tutorial-NPC-Reacting.md) or 
+[implement a combat system](../Howtos/Turn-based-Combat-System.md).
