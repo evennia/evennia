@@ -7,17 +7,17 @@ from it at this time.
 ```
 
 ```{sidebar} Beginner Tutorial Parts
-- [Introduction](../Beginner-Tutorial-Intro.md)
+- [Introduction](../Beginner-Tutorial-Overview.md)
 <br>Getting set up.
-- Part 1: [What we have](../Part1/Beginner-Tutorial-Part1-Intro.md)
+- Part 1: [What we have](../Part1/Beginner-Tutorial-Part1-Overview.md)
 <br>A tour of Evennia and how to use the tools, including an introduction to Python.
-- Part 2: [What we want](../Part2/Beginner-Tutorial-Part2-Intro.md)
+- Part 2: [What we want](../Part2/Beginner-Tutorial-Part2-Overview.md)
 <br>Planning our tutorial game and what to think about when planning your own in the future.
-- **Part 3: [How we get there](./Beginner-Tutorial-Part3-Intro.md)**
+- **Part 3: [How we get there](./Beginner-Tutorial-Part3-Overview.md)**
 <br>Getting down to the meat of extending Evennia to make our game
-- Part 4: [Using what we created](../Part4/Beginner-Tutorial-Part4-Intro.md)
+- Part 4: [Using what we created](../Part4/Beginner-Tutorial-Part4-Overview.md)
 <br>Building a tech-demo and world content to go with our code
-- Part 5: [Showing the world](../Part5/Beginner-Tutorial-Part5-Intro.md)
+- Part 5: [Showing the world](../Part5/Beginner-Tutorial-Part5-Overview.md)
 <br>Taking our new game online and let players try it out
 ```
 

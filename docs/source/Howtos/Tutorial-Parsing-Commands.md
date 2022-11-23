@@ -43,8 +43,7 @@ command for every kind of word or sentence, which is, of course, not practical.
 
 Last thing: what is parsing?
 
-> In our case, parsing is the process by which we convert command arguments into something we can
-work with.
+> In our case, parsing is the process by which we convert command arguments into something we can work with.
 
 We don't usually use the command argument as is (which is just text, of type `str` in Python).  We
 need to extract useful information.  We might want to ask the user for a number, or the name of

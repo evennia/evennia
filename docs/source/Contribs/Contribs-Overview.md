@@ -1,9 +1,14 @@
 # Contribs
 
+```{sidebar} More contributions
+Additional Evennia code snippets and contributions can be found
+in the [Community Contribs & Snippets][forum] forum.
+```
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all contribs currently included.
+This page is auto-generated and summarizes all **46** contribs currently included
+with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
 
@@ -13,16 +18,34 @@ Each contrib contains installation instructions for how to integrate it
 with your other code. If you want to tweak the code of a contrib, just
 copy its entire folder to your game directory and modify/use it from there.
 
-> Hint: Additional (potentially un-maintained) code snippets from the community can be found
-in our discussion forum's [Community Contribs & Snippets](https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets) category.
-
 If you want to contribute yourself, see [here](../Contributing.md)!
+
+[forum]: https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets
+
+## Index
+| | | | | | | |
+|---|---|---|---|---|---|---|
+| [base_systems](#base_systems) | [full_systems](#full_systems) | [game_systems](#game_systems) | [grid](#grid) | [rpg](#rpg) | [tutorials](#tutorials) | [utils](#utils) |
+
+| | | | | |
+|---|---|---|---|---|
+| [auditing](#auditing) | [awsstorage](#awsstorage) | [barter](#barter) | [batchprocessor](#batchprocessor) | [bodyfunctions](#bodyfunctions) |
+| [buffs](#buffs) | [building_menu](#building_menu) | [character_creator](#character_creator) | [clothing](#clothing) | [color_markups](#color_markups) |
+| [components](#components) | [cooldowns](#cooldowns) | [crafting](#crafting) | [custom_gametime](#custom_gametime) | [dice](#dice) |
+| [email_login](#email_login) | [evadventure](#evadventure) | [evscaperoom](#evscaperoom) | [extended_room](#extended_room) | [fieldfill](#fieldfill) |
+| [gendersub](#gendersub) | [git_integration](#git_integration) | [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) |
+| [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) |
+| [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) |
+| [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) |
+| [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) |
+| [xyzgrid](#xyzgrid) |
+
 
 
 ## base_systems
 
-_This category contains systems that are not necessarily tied to a specific
-in-game mechanic but is useful for the game as a whole. Examples include
+_Systems that are not necessarily tied to a specific
+in-game mechanic but which are useful for the game as a whole. Examples include
 login systems, new command syntaxes, and build helpers._
 
 ```{toctree}
@@ -41,7 +64,7 @@ Contrib-Unixcommand.md
 ```
 
 
-### Contrib: `awsstorage`
+### `awsstorage`
 
 _Contrib by The Right Honourable Reverend (trhr), 2020_
 
@@ -53,7 +76,7 @@ cloud hosting. Great for those serving media with the game.
 
 
 
-### Contrib: `building_menu`
+### `building_menu`
 
 _Contrib by vincent-lg, 2018_
 
@@ -68,7 +91,7 @@ that will edit any default object, offering to change its key and description.
 
 
 
-### Contrib: `color_markups`
+### `color_markups`
 
 _Contrib by Griatch, 2017_
 
@@ -80,7 +103,7 @@ Additional color markup styles for Evennia (extending or replacing the default
 
 
 
-### Contrib: `components`
+### `components`
 
 __Contrib by ChrisLR 2021__
 
@@ -90,7 +113,7 @@ __Contrib by ChrisLR 2021__
 
 
 
-### Contrib: `custom_gametime`
+### `custom_gametime`
 
 _Contrib by vlgeoff, 2017 - based on Griatch's core original_
 
@@ -103,7 +126,7 @@ in-game times, but now taking this custom calendar into account.
 
 
 
-### Contrib: `email_login`
+### `email_login`
 
 _Contrib by Griatch, 2012_
 
@@ -115,7 +138,7 @@ it just uses it as the identifier rather than a username.
 
 
 
-### Contrib: `ingame_python`
+### `ingame_python`
 
 _Contrib by Vincent Le Goff 2017_
 
@@ -132,7 +155,7 @@ this module carefully before continuing.
 
 
 
-### Contrib: `menu_login`
+### `menu_login`
 
 _Contribution by Vincent-lg 2016. Reworked for modern EvMenu by Griatch, 2019._
 
@@ -144,7 +167,7 @@ menu system `EvMenu` under the hood.
 
 
 
-### Contrib: `mux_comms_cmds`
+### `mux_comms_cmds`
 
 _Contribution by Griatch 2021_
 
@@ -158,7 +181,7 @@ main `channel` command is still called under the hood.
 
 
 
-### Contrib: `unixcommand`
+### `unixcommand`
 
 _Contribution by Vincent Le Geoff (vlgeoff), 2017_
 
@@ -178,8 +201,8 @@ library under the hood.
 
 ## full_systems
 
-_This category contains 'complete' game engines that can be used directly
-to start creating content without no further additions (unless you want to)._
+_'Complete' game engines that can be used directly to start creating content
+without no further additions (unless you want to)._
 
 ```{toctree}
 :maxdepth: 1
@@ -188,7 +211,7 @@ Contrib-Evscaperoom.md
 ```
 
 
-### Contrib: `evscaperoom`
+### `evscaperoom`
 
 _Contribution by Griatch, 2019_
 
@@ -207,10 +230,10 @@ content but contains the utilities and base classes and an empty example room.
 
 ## game_systems
 
-_This category holds code implementing in-game gameplay systems like
-crafting, mail, combat and more. Each system is meant to be adopted
-piecemeal and adopted for your game. This does not include
-roleplaying-specific systems, those are found in the `rpg` folder._
+_In-game gameplay systems like crafting, mail, combat and more.
+Each system is meant to be adopted piecemeal and adopted for your game.
+This does not include roleplaying-specific systems, those are found in
+the `rpg` category._
 
 ```{toctree}
 :maxdepth: 1
@@ -227,7 +250,7 @@ Contrib-Turnbattle.md
 ```
 
 
-### Contrib: `barter`
+### `barter`
 
 _Contribution by Griatch, 2012_
 
@@ -243,7 +266,7 @@ transactions.
 
 
 
-### Contrib: `clothing`
+### `clothing`
 
 _Contribution by Tim Ashley Jenkins, 2017_
 
@@ -254,7 +277,7 @@ look of these clothes are appended to the character's description when worn.
 
 
 
-### Contrib: `cooldowns`
+### `cooldowns`
 
 _Contribution by owllex, 2021_
 
@@ -268,7 +291,7 @@ asynchronous timer that you can query to see if a certain time has yet passed.
 
 
 
-### Contrib: `crafting`
+### `crafting`
 
 _Contribution by Griatch 2020_
 
@@ -281,7 +304,7 @@ combine 'flour', 'water' and 'yeast' with an 'oven' to bake a 'loaf of bread'.
 
 
 
-### Contrib: `gendersub`
+### `gendersub`
 
 _Contribution by Griatch 2015_
 
@@ -294,7 +317,7 @@ inspiration and starting point to how to do stuff like this.
 
 
 
-### Contrib: `mail`
+### `mail`
 
 _Contribution by grungies1138 2016_
 
@@ -307,7 +330,7 @@ on their own.
 
 
 
-### Contrib: `multidescer`
+### `multidescer`
 
 _Contribution by Griatch 2016_
 
@@ -321,7 +344,7 @@ work well together with the `rpsystem` contrib.
 
 
 
-### Contrib: `puzzles`
+### `puzzles`
 
 _Contribution by Henddher 2018_
 
@@ -335,7 +358,7 @@ the puzzle entirely from in-game.
 
 
 
-### Contrib: `turnbattle`
+### `turnbattle`
 
 _Contribution by Tim Ashley Jenkins, 2017_
 
@@ -356,8 +379,8 @@ the participants until the fight ends.
 
 ## grid
 
-_Systems related to the game world's topology and structure. This has
-contribs related to rooms, exits and map building._
+_Systems related to the game world's topology and structure. Contribs related
+to rooms, exits and map building._
 
 ```{toctree}
 :maxdepth: 1
@@ -372,7 +395,7 @@ Contrib-XYZGrid.md
 ```
 
 
-### Contrib: `extended_room`
+### `extended_room`
 
 _Contribution - Griatch 2012, vincent-lg 2019_
 
@@ -385,7 +408,7 @@ supported by new `look` and `desc` commands.
 
 
 
-### Contrib: `ingame_map_display`
+### `ingame_map_display`
 
 _Contribution - helpme 2022_
 
@@ -398,7 +421,7 @@ directions are ignored.
 
 
 
-### Contrib: `mapbuilder`
+### `mapbuilder`
 
 _Contribution by Cloud_Keeper 2016_
 
@@ -408,7 +431,7 @@ Build a game map from the drawing of a 2D ASCII map.
 
 
 
-### Contrib: `simpledoor`
+### `simpledoor`
 
 _Contribution by Griatch, 2016_
 
@@ -420,7 +443,7 @@ destroyable etc.
 
 
 
-### Contrib: `slow_exit`
+### `slow_exit`
 
 _Contribution by Griatch 2014_
 
@@ -433,7 +456,7 @@ and abort an ongoing traversal, respectively.
 
 
 
-### Contrib: `wilderness`
+### `wilderness`
 
 _Contribution by titeuf87, 2017_
 
@@ -446,7 +469,7 @@ long as the rooms are relatively similar (name/desc changing).
 
 
 
-### Contrib: `xyzgrid`
+### `xyzgrid`
 
 _Contribution by Griatch 2021_
 
@@ -466,7 +489,7 @@ current location (useful for displaying the grid as an in-game, updating map).
 
 ## rpg
 
-_These are systems specifically related to roleplaying
+_Systems specifically related to roleplaying
 and rule implementation like character traits, dice rolling and emoting._
 
 ```{toctree}
@@ -481,7 +504,7 @@ Contrib-Traits.md
 ```
 
 
-### Contrib: `buffs`
+### `buffs`
 
 _Contribution by Tegiminis 2022_
 
@@ -492,7 +515,7 @@ It is a common design pattern in RPGs, particularly action games.
 
 
 
-### Contrib: `character_creator`
+### `character_creator`
 
 _Commands for managing and initiating an in-game character-creation menu._
 
@@ -502,7 +525,7 @@ Contribution by InspectorCaracal, 2022
 
 
 
-### Contrib: `dice`
+### `dice`
 
 _Contribution by Griatch, 2012_
 
@@ -515,7 +538,7 @@ rolls for use by a human game master.
 
 
 
-### Contrib: `health_bar`
+### `health_bar`
 
 _Contribution by Tim Ashley Jenkins, 2017_
 
@@ -528,7 +551,7 @@ and can be used for any sort of appropriate data besides player health.
 
 
 
-### Contrib: `rpsystem`
+### `rpsystem`
 
 _Contribution by Griatch, 2015_
 
@@ -544,7 +567,7 @@ very powerful in-emote reference system, for referencing and differentiate targe
 
 
 
-### Contrib: `traits`
+### `traits`
 
 _Contribution by Griatch 2020, based on code by Whitenoise and Ainneve contribs, 2014_
 
@@ -567,7 +590,8 @@ healed).
 
 _Helper resources specifically meant to teach a development concept or
 to exemplify an Evennia system. Any extra resources tied to documentation
-tutorials are found here. Also the home of the Tutorial World demo adventure._
+tutorials are found here. Also the home of the Tutorial-World and Evadventure
+demo codes._
 
 ```{toctree}
 :maxdepth: 1
@@ -582,7 +606,7 @@ Contrib-Tutorial-World.md
 ```
 
 
-### Contrib: `batchprocessor`
+### `batchprocessor`
 
 _Contibution by Griatch, 2012_
 
@@ -594,7 +618,7 @@ control and then 'applied' to the game to create content.
 
 
 
-### Contrib: `bodyfunctions`
+### `bodyfunctions`
 
 _Contribution by Griatch, 2012_
 
@@ -605,7 +629,7 @@ character make small verbal observations at irregular intervals.
 
 
 
-### Contrib: `evadventure`
+### `evadventure`
 
 _Contrib by Griatch 2022_
 
@@ -620,7 +644,7 @@ perfection.
 
 
 
-### Contrib: `mirror`
+### `mirror`
 
 _Contribution by Griatch, 2017_
 
@@ -630,7 +654,7 @@ A simple mirror object to experiment with. It will respond to being looked at.
 
 
 
-### Contrib: `red_button`
+### `red_button`
 
 _Contribution by Griatch, 2011_
 
@@ -641,7 +665,7 @@ object with its own functionality and state tracking.
 
 
 
-### Contrib: `talking_npc`
+### `talking_npc`
 
 _Contribution by Griatch 2011. Updated by grungies1138, 2016_
 
@@ -652,7 +676,7 @@ conversation. Suitable for example as a quest giver or merchant.
 
 
 
-### Contrib: `tutorial_world`
+### `tutorial_world`
 
 _Contribution by Griatch 2011, 2015_
 
@@ -673,8 +697,7 @@ is a great way to start learning the system.
 
 ## utils
 
-_Miscellaneous, optional tools for manipulating text, auditing connections
-and more._
+_Miscellaneous, tools for manipulating text, security auditing, and more._
 
 ```{toctree}
 :maxdepth: 1
@@ -688,7 +711,7 @@ Contrib-Tree-Select.md
 ```
 
 
-### Contrib: `auditing`
+### `auditing`
 
 _Contribution by Johnny, 2017_
 
@@ -700,7 +723,7 @@ quality assurance, post-incident investigations and debugging.
 
 
 
-### Contrib: `fieldfill`
+### `fieldfill`
 
 _Contribution by Tim Ashley Jenkins, 2018_
 
@@ -716,7 +739,7 @@ to any callable of your choice.
 
 
 
-### Contrib: `git_integration`
+### `git_integration`
 
 _Contribution by helpme (2022)_
 
@@ -726,7 +749,7 @@ A module to integrate a stripped-down version of git within the game, allowing d
 
 
 
-### Contrib: `name_generator`
+### `name_generator`
 
 _Contribution by InspectorCaracal (2022)_
 
@@ -739,7 +762,7 @@ and used under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/b
 
 
 
-### Contrib: `random_string_generator`
+### `random_string_generator`
 
 _Contribution by Vincent Le Goff (vlgeoff), 2017_
 
@@ -752,7 +775,7 @@ passwords and so on. The strings generated will be stored and won't be repeated.
 
 
 
-### Contrib: `tree_select`
+### `tree_select`
 
 _Contribution by Tim Ashley Jenkins, 2017_
 

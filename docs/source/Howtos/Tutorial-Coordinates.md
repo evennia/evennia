@@ -1,15 +1,11 @@
-# Coordinates
+# Adding room coordinates to your game
 
-# Adding room coordinates in your game
+```{sidebar} The XYZGrid 
+See also the [XYZGrid contrib](../Contribs/Contrib-XYZGrid.md), which adds coordinate support and pathfinding.
+```
+This tutorial is moderately difficult in content.  You might want to be familiar and at ease with some Python concepts (like properties) and possibly Django concepts (like queries), although this tutorial will try to walk you through the process and give enough explanations each time.  If you don't feel very confident with math, don't hesitate to pause, go to the example section, which shows a tiny map, and try to walk around the code or read the explanation.
 
-This tutorial is moderately difficult in content.  You might want to be familiar and at ease with
-some Python concepts (like properties) and possibly Django concepts (like queries), although this
-tutorial will try to walk you through the process and give enough explanations each time.  If you
-don't feel very confident with math, don't hesitate to pause, go to the example section, which shows
-a tiny map, and try to walk around the code or read the explanation.
-
-Evennia doesn't have a coordinate system by default.  Rooms and other objects are linked by location
-and content:
+Evennia doesn't have a coordinate system by default.  Rooms and other objects are linked by location and content:
 
 - An object can be in a location, that is, another object.  Like an exit in a room.
 - An object can access its content.  A room can see what objects uses it as location (that would
@@ -25,14 +21,9 @@ instance.
 The first concept might be the most surprising at first glance: we will create coordinates as
 [tags](../Components/Tags.md).
 
-> Why not attributes, wouldn't that be easier?
+So, why not attributes, wouldn't that be easier?  It would.  We could just do something like `room.db.x = 3`.  The advantage of using tags is that it will be easy and effective to search.  Although this might not seem like a huge advantage right now, with a database of thousands of rooms, it might make a difference, particularly if you have a lot of things based on coordinates.
 
-It would.  We could just do something like `room.db.x = 3`.  The advantage of using tags is that it
-will be easy and effective to search.  Although this might not seem like a huge advantage right now,
-with a database of thousands of rooms, it might make a difference, particularly if you have a lot of
-things based on coordinates.
-
-Rather than giving you a step-by-step process, I'll show you the code.  Notice that we use
+Rather than giving you a step-by-step process, We'll show you the code.  Notice that we use
 properties to easily access and update coordinates.  This is a Pythonic approach.  Here's our first
 `Room` class, that you can modify in `typeclasses/rooms.py`:
 
@@ -120,11 +111,7 @@ What it does is pretty simple:
 2. We convert the value to an integer, if it's a `str`.  Remember that tags can only contain `str`,
    so we'll need to convert it.
 
-> I thought tags couldn't contain values?
-
-Well, technically, they can't: they're either here or not.  But using tag categories, as we have
-done, we get a tag, knowing only its category.  That's the basic approach to coordinates in this
-tutorial.
+So can Tags contain values? Well, technically, they can't: they're either here or not.  But using tag categories, as we have done, we get a tag, knowing only its category.  That's the basic approach to coordinates in this tutorial.
 
 Now, let's look at the method that will be called when we wish to set `x` in our room:
 
@@ -143,20 +130,16 @@ Now, let's look at the method that will be called when we wish to set `x` in our
    room with "coordx" as their category, which wouldn't do at all.
 2. Then we add the new tag, giving it the proper category.
 
-> Now what?
-
 If you add this code and reload your game, once you're logged in with a character in a room as its
 location, you can play around:
 
 ```
-@py here.x
-@py here.x = 0
-@py here.y = 3
-@py here.z = -2
-@py here.z = None
+py here.x
+py here.x = 0
+py here.y = 3
+py here.z = -2
+py here.z = None
 ```
-
-The code might not be that easy to read, but you have to admit it's fairly easy to use.
 
 ## Some additional searches
 
@@ -203,24 +186,19 @@ class Room(DefaultRoom):
         return None
 ```
 
-This solution includes a bit of [Django
-queries](https://docs.djangoproject.com/en/1.11/topics/db/queries/).
-Basically, what we do is reach for the object manager and search for objects with the matching tags.
-Again, don't spend too much time worrying about the mechanism, the method is quite easy to use:
+This solution includes some [Django queries](Basic-Tutorial-Django-queries).  Basically, what we do is reach for the object manager and search for objects with the matching tags. Again, don't spend too much time worrying about the mechanism, the method is quite easy to use:
 
 ```
 Room.get_room_at(5, 2, -3)
 ```
 
-Notice that this is a class method: you will call it from `Room` (the class), not an instance.
-Though you still can:
+Notice that this is a class method: you will call it from `Room` (the class), not an instance. Though you still can:
 
-    @py here.get_room_at(3, 8, 0)
+    py here.get_room_at(3, 8, 0)
 
 ### Finding several rooms
 
-Here's another useful method that allows us to look for rooms around a given coordinate.  This is
-more advanced search and doing some calculation, beware!  Look at the following section if you're
+Here's another useful method that allows us to look for rooms around a given coordinate.  This is more advanced search and doing some calculation, beware!  Look at the following section if you're
 lost.
 
 ```python
@@ -286,9 +264,7 @@ This gets more serious.
 
 1. We have specified coordinates as parameters.  We determine a broad range using the distance.
    That is, for each coordinate, we create a list of possible matches.  See the example below.
-2. We then search for the rooms within this broader range.  It gives us a square
-   around our location.  Some rooms are definitely outside the range.  Again, see the example below
-to follow the logic.
+2. We then search for the rooms within this broader range.  It gives us a square around our location.  Some rooms are definitely outside the range.  Again, see the example below to follow the logic.
 3. We filter down the list and sort it by distance from the specified coordinates.
 
 Notice that we only search starting at step 2.  Thus, the Django search doesn't look and cache all
@@ -309,11 +285,7 @@ An example might help.  Consider this very simple map (a textual description fol
   1 2 3 4
 ```
 
-The X coordinates are given below.  The Y coordinates are given on the left.  This is a simple
-square with 16 rooms: 4 on each line, 4 lines of them.  All the rooms are identified by letters in
-this example: the first line at the top has rooms A to D, the second E to H, the third I to L and
-the fourth M to P.  The bottom-left room, X=1 and Y=1, is M.  The upper-right room X=4 and Y=4 is D.
-
+The X coordinates are given below.  The Y coordinates are given on the left.  This is a simple square with 16 rooms: 4 on each line, 4 lines of them.  All the rooms are identified by letters in this example: the first line at the top has rooms A to D, the second E to H, the third I to L and the fourth M to P.  The bottom-left room, X=1 and Y=1, is M.  The upper-right room X=4 and Y=4 is D. 
 So let's say we want to find all the neighbors, distance 1, from the room J.  J is at X=2, Y=2.
 
 So we use:
@@ -321,13 +293,8 @@ So we use:
     Room.get_rooms_around(x=2, y=2, z=0, distance=1)
     # we'll assume a z coordinate of 0 for simplicity
 
-1. First, this method gets all the rooms in a square around J.  So it gets E F G, I J K, M N O.  If
-you want, draw the square around these coordinates to see what's happening.
-2. Next, we browse over this list and check the real distance between J (X=2, Y=2) and the room.
-The four corners of the square are not in this circle.  For instance, the distance between J and M
-is not 1.  If you draw a circle of center J and radius 1, you'll notice that the four corners of our
-square (E, G, M and O) are not in this circle. So we remove them.
-3. We sort by distance from J.
+1. First, this method gets all the rooms in a square around J.  So it gets E F G, I J K, M N O.  If you want, draw the square around these coordinates to see what's happening.
+2. Next, we browse over this list and check the real distance between J (X=2, Y=2) and the room. The four corners of the square are not in this circle.  For instance, the distance between J and M is not 1.  If you draw a circle of center J and radius 1, you'll notice that the four corners of our square (E, G, M and O) are not in this circle. So we remove them. 3. We sort by distance from J.
 
 So in the end we might obtain something like this:
 
@@ -343,7 +310,7 @@ So in the end we might obtain something like this:
 
 You can try with more examples if you want to see this in action.
 
-### To conclude
+## To conclude
 
-You can definitely use this system to map other objects, not just rooms.  You can easily remove the
-`Z coordinate too, if you simply need X and Y.
+You can also use this system to map other objects, not just rooms.  You can easily remove the
+`Z` coordinate too, if you simply need `X` and `Y`.

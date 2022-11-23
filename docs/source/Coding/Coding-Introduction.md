@@ -7,7 +7,7 @@ Here are some pointers to get you going.
 
 ## Start with the tutorial
 
-It's highly recommended that you jump in on the [Starting Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.md). Even if
+It's highly recommended that you jump in on the [Starting Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Overview.md). Even if
 you only the beginning or some part of it, it covers much of the things needed to get started, including giving you are first introduction to Python.
 
 ## Explore Evennia interactively

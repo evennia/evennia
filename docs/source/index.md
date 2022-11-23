@@ -48,7 +48,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 <details>
 <summary>
-    Click here to expand the full list of Documentation sections.
+    Click here to expand the full Documentation index.
 </summary>
 
 ```{toctree}

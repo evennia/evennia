@@ -1,21 +1,19 @@
 # Installation Troubleshooting
 
-If you have an issue not covered here, [please report it](https://github.com/evennia/evennia/issues/new/choose)
-so it can be fixed or a workaround found!
+If you have an issue not covered here, [please report it](https://github.com/evennia/evennia/issues/new/choose) so it can be fixed or a workaround found!
 
 The server logs are in `mygame/server/logs/`. To easily view server logs in the terminal,
-you can run `evennia -l`, or (in the future) start the server with `evennia start -l`.
+you can run `evennia -l`, or start/reload the server with `evennia start -l` or `evennia reload -l`.
 
 ## Check your Requirements
 
-Any system that supports Python3.9+ should work. We'll describe how to install
-everything in the following sections.
+Any system that supports Python3.9+ should work.
 - Linux/Unix
 - Windows (Win7, Win8, Win10, Win11)
 - Mac OSX (>10.5 recommended)
 
-- [Python](https://www.python.org) (v3.9, 3.10  and 3.11 are tested)
-- [Twisted](https://twistedmatrix.com) (v22.0+)
+- [Python](https://www.python.org) (v3.9, 3.10  and 3.11 are tested. 3.11 is recommended)
+- [Twisted](https://twistedmatrix.com) (v22.3+)
     - [ZopeInterface](https://www.zope.org/Products/ZopeInterface) (v3.0+)  - usually included in Twisted packages
     - Linux/Mac users may need the `gcc` and `python-dev` packages or equivalent.
     - Windows users need [MS Visual C++](https://aka.ms/vs/16/release/vs_buildtools.exe) and *maybe* [pypiwin32](https://pypi.python.org/pypi/pypiwin32).

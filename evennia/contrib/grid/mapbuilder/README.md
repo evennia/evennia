@@ -52,6 +52,8 @@ references to rooms previously created is passed to the build commands.
 You then call the command in-game using the path to the MAP and MAP_LEGEND vars
 The path you provide is relative to the evennia or mygame folder.
 
+See also the [separate tutorial in the docs](Contrib-Mapbuilder-Tutorial).
+
 ## Installation
 
 Use by importing and including the command in your default_cmdsets module.
@@ -275,4 +277,9 @@ EXAMPLE2_LEGEND = {
     ("-"): example2_build_horizontal_exit,
 }
 
+```
+
+```{toctree}
+:hidden:
+Contrib-Mapbuilder-Tutorial
 ```
