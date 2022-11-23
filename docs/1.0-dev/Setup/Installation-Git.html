@@ -147,39 +147,44 @@ not recognize <code class="docutils literal notranslate"><span class="pre">local
 <section id="virtualenv">
 <h2>Virtualenv<a class="headerlink" href="#virtualenv" title="Permalink to this headline">¶</a></h2>
 <p>A Python <a class="reference external" href="https://docs.python.org/3/library/venv.html">virtual environment</a> allows you to install Evennia in its own little folder, separate from the rest of the system. You also won’t need any extra permissions. It’s optional to use a virtualenv, but it’s highly recommended. Python supports this natively:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> python3.11 -m venv evenv   (linux/mac)
- python -m venv venv evenv  (Windows)
+<aside class="sidebar">
+<p class="sidebar-title">Using py on Windows</p>
+<p>If you have older versions of Python installed on Windows, you should instead use <code class="docutils literal notranslate"><span class="pre">py</span></code> here instead of <code class="docutils literal notranslate"><span class="pre">python</span></code>. The <code class="docutils literal notranslate"><span class="pre">py</span></code> launcher automatically selects the latest python version among those you installed.</p>
+</aside>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.11 -m venv evenv   <span class="o">(</span>linux/mac<span class="o">)</span>
+python -m venv evenv       <span class="o">(</span>Windows<span class="o">)</span>
 </pre></div>
 </div>
-<blockquote>
-<div><p>If you have older versions of Python installed on Windows, you should instead use <code class="docutils literal notranslate"><span class="pre">py</span></code> instead of <code class="docutils literal notranslate"><span class="pre">python</span></code> - the <code class="docutils literal notranslate"><span class="pre">py</span></code> launcher automatically selects the latest python version among those you installed.</p>
-</div></blockquote>
 <p>This will create a new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> in your current directory.
 Activate it like this:</p>
-<p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">evenv/bin/activate</span></code> (Linux, Mac)
-<code class="docutils literal notranslate"><span class="pre">evenv\Scripts\activate</span></code> (Windows)
-<code class="docutils literal notranslate"><span class="pre">.\evenv\scripts\activate</span></code> (Windows with PS Shell, Git Bash etc)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">evenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span> <span class="p">(</span><span class="n">Linux</span><span class="p">,</span> <span class="n">Mac</span><span class="p">)</span>
+<span class="n">evenv</span>\<span class="n">Scripts</span>\<span class="n">activate</span>    <span class="p">(</span><span class="n">Windows</span> <span class="n">Console</span><span class="p">)</span>
+<span class="o">.</span>\<span class="n">evenv</span>\<span class="n">scripts</span>\<span class="n">activate</span>  <span class="p">(</span><span class="n">Windows</span> <span class="n">PS</span> <span class="n">Shell</span><span class="p">,</span> 
+                           <span class="n">Git</span> <span class="n">Bash</span> <span class="n">etc</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>The text <code class="docutils literal notranslate"><span class="pre">(evenv)</span></code> should appear next to your prompt to show that the virtual
 environment is active. You <em>don’t</em> need to actually be in or near the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> folder for
 the environment to be active.</p>
-<blockquote>
-<div><p>Remember that you need to re-activate the virtualenv like this <em>every time</em> you
-start a new terminal/console. Otherwise the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command will not be available.</p>
-</div></blockquote>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Remember that you need to (re-)activate the virtualenv like this <em>every time</em> you
+start a new terminal/console (or restart your computer). Until you do, the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command will not be available.</p>
+</div>
 </section>
 <section id="linux-install">
 <h2>Linux Install<a class="headerlink" href="#linux-install" title="Permalink to this headline">¶</a></h2>
 <p>For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
 install the requirements:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="mf">.11</span> <span class="n">python3</span><span class="mf">.11</span><span class="o">-</span><span class="n">venv</span> <span class="n">python3</span><span class="mf">.11</span><span class="o">-</span><span class="n">dev</span> <span class="n">gcc</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get update
+sudo apt-get install python3.11 python3.11-venv python3.11-dev gcc
 </pre></div>
 </div>
 <p>You should make sure to <em>not</em> be <code class="docutils literal notranslate"><span class="pre">root</span></code> after this step, running as <code class="docutils literal notranslate"><span class="pre">root</span></code> is a
 security risk. Now create a folder where you want to do all your Evennia
 development:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">muddev</span>
-<span class="n">cd</span> <span class="n">muddev</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir muddev
+<span class="nb">cd</span> muddev
 </pre></div>
 </div>
 <p>Next we fetch Evennia itself:</p>
@@ -191,6 +196,9 @@ contains the source code though, it is not <em>installed</em> yet.</p>
 <p>At this point it’s now optional but recommended that you initialize and activate a <a class="reference internal" href="#virtualenv"><span class="std std-doc">virtualenv</span></a>.</p>
 <p>Next, install Evennia (system-wide, or into your active virtualenv). Make sure you are standing
 at the top of your mud directory tree (so you see the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> folder, and likely the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> virtualenv folder) and do</p>
+<aside class="sidebar">
+<p>The <code class="docutils literal notranslate"><span class="pre">-e</span> </code> means that we install evennia in editable mode. If you want to develop on Evennia itself, it means that changes you do to the code is immediately reflected on your running server (you don’t have to reinstall every time you make a change).</p>
+</aside>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>

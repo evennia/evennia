@@ -19,8 +19,7 @@ Out of the box, Evennia uses three ports for outward communication. If your comp
 Evennia will by default accept incoming connections on all interfaces (`0.0.0.0`) so in principle anyone knowing the ports to use and has the IP address to your machine should be able to connect to your game.
 
 ```{sidebar} Closing the log view
- If you need to close the log-view, use `Ctrl-C`. Use just `evennia --log` on its own to
-start tailing the logs again.
+If you need to close the log-view, use `Ctrl-C`. Use just `evennia --log` on its own to start tailing the logs again.
 ```
  - Make sure Evennia is installed and that you have activated the virtualenv. Start the server with `evennia start --log`. The `--log` (or `-l`) will make sure that the logs are echoed to the terminal.
  - Make sure you can connect with your web browser to `http://localhost:4001` or, alternatively, `http://127.0.0.1:4001` which is the same thing. You should get your Evennia web site and be able to play the game in the web client. Also check so that you can connect with a mud client to host `localhost`, port `4000` or host `127.0.0.1`, port `4000`.

@@ -31,7 +31,7 @@ instructions. Initialize a new game directory with `evennia init
 <gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the
 default database and keep all other settings to default for now. Familiarize yourself with the
 `mygame` folder before continuing. You might want to browse the 
-[First Steps Coding](Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.md) tutorial, just to see roughly where things are modified.
+[First Steps Coding](Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Overview.md) tutorial, just to see roughly where things are modified.
 
 ## The Game Master role
 

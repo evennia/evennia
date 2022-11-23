@@ -351,22 +351,12 @@
 
 <span class="c1"># i18n</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvColumn</span><span class="p">,</span> <span class="n">EvTable</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">crop</span><span class="p">,</span>
-    <span class="n">dedent</span><span class="p">,</span>
-    <span class="n">is_iter</span><span class="p">,</span>
-    <span class="n">m_len</span><span class="p">,</span>
-    <span class="n">make_iter</span><span class="p">,</span>
-    <span class="n">mod_import</span><span class="p">,</span>
-    <span class="n">pad</span><span class="p">,</span>
-    <span class="n">to_str</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">crop</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">m_len</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">to_str</span>
 
 <span class="c1"># read from protocol NAWS later?</span>
 <span class="n">_MAX_TEXT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>

@@ -116,17 +116,16 @@ over things manually.</p>
 <h2>Evennia v0.9.5 to 1.0<a class="headerlink" href="#evennia-v0-9-5-to-1-0" title="Permalink to this headline">¶</a></h2>
 <section id="upgrading-the-evennia-library">
 <h3>Upgrading the Evennia library<a class="headerlink" href="#upgrading-the-evennia-library" title="Permalink to this headline">¶</a></h3>
-<p>Prior to 1.0, all Evennia installs were <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Git-installs</span></a>. These instructions
-assume that you have a cloned <code class="docutils literal notranslate"><span class="pre">evennia</span></code> repo and use a virtualenv (best practices).</p>
+<p>Prior to 1.0, all Evennia installs were <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Git-installs</span></a>. These instructions assume that you have a cloned <code class="docutils literal notranslate"><span class="pre">evennia</span></code> repo and use a virtualenv (best practices).</p>
 <ul class="simple">
-<li><p>Make sure to stop Evennia 0.9.5 entirely with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>.</p></li>
+<li><p>Make sure to stop Evennia 0.9.5 entirely with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code> from your game dir.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">deactivate</span></code> to leave your active virtualenv.</p></li>
-<li><p>Make a <em>backup</em> of your entire <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder, just to be sure!</p></li>
 <li><p>Install Python 3.11 (recommended). Follow the <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Git-installation</span></a> for your OS if needed.</p></li>
 <li><p>Delete the old virtualenv <code class="docutils literal notranslate"><span class="pre">evenv</span></code> folder, or rename it (in case you want to keep using 0.9.5 for a while).</p></li>
 <li><p>Make <em>new</em> <code class="docutils literal notranslate"><span class="pre">evenv</span></code> virtualenv (see the <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">virtualenv instructions</span></a> for help)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> into your <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> root folder (you want to see the <code class="docutils literal notranslate"><span class="pre">docs/</span></code> and  <code class="docutils literal notranslate"><span class="pre">bin/</span></code> directories as well as a nested <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> folder)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">develop</span></code>   TODO - only until 1.0 release.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code></p></li>
 <li><p>If you want the optional extra libs (needed by some contribs), do <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.[extra]</span></code></p></li>
 <li><p>Test that you can run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p></li>
@@ -134,12 +133,10 @@ assume that you have a cloned <code class="docutils literal notranslate"><span c
 </section>
 <section id="upgrading-your-game-dir">
 <h3>Upgrading your game dir<a class="headerlink" href="#upgrading-your-game-dir" title="Permalink to this headline">¶</a></h3>
-<p>If you don’t have anything you want to keep in your existing game dir, you can just start a new onew
-using the normal <a class="reference internal" href="Installation.html"><span class="doc std std-doc">install instructions</span></a>. If you want to keep/convert your existing
-game dir, continue below.</p>
+<p>If you don’t have anything you want to keep in your existing game dir, you can just start a new one using the normal <a class="reference internal" href="Installation.html"><span class="doc std std-doc">install instructions</span></a>. If you want to keep/convert your existing game dir, continue below.</p>
 <ul class="simple">
-<li><p>First, make a backup of your exising game dir! If you use version control, make sure to commit your current state.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to your existing 0.9.5-based game folder (like <code class="docutils literal notranslate"><span class="pre">mygame</span></code>.)</p></li>
+<li><p>First, make a <em>backup</em> of your exising game dir! If you use version control, make sure to commit your current state.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to your existing 0.9.5-based game folder (like <code class="docutils literal notranslate"><span class="pre">mygame</span></code>).</p></li>
 <li><p>If you have changed <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code>, <em>rename</em> the folder to <code class="docutils literal notranslate"><span class="pre">web_0.9.5</span></code>. If you didn’t change anything (or don’t have anything you want to keep), you can <em>delete</em> it entirely.</p></li>
 <li><p>Copy <code class="docutils literal notranslate"><span class="pre">evennia/evennia/game_template/web</span></code> to <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> (e.g. using <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">-Rf</span></code> or a file manager). This new <code class="docutils literal notranslate"><span class="pre">web</span></code> folder <em>replaces the old one</em> and has a very different structure.</p></li>
 <li><p>It’s possible you need to replace/comment out import and calls to the deprecated

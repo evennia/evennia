@@ -42,7 +42,7 @@ Example: To override or modify `evennia/web/website/template/website/index.html`
 add/modify `mygame/web/template_overrides/website/index.html`.
 
 The detailed description on how to customize the website is best described in tutorial form. See the
-[Web Tutorial](../Howtos/Beginner-Tutorial/Part5/Web-Tutorial.md) for more information.
+[Web Tutorial](../Howtos/Web-Changing-Webpage.md) for more information.
 
 ### Overloading Django views
 

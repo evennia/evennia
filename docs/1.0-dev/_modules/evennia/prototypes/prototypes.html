@@ -90,7 +90,6 @@
 <span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">check_lockstring</span><span class="p">,</span> <span class="n">validate_lockstring</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
@@ -604,8 +603,6 @@
     <span class="n">require_single</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">return_iterators</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">no_db</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">page_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">page_no</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find prototypes based on key and/or tags, or all prototypes.</span>

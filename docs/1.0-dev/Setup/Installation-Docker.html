@@ -119,11 +119,8 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="installing-with-docker">
 <h1>Installing with Docker<a class="headerlink" href="#installing-with-docker" title="Permalink to this headline">¶</a></h1>
-<p>Evennia releases <a class="reference external" href="https://hub.docker.com/r/evennia/evennia/">docker images</a> which makes
-running an Evennia-based game in a Docker container easy.</p>
-<p>First, install the <code class="docutils literal notranslate"><span class="pre">docker</span></code> program so you can run the Evennia container. You can get it freely from
-<a class="reference external" href="https://www.docker.com/">docker.com</a>. Linux users can likely also get it through their normal
-package manager.</p>
+<p>Evennia releases <a class="reference external" href="https://hub.docker.com/r/evennia/evennia/">docker images</a> as part of regular commits and releases. This makes running an Evennia-based game in a Docker container easy.</p>
+<p>First, install the <code class="docutils literal notranslate"><span class="pre">docker</span></code> program so you can run the Evennia container. You can get it freely from <a class="reference external" href="https://www.docker.com/">docker.com</a>. Linux users can likely also get it through their normal package manager.</p>
 <p>To fetch the latest evennia docker image, run:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>docker pull evennia/evennia
 </pre></div>
@@ -142,11 +139,7 @@ the docker container:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>evennia<span class="p">|</span>docker /usr/src/game $
 </pre></div>
 </div>
-<p>This is a normal shell prompt. We are in the <code class="docutils literal notranslate"><span class="pre">/usr/src/game</span></code> location inside the docker container.
-If you had anything in the folder you started from, you should see it here (with <code class="docutils literal notranslate"><span class="pre">ls</span></code>) since we
-mounted the current directory to <code class="docutils literal notranslate"><span class="pre">usr/src/game</span></code> (with <code class="docutils literal notranslate"><span class="pre">-v</span></code> above). You have the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command
-available and can now proceed to create a new game as per the normal <a class="reference internal" href="Installation.html"><span class="doc std std-doc">game setup</span></a>
-instructions (no virtualenv needed).</p>
+<p>This is a normal shell prompt. We are in the <code class="docutils literal notranslate"><span class="pre">/usr/src/game</span></code> location inside the docker container. If you had anything in the folder you started from, you should see it here (with <code class="docutils literal notranslate"><span class="pre">ls</span></code>) since we mounted the current directory to <code class="docutils literal notranslate"><span class="pre">usr/src/game</span></code> (with <code class="docutils literal notranslate"><span class="pre">-v</span></code> above). You have the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command available and can now proceed to create a new game as per the normal <a class="reference internal" href="Installation.html"><span class="doc std std-doc">game setup</span></a> instructions (no virtualenv needed).</p>
 <p>You can run Evennia from inside this container if you want to, it’s like you are root in a little
 isolated Linux environment. To exit the container and all processes in there, press <code class="docutils literal notranslate"><span class="pre">Ctrl-D</span></code>. If you
 created a new game folder, you will find that it has appeared on-disk.</p>
@@ -165,8 +158,7 @@ on your drive.</p></li>
 </ul>
 <section id="running-your-game-as-a-docker-image">
 <h2>Running your game as a docker image<a class="headerlink" href="#running-your-game-as-a-docker-image" title="Permalink to this headline">¶</a></h2>
-<p>If you run the  <code class="docutils literal notranslate"><span class="pre">docker</span></code> command given in the previous section from your game dir you can then
-easily start Evennia and have a running server without any further fuss.</p>
+<p>If you run the  <code class="docutils literal notranslate"><span class="pre">docker</span></code> command given in the previous section from your game dir you can then easily start Evennia and have a running server without any further fuss.</p>
 <p>But apart from ease of install, the primary benefit to running an Evennia-based game in a container is  to simplify its deployment into a public production environment. Most cloud-based hosting
 providers these days support the ability to run container-based applications. This makes deploying
 or updating your game as simple as building a new container image locally, pushing it to your Docker Hub account, and then pulling from Docker Hub into your AWS/Azure/other docker-enabled hosting account. The container eliminates the need to install Python, set up a virtualenv, or run pip to install dependencies.</p>
@@ -197,14 +189,11 @@ enter it and run commands).</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    docker build -t mydhaccount/mygame .
 </pre></div>
 </div>
-<p>(don’t forget the period at the end, it will use the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> from the current location). Here
-<code class="docutils literal notranslate"><span class="pre">mydhaccount</span></code> is the name of your <code class="docutils literal notranslate"><span class="pre">dockerhub</span></code> account. If you don’t have a dockerhub account you can build the image locally only (name the container whatever you like in that case, like just <code class="docutils literal notranslate"><span class="pre">mygame</span></code>).</p>
-<p>Docker images are stored centrally on your computer. You can see which ones you have available
-locally with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>. Once built, you have a couple of options to run your game.</p>
+<p>(don’t forget the period at the end, it will use the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> from the current location). Here <code class="docutils literal notranslate"><span class="pre">mydhaccount</span></code> is the name of your <code class="docutils literal notranslate"><span class="pre">dockerhub</span></code> account. If you don’t have a dockerhub account you can build the image locally only (name the container whatever you like in that case, like just <code class="docutils literal notranslate"><span class="pre">mygame</span></code>).</p>
+<p>Docker images are stored centrally on your computer. You can see which ones you have available locally with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>. Once built, you have a couple of options to run your game.</p>
 <section id="run-container-from-your-game-image-for-development">
 <h3>Run container from your game image for development<a class="headerlink" href="#run-container-from-your-game-image-for-development" title="Permalink to this headline">¶</a></h3>
-<p>To run the container based on your game image locally for development, mount the local game
-directory as before:</p>
+<p>To run the container based on your game image locally for development, mount the local game directory as before:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 -v $PWD:/usr/src/game --user $UID:$GID
 mydhaccount/mygame
 </pre></div>
@@ -256,10 +245,8 @@ container will get a new container id to reference.</p>
 </section>
 <section id="how-it-works">
 <h2>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">evennia/evennia</span></code> docker image holds the evennia library and all of its dependencies. It also has an <code class="docutils literal notranslate"><span class="pre">ONBUILD</span></code> directive which is triggered during builds of images derived from it. This
-<code class="docutils literal notranslate"><span class="pre">ONBUILD</span></code> directive handles setting up a volume and copying your game directory code into the proper location within the container.</p>
-<p>In most cases, the Dockerfile for an Evennia-based game will only need the <code class="docutils literal notranslate"><span class="pre">FROM</span> <span class="pre">evennia/evennia:latest</span></code> directive, and optionally a <code class="docutils literal notranslate"><span class="pre">MAINTAINER</span></code> directive if you plan to publish
-your image on Docker Hub and would like to provide contact info.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">evennia/evennia</span></code> docker image holds the evennia library and all of its dependencies. It also has an <code class="docutils literal notranslate"><span class="pre">ONBUILD</span></code> directive which is triggered during builds of images derived from it. This <code class="docutils literal notranslate"><span class="pre">ONBUILD</span></code> directive handles setting up a volume and copying your game directory code into the proper location within the container.</p>
+<p>In most cases, the Dockerfile for an Evennia-based game will only need the <code class="docutils literal notranslate"><span class="pre">FROM</span> <span class="pre">evennia/evennia:latest</span></code> directive, and optionally a <code class="docutils literal notranslate"><span class="pre">MAINTAINER</span></code> directive if you plan to publish your image on Docker Hub and would like to provide contact info.</p>
 <p>For more information on Dockerfile directives, see the <a class="reference external" href="https://docs.docker.com/engine/reference/builder/">Dockerfile Reference</a>.</p>
 <p>For more information on volumes and Docker containers, see the Docker site’s <a class="reference external" href="https://docs.docker.com/engine/tutorials/dockervolumes/">Manage data in
 containers</a> page.</p>
@@ -317,8 +304,7 @@ working directory to be your game directory and run</p>
       <span class="o">-</span> <span class="o">.</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">game</span>
 </pre></div>
 </div>
-<p>With this file in the game directory next to the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>, starting the container is as simple
-as</p>
+<p>With this file in the game directory next to the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>, starting the container is as simple as</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
 </pre></div>
 </div>

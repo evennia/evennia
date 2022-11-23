@@ -96,4 +96,4 @@ This shows only a basic tweet setup, other things to do could be:
 * Changing locks to make tweeting open to more people
 * Echo your tweets to an in-game channel
 
-Rather than using an explicit command you can set up a Script to send automatic tweets, for example to post updated game stats. See the [Tweeting Game Stats tutorial](../Howtos/Tutorial-Tweeting-Game-Stats.md) for help.
+Rather than using an explicit command you can set up a Script to send automatic tweets, for example to post updated game stats. See the [Tweeting Game Stats tutorial](../Howtos/Web-Tweeting-Game-Stats.md) for help.
