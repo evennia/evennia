@@ -414,6 +414,23 @@ class ChannelDBManager(TypedObjectManager):
             return subscriber.object_subscription_set.all()
         return []
 
+    def search_dbref(self, dbref):
+        """
+        Search the channel database for a particular dbref.
+        
+        Args:
+            dbref (str): The database id of the channel, in dbref form.
+        
+        Returns:
+            channel or None: the channel for the dbref, or None if there is no match
+        """
+        channels = self.filter(id=dbref).distinct()
+
+        if not channels:
+            return None
+
+        return channels[0]
+    
     def search_channel(self, ostring, exact=True):
         """
         Search the channel database for a particular channel.
