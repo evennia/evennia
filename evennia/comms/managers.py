@@ -419,7 +419,7 @@ class ChannelDBManager(TypedObjectManager):
         Search the channel database for a particular dbref.
         
         Args:
-            dbref (str): The database id of the channel, in dbref form.
+            dbref (int): The database id of the channel.
         
         Returns:
             Queryset: Iterable with 0, 1 or more matches.
