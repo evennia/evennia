@@ -422,15 +422,10 @@ class ChannelDBManager(TypedObjectManager):
             dbref (str): The database id of the channel, in dbref form.
         
         Returns:
-            channel or None: the channel for the dbref, or None if there is no match
+            Queryset: Iterable with 0, 1 or more matches.
         """
-        channels = self.filter(id=dbref).distinct()
+        return self.filter(id=dbref).distinct()
 
-        if not channels:
-            return None
-
-        return channels[0]
-    
     def search_channel(self, ostring, exact=True):
         """
         Search the channel database for a particular channel.
