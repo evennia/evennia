@@ -114,7 +114,7 @@
 <p>This contrib provides a wilderness map without actually creating a large number
 of rooms - as you move, you instead end up back in the same room but its description
 changes. This means you can make huge areas with little database use as
-long as the rooms are relatively similar (name/desc changing).</p>
+long as the rooms are relatively similar (e.g. only the names/descs changing).</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>This contrib does not provide any new commands. Instead the default <code class="docutils literal notranslate"><span class="pre">py</span></code> command
@@ -136,6 +136,10 @@ specify the name, a script named “default” will be created and used.</p>
 <p>All coordinates used by the wilderness map are in the format of <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code>
 tuples. x goes from left to right and y goes from bottom to top. So <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code>
 is the bottom left corner of the map.</p>
+<blockquote>
+<div><p>You can also add a wilderness by defining a WildernessScript in your GLOBAL_SCRIPT
+settings. If you do, make sure define the map provider.</p>
+</div></blockquote>
 </section>
 <section id="customisation">
 <h2>Customisation<a class="headerlink" href="#customisation" title="Permalink to this headline">¶</a></h2>
@@ -143,9 +147,12 @@ is the bottom left corner of the map.</p>
 new wilderness map it is possible to give a “map provider”: this is a
 python object that is smart enough to create the map.</p>
 <p>The default provider, <code class="docutils literal notranslate"><span class="pre">WildernessMapProvider</span></code>, just creates a grid area that
-is unlimited in size.
-This <code class="docutils literal notranslate"><span class="pre">WildernessMapProvider</span></code> can be subclassed to create more interesting
+is unlimited in size.</p>
+<p><code class="docutils literal notranslate"><span class="pre">WildernessMapProvider</span></code> can be subclassed to create more interesting
 maps and also to customize the room/exit typeclass used.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">WildernessScript</span></code> also has an optional <code class="docutils literal notranslate"><span class="pre">preserve_items</span></code> property, which
+when set to <code class="docutils literal notranslate"><span class="pre">True</span></code> will not recycle rooms that contain any objects. By default,
+a wilderness room is recycled whenever there are no players left in it.</p>
 <p>There is also no command that allows players to enter the wilderness. This
 still needs to be added: it can be a command or an exit, depending on your
 needs.</p>
@@ -197,7 +204,7 @@ provided as a string: a “.” symbol is a location we can walk on.</p>
         <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a room in the pyramid.&quot;</span>
         <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">:</span>
             <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;You can see far and wide from the top of the pyramid.&quot;</span>
-        <span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
 </pre></div>
 </div>
 <p>Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
@@ -209,12 +216,14 @@ py from evennia.contrib import wilderness; wilderness.enter_wilderness(me, coord
 </section>
 <section id="implementation-details">
 <h2>Implementation details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h2>
-<p>When a character moves into the wilderness, they get their own room. If they
-move, instead of moving the character, the room changes to match the new
-coordinates.  If a character meets another character in the wilderness, then
-their room merges. When one of the character leaves again, they each get their
-own separate rooms.  Rooms are created as needed. Unneeded rooms are stored away
-to avoid the overhead cost of creating new rooms again in the future.</p>
+<p>When a character moves into the wilderness, they get their own room. If
+they move, instead of moving the character, the room changes to match the
+new coordinates.</p>
+<p>If a character meets another character in the wilderness, then their room
+merges. When one of the character leaves again, they each get their own
+separate rooms.</p>
+<p>Rooms are created as needed. Unneeded rooms are stored away to avoid the
+overhead cost of creating new rooms again in the future.</p>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/grid/wilderness/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>

@@ -143,10 +143,10 @@ is the bottom left corner of the map.</p>
 <p>The defaults, while useable, are meant to be customised. When creating a
 new wilderness map it is possible to give a “map provider”: this is a
 python object that is smart enough to create the map.</p>
-<p>The default provider, <strong>WildernessMapProvider</strong>, just creates a grid area that
-is unlimited in size.
-This <strong>WildernessMapProvider</strong> can be subclassed to create more interesting
-maps and also to customize the room/exit typeclass used.</p>
+<p>The default provider, <strong>WildernessMapProvider</strong>, creates a grid area that
+is unlimited in size.</p>
+<p><strong>WildernessMapProvider</strong> can be subclassed to create more interesting maps
+and also to customize the room/exit typeclass used.</p>
 <p>There is also no command that allows players to enter the wilderness. This
 still needs to be added: it can be a command or an exit, depending on your
 needs.</p>
@@ -199,7 +199,7 @@ provided as a string: a “.” symbol is a location we can walk on.</p>
         <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a room in the pyramid.&quot;</span>
         <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">:</span>
             <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;You can see far and wide from the top of the pyramid.&quot;</span>
-        <span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
 </pre></div>
 </div>
 <p>Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
@@ -214,16 +214,16 @@ py from evennia.contrib import wilderness; wilderness.enter_wilderness(me, coord
 <blockquote>
 <div><p>When a character moves into the wilderness, they get their own room. If
 they move, instead of moving the character, the room changes to match the
-new coordinates.
-If a character meets another character in the wilderness, then their room
+new coordinates.</p>
+<p>If a character meets another character in the wilderness, then their room
 merges. When one of the character leaves again, they each get their own
-separate rooms.
-Rooms are created as needed. Unneeded rooms are stored away to avoid the
+separate rooms.</p>
+<p>Rooms are created as needed. Unneeded rooms are stored away to avoid the
 overhead cost of creating new rooms again in the future.</p>
 </div></blockquote>
 <dl class="py function">
 <dt id="evennia.contrib.grid.wilderness.wilderness.create_wilderness">
-<code class="sig-prename descclassname">evennia.contrib.grid.wilderness.wilderness.</code><code class="sig-name descname">create_wilderness</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">mapprovider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/wilderness/wilderness.html#create_wilderness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.create_wilderness" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.grid.wilderness.wilderness.</code><code class="sig-name descname">create_wilderness</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">mapprovider</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">preserve_items</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/wilderness/wilderness.html#create_wilderness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.create_wilderness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new wilderness map. Does nothing if a wilderness map already
 exists with the same name.</p>
 <dl class="field-list simple">
@@ -285,6 +285,48 @@ default one</p></li>
 coordinates of every item currently inside the wilderness is stored. This
 script is responsible for creating rooms as needed and storing rooms away
 into storage when they are not needed anymore.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.wilderness.wilderness.WildernessScript.mapprovider">
+<code class="sig-name descname">mapprovider</code><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessScript.mapprovider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.wilderness.wilderness.WildernessScript.itemcoordinates">
+<code class="sig-name descname">itemcoordinates</code><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessScript.itemcoordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.wilderness.wilderness.WildernessScript.preserve_items">
+<code class="sig-name descname">preserve_items</code><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessScript.preserve_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py method">
 <dt id="evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/wilderness/wilderness.html#WildernessScript.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_script_creation" title="Permalink to this definition">¶</a></dt>
@@ -293,33 +335,9 @@ hook.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.grid.wilderness.wilderness.WildernessScript.mapprovider">
-<em class="property">property </em><code class="sig-name descname">mapprovider</code><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessScript.mapprovider" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shortcut property to the map provider.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>MapProvider</em> – the mapprovider used with this wilderness</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.grid.wilderness.wilderness.WildernessScript.itemcoordinates">
-<em class="property">property </em><code class="sig-name descname">itemcoordinates</code><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessScript.itemcoordinates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a dictionary with the coordinates of every item inside this
-wilderness map. The key is the item, the value are the coordinates as
-(x, y) tuple.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>{item</em> – coordinates}</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_start">
-<code class="sig-name descname">at_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/wilderness/wilderness.html#WildernessScript.at_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when the script is started and also after server reloads.</p>
+<dt id="evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_server_start">
+<code class="sig-name descname">at_server_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/wilderness/wilderness.html#WildernessScript.at_server_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_server_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after the server is started or reloaded.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -512,7 +530,8 @@ coordinates to change</p></li>
 <dl class="py method">
 <dt id="evennia.contrib.grid.wilderness.wilderness.WildernessRoom.get_display_name">
 <code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/wilderness/wilderness.html#WildernessRoom.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessRoom.get_display_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Displays the name of the object in a viewer-aware manner.</p>
+<dd><p>Displays the name of the object in a viewer-aware manner.
+This is a core evennia hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>looker</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – The object or account that is looking
@@ -534,6 +553,14 @@ appear to users in character, but be wary. This function
 does not change an object’s keys or aliases when
 searching, and is expected to produce something useful for
 builders.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.wilderness.wilderness.WildernessRoom.get_display_desc">
+<code class="sig-name descname">get_display_desc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/wilderness/wilderness.html#WildernessRoom.get_display_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.wilderness.wilderness.WildernessRoom.get_display_desc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the description of the room. This is a core evennia hook.</p>
+<p>Allows the room’s description to be customized in an ndb value,
+avoiding having to write to the database on moving.</p>
 </dd></dl>
 
 <dl class="py exception">
