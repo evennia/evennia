@@ -34,10 +34,11 @@ The defaults, while useable, are meant to be customised. When creating a
 new wilderness map it is possible to give a "map provider": this is a
 python object that is smart enough to create the map.
 
-The default provider, `WildernessMapProvider`, just creates a grid area that
+The default provider, `WildernessMapProvider`, creates a grid area that
 is unlimited in size.
-This `WildernessMapProvider` can be subclassed to create more interesting
-maps and also to customize the room/exit typeclass used.
+
+`WildernessMapProvider` can be subclassed to create more interesting maps
+and also to customize the room/exit typeclass used.
 
 There is also no command that allows players to enter the wilderness. This
 still needs to be added: it can be a command or an exit, depending on your
@@ -91,7 +92,7 @@ class PyramidMapProvider(wilderness.WildernessMapProvider):
         desc = "This is a room in the pyramid."
         if y == 3 :
             desc = "You can see far and wide from the top of the pyramid."
-        room.db.desc = desc
+        room.ndb.desc = desc
 ```
 
 Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
@@ -105,9 +106,11 @@ create a new wilderness (with the name "default") but using our new map provider
     When a character moves into the wilderness, they get their own room. If
     they move, instead of moving the character, the room changes to match the
     new coordinates.
+
     If a character meets another character in the wilderness, then their room
     merges. When one of the character leaves again, they each get their own
     separate rooms.
+
     Rooms are created as needed. Unneeded rooms are stored away to avoid the
     overhead cost of creating new rooms again in the future.
 
@@ -121,9 +124,9 @@ from evennia import (
     create_script,
 )
 from evennia.utils import inherits_from
+from evennia.typeclasses.attributes import AttributeProperty
 
-
-def create_wilderness(name="default", mapprovider=None):
+def create_wilderness(name="default", mapprovider=None, preserve_items=False):
     """
     Creates a new wilderness map. Does nothing if a wilderness map already
     exists with the same name.
@@ -144,6 +147,8 @@ def create_wilderness(name="default", mapprovider=None):
         mapprovider = WildernessMapProvider()
     script = create_script(WildernessScript, key=name)
     script.db.mapprovider = mapprovider
+    if preserve_items:
+        script.preserve_items = True
 
 
 def enter_wilderness(obj, coordinates=(0, 0), name="default"):
@@ -161,10 +166,12 @@ def enter_wilderness(obj, coordinates=(0, 0), name="default"):
     Returns:
         bool: True if obj successfully moved into the wilderness.
     """
-    if not WildernessScript.objects.filter(db_key=name).exists():
+    script = WildernessScript.objects.filter(db_key=name)
+    if not script.exists():
         return False
+    else:
+        script = script[0]
 
-    script = WildernessScript.objects.get(db_key=name)
     if script.is_valid_coordinates(coordinates):
         script.move_obj(obj, coordinates)
         return True
@@ -205,6 +212,18 @@ class WildernessScript(DefaultScript):
     into storage when they are not needed anymore.
     """
 
+    # Stores the MapProvider class
+    mapprovider = AttributeProperty()
+
+    # Stores a dictionary of items on the map with their coordinates
+    # The key is the item, the value are the coordinates as (x, y) tuple.
+    itemcoordinates = AttributeProperty()
+    
+    # Determines whether or not rooms are recycled despite containing non-player objects
+    # True means that leaving behind a non-player object will prevent the room from being recycled
+    # in order to preserve the object
+    preserve_items = AttributeProperty(default=False)
+
     def at_script_creation(self):
         """
         Only called once, when the script is created. This is a default Evennia
@@ -224,39 +243,17 @@ class WildernessScript(DefaultScript):
         # allows quick retrieval if a new room is needed without having to
         # create it.
         self.db.unused_rooms = []
-
-    @property
-    def mapprovider(self):
+        
+    def at_server_start(self):
         """
-        Shortcut property to the map provider.
-
-        Returns:
-            MapProvider: the mapprovider used with this wilderness
-        """
-        return self.db.mapprovider
-
-    @property
-    def itemcoordinates(self):
-        """
-        Returns a dictionary with the coordinates of every item inside this
-        wilderness map. The key is the item, the value are the coordinates as
-        (x, y) tuple.
-
-        Returns:
-            {item: coordinates}
-        """
-        return self.db.itemcoordinates
-
-    def at_start(self):
-        """
-        Called when the script is started and also after server reloads.
+        Called after the server is started or reloaded.
         """
         for coordinates, room in self.db.rooms.items():
             room.ndb.wildernessscript = self
             room.ndb.active_coordinates = coordinates
-        for item in list(self.db.itemcoordinates.keys()):
-            # Items deleted from the wilderness leave None type 'ghosts'
-            # that must be cleaned out
+        for item in self.db.itemcoordinates.keys():
+            # Items deleted while in the wilderness can leave None-type 'ghosts'
+            # These need to be cleaned up
             if item is None:
                 del self.db.itemcoordinates[item]
                 continue
@@ -303,16 +300,8 @@ class WildernessScript(DefaultScript):
         Returns:
             [Object, ]: list of Objects at coordinates
         """
-        result = []
-        for item, item_coordinates in list(self.itemcoordinates.items()):
-            # Items deleted from the wilderness leave None type 'ghosts'
-            # that must be cleaned out
-            if item is None:
-                del self.db.itemcoordinates[item]
-                continue
-            if coordinates == item_coordinates:
-                result.append(item)
-        return result
+        result = [ item for item, item_coords in self.itemcoordinates.items() if item_coords == coordinates and item is not None ]
+        return list(result)
 
     def move_obj(self, obj, new_coordinates):
         """
@@ -330,45 +319,53 @@ class WildernessScript(DefaultScript):
         # appear in its old room should that room be deleted.
         obj.location = None
 
-        try:
-            # See if we already have a room for that location
-            room = self.db.rooms[new_coordinates]
+        # By default, we'll assume we won't be making a new room and change this flag if necessary.
+        create_room = False
+
+        # See if we already have a room for that location
+        if room := self.db.rooms.get(new_coordinates):
             # There is. Try to destroy the old_room if it is not needed anymore
             self._destroy_room(old_room)
-        except KeyError:
+        else:
             # There is no room yet at new_location
-            if (old_room and not inherits_from(old_room, WildernessRoom)) or (not old_room):
-                # Obj doesn't originally come from a wilderness room.
-                # We'll create a new one then.
-                room = self._create_room(new_coordinates, obj)
-            else:
-                # Obj does come from another wilderness room
-                create_new_room = False
+            # Is the old room in a wilderness?
+            if hasattr(old_room, "wilderness"):
+                # Yes. Is it in THIS wilderness?
+                if old_room.wilderness == self:
+                    # Should we preserve rooms with any objects?
+                    if self.preserve_items:
+                        # Yes - check if ANY objects besides the exits are in old_room
+                        if len([ob for ob in old_room.contents if not inherits_from(ob, WildernessExit)]):
+                            # There is, so we'll create a new room
+                            room = self._create_room(new_coordinates, obj)
+                        else:
+                            # The room is empty, so we'll reuse it
+                            room = old_room
+                    else:
+                        # Only preserve rooms if there are players behind
+                        if len([ob for ob in old_room.contents if ob.has_account]):
+                            # There is still a player there; create a new room
+                            room = self._create_room(new_coordinates, obj)
+                        else:
+                            # The room is empty of players, so we'll reuse it
+                            room = old_room
 
-                if old_room.wilderness != self:
-                    # ... but that other wilderness room belongs to another
-                    # wilderness map
-                    create_new_room = True
+                # It's in a different wilderness
+                else:
+                    # It does, so we make sure to leave the other wilderness properly
                     old_room.wilderness.at_post_object_leave(obj)
-                else:
-                    for item in old_room.contents:
-                        if item.has_account:
-                            # There is still a player in the old room.
-                            # Let's create a new room and not touch that old
-                            # room.
-                            create_new_room = True
-                            break
-
-                if create_new_room:
-                    # Create a new room to hold obj, not touching any obj's in
-                    # the old room
+                    # We'll also need to create a new room in this wilderness
                     room = self._create_room(new_coordinates, obj)
-                else:
-                    # The old_room is empty: we are just going to reuse that
-                    # room instead of creating a new one
-                    room = old_room
 
-        room.set_active_coordinates(new_coordinates, obj)
+            else:
+                # Obj comes from outside the wilderness entirely
+                # We need to make a new room
+                room = self._create_room(new_coordinates, obj)
+
+            # Set `room` to the new coordinates, however it was made
+            room.set_active_coordinates(new_coordinates, obj)
+
+        # Put obj back, now in the correct room
         obj.location = room
         obj.ndb.wilderness = self
 
@@ -425,7 +422,11 @@ class WildernessScript(DefaultScript):
     def _destroy_room(self, room):
         """
         Moves a room back to storage. If room is not a WildernessRoom or there
-        is a player inside the room, then this does nothing.
+        is something left inside the room, then this does nothing.
+        
+        Implementation note: If `preserve_items` is False (the default) then any
+        objects left in the rooms will be moved to None. You may want to implement
+        your own cleanup or recycling routine for these objects.
 
         Args:
             room (WildernessRoom): the room to put in storage
@@ -433,25 +434,30 @@ class WildernessScript(DefaultScript):
         if not room or not inherits_from(room, WildernessRoom):
             return
 
+        # Check the contents of the room before recycling
         for item in room.contents:
             if item.has_account:
-                # There is still a character in that room. We can't get rid of
-                # it just yet
-                break
-        else:
-            # No characters left in the room.
+                # There is still a player in this room, we can't delete it yet.
+                return
 
-            # Clear the location of every obj in that room first
-            for item in room.contents:
-                if item.destination and item.destination == room:
-                    # Ignore the exits, they stay in the room
-                    continue
-                item.location = None
+            if not (item.destination and item.destination == room):
+                # There is still a non-exit object in the room. Should we preserve it?
+                if self.preserve_items:
+                    # Yes, so we can't get rid of the room just yet
+                    return
 
-            # Then delete its reference
-            del self.db.rooms[room.ndb.active_coordinates]
-            # And finally put this room away in storage
-            self.db.unused_rooms.append(room)
+        # If we get here, the room can be recycled
+        # Clear the location of any objects left in that room first
+        for item in room.contents:
+            if item.destination and item.destination == room:
+                # Ignore the exits, they stay in the room
+                continue
+            item.location = None
+
+        # Then delete its coordinate reference
+        del self.db.rooms[room.ndb.active_coordinates]
+        # And finally put this room away in storage
+        self.db.unused_rooms.append(room)
 
     def at_post_object_leave(self, obj):
         """
@@ -460,13 +466,13 @@ class WildernessScript(DefaultScript):
         Args:
             obj (object): the object that left
         """
-        # Remove that obj from the wilderness's coordinates dict
-        loc = self.db.itemcoordinates[obj]
-        del self.db.itemcoordinates[obj]
-
-        # And see if we can put that room away into storage.
-        room = self.db.rooms[loc]
-        self._destroy_room(room)
+        # Try removing the object from the coordinates system
+        if loc := self.db.itemcoordinates.pop(obj, None):
+            # The object was removed successfully
+            # Make sure there was a room at that location
+            if room := self.db.rooms.get(loc):
+                # If so, try to clean up the room
+                self._destroy_room(room)
 
 
 class WildernessRoom(DefaultRoom):
@@ -522,21 +528,13 @@ class WildernessRoom(DefaultRoom):
             # n, ne, ... exits.
             return
 
-        itemcoords = self.wilderness.db.itemcoordinates
+        itemcoords = self.wilderness.itemcoordinates
         if moved_obj in itemcoords:
             # This object was already in the wilderness. We need to make sure
             # it goes to the correct room it belongs to.
-            # Otherwise the following issue can come up:
-            # 1) Player 1 and Player 2 share a room
-            # 2) Player 1 disconnects
-            # 3) Player 2 moves around
-            # 4) Player 1 reconnects
-            # Player 1 will end up in player 2's room, which has the wrong
-            # coordinates
-
             coordinates = itemcoords[moved_obj]
             # Setting the location to None is important here so that we always
-            # get a "fresh" room
+            # get a "fresh" room if it was in the wrong place
             moved_obj.location = None
             self.wilderness.move_obj(moved_obj, coordinates)
         else:
@@ -564,14 +562,16 @@ class WildernessRoom(DefaultRoom):
             obj (Object): the object that moved into this room and caused the
                 coordinates to change
         """
-        # Remove the reference for the old coordinates...
+        # Remove any reference for the old coordinates...
         rooms = self.wilderness.db.rooms
-        del rooms[self.coordinates]
+        if self.coordinates:
+            del rooms[self.coordinates]
         # ...and add it for the new coordinates.
         self.ndb.active_coordinates = new_coordinates
         rooms[self.coordinates] = self
 
-        # Every obj inside this room will get its location set to None
+        # Any object inside this room will get its location set to None
+        # unless it's a wilderness exit
         for item in self.contents:
             if not item.destination or item.destination != item.location:
                 item.location = None
@@ -600,6 +600,7 @@ class WildernessRoom(DefaultRoom):
     def get_display_name(self, looker, **kwargs):
         """
         Displays the name of the object in a viewer-aware manner.
+        This is a core evennia hook.
 
         Args:
             looker (TypedObject): The object or account that is looking
@@ -624,7 +625,21 @@ class WildernessRoom(DefaultRoom):
 
         name += " {0}".format(self.coordinates)
         return name
+    
+    def get_display_desc(self, looker, **kwargs):
+        """
+        Displays the description of the room. This is a core evennia hook.
+        
+        Allows the room's description to be customized in an ndb value,
+        avoiding having to write to the database on moving.
+        """
+        # Check if a new description was prepared by the map provider
+        if self.ndb.active_desc:
+            # There is one: use it
+            return self.ndb.active_desc
 
+        # Otherwise, use the normal description hook.
+        return super().get_display_desc(looker, **kwargs)
 
 class WildernessExit(DefaultExit):
     """
