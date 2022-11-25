@@ -64,6 +64,8 @@
   <ul>
 <li><a class="reference internal" href="#">Clothing</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
 </ul>
 </li>
 </ul>
@@ -136,19 +138,22 @@ inherit from ClothedCharacter in your game’s <a class="reference external" hre
 <p>And then add <code class="docutils literal notranslate"><span class="pre">ClothedCharacterCmdSet</span></code> in your character set in
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.clothing</span> <span class="kn">import</span> <span class="n">ClothedCharacterCmdSet</span> <span class="o">&lt;--</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.clothing</span> <span class="kn">import</span> <span class="n">ClothedCharacterCmdSet</span> <span class="c1"># &lt;--</span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
      <span class="c1"># ...</span>
      <span class="n">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
          <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
-         <span class="o">...</span>
+         <span class="c1"># ...</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ClothedCharacterCmdSet</span><span class="p">)</span>    <span class="c1"># &lt;--</span>
 
 </pre></div>
 </div>
-<p>From here, you can use the default builder commands to create clothes
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Once installed, you can use the default builder commands to create clothes
 with which to test the system:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create a pretty shirt : evennia.contrib.game_systems.clothing.Clothing
 set shirt/clothing_type = &#39;top&#39;
@@ -186,6 +191,51 @@ that can be worn. The system as-is is fairly freeform - you
 can cover any garment with almost any other, for example - but it
 can easily be made more restrictive, and can even be tied into a
 system for armor or other equipment.</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>The contrib has several optional configurations which you can define in your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>
+Here are the settings and their default values.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Maximum character length of &#39;wear style&#39; strings, or None for unlimited.</span>
+<span class="n">CLOTHING_WEARSTYLE_MAXLENGTH</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1"># The order in which clothing types appear on the description.</span>
+<span class="c1"># Untyped clothing or clothing with a type not in this list goes last.</span>
+<span class="n">CLOTHING_TYPE_ORDERED</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;hat&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;jewelry&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;top&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;undershirt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gloves&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fullbody&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;underpants&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;socks&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;shoes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;accessory&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+<span class="c1"># The maximum number of clothing items that can be worn, or None for unlimited.</span>
+<span class="n">CLOTHING_OVERALL_LIMIT</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="c1"># The maximum number for specific clothing types that can be worn.</span>
+<span class="c1"># If the clothing item has no type or is not specified here, the only maximum is the overall limit.</span>
+<span class="n">CLOTHING_TYPE_LIMIT</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;hat&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;gloves&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;socks&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;shoes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="c1"># What types of clothes will automatically cover what other types of clothes when worn.</span>
+<span class="c1"># Note that clothing only gets auto-covered if it&#39;s already being worn. It&#39;s perfectly possible</span>
+<span class="c1"># to have your underpants showing if you put them on after your pants!</span>
+<span class="n">CLOTHING_TYPE_AUTOCOVER</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;undershirt&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;underpants&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;fullbody&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;undershirt&quot;</span><span class="p">,</span> <span class="s2">&quot;underpants&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;shoes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;socks&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+
+<span class="c1"># Any types of clothes that can&#39;t be used to cover other clothes at all.</span>
+<span class="n">CLOTHING_TYPE_CANT_COVER_WITH</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;jewelry&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/clothing/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
