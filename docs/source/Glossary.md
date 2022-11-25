@@ -185,7 +185,7 @@ latest changes, just `cd` into your game dir and run
     evennia migrate
 
 That should be it (see [virtualenv](./Glossary.md#virtualenv) if you get a warning that the `evennia`
-command is not available). See also [Updating your game](Coding/Updating-Your-Game.md) for more details.
+command is not available). See also [Updating your game](Setup/Updating-Evennia.md) for more details.
 
 > Technically, migrations are shipped as little Python snippets of code that explains which database
 actions must be taken to upgrade from one version of the schema to the next. When you run the

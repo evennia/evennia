@@ -80,7 +80,7 @@ Each contrib contains installation instructions for how to integrate it
 with your other code. If you want to tweak the code of a contrib, just
 copy its entire folder to your game directory and modify/use it from there.
 
-If you want to contribute yourself, see [here](Contributing)!
+If you want to add a contrib, see [the contrib guidelines](Contribs-Guidelines)!
 
 [forum]: https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets
 
@@ -90,7 +90,12 @@ If you want to contribute yourself, see [here](Contributing)!
 """
 
 
-TOCTREE = """```{{toctree}}
+TOCTREE = """
+```{{toctree}}
+:hidden:
+Contribs-Guidelines.md
+```
+```{{toctree}}
 :maxdepth: 1
 
 {listing}

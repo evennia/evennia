@@ -12,9 +12,26 @@ DOCSRCDIR = pathjoin(DOCDIR, "source")
 EVENNIADIR = pathjoin(ROOTDIR, "evennia")
 
 
+def update_code_style():
+    """
+    Plain CODING_STYLE.md copy
+
+    """
+    sourcefile = pathjoin(ROOTDIR, "CODING_STYLE.md")
+    targetfile = pathjoin(DOCSRCDIR, "Coding", "Evennia-Code-Style.md")
+
+    with open(sourcefile) as fil:
+        txt = fil.read()
+
+    with open(targetfile, "w") as fil:
+        fil.write(txt)
+
+    print("  -- Updated Evennia-Code-Style.md")
+
+
 def update_changelog():
     """
-    Plain CHANGELOG copy
+    Plain CHANGELOG.md copy
 
     """
 
@@ -77,6 +94,7 @@ def update_dynamic_pages():
     """
     update_changelog()
     update_default_settings()
+    update_code_style()
 
 
 if __name__ == "__main__":

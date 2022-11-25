@@ -1,24 +1,16 @@
 # Profiling
 
-*This is considered an advanced topic mainly of interest to server developers.*
+```{important}
+This is considered an advanced topic. It's mainly of interest to server developers.
+```
 
-## Introduction
+Sometimes it can be useful to try to determine just how efficient a particular piece of code is, or to figure out if one could speed up things more than they are. There are many ways to test the performance of Python and the running server.
 
-Sometimes it can be useful to try to determine just how efficient a particular
-piece of code is, or to figure out if one could speed up things more than they
-are. There are many ways to test the performance of Python and the running
-server.
-
-Before digging into this section, remember Donald Knuth's
-[words of wisdom](https://en.wikipedia.org/wiki/Program_optimization#When_to_optimize):
+Before digging into this section, remember Donald Knuth's [words of wisdom](https://en.wikipedia.org/wiki/Program_optimization#When_to_optimize):
 
 > *[...]about 97% of the time: Premature optimization is the root of all evil*.
 
-That is, don't start to try to optimize your code until you have actually
-identified a need to do so. This means your code must actually be working before
-you start to consider optimization.  Optimization will also often make your code
-more complex and harder to read. Consider readability and maintainability and
-you may find that a small gain in speed is just not worth it.
+That is, don't start to try to optimize your code until you have actually identified a need to do so. This means your code must actually be working before you start to consider optimization.  Optimization will also often make your code more complex and harder to read. Consider readability and maintainability and you may find that a small gain in speed is just not worth it.
 
 ## Simple timer tests
 
@@ -36,53 +28,31 @@ could use the following code:
    <<<  5.358283996582031
 ```
 
-The `setup` keyword is used to set up things that should not be included in the
-time measurement, like `a = []` in the first call.
+The `setup` keyword is used to set up things that should not be included in the time measurement, like `a = []` in the first call.
 
-By default the `timeit` function will re-run the given test 1000000 times and
-returns the *total time* to do so (so *not* the average per test). A hint is to
-not use this default for testing something that includes database writes - for
-that you may want to use a lower number of repeats (say 100 or 1000) using the
-`number=100` keyword.
+By default the `timeit` function will re-run the given test 1000000 times and returns the *total time* to do so (so *not* the average per test). A hint is to not use this default for testing something that includes database writes - for that you may want to use a lower number of repeats (say 100 or 1000) using the `number=100` keyword. 
+
+In the example above, we see that this number of calls, using a list comprehension is about twice as fast as building a list using `.append()`.
 
 ## Using cProfile
 
-Python comes with its own profiler, named cProfile (this is for cPython, no
-tests have been done with `pypy` at this point). Due to the way Evennia's
-processes are handled, there is no point in using the normal way to start the
-profiler (`python -m cProfile evennia.py`). Instead you start the profiler
-through the launcher:
+Python comes with its own profiler, named cProfile (this is for cPython, no tests have been done with `pypy` at this point). Due to the way Evennia's processes are handled, there is no point in using the normal way to start the profiler (`python -m cProfile evennia.py`). Instead you start the profiler through the launcher:
 
     evennia --profiler start
 
-This will start Evennia with the Server component running (in daemon mode) under
-cProfile. You could instead try `--profile` with the `portal` argument to
-profile the Portal (you would then need to
-[start the Server separately](../Setup/Start-Stop-Reload.md)).
+This will start Evennia with the Server component running (in daemon mode) under cProfile. You could instead try `--profile` with the `portal` argument to profile the Portal (you would then need to [start the Server separately](../Setup/Running-Evennia.md)).
 
-Please note that while the profiler is running, your process will use a lot more
-memory than usual.  Memory usage is even likely to climb over time. So don't
-leave it running perpetually but monitor it carefully (for example using the
-`top` command on Linux or the Task Manager's memory display on Windows).
+Please note that while the profiler is running, your process will use a lot more memory than usual.  Memory usage is even likely to climb over time. So don't leave it running perpetually but monitor it carefully (for example using the `top` command on Linux or the Task Manager's memory display on Windows). 
 
-Once you have run the server for a while, you need to stop it so the profiler
-can give its report.  Do *not* kill the program from your task manager or by
-sending it a kill signal - this will most likely also mess with the profiler.
-Instead either use `evennia.py stop` or (which may be even better), use
-`@shutdown` from inside the game.
+Once you have run the server for a while, you need to stop it so the profiler can give its report.  Do *not* kill the program from your task manager or by sending it a kill signal - this will most likely also mess with the profiler. Instead either use `evennia.py stop` or (which may be even better), use `@shutdown` from inside the game.
 
-Once the server has fully shut down (this may be a lot slower than usual) you
-will find that profiler has created a new file `mygame/server/logs/server.prof`.
+Once the server has fully shut down (this may be a lot slower than usual) you will find that profiler has created a new file `mygame/server/logs/server.prof`.
 
 ### Analyzing the profile
 
-The `server.prof` file is a binary file. There are many ways to analyze and
-display its contents, all of which has only been tested in Linux (If you are a
-Windows/Mac user, let us know what works).
+The `server.prof` file is a binary file. There are many ways to analyze and display its contents, all of which has only been tested in Linux (If you are a Windows/Mac user, let us know what works). 
 
-You can look at the contents of the profile file with Python's in-built `pstats`
-module in the evennia shell (it's recommended you install `ipython` with `pip
-install ipython` in your virtualenv first, for prettier output):
+You can look at the contents of the profile file with Python's in-built `pstats` module in the evennia shell (it's recommended you install `ipython` with `pip install ipython` in your virtualenv first, for prettier output):
 
     evennia shell
 
@@ -97,9 +67,7 @@ p.strip_dirs().sort_stats(-1).print_stats()
 
 ```
 
-See the
-[Python profiling documentation](https://docs.python.org/3/library/profile.html#instant-user-s-manual)
-for more information.
+See the [Python profiling documentation](https://docs.python.org/3/library/profile.html#instant-user-s-manual) for more information.
 
 You can also visualize the data in various ways.
 - [Runsnake](https://pypi.org/project/RunSnakeRun/) visualizes the profile to
@@ -112,20 +80,11 @@ You can also visualize the data in various ways.
   `pyprof2calltree` via `pip` whereas KCacheGrind is something you need to get
   via your package manager or their homepage.
 
-How to analyze and interpret profiling data is not a trivial issue and depends
-on what you are profiling for. Evennia being an asynchronous server can also
-confuse profiling. Ask on the mailing list if you need help and be ready to be
-able to supply your `server.prof` file for comparison, along with the exact
-conditions under which it was obtained.
+How to analyze and interpret profiling data is not a trivial issue and depends on what you are profiling for. Evennia being an asynchronous server can also confuse profiling. Ask on the mailing list if you need help and be ready to be able to supply your `server.prof` file for comparison, along with the exact conditions under which it was obtained.
 
 ## The Dummyrunner
 
-It is difficult to test "actual" game performance without having players in your
-game. For this reason Evennia comes with the *Dummyrunner* system. The
-Dummyrunner is a stress-testing system: a separate program that logs into your
-game with simulated players (aka "bots" or "dummies"). Once connected, these
-dummies will semi-randomly perform various tasks from a list of possible
-actions.  Use `Ctrl-C` to stop the Dummyrunner.
+It is difficult to test "actual" game performance without having players in your game. For this reason Evennia comes with the *Dummyrunner* system. The Dummyrunner is a stress-testing system: a separate program that logs into your game with simulated players (aka "bots" or "dummies"). Once connected, these dummies will semi-randomly perform various tasks from a list of possible actions.  Use `Ctrl-C` to stop the Dummyrunner.
 
 ```{warning}
 
@@ -140,9 +99,7 @@ This is the recommended process for using the dummy runner:
 
         from evennia.server.profiling.settings_mixin import *
 
-   This will override your settings and disable Evennia's rate limiters and
-   DoS-protections, which would otherwise block mass-connecting clients from
-   one IP. Notably, it will also change to a different (faster) password hasher.
+   This will override your settings and disable Evennia's rate limiters and DoS-protections, which would otherwise block mass-connecting clients from one IP. Notably, it will also change to a different (faster) password hasher.
 1. (recommended): Build a new database. If you use default Sqlite3 and want to
    keep your existing database, just rename `mygame/server/evennia.db3` to
    `mygame/server/evennia.db3_backup` and run `evennia migrate` and `evennia
@@ -156,29 +113,17 @@ This is the recommended process for using the dummy runner:
 
    Use `Ctrl-C` (or `Cmd-C`) to stop it.
 
-If you want to see what the dummies are actually doing you can run with a single
-dummy:
+If you want to see what the dummies are actually doing you can run with a single dummy:
 
     evennia --dummyrunner 1
 
-The inputs/outputs from the dummy will then be printed. By default the runner
-uses the 'looker' profile, which just logs in and sends the 'look' command
-over and over. To change the settings, copy the file
-`evennia/server/profiling/dummyrunner_settings.py` to your `mygame/server/conf/`
-directory, then add this line to your settings file to use it in the new
-location:
+The inputs/outputs from the dummy will then be printed. By default the runner uses the 'looker' profile, which just logs in and sends the 'look' command over and over. To change the settings, copy the file `evennia/server/profiling/dummyrunner_settings.py` to your `mygame/server/conf/` directory, then add this line to your settings file to use it in the new location:
 
     DUMMYRUNNER_SETTINGS_MODULE = "server/conf/dummyrunner_settings.py"
 
-The dummyrunner settings file is a python code module in its own right - it
-defines the actions available to the dummies. These are just tuples of command
-strings (like "look here") for the dummy to send to the server along with a
-probability of them happening. The dummyrunner looks for a global variable
-`ACTIONS`, a list of tuples, where the first two elements define the
-commands for logging in/out of the server.
+The dummyrunner settings file is a python code module in its own right - it defines the actions available to the dummies. These are just tuples of command strings (like "look here") for the dummy to send to the server along with a probability of them happening. The dummyrunner looks for a global variable `ACTIONS`, a list of tuples, where the first two elements define the commands for logging in/out of the server.
 
-Below is a simplified minimal setup (the default settings file adds a lot more
-functionality and info):
+Below is a simplified minimal setup (the default settings file adds a lot more functionality and info):
 
 ```python
 # minimal dummyrunner setup file
@@ -224,8 +169,7 @@ ACTIONS = (
 
 ```
 
-At the bottom of the default file are a few default profiles you can test out
-by just setting the `PROFILE` variable to one of the options.
+At the bottom of the default file are a few default profiles you can test out by just setting the `PROFILE` variable to one of the options.
 
 ### Dummyrunner hints
 

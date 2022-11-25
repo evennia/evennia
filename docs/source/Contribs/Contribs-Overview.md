@@ -18,7 +18,7 @@ Each contrib contains installation instructions for how to integrate it
 with your other code. If you want to tweak the code of a contrib, just
 copy its entire folder to your game directory and modify/use it from there.
 
-If you want to contribute yourself, see [here](../Contributing.md)!
+If you want to add a contrib, see [the contrib guidelines](./Contribs-Guidelines.md)!
 
 [forum]: https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets
 
@@ -48,6 +48,11 @@ _Systems that are not necessarily tied to a specific
 in-game mechanic but which are useful for the game as a whole. Examples include
 login systems, new command syntaxes, and build helpers._
 
+
+```{toctree}
+:hidden:
+Contribs-Guidelines.md
+```
 ```{toctree}
 :maxdepth: 1
 
@@ -204,6 +209,11 @@ library under the hood.
 _'Complete' game engines that can be used directly to start creating content
 without no further additions (unless you want to)._
 
+
+```{toctree}
+:hidden:
+Contribs-Guidelines.md
+```
 ```{toctree}
 :maxdepth: 1
 
@@ -235,6 +245,11 @@ Each system is meant to be adopted piecemeal and adopted for your game.
 This does not include roleplaying-specific systems, those are found in
 the `rpg` category._
 
+
+```{toctree}
+:hidden:
+Contribs-Guidelines.md
+```
 ```{toctree}
 :maxdepth: 1
 
@@ -382,6 +397,11 @@ the participants until the fight ends.
 _Systems related to the game world's topology and structure. Contribs related
 to rooms, exits and map building._
 
+
+```{toctree}
+:hidden:
+Contribs-Guidelines.md
+```
 ```{toctree}
 :maxdepth: 1
 
@@ -463,7 +483,7 @@ _Contribution by titeuf87, 2017_
 This contrib provides a wilderness map without actually creating a large number
 of rooms - as you move, you instead end up back in the same room but its description 
 changes. This means you can make huge areas with little database use as
-long as the rooms are relatively similar (name/desc changing).
+long as the rooms are relatively similar (e.g. only the names/descs changing).
 
 [Read the documentation](./Contrib-Wilderness.md) - [Browse the Code](evennia.contrib.grid.wilderness)
 
@@ -492,6 +512,11 @@ current location (useful for displaying the grid as an in-game, updating map).
 _Systems specifically related to roleplaying
 and rule implementation like character traits, dice rolling and emoting._
 
+
+```{toctree}
+:hidden:
+Contribs-Guidelines.md
+```
 ```{toctree}
 :maxdepth: 1
 
@@ -593,6 +618,11 @@ to exemplify an Evennia system. Any extra resources tied to documentation
 tutorials are found here. Also the home of the Tutorial-World and Evadventure
 demo codes._
 
+
+```{toctree}
+:hidden:
+Contribs-Guidelines.md
+```
 ```{toctree}
 :maxdepth: 1
 
@@ -699,6 +729,11 @@ is a great way to start learning the system.
 
 _Miscellaneous, tools for manipulating text, security auditing, and more._
 
+
+```{toctree}
+:hidden:
+Contribs-Guidelines.md
+```
 ```{toctree}
 :maxdepth: 1
 

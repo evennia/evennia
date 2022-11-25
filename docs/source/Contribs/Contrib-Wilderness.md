@@ -5,7 +5,7 @@ Contribution by titeuf87, 2017
 This contrib provides a wilderness map without actually creating a large number
 of rooms - as you move, you instead end up back in the same room but its description 
 changes. This means you can make huge areas with little database use as
-long as the rooms are relatively similar (name/desc changing).
+long as the rooms are relatively similar (e.g. only the names/descs changing).
 
 ## Installation
 
@@ -29,6 +29,9 @@ All coordinates used by the wilderness map are in the format of `(x, y)`
 tuples. x goes from left to right and y goes from bottom to top. So `(0, 0)`
 is the bottom left corner of the map.
 
+> You can also add a wilderness by defining a WildernessScript in your GLOBAL_SCRIPT
+> settings. If you do, make sure define the map provider.
+
 ## Customisation
 
 The defaults, while useable, are meant to be customised. When creating a
@@ -37,8 +40,13 @@ python object that is smart enough to create the map.
 
 The default provider, `WildernessMapProvider`, just creates a grid area that
 is unlimited in size.
-This `WildernessMapProvider` can be subclassed to create more interesting
+
+`WildernessMapProvider` can be subclassed to create more interesting
 maps and also to customize the room/exit typeclass used.
+
+The `WildernessScript` also has an optional `preserve_items` property, which
+when set to `True` will not recycle rooms that contain any objects. By default,
+a wilderness room is recycled whenever there are no players left in it.
 
 There is also no command that allows players to enter the wilderness. This
 still needs to be added: it can be a command or an exit, depending on your
@@ -94,7 +102,7 @@ class PyramidMapProvider(wilderness.WildernessMapProvider):
         desc = "This is a room in the pyramid."
         if y == 3 :
             desc = "You can see far and wide from the top of the pyramid."
-        room.db.desc = desc
+        room.ndb.desc = desc
 ```
 
 Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
@@ -105,12 +113,16 @@ create a new wilderness (with the name "default") but using our new map provider
 
 ## Implementation details
 
-When a character moves into the wilderness, they get their own room. If they
-move, instead of moving the character, the room changes to match the new
-coordinates.  If a character meets another character in the wilderness, then
-their room merges. When one of the character leaves again, they each get their
-own separate rooms.  Rooms are created as needed. Unneeded rooms are stored away
-to avoid the overhead cost of creating new rooms again in the future.
+When a character moves into the wilderness, they get their own room. If
+they move, instead of moving the character, the room changes to match the
+new coordinates.
+
+If a character meets another character in the wilderness, then their room
+merges. When one of the character leaves again, they each get their own
+separate rooms.
+
+Rooms are created as needed. Unneeded rooms are stored away to avoid the
+overhead cost of creating new rooms again in the future.
 
 
 ----
