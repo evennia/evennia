@@ -30,9 +30,9 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 ## Developing with Evennia
 
+- [Coding with Evennia](Coding/Coding-Overview.md) - coding and development hints and resources
 - [Core components](Components/Components-Overview.md) - the core building blocks of Evennia
-- [Concepts](Concepts/Concepts-Overview.md) - larger-scale concepts and features
-- [Coding](Coding/Coding-Overview.md) - coding and development hints and resources
+- [Core Concepts](Concepts/Concepts-Overview.md) - larger-scale concepts and features
 - [API](./Evennia-API.md) - the full API-reference, generated from source
 - [Default Commands](Components/Default-Commands.md) - list of game commands included out of the box
 
@@ -77,7 +77,6 @@ Links
 ```{toctree}
 :hidden:
 
-Glossary
 Evennia-API
 Licensing
 Unimplemented

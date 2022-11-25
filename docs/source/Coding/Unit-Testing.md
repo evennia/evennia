@@ -229,12 +229,9 @@ optional models regardless of if the user wants them. But at the same time a con
 of the Evennia distribution and its unit tests should be run with all other Evennia tests using
 `evennia test evennia`.
 
-The way to do this is to only temporarily add your models to the `INSTALLED_APPS` directory when the
-test runs. here is an example of how to do it.
+The way to do this is to only temporarily add your models to the `INSTALLED_APPS` directory when the test runs. here is an example of how to do it.
 
-> Note that this solution, derived from this [stackexchange
-answer](http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-
-testing#503435) is currently untested! Please report your findings.
+> Note that this solution, derived from this [stackexchange answer](http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-testing#503435) is currently untested! Please report your findings.
 
 ```python
 # a file contrib/mycontrib/tests.py
@@ -286,8 +283,7 @@ class TestMyModel(BaseEvenniaTest):
 
 ## A note on making the test runner faster
 
-If you have custom models with a large number of migrations, creating the test database can take a
-very long time. If you don't require migrations to run for your tests, you can disable them with the
+If you have custom models with a large number of migrations, creating the test database can take a very long time. If you don't require migrations to run for your tests, you can disable them with the
 django-test-without-migrations package. To install it, simply:
 
 ```

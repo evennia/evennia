@@ -13,10 +13,7 @@ need to add them to your project too:
 1. Select the folder (i.e. the `evennia` root)
 1. Select "Open in current window" and "Add to currently opened projects"
 
-## Setting up the project interpreter
-
-It's a good idea to do this before attempting anything further. The rest of this page assumes your
-project is already configured in PyCharm.
+It's a good idea to set up the interpreter this before attempting anything further. The rest of this page assumes your project is already configured in PyCharm.
 
 1. Go to `File > Settings... > Project: \<mygame\> > Project Interpreter`
 1. Click the Gear symbol `> Add local`
@@ -24,7 +21,7 @@ project is already configured in PyCharm.
 
 Enjoy seeing all your imports checked properly, setting breakpoints, and live variable watching!
 
-## Attaching PyCharm debugger to Evennia
+## Debug Evennia from inside PyCharm
 
 1. Launch Evennia in your preferred way (usually from a console/terminal)
 1. Open your project in PyCharm
@@ -40,7 +37,7 @@ or runner for some reason (or just learn how they work!), see Run Configuration 
 
 ![Example process filter configuration](https://i.imgur.com/vkSheR8.png)
 
-## Setting up an Evennia run configuration
+## Run Evennia from inside PyCharm
 
 This configuration allows you to launch Evennia from inside PyCharm. Besides convenience, it also allows suspending and debugging the evennia_launcher or evennia_runner at points earlier than you could by running them externally and attaching. In fact by the time the server and/or portal are running the launcher will have exited already.
 
@@ -56,7 +53,7 @@ Now set up a "stop" configuration by following the same steps as above, but set 
 
 A dropdown box holding your new configurations should appear next to your PyCharm run button. Select MyMUD start and press the debug icon to begin debugging.  Depending on how far you let the program run, you may need to run your "MyMUD stop" config to actually stop the server, before you'll be able start it again.
 
-## Alternative config - utilizing logfiles as source of data
+### Alternative config - utilizing logfiles as source of data
 
 This configuration takes a bit different approach as instead of focusing on getting the data back through logfiles. Reason for that is this way you can easily separate data streams, for example you rarely want to follow both server and portal at the same time, and this will allow it. This will also make sure to stop the evennia before starting it, essentially working as reload command (it will also include instructions how to disable that part of functionality). We will start by defining a configuration that will stop evennia. This assumes that `upfire` is your pycharm project name, and also the game name, hence the `upfire/upfire` path.
 

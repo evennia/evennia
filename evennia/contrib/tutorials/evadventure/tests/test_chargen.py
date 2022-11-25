@@ -5,10 +5,9 @@ Test chargen.
 
 from unittest.mock import MagicMock, patch
 
-from parameterized import parameterized
-
 from evennia import create_object
 from evennia.utils.test_resources import BaseEvenniaTest
+from parameterized import parameterized
 
 from .. import chargen, enums, objects
 
@@ -45,9 +44,11 @@ class EvAdventureCharacterGenerationTest(BaseEvenniaTest):
     def test_apply(self, mock_spawn):
 
         gambeson = create_object(objects.EvAdventureArmor, key="gambeson")
-        mock_spawn.return_value = gambeson
+        mock_spawn.return_value = [gambeson]
+        account = MagicMock()
+        account.id = 2222
 
-        character = self.chargen.apply()
+        character = self.chargen.apply(account)
 
         self.assertIn("Herbalist", character.db.desc)
         self.assertEqual(
