@@ -5,6 +5,9 @@ EvAdventure character generation.
 from evennia import create_object
 from evennia.prototypes.spawner import spawn
 from evennia.utils.evmenu import EvMenu
+from evennia.objects.models import ObjectDB
+
+from django.conf import settings
 
 from .characters import EvAdventureCharacter
 from .random_tables import chargen_tables
@@ -84,6 +87,7 @@ class TemporaryCharacterSheet:
         misfortune = dice.roll_random_table("1d20", chargen_tables["misfortune"])
         alignment = dice.roll_random_table("1d20", chargen_tables["alignment"])
 
+        self.ability_changes = 0
         self.desc = (
             f"You are {physique} with a {face} face, {skin} skin, {hair} hair, {speech} speech, and"
             f" {clothing} clothing. You were a {background.title()}, but you were {misfortune} and"
@@ -135,16 +139,22 @@ class TemporaryCharacterSheet:
             equipment=", ".join(equipment),
         )
 
-    def apply(self):
+    def apply(self, account):
         """
         Once the chargen is complete, call this create and set up the character.
 
         """
 
+        start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
+        default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
+        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
         # creating character with given abilities
         new_character = create_object(
             EvAdventureCharacter,
             key=self.name,
+            location=start_location,
+            home=default_home,
+            permissions=permissions,
             attributes=(
                 ("strength", self.strength),
                 ("dexterity", self.dexterity),
@@ -157,23 +167,28 @@ class TemporaryCharacterSheet:
                 ("desc", self.desc),
             ),
         )
+
+        new_character.locks.add(
+            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"
+            " perm(Admin)" % (new_character.id, account.id, account.id)
+        )
         # spawn equipment
         if self.weapon:
             weapon = spawn(self.weapon)
-            new_character.equipment.move(weapon)
-        if self.shield:
-            shield = spawn(self.shield)
-            new_character.equipment.move(shield)
+            new_character.equipment.move(weapon[0])
         if self.armor:
             armor = spawn(self.armor)
-            new_character.equipment.move(armor)
+            new_character.equipment.move(armor[0])
+        if self.shield:
+            shield = spawn(self.shield)
+            new_character.equipment.move(shield[0])
         if self.helmet:
             helmet = spawn(self.helmet)
-            new_character.equipment.move(helmet)
+            new_character.equipment.move(helmet[0])
 
         for item in self.backpack:
             item = spawn(item)
-            new_character.equipment.move(item)
+            new_character.equipment.move(item[0])
 
         return new_character
 
@@ -301,10 +316,8 @@ def node_apply_character(caller, raw_string, **kwargs):
 
     """
     tmp_character = kwargs["tmp_character"]
-
     new_character = tmp_character.apply(caller)
-
-    caller.account.db._playble_characters = [new_character]
+    caller.db._playable_characters.append(new_character)
 
     text = "Character created!"
 
@@ -321,9 +334,10 @@ def start_chargen(caller, session=None):
         "node_chargen": node_chargen,
         "node_change_name": node_change_name,
         "node_swap_abilities": node_swap_abilities,
+        "node_apply_character": node_apply_character,
     }
 
     # this generates all random components of the character
     tmp_character = TemporaryCharacterSheet()
-
-    EvMenu(caller, menutree, startnode="node_chargen", session=session, tmp_character=tmp_character)
+    
+    EvMenu(caller, menutree, startnode="node_chargen", session=session, startnode_input=('sgsg', {"tmp_character":tmp_character}))
