@@ -536,6 +536,6 @@ BBCODE_PARSER = TextToBBCODEparser()
 
 def parse_to_bbcode(string, strip_ansi=False, parser=BBCODE_PARSER):
     """
-    Parses a string, replace ANSI markup with html
+    Parses a string, replace ANSI markup with bbcode
     """
     return parser.parse(string, strip_ansi=strip_ansi)
