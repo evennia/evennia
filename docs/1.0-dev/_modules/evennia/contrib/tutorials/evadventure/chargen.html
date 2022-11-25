@@ -83,6 +83,9 @@
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
 <span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
 <span class="kn">from</span> <span class="nn">.random_tables</span> <span class="kn">import</span> <span class="n">chargen_tables</span>
@@ -162,6 +165,7 @@
         <span class="n">misfortune</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;misfortune&quot;</span><span class="p">])</span>
         <span class="n">alignment</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;alignment&quot;</span><span class="p">])</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ability_changes</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;You are </span><span class="si">{</span><span class="n">physique</span><span class="si">}</span><span class="s2"> with a </span><span class="si">{</span><span class="n">face</span><span class="si">}</span><span class="s2"> face, </span><span class="si">{</span><span class="n">skin</span><span class="si">}</span><span class="s2"> skin, </span><span class="si">{</span><span class="n">hair</span><span class="si">}</span><span class="s2"> hair, </span><span class="si">{</span><span class="n">speech</span><span class="si">}</span><span class="s2"> speech, and&quot;</span>
             <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">clothing</span><span class="si">}</span><span class="s2"> clothing. You were a </span><span class="si">{</span><span class="n">background</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">, but you were </span><span class="si">{</span><span class="n">misfortune</span><span class="si">}</span><span class="s2"> and&quot;</span>
@@ -213,16 +217,22 @@
             <span class="n">equipment</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">equipment</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TemporaryCharacterSheet.apply"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TemporaryCharacterSheet.apply"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Once the chargen is complete, call this create and set up the character.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="n">start_location</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">START_LOCATION</span><span class="p">)</span>
+        <span class="n">default_home</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">)</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_ACCOUNT_DEFAULT</span>
         <span class="c1"># creating character with given abilities</span>
         <span class="n">new_character</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
             <span class="n">EvAdventureCharacter</span><span class="p">,</span>
             <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">start_location</span><span class="p">,</span>
+            <span class="n">home</span><span class="o">=</span><span class="n">default_home</span><span class="p">,</span>
+            <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span>
             <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
                 <span class="p">(</span><span class="s2">&quot;strength&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">strength</span><span class="p">),</span>
                 <span class="p">(</span><span class="s2">&quot;dexterity&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dexterity</span><span class="p">),</span>
@@ -235,23 +245,28 @@
                 <span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">),</span>
             <span class="p">),</span>
         <span class="p">)</span>
+
+        <span class="n">new_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developer) or pperm(Developer);delete:id(</span><span class="si">%i</span><span class="s2">) or&quot;</span>
+            <span class="s2">&quot; perm(Admin)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">new_character</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="c1"># spawn equipment</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">:</span>
             <span class="n">weapon</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">)</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">weapon</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="p">:</span>
-            <span class="n">shield</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="p">)</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">shield</span><span class="p">)</span>
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">weapon</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">armor</span><span class="p">:</span>
             <span class="n">armor</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">armor</span><span class="p">)</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">armor</span><span class="p">)</span>
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">armor</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="p">:</span>
+            <span class="n">shield</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="p">)</span>
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">shield</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">:</span>
             <span class="n">helmet</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">helmet</span><span class="p">)</span>
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">helmet</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backpack</span><span class="p">:</span>
             <span class="n">item</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">new_character</span></div></div>
 
@@ -379,10 +394,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
-
     <span class="n">new_character</span> <span class="o">=</span> <span class="n">tmp_character</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-
-    <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playble_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_character</span><span class="p">]</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Character created!&quot;</span>
 
@@ -399,12 +412,13 @@
         <span class="s2">&quot;node_chargen&quot;</span><span class="p">:</span> <span class="n">node_chargen</span><span class="p">,</span>
         <span class="s2">&quot;node_change_name&quot;</span><span class="p">:</span> <span class="n">node_change_name</span><span class="p">,</span>
         <span class="s2">&quot;node_swap_abilities&quot;</span><span class="p">:</span> <span class="n">node_swap_abilities</span><span class="p">,</span>
+        <span class="s2">&quot;node_apply_character&quot;</span><span class="p">:</span> <span class="n">node_apply_character</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># this generates all random components of the character</span>
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">TemporaryCharacterSheet</span><span class="p">()</span>
-
-    <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menutree</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">tmp_character</span><span class="o">=</span><span class="n">tmp_character</span><span class="p">)</span></div>
+    
+    <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menutree</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">startnode_input</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;sgsg&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">:</span><span class="n">tmp_character</span><span class="p">}))</span></div>
 </pre></div>
 
           </div>

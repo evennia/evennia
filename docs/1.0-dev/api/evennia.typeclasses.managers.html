@@ -426,6 +426,20 @@ either a string ‘#N’ or an integer N.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.typeclasses.managers.TypedObjectManager.search_dbref">
+<code class="sig-name descname">search_dbref</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbref</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.search_dbref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias to get_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dbref</strong> (<em>str</em><em> or </em><em>int</em>) – The id to search for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – Queryset with 0 or 1 match.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_dbref_range">
 <code class="sig-name descname">get_dbref_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min_dbref</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_dbref</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_dbref_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_dbref_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get objects within a certain range of dbrefs.</p>
