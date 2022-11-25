@@ -4,27 +4,8 @@
 the docs if you can rather than too lengthy explanations. Don't forget to check if an answer already
 exists before answering - maybe you can clarify that answer rather than to make a new Q&A section.*
 
-
-## Table of Contents
-
-- [Removing default commands](./Coding-FAQ.md#removing-default-commands)
-- [Preventing character from moving based on a condition](./Coding-FAQ.md#preventing-character-from-
-moving-based-on-a-condition)
-- [Reference initiating object in an EvMenu command](./Coding-FAQ.md#reference-initiating-object-in-an-
-evmenu-command)
-- [Adding color to default Evennia Channels](./Coding-FAQ.md#adding-color-to-default-evennia-channels)
-- [Selectively turn off commands in a room](./Coding-FAQ.md#selectively-turn-off-commands-in-a-room)
-- [Select Command based on a condition](./Coding-FAQ.md#select-command-based-on-a-condition)
-- [Automatically updating code when reloading](./Coding-FAQ.md#automatically-updating-code-when-
-reloading)
-- [Changing all exit messages](./Coding-FAQ.md#changing-all-exit-messages)
-- [Add parsing with the "to" delimiter](./Coding-FAQ.md#add-parsing-with-the-to-delimiter)
-- [Store last used session IP address](./Coding-FAQ.md#store-last-used-session-ip-address)
-- [Use wide characters with EvTable](./Coding-FAQ.md#non-latin-characters-in-evtable)
-
 ## Removing default commands
-**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](../Components/Commands.md) from the
-Character [Command Set](../Components/Command-Sets.md)?
+**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](../Components/Commands.md) from the Character [Command Set](../Components/Command-Sets.md)?
 
 **A:** Go to `mygame/commands/default_cmdsets.py`. Find the `CharacterCmdSet` class. It has one
 method named `at_cmdset_creation`. At the end of that method, add the following line:
@@ -70,32 +51,6 @@ class MyObjectCommand(Command):
 Inside the menu you can now access the object through `caller.ndb._evmenu.stored_obj`.
 
 
-## Adding color to default Evennia Channels
-**Q:** How do I add colors to the names of Evennia channels?
-
-**A:** The Channel typeclass' `channel_prefix` method decides what is shown at the beginning of a
-channel send. Edit `mygame/typeclasses/channels.py` (and then `@reload`):
-
-```python
-# define our custom color names
-CHANNEL_COLORS = {"public": "|015Public|n",
-                  "newbie": "|550N|n|551e|n|552w|n|553b|n|554i|n|555e|n",
-                  "staff": "|010S|n|020t|n|030a|n|040f|n|050f|n"}
-
-# Add to the Channel class
-    # ...
-    def channel_prefix(self, msg, emit=False):
-        if self.key in COLORS:
-            p_str = CHANNEL_COLORS.get(self.key.lower())
-        else:
-            p_str = self.key.capitalize()
-        return f"[{p_str}] "
-```
-Additional hint: To make colors easier to change from one place you could instead put the
-`CHANNEL_COLORS` dict in your settings file and import it as `from django.conf.settings import
-CHANNEL_COLORS`.
-
-
 ## Selectively turn off commands in a room
 **Q:** I want certain commands to turn off in a given room. They should still work normally for
 staff.
@@ -130,18 +85,16 @@ class BlockingRoom(Room):
         # are NOT Builders or higher
         self.locks.add("call:not perm(Builders)")
 ```
-After `@reload`, make some `BlockingRooms` (or switch a room to it with `@typeclass`). Entering one
+After `reload`, make some `BlockingRooms` (or switch a room to it with `@typeclass`). Entering one
 will now replace the given commands for anyone that does not have the `Builders` or higher
 permission. Note that the 'call' lock is special in that even the superuser will be affected by it
-(otherwise superusers would always see other player's cmdsets and a game would be unplayable for
-superusers).
+(otherwise superusers would always see other player's cmdsets and a game would be unplayable for superusers).
 
 ## Select Command based on a condition
 **Q:** I want a command to be available only based on a condition. For example I want the "werewolf"
 command to only be available on a full moon, from midnight to three in-game time.
 
-**A:** This is easiest accomplished by putting the "werewolf" command on the Character as normal,
-but to [lock](../Components/Locks.md) it with the "cmd" type lock. Only if the "cmd" lock type is passed will the
+**A:** This is easiest accomplished by putting the "werewolf" command on the Character as normal, but to [lock](../Components/Locks.md) it with the "cmd" type lock. Only if the "cmd" lock type is passed will the
 command be available.
 
 ```python
@@ -156,8 +109,7 @@ class CmdWerewolf(Command):
     def func(self):
         # ...
 ```
-Add this to the [default cmdset as usual](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md). The `is_full_moon` [lock
-function](../Components/Locks.md#lock-functions) does not yet exist. We must create that:
+Add this to the [default cmdset as usual](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md). The `is_full_moon` [lock function](../Components/Locks.md#lock-functions) does not yet exist. We must create that:
 
 ```python
 # in mygame/server/conf/lockfuncs.py
@@ -169,17 +121,17 @@ def is_full_moon(accessing_obj, accessed_obj,
     # return True or False
 
 ```
-After a `@reload`, the `werewolf` command will be available only at the right time, that is when the
+After a `reload`, the `werewolf` command will be available only at the right time, that is when the
 `is_full_moon` lock function returns True.
 
 ## Automatically updating code when reloading
+
 **Q:** I have a development server running Evennia.  Can I have the server update its code-base when
 I reload?
 
 **A:** Having a development server that pulls updated code whenever you reload it can be really
 useful if you have limited shell access to your server, or want to have it done automatically.  If
-you have your project in a configured Git environment, it's a matter of automatically calling `git
-pull` when you reload.  And that's pretty straightforward:
+you have your project in a configured Git environment, it's a matter of automatically calling `git pull` when you reload.  And that's pretty straightforward:
 
 In `/server/conf/at_server_startstop.py`:
 
@@ -196,45 +148,30 @@ def at_server_reload_stop():
     process = subprocess.call(["git", "pull"], shell=False)
 ```
 
-That's all.  We call `subprocess` to execute a shell command (that code works on Windows and Linux,
-assuming the current directory is your game directory, which is probably the case when you run
-Evennia).  `call` waits for the process to complete, because otherwise, Evennia would reload on
-partially-modified code, which would be problematic.
+That's all.  We call `subprocess` to execute a shell command (that code works on Windows and Linux, assuming the current directory is your game directory, which is probably the case when you run Evennia).  `call` waits for the process to complete, because otherwise, Evennia would reload on partially-modified code, which would be problematic.
 
-Now, when you enter `@reload` on your development server, the game repository is updated from the
-configured remote repository (Github, for instance).  Your development cycle could resemble
-something like:
+Now, when you enter `reload` on your development server, the game repository is updated from the configured remote repository (Github, for instance).  Your development cycle could resemble something like:
 
 1. Coding on the local machine.
 2. Testing modifications.
-3. Committing once, twice or more (being sure the code is still working, unittests are pretty useful
-here).
+3. Committing once, twice or more (being sure the code is still working, unittests are pretty useful here).
 4. When the time comes, login to the development server and run `@reload`.
 
-The reloading might take one or two additional seconds, since Evennia will pull from your remote Git
-repository.  But it will reload on it and you will have your modifications ready, without needing
+The reloading might take one or two additional seconds, since Evennia will pull from your remote Git repository.  But it will reload on it and you will have your modifications ready, without needing
 connecting to your server using SSH or something similar.
 
 ## Changing all exit messages
 **Q:** How can I change the default exit messages to something like "XXX leaves east" or "XXX
 arrives from the west"?
 
-**A:** the default exit messages are stored in two hooks, namely `announce_move_from` and
-`announce_move_to`, on the `Character` typeclass (if what you want to change is the message other
-characters will see when a character exits).
+**A:** the default exit messages are stored in two hooks, namely `announce_move_from` and `announce_move_to`, on the `Character` typeclass (if what you want to change is the message other characters will see when a character exits).
 
-These two hooks provide some useful features to easily update the message to be displayed.  They
-take both the default message and mapping as argument.  You can easily call the parent hook with
-these information:
+These two hooks provide some useful features to easily update the message to be displayed.  They take both the default message and mapping as argument.  You can easily call the parent hook with these information:
 
-* The message represents the string of characters sent to characters in the room when a character
-leaves.
-* The mapping is a dictionary containing additional mappings (you will probably not need it for
-simple customization).
+* The message represents the string of characters sent to characters in the room when a character leaves.
+* The mapping is a dictionary containing additional mappings (you will probably not need it for simple customization).
 
-It is advisable to look in the [code of both
-hooks](https://github.com/evennia/evennia/tree/master/evennia/objects/objects.py), and read the
-hooks' documentation.  The explanations on how to quickly update the message are shown below:
+It is advisable to look in the [code of both hooks](evennia.objects.objects.DefaultCharacter), and read the hooks' documentation.  The explanations on how to quickly update the message are shown below:
 
 ```python
 # In typeclasses/characters.py
@@ -295,18 +232,13 @@ class Character(DefaultCharacter):
         super().announce_move_to(source_location, msg="{object} arrives from the {exit}.")
 ```
 
-We override both hooks, but call the parent hook to display a different message.  If you read the
-provided docstrings, you will better understand why and how we use mappings (information between
-braces).  You can provide additional mappings as well, if you want to set a verb to move, for
-instance, or other, extra information.
+We override both hooks, but call the parent hook to display a different message.  If you read the provided docstrings, you will better understand why and how we use mappings (information between braces).  You can provide additional mappings as well, if you want to set a verb to move, for instance, or other, extra information.
 
 ## Add parsing with the "to" delimiter
 
-**Q:** How do I change commands to undestand say `give obj to target` as well as the default `give
-obj = target`?
+**Q:** How do I change commands to undestand say `give obj to target` as well as the default `give obj = target`?
 
-**A:** You can make change the default `MuxCommand` parent with your own class making a small change
-in its `parse` method:
+**A:** You can make change the default `MuxCommand` parent with your own class making a small change in its `parse` method:
 
 ```python
     # in mygame/commands/command.py
@@ -324,41 +256,8 @@ Next you change the parent of the default commands in settings:
     COMMAND_DEFAULT_CLASS = "commands.command.MuxCommand"
 ```
 
-Do a `@reload` and all default commands will now use your new tweaked parent class. A copy of the
+Do a `reload` and all default commands will now use your new tweaked parent class. A copy of the
 MuxCommand class is also found commented-out in the `mygame/commands/command.py` file.
-
-## Store last used session IP address
-
-**Q:** If a user has already logged out of an Evennia account, their IP is no longer visible to
-staff that wants to ban-by-ip (instead of the user) with `@ban/ip`?
-
-**A:** One approach is to write the IP from the last session onto the "account" account object.
-
-`typeclasses/accounts.py`
-```python
-    def at_post_login(self, session=None, **kwargs):
-        super().at_post_login(session=session, **kwargs)
-        self.db.lastsite = self.sessions.all()[-1].address
-```
-Adding timestamp for login time and appending to a list to keep the last N login IP addresses and
-timestamps is possible, also.  Additionally, if you don't want the list to grow beyond a
-`do_not_exceed` length, conditionally pop a value after you've added it, if the length has grown too
-long.
-
-**NOTE:** You'll need to add `import time` to generate the login timestamp.
-```python
-    def at_post_login(self, session=None, **kwargs):
-        super().at_post_login(session=session, **kwargs)
-        do_not_exceed = 24  # Keep the last two dozen entries
-        session = self.sessions.all()[-1]  # Most recent session
-        if not self.db.lastsite:
-           self.db.lastsite = []
-        self.db.lastsite.insert(0, (session.address, int(time.time())))
-        if len(self.db.lastsite) > do_not_exceed:
-            self.db.lastsite.pop()
-```
-This only stores the data. You may want to interface the `@ban` command or make a menu-driven viewer
-for staff to browse the list and display how long ago the login occurred.
 
 ## Non-latin characters in EvTable
 
@@ -370,8 +269,4 @@ for staff to browse the list and display how long ago the login occurred.
 |      |      |
 +~~~~~~+~~~~~~+
 ```
-**A:** The reason for this is because certain non-latin characters are *visually* much wider than
-their len() suggests. There is little Evennia can (reliably) do about this. If you are using such
-characters, you need to make sure to use a suitable mono-spaced font where are width are equal. You
-can set this in your web client and need to recommend it for telnet-client users. See [this
-discussion](https://github.com/evennia/evennia/issues/1522) where some suitable fonts are suggested.
+**A:** The reason for this is because certain non-latin characters are *visually* much wider than their len() suggests. There is little Evennia can (reliably) do about this. If you are using such characters, you need to make sure to use a suitable mono-spaced font where are width are equal. You can set this in your web client and need to recommend it for telnet-client users. See [this discussion](https://github.com/evennia/evennia/issues/1522) where some suitable fonts are suggested.

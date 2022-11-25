@@ -4,21 +4,21 @@
 If you are converting an existing game from a previous Evennia version, [see here](./Installation-Upgrade.md).
 ```
 
+The fastest way to install Evennia is to use the `pip` installer that comes with Python (read on).
+You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
+
 ## Requirements
 
 ```{sidebar} Develop in isolation
 Installing Evennia doesn't make anything visible online. Apart from installation and updating, you can develop your game without any internet connection if you want to.
 ```
-- Evennia requires [Python](https://www.python.org/downloads/) 3.9, 3.10 or 3.11 (recommended)
+- Evennia requires [Python](https://www.python.org/downloads/) 3.9, 3.10 or 3.11 (recommended). Any OS that supports Python should work.
 	- Windows: In the installer, make sure you select `add python to path`.  If you have multiple versions of Python installed, use `py` command instead of `python` to have Windows automatically use the latest.
 - Using a light-weight  [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended_ in order to keep your Evennia installation independent from the system libraries. Using virtualenvs like this is common Python praxis.
 - Don't install Evennia as administrator or superuser. 
 - If you run into trouble, see [installation troubleshooting](./Installation-Troubleshooting.md).
 
 ## Install with `pip`
-
-The fastest way to install Evennia is to use the `pip` installer that comes with Python.
-You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
 
 
 Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you install Evennia with
@@ -87,7 +87,7 @@ Full stop of the server (use `evennia start` to restart):
 
     evennia stop
 
-See [Server start-stop-reload](./Start-Stop-Reload.md) page for more details.
+See [Server start-stop-reload](./Running-Evennia.md) page for more details.
 
 ## See server logs
 

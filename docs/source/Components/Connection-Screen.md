@@ -20,7 +20,7 @@ Effective, but not very exciting. You will most likely want to change this to be
 your game. This is simple:
 
 1. Edit `mygame/server/conf/connection_screens.py`.
-1. [Reload](../Setup/Start-Stop-Reload.md) Evennia.
+1. [Reload](../Setup/Running-Evennia.md) Evennia.
 
 Evennia will look into this module and locate all *globally defined strings* in it. These strings
 are used as the text in your connection screen and are shown to the user at startup. If more than

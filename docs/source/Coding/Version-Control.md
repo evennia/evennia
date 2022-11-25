@@ -1,26 +1,14 @@
-# Version Control
+# Coding using Version Control
 
-Version control software allows you to track the changes you make to your code, as well as being
-able to easily backtrack these changes, share your development efforts and more.
+[Version control](https://en.wikipedia.org/wiki/Version_control) allows you to track changes to your code. You can save 'snapshots' of your progress which means you can roll back undo things easily. Version control also allows you to easily back up your code to an online _repository_ such as Github. It also allows you to collaborate with others on the same code without clashing or worry about who changed what. 
 
-It's strongly recommended that you put your game code under version control. Version
-control is also the way to contribue to Evennia itself.
+```{sidebar} Do it!
+It's _strongly_ recommended that you [put your game folder under version control](#putting-your-game-dir-under-version-control). Using git is is also the way to contribue to Evennia itself.
+```
 
-For an introduction to the concept, start with the Wikipedia article
-[here](https://en.wikipedia.org/wiki/Version_control). Evennia uses the version
-control system [Git](https://git-scm.com/) and this is what will be covered
-henceforth. Note that this page primarily shows commands for Linux, but the
-syntax should be the same for Windows and Mac.
-
-For more help on using Git, please refer to the [Official GitHub
-documentation](https://help.github.com/articles/set-up-git#platform-all).
+Evennia uses the most commonly used version control system, [Git](https://git-scm.com/) .  For additional help on using Git, please refer to the [Official GitHub documentation](https://help.github.com/articles/set-up-git#platform-all).
 
 ## Setting up Git
-
-You can find expanded instructions for
-installation [here](https://git-scm.com/book/en/Getting-Started-Installing-Git).
-
-### Step 1: Install Git
 
 - **Fedora Linux**
 
@@ -31,19 +19,15 @@ installation [here](https://git-scm.com/book/en/Getting-Started-Installing-Git).
         apt-get install git
 
 - **Windows**: It is recommended to use [Git for Windows](https://gitforwindows.org/).
-- **Mac**:  Mac platforms offer two methods for installation, one via MacPorts, which you can find
-out about [here](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac), or
-you can use the [Git OSX Installer](https://sourceforge.net/projects/git-osx-installer/).
+- **Mac**:  Mac platforms offer two methods for installation, one via MacPorts, which you can find out about [here](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac), or you can use the [Git OSX Installer](https://sourceforge.net/projects/git-osx-installer/).
 
-### Step 2: Define user/e-mail Settings for Git
+> You can find expanded instructions for installation [here](https://git-scm.com/book/en/Getting-Started-Installing-Git).
 
-To avoid a common issue later, you will need to set a couple of settings; first you will need to
-tell Git your username, followed by your e-mail address, so that when you commit code later you will
-be properly credited.
+```{sidebar} Git user nickname
+If you ever make your code available online (or contribute to Evennia), your name will be visible to those reading the code-commit history. So if you are not comfortable with using your real, full name online, put a nickname (or your github handler) here.
+```
+To avoid a common issue later, you will need to set a couple of settings; first you will need to tell Git your username, followed by your e-mail address, so that when you commit code later you will be properly credited. 
 
-> Note that your commit information will be visible to everyone if you ever contribute to Evennia or
-use an online service like github to host your code. So if you are not comfortable with using your
-real, full name online, put a nickname here.
 
 1. Set the default name for git to use when you commit:
 
@@ -53,417 +37,313 @@ real, full name online, put a nickname here.
 
         git config --global user.email "your_email@example.com"
 
+> To get a running start with Git, here's [a good YouTube talk about it](https://www.youtube.com/watch?v=1ffBJ4sVUb4#t=1m58s). It's a bit long but it will help you understand the underlying ideas behind GIT (which in turn makes it a lot more intuitive to use).
 
-## Putting your game folder under version control
+## Common Git commands 
 
-> Note: The game folder's version control is completely separate from Evennia's repository.
+```{sidebar} Git repository
+This is just a fancy name for the folder you have designated to be under version control. We will make your `mygame` game folder into such a repository. The Evennia code  is also in a (separate) git repository.
+```
+Git can be controlled via a GUI. But it's often easier to use the base terminal/console commands, since it makes it clear if something goes wrong. 
 
-After you have set up your game you will have created a new folder to host your particular game
-(let's call this folder `mygame` for now).
+All these actions need to be done from inside the _git repository_ . 
 
-This folder is *not* under version control at this point.
+Git may seem daunting at first. But when working with git, you'll be using the same 2-3 commands 99% of the time. And you can make git _aliases_ to have them be even easier to remember.  
 
-    git init mygame
 
-Your mygame folder is now ready for version control! Add all the content and make a first
-commit:
+### `git init`
 
-    cd mygame
+This initializes a folder/directory on your drive as a 'git repository'
+
+    git init .
+
+The `.` means to apply to the current directory. If you are inside `mygame`, this makes your game dir into a git repository. That's all there is to it, really. You only need to do this once.
+
+### `git add` 
+
+    git add <file> 
+
+This tells Git to start to _track_ the file under version control. You need to do this when you create a new file. You can also add all files in your current directory: 
+
+    git add . 
+
+Or 
+
+    git add *
+
+All files in the current directory are now tracked by Git. You only need to do this once for every file you want to track. 
+
+### `git commit`
+
+    git commit -a -m "This is the initial commit"
+
+This _commits_ your changes. It stores a snapshot of all (`-a`) your code at the current time, adding a message `-m` so you know what you did. Later you can _check out_ your code the way it was at a given time.  The message is mandatory and you will thank yourself later if write clear and descriptive log messages. If you don't add `-m`, a text editor opens for you to write the message instead.
+
+The `git commit` is something you'll be using all the time, so it can be useful to make a _git alias_ for it: 
+
+    git config --global alias.cma 'commit -a -m'
+
+After you've run this, you can commit much simpler, like this: 
+
+    git cma "This is the initial commit"
+
+Much easier to remember! 
+
+### `git status`, `git diff` and `git log`
+
+
+    git status -s 
+
+This gives a short (`-s`) of the files that changes since your last `git commit`. 
+
+    git diff --word-diff`
+
+This shows exactly what changed in each file since you last made a `git commit`. The `--word-diff`  option means it will mark if a single word changed on a line. 
+
+    git log
+
+This shows the log of all `commits` done. Each log will show you who made the change, the  commit-message and a unique _hash_ (like `ba214f12ab12e123...`) that uniquely describes that commit. 
+
+You can make the `log` command more succinct with some more options: 
+
+    ls=log --pretty=format:%C(green)%h\ %C(yellow)[%ad]%Cred%d\ %Creset%s%Cblue\ [%an] --decorate --date=relative
+
+This adds coloration and another fancy effects (use `git help log` to see what they mean).
+
+Let's add aliases: 
+
+    git config --global alias.st 'status -s'
+    git config --global alias.df 'diff --word-diff'
+    git config --global alias.ls 'log --pretty=format:%C(green)%h\ %C(yellow)[%ad]%Cred%d\ %Creset%s%Cblue\ [%an] --decorate --date=relative'
+
+You can now use the much shorter
+
+    git st    # short status
+    git dif   # diff with word-marking
+    git ls    # log with pretty formatting
+
+for these useful functions.
+
+### `git branch`, `checkout` and `merge`
+
+Git allows you to work with _branches_. These are separate development paths your code may take, completely separate from each other. You can later _merge_ the code from a branch back into another branch. Evennia's `master` and `develop` branches are examples of this.
+
+    git branch -b branchaname 
+
+This creates a new branch, exactly identical to the branch you were on.  It also moves you to that branch.
+
+    git branch -D branchname 
+
+Deletes a branch.
+
+    git branch 
+
+Shows all your branches, marking which one you are currently on.
+
+    git checkout branchname 
+
+This checks out another branch. As long as you are in a branch all `git commit`s will commit the code to that branch only.
+
+    git checkout .
+
+This checks out your _current branch_ and has the effect of throwing away all your changes since your last commit. This is like undoing what you did since the last save point.
+
+    git checkout b2342bc21c124
+
+This checks out a particular _commit_, identified by the hash you find with `git log`. This open a 'temporary branch' where the  code is as it was when you made this commit. As an example, you can use this to check where a bug was introduced. Check out an existing branch to go back to your normal timeline, or use `git branch -b newbranch` to break this code off into a new branch you can continue working from. 
+
+    git merge branchname
+
+This _merges_ the code from `branchname` into the branch you are currently in. Doing so may lead to _merge conflicts_ if the same code changed in different ways in the two branches. See [how to resolve merge conflicts in git](https://phoenixnap.com/kb/how-to-resolve-merge-conflicts-in-git) for more help.
+
+### `git glone`, `git push` and `git pull`
+
+All of these other commands have dealt with code only sitting in your local repository-folder. These commands instead allows you to exchange code with a _remote_ repository - usually one that is online (like on github). 
+
+> How you actually set up a remote repository is described [in the next section](#pushing-your-code-online).
+
+    git clone repository/path
+
+This copies the remote repository to your current location. If you used the [Git installation instructions](../Setup/Installation-Git.md) to install Evennia, this is what you used to get your local copy of the Evennia repository. 
+
+    git pull
+
+Once you cloned or otherwise set up  a remote repository, using `git pull` will re-sync the remote with what you have locally. If what you download clashes with local changes, git will force you to `git commit` your changes before you can continue with `git pull`.
+
+    git push 
+
+This uploads your local changes _of your current branch_ to the same-named branch on the remote repository. To be able to do this you must have write-permissions to the remote repository.
+
+### Other git commands 
+
+There are _many_ other git commands. Read up on them online: 
+
+    git reflog 
+
+Shows hashes of individual git actions. This allows you to go back in the git event history itself. 
+
+
+    git reset 
+    
+Force reset a branch to an earlier commit. This could throw away some history, so be careful.
+
+    git grep -n -I -i <query>
+
+Quickly search for a phrase/text in all files tracked by git. Very useful to quickly find where things are. Set up an alias `git gr` with
+
+```
+git config --global alias.gr 'grep -n -I -i'
+```
+
+## Putting your game dir under version control
+
+This makes use  of the git commands listed in the previous section.
+
+```{sidebar} git aliases
+If you set up the git aliases for commands suggested in the previous section, you can use them instead!
+```
+
+    cd mygame 
+    git init . 
     git add *
     git commit -a -m "Initial commit"
 
-In turn these commands:
-- Move us into the `mygame` folder
-- Tell `git` that everything `*` means everything) in this folder should be put
-  under version control.
-- _Commit_ all (`-a`) those newly added files to git and add a message `-m` so you remember
-  what you did at this point. Doing a commit is like saving a snapshot of the
-  current state of everything.
+    
+Your game-dir is now tracked by git.
 
-Read on for details!
-
-### Tracking files
-
-When working on your code or fix bugs in your local branches you may end up creating new files. If
-you do you must tell Git to track them by using the add command.
-
-    git add <filename>
-
-You only need to do this once per file.
-
-    git status
-
-will show if you have any modified, added or otherwise changed files. Some
-files, like database files, logs and temporary PID files are usually *not*
-tracked in version control. These should either not show up or have a question
-mark in front of them.
-
-```{note}
-You will notice that some files are not covered by your git version control,
-notably your settings file (`mygame/server/conf/settings.py`) and your sqlite3
-database file `mygame/server/evennia.db3`. What is auto-ignored by is controlled
-by the hidden file `mygame/.gitignore`. Evennia creates this file as part of
-the creation of your game directory. Everything matched in this file will be
-ignored by git. If you want to, for example, include your settings file for
-collaborators to access, remove that entry in `.gitignore`.
-```
+You will notice that some files are not covered by your git version control, notably your secret-settings file (`mygame/server/conf/secret_settings.py`) and your sqlite3 database file `mygame/server/evennia.db3`. This is intentional and controlled from the file  `mygame/.gitignore`. 
 
 ```{warning}
 You should *never* put your sqlite3 database file into git by removing its entry
 in `.gitignore`. GIT is for backing up your code, not your database. That way
-lies madness and a good chance you'll confuse yourself so that after a few
-commits and reverts don't know what is in your database or not. If you want to
-backup your database, do so by simply copying the file on your hard drive to a
-backup-name.
+lies madness and a good chance you'll confuse yourself. Make one mistake or local change and after a few commits and reverts you will have lost track of what is in your database or not. If you want to backup your SQlite3 database, do so by simply copying the database file to a safe location.
 ```
-
-### Committing your Code
-
-_Committing_ your code means storing the current snapshot of your code within
-git. This creates a "save point" or "history" of your development process. You
-can later jump back and forth in your history, for example to figure out just
-when a bug was introduced or see what results the code used to produce compared
-to now. Or just wiping everything since the last commit, if you did something
-stupid.
-
-It's usually a good idea to commit your changes often. Committing is fast and
-local only - you will never commit anything online at this point. To commit your
-changes, use
-
-    git commit --all
-
-Also `-a` works. This will open a text editor for you to describe your change.
-Be brief but informative in your message - you'll appreciate it later.  When you
-save and close the editor, the commit will be saved. You can create the message
-directly with
-
-    git commit -a -m "This fixes a bug in the combat code."
-
-
-### Changing your mind
-
-If you have non-committed changes that you realize you want to throw away, you
-'check out' the file you want - this will re-load it from the last committed
-state:
-
-    git checkout <file_to_revert>
-    git checkout foo/bar/dummy.py
-
-If you want to revert _all_ changes you did since last commit, do
-
-    git checkout .
-
-(that is, add a single `.` at the end).
 
 ### Pushing your code online
 
-So far your code is only located on your private machine. A good idea is to back
-it up online. The easiest way to do this is to push it to your own remote
-repository on GitHub.
+So far your code is only located on your private machine. A good idea is to back it up online. The easiest way to do this is to `git push` it to your own remote repository on GitHub. So for this you need a (free) Github account.
 
-```{important}
-Just to avoid confusion, be aware that Github's documentation has changed to
-calling the primary branch 'main' rather than 'master'. While Evennia still
-uses 'master' branch (and this is what we refer to below), you can use either
-name for your personal primary branch - they are equivalent.
+If you don't want your code to be publicly visible, Github also allows you set up a _private_ repository, only visible to you.
+
+
+```{note} 
+Github's defaults have changed to calling the primary branch 'main' rather than 'master'. While Evennia still uses 'master' branch (and this is what we refer to below), you can use either name for your personal primary branch - they are equivalent.
 ```
 
-1. Make sure you have your game directory setup under git version control as
-   described in the previous section. Make sure to commit any changes you did.
-2. Create a new, empty repository on Github. Github explains how
-   [here](https://help.github.com/articles/create-a-repo/) (do *not* "Initialize
-   the repository with a README" or else you'll create unrelated histories).
-3. From your local game dir, do `git remote add origin <github URL>` where
-   `<github URL>` is the URL to your online repo. This tells your game dir that
-   it should be pushing to the remote online dir.
-4. `git remote -v` to verify the online dir.
-5. `git push origin master` (or `git push origin main`) now pushes your game dir
-   online so you can see it on github.com.
+Create a new, empty repository on Github. [Github explains how here](https://help.github.com/articles/create-a-repo/) . _Don't_ allow it to add a README, license etc, that will just clash with what we upload later.
 
-You can commit your work locally (`git commit --all -m "Make a change that
-..."`) as many times as you want. When you want to push those changes to your
-online repo, you do `git push`. You can also `git clone <url_to_online_repo>`
-from your online repo to somewhere else (like your production server) and
-henceforth do `git pull` to update that to the latest thing you pushed.
+```{sidebar} Origin
+We label the remote repository 'origin'. This is the git default and means we won't need to specify it explicitly later.
+```
 
-Note that GitHub's repos are, by default publicly visible by all. Creating a
-publicly visible online clone might not be what you want for all parts of your
-development process - you may prefer a more private venue when sharing your
-revolutionary work with your team. If that's the case you can change your
-repository to "Private" in the github settings. Then your code will only be
-visible to those you specifically grant access.
+Make sure you are in your local game dir (previously initialized as a git repo).
 
+    git remote add origin <github URL>
 
-## Forking Evennia
+This tells Git that there is a remote repository at `<github URL>`. See the  github docs as to which URL to use. Verify that the remote works with `git remote -v`
 
-This helps you set up an online *fork* of the main Evennia repository so you can
-easily commit fixes and help with upstream development. You can do this step
-also if you _didn't_ put your game dir under version control like in the
-previous section - the evennia repo and your game dir repo are completely
-separate.
+Now we push to the remote (labeled 'origin' which is the default):
 
-### Step 1: Fork the evennia/master repository
+    git push
 
-> Before proceeding with the following step, make sure you have registered and
-> created an account on [GitHub.com](https://github.com/). This is necessary in order to create a fork
-of Evennia's master repository, and to push your commits to your fork either for
-yourself or for contributing to
-Evennia.
+Depending on how you set up your authentication with github, you may be asked to enter your github username and password. If you set up SSH authentication, this command will just work.
 
-A _fork_ is a clone of the master repository that you can make your own commits
-and changes to. At the top of [this page](https://github.com/evennia/evennia),
-click the "Fork" button, as it appears below.
-![](https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png)
+You use `git push` to upload your local changes so the remote repository is in sync with your local one. If you edited a file online using the Github editor (or a collaborator pushed code), you use `git pull` to sync in the other direction.
 
-### Step 2: Clone your online fork of Evennia
+## Contributing to Evennia 
 
-The fork only exists online as of yet. In a terminal, change your directory to
-the folder you wish to develop in. From this directory run the following
-command:
+If you want to help contributing to Evennia you must do so by _forking_ - making your own remote copy of the Evennia repository on Github. So for this, you need a (free) Github account. Doing so is a completely separate process from [putting your game dir under version control](#putting-your-game-dir-under-version-control) (which you should also do!).
 
-    git clone https://github.com/yourusername/evennia.git
+At the top right of [the evennia github page](https://github.com/evennia/evennia), click the "Fork" button:
 
-This will download your fork to your computer. It creates a new folder
-`evennia/` at your current location.
+![fork button](../_static/images/fork_button.png)
 
-### Step 3: Configure remotes
+This will create a new online fork Evennia under your github account. 
 
-Your Evennia-fork is now separate from upstream, 'official' Evennia. You will
-want to set it up so that you can easily sync our updates and changes to your
-fork.
+The fork only exists online as of yet. In a terminal, `cd` to  the folder you wish to develop in. This folder should _not_ be your game dir, nor the place you cloned Evennia into if you used the [Git installation](../Setup/Installation-Git.md).
 
-We do this by setting up a new _remote_. We actually already have one remote,
-that is our own github form of Evennia. This got created when you cloned the
-repo and defaults to being called `origin`.
+From this directory run the following command:
 
-We will now create a new remote called `upstream`.
+    git clone https://github.com/yourusername/evennia.git evennia
+
+This will download your fork to your computer. It creates a new folder `evennia/` at your current location. If you installed Evennia using the [Git installation](../Setup/Installation-Git.md), this folder will be identical in content to the `evennia` folder you cloned during that installation. The difference is that this repo is connected to your remote fork and not to the 'original' _upstream_ Evennia.
+
+When we cloned our fork, git automatically set up a 'remote repository' labeled `origin` pointing to it. So if we do `git pull` and `git push`, we'll push to our fork. 
+
+We now want to add a second remote repository linked to the original Evennia repo. We will label this remote repository `upstream`: 
 
     cd evennia
     git remote add upstream https://github.com/evennia/evennia.git
 
-This adds a remote to the main evennia repo.
-
-If you also want to access Evennia's `develop` branch (the bleeding edge
-development) do the following:
+If you also want to access Evennia's `develop` branch (the bleeding edge development) do the following:
 
     git fetch upstream develop
     git checkout develop
 
 Use
+
     git checkout master
     git checkout develop
 
-to switch between the branches. If you want to contribute a fix, ask first which
-branch to use. Normally `master` is for bug fixes and `develop` is for new
-features, but late in the development of a new Evennia version, all changes
-often go into `develop`.
+to switch between the branches. 
 
+To pull the latest from upstream Evennia, just checkout the branch you want and do 
 
-## Working with your Evennia fork
+    git pull upstream
 
-_Branches_ are stand-alone editions of the same code. You make a commit to a
-branch. Switching to a branch will change the code on-disk. You can easily
-make a new branch off a parent branch, and then merge it back into the same
-branch later (or throw it away). This is a very common way to work on new
-features in safety and isolation.
+```{sidebar} Pushing to upstream
+You can't do `git push upstream` unless you have write-access to the upstream Evennia repository. So there is no risk of you accidentally pushing your own code into the main, public repository.
+```
 
-### Updating to latest Evennia
+### Fixing an Evennia bug or feature
 
-When Evennia's official repository updates, first make sure to commit all your
-changes to your branch and then checkout the "clean" master branch:
-
-    git checkout master
-    git pull upstream master
-
-Or, if you are working against Evennia's development branch:
-
-    git checkout develop
-    git pull upstream develop
-
-The `pull` command will fetch all the changes from the "upstream" remote and
-merge it into your local master/develop branch. It should now be a perfect copy
-of the latest Evennia changes.
-
-### Making changes
-
-As a rule of thumb you should _never_ work directly in Evennia's `master` or
-`develop` branches. Instead you make a _new_ branch off the branch you want
-and change _that_.
+This should be done in your fork of Evennia. You should _always_ do this in a _separate git branch_ based off the Evennia branch you want to improve. 
 
     git checkout master (or develop)
-    check checkout -b strange_bug
+    git branch - b myfixbranch
 
-You now have a new branch `strange_bug` that is an exact replica of the branch you
-had checked out when you created it. Here you can now make your own
-modifications.
+Now fix whatever needs fixing. Abide by the [Evennia code style](./Evennia-Code-Style.md). You can `git commit` commit your changes along the way as normal.
 
-    git branches
+Upstream Evennia is not standing still, so you want to make sure that your work is up-to-date with upstream changes. Make sure to first commit your `myfixbranch` changes, then
 
-will show you which branches are available and which one you are currently
-using. Use `git checkout <branch>` to move between them, but remember to commit
-your changes before you do.
-
-You often want to make sure also your work-branch has the latest upstream
-changes. To do this, you need to first update your copy of the
-`master`/`develop` branch and then _merge_ those changes into your work branch.
-Make sure you have committed everything first!
-
-    git commit -a -m "My latest changes ..."   # on your strange_bug branch
     git checkout master (or develop)
-    git pull upstream develop
-    git checkout strange_bug
+    git pull upstream 
+    git checkout myfixbranch
     git merge master (or develop)
 
-If everything went well, your `strange_bug` branch will now have the latest version
-of Evennia merged with whatever changes you have done.
-
-Now work away on your code and commit with reasonable commit messages
-
-    git commit -a -m "Fixed the issue in ..."
-    git commit -a -m "Adding unit tests. This resolves #123."
-
-Use
-
-    git diff
-
-to see what you changed since last commit, and
-
-    git log
-
-to see past commits (including those made by Evennia upstream, remember that
-your branch is a copy of the upstream one, including its history!)
-
-## Sharing your Evennia fixes on Github
-
-Up to this point your `strange_bug` branch only exists on your local computer. No
-one else can see it.  If you want a copy of this branch to also appear in your
-online fork on GitHub, make sure to have checked out your "myfixes" branch and
-then run the following:
-
-    git push -u origin strange_bug
-
-You only need to do this once, the `-u` makes this the default push-location. In
-the future, you can just push things online like this:
+Up to this point your `myfixbranch` branch only exists on your local computer. No
+one else can see it.  
 
     git push
 
-### Troubleshooting
+This will automatically create a matching `myfixbranch` in your forked version of Evennia and push to it. On github you will be able to see appear it in the `branches` dropdown. You can keep pushing to your remote `myfixbranch` as much as you like.
 
-If you hadn't setup a public key on GitHub or aren't asked for a
-username/password, you might get an error `403: Forbidden Access` at this stage.
-In that case, some users have reported that the workaround is to create a file
-`.netrc` under your home directory and add your github credentials there:
+Once you feel you have something to share, you need to [create a pull request](https://github.com/evennia/evennia/pulls) (PR): 
+This is a formal request for upstream Evennia to adopt and pull your code into the main repository.  
+1. Click `New pull request`
+2.  Choose `compare across forks`
+3. Select your fork from dropdown list of `head repository` repos. Pick the right branch to `compare`.
+4. On the Evennia side (to the left) make sure to pick the right `base` branch: If you want to contribute a change to the `develop` branch, you must pick `develop` as the `base`.
+5. Then click `Create pull request` and fill in as much information as you can in the form.
+6. Optional: Once you saved your PR, you can go into your code (on github) and add some per-line comments; this can help reviewers by explaining complex code or decisions you made. 
+
+Now you just need to wait for your code to be reviewed. Expect to get feedback and be asked to make changes, add more documentation etc. Getting as PR merged can take a few iterations. 
+
+```{sidebar} Not all PRs can merge
+While most PRs get merged, Evennia can't **guarantee** that your PR code will be deemed suitable to merge into upstream Evennia. For this reason it's a good idea to check in with the community _before_ you spend a lot of time on a large piece of code (fixing bugs is always a safe bet though!)
+```
+
+
+## Troubleshooting
+
+### Getting 403: Forbidden access
+
+Some users have experienced this on `git push` to their remote repository. They are not asked for username/password (and don't have a ssh key set up). 
+
+Some users have reported that the workaround is to create a file `.netrc` under your home directory and add your github credentials there:
 
 ```bash
 machine github.com
 login <my_github_username>
 password <my_github_password>
 ```
-
-## Making an Evennia Pull Request
-
-If you think that the fixes you did in your `strange_bug` branch should be a
-part of the regular Evennia, you should create a _Pull Request_ (PR). This is a
-call for the Evennia maintainer to pull your change into an upstream branch.
-
-> It is wise to make separate branches for every fix or series of fixes you want
-to contribute.
-
-Assuming you have followed the instructions above and have pushed your changes
-online, [create a pull request](https://github.com/evennia/evennia/pulls) and
-follow the instructions. Make sure to specifically select your `strange_bug`
-branch to be the source of the merge and use the branch you based that branch
-off (`master` or `develop`) as the target.
-
-Evennia developers will then be able to examine your request and merge it if
-it's deemed suitable. They may also come back with feedback and request you do
-some changes.
-
-Once approved and merged, your change will now be available in the upstream
-branch:
-
-    git checkout master (or develope)
-    git pull upstream master (or develop)
-
-Since your changes are now in upstream, your local `strange_bug` branch is now
-superfluous and should be deleted:
-
-    git branch -D strange_bug
-
-You can also safely delete your online `strange_bug` branch in your fork
-(you can do this from the PR page on github).
-
-
-## GIT tips and tricks
-
-Some of the GIT commands can feel a little long and clunky if you need to do them often. Luckily you
-can create aliases for those. Here are some useful commands to run:
-
-
-```
-# git st
-# - view brief status info
-git config --global alias.st 'status -s'
-```
-
-Above, you only need to ever enter the `git config ...` command once - you have then added the new
-alias. Afterwards, just do `git st` to get status info. All the examples below follow the same
-template.
-
-```
-# git cl
-# - clone a repository
-git config --global alias.cl clone
-```
-
-```
-# git cma "commit message"
-# - commit all changes without opening editor for message
-git config --global alias.cma 'commit -a -m'
-```
-
-```
-# git ca
-# - amend text to your latest commit message
-git config --global alias.ca 'commit --amend'
-```
-
-```
-# git fl
-# - file log; shows diffs of files in latest commits
-git config --global alias.fl 'log -u'
-```
-
-```
-# git co [branchname]
-# - checkout
-git config --global alias.co checkout
-```
-
-```
-# git br <branchname>
-# - create branch
-git config --global alias.br branch
-```
-
-```
-# git ls
-# - view log tree
-git config --global alias.ls 'log --pretty=format:"%C(green)%h\ %C(yellow)[%ad]%Cred%d\
-%Creset%s%Cblue\ [%cn]" --decorate --date=relative --graph'
-```
-
-```
-# git diff
-# - show current uncommitted changes
-git config --global alias.diff 'diff --word-diff'
-```
-
-```
-# git grep <query>
-# - search (grep) codebase for a search criterion
-git config --global alias.grep 'grep -Ii'
-```
-
-To get a further feel for GIT there is also [a good YouTube talk about it](https://www.youtube.com/watch?v=1ffBJ4sVUb4#t=1m58s) - it's a bit long but it will help you understand the underlying ideas behind GIT
-(which in turn makes it a lot more intuitive to use).

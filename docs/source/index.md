@@ -13,14 +13,15 @@
 This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles.
 
 - [Introduction](./Evennia-Introduction.md) - what is this Evennia thing? 
-- [Getting help and Contribute](./Contributing.md) - when you get stuck or want to chip in
+- [Contributing and Getting help](./Contributing.md) - when you get stuck or want to chip in
 
 ## Setup
 
-- [Setup Quickstart](Setup/Setup-Overview.md#installation-and-running) - installing Evennia and get going
-- [Starting, Stopping and Reloading](Setup/Start-Stop-Reload.md)  - how to manage the Evennia server
-- [Configuration](Setup/Setup-Overview.md#configuration) - how to set up your server the way you like it
-- [Going public](Setup/Setup-Overview.md#going-public) - taking your game online
+- [Installation](Setup/Setup-Overview.md#installation-and-running) - getting started
+- [Running the Game](Setup/Running-Evennia.md)  - how to start, stop and reload Evennia
+- [Updating the Server](Setup/Updating-Evennia.md) - how to update Evennia 
+- [Configuration](Setup/Setup-Overview.md#configuration) - how to set up Evennia the way you like it
+- [Going Online](Setup/Setup-Overview.md#going-online) - bringing your game online
 
 ## Tutorials and Howtos
 
@@ -55,7 +56,10 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 :maxdepth: 3
 
 Evennia-Introduction
+Setup/Running-Evennia
+Setup/Updating-Evennia
 Setup/Setup-Overview
+
 Howtos/Howtos-Overview
 Components/Components-Overview
 Concepts/Concepts-Overview

@@ -1,19 +1,11 @@
 # Unit Testing
 
-*Unit testing* means testing components of a program in isolation from each other to make sure every
-part works on its own before using it with others. Extensive testing helps avoid new updates causing
-unexpected side effects as well as alleviates general code rot (a more comprehensive wikipedia
-article on unit testing can be found [here](https://en.wikipedia.org/wiki/Unit_test)).
+*Unit testing* means testing components of a program in isolation from each other to make sure every part works on its own before using it with others. Extensive testing helps avoid new updates causing unexpected side effects as well as alleviates general code rot (a more comprehensive wikipedia article on unit testing can be found [here](https://en.wikipedia.org/wiki/Unit_test)). 
 
-A typical unit test set calls some function or method with a given input, looks at the result and
-makes sure that this result looks as expected. Rather than having lots of stand-alone test programs,
-Evennia makes use of a central *test runner*. This is a program that gathers all available tests all
-over the Evennia source code (called *test suites*) and runs them all in one go. Errors and
-tracebacks are reported.
+A typical unit test set calls some function or method with a given input, looks at the result and makes sure that this result looks as expected. Rather than having lots of stand-alone test programs, Evennia makes use of a central *test runner*. This is a program that gathers all available tests all over the Evennia source code (called *test suites*) and runs them all in one go. Errors and tracebacks are reported.
 
-By default Evennia only tests itself. But you can also add your own tests to your game code and have
-Evennia run those for you.
-
+ By default Evennia only tests itself. But you can also add your own tests to your game code and have Evennia run those for you. 
+ 
 ## Running the Evennia test suite
 
 To run the full Evennia test suite, go to your game folder and issue the command
