@@ -150,6 +150,7 @@ Extra Installation Instructions:
 """
 import re
 from string import punctuation
+from collections import defaultdict
 
 from django.conf import settings
 
@@ -158,7 +159,10 @@ from evennia.commands.command import Command
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultObject
 from evennia.utils import ansi, logger
-from evennia.utils.utils import lazy_property, make_iter, variable_from_module
+from evennia.utils.utils import iter_to_str, lazy_property, make_iter, variable_from_module
+
+import inflect
+_INFLECT = inflect.engine()
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 # ------------------------------------------------------------
@@ -1283,10 +1287,7 @@ class ContribRPObject(DefaultObject):
         # emoting/recog data
         self.db.pose = ""
         self.db.pose_default = "is here."
-
-        # initializing sdesc
         self.db._sdesc = ""
-        self.sdesc.add("Something")
 
     def search(
         self,
@@ -1520,43 +1521,74 @@ class ContribRPObject(DefaultObject):
 
         return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
-    def return_appearance(self, looker):
+    def get_display_characters(self, looker, pose=True, **kwargs):
         """
-        This formats a description. It is the hook a 'look' command
-        should call.
+        Get the ‘characters’ component of the object description. Called by return_appearance.
+        """
+        def _filter_visible(obj_list):
+            return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
+
+        characters = _filter_visible(self.contents_get(content_type="character"))
+        character_names = "\n".join(
+            char.get_display_name(looker, pose=pose, **kwargs) for char in characters
+        )
+
+        return f"\n{character_names}" if character_names else ""        
+
+    def get_display_things(self, looker, pose=True, **kwargs):
+        """
+        Get the 'things' component of the object description. Called by `return_appearance`.
 
         Args:
             looker (Object): Object doing the looking.
-
+            **kwargs: Arbitrary data for use when overriding.
         Returns:
-            string (str): A string containing the name, appearance and contents
-                of the object.
+            str: The things display data.
+
         """
-        if not looker:
+        if not pose:
+            # if poses aren't included, we can use the core version instead
+            return super().get_display_things(looker, **kwargs)
+
+        def _filter_visible(obj_list):
+            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
+
+        # sort and handle same-named things
+        things = _filter_visible(self.contents_get(content_type="object"))
+
+        posed_things = defaultdict(list)
+        for thing in things:
+            pose = thing.db.pose or thing.db.pose_default
+            if not pose:
+                pose = ""
+            posed_things[pose].append(thing)
+        
+        display_strings = []
+        
+        for pose, thinglist in posed_things.items():
+            grouped_things = defaultdict(list)
+            for thing in thinglist:
+                grouped_things[thing.get_display_name(looker, pose=False, **kwargs)].append(thing)
+
+            thing_names = []
+            for thingname, samethings in sorted(grouped_things.items()):
+                nthings = len(samethings)
+                thing = samethings[0]
+                singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
+                thing_names.append(singular if nthings == 1 else plural)
+            thing_names = iter_to_str(thing_names)
+
+            if pose:
+                pose = _INFLECT.plural(pose) if nthings != 1 else pose
+            grouped_names = f"{thing_names} {pose}"
+            grouped_names = grouped_names[0].upper() + grouped_names[1:]
+            display_strings.append(grouped_names)
+
+        if not display_strings:
             return ""
-        # get and identify all objects
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
-        exits, users, things = [], [], []
-        for con in visible:
-            key = con.get_display_name(looker, pose=True)
-            if con.destination:
-                exits.append(key)
-            elif con.has_account:
-                users.append(key)
-            else:
-                things.append(key)
-        # get description, build string
-        string = "|c%s|n\n" % self.get_display_name(looker, pose=True)
-        desc = self.db.desc
-        if desc:
-            string += "%s" % desc
-        if exits:
-            string += "\n|wExits:|n " + ", ".join(exits)
-        if users or things:
-            string += "\n " + "\n ".join(users + things)
 
-        return string
-
+        return "\n" + "\n".join(display_strings)
+  
 
 class ContribRPRoom(ContribRPObject):
     """
