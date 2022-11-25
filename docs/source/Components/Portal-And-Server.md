@@ -2,10 +2,26 @@
 
 
 Evennia consists of two processes, known as *Portal* and *Server*.  They can be controlled from
-inside the game or from the command line as described [here](../Setup/Running-Evennia.md).
+inside the game or from the command line as described [in the Running-Evennia doc](../Setup/Running-Evennia.md).
 
-If you are new to the concept, the main purpose of separating the two is to have accounts connect to the Portal but keep the MUD running on the Server. This way one can restart/reload the game (the Server part) without Accounts getting disconnected.
+In short, the Portal knows everything about internet protocols (telnet, websockets etc), but knows very little about the game. 
 
-![portal and server layout](https://474a3b9f-a-62cb3a1a-s-  sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png)
+In contrast, the Server knows everything about the game. It knows that a player has connected but now _how_ they connected. 
 
-The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection. This allows the two programs to communicate seamlessly.
+The effect of this is that you can fully `reload` the Server and have players still connected to the game. One the server comes back up, it will re-connect to the Portal and re-sync all players as if nothing happened. 
+
+```
+Internet│  ┌──────────┐ ┌─┐           ┌─┐ ┌─────────┐
+        │  │Portal    │ │S│   ┌───┐   │S│ │Server   │
+    P   │  │          ├─┤e├───┤AMP├───┤e├─┤         │
+    l ──┼──┤ Telnet   │ │s│   │   │   │s│ │         │
+    a   │  │ Webclient├─┤s├───┤   ├───┤s├─┤ Game    │
+    y ──┼──┤ SSH      │ │i│   │   │   │i│ │ Database│
+    e   │  │ ...      ├─┤o├───┤   ├───┤o├─┤         │
+    r ──┼──┤          │ │n│   │   │   │n│ │         │
+    s   │  │          │ │s│   └───┘   │s│ │         │
+        │  └──────────┘ └─┘           └─┘ └─────────┘
+        │Evennia 
+```
+
+The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection. This allows the two programs to communicate seamlessly on the same machine.
