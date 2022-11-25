@@ -99,10 +99,24 @@
   <section class="tex2jax_ignore mathjax_ignore" id="portal-and-server">
 <h1>Portal And Server<a class="headerlink" href="#portal-and-server" title="Permalink to this headline">¶</a></h1>
 <p>Evennia consists of two processes, known as <em>Portal</em> and <em>Server</em>.  They can be controlled from
-inside the game or from the command line as described <a class="reference internal" href="../Setup/Running-Evennia.html"><span class="doc std std-doc">here</span></a>.</p>
-<p>If you are new to the concept, the main purpose of separating the two is to have accounts connect to the Portal but keep the MUD running on the Server. This way one can restart/reload the game (the Server part) without Accounts getting disconnected.</p>
-<p>![portal and server layout](https://474a3b9f-a-62cb3a1a-s-  <a class="reference external" href="http://sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png">sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png</a>)</p>
-<p>The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection. This allows the two programs to communicate seamlessly.</p>
+inside the game or from the command line as described <a class="reference internal" href="../Setup/Running-Evennia.html"><span class="doc std std-doc">in the Running-Evennia doc</span></a>.</p>
+<p>In short, the Portal knows everything about internet protocols (telnet, websockets etc), but knows very little about the game.</p>
+<p>In contrast, the Server knows everything about the game. It knows that a player has connected but now <em>how</em> they connected.</p>
+<p>The effect of this is that you can fully <code class="docutils literal notranslate"><span class="pre">reload</span></code> the Server and have players still connected to the game. One the server comes back up, it will re-connect to the Portal and re-sync all players as if nothing happened.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Internet│  ┌──────────┐ ┌─┐           ┌─┐ ┌─────────┐
+        │  │Portal    │ │S│   ┌───┐   │S│ │Server   │
+    P   │  │          ├─┤e├───┤AMP├───┤e├─┤         │
+    l ──┼──┤ Telnet   │ │s│   │   │   │s│ │         │
+    a   │  │ Webclient├─┤s├───┤   ├───┤s├─┤ Game    │
+    y ──┼──┤ SSH      │ │i│   │   │   │i│ │ Database│
+    e   │  │ ...      ├─┤o├───┤   ├───┤o├─┤         │
+    r ──┼──┤          │ │n│   │   │   │n│ │         │
+    s   │  │          │ │s│   └───┘   │s│ │         │
+        │  └──────────┘ └─┘           └─┘ └─────────┘
+        │Evennia 
+</pre></div>
+</div>
+<p>The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection. This allows the two programs to communicate seamlessly on the same machine.</p>
 </section>
 
 
