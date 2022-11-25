@@ -2,12 +2,11 @@
 EvAdventure character generation.
 
 """
+from django.conf import settings
 from evennia import create_object
+from evennia.objects.models import ObjectDB
 from evennia.prototypes.spawner import spawn
 from evennia.utils.evmenu import EvMenu
-from evennia.objects.models import ObjectDB
-
-from django.conf import settings
 
 from .characters import EvAdventureCharacter
 from .random_tables import chargen_tables
@@ -339,5 +338,11 @@ def start_chargen(caller, session=None):
 
     # this generates all random components of the character
     tmp_character = TemporaryCharacterSheet()
-    
-    EvMenu(caller, menutree, startnode="node_chargen", session=session, startnode_input=('sgsg', {"tmp_character":tmp_character}))
+
+    EvMenu(
+        caller,
+        menutree,
+        startnode="node_chargen",
+        session=session,
+        startnode_input=("sgsg", {"tmp_character": tmp_character}),
+    )
