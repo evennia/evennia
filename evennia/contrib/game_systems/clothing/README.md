@@ -36,19 +36,21 @@ And then add `ClothedCharacterCmdSet` in your character set in
 
 ```python
 
-from evennia.contrib.game_systems.clothing import ClothedCharacterCmdSet <--
+from evennia.contrib.game_systems.clothing import ClothedCharacterCmdSet # <--
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
      # ...
      at_cmdset_creation(self):
 
          super().at_cmdset_creation()
-         ...
+         # ...
          self.add(ClothedCharacterCmdSet)    # <--
 
 ```
 
-From here, you can use the default builder commands to create clothes
+## Usage
+
+Once installed, you can use the default builder commands to create clothes
 with which to test the system:
 
     create a pretty shirt : evennia.contrib.game_systems.clothing.Clothing
@@ -87,3 +89,48 @@ can cover any garment with almost any other, for example - but it
 can easily be made more restrictive, and can even be tied into a
 system for armor or other equipment.
 
+## Configuration
+
+The contrib has several optional configurations which you can define in your `settings.py`
+Here are the settings and their default values.
+
+```python
+# Maximum character length of 'wear style' strings, or None for unlimited.
+CLOTHING_WEARSTYLE_MAXLENGTH = 50
+
+# The order in which clothing types appear on the description.
+# Untyped clothing or clothing with a type not in this list goes last.
+CLOTHING_TYPE_ORDERED = [
+        "hat",
+        "jewelry",
+        "top",
+        "undershirt",
+        "gloves",
+        "fullbody",
+        "bottom",
+        "underpants",
+        "socks",
+        "shoes",
+        "accessory",
+    ]
+
+# The maximum number of clothing items that can be worn, or None for unlimited.
+CLOTHING_OVERALL_LIMIT = 20
+
+# The maximum number for specific clothing types that can be worn.
+# If the clothing item has no type or is not specified here, the only maximum is the overall limit.
+CLOTHING_TYPE_LIMIT = {"hat": 1, "gloves": 1, "socks": 1, "shoes": 1}
+
+# What types of clothes will automatically cover what other types of clothes when worn.
+# Note that clothing only gets auto-covered if it's already being worn. It's perfectly possible
+# to have your underpants showing if you put them on after your pants!
+CLOTHING_TYPE_AUTOCOVER = {
+        "top": ["undershirt"],
+        "bottom": ["underpants"],
+        "fullbody": ["undershirt", "underpants"],
+        "shoes": ["socks"],
+    }
+
+# Any types of clothes that can't be used to cover other clothes at all.
+CLOTHING_TYPE_CANT_COVER_WITH = ["jewelry"]
+```
