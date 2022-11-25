@@ -8,7 +8,6 @@ import shlex
 
 from django.db.models import Count, ExpressionWrapper, F, FloatField, Q
 from django.db.models.functions import Cast
-
 from evennia.typeclasses.attributes import Attribute
 from evennia.typeclasses.tags import Tag
 from evennia.utils import idmapper
@@ -475,6 +474,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if dbref:
             return self.filter(id=dbref)
         return self.none()
+
+    search_dbref = dbref_search  # alias
 
     def get_dbref_range(self, min_dbref=None, max_dbref=None):
         """
