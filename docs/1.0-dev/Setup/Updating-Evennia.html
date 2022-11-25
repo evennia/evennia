@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Updating Evennia &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Server Setup and Life" href="Setup-Overview.html" />
+    <link rel="prev" title="Start Stop Reload" href="Running-Evennia.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Setup-Overview.html" title="Server Setup and Life"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Running-Evennia.html" title="Start Stop Reload"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Updating Evennia</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Updating Evennia</a><ul>
+<li><a class="reference internal" href="#if-you-installed-with-pip">If you installed with <code class="docutils literal notranslate"><span class="pre">pip</span></code></a></li>
+<li><a class="reference internal" href="#if-you-installed-with-git">If you installed with <code class="docutils literal notranslate"><span class="pre">git</span></code></a></li>
+<li><a class="reference internal" href="#if-you-installed-with-docker">If you installed with <code class="docutils literal notranslate"><span class="pre">docker</span></code></a></li>
+<li><a class="reference internal" href="#resetting-your-database">Resetting your database</a><ul>
+<li><a class="reference internal" href="#sqlite3-default">SQLite3 (default)</a></li>
+<li><a class="reference internal" href="#postgresql">PostgreSQL</a></li>
+<li><a class="reference internal" href="#mysql-mariadb">MySQL/MariaDB</a></li>
+<li><a class="reference internal" href="#what-are-database-migrations">What are database migrations?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Running-Evennia.html"
+                        title="previous chapter">Start Stop Reload</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Setup-Overview.html"
+                        title="next chapter">Server Setup and Life</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Setup/Updating-Evennia.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Updating-Evennia.html">1.0-dev (develop branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="updating-evennia">
+<h1>Updating Evennia<a class="headerlink" href="#updating-evennia" title="Permalink to this headline">¶</a></h1>
+<p>When Evennia is updated to a new version you will usually see it announced in the <a class="reference external" href="https://github.com/evennia/evennia/blob/master/discussions">Discussion forum</a> and in the <a class="reference external" href="https://www.evennia.com/devblog/index.html">dev blog</a>. You can also see the changes on <a class="reference external" href="https://github.com/evennia/evennia/blob/master/">github</a> or through one of our other <a class="reference internal" href="../Links.html"><span class="doc std std-doc">linked pages</span></a>.</p>
+<section id="if-you-installed-with-pip">
+<h2>If you installed with <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#if-you-installed-with-pip" title="Permalink to this headline">¶</a></h2>
+<p>If you followed the <a class="reference internal" href="Installation.html"><span class="doc std std-doc">normal install instructions</span></a>, here’s what you do to upgrade:</p>
+<ol class="simple">
+<li><p>Read the <a class="reference internal" href="../Coding/Changelog.html"><span class="doc std std-doc">changelog</span></a> to see what changed and if it means you need to make any changes to your game code.</p></li>
+<li><p>If you use a <span class="xref myst">virtualenv</span>, make sure it’s active.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to your game dir (e.g. <code class="docutils literal notranslate"><span class="pre">mygame</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">evennia</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> tor your game dir</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code>  (<em>ignore</em> any warnings about running <code class="docutils literal notranslate"><span class="pre">makemigrations</span></code>, it should <em>not</em> be done)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code></p></li>
+</ol>
+<p>If the upstream changes are large, you may also need to go into your gamedoor</p>
+</section>
+<section id="if-you-installed-with-git">
+<h2>If you installed with <code class="docutils literal notranslate"><span class="pre">git</span></code><a class="headerlink" href="#if-you-installed-with-git" title="Permalink to this headline">¶</a></h2>
+<p>This applies if you followed the <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">git-install instructions</span></a>. Before Evennia 1.0, this was the only way to install Evennia.</p>
+<p>At any time, development is either happening in the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch (latest stable) or <code class="docutils literal notranslate"><span class="pre">develop</span></code> (experimental). Which one is active and ‘latest’ at a given time depends - after a release,  <code class="docutils literal notranslate"><span class="pre">master</span></code> will see most updates, close to a new release, <code class="docutils literal notranslate"><span class="pre">develop</span></code> will usually be the fastest changing.</p>
+<ol class="simple">
+<li><p>Read the <a class="reference internal" href="../Coding/Changelog.html"><span class="doc std std-doc">changelog</span></a> to see what changed and if it means you need to make any changes to your game code.</p></li>
+<li><p>If you use a <span class="xref myst">virtualenv</span>, make sure it’s active.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to your game dir  (e.g. <code class="docutils literal notranslate"><span class="pre">mygame</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> repo folder you cloned during the git installation process.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">-e</span> <span class="pre">.</span></code>  (remember the <code class="docutils literal notranslate"><span class="pre">.</span></code> at the end!)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> back to your game dir</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> (<em>ignore</em> any warnings about running <code class="docutils literal notranslate"><span class="pre">makemigrations</span></code> , it should <em>not</em> be done)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code></p></li>
+</ol>
+</section>
+<section id="if-you-installed-with-docker">
+<h2>If you installed with <code class="docutils literal notranslate"><span class="pre">docker</span></code><a class="headerlink" href="#if-you-installed-with-docker" title="Permalink to this headline">¶</a></h2>
+<p>If you followed the [docker installation instructions] you need to pull the latest docker image for the branch you want:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">evennia/evennia</span></code>  (master branch)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">evennia/evennia:develop</span></code>  (experimental <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch)</p></li>
+</ul>
+<p>Then restart your containers.</p>
+</section>
+<section id="resetting-your-database">
+<h2>Resetting your database<a class="headerlink" href="#resetting-your-database" title="Permalink to this headline">¶</a></h2>
+<p>Should you ever want to start over completely from scratch, there is no need to re-download Evennia. You just need to clear your database.</p>
+<p>First:</p>
+<ol class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to your game dir (e.g. <code class="docutils literal notranslate"><span class="pre">mygame</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code></p></li>
+</ol>
+<section id="sqlite3-default">
+<h3>SQLite3 (default)<a class="headerlink" href="#sqlite3-default" title="Permalink to this headline">¶</a></h3>
+<aside class="sidebar">
+<p class="sidebar-title">Hint</p>
+<p>Make a copy of the <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> file once you created your superuser. When you want to reset (and as long as you haven’t had to run any new migrations), you can just stop evennia and copy that file back over <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code>. That way you don’t have to run the same migrations and create the superuser every time!</p>
+</aside>
+<ol class="simple">
+<li><p>delete the file <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code></p></li>
+</ol>
+</section>
+<section id="postgresql">
+<h3>PostgreSQL<a class="headerlink" href="#postgresql" title="Permalink to this headline">¶</a></h3>
+<ol>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">dbshell</span></code>   (opens the psql client interface)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">psql</span><span class="o">&gt;</span> <span class="n">DROP</span> <span class="n">DATABASE</span> <span class="n">evennia</span><span class="p">;</span>
+<span class="n">psql</span><span class="o">&gt;</span> <span class="n">exit</span>
+</pre></div>
+</div>
+</li>
+<li><p>You should now follow the <a class="reference internal" href="Choosing-a-Database.html#postgresql"><span class="std std-doc">PostgreSQL install instructions</span></a> to create a new evennia database.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code></p></li>
+</ol>
+</section>
+<section id="mysql-mariadb">
+<h3>MySQL/MariaDB<a class="headerlink" href="#mysql-mariadb" title="Permalink to this headline">¶</a></h3>
+<ol>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">dbshell</span></code> (opens the mysql client interface)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">DROP</span> <span class="n">DATABASE</span> <span class="n">evennia</span><span class="p">;</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="n">exit</span>
+</pre></div>
+</div>
+</li>
+<li><p>You should now follow the <span class="xref myst">MySQL install instructions</span> to create a new evennia database.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code></p></li>
+</ol>
+</section>
+<section id="what-are-database-migrations">
+<h3>What are database migrations?<a class="headerlink" href="#what-are-database-migrations" title="Permalink to this headline">¶</a></h3>
+<p>If and when an Evennia update modifies the database <em>schema</em> (that is, the under-the-hood details as to how data is stored in the database), you must update your existing database correspondingly to match the change. If you don’t, the updated Evennia will complain that it cannot read the database properly. Whereas schema changes should become more and more rare as Evennia matures, it may still happen from time to time.</p>
+<p>One way one could handle this is to apply the changes manually to your database using the database’s command line. This often means adding/removing new tables or fields as well as possibly convert existing data to match what the new Evennia version expects. It should be quite obvious that this quickly becomes cumbersome and error-prone.  If your database doesn’t contain anything critical yet it’s probably easiest to simply reset it and start over rather than to bother converting.</p>
+<p>Enter <em>migrations</em>. Migrations keeps track of changes in the database schema and applies them automatically for you. Basically, whenever the schema changes we distribute small files called “migrations” with the source. Those tell the system exactly how to implement the change so you don’t have to do so manually. When a migration has been added we will tell you so on Evennia’s mailing lists and in commit messages - you then just run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> to be up-to-date again.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Setup-Overview.html" title="Server Setup and Life"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Running-Evennia.html" title="Start Stop Reload"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Updating Evennia</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Installation" href="Installation.html" />
-    <link rel="prev" title="Evennia Introduction" href="../Evennia-Introduction.html" /> 
+    <link rel="prev" title="Updating Evennia" href="Updating-Evennia.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -33,7 +33,7 @@
           <a href="Installation.html" title="Installation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../Evennia-Introduction.html" title="Evennia Introduction"
+          <a href="Updating-Evennia.html" title="Updating Evennia"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Server Setup and Life</a></li> 
@@ -64,14 +64,14 @@
 <li><a class="reference internal" href="#">Server Setup and Life</a><ul>
 <li><a class="reference internal" href="#installation-and-running">Installation and running</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>
-<li><a class="reference internal" href="#going-public">Going public</a></li>
+<li><a class="reference internal" href="#going-online">Going Online</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../Evennia-Introduction.html"
-                        title="previous chapter">Evennia Introduction</a></p>
+  <p class="topless"><a href="Updating-Evennia.html"
+                        title="previous chapter">Updating Evennia</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Installation.html"
                         title="next chapter">Installation</a></p>
@@ -162,17 +162,24 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Installation-Non-Interactive.html">Non-interactive setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Start-Stop-Reload.html">Start Stop Reload</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#starting-evennia">Starting Evennia</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#reloading">Reloading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#stopping">Stopping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#foreground-mode">Foreground mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#resetting">Resetting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#rebooting">Rebooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#status-and-info">Status and info</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#killing-linux-mac-only">Killing (Linux/Mac only)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#django-options">Django options</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#advanced-handling-of-evennia-processes">Advanced handling of Evennia processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Running-Evennia.html">Start Stop Reload</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#starting-evennia">Starting Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#reloading">Reloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#stopping">Stopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#foreground-mode">Foreground mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#resetting">Resetting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#rebooting">Rebooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#status-and-info">Status and info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#killing-linux-mac-only">Killing (Linux/Mac only)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#django-options">Django options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-Evennia.html#advanced-handling-of-evennia-processes">Advanced handling of Evennia processes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Updating-Evennia.html">Updating Evennia</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Evennia.html#if-you-installed-with-pip">If you installed with <code class="docutils literal notranslate"><span class="pre">pip</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Evennia.html#if-you-installed-with-git">If you installed with <code class="docutils literal notranslate"><span class="pre">git</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Evennia.html#if-you-installed-with-docker">If you installed with <code class="docutils literal notranslate"><span class="pre">docker</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Evennia.html#resetting-your-database">Resetting your database</a></li>
 </ul>
 </li>
 </ul>
@@ -189,11 +196,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Settings-Default.html">Evennia Default settings file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Choosing-a-Database.html">Choosing a database</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Choosing-a-Database.html#sqlite3">SQLite3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Choosing-a-Database.html#sqlite3-default">SQLite3 (default)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Choosing-a-Database.html#postgresql">PostgreSQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Choosing-a-Database.html#mysql-mariadb">MySQL / MariaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Choosing-a-Database.html#add-mysql-configuration-to-evennia">Add MySQL configuration to Evennia</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Choosing-a-Database.html#others">Others</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Choosing-a-Database.html#other-databases">Other databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Channels-to-IRC.html">Connect Evennia channels to IRC</a><ul>
@@ -219,8 +225,8 @@
 </ul>
 </div>
 </section>
-<section id="going-public">
-<h2>Going public<a class="headerlink" href="#going-public" title="Permalink to this headline">¶</a></h2>
+<section id="going-online">
+<h2>Going Online<a class="headerlink" href="#going-online" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Evennia-Game-Index.html">Evennia Game Index</a><ul>
@@ -287,7 +293,7 @@
           <a href="Installation.html" title="Installation"
              >next</a> |</li>
         <li class="right" >
-          <a href="../Evennia-Introduction.html" title="Evennia Introduction"
+          <a href="Updating-Evennia.html" title="Updating Evennia"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Server Setup and Life</a></li> 

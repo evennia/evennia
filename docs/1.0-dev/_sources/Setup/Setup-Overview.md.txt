@@ -14,7 +14,8 @@ Installation-Troubleshooting
 Installation-Android
 Installation-Upgrade
 Installation-Non-Interactive
-Start-Stop-Reload
+Running-Evennia
+Updating-Evennia
 ```
 
 ## Configuration
@@ -31,7 +32,7 @@ Channels-to-RSS
 Channels-to-Twitter
 ```
 
-## Going public 
+## Going Online
 
 ```{toctree} 
 :maxdepth: 2

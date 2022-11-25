@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Version Control &#8212; Evennia 1.0-dev documentation</title>
+    <title>Coding using Version Control &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Updating Your Game" href="Updating-Your-Game.html" />
+    <link rel="next" title="Debugging" href="Debugging.html" />
     <link rel="prev" title="Coding and development help" href="Coding-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,14 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Updating-Your-Game.html" title="Updating Your Game"
+          <a href="Debugging.html" title="Debugging"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Coding-Overview.html" title="Coding and development help"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Coding-Overview.html" accesskey="U">Coding and development help</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Version Control</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Coding using Version Control</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,36 +62,30 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Version Control</a><ul>
-<li><a class="reference internal" href="#setting-up-git">Setting up Git</a><ul>
-<li><a class="reference internal" href="#step-1-install-git">Step 1: Install Git</a></li>
-<li><a class="reference internal" href="#step-2-define-user-e-mail-settings-for-git">Step 2: Define user/e-mail Settings for Git</a></li>
+<li><a class="reference internal" href="#">Coding using Version Control</a><ul>
+<li><a class="reference internal" href="#setting-up-git">Setting up Git</a></li>
+<li><a class="reference internal" href="#common-git-commands">Common Git commands</a><ul>
+<li><a class="reference internal" href="#git-init"><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">init</span></code></a></li>
+<li><a class="reference internal" href="#git-add"><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span></code></a></li>
+<li><a class="reference internal" href="#git-commit"><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code></a></li>
+<li><a class="reference internal" href="#git-status-git-diff-and-git-log"><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span></code></a></li>
+<li><a class="reference internal" href="#git-branch-checkout-and-merge"><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span></code>, <code class="docutils literal notranslate"><span class="pre">checkout</span></code> and <code class="docutils literal notranslate"><span class="pre">merge</span></code></a></li>
+<li><a class="reference internal" href="#git-glone-git-push-and-git-pull"><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">glone</span></code>, <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code></a></li>
+<li><a class="reference internal" href="#other-git-commands">Other git commands</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#putting-your-game-folder-under-version-control">Putting your game folder under version control</a><ul>
-<li><a class="reference internal" href="#tracking-files">Tracking files</a></li>
-<li><a class="reference internal" href="#committing-your-code">Committing your Code</a></li>
-<li><a class="reference internal" href="#changing-your-mind">Changing your mind</a></li>
+<li><a class="reference internal" href="#putting-your-game-dir-under-version-control">Putting your game dir under version control</a><ul>
 <li><a class="reference internal" href="#pushing-your-code-online">Pushing your code online</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#forking-evennia">Forking Evennia</a><ul>
-<li><a class="reference internal" href="#step-1-fork-the-evennia-master-repository">Step 1: Fork the evennia/master repository</a></li>
-<li><a class="reference internal" href="#step-2-clone-your-online-fork-of-evennia">Step 2: Clone your online fork of Evennia</a></li>
-<li><a class="reference internal" href="#step-3-configure-remotes">Step 3: Configure remotes</a></li>
+<li><a class="reference internal" href="#contributing-to-evennia">Contributing to Evennia</a><ul>
+<li><a class="reference internal" href="#fixing-an-evennia-bug-or-feature">Fixing an Evennia bug or feature</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#working-with-your-evennia-fork">Working with your Evennia fork</a><ul>
-<li><a class="reference internal" href="#updating-to-latest-evennia">Updating to latest Evennia</a></li>
-<li><a class="reference internal" href="#making-changes">Making changes</a></li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#getting-403-forbidden-access">Getting 403: Forbidden access</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sharing-your-evennia-fixes-on-github">Sharing your Evennia fixes on Github</a><ul>
-<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#making-an-evennia-pull-request">Making an Evennia Pull Request</a></li>
-<li><a class="reference internal" href="#git-tips-and-tricks">GIT tips and tricks</a></li>
 </ul>
 </li>
 </ul>
@@ -100,8 +94,8 @@
   <p class="topless"><a href="Coding-Overview.html"
                         title="previous chapter">Coding and development help</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Updating-Your-Game.html"
-                        title="next chapter">Updating Your Game</a></p>
+  <p class="topless"><a href="Debugging.html"
+                        title="next chapter">Debugging</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -132,25 +126,16 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="version-control">
-<h1>Version Control<a class="headerlink" href="#version-control" title="Permalink to this headline">¶</a></h1>
-<p>Version control software allows you to track the changes you make to your code, as well as being
-able to easily backtrack these changes, share your development efforts and more.</p>
-<p>It’s strongly recommended that you put your game code under version control. Version
-control is also the way to contribue to Evennia itself.</p>
-<p>For an introduction to the concept, start with the Wikipedia article
-<a class="reference external" href="https://en.wikipedia.org/wiki/Version_control">here</a>. Evennia uses the version
-control system <a class="reference external" href="https://git-scm.com/">Git</a> and this is what will be covered
-henceforth. Note that this page primarily shows commands for Linux, but the
-syntax should be the same for Windows and Mac.</p>
-<p>For more help on using Git, please refer to the <a class="reference external" href="https://help.github.com/articles/set-up-git#platform-all">Official GitHub
-documentation</a>.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="coding-using-version-control">
+<h1>Coding using Version Control<a class="headerlink" href="#coding-using-version-control" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Version_control">Version control</a> allows you to track changes to your code. You can save ‘snapshots’ of your progress which means you can roll back undo things easily. Version control also allows you to easily back up your code to an online <em>repository</em> such as Github. It also allows you to collaborate with others on the same code without clashing or worry about who changed what.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Do it!</p>
+<p>It’s <em>strongly</em> recommended that you <a class="reference internal" href="#putting-your-game-dir-under-version-control"><span class="std std-doc">put your game folder under version control</span></a>. Using git is is also the way to contribue to Evennia itself.</p>
+</aside>
+<p>Evennia uses the most commonly used version control system, <a class="reference external" href="https://git-scm.com/">Git</a> .  For additional help on using Git, please refer to the <a class="reference external" href="https://help.github.com/articles/set-up-git#platform-all">Official GitHub documentation</a>.</p>
 <section id="setting-up-git">
 <h2>Setting up Git<a class="headerlink" href="#setting-up-git" title="Permalink to this headline">¶</a></h2>
-<p>You can find expanded instructions for
-installation <a class="reference external" href="https://git-scm.com/book/en/Getting-Started-Installing-Git">here</a>.</p>
-<section id="step-1-install-git">
-<h3>Step 1: Install Git<a class="headerlink" href="#step-1-install-git" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p><strong>Fedora Linux</strong></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  yum install git-core
@@ -163,21 +148,16 @@ installation <a class="reference external" href="https://git-scm.com/book/en/Get
 </div>
 </li>
 <li><p><strong>Windows</strong>: It is recommended to use <a class="reference external" href="https://gitforwindows.org/">Git for Windows</a>.</p></li>
-<li><p><strong>Mac</strong>:  Mac platforms offer two methods for installation, one via MacPorts, which you can find
-out about <a class="reference external" href="https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac">here</a>, or
-you can use the <a class="reference external" href="https://sourceforge.net/projects/git-osx-installer/">Git OSX Installer</a>.</p></li>
+<li><p><strong>Mac</strong>:  Mac platforms offer two methods for installation, one via MacPorts, which you can find out about <a class="reference external" href="https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac">here</a>, or you can use the <a class="reference external" href="https://sourceforge.net/projects/git-osx-installer/">Git OSX Installer</a>.</p></li>
 </ul>
-</section>
-<section id="step-2-define-user-e-mail-settings-for-git">
-<h3>Step 2: Define user/e-mail Settings for Git<a class="headerlink" href="#step-2-define-user-e-mail-settings-for-git" title="Permalink to this headline">¶</a></h3>
-<p>To avoid a common issue later, you will need to set a couple of settings; first you will need to
-tell Git your username, followed by your e-mail address, so that when you commit code later you will
-be properly credited.</p>
 <blockquote>
-<div><p>Note that your commit information will be visible to everyone if you ever contribute to Evennia or
-use an online service like github to host your code. So if you are not comfortable with using your
-real, full name online, put a nickname here.</p>
+<div><p>You can find expanded instructions for installation <a class="reference external" href="https://git-scm.com/book/en/Getting-Started-Installing-Git">here</a>.</p>
 </div></blockquote>
+<aside class="sidebar">
+<p class="sidebar-title">Git user nickname</p>
+<p>If you ever make your code available online (or contribute to Evennia), your name will be visible to those reading the code-commit history. So if you are not comfortable with using your real, full name online, put a nickname (or your github handler) here.</p>
+</aside>
+<p>To avoid a common issue later, you will need to set a couple of settings; first you will need to tell Git your username, followed by your e-mail address, so that when you commit code later you will be properly credited.</p>
 <ol>
 <li><p>Set the default name for git to use when you commit:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> git config --global user.name &quot;Your Name Here&quot;
@@ -190,396 +170,296 @@ real, full name online, put a nickname here.</p>
 </div>
 </li>
 </ol>
-</section>
-</section>
-<section id="putting-your-game-folder-under-version-control">
-<h2>Putting your game folder under version control<a class="headerlink" href="#putting-your-game-folder-under-version-control" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>Note: The game folder’s version control is completely separate from Evennia’s repository.</p>
+<div><p>To get a running start with Git, here’s <a class="reference external" href="https://www.youtube.com/watch?v=1ffBJ4sVUb4#t=1m58s">a good YouTube talk about it</a>. It’s a bit long but it will help you understand the underlying ideas behind GIT (which in turn makes it a lot more intuitive to use).</p>
 </div></blockquote>
-<p>After you have set up your game you will have created a new folder to host your particular game
-(let’s call this folder <code class="docutils literal notranslate"><span class="pre">mygame</span></code> for now).</p>
-<p>This folder is <em>not</em> under version control at this point.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git init mygame
+</section>
+<section id="common-git-commands">
+<h2>Common Git commands<a class="headerlink" href="#common-git-commands" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Git repository</p>
+<p>This is just a fancy name for the folder you have designated to be under version control. We will make your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> game folder into such a repository. The Evennia code  is also in a (separate) git repository.</p>
+</aside>
+<p>Git can be controlled via a GUI. But it’s often easier to use the base terminal/console commands, since it makes it clear if something goes wrong.</p>
+<p>All these actions need to be done from inside the <em>git repository</em> .</p>
+<p>Git may seem daunting at first. But when working with git, you’ll be using the same 2-3 commands 99% of the time. And you can make git <em>aliases</em> to have them be even easier to remember.</p>
+<section id="git-init">
+<h3><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">init</span></code><a class="headerlink" href="#git-init" title="Permalink to this headline">¶</a></h3>
+<p>This initializes a folder/directory on your drive as a ‘git repository’</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git init .
 </pre></div>
 </div>
-<p>Your mygame folder is now ready for version control! Add all the content and make a first
-commit:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd mygame
+<p>The <code class="docutils literal notranslate"><span class="pre">.</span></code> means to apply to the current directory. If you are inside <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, this makes your game dir into a git repository. That’s all there is to it, really. You only need to do this once.</p>
+</section>
+<section id="git-add">
+<h3><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span></code><a class="headerlink" href="#git-add" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git add &lt;file&gt; 
+</pre></div>
+</div>
+<p>This tells Git to start to <em>track</em> the file under version control. You need to do this when you create a new file. You can also add all files in your current directory:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git add . 
+</pre></div>
+</div>
+<p>Or</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git add *
+</pre></div>
+</div>
+<p>All files in the current directory are now tracked by Git. You only need to do this once for every file you want to track.</p>
+</section>
+<section id="git-commit">
+<h3><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code><a class="headerlink" href="#git-commit" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git commit -a -m &quot;This is the initial commit&quot;
+</pre></div>
+</div>
+<p>This <em>commits</em> your changes. It stores a snapshot of all (<code class="docutils literal notranslate"><span class="pre">-a</span></code>) your code at the current time, adding a message <code class="docutils literal notranslate"><span class="pre">-m</span></code> so you know what you did. Later you can <em>check out</em> your code the way it was at a given time.  The message is mandatory and you will thank yourself later if write clear and descriptive log messages. If you don’t add <code class="docutils literal notranslate"><span class="pre">-m</span></code>, a text editor opens for you to write the message instead.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code> is something you’ll be using all the time, so it can be useful to make a <em>git alias</em> for it:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git config --global alias.cma &#39;commit -a -m&#39;
+</pre></div>
+</div>
+<p>After you’ve run this, you can commit much simpler, like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git cma &quot;This is the initial commit&quot;
+</pre></div>
+</div>
+<p>Much easier to remember!</p>
+</section>
+<section id="git-status-git-diff-and-git-log">
+<h3><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span></code><a class="headerlink" href="#git-status-git-diff-and-git-log" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git status -s 
+</pre></div>
+</div>
+<p>This gives a short (<code class="docutils literal notranslate"><span class="pre">-s</span></code>) of the files that changes since your last <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git diff --word-diff`
+</pre></div>
+</div>
+<p>This shows exactly what changed in each file since you last made a <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code>. The <code class="docutils literal notranslate"><span class="pre">--word-diff</span></code>  option means it will mark if a single word changed on a line.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git log
+</pre></div>
+</div>
+<p>This shows the log of all <code class="docutils literal notranslate"><span class="pre">commits</span></code> done. Each log will show you who made the change, the  commit-message and a unique <em>hash</em> (like <code class="docutils literal notranslate"><span class="pre">ba214f12ab12e123...</span></code>) that uniquely describes that commit.</p>
+<p>You can make the <code class="docutils literal notranslate"><span class="pre">log</span></code> command more succinct with some more options:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ls=log --pretty=format:%C(green)%h\ %C(yellow)[%ad]%Cred%d\ %Creset%s%Cblue\ [%an] --decorate --date=relative
+</pre></div>
+</div>
+<p>This adds coloration and another fancy effects (use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">help</span> <span class="pre">log</span></code> to see what they mean).</p>
+<p>Let’s add aliases:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git config --global alias.st &#39;status -s&#39;
+git config --global alias.df &#39;diff --word-diff&#39;
+git config --global alias.ls &#39;log --pretty=format:%C(green)%h\ %C(yellow)[%ad]%Cred%d\ %Creset%s%Cblue\ [%an] --decorate --date=relative&#39;
+</pre></div>
+</div>
+<p>You can now use the much shorter</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git st    # short status
+git dif   # diff with word-marking
+git ls    # log with pretty formatting
+</pre></div>
+</div>
+<p>for these useful functions.</p>
+</section>
+<section id="git-branch-checkout-and-merge">
+<h3><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span></code>, <code class="docutils literal notranslate"><span class="pre">checkout</span></code> and <code class="docutils literal notranslate"><span class="pre">merge</span></code><a class="headerlink" href="#git-branch-checkout-and-merge" title="Permalink to this headline">¶</a></h3>
+<p>Git allows you to work with <em>branches</em>. These are separate development paths your code may take, completely separate from each other. You can later <em>merge</em> the code from a branch back into another branch. Evennia’s <code class="docutils literal notranslate"><span class="pre">master</span></code> and <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches are examples of this.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git branch -b branchaname 
+</pre></div>
+</div>
+<p>This creates a new branch, exactly identical to the branch you were on.  It also moves you to that branch.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git branch -D branchname 
+</pre></div>
+</div>
+<p>Deletes a branch.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git branch 
+</pre></div>
+</div>
+<p>Shows all your branches, marking which one you are currently on.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout branchname 
+</pre></div>
+</div>
+<p>This checks out another branch. As long as you are in a branch all <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code>s will commit the code to that branch only.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout .
+</pre></div>
+</div>
+<p>This checks out your <em>current branch</em> and has the effect of throwing away all your changes since your last commit. This is like undoing what you did since the last save point.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout b2342bc21c124
+</pre></div>
+</div>
+<p>This checks out a particular <em>commit</em>, identified by the hash you find with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span></code>. This open a ‘temporary branch’ where the  code is as it was when you made this commit. As an example, you can use this to check where a bug was introduced. Check out an existing branch to go back to your normal timeline, or use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">-b</span> <span class="pre">newbranch</span></code> to break this code off into a new branch you can continue working from.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git merge branchname
+</pre></div>
+</div>
+<p>This <em>merges</em> the code from <code class="docutils literal notranslate"><span class="pre">branchname</span></code> into the branch you are currently in. Doing so may lead to <em>merge conflicts</em> if the same code changed in different ways in the two branches. See <a class="reference external" href="https://phoenixnap.com/kb/how-to-resolve-merge-conflicts-in-git">how to resolve merge conflicts in git</a> for more help.</p>
+</section>
+<section id="git-glone-git-push-and-git-pull">
+<h3><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">glone</span></code>, <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code><a class="headerlink" href="#git-glone-git-push-and-git-pull" title="Permalink to this headline">¶</a></h3>
+<p>All of these other commands have dealt with code only sitting in your local repository-folder. These commands instead allows you to exchange code with a <em>remote</em> repository - usually one that is online (like on github).</p>
+<blockquote>
+<div><p>How you actually set up a remote repository is described <a class="reference internal" href="#pushing-your-code-online"><span class="std std-doc">in the next section</span></a>.</p>
+</div></blockquote>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone repository/path
+</pre></div>
+</div>
+<p>This copies the remote repository to your current location. If you used the <a class="reference internal" href="../Setup/Installation-Git.html"><span class="doc std std-doc">Git installation instructions</span></a> to install Evennia, this is what you used to get your local copy of the Evennia repository.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git pull
+</pre></div>
+</div>
+<p>Once you cloned or otherwise set up  a remote repository, using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code> will re-sync the remote with what you have locally. If what you download clashes with local changes, git will force you to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code> your changes before you can continue with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git push 
+</pre></div>
+</div>
+<p>This uploads your local changes <em>of your current branch</em> to the same-named branch on the remote repository. To be able to do this you must have write-permissions to the remote repository.</p>
+</section>
+<section id="other-git-commands">
+<h3>Other git commands<a class="headerlink" href="#other-git-commands" title="Permalink to this headline">¶</a></h3>
+<p>There are <em>many</em> other git commands. Read up on them online:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git reflog 
+</pre></div>
+</div>
+<p>Shows hashes of individual git actions. This allows you to go back in the git event history itself.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git reset 
+</pre></div>
+</div>
+<p>Force reset a branch to an earlier commit. This could throw away some history, so be careful.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git grep -n -I -i &lt;query&gt;
+</pre></div>
+</div>
+<p>Quickly search for a phrase/text in all files tracked by git. Very useful to quickly find where things are. Set up an alias <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">gr</span></code> with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">gr</span> <span class="s1">&#39;grep -n -I -i&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="putting-your-game-dir-under-version-control">
+<h2>Putting your game dir under version control<a class="headerlink" href="#putting-your-game-dir-under-version-control" title="Permalink to this headline">¶</a></h2>
+<p>This makes use  of the git commands listed in the previous section.</p>
+<aside class="sidebar">
+<p class="sidebar-title">git aliases</p>
+<p>If you set up the git aliases for commands suggested in the previous section, you can use them instead!</p>
+</aside>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd mygame 
+git init . 
 git add *
 git commit -a -m &quot;Initial commit&quot;
 </pre></div>
 </div>
-<p>In turn these commands:</p>
-<ul class="simple">
-<li><p>Move us into the <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder</p></li>
-<li><p>Tell <code class="docutils literal notranslate"><span class="pre">git</span></code> that everything <code class="docutils literal notranslate"><span class="pre">*</span></code> means everything) in this folder should be put
-under version control.</p></li>
-<li><p><em>Commit</em> all (<code class="docutils literal notranslate"><span class="pre">-a</span></code>) those newly added files to git and add a message <code class="docutils literal notranslate"><span class="pre">-m</span></code> so you remember
-what you did at this point. Doing a commit is like saving a snapshot of the
-current state of everything.</p></li>
-</ul>
-<p>Read on for details!</p>
-<section id="tracking-files">
-<h3>Tracking files<a class="headerlink" href="#tracking-files" title="Permalink to this headline">¶</a></h3>
-<p>When working on your code or fix bugs in your local branches you may end up creating new files. If
-you do you must tell Git to track them by using the add command.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git add &lt;filename&gt;
-</pre></div>
-</div>
-<p>You only need to do this once per file.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git status
-</pre></div>
-</div>
-<p>will show if you have any modified, added or otherwise changed files. Some
-files, like database files, logs and temporary PID files are usually <em>not</em>
-tracked in version control. These should either not show up or have a question
-mark in front of them.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You will notice that some files are not covered by your git version control,
-notably your settings file (<code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>) and your sqlite3
-database file <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>. What is auto-ignored by is controlled
-by the hidden file <code class="docutils literal notranslate"><span class="pre">mygame/.gitignore</span></code>. Evennia creates this file as part of
-the creation of your game directory. Everything matched in this file will be
-ignored by git. If you want to, for example, include your settings file for
-collaborators to access, remove that entry in <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code>.</p>
-</div>
+<p>Your game-dir is now tracked by git.</p>
+<p>You will notice that some files are not covered by your git version control, notably your secret-settings file (<code class="docutils literal notranslate"><span class="pre">mygame/server/conf/secret_settings.py</span></code>) and your sqlite3 database file <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>. This is intentional and controlled from the file  <code class="docutils literal notranslate"><span class="pre">mygame/.gitignore</span></code>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>You should <em>never</em> put your sqlite3 database file into git by removing its entry
 in <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code>. GIT is for backing up your code, not your database. That way
-lies madness and a good chance you’ll confuse yourself so that after a few
-commits and reverts don’t know what is in your database or not. If you want to
-backup your database, do so by simply copying the file on your hard drive to a
-backup-name.</p>
+lies madness and a good chance you’ll confuse yourself. Make one mistake or local change and after a few commits and reverts you will have lost track of what is in your database or not. If you want to backup your SQlite3 database, do so by simply copying the database file to a safe location.</p>
 </div>
-</section>
-<section id="committing-your-code">
-<h3>Committing your Code<a class="headerlink" href="#committing-your-code" title="Permalink to this headline">¶</a></h3>
-<p><em>Committing</em> your code means storing the current snapshot of your code within
-git. This creates a “save point” or “history” of your development process. You
-can later jump back and forth in your history, for example to figure out just
-when a bug was introduced or see what results the code used to produce compared
-to now. Or just wiping everything since the last commit, if you did something
-stupid.</p>
-<p>It’s usually a good idea to commit your changes often. Committing is fast and
-local only - you will never commit anything online at this point. To commit your
-changes, use</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git commit --all
-</pre></div>
-</div>
-<p>Also <code class="docutils literal notranslate"><span class="pre">-a</span></code> works. This will open a text editor for you to describe your change.
-Be brief but informative in your message - you’ll appreciate it later.  When you
-save and close the editor, the commit will be saved. You can create the message
-directly with</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git commit -a -m &quot;This fixes a bug in the combat code.&quot;
-</pre></div>
-</div>
-</section>
-<section id="changing-your-mind">
-<h3>Changing your mind<a class="headerlink" href="#changing-your-mind" title="Permalink to this headline">¶</a></h3>
-<p>If you have non-committed changes that you realize you want to throw away, you
-‘check out’ the file you want - this will re-load it from the last committed
-state:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout &lt;file_to_revert&gt;
-git checkout foo/bar/dummy.py
-</pre></div>
-</div>
-<p>If you want to revert <em>all</em> changes you did since last commit, do</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout .
-</pre></div>
-</div>
-<p>(that is, add a single <code class="docutils literal notranslate"><span class="pre">.</span></code> at the end).</p>
-</section>
 <section id="pushing-your-code-online">
 <h3>Pushing your code online<a class="headerlink" href="#pushing-your-code-online" title="Permalink to this headline">¶</a></h3>
-<p>So far your code is only located on your private machine. A good idea is to back
-it up online. The easiest way to do this is to push it to your own remote
-repository on GitHub.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Just to avoid confusion, be aware that Github’s documentation has changed to
-calling the primary branch ‘main’ rather than ‘master’. While Evennia still
-uses ‘master’ branch (and this is what we refer to below), you can use either
-name for your personal primary branch - they are equivalent.</p>
+<p>So far your code is only located on your private machine. A good idea is to back it up online. The easiest way to do this is to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code> it to your own remote repository on GitHub. So for this you need a (free) Github account.</p>
+<p>If you don’t want your code to be publicly visible, Github also allows you set up a <em>private</em> repository, only visible to you.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Github’s defaults have changed to calling the primary branch ‘main’ rather than ‘master’. While Evennia still uses ‘master’ branch (and this is what we refer to below), you can use either name for your personal primary branch - they are equivalent.</p>
 </div>
-<ol class="simple">
-<li><p>Make sure you have your game directory setup under git version control as
-described in the previous section. Make sure to commit any changes you did.</p></li>
-<li><p>Create a new, empty repository on Github. Github explains how
-<a class="reference external" href="https://help.github.com/articles/create-a-repo/">here</a> (do <em>not</em> “Initialize
-the repository with a README” or else you’ll create unrelated histories).</p></li>
-<li><p>From your local game dir, do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">add</span> <span class="pre">origin</span> <span class="pre">&lt;github</span> <span class="pre">URL&gt;</span></code> where
-<code class="docutils literal notranslate"><span class="pre">&lt;github</span> <span class="pre">URL&gt;</span></code> is the URL to your online repo. This tells your game dir that
-it should be pushing to the remote online dir.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">-v</span></code> to verify the online dir.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">master</span></code> (or <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">main</span></code>) now pushes your game dir
-online so you can see it on <a class="reference external" href="http://github.com">github.com</a>.</p></li>
-</ol>
-<p>You can commit your work locally (<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--all</span> <span class="pre">-m</span> <span class="pre">&quot;Make</span> <span class="pre">a</span> <span class="pre">change</span> <span class="pre">that</span> <span class="pre">...&quot;</span></code>) as many times as you want. When you want to push those changes to your
-online repo, you do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>. You can also <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">&lt;url_to_online_repo&gt;</span></code>
-from your online repo to somewhere else (like your production server) and
-henceforth do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code> to update that to the latest thing you pushed.</p>
-<p>Note that GitHub’s repos are, by default publicly visible by all. Creating a
-publicly visible online clone might not be what you want for all parts of your
-development process - you may prefer a more private venue when sharing your
-revolutionary work with your team. If that’s the case you can change your
-repository to “Private” in the github settings. Then your code will only be
-visible to those you specifically grant access.</p>
-</section>
-</section>
-<section id="forking-evennia">
-<h2>Forking Evennia<a class="headerlink" href="#forking-evennia" title="Permalink to this headline">¶</a></h2>
-<p>This helps you set up an online <em>fork</em> of the main Evennia repository so you can
-easily commit fixes and help with upstream development. You can do this step
-also if you <em>didn’t</em> put your game dir under version control like in the
-previous section - the evennia repo and your game dir repo are completely
-separate.</p>
-<section id="step-1-fork-the-evennia-master-repository">
-<h3>Step 1: Fork the evennia/master repository<a class="headerlink" href="#step-1-fork-the-evennia-master-repository" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><p>Before proceeding with the following step, make sure you have registered and
-created an account on <a class="reference external" href="https://github.com/">GitHub.com</a>. This is necessary in order to create a fork
-of Evennia’s master repository, and to push your commits to your fork either for
-yourself or for contributing to
-Evennia.</p>
-</div></blockquote>
-<p>A <em>fork</em> is a clone of the master repository that you can make your own commits
-and changes to. At the top of <a class="reference external" href="https://github.com/evennia/evennia">this page</a>,
-click the “Fork” button, as it appears below.
-<img alt="" src="https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png" /></p>
-</section>
-<section id="step-2-clone-your-online-fork-of-evennia">
-<h3>Step 2: Clone your online fork of Evennia<a class="headerlink" href="#step-2-clone-your-online-fork-of-evennia" title="Permalink to this headline">¶</a></h3>
-<p>The fork only exists online as of yet. In a terminal, change your directory to
-the folder you wish to develop in. From this directory run the following
-command:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/yourusername/evennia.git
+<p>Create a new, empty repository on Github. <a class="reference external" href="https://help.github.com/articles/create-a-repo/">Github explains how here</a> . <em>Don’t</em> allow it to add a README, license etc, that will just clash with what we upload later.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Origin</p>
+<p>We label the remote repository ‘origin’. This is the git default and means we won’t need to specify it explicitly later.</p>
+</aside>
+<p>Make sure you are in your local game dir (previously initialized as a git repo).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git remote add origin &lt;github URL&gt;
 </pre></div>
 </div>
-<p>This will download your fork to your computer. It creates a new folder
-<code class="docutils literal notranslate"><span class="pre">evennia/</span></code> at your current location.</p>
+<p>This tells Git that there is a remote repository at <code class="docutils literal notranslate"><span class="pre">&lt;github</span> <span class="pre">URL&gt;</span></code>. See the  github docs as to which URL to use. Verify that the remote works with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">-v</span></code></p>
+<p>Now we push to the remote (labeled ‘origin’ which is the default):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git push
+</pre></div>
+</div>
+<p>Depending on how you set up your authentication with github, you may be asked to enter your github username and password. If you set up SSH authentication, this command will just work.</p>
+<p>You use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code> to upload your local changes so the remote repository is in sync with your local one. If you edited a file online using the Github editor (or a collaborator pushed code), you use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code> to sync in the other direction.</p>
 </section>
-<section id="step-3-configure-remotes">
-<h3>Step 3: Configure remotes<a class="headerlink" href="#step-3-configure-remotes" title="Permalink to this headline">¶</a></h3>
-<p>Your Evennia-fork is now separate from upstream, ‘official’ Evennia. You will
-want to set it up so that you can easily sync our updates and changes to your
-fork.</p>
-<p>We do this by setting up a new <em>remote</em>. We actually already have one remote,
-that is our own github form of Evennia. This got created when you cloned the
-repo and defaults to being called <code class="docutils literal notranslate"><span class="pre">origin</span></code>.</p>
-<p>We will now create a new remote called <code class="docutils literal notranslate"><span class="pre">upstream</span></code>.</p>
+</section>
+<section id="contributing-to-evennia">
+<h2>Contributing to Evennia<a class="headerlink" href="#contributing-to-evennia" title="Permalink to this headline">¶</a></h2>
+<p>If you want to help contributing to Evennia you must do so by <em>forking</em> - making your own remote copy of the Evennia repository on Github. So for this, you need a (free) Github account. Doing so is a completely separate process from <a class="reference internal" href="#putting-your-game-dir-under-version-control"><span class="std std-doc">putting your game dir under version control</span></a> (which you should also do!).</p>
+<p>At the top right of <a class="reference external" href="https://github.com/evennia/evennia">the evennia github page</a>, click the “Fork” button:</p>
+<p><img alt="fork button" src="../_images/fork_button.png" /></p>
+<p>This will create a new online fork Evennia under your github account.</p>
+<p>The fork only exists online as of yet. In a terminal, <code class="docutils literal notranslate"><span class="pre">cd</span></code> to  the folder you wish to develop in. This folder should <em>not</em> be your game dir, nor the place you cloned Evennia into if you used the <a class="reference internal" href="../Setup/Installation-Git.html"><span class="doc std std-doc">Git installation</span></a>.</p>
+<p>From this directory run the following command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/yourusername/evennia.git evennia
+</pre></div>
+</div>
+<p>This will download your fork to your computer. It creates a new folder <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> at your current location. If you installed Evennia using the <a class="reference internal" href="../Setup/Installation-Git.html"><span class="doc std std-doc">Git installation</span></a>, this folder will be identical in content to the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> folder you cloned during that installation. The difference is that this repo is connected to your remote fork and not to the ‘original’ <em>upstream</em> Evennia.</p>
+<p>When we cloned our fork, git automatically set up a ‘remote repository’ labeled <code class="docutils literal notranslate"><span class="pre">origin</span></code> pointing to it. So if we do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>, we’ll push to our fork.</p>
+<p>We now want to add a second remote repository linked to the original Evennia repo. We will label this remote repository <code class="docutils literal notranslate"><span class="pre">upstream</span></code>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd evennia
 git remote add upstream https://github.com/evennia/evennia.git
 </pre></div>
 </div>
-<p>This adds a remote to the main evennia repo.</p>
-<p>If you also want to access Evennia’s <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch (the bleeding edge
-development) do the following:</p>
+<p>If you also want to access Evennia’s <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch (the bleeding edge development) do the following:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git fetch upstream develop
 git checkout develop
 </pre></div>
 </div>
-<p>Use
-git checkout master
-git checkout develop</p>
-<p>to switch between the branches. If you want to contribute a fix, ask first which
-branch to use. Normally <code class="docutils literal notranslate"><span class="pre">master</span></code> is for bug fixes and <code class="docutils literal notranslate"><span class="pre">develop</span></code> is for new
-features, but late in the development of a new Evennia version, all changes
-often go into <code class="docutils literal notranslate"><span class="pre">develop</span></code>.</p>
-</section>
-</section>
-<section id="working-with-your-evennia-fork">
-<h2>Working with your Evennia fork<a class="headerlink" href="#working-with-your-evennia-fork" title="Permalink to this headline">¶</a></h2>
-<p><em>Branches</em> are stand-alone editions of the same code. You make a commit to a
-branch. Switching to a branch will change the code on-disk. You can easily
-make a new branch off a parent branch, and then merge it back into the same
-branch later (or throw it away). This is a very common way to work on new
-features in safety and isolation.</p>
-<section id="updating-to-latest-evennia">
-<h3>Updating to latest Evennia<a class="headerlink" href="#updating-to-latest-evennia" title="Permalink to this headline">¶</a></h3>
-<p>When Evennia’s official repository updates, first make sure to commit all your
-changes to your branch and then checkout the “clean” master branch:</p>
+<p>Use</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout master
-git pull upstream master
+git checkout develop
 </pre></div>
 </div>
-<p>Or, if you are working against Evennia’s development branch:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout develop
-git pull upstream develop
+<p>to switch between the branches.</p>
+<p>To pull the latest from upstream Evennia, just checkout the branch you want and do</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git pull upstream
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">pull</span></code> command will fetch all the changes from the “upstream” remote and
-merge it into your local master/develop branch. It should now be a perfect copy
-of the latest Evennia changes.</p>
-</section>
-<section id="making-changes">
-<h3>Making changes<a class="headerlink" href="#making-changes" title="Permalink to this headline">¶</a></h3>
-<p>As a rule of thumb you should <em>never</em> work directly in Evennia’s <code class="docutils literal notranslate"><span class="pre">master</span></code> or
-<code class="docutils literal notranslate"><span class="pre">develop</span></code> branches. Instead you make a <em>new</em> branch off the branch you want
-and change <em>that</em>.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Pushing to upstream</p>
+<p>You can’t do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">upstream</span></code> unless you have write-access to the upstream Evennia repository. So there is no risk of you accidentally pushing your own code into the main, public repository.</p>
+</aside>
+<section id="fixing-an-evennia-bug-or-feature">
+<h3>Fixing an Evennia bug or feature<a class="headerlink" href="#fixing-an-evennia-bug-or-feature" title="Permalink to this headline">¶</a></h3>
+<p>This should be done in your fork of Evennia. You should <em>always</em> do this in a <em>separate git branch</em> based off the Evennia branch you want to improve.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout master (or develop)
-check checkout -b strange_bug
+git branch - b myfixbranch
 </pre></div>
 </div>
-<p>You now have a new branch <code class="docutils literal notranslate"><span class="pre">strange_bug</span></code> that is an exact replica of the branch you
-had checked out when you created it. Here you can now make your own
-modifications.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git branches
-</pre></div>
-</div>
-<p>will show you which branches are available and which one you are currently
-using. Use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;branch&gt;</span></code> to move between them, but remember to commit
-your changes before you do.</p>
-<p>You often want to make sure also your work-branch has the latest upstream
-changes. To do this, you need to first update your copy of the
-<code class="docutils literal notranslate"><span class="pre">master</span></code>/<code class="docutils literal notranslate"><span class="pre">develop</span></code> branch and then <em>merge</em> those changes into your work branch.
-Make sure you have committed everything first!</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git commit -a -m &quot;My latest changes ...&quot;   # on your strange_bug branch
-git checkout master (or develop)
-git pull upstream develop
-git checkout strange_bug
+<p>Now fix whatever needs fixing. Abide by the <a class="reference internal" href="Evennia-Code-Style.html"><span class="doc std std-doc">Evennia code style</span></a>. You can <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code> commit your changes along the way as normal.</p>
+<p>Upstream Evennia is not standing still, so you want to make sure that your work is up-to-date with upstream changes. Make sure to first commit your <code class="docutils literal notranslate"><span class="pre">myfixbranch</span></code> changes, then</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout master (or develop)
+git pull upstream 
+git checkout myfixbranch
 git merge master (or develop)
 </pre></div>
 </div>
-<p>If everything went well, your <code class="docutils literal notranslate"><span class="pre">strange_bug</span></code> branch will now have the latest version
-of Evennia merged with whatever changes you have done.</p>
-<p>Now work away on your code and commit with reasonable commit messages</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git commit -a -m &quot;Fixed the issue in ...&quot;
-git commit -a -m &quot;Adding unit tests. This resolves #123.&quot;
-</pre></div>
-</div>
-<p>Use</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git diff
-</pre></div>
-</div>
-<p>to see what you changed since last commit, and</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git log
-</pre></div>
-</div>
-<p>to see past commits (including those made by Evennia upstream, remember that
-your branch is a copy of the upstream one, including its history!)</p>
-</section>
-</section>
-<section id="sharing-your-evennia-fixes-on-github">
-<h2>Sharing your Evennia fixes on Github<a class="headerlink" href="#sharing-your-evennia-fixes-on-github" title="Permalink to this headline">¶</a></h2>
-<p>Up to this point your <code class="docutils literal notranslate"><span class="pre">strange_bug</span></code> branch only exists on your local computer. No
-one else can see it.  If you want a copy of this branch to also appear in your
-online fork on GitHub, make sure to have checked out your “myfixes” branch and
-then run the following:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git push -u origin strange_bug
-</pre></div>
-</div>
-<p>You only need to do this once, the <code class="docutils literal notranslate"><span class="pre">-u</span></code> makes this the default push-location. In
-the future, you can just push things online like this:</p>
+<p>Up to this point your <code class="docutils literal notranslate"><span class="pre">myfixbranch</span></code> branch only exists on your local computer. No
+one else can see it.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git push
 </pre></div>
 </div>
+<p>This will automatically create a matching <code class="docutils literal notranslate"><span class="pre">myfixbranch</span></code> in your forked version of Evennia and push to it. On github you will be able to see appear it in the <code class="docutils literal notranslate"><span class="pre">branches</span></code> dropdown. You can keep pushing to your remote <code class="docutils literal notranslate"><span class="pre">myfixbranch</span></code> as much as you like.</p>
+<p>Once you feel you have something to share, you need to <a class="reference external" href="https://github.com/evennia/evennia/pulls">create a pull request</a> (PR):
+This is a formal request for upstream Evennia to adopt and pull your code into the main repository.</p>
+<ol class="simple">
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">New</span> <span class="pre">pull</span> <span class="pre">request</span></code></p></li>
+<li><p>Choose <code class="docutils literal notranslate"><span class="pre">compare</span> <span class="pre">across</span> <span class="pre">forks</span></code></p></li>
+<li><p>Select your fork from dropdown list of <code class="docutils literal notranslate"><span class="pre">head</span> <span class="pre">repository</span></code> repos. Pick the right branch to <code class="docutils literal notranslate"><span class="pre">compare</span></code>.</p></li>
+<li><p>On the Evennia side (to the left) make sure to pick the right <code class="docutils literal notranslate"><span class="pre">base</span></code> branch: If you want to contribute a change to the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch, you must pick <code class="docutils literal notranslate"><span class="pre">develop</span></code> as the <code class="docutils literal notranslate"><span class="pre">base</span></code>.</p></li>
+<li><p>Then click <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">pull</span> <span class="pre">request</span></code> and fill in as much information as you can in the form.</p></li>
+<li><p>Optional: Once you saved your PR, you can go into your code (on github) and add some per-line comments; this can help reviewers by explaining complex code or decisions you made.</p></li>
+</ol>
+<p>Now you just need to wait for your code to be reviewed. Expect to get feedback and be asked to make changes, add more documentation etc. Getting as PR merged can take a few iterations.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Not all PRs can merge</p>
+<p>While most PRs get merged, Evennia can’t <strong>guarantee</strong> that your PR code will be deemed suitable to merge into upstream Evennia. For this reason it’s a good idea to check in with the community <em>before</em> you spend a lot of time on a large piece of code (fixing bugs is always a safe bet though!)</p>
+</aside>
+</section>
+</section>
 <section id="troubleshooting">
-<h3>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h3>
-<p>If you hadn’t setup a public key on GitHub or aren’t asked for a
-username/password, you might get an error <code class="docutils literal notranslate"><span class="pre">403:</span> <span class="pre">Forbidden</span> <span class="pre">Access</span></code> at this stage.
-In that case, some users have reported that the workaround is to create a file
-<code class="docutils literal notranslate"><span class="pre">.netrc</span></code> under your home directory and add your github credentials there:</p>
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<section id="getting-403-forbidden-access">
+<h3>Getting 403: Forbidden access<a class="headerlink" href="#getting-403-forbidden-access" title="Permalink to this headline">¶</a></h3>
+<p>Some users have experienced this on <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code> to their remote repository. They are not asked for username/password (and don’t have a ssh key set up).</p>
+<p>Some users have reported that the workaround is to create a file <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> under your home directory and add your github credentials there:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>machine github.com
 login &lt;my_github_username&gt;
 password &lt;my_github_password&gt;
 </pre></div>
 </div>
 </section>
-</section>
-<section id="making-an-evennia-pull-request">
-<h2>Making an Evennia Pull Request<a class="headerlink" href="#making-an-evennia-pull-request" title="Permalink to this headline">¶</a></h2>
-<p>If you think that the fixes you did in your <code class="docutils literal notranslate"><span class="pre">strange_bug</span></code> branch should be a
-part of the regular Evennia, you should create a <em>Pull Request</em> (PR). This is a
-call for the Evennia maintainer to pull your change into an upstream branch.</p>
-<blockquote>
-<div><p>It is wise to make separate branches for every fix or series of fixes you want
-to contribute.</p>
-</div></blockquote>
-<p>Assuming you have followed the instructions above and have pushed your changes
-online, <a class="reference external" href="https://github.com/evennia/evennia/pulls">create a pull request</a> and
-follow the instructions. Make sure to specifically select your <code class="docutils literal notranslate"><span class="pre">strange_bug</span></code>
-branch to be the source of the merge and use the branch you based that branch
-off (<code class="docutils literal notranslate"><span class="pre">master</span></code> or <code class="docutils literal notranslate"><span class="pre">develop</span></code>) as the target.</p>
-<p>Evennia developers will then be able to examine your request and merge it if
-it’s deemed suitable. They may also come back with feedback and request you do
-some changes.</p>
-<p>Once approved and merged, your change will now be available in the upstream
-branch:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout master (or develope)
-git pull upstream master (or develop)
-</pre></div>
-</div>
-<p>Since your changes are now in upstream, your local <code class="docutils literal notranslate"><span class="pre">strange_bug</span></code> branch is now
-superfluous and should be deleted:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git branch -D strange_bug
-</pre></div>
-</div>
-<p>You can also safely delete your online <code class="docutils literal notranslate"><span class="pre">strange_bug</span></code> branch in your fork
-(you can do this from the PR page on github).</p>
-</section>
-<section id="git-tips-and-tricks">
-<h2>GIT tips and tricks<a class="headerlink" href="#git-tips-and-tricks" title="Permalink to this headline">¶</a></h2>
-<p>Some of the GIT commands can feel a little long and clunky if you need to do them often. Luckily you
-can create aliases for those. Here are some useful commands to run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git st</span>
-<span class="c1"># - view brief status info</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">st</span> <span class="s1">&#39;status -s&#39;</span>
-</pre></div>
-</div>
-<p>Above, you only need to ever enter the <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">config</span> <span class="pre">...</span></code> command once - you have then added the new
-alias. Afterwards, just do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">st</span></code> to get status info. All the examples below follow the same
-template.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git cl</span>
-<span class="c1"># - clone a repository</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">cl</span> <span class="n">clone</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git cma &quot;commit message&quot;</span>
-<span class="c1"># - commit all changes without opening editor for message</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">cma</span> <span class="s1">&#39;commit -a -m&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git ca</span>
-<span class="c1"># - amend text to your latest commit message</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">ca</span> <span class="s1">&#39;commit --amend&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git fl</span>
-<span class="c1"># - file log; shows diffs of files in latest commits</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">fl</span> <span class="s1">&#39;log -u&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git co [branchname]</span>
-<span class="c1"># - checkout</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">co</span> <span class="n">checkout</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git br &lt;branchname&gt;</span>
-<span class="c1"># - create branch</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">br</span> <span class="n">branch</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git ls</span>
-<span class="c1"># - view log tree</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">ls</span> <span class="s1">&#39;log --pretty=format:&quot;%C(green)%h\ %C(yellow)[</span><span class="si">%a</span><span class="s1">d]%Cred</span><span class="si">%d</span><span class="se">\</span>
-<span class="s1">%Creset</span><span class="si">%s</span><span class="s1">%Cblue\ [</span><span class="si">%c</span><span class="s1">n]&quot; --decorate --date=relative --graph&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git diff</span>
-<span class="c1"># - show current uncommitted changes</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">diff</span> <span class="s1">&#39;diff --word-diff&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git grep &lt;query&gt;</span>
-<span class="c1"># - search (grep) codebase for a search criterion</span>
-<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">alias</span><span class="o">.</span><span class="n">grep</span> <span class="s1">&#39;grep -Ii&#39;</span>
-</pre></div>
-</div>
-<p>To get a further feel for GIT there is also <a class="reference external" href="https://www.youtube.com/watch?v=1ffBJ4sVUb4#t=1m58s">a good YouTube talk about it</a> - it’s a bit long but it will help you understand the underlying ideas behind GIT
-(which in turn makes it a lot more intuitive to use).</p>
 </section>
 </section>
 
@@ -599,14 +479,14 @@ template.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Updating-Your-Game.html" title="Updating Your Game"
+          <a href="Debugging.html" title="Debugging"
              >next</a> |</li>
         <li class="right" >
           <a href="Coding-Overview.html" title="Coding and development help"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Coding-Overview.html" >Coding and development help</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Version Control</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Coding using Version Control</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>
