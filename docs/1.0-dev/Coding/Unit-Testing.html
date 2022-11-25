@@ -64,8 +64,8 @@
   <ul>
 <li><a class="reference internal" href="#">Unit Testing</a><ul>
 <li><a class="reference internal" href="#running-the-evennia-test-suite">Running the Evennia test suite</a></li>
-<li><a class="reference internal" href="#running-tests-for-your-game-dir">Running tests for your game dir</a></li>
-<li><a class="reference internal" href="#writing-new-tests">Writing new tests</a></li>
+<li><a class="reference internal" href="#running-custom-game-dir-unit-tests">Running custom game-dir unit tests</a></li>
+<li><a class="reference internal" href="#writing-new-unit-tests">Writing new unit tests</a><ul>
 <li><a class="reference internal" href="#using-the-evennia-testing-classes">Using the Evennia testing classes</a><ul>
 <li><a class="reference internal" href="#classes-for-testing-your-game-dir">Classes for testing your game dir</a></li>
 <li><a class="reference internal" href="#classes-for-testing-evennia-core">Classes for testing Evennia core</a></li>
@@ -73,6 +73,8 @@
 </li>
 <li><a class="reference internal" href="#unit-testing-contribs-with-custom-models">Unit testing contribs with custom models</a></li>
 <li><a class="reference internal" href="#a-note-on-making-the-test-runner-faster">A note on making the test runner faster</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -134,8 +136,8 @@ how many tests were run and how long it took. If something went wrong you will g
 If you contribute to Evennia, this is a useful sanity check to see you haven’t introduced an
 unexpected bug.</p>
 </section>
-<section id="running-tests-for-your-game-dir">
-<h2>Running tests for your game dir<a class="headerlink" href="#running-tests-for-your-game-dir" title="Permalink to this headline">¶</a></h2>
+<section id="running-custom-game-dir-unit-tests">
+<h2>Running custom game-dir unit tests<a class="headerlink" href="#running-custom-game-dir-unit-tests" title="Permalink to this headline">¶</a></h2>
 <p>If you have implemented your own tests for your game you can run them from your game dir
 with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .
@@ -156,8 +158,8 @@ forces Evennia to use this settings file over the default one.</p>
 </pre></div>
 </div>
 </section>
-<section id="writing-new-tests">
-<h2>Writing new tests<a class="headerlink" href="#writing-new-tests" title="Permalink to this headline">¶</a></h2>
+<section id="writing-new-unit-tests">
+<h2>Writing new unit tests<a class="headerlink" href="#writing-new-unit-tests" title="Permalink to this headline">¶</a></h2>
 <p>Evennia’s test suite makes use of Django unit test system, which in turn relies on Python’s
 <em>unittest</em> module.</p>
 <p>To make the test runner find the tests, they must be put in a module named <code class="docutils literal notranslate"><span class="pre">test*.py</span></code> (so <code class="docutils literal notranslate"><span class="pre">test.py</span></code>,
@@ -221,15 +223,14 @@ and want to test a function in <code class="docutils literal notranslate"><span 
 </pre></div>
 </div>
 <p>You might also want to read the <a class="reference external" href="https://docs.python.org/library/unittest.html">Python documentation for the unittest module</a>.</p>
-</section>
 <section id="using-the-evennia-testing-classes">
-<h2>Using the Evennia testing classes<a class="headerlink" href="#using-the-evennia-testing-classes" title="Permalink to this headline">¶</a></h2>
+<h3>Using the Evennia testing classes<a class="headerlink" href="#using-the-evennia-testing-classes" title="Permalink to this headline">¶</a></h3>
 <p>Evennia offers many custom testing classes that helps with testing Evennia features.
 They are all found in <a class="reference internal" href="../api/evennia.utils.test_resources.html#evennia-utils-test-resources"><span class="std std-ref">evennia.utils.test_resources</span></a>. Note that
 these classes implement the <code class="docutils literal notranslate"><span class="pre">setUp</span></code> and <code class="docutils literal notranslate"><span class="pre">tearDown</span></code> already, so if you want to add stuff in them
 yourself you should remember to use e.g. <code class="docutils literal notranslate"><span class="pre">super().setUp()</span></code> in your code.</p>
 <section id="classes-for-testing-your-game-dir">
-<h3>Classes for testing your game dir<a class="headerlink" href="#classes-for-testing-your-game-dir" title="Permalink to this headline">¶</a></h3>
+<h4>Classes for testing your game dir<a class="headerlink" href="#classes-for-testing-your-game-dir" title="Permalink to this headline">¶</a></h4>
 <p>These all use whatever setting you pass to them and works well for testing code in your game dir.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code> - this sets up a full object environment for your test. All the created entities
@@ -301,7 +302,7 @@ has a lot of arguments for mimicing different ways of calling a Command, so make
 <a class="reference internal" href="../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin.call" title="evennia.utils.test_resources.EvenniaCommandTestMixin.call"><span class="xref myst py py-meth">read the API docs for .call()</span></a>.</p>
 </section>
 <section id="classes-for-testing-evennia-core">
-<h3>Classes for testing Evennia core<a class="headerlink" href="#classes-for-testing-evennia-core" title="Permalink to this headline">¶</a></h3>
+<h4>Classes for testing Evennia core<a class="headerlink" href="#classes-for-testing-evennia-core" title="Permalink to this headline">¶</a></h4>
 <p>These are used for testing Evennia itself. They provide the same resources as the classes
 above but enforce Evennias default settings found in <code class="docutils literal notranslate"><span class="pre">evennia/settings_default.py</span></code>, ignoring
 any settings changes in your game dir.</p>
@@ -322,7 +323,7 @@ test coverage and which does not. All help is appreciated!</p>
 </section>
 </section>
 <section id="unit-testing-contribs-with-custom-models">
-<h2>Unit testing contribs with custom models<a class="headerlink" href="#unit-testing-contribs-with-custom-models" title="Permalink to this headline">¶</a></h2>
+<h3>Unit testing contribs with custom models<a class="headerlink" href="#unit-testing-contribs-with-custom-models" title="Permalink to this headline">¶</a></h3>
 <p>A special case is if you were to create a contribution to go to the <code class="docutils literal notranslate"><span class="pre">evennia/contrib</span></code> folder that
 uses its <a class="reference internal" href="../Concepts/New-Models.html"><span class="doc std std-doc">own database models</span></a>. The problem with this is that Evennia (and Django) will
 only recognize models in <code class="docutils literal notranslate"><span class="pre">settings.INSTALLED_APPS</span></code>. If a user wants to use your contrib, they will
@@ -383,7 +384,7 @@ of the Evennia distribution and its unit tests should be run with all other Even
 </div>
 </section>
 <section id="a-note-on-making-the-test-runner-faster">
-<h2>A note on making the test runner faster<a class="headerlink" href="#a-note-on-making-the-test-runner-faster" title="Permalink to this headline">¶</a></h2>
+<h3>A note on making the test runner faster<a class="headerlink" href="#a-note-on-making-the-test-runner-faster" title="Permalink to this headline">¶</a></h3>
 <p>If you have custom models with a large number of migrations, creating the test database can take a very long time. If you don’t require migrations to run for your tests, you can disable them with the
 django-test-without-migrations package. To install it, simply:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install django-test-without-migrations
@@ -400,6 +401,7 @@ django-test-without-migrations package. To install it, simply:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">test</span> <span class="o">--</span><span class="n">settings</span> <span class="n">settings</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">nomigrations</span> <span class="o">.</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 

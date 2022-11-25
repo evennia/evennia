@@ -22,7 +22,7 @@ how many tests were run and how long it took. If something went wrong you will g
 If you contribute to Evennia, this is a useful sanity check to see you haven't introduced an
 unexpected bug.
 
-## Running tests for your game dir
+## Running custom game-dir unit tests
 
 If you have implemented your own tests for your game you can run them from your game dir
 with
@@ -46,7 +46,7 @@ You can also test specific things by giving their path
     evennia test --settings settings.py .world.tests.YourTest
 
 
-## Writing new tests
+## Writing new unit tests
 
 Evennia's test suite makes use of Django unit test system, which in turn relies on Python's
 *unittest* module.
@@ -118,14 +118,14 @@ You can also run a specific test:
 
 You might also want to read the [Python documentation for the unittest module](https://docs.python.org/library/unittest.html).
 
-## Using the Evennia testing classes
+### Using the Evennia testing classes
 
 Evennia offers many custom testing classes that helps with testing Evennia features. 
 They are all found in [evennia.utils.test_resources](evennia.utils.test_resources). Note that 
 these classes implement the `setUp` and `tearDown` already, so if you want to add stuff in them 
 yourself you should remember to use e.g. `super().setUp()` in your code.
 
-### Classes for testing your game dir
+#### Classes for testing your game dir
 
 These all use whatever setting you pass to them and works well for testing code in your game dir.
 
@@ -198,7 +198,7 @@ the `.call` helper), `||` to indicate multiple uses of `.msg()` in the Command. 
 has a lot of arguments for mimicing different ways of calling a Command, so make sure to 
 [read the API docs for .call()](evennia.utils.test_resources.EvenniaCommandTestMixin.call).
 
-### Classes for testing Evennia core
+#### Classes for testing Evennia core
 
 These are used for testing Evennia itself. They provide the same resources as the classes 
 above but enforce Evennias default settings found in `evennia/settings_default.py`, ignoring
@@ -218,7 +218,7 @@ If you want to help out writing unittests for Evennia, take a look at Evennia's 
 page](https://coveralls.io/github/evennia/evennia). There you see which modules have any form of
 test coverage and which does not. All help is appreciated!
 
-## Unit testing contribs with custom models
+### Unit testing contribs with custom models
 
 A special case is if you were to create a contribution to go to the `evennia/contrib` folder that
 uses its [own database models](../Concepts/New-Models.md). The problem with this is that Evennia (and Django) will
@@ -281,7 +281,7 @@ class TestMyModel(BaseEvenniaTest):
 ```
 
 
-## A note on making the test runner faster
+### A note on making the test runner faster
 
 If you have custom models with a large number of migrations, creating the test database can take a very long time. If you don't require migrations to run for your tests, you can disable them with the
 django-test-without-migrations package. To install it, simply:

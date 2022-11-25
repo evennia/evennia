@@ -118,10 +118,7 @@
 <p><em>Typeclasses</em> form the core of Evennia’s data storage. It allows Evennia to represent any number of
 different game entities as Python classes, without having to modify the database schema for every
 new type.</p>
-<p>In Evennia the most important game entities, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>,
-<a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a> are all Python classes inheriting, at
-varying distance, from <code class="docutils literal notranslate"><span class="pre">evennia.typeclasses.models.TypedObject</span></code>.  In the documentation we refer to
-these objects as being “typeclassed” or even “being a typeclass”.</p>
+<p>In Evennia the most important game entities, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a> are all Python classes inheriting, at varying distance, from <code class="docutils literal notranslate"><span class="pre">evennia.typeclasses.models.TypedObject</span></code>.  In the documentation we refer to these objects as being “typeclassed” or even “being a typeclass”.</p>
 <p>This is how the inheritance looks for the typeclasses in Evennia:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                  <span class="n">TypedObject</span>
       <span class="n">_________________</span><span class="o">|</span><span class="n">_________________________________</span>
@@ -175,12 +172,7 @@ default library):</p>
 </pre></div>
 </div>
 </li>
-<li><p>A typeclass’ <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method should normally not be overloaded. This has mostly to do with the
-fact that the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method is not called in a predictable way. Instead Evennia suggest you use
-the <code class="docutils literal notranslate"><span class="pre">at_*_creation</span></code> hooks (like <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> for Objects) for setting things the very first
-time the typeclass is saved to the database or the <code class="docutils literal notranslate"><span class="pre">at_init</span></code> hook which is called every time the
-object is cached to memory. If you know what you are doing and want to use <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it <em>must</em>
-both accept arbitrary keyword arguments and use <code class="docutils literal notranslate"><span class="pre">super</span></code> to call its parent::</p>
+<li><p>A typeclass’ <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method should normally not be overloaded. This has mostly to do with the fact that the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method is not called in a predictable way. Instead Evennia suggest you use the <code class="docutils literal notranslate"><span class="pre">at_*_creation</span></code> hooks (like <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> for Objects) for setting things the very first time the typeclass is saved to the database or the <code class="docutils literal notranslate"><span class="pre">at_init</span></code> hook which is called every time the object is cached to memory. If you know what you are doing and want to use <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it <em>must</em> both accept arbitrary keyword arguments and use <code class="docutils literal notranslate"><span class="pre">super</span></code> to call its parent:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># my content</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -194,8 +186,7 @@ treat it as such.</p>
 </section>
 <section id="creating-a-new-typeclass">
 <h2>Creating a new typeclass<a class="headerlink" href="#creating-a-new-typeclass" title="Permalink to this headline">¶</a></h2>
-<p>It’s easy to work with Typeclasses. Either you use an existing typeclass or you  create a new Python
-class inheriting from an existing typeclass. Here is an example of creating a new type of Object:</p>
+<p>It’s easy to work with Typeclasses. Either you use an existing typeclass or you  create a new Python class inheriting from an existing typeclass. Here is an example of creating a new type of Object:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 
     <span class="k">class</span> <span class="nc">Furniture</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
@@ -334,8 +325,7 @@ you will always query all children on the database model.</p>
 <section id="updating-existing-typeclass-instances">
 <h2>Updating existing typeclass instances<a class="headerlink" href="#updating-existing-typeclass-instances" title="Permalink to this headline">¶</a></h2>
 <p>If you already have created instances of Typeclasses, you can modify the <em>Python code</em> at any time -
-due to how Python inheritance works your changes will automatically be applied to all children once
-you have reloaded the server.</p>
+due to how Python inheritance works your changes will automatically be applied to all children once you have reloaded the server.</p>
 <p>However, database-saved data, like <code class="docutils literal notranslate"><span class="pre">db_*</span></code> fields, <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a>, <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> etc, are
 not themselves embedded into the class and will <em>not</em> be updated automatically. This you need to
 manage yourself, by searching for all relevant objects and updating or adding the data:</p>
@@ -361,7 +351,7 @@ it all in-game using <code class="docutils literal notranslate"><span class="pre
 single line using <code class="docutils literal notranslate"><span class="pre">;</span></code> and <a class="reference external" href="http://www.secnetix.de/olli/Python/list_comprehensions.hawk">list
 comprehensions</a>, like this (ignore the
 line break, that’s only for readability in the wiki):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">typeclasses.furniture</span> <span class="kn">import</span> <span class="n">Furniture</span><span class="p">;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">py</span> <span class="kn">from</span> <span class="nn">typeclasses.furniture</span> <span class="kn">import</span> <span class="n">Furniture</span><span class="p">;</span>
 <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">Furniture</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worth</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -370,59 +360,35 @@ retroactively update objects more than necessary.</p>
 </section>
 <section id="swap-typeclass">
 <h2>Swap typeclass<a class="headerlink" href="#swap-typeclass" title="Permalink to this headline">¶</a></h2>
-<p>If you want to swap an already existing typeclass, there are two ways to do so: From in-game and via
-code. From inside the game you can use the default <code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@typeclass</span> <span class="n">objname</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">typeclass</span>
+<p>If you want to swap an already existing typeclass, there are two ways to do so: From in-game and via code. From inside the game you can use the default <code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">typeclass</span> <span class="n">objname</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">typeclass</span>
 </pre></div>
 </div>
 <p>There are two important switches to this command:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">/reset</span></code> - This will purge all existing Attributes on the object and re-run the creation hook
-(like <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> for Objects). This assures you get an object which is purely of this new
-class.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">/force</span></code> - This is required if you are changing the class to be <em>the same</em> class the object
-already has - it’s a safety check to avoid user errors. This is usually used together with <code class="docutils literal notranslate"><span class="pre">/reset</span></code>
-to re-run the creation hook on an existing class.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/reset</span></code> - This will purge all existing Attributes on the object and re-run the creation hook (like <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> for Objects). This assures you get an object which is purely of this new class.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/force</span></code> - This is required if you are changing the class to be <em>the same</em> class the object already has - it’s a safety check to avoid user errors. This is usually used together with <code class="docutils literal notranslate"><span class="pre">/reset</span></code> to re-run the creation hook on an existing class.</p></li>
 </ul>
 <p>In code you instead use the <code class="docutils literal notranslate"><span class="pre">swap_typeclass</span></code> method which you can find on all typeclassed entities:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obj_to_change</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="n">new_typeclass_path</span><span class="p">,</span> <span class="n">clean_attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">run_start_hooks</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">no_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_cmdsets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The arguments to this method are described <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.typeclasses.models#typedobjectswap_typeclass">in the API docs
-here</a>.</p>
+<p>The arguments to this method are described <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.typeclasses.models#typedobjectswap_typeclass">in the API docs here</a>.</p>
 </section>
 <section id="how-typeclasses-actually-work">
 <h2>How typeclasses actually work<a class="headerlink" href="#how-typeclasses-actually-work" title="Permalink to this headline">¶</a></h2>
 <p><em>This is considered an advanced section.</em></p>
-<p>Technically, typeclasses are <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models">Django proxy
-models</a>.  The only database
-models that are “real” in the typeclass system (that is, are represented by actual tables in the
-database) are <code class="docutils literal notranslate"><span class="pre">AccountDB</span></code>, <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code>, <code class="docutils literal notranslate"><span class="pre">ScriptDB</span></code> and <code class="docutils literal notranslate"><span class="pre">ChannelDB</span></code> (there are also
-<a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> and <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> but they are not typeclasses themselves). All the
-subclasses of them are “proxies”, extending them with Python code without actually modifying the
-database layout.</p>
-<p>Evennia modifies Django’s proxy model in various ways to allow them to work without any boiler plate
-(for example you don’t need to set the Django “proxy” property in the model <code class="docutils literal notranslate"><span class="pre">Meta</span></code> subclass, Evennia
-handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as
-patches django to allow multiple inheritance from the same base class.</p>
+<p>Technically, typeclasses are <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models">Django proxy models</a>.  The only database
+models that are “real” in the typeclass system (that is, are represented by actual tables in the database) are <code class="docutils literal notranslate"><span class="pre">AccountDB</span></code>, <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code>, <code class="docutils literal notranslate"><span class="pre">ScriptDB</span></code> and <code class="docutils literal notranslate"><span class="pre">ChannelDB</span></code> (there are also <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> and <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> but they are not typeclasses themselves). All the subclasses of them are “proxies”, extending them with Python code without actually modifying the database layout.</p>
+<p>Evennia modifies Django’s proxy model in various ways to allow them to work without any boiler plate (for example you don’t need to set the Django “proxy” property in the model <code class="docutils literal notranslate"><span class="pre">Meta</span></code> subclass, Evennia handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as patches django to allow multiple inheritance from the same base class.</p>
 </section>
 <section id="caveats">
 <h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
-<p>Evennia uses the <em>idmapper</em> to cache its typeclasses (Django proxy models) in memory. The idmapper
-allows things like on-object handlers and properties to be stored on typeclass instances and to not
-get lost as long as the server is running (they will only be cleared on a Server reload). Django
-does not work like this by default; by default every time you search for an object in the database
-you’ll get a <em>different</em> instance of that object back and anything you stored on it that was not in
-the database would be lost. The bottom line is that Evennia’s Typeclass instances subside in memory
-a lot longer than vanilla Django model instance do.</p>
+<p>Evennia uses the <em>idmapper</em> to cache its typeclasses (Django proxy models) in memory. The idmapper allows things like on-object handlers and properties to be stored on typeclass instances and to not get lost as long as the server is running (they will only be cleared on a Server reload). Django does not work like this by default; by default every time you search for an object in the database you’ll get a <em>different</em> instance of that object back and anything you stored on it that was not in the database would be lost. The bottom line is that Evennia’s Typeclass instances subside in memory a lot longer than vanilla Django model instance do.</p>
 <p>There is one  caveat to consider with this, and that relates to [making your own models](New-
-Models): Foreign relationships to typeclasses are cached by Django and that means that if you were
-to change an object in a foreign relationship via some other means than via that relationship, the
-object seeing the relationship may not reliably update but will still see its old cached version.
-Due to typeclasses staying so long in memory, stale caches of such relationships could be more
-visible than common in Django. See the <a class="reference external" href="https://github.com/evennia/evennia/issues/1098">closed issue #1098 and its
-comments</a> for examples and solutions.</p>
+Models): Foreign relationships to typeclasses are cached by Django and that means that if you were to change an object in a foreign relationship via some other means than via that relationship, the object seeing the relationship may not reliably update but will still see its old cached version. Due to typeclasses staying so long in memory, stale caches of such relationships could be more
+visible than common in Django. See the <a class="reference external" href="https://github.com/evennia/evennia/issues/1098">closed issue #1098 and its comments</a> for examples and solutions.</p>
 </section>
 <section id="will-i-run-out-of-dbrefs">
 <h2>Will I run out of dbrefs?<a class="headerlink" href="#will-i-run-out-of-dbrefs" title="Permalink to this headline">¶</a></h2>

@@ -111,23 +111,17 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="sessions">
 <h1>Sessions<a class="headerlink" href="#sessions" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌──────┐ │   ┌───────┐    ┌───────┐   ┌──────┐
+│Client├─┼──►│Session├───►│Account├──►│Object│
+└──────┘ │   └───────┘    └───────┘   └──────┘
+                 ^
+</pre></div>
+</div>
 <p>An Evennia <em>Session</em> represents one single established connection to the server. Depending on the
 Evennia session, it is possible for a person to connect multiple times, for example using different
 clients in multiple windows. Each such connection is represented by a session object.</p>
-<p>A session object has its own <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">cmdset</span></a>, usually the “unloggedin” cmdset. This is what
-is used to show the login screen and to handle commands to create a new account (or
-<a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> in evennia lingo) read initial help and to log into the game with an existing
-account. A session object can either be “logged in” or not.  Logged in means that the user has
-authenticated. When this happens the session is associated with an Account object (which is what
-holds account-centric stuff). The account can then in turn puppet any number of objects/characters.</p>
-<blockquote>
-<div><p>Warning: A Session is not <em>persistent</em> - it is not a <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclass</span></a> and has no
-connection to the database. The Session will go away when a user disconnects and you will lose any
-custom data on it if the server reloads. The <code class="docutils literal notranslate"><span class="pre">.db</span></code> handler on Sessions is there to present a uniform
-API (so you can assume <code class="docutils literal notranslate"><span class="pre">.db</span></code> exists even if you don’t know if you receive an Object or a Session),
-but this is just an alias to <code class="docutils literal notranslate"><span class="pre">.ndb</span></code>. So don’t store any data on Sessions that you can’t afford to
-lose in a reload. You have been warned.</p>
-</div></blockquote>
+<p>A session object has its own <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">cmdset</span></a>, usually the “unloggedin” cmdset. This is what is used to show the login screen and to handle commands to create a new account (or <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> in evennia lingo) read initial help and to log into the game with an existing account. A session object can either be “logged in” or not.  Logged in means that the user has authenticated. When this happens the session is associated with an Account object (which is what holds account-centric stuff). The account can then in turn puppet any number of objects/characters.</p>
+<p>A Session is not <em>persistent</em> - it is not a <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclass</span></a> and has no connection to the database. The Session will go away when a user disconnects and you will lose any custom data on it if the server reloads. The <code class="docutils literal notranslate"><span class="pre">.db</span></code> handler on Sessions is there to present a uniform API (so you can assume <code class="docutils literal notranslate"><span class="pre">.db</span></code> exists even if you don’t know if you receive an Object or a Session), but this is just an alias to <code class="docutils literal notranslate"><span class="pre">.ndb</span></code>. So don’t store any data on Sessions that you can’t afford to lose in a reload.</p>
 <section id="properties-on-sessions">
 <h2>Properties on Sessions<a class="headerlink" href="#properties-on-sessions" title="Permalink to this headline">¶</a></h2>
 <p>Here are some important properties available on (Server-)Sessions</p>
@@ -154,39 +148,61 @@ last time this session was truly visibly active.</p></li>
 </section>
 <section id="multisession-mode">
 <h2>Multisession mode<a class="headerlink" href="#multisession-mode" title="Permalink to this headline">¶</a></h2>
-<p>The number of sessions possible to connect to a given account at the same time and how it works is
-given by the <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> setting:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=0</span></code>: One session per account. When connecting with a new session the old one is
-disconnected. This is the default mode and emulates many classic mud code bases. In default Evennia,
-this mode also changes how the <code class="docutils literal notranslate"><span class="pre">create</span> <span class="pre">account</span></code> Command works - it will automatically create a
-Character with the <em>same name</em> as the Account. When logging in, the login command is also modified
-to have the player automatically puppet that Character. This makes the distinction between Account
-and Character minimal from the player’s perspective.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=1</span></code>: Many sessions per account, input/output from/to each session is treated the
-same. For the player this means they can connect to the game from multiple clients and see the same
-output in all of them. The result of a command given in one client (that is, through one Session)
-will be returned to <em>all</em> connected Sessions/clients with no distinction. This mode will have the
-Session(s) auto-create and puppet a Character in the same way as mode 0.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=2</span></code>: Many sessions per account, one character per session. In this mode,
-puppeting an Object/Character will link the puppet back only to the particular Session doing the
-puppeting. That is, input from that Session will make use of the CmdSet of that Object/Character and
-outgoing messages (such as the result of a <code class="docutils literal notranslate"><span class="pre">look</span></code>) will be passed back only to that puppeting
-Session. If another Session tries to puppet the same Character, the old Session will automatically
-un-puppet it. From the player’s perspective, this will mean that they can open separate game clients
-and play a different Character in each using one game account.
-This mode will <em>not</em> auto-create a Character and <em>not</em> auto-puppet on login like in modes 0 and 1.
-Instead it changes how the account-cmdsets’s <code class="docutils literal notranslate"><span class="pre">OOCLook</span></code> command works so as to show a simple
-‘character select’ menu.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=3</span></code>: Many sessions per account <em>and</em> character. This is the full multi-puppeting
-mode, where multiple sessions may not only connect to the player account but multiple sessions may
-also puppet a single character at the same time. From the user’s perspective it means one can open
-multiple client windows, some for controlling different Characters and some that share a Character’s
-input/output like in mode 1. This mode otherwise works the same as mode 2.</p></li>
+<p>The number of sessions possible to connect to a given account at the same time and how it works is given by the <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> setting:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=0</span></code>: One session per account. When connecting with a new session the old one is disconnected. This is the default mode and emulates many classic mud code bases.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌──────┐ │   ┌───────┐    ┌───────┐   ┌─────────┐
+│Client├─┼──►│Session├───►│Account├──►│Character│
+└──────┘ │   └───────┘    └───────┘   └─────────┘
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=1</span></code>: Many sessions per account, input/output from/to each session is treated the same. For the player this means they can connect to the game from multiple clients and see the same output in all of them. The result of a command given in one client (that is, through one Session) will be returned to <em>all</em> connected Sessions/clients with no distinction.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         │
+┌──────┐ │   ┌───────┐
+│Client├─┼──►│Session├──┐
+└──────┘ │   └───────┘  └──►┌───────┐   ┌─────────┐
+         │                  │Account├──►│Character│
+┌──────┐ │   ┌───────┐  ┌──►└───────┘   └─────────┘
+│Client├─┼──►│Session├──┘
+└──────┘ │   └───────┘
+         │
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=2</span></code>: Many sessions per account, one character per session. In this mode, puppeting an Object/Character will link the puppet back only to the particular Session doing the puppeting. That is, input from that Session will make use of the CmdSet of that Object/Character and outgoing messages (such as the result of a <code class="docutils literal notranslate"><span class="pre">look</span></code>) will be passed back only to that puppeting Session. If another Session tries to puppet the same Character, the old Session will automatically un-puppet it. From the player’s perspective, this will mean that they can open separate game clients and play a different Character in each using one game account.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         │                 ┌───────┐
+┌──────┐ │   ┌───────┐     │Account│    ┌─────────┐
+│Client├─┼──►│Session├──┐  │       │  ┌►│Character│
+└──────┘ │   └───────┘  └──┼───────┼──┘ └─────────┘
+         │                 │       │
+┌──────┐ │   ┌───────┐  ┌──┼───────┼──┐ ┌─────────┐
+│Client├─┼──►│Session├──┘  │       │  └►│Character│
+└──────┘ │   └───────┘     │       │    └─────────┘
+         │                 └───────┘
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=3</span></code>: Many sessions per account <em>and</em> character. This is the full multi-puppeting mode, where multiple sessions may not only connect to the player account but multiple sessions may also puppet a single character at the same time. From the user’s perspective it means one can open multiple client windows, some for controlling different Characters and some that share a Character’s input/output like in mode 1. This mode otherwise works the same as mode 2.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         │                 ┌───────┐
+┌──────┐ │   ┌───────┐     │Account│    ┌─────────┐
+│Client├─┼──►│Session├──┐  │       │  ┌►│Character│
+└──────┘ │   └───────┘  └──┼───────┼──┘ └─────────┘
+         │                 │       │
+┌──────┐ │   ┌───────┐  ┌──┼───────┼──┐
+│Client├─┼──►│Session├──┘  │       │  └►┌─────────┐
+└──────┘ │   └───────┘     │       │    │Character│
+         │                 │       │  ┌►└─────────┘
+┌──────┐ │   ┌───────┐  ┌──┼───────┼──┘             ▼
+│Client├─┼──►│Session├──┘  │       │
+└──────┘ │   └───────┘     └───────┘
+         │
+</pre></div>
+</div>
+</li>
 </ul>
 <blockquote>
-<div><p>Note that even if multiple Sessions puppet one Character, there is only ever one instance of that
-Character.</p>
+<div><p>Note that even if multiple Sessions puppet one Character, there is only ever one instance of that Character.</p>
 </div></blockquote>
 </section>
 <section id="returning-data-to-the-session">
