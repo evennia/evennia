@@ -331,12 +331,9 @@ add the model to Evennia’s central <code class="docutils literal notranslate">
 optional models regardless of if the user wants them. But at the same time a contribution is a part
 of the Evennia distribution and its unit tests should be run with all other Evennia tests using
 <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">test</span> <span class="pre">evennia</span></code>.</p>
-<p>The way to do this is to only temporarily add your models to the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> directory when the
-test runs. here is an example of how to do it.</p>
+<p>The way to do this is to only temporarily add your models to the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> directory when the test runs. here is an example of how to do it.</p>
 <blockquote>
-<div><p>Note that this solution, derived from this [stackexchange
-answer](<a class="reference external" href="http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-">http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-</a>
-testing#503435) is currently untested! Please report your findings.</p>
+<div><p>Note that this solution, derived from this <a class="reference external" href="http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-testing#503435">stackexchange answer</a> is currently untested! Please report your findings.</p>
 </div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># a file contrib/mycontrib/tests.py</span>
 
@@ -387,8 +384,7 @@ testing#503435) is currently untested! Please report your findings.</p>
 </section>
 <section id="a-note-on-making-the-test-runner-faster">
 <h2>A note on making the test runner faster<a class="headerlink" href="#a-note-on-making-the-test-runner-faster" title="Permalink to this headline">¶</a></h2>
-<p>If you have custom models with a large number of migrations, creating the test database can take a
-very long time. If you don’t require migrations to run for your tests, you can disable them with the
+<p>If you have custom models with a large number of migrations, creating the test database can take a very long time. If you don’t require migrations to run for your tests, you can disable them with the
 django-test-without-migrations package. To install it, simply:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install django-test-without-migrations
 </pre></div>

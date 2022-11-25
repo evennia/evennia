@@ -83,10 +83,9 @@
 
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
-
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">chargen</span><span class="p">,</span> <span class="n">enums</span><span class="p">,</span> <span class="n">objects</span>
 
@@ -123,9 +122,11 @@
     <span class="k">def</span> <span class="nf">test_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_spawn</span><span class="p">):</span>
 
         <span class="n">gambeson</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">objects</span><span class="o">.</span><span class="n">EvAdventureArmor</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;gambeson&quot;</span><span class="p">)</span>
-        <span class="n">mock_spawn</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">gambeson</span>
+        <span class="n">mock_spawn</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">gambeson</span><span class="p">]</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">account</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">2222</span>
 
-        <span class="n">character</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chargen</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
+        <span class="n">character</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chargen</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;Herbalist&quot;</span><span class="p">,</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>

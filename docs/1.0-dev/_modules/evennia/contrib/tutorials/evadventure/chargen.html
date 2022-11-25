@@ -80,12 +80,11 @@
 <span class="sd">EvAdventure character generation.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
 <span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
 <span class="kn">from</span> <span class="nn">.random_tables</span> <span class="kn">import</span> <span class="n">chargen_tables</span>
@@ -417,8 +416,14 @@
 
     <span class="c1"># this generates all random components of the character</span>
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">TemporaryCharacterSheet</span><span class="p">()</span>
-    
-    <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menutree</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">startnode_input</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;sgsg&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">:</span><span class="n">tmp_character</span><span class="p">}))</span></div>
+
+    <span class="n">EvMenu</span><span class="p">(</span>
+        <span class="n">caller</span><span class="p">,</span>
+        <span class="n">menutree</span><span class="p">,</span>
+        <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+        <span class="n">startnode_input</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;sgsg&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">:</span> <span class="n">tmp_character</span><span class="p">}),</span>
+    <span class="p">)</span></div>
 </pre></div>
 
           </div>
