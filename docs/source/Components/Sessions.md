@@ -1,23 +1,19 @@
 # Sessions
 
+```
+┌──────┐ │   ┌───────┐    ┌───────┐   ┌──────┐
+│Client├─┼──►│Session├───►│Account├──►│Object│
+└──────┘ │   └───────┘    └───────┘   └──────┘
+                 ^
+```
 
 An Evennia *Session* represents one single established connection to the server. Depending on the
 Evennia session, it is possible for a person to connect multiple times, for example using different
 clients in multiple windows. Each such connection is represented by a session object.
 
-A session object has its own [cmdset](./Command-Sets.md), usually the "unloggedin" cmdset. This is what
-is used to show the login screen and to handle commands to create a new account (or
-[Account](./Accounts.md) in evennia lingo) read initial help and to log into the game with an existing
-account. A session object can either be "logged in" or not.  Logged in means that the user has
-authenticated. When this happens the session is associated with an Account object (which is what
-holds account-centric stuff). The account can then in turn puppet any number of objects/characters.
+A session object has its own [cmdset](./Command-Sets.md), usually the "unloggedin" cmdset. This is what is used to show the login screen and to handle commands to create a new account (or [Account](./Accounts.md) in evennia lingo) read initial help and to log into the game with an existing account. A session object can either be "logged in" or not.  Logged in means that the user has authenticated. When this happens the session is associated with an Account object (which is what holds account-centric stuff). The account can then in turn puppet any number of objects/characters.
 
-> Warning: A Session is not *persistent* - it is not a [Typeclass](./Typeclasses.md) and has no
-connection to the database. The Session will go away when a user disconnects and you will lose any
-custom data on it if the server reloads. The `.db` handler on Sessions is there to present a uniform
-API (so you can assume `.db` exists even if you don't know if you receive an Object or a Session),
-but this is just an alias to `.ndb`. So don't store any data on Sessions that you can't afford to
-lose in a reload. You have been warned.
+A Session is not *persistent* - it is not a [Typeclass](./Typeclasses.md) and has no connection to the database. The Session will go away when a user disconnects and you will lose any custom data on it if the server reloads. The `.db` handler on Sessions is there to present a uniform API (so you can assume `.db` exists even if you don't know if you receive an Object or a Session), but this is just an alias to `.ndb`. So don't store any data on Sessions that you can't afford to lose in a reload.
 
 ## Properties on Sessions
 
@@ -42,41 +38,59 @@ Session statistics are mainly used internally by Evennia.
 last time this session was truly visibly active.
 - `cmd_total` - Total number of Commands passed through this Session.
 
-
 ## Multisession mode
 
-The number of sessions possible to connect to a given account at the same time and how it works is
-given by the `MULTISESSION_MODE` setting:
+The number of sessions possible to connect to a given account at the same time and how it works is given by the `MULTISESSION_MODE` setting:
 
-* `MULTISESSION_MODE=0`: One session per account. When connecting with a new session the old one is
-disconnected. This is the default mode and emulates many classic mud code bases. In default Evennia,
-this mode also changes how the `create account` Command works - it will automatically create a
-Character with the *same name* as the Account. When logging in, the login command is also modified
-to have the player automatically puppet that Character. This makes the distinction between Account
-and Character minimal from the player's perspective.
-* `MULTISESSION_MODE=1`: Many sessions per account, input/output from/to each session is treated the
-same. For the player this means they can connect to the game from multiple clients and see the same
-output in all of them. The result of a command given in one client (that is, through one Session)
-will be returned to *all* connected Sessions/clients with no distinction. This mode will have the
-Session(s) auto-create and puppet a Character in the same way as mode 0.
-* `MULTISESSION_MODE=2`: Many sessions per account, one character per session. In this mode,
-puppeting an Object/Character will link the puppet back only to the particular Session doing the
-puppeting. That is, input from that Session will make use of the CmdSet of that Object/Character and
-outgoing messages (such as the result of a `look`) will be passed back only to that puppeting
-Session. If another Session tries to puppet the same Character, the old Session will automatically
-un-puppet it. From the player's perspective, this will mean that they can open separate game clients
-and play a different Character in each using one game account.
-This mode will *not* auto-create a Character and *not* auto-puppet on login like in modes 0 and 1.
-Instead it changes how the account-cmdsets's `OOCLook` command works so as to show a simple
-'character select' menu.
-* `MULTISESSION_MODE=3`: Many sessions per account *and* character. This is the full multi-puppeting
-mode, where multiple sessions may not only connect to the player account but multiple sessions may
-also puppet a single character at the same time. From the user's perspective it means one can open
-multiple client windows, some for controlling different Characters and some that share a Character's
-input/output like in mode 1. This mode otherwise works the same as mode 2.
+* `MULTISESSION_MODE=0`: One session per account. When connecting with a new session the old one is disconnected. This is the default mode and emulates many classic mud code bases.
+    ```
+    ┌──────┐ │   ┌───────┐    ┌───────┐   ┌─────────┐
+    │Client├─┼──►│Session├───►│Account├──►│Character│
+    └──────┘ │   └───────┘    └───────┘   └─────────┘
+    ```
+* `MULTISESSION_MODE=1`: Many sessions per account, input/output from/to each session is treated the same. For the player this means they can connect to the game from multiple clients and see the same output in all of them. The result of a command given in one client (that is, through one Session) will be returned to *all* connected Sessions/clients with no distinction.       
+    ```
+             │
+    ┌──────┐ │   ┌───────┐
+    │Client├─┼──►│Session├──┐
+    └──────┘ │   └───────┘  └──►┌───────┐   ┌─────────┐
+             │                  │Account├──►│Character│
+    ┌──────┐ │   ┌───────┐  ┌──►└───────┘   └─────────┘
+    │Client├─┼──►│Session├──┘
+    └──────┘ │   └───────┘
+             │
+    ```
 
-> Note that even if multiple Sessions puppet one Character, there is only ever one instance of that
-Character.
+* `MULTISESSION_MODE=2`: Many sessions per account, one character per session. In this mode, puppeting an Object/Character will link the puppet back only to the particular Session doing the puppeting. That is, input from that Session will make use of the CmdSet of that Object/Character and outgoing messages (such as the result of a `look`) will be passed back only to that puppeting Session. If another Session tries to puppet the same Character, the old Session will automatically un-puppet it. From the player's perspective, this will mean that they can open separate game clients and play a different Character in each using one game account.
+    ```
+             │                 ┌───────┐
+    ┌──────┐ │   ┌───────┐     │Account│    ┌─────────┐
+    │Client├─┼──►│Session├──┐  │       │  ┌►│Character│
+    └──────┘ │   └───────┘  └──┼───────┼──┘ └─────────┘
+             │                 │       │
+    ┌──────┐ │   ┌───────┐  ┌──┼───────┼──┐ ┌─────────┐
+    │Client├─┼──►│Session├──┘  │       │  └►│Character│
+    └──────┘ │   └───────┘     │       │    └─────────┘
+             │                 └───────┘
+    ```
+* `MULTISESSION_MODE=3`: Many sessions per account *and* character. This is the full multi-puppeting mode, where multiple sessions may not only connect to the player account but multiple sessions may also puppet a single character at the same time. From the user's perspective it means one can open multiple client windows, some for controlling different Characters and some that share a Character's input/output like in mode 1. This mode otherwise works the same as mode 2.
+    ```
+             │                 ┌───────┐
+    ┌──────┐ │   ┌───────┐     │Account│    ┌─────────┐
+    │Client├─┼──►│Session├──┐  │       │  ┌►│Character│
+    └──────┘ │   └───────┘  └──┼───────┼──┘ └─────────┘
+             │                 │       │
+    ┌──────┐ │   ┌───────┐  ┌──┼───────┼──┐
+    │Client├─┼──►│Session├──┘  │       │  └►┌─────────┐
+    └──────┘ │   └───────┘     │       │    │Character│
+             │                 │       │  ┌►└─────────┘
+    ┌──────┐ │   ┌───────┐  ┌──┼───────┼──┘             ▼
+    │Client├─┼──►│Session├──┘  │       │
+    └──────┘ │   └───────┘     └───────┘
+             │
+    ```
+
+> Note that even if multiple Sessions puppet one Character, there is only ever one instance of that Character.
 
 ## Returning data to the session
 

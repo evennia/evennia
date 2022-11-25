@@ -4,10 +4,7 @@
 different game entities as Python classes, without having to modify the database schema for every
 new type.
 
-In Evennia the most important game entities, [Accounts](./Accounts.md), [Objects](./Objects.md),
-[Scripts](./Scripts.md) and [Channels](./Channels.md) are all Python classes inheriting, at
-varying distance, from `evennia.typeclasses.models.TypedObject`.  In the documentation we refer to
-these objects as being "typeclassed" or even "being a typeclass".
+In Evennia the most important game entities, [Accounts](./Accounts.md), [Objects](./Objects.md), [Scripts](./Scripts.md) and [Channels](./Channels.md) are all Python classes inheriting, at varying distance, from `evennia.typeclasses.models.TypedObject`.  In the documentation we refer to these objects as being "typeclassed" or even "being a typeclass".
 
 This is how the inheritance looks for the typeclasses in Evennia:
 
@@ -66,12 +63,7 @@ default library):
          pass
     ```
 
- 1. A typeclass' `__init__` method should normally not be overloaded. This has mostly to do with the
-fact that the `__init__` method is not called in a predictable way. Instead Evennia suggest you use
-the `at_*_creation` hooks (like `at_object_creation` for Objects) for setting things the very first
-time the typeclass is saved to the database or the `at_init` hook which is called every time the
-object is cached to memory. If you know what you are doing and want to use `__init__`, it *must*
-both accept arbitrary keyword arguments and use `super` to call its parent::
+ 1. A typeclass' `__init__` method should normally not be overloaded. This has mostly to do with the fact that the `__init__` method is not called in a predictable way. Instead Evennia suggest you use the `at_*_creation` hooks (like `at_object_creation` for Objects) for setting things the very first time the typeclass is saved to the database or the `at_init` hook which is called every time the object is cached to memory. If you know what you are doing and want to use `__init__`, it *must* both accept arbitrary keyword arguments and use `super` to call its parent:
 
     ```python
     def __init__(self, **kwargs):
@@ -86,8 +78,7 @@ treat it as such.
 
 ## Creating a new typeclass
 
-It's easy to work with Typeclasses. Either you use an existing typeclass or you  create a new Python
-class inheriting from an existing typeclass. Here is an example of creating a new type of Object:
+ It's easy to work with Typeclasses. Either you use an existing typeclass or you  create a new Python class inheriting from an existing typeclass. Here is an example of creating a new type of Object:
 
 ```python
     from evennia import DefaultObject
@@ -247,8 +238,7 @@ you will always query all children on the database model.
 ## Updating existing typeclass instances
 
 If you already have created instances of Typeclasses, you can modify the *Python code* at any time -
-due to how Python inheritance works your changes will automatically be applied to all children once
-you have reloaded the server.
+due to how Python inheritance works your changes will automatically be applied to all children once you have reloaded the server.
 
 However, database-saved data, like `db_*` fields, [Attributes](./Attributes.md), [Tags](./Tags.md) etc, are
 not themselves embedded into the class and will *not* be updated automatically. This you need to
@@ -281,7 +271,7 @@ comprehensions](http://www.secnetix.de/olli/Python/list_comprehensions.hawk), li
 line break, that's only for readability in the wiki):
 
 ```
-@py from typeclasses.furniture import Furniture;
+py from typeclasses.furniture import Furniture;
 [obj.at_object_creation() for obj in Furniture.objects.all() if not obj.db.worth]
 ```
 
@@ -290,20 +280,15 @@ retroactively update objects more than necessary.
 
 ## Swap typeclass
 
-If you want to swap an already existing typeclass, there are two ways to do so: From in-game and via
-code. From inside the game you can use the default `@typeclass` command:
+If you want to swap an already existing typeclass, there are two ways to do so: From in-game and via code. From inside the game you can use the default `@typeclass` command:
 
 ```
-@typeclass objname = path.to.new.typeclass
+typeclass objname = path.to.new.typeclass
 ```
 
 There are two important switches to this command:
-- `/reset` - This will purge all existing Attributes on the object and re-run the creation hook
-(like `at_object_creation` for Objects). This assures you get an object which is purely of this new
-class.
-- `/force` - This is required if you are changing the class to be *the same* class the object
-already has - it's a safety check to avoid user errors. This is usually used together with `/reset`
-to re-run the creation hook on an existing class.
+- `/reset` - This will purge all existing Attributes on the object and re-run the creation hook (like `at_object_creation` for Objects). This assures you get an object which is purely of this new class.
+- `/force` - This is required if you are changing the class to be *the same* class the object already has - it's a safety check to avoid user errors. This is usually used together with `/reset` to re-run the creation hook on an existing class.
 
 In code you instead use the `swap_typeclass` method which you can find on all typeclassed entities:
 
@@ -312,44 +297,25 @@ obj_to_change.swap_typeclass(new_typeclass_path, clean_attributes=False,
                    run_start_hooks="all", no_default=True, clean_cmdsets=False)
 ```
 
-The arguments to this method are described [in the API docs
-here](github:evennia.typeclasses.models#typedobjectswap_typeclass).
+The arguments to this method are described [in the API docs here](github:evennia.typeclasses.models#typedobjectswap_typeclass).
 
 
 ## How typeclasses actually work
 
 *This is considered an advanced section.*
 
-Technically, typeclasses are [Django proxy
-models](https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models).  The only database
-models that are "real" in the typeclass system (that is, are represented by actual tables in the
-database) are `AccountDB`, `ObjectDB`, `ScriptDB` and `ChannelDB` (there are also
-[Attributes](./Attributes.md) and [Tags](./Tags.md) but they are not typeclasses themselves). All the
-subclasses of them are "proxies", extending them with Python code without actually modifying the
-database layout.
+Technically, typeclasses are [Django proxy models](https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models).  The only database
+models that are "real" in the typeclass system (that is, are represented by actual tables in the database) are `AccountDB`, `ObjectDB`, `ScriptDB` and `ChannelDB` (there are also [Attributes](./Attributes.md) and [Tags](./Tags.md) but they are not typeclasses themselves). All the subclasses of them are "proxies", extending them with Python code without actually modifying the database layout.
 
-Evennia modifies Django's proxy model in various ways to allow them to work without any boiler plate
-(for example you don't need to set the Django "proxy" property in the model `Meta` subclass, Evennia
-handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as
-patches django to allow multiple inheritance from the same base class.
+Evennia modifies Django's proxy model in various ways to allow them to work without any boiler plate (for example you don't need to set the Django "proxy" property in the model `Meta` subclass, Evennia handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as patches django to allow multiple inheritance from the same base class.
 
 ## Caveats
 
-Evennia uses the *idmapper* to cache its typeclasses (Django proxy models) in memory. The idmapper
-allows things like on-object handlers and properties to be stored on typeclass instances and to not
-get lost as long as the server is running (they will only be cleared on a Server reload). Django
-does not work like this by default; by default every time you search for an object in the database
-you'll get a *different* instance of that object back and anything you stored on it that was not in
-the database would be lost. The bottom line is that Evennia's Typeclass instances subside in memory
-a lot longer than vanilla Django model instance do.
+Evennia uses the *idmapper* to cache its typeclasses (Django proxy models) in memory. The idmapper allows things like on-object handlers and properties to be stored on typeclass instances and to not get lost as long as the server is running (they will only be cleared on a Server reload). Django does not work like this by default; by default every time you search for an object in the database you'll get a *different* instance of that object back and anything you stored on it that was not in the database would be lost. The bottom line is that Evennia's Typeclass instances subside in memory a lot longer than vanilla Django model instance do. 
 
 There is one  caveat to consider with this, and that relates to [making your own models](New-
-Models): Foreign relationships to typeclasses are cached by Django and that means that if you were
-to change an object in a foreign relationship via some other means than via that relationship, the
-object seeing the relationship may not reliably update but will still see its old cached version.
-Due to typeclasses staying so long in memory, stale caches of such relationships could be more
-visible than common in Django. See the [closed issue #1098 and its
-comments](https://github.com/evennia/evennia/issues/1098) for examples and solutions.
+Models): Foreign relationships to typeclasses are cached by Django and that means that if you were to change an object in a foreign relationship via some other means than via that relationship, the object seeing the relationship may not reliably update but will still see its old cached version. Due to typeclasses staying so long in memory, stale caches of such relationships could be more
+visible than common in Django. See the [closed issue #1098 and its comments](https://github.com/evennia/evennia/issues/1098) for examples and solutions.
 
 ## Will I run out of dbrefs? 
 
