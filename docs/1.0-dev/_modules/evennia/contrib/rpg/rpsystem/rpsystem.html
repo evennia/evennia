@@ -228,6 +228,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
@@ -236,7 +237,10 @@
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultObject</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">iter_to_str</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">variable_from_module</span>
+
+<span class="kn">import</span> <span class="nn">inflect</span>
+<span class="n">_INFLECT</span> <span class="o">=</span> <span class="n">inflect</span><span class="o">.</span><span class="n">engine</span><span class="p">()</span>
 
 <span class="n">_AT_SEARCH_RESULT</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="c1"># ------------------------------------------------------------</span>
@@ -1361,10 +1365,7 @@
         <span class="c1"># emoting/recog data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose_default</span> <span class="o">=</span> <span class="s2">&quot;is here.&quot;</span>
-
-        <span class="c1"># initializing sdesc</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_sdesc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Something&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_sdesc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="ContribRPObject.search"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1598,43 +1599,74 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_posed_sdesc</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">sdesc</span></div>
 
-<div class="viewcode-block" id="ContribRPObject.return_appearance"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPObject.get_display_characters"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_display_characters">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_characters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">pose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This formats a description. It is the hook a &#39;look&#39; command</span>
-<span class="sd">        should call.</span>
+<span class="sd">        Get the ‘characters’ component of the object description. Called by return_appearance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">_filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">))</span>
+
+        <span class="n">characters</span> <span class="o">=</span> <span class="n">_filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">))</span>
+        <span class="n">character_names</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">char</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">pose</span><span class="o">=</span><span class="n">pose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">characters</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">character_names</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">character_names</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>        </div>
+
+<div class="viewcode-block" id="ContribRPObject.get_display_things"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_display_things">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_things</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">pose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the &#39;things&#39; component of the object description. Called by `return_appearance`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            looker (Object): Object doing the looking.</span>
-
+<span class="sd">            **kwargs: Arbitrary data for use when overriding.</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            string (str): A string containing the name, appearance and contents</span>
-<span class="sd">                of the object.</span>
+<span class="sd">            str: The things display data.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">looker</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pose</span><span class="p">:</span>
+            <span class="c1"># if poses aren&#39;t included, we can use the core version instead</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_display_things</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)]</span>
+
+        <span class="c1"># sort and handle same-named things</span>
+        <span class="n">things</span> <span class="o">=</span> <span class="n">_filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">))</span>
+
+        <span class="n">posed_things</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">things</span><span class="p">:</span>
+            <span class="n">pose</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="ow">or</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose_default</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pose</span><span class="p">:</span>
+                <span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">posed_things</span><span class="p">[</span><span class="n">pose</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+        
+        <span class="n">display_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">pose</span><span class="p">,</span> <span class="n">thinglist</span> <span class="ow">in</span> <span class="n">posed_things</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">grouped_things</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">thinglist</span><span class="p">:</span>
+                <span class="n">grouped_things</span><span class="p">[</span><span class="n">thing</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">pose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+
+            <span class="n">thing_names</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">thingname</span><span class="p">,</span> <span class="n">samethings</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">grouped_things</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="n">nthings</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">samethings</span><span class="p">)</span>
+                <span class="n">thing</span> <span class="o">=</span> <span class="n">samethings</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">singular</span><span class="p">,</span> <span class="n">plural</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="n">nthings</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">thingname</span><span class="p">)</span>
+                <span class="n">thing_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">singular</span> <span class="k">if</span> <span class="n">nthings</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">plural</span><span class="p">)</span>
+            <span class="n">thing_names</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span><span class="n">thing_names</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">pose</span><span class="p">:</span>
+                <span class="n">pose</span> <span class="o">=</span> <span class="n">_INFLECT</span><span class="o">.</span><span class="n">plural</span><span class="p">(</span><span class="n">pose</span><span class="p">)</span> <span class="k">if</span> <span class="n">nthings</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">pose</span>
+            <span class="n">grouped_names</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">thing_names</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pose</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">grouped_names</span> <span class="o">=</span> <span class="n">grouped_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">grouped_names</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">display_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grouped_names</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">display_strings</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-        <span class="c1"># get and identify all objects</span>
-        <span class="n">visible</span> <span class="o">=</span> <span class="p">(</span><span class="n">con</span> <span class="k">for</span> <span class="n">con</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">con</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">con</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">))</span>
-        <span class="n">exits</span><span class="p">,</span> <span class="n">users</span><span class="p">,</span> <span class="n">things</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">con</span> <span class="ow">in</span> <span class="n">visible</span><span class="p">:</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">pose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
-                <span class="n">exits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">con</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
-                <span class="n">users</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">things</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="c1"># get description, build string</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">pose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
-        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">desc</span>
-        <span class="k">if</span> <span class="n">exits</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wExits:|n &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exits</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">users</span> <span class="ow">or</span> <span class="n">things</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">users</span> <span class="o">+</span> <span class="n">things</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">string</span></div></div>
-
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">display_strings</span><span class="p">)</span></div></div>
+  
 
 <div class="viewcode-block" id="ContribRPRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPRoom">[docs]</a><span class="k">class</span> <span class="nc">ContribRPRoom</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
