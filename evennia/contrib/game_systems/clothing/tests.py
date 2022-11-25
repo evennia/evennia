@@ -12,120 +12,117 @@ from . import clothing
 
 
 class TestClothingCmd(BaseEvenniaCommandTest):
-    def test_clothingcommands(self):
-        wearer = create_object(clothing.ClothedCharacter, key="Wearer")
-        friend = create_object(clothing.ClothedCharacter, key="Friend")
-        room = create_object(DefaultRoom, key="room")
-        wearer.location = room
-        friend.location = room
+    def setUp(self):
+        super().setUp()
+        self.room = create_object(DefaultRoom, key="Room")
+        self.wearer = create_object(clothing.ClothedCharacter, key="Wearer")
+        self.wearer.location = self.room
         # Make a test hat
-        test_hat = create_object(clothing.ContribClothing, key="test hat")
-        test_hat.db.clothing_type = "hat"
-        test_hat.location = wearer
+        self.test_hat = create_object(clothing.ContribClothing, key="test hat")
+        self.test_hat.db.clothing_type = "hat"
         # Make a test scarf
-        test_scarf = create_object(clothing.ContribClothing, key="test scarf")
-        test_scarf.db.clothing_type = "accessory"
-        test_scarf.location = wearer
+        self.test_scarf = create_object(clothing.ContribClothing, key="test scarf")
+        self.test_scarf.db.clothing_type = "accessory"
+
+    def test_clothingcommands(self):
+        # Test inventory command.
+        self.call(
+            clothing.CmdInventory(),
+            "",
+            "You are not carrying or wearing anything.",
+            caller=self.wearer,
+        )
+
         # Test wear command
-        self.call(clothing.CmdWear(), "", "Usage: wear <obj> [wear style]", caller=wearer)
-        self.call(clothing.CmdWear(), "hat", "Wearer puts on test hat.", caller=wearer)
+        self.test_scarf.location = self.wearer
+        self.test_hat.location = self.wearer
+        self.call(clothing.CmdWear(), "", "Usage: wear <obj> [=] [wear style]", caller=self.wearer)
+        self.call(clothing.CmdWear(), "hat", "You put on test hat.", caller=self.wearer)
         self.call(
             clothing.CmdWear(),
             "scarf stylishly",
-            "Wearer wears test scarf stylishly.",
-            caller=wearer,
+            "You wear test scarf stylishly.",
+            caller=self.wearer,
         )
         # Test cover command.
         self.call(
             clothing.CmdCover(),
             "",
-            "Usage: cover <worn clothing> [with] <clothing object>",
-            caller=wearer,
+            "Usage: cover <worn clothing> with <clothing object>",
+            caller=self.wearer,
         )
         self.call(
             clothing.CmdCover(),
             "hat with scarf",
-            "Wearer covers test hat with test scarf.",
-            caller=wearer,
+            "You cover test hat with test scarf.",
+            caller=self.wearer,
         )
         # Test remove command.
-        self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=wearer)
+        self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=self.wearer)
         self.call(
-            clothing.CmdRemove(), "hat", "You have to take off test scarf first.", caller=wearer
+            clothing.CmdRemove(),
+            "hat",
+            "You have to take off test scarf first.",
+            caller=self.wearer,
         )
         self.call(
             clothing.CmdRemove(),
             "scarf",
-            "Wearer removes test scarf, revealing test hat.",
-            caller=wearer,
+            "You remove test scarf, revealing test hat.",
+            caller=self.wearer,
         )
         # Test uncover command.
-        test_scarf.wear(wearer, True)
-        test_hat.db.covered_by = test_scarf
-        self.call(clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=wearer)
-        self.call(clothing.CmdUncover(), "hat", "Wearer uncovers test hat.", caller=wearer)
-        # Test drop command.
-        test_hat.db.covered_by = test_scarf
-        self.call(clothing.CmdDrop(), "", "Drop what?", caller=wearer)
+        self.test_scarf.wear(self.wearer, True)
+        self.test_hat.db.covered_by = self.test_scarf
         self.call(
-            clothing.CmdDrop(),
-            "hat",
-            "You can't drop that because it's covered by test scarf.",
-            caller=wearer,
+            clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=self.wearer
         )
-        self.call(clothing.CmdDrop(), "scarf", "You drop test scarf.", caller=wearer)
-        # Test give command.
-        self.call(
-            clothing.CmdGive(), "", "Usage: give <inventory object> = <target>", caller=wearer
-        )
-        self.call(
-            clothing.CmdGive(),
-            "hat = Friend",
-            "Wearer removes test hat.|You give test hat to Friend.",
-            caller=wearer,
-        )
-        # Test inventory command.
-        self.call(
-            clothing.CmdInventory(), "", "You are not carrying or wearing anything.", caller=wearer
-        )
+        self.call(clothing.CmdUncover(), "hat", "You uncover test hat.", caller=self.wearer)
 
 
 class TestClothingFunc(BaseEvenniaTest):
-    def test_clothingfunctions(self):
-        wearer = create_object(clothing.ClothedCharacter, key="Wearer")
-        room = create_object(DefaultRoom, key="room")
-        wearer.location = room
+    def setUp(self):
+        super().setUp()
+        self.room = create_object(DefaultRoom, key="Room")
+        self.wearer = create_object(clothing.ClothedCharacter, key="Wearer")
+        self.wearer.location = self.room
         # Make a test hat
-        test_hat = create_object(clothing.ContribClothing, key="test hat")
-        test_hat.db.clothing_type = "hat"
-        test_hat.location = wearer
+        self.test_hat = create_object(clothing.ContribClothing, key="test hat")
+        self.test_hat.db.clothing_type = "hat"
+        self.test_hat.location = self.wearer
         # Make a test shirt
-        test_shirt = create_object(clothing.ContribClothing, key="test shirt")
-        test_shirt.db.clothing_type = "top"
-        test_shirt.location = wearer
-        # Make a test pants
-        test_pants = create_object(clothing.ContribClothing, key="test pants")
-        test_pants.db.clothing_type = "bottom"
-        test_pants.location = wearer
+        self.test_shirt = create_object(clothing.ContribClothing, key="test shirt")
+        self.test_shirt.db.clothing_type = "top"
+        self.test_shirt.location = self.wearer
+        # Make test pants
+        self.test_pants = create_object(clothing.ContribClothing, key="test pants")
+        self.test_pants.db.clothing_type = "bottom"
+        self.test_pants.location = self.wearer
 
-        test_hat.wear(wearer, "on the head")
-        self.assertEqual(test_hat.db.worn, "on the head")
+    def test_clothingfunctions(self):
+        self.test_hat.wear(self.wearer, "on the head")
+        self.assertEqual(self.test_hat.db.worn, "on the head")
 
-        test_hat.remove(wearer)
-        self.assertEqual(test_hat.db.worn, False)
+        self.test_hat.remove(self.wearer)
+        self.assertFalse(self.test_hat.db.worn)
 
-        test_hat.worn = True
-        test_hat.at_get(wearer)
-        self.assertEqual(test_hat.db.worn, False)
+        self.test_hat.db.worn = True
+        self.test_hat.at_get(self.wearer)
+        self.assertFalse(self.test_hat.db.worn)
 
-        clothes_list = [test_shirt, test_hat, test_pants]
+        self.test_hat.db.covered_by = self.test_shirt
+        can_move = self.test_hat.at_pre_move(self.room)
+        self.assertFalse(can_move)
+
+        clothes_list = [self.test_shirt, self.test_hat, self.test_pants]
         self.assertEqual(
-            clothing.order_clothes_list(clothes_list), [test_hat, test_shirt, test_pants]
+            clothing.order_clothes_list(clothes_list),
+            [self.test_hat, self.test_shirt, self.test_pants],
         )
 
-        test_hat.wear(wearer, True)
-        test_pants.wear(wearer, True)
-        self.assertEqual(clothing.get_worn_clothes(wearer), [test_hat, test_pants])
+        self.test_hat.wear(self.wearer, True)
+        self.test_pants.wear(self.wearer, True)
+        self.assertEqual(clothing.get_worn_clothes(self.wearer), [self.test_hat, self.test_pants])
 
         self.assertEqual(
             clothing.clothing_type_count(clothes_list), {"hat": 1, "top": 1, "bottom": 1}
