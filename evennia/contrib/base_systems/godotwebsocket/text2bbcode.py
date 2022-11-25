@@ -318,8 +318,7 @@ class TextToBBCODEparser(TextToHTMLparser):
 
     def format_styles(self, text):
         """
-        Takes a string with parsed ANSI codes and replaces them with
-        HTML spans and CSS classes.
+        Takes a string with parsed ANSI codes and replaces them with bbcode style tags
 
         Args:
             text (str): The string to process.
