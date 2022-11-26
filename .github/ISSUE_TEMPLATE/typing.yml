@@ -41,7 +41,7 @@ body:
       required: true
   - type: markdown
     value: Evennia type stubs were written using the typing features included with **Python 3.11**.|
-    Please verify that your Python typing analysis tools support these features.
+      Please verify that your Python typing analysis tools support these features.
   - type: checkboxes
     id: version-check
     attributes:
