@@ -32,7 +32,7 @@ body:
       render: Python
     validations:
       required: true
-   - type: textarea
+  - type: textarea
     id: details
     attributes:
       label: Description of Issue
