@@ -9,6 +9,7 @@ See also the [Beginner Tutorial](../Howtos/Beginner-Tutorial/Beginner-Tutorial-O
 :maxdepth: 2
 
 Evennia-Code-Style.md
+Default-Command-Syntax.md
 Version-Control.md
 Debugging.md
 Unit-Testing.md

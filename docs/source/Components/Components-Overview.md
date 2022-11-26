@@ -41,7 +41,6 @@ Batch-Processors.md
 Batch-Code-Processor.md
 Batch-Command-Processor.md
 Inputfuncs.md
-Outputfuncs.md
 ```
 
 
@@ -77,5 +76,5 @@ Webclient.md
 Web-Admin.md
 Webserver.md
 Web-API.md
-Bootstrap-Components-and-Utilities.md
+Web-Bootstrap-Framework.md
 ```

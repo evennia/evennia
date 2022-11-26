@@ -50,7 +50,7 @@ choose to either store things as individual [Attributes](../Components/Attribute
 dictionary `character.db.skills = {"Hunting":34, "Fishing":20, ...}`. A much more fancy solution is
 to look at the Ainneve [Trait
 handler](https://github.com/evennia/ainneve/blob/master/world/traits.py). Finally you could even go
-with a [custom django model](../Concepts/New-Models.md). Which is the better depends on your game and the
+with a [custom django model](../Concepts/Models.md). Which is the better depends on your game and the
 complexity of your system.
 - Make a clear [API](https://en.wikipedia.org/wiki/Application_programming_interface) into your
 rules. That is, make methods/functions that you feed with, say, your Character and which skill you

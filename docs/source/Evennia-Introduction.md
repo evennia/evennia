@@ -29,7 +29,7 @@ We also include a growing list of *optional* [contribs](Contribs/Contribs-Overvi
 
 Using the full power of Python throughout the server offers some distinct advantages. All your coding, from object definitions and custom commands to AI scripts and economic systems is  done in normal Python modules rather than some ad-hoc scripting language. The fact that you script the game in the same high-level language that you code it in allows for very powerful and custom game implementations indeed.
 
-Out of the box, Evennia gives you a 'talker'-type of game; you can walk around, chat, build rooms and objects, do basic roleplaying and administration. The server ships with a default set of player commands that are  similar to the MUX command set. We *do not* aim specifically to be a MUX server, but we had to pick some  default to go with (see [this](Concepts/Soft-Code.md) for more about our original motivations). It's easy to  remove or add commands, or to have the command syntax mimic other systems, like Diku, LP, MOO and so on. Or why not create a new and better command system of your own design.
+Out of the box, Evennia gives you a 'talker'-type of game; you can walk around, chat, build rooms and objects, do basic roleplaying and administration. The server ships with a default set of player commands that are  similar to the MUX command set. We *do not* aim specifically to be a MUX server, but we had to pick some  default to go with (see [this](Coding/Soft-Code.md) for more about our original motivations). It's easy to  remove or add commands, or to have the command syntax mimic other systems, like Diku, LP, MOO and so on. Or why not create a new and better command system of your own design.
 
 ## Can I test it somewhere?
 

@@ -1,11 +1,7 @@
 # Evennia REST API
 
 Evennia makes its database accessible via a REST API found on
-[http://localhost:4001/api](http://localhost:4001/api) if running locally with
-default setup. The API allows you to retrieve, edit and create resources from
-outside the game, for example with your own custom client or game editor.
-
-While you can view and learn about the api in the web browser, it is really
+[http://localhost:4001/api](http://localhost:4001/api) if running locally with default setup. The API allows you to retrieve, edit and create resources from outside the game, for example with your own custom client or game editor.  While you can view and learn about the api in the web browser, it is really
 meant to be accessed in code, by other programs.
 
 The API is using [Django Rest Framework][drf]. This automates the process
@@ -55,16 +51,10 @@ To list a specific type of object:
     "previous": null,
     "results" : [{"db_key": "A rusty longsword", "id": 57, "db_location": 213, ...}]}
 
-In the above example, it now displays the objects inside the "results" array,
-while it has a "count" value for the number of total objects, and "next" and
-"previous" links for the next and previous page, if any.  This is called
-[pagination][pagination], and the link displays "limit" and "offset" as query
-parameters that can be added to the url to control the output.
+In the above example, it now displays the objects inside the "results" array, while it has a "count" value for the number of total objects, and "next" and "previous" links for the next and previous page, if any.  This is called [pagination][pagination], and the link displays "limit" and "offset" as query parameters that can be added to the url to control the output.
 
 
-Other query parameters can be defined as [filters][filters] which allow you to
-further narrow the results. For example, to only get accounts with developer
-permissions:
+Other query parameters can be defined as [filters][filters] which allow you to further narrow the results. For example, to only get accounts with developer permissions:
 
     >>> response = requests.get("https://www.mygame.com/api/accounts/?permission=developer",
                                 auth=("MyUserName", "password123"))
@@ -83,11 +73,7 @@ Now suppose that you want to use the API to create an [Object](./Objects.md):
     {"db_key": "A shiny sword", "id": 214, "db_location": None, ...}
 
 
-Here we made a HTTP POST request to the `/api/objects` endpoint with the `db_key`
-we wanted. We got back info for the newly created object. You can now make
-another request with PUT (replace everything) or PATCH (replace only what you
-provide). By providing the id to the endpoint (`/api/objects/214`),
-we make sure to update the right sword:
+Here we made a HTTP POST request to the `/api/objects` endpoint with the `db_key` we wanted. We got back info for the newly created object. You can now make another request with PUT (replace everything) or PATCH (replace only what you provide). By providing the id to the endpoint (`/api/objects/214`), we make sure to update the right sword:
 
     >>> data = {"db_key": "An even SHINIER sword", "db_location": 50}
     >>> response = requests.put("https://www.mygame.com/api/objects/214",
