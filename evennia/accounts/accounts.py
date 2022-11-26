@@ -1060,7 +1060,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 # normal message
                 message = f"{sender_string}: {message}"
 
-        if not kwargs.get("no_prefix") or not kwargs.get("emit"):
+        if not kwargs.get("no_prefix") and not kwargs.get("emit"):
             message = channel.channel_prefix() + message
 
         return message
