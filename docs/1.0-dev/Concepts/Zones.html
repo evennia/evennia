@@ -107,6 +107,7 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="zones">
 <h1>Zones<a class="headerlink" href="#zones" title="Permalink to this headline">¶</a></h1>
+<p>Evennia recommends using <a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tags</span></a> to create zones and other groupings.</p>
 <p>Say you create a room named <em>Meadow</em> in your nice big forest MUD.  That’s all nice and dandy, but
 what if you, in the other end of that forest want another <em>Meadow</em>? As a game creator, this can
 cause all sorts of confusion. For example, teleporting to <em>Meadow</em> will now give you a warning that
@@ -119,21 +120,16 @@ disturbance echoes through all magical-forest rooms. It would then be convenient
 simply find all rooms that are “magical” so you could send messages to them.</p>
 <section id="zones-in-evennia">
 <h2>Zones in Evennia<a class="headerlink" href="#zones-in-evennia" title="Permalink to this headline">¶</a></h2>
-<p><em>Zones</em> try to separate rooms by global location. In our example we would separate the forest into
-two parts - the magical and the non-magical part. Each have a <em>Meadow</em> and rooms belonging to each
-part should be easy to retrieve.</p>
+<p><em>Zones</em> try to separate rooms by global location. In our example we would separate the forest into two parts - the magical and the non-magical part. Each have a <em>Meadow</em> and rooms belonging to each part should be easy to retrieve.</p>
 <p>Many MUD codebases hardcode zones as part of the engine and database.  Evennia does no such
-distinction due to the fact that rooms themselves are meant to be customized to any level anyway.
-Below is a suggestion for how to implement zones in Evennia.</p>
-<p>All objects in Evennia can hold any number of <a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tags</span></a>. Tags are short labels that you attach to
-objects. They make it very easy to retrieve groups of objects. An object can have any number of
-different tags. So let’s attach the relevant tag to our forest:</p>
+distinction.</p>
+<p>All objects in Evennia can hold any number of <a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tags</span></a>. Tags are short labels that you attach to objects. They make it very easy to retrieve groups of objects. An object can have any number of different tags. So let’s attach the relevant tag to our forest:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">forestobj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;magicalforest&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;zone&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You could add this manually, or automatically during creation somehow (you’d need to modify your
-&#64;dig command for this, most likely). You can also use the default <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> command during building:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @tag forestobj = magicalforest : zone
+<code class="docutils literal notranslate"><span class="pre">dig</span></code> command for this, most likely). You can also use the default <code class="docutils literal notranslate"><span class="pre">tag</span></code> command during building:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> tag forestobj = magicalforest : zone
 </pre></div>
 </div>
 <p>Henceforth you can then easily retrieve only objects with a given tag:</p>
@@ -144,12 +140,8 @@ different tags. So let’s attach the relevant tag to our forest:</p>
 </section>
 <section id="using-typeclasses-and-inheritance-for-zoning">
 <h2>Using typeclasses and inheritance for zoning<a class="headerlink" href="#using-typeclasses-and-inheritance-for-zoning" title="Permalink to this headline">¶</a></h2>
-<p>The tagging or aliasing systems above don’t instill any sort of functional difference between a
-magical forest room and a normal one - they are just arbitrary ways to mark objects for quick
-retrieval later. Any functional differences must be expressed using <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>.</p>
-<p>Of course, an alternative way to implement zones themselves is to have all rooms/objects in a zone
-inherit from a given typeclass parent - and then limit your searches to objects inheriting from that
-given parent. The effect would be similar but you’d need to expand the search functionality to
+<p>The tagging or aliasing systems above don’t instill any sort of functional difference between a magical forest room and a normal one - they are just arbitrary ways to mark objects for quick retrieval later. Any functional differences must be expressed using <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>.</p>
+<p>Of course, an alternative way to implement zones themselves is to have all rooms/objects in a zone inherit from a given typeclass parent - and then limit your searches to objects inheriting from that given parent. The effect would be similar but you’d need to expand the search functionality to
 properly search the inheritance tree.</p>
 </section>
 </section>

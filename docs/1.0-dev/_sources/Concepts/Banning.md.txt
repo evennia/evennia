@@ -5,9 +5,9 @@ Whether due to abuse, blatant breaking of your rules, or some other reason, you 
 no other recourse but to kick out a particularly troublesome player. The default command set has
 admin tools to handle this, primarily `ban`, `unban`, and `boot`. 
 
-## Creating a ban
-
 Say we have a troublesome player "YouSuck" - this is a person that refuses common courtesy - an abusive and spammy account that is clearly created by some bored internet hooligan only to cause grief. You have tried to be nice. Now you just want this troll gone. 
+
+## Creating a ban
 
 ### Name ban
 
@@ -50,16 +50,6 @@ You should combine the IP ban with a name-ban too of course, so the account YouS
 
 Be careful with too general IP bans however (more asterisks above). If you are unlucky you could be blocking out innocent players who just happen to connect from the same subnet as the offender.
 
-## Booting
-
-YouSuck is not really noticing all this banning yet though - and won't until having logged out and trying to log back in again. Let's help the troll along.
-
-     boot YouSuck
-
-Good riddance. You can give a reason for booting too (to be echoed to the player before getting kicked out).
-
-     boot YouSuck:Go troll somewhere else.
-
 ### Lifting a ban
 
 Use the `unban` (or `ban`) command without any arguments and you will see a list of all currently active bans:
@@ -74,6 +64,17 @@ Use the `id` from this list to find out which ban to lift.
      unban 2
       
     Cleared ban 2: 237.333.0.*
+
+
+## Booting
+
+YouSuck is not really noticing all this banning yet though - and won't until having logged out and trying to log back in again. Let's help the troll along.
+
+     boot YouSuck
+
+Good riddance. You can give a reason for booting too (to be echoed to the player before getting kicked out).
+
+     boot YouSuck:Go troll somewhere else.
 
 ## Summary of abuse-handling tools
 

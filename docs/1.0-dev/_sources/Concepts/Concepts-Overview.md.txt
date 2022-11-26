@@ -27,7 +27,7 @@ Text-Encodings.md
 ```{toctree}
 :maxdepth: 2
 
-Multisession-modes.md
+Connection-Styles.md
 Guests.md
 Banning.md
 ```
