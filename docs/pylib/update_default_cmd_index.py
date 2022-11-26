@@ -19,7 +19,7 @@ PAGE = """
 # Default Commands
 
 The full set of default Evennia commands currently contains {ncommands} commands in {nfiles} source
-files. Our policy for adding default commands is outlined [here](Using-MUX-as-a-Standard). The
+files. Our policy for adding default commands is outlined [here](Default-Command-Syntax). The
 [Commands](Commands) documentation explains how Commands work as well as how to make new or customize
 existing ones.
 

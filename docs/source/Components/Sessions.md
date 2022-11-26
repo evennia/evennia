@@ -186,7 +186,7 @@ server reboot (assuming the Portal is not stopped at the same time, obviously).
 Both the Portal and Server each have a *sessionhandler* to manage the connections. These handlers
 are global entities contain all methods for relaying data across the AMP bridge. All types of
 Sessions hold a reference to their respective Sessionhandler (the property is called
-`sessionhandler`) so they can relay data. See [protocols](../Concepts/Custom-Protocols.md) for more info
+`sessionhandler`) so they can relay data. See [protocols](../Concepts/Protocols.md) for more info
 on building new protocols.
 
 To get all Sessions in the game (i.e. all currently connected clients), you access the server-side

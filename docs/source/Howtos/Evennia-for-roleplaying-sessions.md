@@ -28,26 +28,19 @@ defaults for our particular use-case. Below we will flesh out these components f
 
 We will assume you start from scratch. You need Evennia installed, as per the [Setup Quickstart](../Setup/Installation.md) 
 instructions. Initialize a new game directory with `evennia init
-<gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the
-default database and keep all other settings to default for now. Familiarize yourself with the
-`mygame` folder before continuing. You might want to browse the 
-[First Steps Coding](Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Overview.md) tutorial, just to see roughly where things are modified.
+`<gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the default database and keep all other settings to default for now. Familiarize yourself with the
+`mygame` folder before continuing. You might want to browse the  [Beginner Tutorial](Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Overview.md) tutorial, just to see roughly where things are modified.
 
 ## The Game Master role
 
 In brief: 
 
-* Simplest way: Being an admin, just give one account `Admins` permission using the standard `@perm`
-command.
-* Better but more work: Make a custom command to set/unset the above, while tweaking the Character
-to show your renewed GM status to the other accounts.
+* Simplest way: Being an admin, just give one account `Admins` permission using the standard `perm` command.
+* Better but more work: Make a custom command to set/unset the above, while tweaking the Character to show your renewed GM status to the other accounts.
 
 ### The permission hierarchy
 
-Evennia has the following [permission hierarchy](../Concepts/Building-Permissions.md#assigning-permissions) out of
-the box: *Players, Helpers, Builders, Admins* and finally *Developers*. We could change these but
-then we'd need to update our Default commands to use the changes. We want to keep this simple, so
-instead we map our different roles on top of this permission ladder.
+Evennia has the following [permission hierarchy](../Components/Permissions.md) out of the box: *Players, Helpers, Builders, Admins* and finally *Developers*. We could change these but then we'd need to update our Default commands to use the changes. We want to keep this simple, so instead we map our different roles on top of this permission ladder.
 
 1. `Players` is the permission set on normal players. This is the default for anyone creating a new
 account on the server.
@@ -60,8 +53,7 @@ everyone.
 5. `Developers`-level permission are the server administrators, the ones with the ability to
 restart/shutdown the server as well as changing the permission levels.
 
-> The [superuser](../Concepts/Building-Permissions.md#the-super-user) is not part of the hierarchy and actually
-completely bypasses it. We'll assume server admin(s) will "just" be Developers.
+> The _superuser_ is not part of the hierarchy and actually completely bypasses it. We'll assume server admin(s) will "just" be Developers.
 
 ### How to grant permissions
 
@@ -69,15 +61,15 @@ Only `Developers` can (by default) change permission level. Only they have acces
 command:
 
 ```
-> @perm Yvonne
+> perm Yvonne
 Permissions on Yvonne: accounts
 
-> @perm Yvonne = Admins
-> @perm Yvonne
+> perm Yvonne = Admins
+> perm Yvonne
 Permissions on Yvonne: accounts, admins
 
-> @perm/del Yvonne = Admins
-> @perm Yvonne
+> perm/del Yvonne = Admins
+> perm Yvonne
 Permissions on Yvonne: accounts
 ```
 
@@ -88,7 +80,7 @@ and singular, so "Admins" gives the same powers as "Admin".
 
 ### Optional: Making a GM-granting command
 
-Use of `@perm` works out of the box, but it's really the bare minimum. Would it not be nice if other
+Use of `perm` works out of the box, but it's really the bare minimum. Would it not be nice if other
 accounts could tell at a glance who the GM is? Also, we shouldn't really need to remember that the
 permission level is called "Admins". It would be easier if we could just do `@gm <account>` and
 `@notgm <account>` and at the same time change something make the new GM status apparent.
@@ -221,16 +213,12 @@ class CmdMakeGM(default_cmds.MuxCommand):
 ```
 
 All the command does is to locate the account target and assign it the `Admins` permission if we
-used `@gm` or revoke it if using the `@ungm` alias. We also set/unset the `is_gm` Attribute that is
+used `gm` or revoke it if using the `ungm` alias. We also set/unset the `is_gm` Attribute that is
 expected by our new `Character.get_display_name` method from earlier.
 
-> We could have made this into two separate commands or opted for a syntax like `@gm/revoke
-<accountname>`. Instead we examine how this command was called (stored in `self.cmdstring`) in order
-to act accordingly. Either way works, practicality and coding style decides which to go with.
+> We could have made this into two separate commands or opted for a syntax like `gm/revoke <accountname>`. Instead we examine how this command was called (stored in `self.cmdstring`) in order to act accordingly. Either way works, practicality and coding style decides which to go with.
 
-To actually make this command available (only to Developers, due to the lock on it), we add it to
-the default Account command set. Open the file `mygame/commands/default_cmdsets.py` and find the
-`AccountCmdSet` class:
+To actually make this command available (only to Developers, due to the lock on it), we add it to the default Account command set. Open the file `mygame/commands/default_cmdsets.py` and find the `AccountCmdSet` class:
 
 ```python
 # mygame/commands/default_cmdsets.py
@@ -246,8 +234,8 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
 
 ```
 
-Finally, issue the `@reload` command to update the server to your changes. Developer-level players
-(or the superuser) should now have the `@gm/@ungm` command available.
+Finally, issue the `reload` command to update the server to your changes. Developer-level players
+(or the superuser) should now have the `gm/ungm` command available.
 
 ## Character sheet
 
@@ -260,18 +248,13 @@ In brief:
 
 ### Building a Character sheet
 
-There are many ways to build a Character sheet in text, from manually pasting strings together to
-more automated ways. Exactly what is the best/easiest way depends on the sheet one tries to create.
-We will here show two examples using the *EvTable* and *EvForm* utilities.Later we will create
-Commands to edit and display the output from those utilities.
+There are many ways to build a Character sheet in text, from manually pasting strings together to more automated ways. Exactly what is the best/easiest way depends on the sheet one tries to create. We will here show two examples using the *EvTable* and *EvForm* utilities.Later we will create Commands to edit and display the output from those utilities.
 
-> Note that due to the limitations of the wiki, no color is used in any of the examples. See 
-> [the text tag documentation](../Concepts/Inline-Tags-and-Functions.md) for how to add color to the tables and forms.
+> Note that these docs don't show the color.  see [the text tag documentation](../Concepts/Tags-Parsed-By-Evennia.md) for how to add color to the tables and forms.
 
 #### Making a sheet with EvTable
 
-[EvTable](github:evennia.utils.evtable) is a text-table generator. It helps with displaying text in
-ordered rows and columns. This is an example of using it in code:
+[EvTable](../Components/EvTable.md) is a text-table generator. It helps with displaying text in ordered rows and columns. This is an example of using it in code:
 
 ````python
 # this can be tried out in a Python shell like iPython
@@ -288,13 +271,7 @@ table = evtable.EvTable("Attr", "Value",
                         ], align='r', border="incols")
 ````
 
-Above, we create a two-column table by supplying the two columns directly. We also tell the table to
-be right-aligned and to use the "incols" border type (borders drawns only in between columns). The
-`EvTable` class takes a lot of arguments for customizing its look, you can see [some of the possible
-keyword arguments here](github:evennia.utils.evtable#evtable__init__). Once you have the `table` you
-could also retroactively add new columns and rows to it with `table.add_row()` and
-`table.add_column()`: if necessary the table will expand with empty rows/columns to always remain
-rectangular.
+Above, we create a two-column table by supplying the two columns directly. We also tell the table to be right-aligned and to use the "incols" border type (borders drawns only in between columns). The `EvTable` class takes a lot of arguments for customizing its look, you can see [some of the possible keyword arguments here](github:evennia.utils.evtable#evtable__init__). Once you have the `table` you could also retroactively add new columns and rows to it with `table.add_row()` and `table.add_column()`: if necessary the table will expand with empty rows/columns to always remain rectangular.
 
 The result from printing the above table will be
 
@@ -319,10 +296,7 @@ advanced layouts we'll look into EvForm next.
 
 #### Making a sheet with EvForm
 
-[EvForm](github:evennia.utils.evform) allows the creation of a two-dimensional "graphic" made by
-text characters. On this surface, one marks and tags rectangular regions ("cells") to be filled with
-content. This content can be either normal strings or `EvTable` instances (see the previous section,
-one such instance would be the `table` variable in that example).
+[EvForm](../Components/EvForm.md) allows the creation of a two-dimensional "graphic" made by text characters. On this surface, one marks and tags rectangular regions ("cells") to be filled with content. This content can be either normal strings or `EvTable` instances (see the previous section, one such instance would be the `table` variable in that example).
 
 In the case of a Character sheet, these cells would be comparable to a line or box where you could
 enter the name of your character or their strength score. EvMenu also easily allows to update the
@@ -368,13 +342,9 @@ FORM = """
 The `#coding` statement (which must be put on the very first line to work) tells Python to use the
 utf-8 encoding for the file. Using the `FORMCHAR` and `TABLECHAR` we define what single-character we
 want to use to "mark" the regions of the character sheet holding cells and tables respectively.
-Within each block (which must be separated from one another by at least one non-marking character)
-we embed identifiers 1-4 to identify each block. The identifier could be any single character except
-for the `FORMCHAR` and `TABLECHAR`
+Within each block (which must be separated from one another by at least one non-marking character) we embed identifiers 1-4 to identify each block. The identifier could be any single character except for the `FORMCHAR` and `TABLECHAR`
 
-> You can still use `FORMCHAR` and `TABLECHAR` elsewhere in your sheet, but not in a way that it
-would identify a cell/table. The smallest identifiable cell/table area is 3 characters wide
-including the identifier (for example `x2x`).
+> You can still use `FORMCHAR` and `TABLECHAR` elsewhere in your sheet, but not in a way that it would identify a cell/table. The smallest identifiable cell/table area is 3 characters wide including the identifier (for example `x2x`).
 
 Now we will map content to this form.
 
@@ -402,10 +372,7 @@ form.map(cells={"1":NAME, "3": ADVANTAGES, "4": DISADVANTAGES},
 We create some RP-sounding input and re-use the `table` variable from the previous `EvTable`
 example.
 
-> Note, that if you didn't want to create the form in a separate module you *could* also load it
-directly into the `EvForm` call like this: `EvForm(form={"FORMCHAR":"x", "TABLECHAR":"c", "FORM":
-formstring})` where `FORM` specifies the form as a string in the same way as listed in the module
-above. Note however that the very first line of the `FORM` string is ignored, so start with a `\n`.
+> Note, that if you didn't want to create the form in a separate module you *could* also load it directly into the `EvForm` call like this: `EvForm(form={"FORMCHAR":"x", "TABLECHAR":"c", "FORM": formstring})` where `FORM` specifies the form as a string in the same way as listed in the module above. Note however that the very first line of the `FORM` string is ignored, so start with a `\n`.
 
 We then map those to the cells of the form:
 
@@ -432,15 +399,11 @@ print(form)
 +--------------------------------------+
 ````
 
-As seen, the texts and tables have been slotted into the text areas and line breaks have been added
-where needed. We chose to just enter the Advantages/Disadvantages as plain strings here, meaning
-long names ended up split between rows. If we wanted more control over the display we could have
-inserted `\n` line breaks after each line or used a borderless `EvTable` to display those as well.
+As seen, the texts and tables have been slotted into the text areas and line breaks have been added where needed. We chose to just enter the Advantages/Disadvantages as plain strings here, meaning long names ended up split between rows. If we wanted more control over the display we could have inserted `\n` line breaks after each line or used a borderless `EvTable` to display those as well. 
 
 ### Tie a Character sheet to a Character
 
-We will assume we go with the `EvForm` example above. We now need to attach this to a Character so
-it can be modified. For this we will modify our `Character` class a little more:
+We will assume we go with the `EvForm` example above. We now need to attach this to a Character so it can be modified. For this we will modify our `Character` class a little more:
 
 ```python
 # mygame/typeclasses/character.py
@@ -486,13 +449,13 @@ class Character(DefaultCharacter):
 
 ```
 
-Use `@reload` to make this change available to all *newly created* Characters. *Already existing*
+Use `reload` to make this change available to all *newly created* Characters. *Already existing*
 Characters will *not* have the charsheet defined, since `at_object_creation` is only called once.
 The easiest to force an existing Character to re-fire its `at_object_creation` is to use the
-`@typeclass` command in-game:
+`typeclass` command in-game:
 
 ```
-@typeclass/force <Character Name>
+typeclass/force <Character Name>
 ```
 
 ### Command for Account to change Character sheet
@@ -574,16 +537,13 @@ class CmdSheet(MuxCommand):
 
 ```
 
-Most of this command is error-checking to make sure the right type of data was input. Note how the
-`sheet_locked` Attribute is checked and will return if not set.
+Most of this command is error-checking to make sure the right type of data was input. Note how the `sheet_locked` Attribute is checked and will return if not set.
 
-This command you import into `mygame/commands/default_cmdsets.py` and add to the `CharacterCmdSet`,
-in the same way the `@gm` command was added to the `AccountCmdSet` earlier.
+This command you import into `mygame/commands/default_cmdsets.py` and add to the `CharacterCmdSet`, in the same way the `@gm` command was added to the `AccountCmdSet` earlier.
 
 ### Commands for GM to change Character sheet
 
-Game masters use basically the same input as Players do to edit a character sheet, except they can
-do it on other players than themselves. They are also not stopped by any `sheet_locked` flags.
+Game masters use basically the same input as Players do to edit a character sheet, except they can do it on other players than themselves. They are also not stopped by any `sheet_locked` flags.
 
 ```python
 # continuing in mygame/commands/command.py
@@ -661,18 +621,13 @@ class CmdGMsheet(MuxCommand):
             caller.msg(character.db.charsheet)
 ```
 
-The `@gmsheet` command takes an additional argument to specify which Character's character sheet to
-edit. It also takes `/lock` and `/unlock` switches to block the Player from tweaking their sheet.
+The `gmsheet` command takes an additional argument to specify which Character's character sheet to edit. It also takes `/lock` and `/unlock` switches to block the Player from tweaking their sheet.
 
-Before this can be used, it should be added to the default `CharacterCmdSet` in the same way as the
-normal `@sheet`. Due to the lock set on it, this command will only be available to `Admins` (i.e.
-GMs) or higher permission levels.
+Before this can be used, it should be added to the default `CharacterCmdSet` in the same way as the normal `sheet`. Due to the lock set on it, this command will only be available to `Admins` (i.e. GMs) or higher permission levels.
 
 ## Dice roller
 
-Evennia's *contrib* folder already comes with a full dice roller. To add it to the game, simply
-import `contrib.dice.CmdDice` into `mygame/commands/default_cmdsets.py` and add `CmdDice` to the
-`CharacterCmdset` as done with other commands in this tutorial. After a `@reload` you will be able
+Evennia's *contrib* folder already comes with a full dice roller. To add it to the game, simply import `contrib.dice.CmdDice` into `mygame/commands/default_cmdsets.py` and add `CmdDice` to the `CharacterCmdset` as done with other commands in this tutorial. After a `@reload` you will be able
 to roll dice using normal RPG-style format:
 
 ```
@@ -680,40 +635,30 @@ roll 2d6 + 3
 7
 ```
 
-Use `help dice` to see what syntax is supported or look at `evennia/contrib/dice.py` to see how it's
-implemented.
+Use `help dice` to see what syntax is supported or look at `evennia/contrib/dice.py` to see how it's implemented.
 
 ## Rooms
 
-Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all
-needed building commands available. A fuller go-through is found in the [Building tutorial](Beginner-Tutorial/Part1/Beginner-Tutorial-Building-Quickstart.md).
+Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all needed building commands available. A fuller go-through is found in the [Building tutorial](Beginner-Tutorial/Part1/Beginner-Tutorial-Building-Quickstart.md).
 Here are some useful highlights:
 
-* `@dig roomname;alias = exit_there;alias, exit_back;alias` - this is the basic command for digging
-a new room. You can specify any exit-names and just enter the name of that exit to go there.
-* `@tunnel direction = roomname` - this is a specialized command that only accepts directions in the
-cardinal directions (n,ne,e,se,s,sw,w,nw) as well as in/out and up/down. It also automatically
-builds "matching" exits back in the opposite direction.
-* `@create/drop objectname` - this creates and drops a new simple object in the current location.
-* `@desc obj` - change the look-description of the object.
-* `@tel object = location` - teleport an object to a named location.
-* `@search objectname` - locate an object in the database.
+* `dig roomname;alias = exit_there;alias, exit_back;alias` - this is the basic command for digging a new room. You can specify any exit-names and just enter the name of that exit to go there.
+* `tunnel direction = roomname` - this is a specialized command that only accepts directions in the cardinal directions (n,ne,e,se,s,sw,w,nw) as well as in/out and up/down. It also automatically builds "matching" exits back in the opposite direction.
+* `create/drop objectname` - this creates and drops a new simple object in the current location.
+* `desc obj` - change the look-description of the object.
+* `tel object = location` - teleport an object to a named location.
+* `search objectname` - locate an object in the database.
 
-> TODO: Describe how to add a logging room, that logs says and poses to a log file that people can
-access after the fact.
+> TODO: Describe how to add a logging room, that logs says and poses to a log file that people can access after the fact.
 
 ## Channels
 
-Evennia comes with [Channels](../Components/Channels.md) in-built and they are described fully in the
-documentation. For brevity, here are the relevant commands for normal use:
+Evennia comes with [Channels](../Components/Channels.md) in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:
 
-* `@ccreate new_channel;alias;alias = short description` - Creates a new channel.
-* `addcom channel` - join an existing channel. Use `addcom alias = channel` to add a new alias you
-can use to talk to the channel, as many as desired.
-* `delcom alias or channel` - remove an alias from a channel or, if the real channel name is given,
-unsubscribe completely.
-* `@channels` lists all available channels, including your subscriptions and any aliases you have
-set up for them.
+* `channel/create = new_channel;alias;alias = short description` - Creates a new channel.
+* `channel/sub channel` - subscribe to a channel.
+* `channel/unsub channel` - unsubscribel from a channel. 
+* `channels` lists all available channels, including your subscriptions and any aliases you have set up for them.
 
 You can read channel history: if you for example are chatting on the `public` channel you can do
 `public/history` to see the 20 last posts to that channel or `public/history 32` to view twenty
@@ -721,7 +666,7 @@ posts backwards, starting with the 32nd from the end.
 
 ## PMs
 
-To send PMs to one another, players can use the `@page` (or `tell`) command:
+To send PMs to one another, players can use the `page` (or `tell`) command:
 
 ```
 page recipient = message

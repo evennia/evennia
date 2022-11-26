@@ -13,15 +13,15 @@ The effect of this is that you can fully `reload` the Server and have players st
 ```
 Internet│  ┌──────────┐ ┌─┐           ┌─┐ ┌─────────┐
         │  │Portal    │ │S│   ┌───┐   │S│ │Server   │
-    P   │  │          ├─┤e├───┤AMP├───┤e├─┤         │
-    l ──┼──┤ Telnet   │ │s│   │   │   │s│ │         │
-    a   │  │ Webclient├─┤s├───┤   ├───┤s├─┤ Game    │
-    y ──┼──┤ SSH      │ │i│   │   │   │i│ │ Database│
-    e   │  │ ...      ├─┤o├───┤   ├───┤o├─┤         │
-    r ──┼──┤          │ │n│   │   │   │n│ │         │
+    P   │  │          │ │e│   │AMP│   │e│ │         │
+    l ──┼──┤ Telnet   ├─┤s├───┤   ├───┤s├─┤         │
+    a   │  │ Webclient│ │s│   │   │   │s│ │ Game    │
+    y ──┼──┤ SSH      ├─┤i├───┤   ├───┤i├─┤ Database│
+    e   │  │ ...      │ │o│   │   │   │o│ │         │
+    r ──┼──┤          ├─┤n├───┤   ├───┤n├─┤         │
     s   │  │          │ │s│   └───┘   │s│ │         │
         │  └──────────┘ └─┘           └─┘ └─────────┘
-        │Evennia 
+        │Evennia
 ```
 
 The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection. This allows the two programs to communicate seamlessly on the same machine.

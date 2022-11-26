@@ -7,12 +7,19 @@ This documentation cover more over-arching concepts of Evennia, often involving 
 ```{toctree}
 :maxdepth: 2
 
-Async-Process.md
-Soft-Code.md
-Using-MUX-as-a-Standard.md
 Messagepath.md
 OOB.md
+Async-Process.md
+```
 
+## Text processing
+```{toctree}
+:maxdepth: 2
+
+Tags-Parsed-By-Evennia.md
+Change-Message-Per-Receiver.md
+Internationalization.md
+Text-Encodings.md
 ```
 
 ## Access 
@@ -21,10 +28,8 @@ OOB.md
 :maxdepth: 2
 
 Multisession-modes.md
-Building-Permissions.md
-Guest-Logins.md
+Guests.md
 Banning.md
-
 ```
 
 ## Extending the Server 
@@ -32,31 +37,7 @@ Banning.md
 ```{toctree}
 :maxdepth: 2
 
-Custom-Protocols.md
-Bootstrap-&-Evennia.md
-New-Models.md
+Protocols.md
+Models.md
 Zones.md
-
 ```
-
-## Text processing
-```{toctree}
-:maxdepth: 2
-
-Internationalization.md
-Text-Encodings.md
-Inline-Tags-and-Functions.md
-Change-Messages-Per-Receiver.md
-Clickable-Links.md
-Colors.md
-
-```
-
-
-## Web features
-```{toctree}
-:maxdepth: 2
-
-Web-Features.md
-```
-
