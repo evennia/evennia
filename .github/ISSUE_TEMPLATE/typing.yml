@@ -39,12 +39,13 @@ body:
       description: Describe the issue with the typing.  Include any error messages from analysis software (e.g. type checker) if applicable.
     validations:
       required: true
-  - type: markdown
-    value: Evennia type stubs were written using the typing features included with **Python 3.11**.|
-      Please verify that your Python typing analysis tools support these features.
   - type: checkboxes
     id: version-check
     attributes:
-      label: I have verified that my environment supports Python 3.11's typing features.
+      label: Version Check
+      description: Evennia type stubs were written using the typing features included with **Python 3.11**.|
+        Please verify that your typing software supports these features.
+      options:
+        - label: I have verified that my environment supports Python 3.11's typing features.
     validations:
       required: true
