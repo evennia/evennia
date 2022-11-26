@@ -32,7 +32,6 @@ Evennia's Command system handle everything sent to the server by the user.
 ```{toctree} 
 :maxdepth: 2
 
-Command-System.md
 Commands.md
 Command-Sets.md
 Default-Commands.md
