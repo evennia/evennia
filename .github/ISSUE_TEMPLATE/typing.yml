@@ -1,0 +1,50 @@
+name: Typing
+description: Report an issue with Evennia's inline typing and/or type stubs.
+assignees:
+  - dvoraen
+title: "[Typing] "
+body:
+  - type: dropdown
+    id: typing-issue
+    attributes:
+      label: Typing Issue
+      description: What does this issue concern?
+      options:
+        - Variable, parameter or return type
+        - TypeAlias and/or Literal
+        - Incomplete typing or stub
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: file-path
+    attributes:
+      label: Affected File
+      description: Which file contains the issue?
+      placeholder: ex. typing/evennia/utils/utils.pyi
+    validations:
+      required: true
+  - type: textarea
+    id: affected-code
+    attributes:
+      label: Code Containing Issue
+      description: Copy and paste the code with the incorrect typing here.  It will be treated as Python code upon submitting the issue.
+      render: Python
+    validations:
+      required: true
+   - type: textarea
+    id: details
+    attributes:
+      label: Description of Issue
+      description: Describe the issue with the typing.  Include any error messages from analysis software (e.g. type checker) if applicable.
+    validations:
+      required: true
+  - type: markdown
+    value: Evennia type stubs were written using the typing features included with **Python 3.11**.|
+    Please verify that your Python typing analysis tools support these features.
+  - type: checkboxes
+    id: version-check
+    attributes:
+      label: I have verified that my environment supports Python 3.11's typing features.
+    validations:
+      required: true
