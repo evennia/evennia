@@ -29,7 +29,7 @@ cleanup and exit messages to the user must be handled by this function.
 It has no other mechanical function.
  - `persistent` (default `False`): if set to `True`, the editor will survive a reboot.
 
-## Example of usage
+## Working with EvEditor
 
 This is an example command for setting a specific Attribute using the editor.
 
@@ -65,7 +65,7 @@ class CmdSetTestAttr(Command):
                           key=key)
 ```
 
-## Persistent editor
+### Persistent editor
 
 If you set the `persistent` keyword to `True` when creating the editor, it will remain open even
 when reloading the game.  In order to be persistent, an editor needs to have its callback functions
@@ -107,7 +107,7 @@ class CmdSetTestAttr(Command):
                           key=key, persistent=True)
 ```
 
-## Line editor usage
+### Line editor usage
 
 The editor mimics the `VIM` editor as best as possible. The below is an excerpt of the return from
 the in-editor help command (`:h`).
@@ -154,28 +154,19 @@ the in-editor help command (`:h`).
     <txt> - longer string, usually not needed to be enclosed in quotes.
 ```
 
-## The EvEditor to edit code
+### The EvEditor to edit code
 
-The `EvEditor` is also used to edit some Python code in Evennia.  The `@py` command supports an
-`/edit` switch that will open the EvEditor in code mode.  This mode isn't significantly different
-from the standard one, except it handles automatic indentation of blocks and a few options to
-control this behavior.
+The `EvEditor` is also used to edit some Python code in Evennia.  The `py` command supports an `/edit` switch that will open the EvEditor in code mode.  This mode isn't significantly different from the standard one, except it handles automatic indentation of blocks and a few options to control this behavior.
 
 - `:<` to remove a level of indentation for the future lines.
 - `:+` to add a level of indentation for the future lines.
 - `:=` to disable automatic indentation altogether.
 
-Automatic indentation is there to make code editing more simple.  Python needs correct indentation,
-not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The
-EvEditor will try to guess the next level of indentation.  If you type a block "if", for instance,
-the EvEditor will propose you an additional level of indentation at the next line.  This feature
-cannot be perfect, however, and sometimes, you will have to use the above options to handle
-indentation.
+Automatic indentation is there to make code editing more simple.  Python needs correct indentation, not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The EvEditor will try to guess the next level of indentation.  If you type a block "if", for instance, the EvEditor will propose you an additional level of indentation at the next line.  This feature cannot be perfect, however, and sometimes, you will have to use the above options to handle indentation.
 
 `:=` can be used to turn automatic indentation off completely.  This can be very useful when trying
 to paste several lines of code that are already correctly indented, for instance.
 
-To see the EvEditor in code mode, you can use the `@py/edit` command.  Type in your code (on one or
-several lines).  You can then use the `:w` option (save without quitting) and the code you have
+To see the EvEditor in code mode, you can use the `@py/edit` command.  Type in your code (on one or several lines).  You can then use the `:w` option (save without quitting) and the code you have
 typed will be executed.  The `:!` will do the same thing.  Executing code while not closing the
 editor can be useful if you want to test the code you have typed but add new lines after your test.

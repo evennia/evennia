@@ -2,15 +2,15 @@
 
 These are the 'building blocks' out of which Evennia is built. This documentation is complementary to, and often goes deeper than, the doc-strings of each component in the [API](../Evennia-API.md).
 
-## Basic entites
+## Base components
 
 These are base pieces used to make an Evennia game. Most are long-lived and are persisted in the database.
 
 ```{toctree} 
 :maxdepth: 2
-
-Typeclasses.md
+Portal-And-Server.md
 Sessions.md
+Typeclasses.md
 Accounts.md
 Objects.md
 Scripts.md
@@ -22,7 +22,7 @@ Tags.md
 Prototypes.md
 Help-System.md
 Permissions.md
-Portal-And-Server.md
+Locks.md
 ```
 
 ## Commands
@@ -35,10 +35,7 @@ Evennia's Command system handle everything sent to the server by the user.
 Commands.md
 Command-Sets.md
 Default-Commands.md
-Connection-Screen.md
 Batch-Processors.md
-Batch-Code-Processor.md
-Batch-Command-Processor.md
 Inputfuncs.md
 ```
 
@@ -59,7 +56,6 @@ EvTable.md
 FuncParser.md
 MonitorHandler.md
 TickerHandler.md
-Locks.md
 Signals.md
 ```
 

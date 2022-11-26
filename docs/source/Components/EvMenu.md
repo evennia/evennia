@@ -1,44 +1,27 @@
 # EvMenu
 
-EvMenu is used for generate branching multi-choice menus. Each menu 'node' can
-accepts specific options as input or free-form input. Depending what the player
-chooses, they are forwarded to different nodes in the menu.
-
-## Introduction
-
-The `EvMenu` utility class is located in [evennia/utils/evmenu.py](evennia.utils.evmenu).
-It allows for easily adding interactive menus to the game; for example to implement Character
-creation, building commands or similar. Below is an example of offering NPC conversation choices:
-
-### Examples
-
-This section gives some examples of how menus work in-game. A menu is a state
-(it's actually a custom cmdset) where menu-specific commands are made available
-to you. An EvMenu is usually started from inside a command, but could also
-just be put in a file and run with `py`.
-
-This is how the example menu will look in-game:
-
-```
+```shell
 Is your answer yes or no?
 _________________________________________
 [Y]es! - Answer yes.
 [N]o! - Answer no.
 [A]bort - Answer neither, and abort.
-```
 
-If you pick (for example) Y(es), you will see
-
-```
+> Y
 You chose yes!
 
 Thanks for your answer. Goodbye!
 ```
 
-After which the menu will end (in this example at least - it could also continue
-on to other questions and choices or even repeat the same node over and over!)
+_EvMenu_ is used for generate branching multi-choice menus. Each menu 'node' can
+accepts specific options as input or free-form input. Depending what the player
+chooses, they are forwarded to different nodes in the menu.
 
-Here's the full EvMenu code for this example:
+The `EvMenu` utility class is located in [evennia/utils/evmenu.py](evennia.utils.evmenu).
+It allows for easily adding interactive menus to the game; for example to implement Character
+creation, building commands or similar. Below is an example of offering NPC conversation choices:
+
+This is how the example menu at the top of this page will look in code:
 
 ```python
 from evennia.utils import evmenu
@@ -229,39 +212,14 @@ EvMenu(caller, menu_data,
 
 ```
 
- - `caller` (Object or Account): is a reference to the object using the menu. This object will get a
-   new [CmdSet](./Command-Sets.md) assigned to it, for handling the menu.
- - `menu_data` (str, module or dict): is a module or python path to a module where the global-level
-   functions will each be considered to be a menu node. Their names in the module will be the names
-   by which they are referred to in the module. Importantly, function names starting with an
-underscore
-   `_` will be ignored by the loader. Alternatively, this can be a direct mapping
+ - `caller` (Object or Account): is a reference to the object using the menu. This object will get a new [CmdSet](./Command-Sets.md) assigned to it, for handling the menu.
+ - `menu_data` (str, module or dict): is a module or python path to a module where the global-level functions will each be considered to be a menu node. Their names in the module will be the names by which they are referred to in the module. Importantly, function names starting with an underscore `_` will be ignored by the loader. Alternatively, this can be a direct mapping
 `{"nodename":function, ...}`.
- - `startnode` (str): is the name of the menu-node to start the menu at. Changing this means that
-   you can jump into a menu tree at different positions depending on circumstance and thus possibly
-   re-use menu entries.
- - `cmdset_mergetype` (str): This is usually one of "Replace" or "Union" (see [CmdSets](Command-
-Sets).
-   The first means that the menu is exclusive - the user has no access to any other commands while
-   in the menu. The Union mergetype means the menu co-exists with previous commands (and may
-overload
-   them, so be careful as to what to name your menu entries in this case).
- - `cmdset_priority` (int): The priority with which to merge in the menu cmdset. This allows for
-   advanced usage.
- - `auto_quit`, `auto_look`, `auto_help` (bool): If either of these are `True`, the menu
-   automatically makes a `quit`, `look` or `help` command available to the user. The main reason why
-   you'd want to turn this off is if  you want to use the aliases "q", "l" or "h" for something in
-your
-   menu. Nevertheless, at least `quit` is highly recommend - if `False`, the menu *must* itself
-supply
-   an "exit node" (a node without any options), or the user will be stuck in the menu until the
-server
-   reloads (or eternally if the menu is `persistent`)!
- - `cmd_on_exit` (str): This command string will be executed right *after* the menu has closed down.
-   From experience, it's useful to trigger a "look" command to make sure the user is aware of the
-   change of state; but any command can be used. If set to `None`, no command will be triggered
-after
-   exiting the menu.
+ - `startnode` (str): is the name of the menu-node to start the menu at. Changing this means that you can jump into a menu tree at different positions depending on circumstance and thus possibly re-use menu entries.
+ - `cmdset_mergetype` (str): This is usually one of "Replace" or "Union" (see [CmdSets](Command- Sets). The first means that the menu is exclusive - the user has no access to any other commands while in the menu. The Union mergetype means the menu co-exists with previous commands (and may overload them, so be careful as to what to name your menu entries in this case).
+ - `cmdset_priority` (int): The priority with which to merge in the menu cmdset. This allows for advanced usage.
+ - `auto_quit`, `auto_look`, `auto_help` (bool): If either of these are `True`, the menu automatically makes a `quit`, `look` or `help` command available to the user. The main reason why you'd want to turn this off is if  you want to use the aliases "q", "l" or "h" for something in your menu. Nevertheless, at least `quit` is highly recommend - if `False`, the menu *must* itself supply an "exit node" (a node without any options), or the user will be stuck in the menu until the server reloads (or eternally if the menu is `persistent`)!
+ - `cmd_on_exit` (str): This command string will be executed right *after* the menu has closed down. From experience, it's useful to trigger a "look" command to make sure the user is aware of the change of state; but any command can be used. If set to `None`, no command will be triggered after exiting the menu.
  - `persistent` (bool) - if `True`, the menu will survive a reload (so the user will not be kicked
    out by the reload - make sure they can exit on their own!)
  - `startnode_input` (str or (str, dict) tuple): Pass an input text or a input text + kwargs to the
@@ -272,16 +230,13 @@ after
  - `debug` (bool): If set, the `menudebug` command will be made available in the menu. Use it to
    list the current state of the menu and use `menudebug <variable>` to inspect a specific state
    variable from the list.
- - All other keyword arguments will be available as initial data for the nodes. They will be
-   available in all nodes as properties on `caller.ndb._evmenu` (see below). These will also
-survive a `@reload` if the menu is `persistent`.
+ - All other keyword arguments will be available as initial data for the nodes. They will be available in all nodes as properties on `caller.ndb._evmenu` (see below). These will also survive a `reload` if the menu is `persistent`.
 
 You don't need to store the EvMenu instance anywhere - the very act of initializing it will store it
 as `caller.ndb._evmenu` on the `caller`. This object will be deleted automatically when the menu
 is exited and you can also use it to store your own temporary variables for access throughout the
 menu. Temporary variables you store on a persistent `_evmenu` as it runs will
 *not* survive a `@reload`, only those you set as part of the original `EvMenu` call.
-
 
 ## The Menu nodes
 
@@ -506,7 +461,7 @@ manipulated for every iteration.
 > *deprecated* as of Evennia 0.8. Use `goto` for all functionality where you'd before use `exec`.
 
 
-## Temporary storage
+### Temporary storage
 
 When the menu starts, the EvMenu instance is stored on the caller as `caller.ndb._evmenu`. Through
 this object you can in principle reach the menu's internal state if you know what you are doing.
@@ -519,7 +474,7 @@ that this will remain after the menu closes though, so you need to handle any ne
 yourself.
 
 
-## Customizing Menu formatting
+### Customizing Menu formatting
 
 The `EvMenu` display of nodes, options etc are controlled by a series of formatting methods on the
 `EvMenu` class. To customize these, simply create a new child class of `EvMenu` and override as
@@ -737,7 +692,189 @@ evmenu.template2menu(caller, template_string, goto_callables)
 
 ```
 
-## Examples:
+## Asking for one-line input
+
+This describes two ways for asking for simple questions from the user. Using Python's `input`
+will *not* work in Evennia. `input` will *block* the entire server for *everyone* until that one
+player has entered their text, which is not what you want.
+
+### The `yield` way
+
+In the `func` method of your Commands (only) you can use Python's built-in `yield` command to
+request input in a similar way to `input`. It looks like this:
+
+```python
+result = yield("Please enter your answer:")
+```
+
+This will send "Please enter your answer" to the Command's `self.caller` and then pause at that
+point. All other players at the server will be unaffected. Once caller enteres a reply, the code
+execution will continue and you can do stuff with the `result`. Here is an example:
+
+```python
+from evennia import Command
+class CmdTestInput(Command):
+    key = "test"
+    def func(self):
+        result = yield("Please enter something:")
+        self.caller.msg(f"You entered {result}.")
+        result2 = yield("Now enter something else:")
+        self.caller.msg(f"You now entered {result2}.")
+```
+
+Using `yield` is simple and intuitive, but it will only access input from `self.caller` and you
+cannot abort or time out the pause until the player has responded. Under the hood, it is actually
+just a wrapper calling `get_input` described in the following section.
+
+> Important Note: In Python you *cannot mix `yield` and `return <value>` in the same method*. It has
+> to do with `yield` turning the method into a
+> [generator](https://www.learnpython.org/en/Generators). A `return` without an argument works, you
+> can just not do `return <value>`. This is usually not something you need to do in `func()` anyway,
+> but worth keeping in mind.
+
+### The `get_input` way
+
+The evmenu module offers a helper function named `get_input`. This is wrapped by the `yield`
+statement which is often easier and more intuitive to use. But `get_input` offers more flexibility
+and power if you need it. While in the same module as `EvMenu`, `get_input` is technically unrelated
+to it. The `get_input` allows you to ask and receive simple one-line input from the user without
+launching the full power of a menu to do so. To use, call `get_input` like this:
+
+```python
+get_input(caller, prompt, callback)
+```
+
+Here `caller` is the entity that should receive the prompt for input given as `prompt`. The
+`callback` is a callable `function(caller, prompt, user_input)` that you define to handle the answer
+from the user. When run, the caller will see `prompt` appear on their screens and *any* text they
+enter will be sent into the callback for whatever processing you want.
+
+Below is a fully explained callback and example call:
+
+```python
+from evennia import Command
+from evennia.utils.evmenu import get_input
+
+def callback(caller, prompt, user_input):
+    """
+    This is a callback you define yourself.
+
+    Args:
+        caller (Account or Object): The one being asked
+          for input
+        prompt (str): A copy of the current prompt
+        user_input (str): The input from the account.
+
+    Returns:
+        repeat (bool): If not set or False, exit the
+          input prompt and clean up. If returning anything
+          True, stay in the prompt, which means this callback
+          will be called again with the next user input.
+    """
+    caller.msg(f"When asked '{prompt}', you answered '{user_input}'.")
+
+get_input(caller, "Write something! ", callback)
+```
+
+This will show as
+
+```
+Write something!
+> Hello
+When asked 'Write something!', you answered 'Hello'.
+
+```
+
+Normally, the `get_input` function quits after any input, but as seen in the example docs, you could
+return True from the callback to repeat the prompt until you pass whatever check you want.
+
+> Note: You *cannot* link consecutive questions by putting a new `get_input` call inside the
+> callback If you want that you should use an EvMenu instead (see the [Repeating the same
+> node](./EvMenu.md#example-repeating-the-same-node) example above). Otherwise you can either peek at the
+> implementation of `get_input` and implement your own mechanism (it's just using cmdset nesting) or
+> you can look at [this extension suggested on the mailing
+> list](https://groups.google.com/forum/#!category-topic/evennia/evennia-questions/16pi0SfMO5U).
+
+
+#### Example: Yes/No prompt
+
+Below is an example of a Yes/No prompt using the `get_input` function:
+
+```python
+def yesno(caller, prompt, result):
+    if result.lower() in ("y", "yes", "n", "no"):
+        # do stuff to handle the yes/no answer
+        # ...
+        # if we return None/False the prompt state
+        # will quit after this
+    else:
+        # the answer is not on the right yes/no form
+        caller.msg("Please answer Yes or No. \n{prompt}")
+@        # returning True will make sure the prompt state is not exited
+        return True
+
+# ask the question
+get_input(caller, "Is Evennia great (Yes/No)?", yesno)
+```
+
+## The `@list_node` decorator
+
+The `evennia.utils.evmenu.list_node` is an advanced decorator for use with `EvMenu` node functions.
+It is used to quickly create menus for manipulating large numbers of items.
+
+
+```
+text here
+______________________________________________
+
+1. option1     7. option7      13. option13
+2. option2     8. option8      14. option14
+3. option3     9. option9      [p]revius page
+4. option4    10. option10      page 2
+5. option5    11. option11     [n]ext page
+6. option6    12. option12
+
+```
+
+The menu will automatically create an multi-page option listing that one can flip through. One can
+inpect each entry and then select them with prev/next. This is how it is used:
+
+
+```python
+from evennia.utils.evmenu import list_node
+
+
+...
+
+_options(caller):
+    return ['option1', 'option2', ... 'option100']
+
+_select(caller, menuchoice, available_choices):
+    # analyze choice
+    return "next_node"
+
+@list_node(options, select=_select, pagesize=10)
+def node_mylist(caller, raw_string, **kwargs):
+    ...
+
+    return text, options
+
+```
+
+The `options` argument to `list_node` is either a list, a generator or a callable returning a list
+of strings for each option that should be displayed in the node.
+
+The `select` is a callable in the example above but could also be the name of a menu node. If a
+callable, the `menuchoice` argument holds the selection done and `available_choices` holds all the
+options available. The callable should return the menu to go to depending on the selection (or
+`None` to rerun the same node). If the name of a menu node, the selection will be passed as
+`selection` kwarg to that node.
+
+The decorated node itself should return `text` to display in the node. It must return at least an
+empty dictionary for its options. It returning options, those will supplement the options
+auto-created by the `list_node` decorator.
+
+## Example Menus
 
 - **[Simple branching menu](./EvMenu.md#example-simple-branching-menu)** - choose from options
 - **[Dynamic goto](./EvMenu.md#example-dynamic-goto)** - jumping to different nodes based on response
@@ -754,8 +891,7 @@ helper function accessed as `evennia.utils.evmenu.get_input`).
 
 ### Example: Simple branching menu
 
-Below is an example of a simple branching menu node leading to different other nodes depending on
-choice:
+Below is an example of a simple branching menu node leading to different other nodes depending on choice:
 
 ```python
 # in mygame/world/mychargen.py
@@ -993,9 +1129,7 @@ use
 
 ### Example: Repeating the same node
 
-Sometimes you want to make a chain of menu nodes one after another, but you don't want the user to
-be able to continue to the next node until you have verified that what they input in the previous
-node is ok. A common example is a login menu:
+Sometimes you want to make a chain of menu nodes one after another, but you don't want the user to be able to continue to the next node until you have verified that what they input in the previous node is ok. A common example is a login menu:
 
 
 ```python
@@ -1116,196 +1250,3 @@ function - for example you can't use other Python keywords like `if` inside the 
 Unless you are dealing with a relatively simple dynamic menu, defining menus with lambda's is
 probably more work than it's worth: You can create dynamic menus by instead making each node
 function more clever. See the [NPC shop tutorial](../Howtos/Tutorial-NPC-Merchants.md) for an example of this.
-
-
-## Ask for simple input
-
-This describes two ways for asking for simple questions from the user. Using Python's `input`
-will *not* work in Evennia. `input` will *block* the entire server for *everyone* until that one
-player has entered their text, which is not what you want.
-
-### The `yield` way
-
-In the `func` method of your Commands (only) you can use Python's built-in `yield` command to
-request input in a similar way to `input`. It looks like this:
-
-```python
-result = yield("Please enter your answer:")
-```
-
-This will send "Please enter your answer" to the Command's `self.caller` and then pause at that
-point. All other players at the server will be unaffected. Once caller enteres a reply, the code
-execution will continue and you can do stuff with the `result`. Here is an example:
-
-```python
-from evennia import Command
-class CmdTestInput(Command):
-    key = "test"
-    def func(self):
-        result = yield("Please enter something:")
-        self.caller.msg(f"You entered {result}.")
-        result2 = yield("Now enter something else:")
-        self.caller.msg(f"You now entered {result2}.")
-```
-
-Using `yield` is simple and intuitive, but it will only access input from `self.caller` and you
-cannot abort or time out the pause until the player has responded. Under the hood, it is actually
-just a wrapper calling `get_input` described in the following section.
-
-> Important Note: In Python you *cannot mix `yield` and `return <value>` in the same method*. It has
-> to do with `yield` turning the method into a
-> [generator](https://www.learnpython.org/en/Generators). A `return` without an argument works, you
-> can just not do `return <value>`. This is usually not something you need to do in `func()` anyway,
-> but worth keeping in mind.
-
-### The `get_input` way
-
-The evmenu module offers a helper function named `get_input`. This is wrapped by the `yield`
-statement which is often easier and more intuitive to use. But `get_input` offers more flexibility
-and power if you need it. While in the same module as `EvMenu`, `get_input` is technically unrelated
-to it. The `get_input` allows you to ask and receive simple one-line input from the user without
-launching the full power of a menu to do so. To use, call `get_input` like this:
-
-```python
-get_input(caller, prompt, callback)
-```
-
-Here `caller` is the entity that should receive the prompt for input given as `prompt`. The
-`callback` is a callable `function(caller, prompt, user_input)` that you define to handle the answer
-from the user. When run, the caller will see `prompt` appear on their screens and *any* text they
-enter will be sent into the callback for whatever processing you want.
-
-Below is a fully explained callback and example call:
-
-```python
-from evennia import Command
-from evennia.utils.evmenu import get_input
-
-def callback(caller, prompt, user_input):
-    """
-    This is a callback you define yourself.
-
-    Args:
-        caller (Account or Object): The one being asked
-          for input
-        prompt (str): A copy of the current prompt
-        user_input (str): The input from the account.
-
-    Returns:
-        repeat (bool): If not set or False, exit the
-          input prompt and clean up. If returning anything
-          True, stay in the prompt, which means this callback
-          will be called again with the next user input.
-    """
-    caller.msg(f"When asked '{prompt}', you answered '{user_input}'.")
-
-get_input(caller, "Write something! ", callback)
-```
-
-This will show as
-
-```
-Write something!
-> Hello
-When asked 'Write something!', you answered 'Hello'.
-
-```
-
-Normally, the `get_input` function quits after any input, but as seen in the example docs, you could
-return True from the callback to repeat the prompt until you pass whatever check you want.
-
-> Note: You *cannot* link consecutive questions by putting a new `get_input` call inside the
-> callback If you want that you should use an EvMenu instead (see the [Repeating the same
-> node](./EvMenu.md#example-repeating-the-same-node) example above). Otherwise you can either peek at the
-> implementation of `get_input` and implement your own mechanism (it's just using cmdset nesting) or
-> you can look at [this extension suggested on the mailing
-> list](https://groups.google.com/forum/#!category-topic/evennia/evennia-questions/16pi0SfMO5U).
-
-
-#### Example: Yes/No prompt
-
-Below is an example of a Yes/No prompt using the `get_input` function:
-
-```python
-def yesno(caller, prompt, result):
-    if result.lower() in ("y", "yes", "n", "no"):
-        # do stuff to handle the yes/no answer
-        # ...
-        # if we return None/False the prompt state
-        # will quit after this
-    else:
-        # the answer is not on the right yes/no form
-        caller.msg("Please answer Yes or No. \n{prompt}")
-@        # returning True will make sure the prompt state is not exited
-        return True
-
-# ask the question
-get_input(caller, "Is Evennia great (Yes/No)?", yesno)
-```
-
-## The `@list_node` decorator
-
-The `evennia.utils.evmenu.list_node` is an advanced decorator for use with `EvMenu` node functions.
-It is used to quickly create menus for manipulating large numbers of items.
-
-
-```
-text here
-______________________________________________
-
-1. option1     7. option7      13. option13
-2. option2     8. option8      14. option14
-3. option3     9. option9      [p]revius page
-4. option4    10. option10      page 2
-5. option5    11. option11     [n]ext page
-6. option6    12. option12
-
-```
-
-The menu will automatically create an multi-page option listing that one can flip through. One can
-inpect each entry and then select them with prev/next. This is how it is used:
-
-
-```python
-from evennia.utils.evmenu import list_node
-
-
-...
-
-_options(caller):
-    return ['option1', 'option2', ... 'option100']
-
-_select(caller, menuchoice, available_choices):
-    # analyze choice
-    return "next_node"
-
-@list_node(options, select=_select, pagesize=10)
-def node_mylist(caller, raw_string, **kwargs):
-    ...
-
-    return text, options
-
-```
-
-The `options` argument to `list_node` is either a list, a generator or a callable returning a list
-of strings for each option that should be displayed in the node.
-
-The `select` is a callable in the example above but could also be the name of a menu node. If a
-callable, the `menuchoice` argument holds the selection done and `available_choices` holds all the
-options available. The callable should return the menu to go to depending on the selection (or
-`None` to rerun the same node). If the name of a menu node, the selection will be passed as
-`selection` kwarg to that node.
-
-The decorated node itself should return `text` to display in the node. It must return at least an
-empty dictionary for its options. It returning options, those will supplement the options
-auto-created by the `list_node` decorator.
-
-
-## Assorted notes
-
-The EvMenu is implemented using [Commands](./Commands.md). When you start a new EvMenu, the user of the
-menu will be assigned a [CmdSet](./Command-Sets.md) with the commands they need to navigate the menu.
-This means that if you were to, from inside the menu, assign a new command set to the caller, *you
-may override the Menu Cmdset and kill the menu*. If you want to assign cmdsets to the caller as part
-of the menu, you should store the cmdset on `caller.ndb._evmenu` and wait to actually assign it
-until the exit node.
