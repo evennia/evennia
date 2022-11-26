@@ -43,9 +43,8 @@ body:
     id: version-check
     attributes:
       label: Version Check
-      description: Evennia type stubs were written using the typing features included with **Python 3.11**.|
+      description: Evennia type stubs were written using the typing features included with Python 3.11.
         Please verify that your typing software supports these features.
       options:
         - label: I have verified that my environment supports Python 3.11's typing features.
-    validations:
-      required: true
+          required: true
