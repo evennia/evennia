@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Game website" href="Website.html" />
-    <link rel="prev" title="Locks" href="Locks.html" /> 
+    <link rel="prev" title="TickerHandler" href="TickerHandler.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -33,7 +33,7 @@
           <a href="Website.html" title="Game website"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Locks.html" title="Locks"
+          <a href="TickerHandler.html" title="TickerHandler"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
@@ -63,15 +63,17 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Signals</a><ul>
-<li><a class="reference internal" href="#attaching-a-handler-to-a-signal">Attaching a handler to a signal</a></li>
+<li><a class="reference internal" href="#working-with-signals">Working with Signals</a><ul>
 <li><a class="reference internal" href="#available-signals">Available signals</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Locks.html"
-                        title="previous chapter">Locks</a></p>
+  <p class="topless"><a href="TickerHandler.html"
+                        title="previous chapter">TickerHandler</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Website.html"
                         title="next chapter">Game website</a></p>
@@ -119,8 +121,8 @@ you can “attach” any number of event-handlers to these signals. You can atta
 any number of handlers and they’ll all fire whenever any entity triggers the
 signal.</p>
 <p>Evennia uses the <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/signals/">Django Signal system</a>.</p>
-<section id="attaching-a-handler-to-a-signal">
-<h2>Attaching a handler to a signal<a class="headerlink" href="#attaching-a-handler-to-a-signal" title="Permalink to this headline">¶</a></h2>
+<section id="working-with-signals">
+<h2>Working with Signals<a class="headerlink" href="#working-with-signals" title="Permalink to this headline">¶</a></h2>
 <p>First you create your handler</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">def</span> <span class="nf">myhandler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -146,9 +148,8 @@ like this:</p>
 <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_ACCOUNT_POST_CONNECT</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">myhandler</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
 <section id="available-signals">
-<h2>Available signals<a class="headerlink" href="#available-signals" title="Permalink to this headline">¶</a></h2>
+<h3>Available signals<a class="headerlink" href="#available-signals" title="Permalink to this headline">¶</a></h3>
 <p>All signals (including some django-specific defaults) are available in the module
 <code class="docutils literal notranslate"><span class="pre">evennia.server.signals</span></code>
 (with a shortcut <code class="docutils literal notranslate"><span class="pre">evennia.signals</span></code>). Signals are named by the sender type. So <code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_*</span></code>
@@ -217,6 +218,7 @@ decorator (only relevant for unit testing)</p></li>
 </ul>
 </section>
 </section>
+</section>
 
 
           </div>
@@ -237,7 +239,7 @@ decorator (only relevant for unit testing)</p></li>
           <a href="Website.html" title="Game website"
              >next</a> |</li>
         <li class="right" >
-          <a href="Locks.html" title="Locks"
+          <a href="TickerHandler.html" title="TickerHandler"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>

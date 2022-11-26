@@ -18,7 +18,7 @@ signal.
 Evennia uses the [Django Signal system](https://docs.djangoproject.com/en/2.2/topics/signals/).
 
 
-## Attaching a handler to a signal
+## Working with Signals
 
 First you create your handler
 
@@ -52,7 +52,7 @@ account = search_account("foo")[0]
 signals.SIGNAL_ACCOUNT_POST_CONNECT.connect(myhandler, account)
 ```
 
-## Available signals
+### Available signals
 
 All signals (including some django-specific defaults) are available in the module
 `evennia.server.signals`

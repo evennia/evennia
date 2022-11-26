@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Objects" href="Objects.html" />
-    <link rel="prev" title="Sessions" href="Sessions.html" /> 
+    <link rel="prev" title="Typeclasses" href="Typeclasses.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -33,7 +33,7 @@
           <a href="Objects.html" title="Objects"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Sessions.html" title="Sessions"
+          <a href="Typeclasses.html" title="Typeclasses"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
@@ -63,15 +63,17 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Accounts</a><ul>
-<li><a class="reference internal" href="#how-to-customize-your-own-account-types">How to customize your own Account types</a></li>
+<li><a class="reference internal" href="#working-with-accounts">Working with Accounts</a><ul>
 <li><a class="reference internal" href="#properties-on-accounts">Properties on Accounts</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Sessions.html"
-                        title="previous chapter">Sessions</a></p>
+  <p class="topless"><a href="Typeclasses.html"
+                        title="previous chapter">Typeclasses</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Objects.html"
                         title="next chapter">Objects</a></p>
@@ -116,7 +118,7 @@
 <p>An <em>Account</em> represents a unique game account - one player playing the game. Whereas a player can potentially connect to the game from several Clients/Sessions, they will normally have only one Account.</p>
 <p>The Account object has no in-game representation. In order to actually get on the game the Account must <em>puppet</em> an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> (normally a <a class="reference internal" href="Objects.html#characters"><span class="std std-doc">Character</span></a>).</p>
 <p>Exactly how many Sessions can interact with an Account and its Puppets at once is determined by
-Evennia’s <a class="reference internal" href="Sessions.html#multisession-mode"><span class="std std-doc">MULTISESSION_MODE</span></a> setting.</p>
+Evennia’s <span class="xref myst">MULTISESSION_MODE</span></p>
 <p>Apart from storing login information and other account-specific data, the Account object is what is chatting on Evennia’s default <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>.  It is also a good place to store <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Permissions</span></a> to be consistent between different in-game characters. It can also hold player-level configuration options.</p>
 <p>The Account object has its own default <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a>, the <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code>. The commands in this set are available to the player no matter which character they are puppeting. Most notably the default game’s <code class="docutils literal notranslate"><span class="pre">exit</span></code>, <code class="docutils literal notranslate"><span class="pre">who</span></code> and chat-channel commands are in the Account cmdset.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; ooc 
@@ -128,8 +130,8 @@ Evennia’s <a class="reference internal" href="Sessions.html#multisession-mode"
 </div>
 <p>This re-puppets the latest character.</p>
 <p>Note that the Account object can have, and often does have, a different set of <a class="reference internal" href="Permissions.html"><span class="doc std std-doc">Permissions</span></a> from the Character they control.  Normally you should put your permissions on the Account level - this will overrule permissions set on the Character level. For the permissions of the Character to come into play the default <code class="docutils literal notranslate"><span class="pre">quell</span></code> command can be used. This allows for exploring the game using a different permission set (but you can’t escalate your permissions this way - for hierarchical permissions like <code class="docutils literal notranslate"><span class="pre">Builder</span></code>, <code class="docutils literal notranslate"><span class="pre">Admin</span></code> etc, the <em>lower</em> of the permissions on the Character/Account will always be used).</p>
-<section id="how-to-customize-your-own-account-types">
-<h2>How to customize your own Account types<a class="headerlink" href="#how-to-customize-your-own-account-types" title="Permalink to this headline">¶</a></h2>
+<section id="working-with-accounts">
+<h2>Working with Accounts<a class="headerlink" href="#working-with-accounts" title="Permalink to this headline">¶</a></h2>
 <p>You will usually not want more than one Account typeclass for all new accounts.</p>
 <p>An Evennia Account is, per definition, a Python class that includes <code class="docutils literal notranslate"><span class="pre">evennia.DefaultAccount</span></code> among its parents. In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/accounts.py</span></code> there is an empty class ready for you to modify. Evennia defaults to using this (it inherits directly from <code class="docutils literal notranslate"><span class="pre">DefaultAccount</span></code>).</p>
 <p>Here’s an example of modifying the default Account class in code:</p>
@@ -157,9 +159,8 @@ Evennia’s <a class="reference internal" href="Sessions.html#multisession-mode"
 <blockquote>
 <div><p>If you wanted Evennia to default to a completely <em>different</em> Account class located elsewhere, you &gt; must point Evennia to it. Add <code class="docutils literal notranslate"><span class="pre">BASE_ACCOUNT_TYPECLASS</span></code> to your settings file, and give the python path to your custom class as its value. By default this points to <code class="docutils literal notranslate"><span class="pre">typeclasses.accounts.Account</span></code>, the empty template we used above.</p>
 </div></blockquote>
-</section>
 <section id="properties-on-accounts">
-<h2>Properties on Accounts<a class="headerlink" href="#properties-on-accounts" title="Permalink to this headline">¶</a></h2>
+<h3>Properties on Accounts<a class="headerlink" href="#properties-on-accounts" title="Permalink to this headline">¶</a></h3>
 <p>Beyond those properties assigned to all typeclassed objects (see <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>), the Account also has the following custom properties:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">user</span></code> - a unique link to a <code class="docutils literal notranslate"><span class="pre">User</span></code> Django object, representing the logged-in user.</p></li>
@@ -185,6 +186,7 @@ the commands found in the cmdset defined by <code class="docutils literal notran
 </ul>
 </section>
 </section>
+</section>
 
 
           </div>
@@ -205,7 +207,7 @@ the commands found in the cmdset defined by <code class="docutils literal notran
           <a href="Objects.html" title="Objects"
              >next</a> |</li>
         <li class="right" >
-          <a href="Sessions.html" title="Sessions"
+          <a href="Typeclasses.html" title="Typeclasses"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>

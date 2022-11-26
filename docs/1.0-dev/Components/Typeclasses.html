@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Sessions" href="Sessions.html" />
-    <link rel="prev" title="Core Components" href="Components-Overview.html" /> 
+    <link rel="next" title="Accounts" href="Accounts.html" />
+    <link rel="prev" title="Sessions" href="Sessions.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Sessions.html" title="Sessions"
+          <a href="Accounts.html" title="Accounts"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Components-Overview.html" title="Core Components"
+          <a href="Sessions.html" title="Sessions"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
@@ -64,25 +64,29 @@
   <ul>
 <li><a class="reference internal" href="#">Typeclasses</a><ul>
 <li><a class="reference internal" href="#difference-between-typeclasses-and-classes">Difference between typeclasses and classes</a></li>
+<li><a class="reference internal" href="#working-with-typeclasses">Working with typeclasses</a><ul>
 <li><a class="reference internal" href="#creating-a-new-typeclass">Creating a new typeclass</a></li>
-<li><a class="reference internal" href="#about-typeclass-properties">About typeclass properties</a></li>
 <li><a class="reference internal" href="#overloading-hooks">Overloading hooks</a></li>
 <li><a class="reference internal" href="#querying-for-typeclasses">Querying for typeclasses</a></li>
 <li><a class="reference internal" href="#updating-existing-typeclass-instances">Updating existing typeclass instances</a></li>
 <li><a class="reference internal" href="#swap-typeclass">Swap typeclass</a></li>
-<li><a class="reference internal" href="#how-typeclasses-actually-work">How typeclasses actually work</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-typeclasses-actually-work">How typeclasses actually work</a><ul>
 <li><a class="reference internal" href="#caveats">Caveats</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#will-i-run-out-of-dbrefs">Will I run out of dbrefs?</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Components-Overview.html"
-                        title="previous chapter">Core Components</a></p>
-  <h4>Next topic</h4>
   <p class="topless"><a href="Sessions.html"
-                        title="next chapter">Sessions</a></p>
+                        title="previous chapter">Sessions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Accounts.html"
+                        title="next chapter">Accounts</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -115,57 +119,52 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="typeclasses">
 <h1>Typeclasses<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h1>
-<p><em>Typeclasses</em> form the core of Evennia’s data storage. It allows Evennia to represent any number of
-different game entities as Python classes, without having to modify the database schema for every
-new type.</p>
+<p><em>Typeclasses</em> form the core of Evennia’s data storage. It allows Evennia to represent any number of different game entities as Python classes, without having to modify the database schema for every new type.</p>
 <p>In Evennia the most important game entities, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a> are all Python classes inheriting, at varying distance, from <code class="docutils literal notranslate"><span class="pre">evennia.typeclasses.models.TypedObject</span></code>.  In the documentation we refer to these objects as being “typeclassed” or even “being a typeclass”.</p>
 <p>This is how the inheritance looks for the typeclasses in Evennia:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                  <span class="n">TypedObject</span>
-      <span class="n">_________________</span><span class="o">|</span><span class="n">_________________________________</span>
-     <span class="o">|</span>                 <span class="o">|</span>                 <span class="o">|</span>               <span class="o">|</span>
-<span class="mi">1</span><span class="p">:</span> <span class="n">AccountDB</span>        <span class="n">ObjectDB</span>           <span class="n">ScriptDB</span>         <span class="n">ChannelDB</span>
-     <span class="o">|</span>                 <span class="o">|</span>                 <span class="o">|</span>               <span class="o">|</span>
-<span class="mi">2</span><span class="p">:</span> <span class="n">DefaultAccount</span>   <span class="n">DefaultObject</span>      <span class="n">DefaultScript</span>    <span class="n">DefaultChannel</span>
-     <span class="o">|</span>              <span class="n">DefaultCharacter</span>     <span class="o">|</span>               <span class="o">|</span>
-     <span class="o">|</span>              <span class="n">DefaultRoom</span>          <span class="o">|</span>               <span class="o">|</span>
-     <span class="o">|</span>              <span class="n">DefaultExit</span>          <span class="o">|</span>               <span class="o">|</span>
-     <span class="o">|</span>                 <span class="o">|</span>                 <span class="o">|</span>               <span class="o">|</span>
-<span class="mi">3</span><span class="p">:</span> <span class="n">Account</span>          <span class="n">Object</span>              <span class="n">Script</span>           <span class="n">Channel</span>
-                   <span class="n">Character</span>
-                   <span class="n">Room</span>
-                   <span class="n">Exit</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                                  ┌───────────┐
+                                  │TypedObject│
+                                  └─────▲─────┘
+               ┌───────────────┬────────┴──────┬────────────────┐
+          ┌────┴────┐     ┌────┴───┐      ┌────┴────┐      ┌────┴───┐
+1:        │AccountDB│     │ScriptDB│      │ChannelDB│      │ObjectDB│
+          └────▲────┘     └────▲───┘      └────▲────┘      └────▲───┘
+       ┌───────┴──────┐ ┌──────┴──────┐ ┌──────┴───────┐ ┌──────┴──────┐
+2:     │DefaultAccount│ │DefaultScript│ │DefaultChannel│ │DefaultObject│
+       └───────▲──────┘ └──────▲──────┘ └──────▲───────┘ └──────▲──────┘
+               │               │               │                │  Evennia
+       ────────┼───────────────┼───────────────┼────────────────┼─────────
+               │               │               │                │  Gamedir
+           ┌───┴───┐       ┌───┴──┐        ┌───┴───┐   ┌──────┐ │
+3:         │Account│       │Script│        │Channel│   │Object├─┤
+           └───────┘       └──────┘        └───────┘   └──────┘ │
+                                                    ┌─────────┐ │
+                                                    │Character├─┤
+                                                    └─────────┘ │
+                                                         ┌────┐ │
+                                                         │Room├─┤
+                                                         └────┘ │
+                                                         ┌────┐ │
+                                                         │Exit├─┘
+                                                         └────┘
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>Level 1</strong> above is the “database model” level. This describes the database tables and fields
-(this is technically a <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/db/models/">Django model</a>).</p></li>
-<li><p><strong>Level 2</strong> is where we find Evennia’s default implementations of the various game entities, on
-top of the database. These classes define all the hook methods that Evennia calls in various
-situations. <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is a little special since it’s the parent for <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>,
-<code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code> and <code class="docutils literal notranslate"><span class="pre">DefaultExit</span></code>. They are all grouped under level 2 because they all represents
-defaults to build from.</p></li>
-<li><p><strong>Level 3</strong>, finally, holds empty template classes created in your game directory. This is the
-level you are meant to modify and tweak as you please, overloading the defaults as befits your game.
-The templates inherit directly from their defaults, so <code class="docutils literal notranslate"><span class="pre">Object</span></code> inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> and
-<code class="docutils literal notranslate"><span class="pre">Room</span></code> inherits from <code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code>.</p></li>
+<li><p><strong>Level 1</strong> above is the “database model” level. This describes the database tables and fields (this is technically a <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/db/models/">Django model</a>).</p></li>
+<li><p><strong>Level 2</strong> is where we find Evennia’s default implementations of the various game entities, on top of the database. These classes define all the hook methods that Evennia calls in various situations. <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is a little special since it’s the parent for <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>, <code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code> and <code class="docutils literal notranslate"><span class="pre">DefaultExit</span></code>. They are all grouped under level 2 because they all represents defaults to build from.</p></li>
+<li><p><strong>Level 3</strong>, finally, holds empty template classes created in your game directory. This is the level you are meant to modify and tweak as you please, overloading the defaults as befits your game. The templates inherit directly from their defaults, so <code class="docutils literal notranslate"><span class="pre">Object</span></code> inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> and <code class="docutils literal notranslate"><span class="pre">Room</span></code> inherits from <code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code>.</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">typeclass/list</span></code> command will provide a list of all typeclasses known to
-Evennia. This can be useful for getting a feel for what is available. Note
-however that if you add a new module with a class in it but do not import that
-module from anywhere, the <code class="docutils literal notranslate"><span class="pre">typeclass/list</span></code> will not find it. To make it known
-to Evennia you must import that module from somewhere.</p>
+<blockquote>
+<div><p>This diagram doesn’t include the <code class="docutils literal notranslate"><span class="pre">ObjectParent</span></code> mixin for <code class="docutils literal notranslate"><span class="pre">Object</span></code>, <code class="docutils literal notranslate"><span class="pre">Character</span></code>, <code class="docutils literal notranslate"><span class="pre">Room</span></code> and <code class="docutils literal notranslate"><span class="pre">Exit</span></code>. This establishes a common parent for those classes, for shared properties. See <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a> for more details.</p>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">typeclass/list</span></code> command will provide a list of all typeclasses known to Evennia. This can be useful for getting a feel for what is available. Note however that if you add a new module with a class in it but do not import that module from anywhere, the <code class="docutils literal notranslate"><span class="pre">typeclass/list</span></code> will not find it. To make it known to Evennia you must import that module from somewhere.</p>
 <section id="difference-between-typeclasses-and-classes">
 <h2>Difference between typeclasses and classes<a class="headerlink" href="#difference-between-typeclasses-and-classes" title="Permalink to this headline">¶</a></h2>
 <p>All Evennia classes inheriting from class in the table above share one important feature and two
-important limitations. This is why we don’t simply call them “classes” but “typeclasses”.</p>
+<span class="xref myst"></span>important limitations. This is why we don’t simply call them “classes” but “typeclasses”.</p>
 <ol>
-<li><p>A typeclass can save itself to the database. This means that some properties (actually not that
-many) on the class actually represents database fields and can only hold very specific data types.
-This is detailed <a class="reference internal" href="#about-typeclass-properties"><span class="std std-doc">below</span></a>.</p></li>
-<li><p>Due to its connection to the database, the typeclass’ name must be <em>unique</em> across the <em>entire</em>
-server namespace. That is, there must never be two same-named classes defined anywhere. So the below
-code would give an error (since <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is now globally found both in this module and in the
-default library):</p>
+<li><p>A typeclass can save itself to the database. This means that some properties (actually not that many) on the class actually represents database fields and can only hold very specific data types.</p></li>
+<li><p>Due to its connection to the database, the typeclass’ name must be <em>unique</em> across the <em>entire</em> server namespace. That is, there must never be two same-named classes defined anywhere. So the below code would give an error (since <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is now globally found both in this module and in the default library):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span> <span class="k">as</span> <span class="n">BaseObject</span>
 <span class="k">class</span> <span class="nc">DefaultObject</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
      <span class="k">pass</span>
@@ -184,8 +183,10 @@ default library):</p>
 <p>Apart from this, a typeclass works like any normal Python class and you can
 treat it as such.</p>
 </section>
+<section id="working-with-typeclasses">
+<h2>Working with typeclasses<a class="headerlink" href="#working-with-typeclasses" title="Permalink to this headline">¶</a></h2>
 <section id="creating-a-new-typeclass">
-<h2>Creating a new typeclass<a class="headerlink" href="#creating-a-new-typeclass" title="Permalink to this headline">¶</a></h2>
+<h3>Creating a new typeclass<a class="headerlink" href="#creating-a-new-typeclass" title="Permalink to this headline">¶</a></h3>
 <p>It’s easy to work with Typeclasses. Either you use an existing typeclass or you  create a new Python class inheriting from an existing typeclass. Here is an example of creating a new type of Object:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 
@@ -222,9 +223,6 @@ could point to it as <code class="docutils literal notranslate"><span class="pre
 functions take a lot of extra keywords allowing you to set things like <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> and
 <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> all in one go. These keywords don’t use the <code class="docutils literal notranslate"><span class="pre">db_*</span></code> prefix. This will also automatically
 save the new instance to the database, so you don’t need to call <code class="docutils literal notranslate"><span class="pre">save()</span></code> explicitly.</p>
-</section>
-<section id="about-typeclass-properties">
-<h2>About typeclass properties<a class="headerlink" href="#about-typeclass-properties" title="Permalink to this headline">¶</a></h2>
 <p>An example of a database field is <code class="docutils literal notranslate"><span class="pre">db_key</span></code>. This stores the “name” of the entity you are modifying
 and can thus only hold a string. This is one way of making sure to update the <code class="docutils literal notranslate"><span class="pre">db_key</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chair</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="s2">&quot;Table&quot;</span>
@@ -282,14 +280,11 @@ entities using <a class="reference internal" href="../Evennia-API.html"><span cl
 available.</p>
 </section>
 <section id="overloading-hooks">
-<h2>Overloading hooks<a class="headerlink" href="#overloading-hooks" title="Permalink to this headline">¶</a></h2>
-<p>The way to customize typeclasses is usually to overload <em>hook methods</em> on them. Hooks are methods
-that Evennia call in various situations. An example is the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook on <code class="docutils literal notranslate"><span class="pre">Objects</span></code>,
-which is only called once, the very first time this object is saved to the database.  Other examples
-are the <code class="docutils literal notranslate"><span class="pre">at_login</span></code> hook of Accounts and the <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> hook of Scripts.</p>
+<h3>Overloading hooks<a class="headerlink" href="#overloading-hooks" title="Permalink to this headline">¶</a></h3>
+<p>The way to customize typeclasses is usually to overload <em>hook methods</em> on them. Hooks are methods that Evennia call in various situations. An example is the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook on <code class="docutils literal notranslate"><span class="pre">Objects</span></code>, which is only called once, the very first time this object is saved to the database.  Other examples are the <code class="docutils literal notranslate"><span class="pre">at_login</span></code> hook of Accounts and the <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> hook of Scripts.</p>
 </section>
 <section id="querying-for-typeclasses">
-<h2>Querying for typeclasses<a class="headerlink" href="#querying-for-typeclasses" title="Permalink to this headline">¶</a></h2>
+<h3>Querying for typeclasses<a class="headerlink" href="#querying-for-typeclasses" title="Permalink to this headline">¶</a></h3>
 <p>Most of the time you search for objects in the database by using convenience methods like the
 <code class="docutils literal notranslate"><span class="pre">caller.search()</span></code> of <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a> or the search functions like <code class="docutils literal notranslate"><span class="pre">evennia.search_objects</span></code>.</p>
 <p>You can however also query for them directly using <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/db/queries/">Django’s query
@@ -323,7 +318,7 @@ example for Scripts:</p>
 you will always query all children on the database model.</p>
 </section>
 <section id="updating-existing-typeclass-instances">
-<h2>Updating existing typeclass instances<a class="headerlink" href="#updating-existing-typeclass-instances" title="Permalink to this headline">¶</a></h2>
+<h3>Updating existing typeclass instances<a class="headerlink" href="#updating-existing-typeclass-instances" title="Permalink to this headline">¶</a></h3>
 <p>If you already have created instances of Typeclasses, you can modify the <em>Python code</em> at any time -
 due to how Python inheritance works your changes will automatically be applied to all children once you have reloaded the server.</p>
 <p>However, database-saved data, like <code class="docutils literal notranslate"><span class="pre">db_*</span></code> fields, <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a>, <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> etc, are
@@ -359,7 +354,7 @@ line break, that’s only for readability in the wiki):</p>
 retroactively update objects more than necessary.</p>
 </section>
 <section id="swap-typeclass">
-<h2>Swap typeclass<a class="headerlink" href="#swap-typeclass" title="Permalink to this headline">¶</a></h2>
+<h3>Swap typeclass<a class="headerlink" href="#swap-typeclass" title="Permalink to this headline">¶</a></h3>
 <p>If you want to swap an already existing typeclass, there are two ways to do so: From in-game and via code. From inside the game you can use the default <code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">typeclass</span> <span class="n">objname</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">typeclass</span>
 </pre></div>
@@ -376,19 +371,20 @@ retroactively update objects more than necessary.</p>
 </div>
 <p>The arguments to this method are described <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.typeclasses.models#typedobjectswap_typeclass">in the API docs here</a>.</p>
 </section>
+</section>
 <section id="how-typeclasses-actually-work">
 <h2>How typeclasses actually work<a class="headerlink" href="#how-typeclasses-actually-work" title="Permalink to this headline">¶</a></h2>
 <p><em>This is considered an advanced section.</em></p>
 <p>Technically, typeclasses are <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models">Django proxy models</a>.  The only database
 models that are “real” in the typeclass system (that is, are represented by actual tables in the database) are <code class="docutils literal notranslate"><span class="pre">AccountDB</span></code>, <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code>, <code class="docutils literal notranslate"><span class="pre">ScriptDB</span></code> and <code class="docutils literal notranslate"><span class="pre">ChannelDB</span></code> (there are also <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> and <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> but they are not typeclasses themselves). All the subclasses of them are “proxies”, extending them with Python code without actually modifying the database layout.</p>
 <p>Evennia modifies Django’s proxy model in various ways to allow them to work without any boiler plate (for example you don’t need to set the Django “proxy” property in the model <code class="docutils literal notranslate"><span class="pre">Meta</span></code> subclass, Evennia handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as patches django to allow multiple inheritance from the same base class.</p>
-</section>
 <section id="caveats">
-<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
+<h3>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h3>
 <p>Evennia uses the <em>idmapper</em> to cache its typeclasses (Django proxy models) in memory. The idmapper allows things like on-object handlers and properties to be stored on typeclass instances and to not get lost as long as the server is running (they will only be cleared on a Server reload). Django does not work like this by default; by default every time you search for an object in the database you’ll get a <em>different</em> instance of that object back and anything you stored on it that was not in the database would be lost. The bottom line is that Evennia’s Typeclass instances subside in memory a lot longer than vanilla Django model instance do.</p>
 <p>There is one  caveat to consider with this, and that relates to [making your own models](New-
 Models): Foreign relationships to typeclasses are cached by Django and that means that if you were to change an object in a foreign relationship via some other means than via that relationship, the object seeing the relationship may not reliably update but will still see its old cached version. Due to typeclasses staying so long in memory, stale caches of such relationships could be more
 visible than common in Django. See the <a class="reference external" href="https://github.com/evennia/evennia/issues/1098">closed issue #1098 and its comments</a> for examples and solutions.</p>
+</section>
 </section>
 <section id="will-i-run-out-of-dbrefs">
 <h2>Will I run out of dbrefs?<a class="headerlink" href="#will-i-run-out-of-dbrefs" title="Permalink to this headline">¶</a></h2>
@@ -415,10 +411,10 @@ visible than common in Django. See the <a class="reference external" href="https
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Sessions.html" title="Sessions"
+          <a href="Accounts.html" title="Accounts"
              >next</a> |</li>
         <li class="right" >
-          <a href="Components-Overview.html" title="Core Components"
+          <a href="Sessions.html" title="Sessions"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>

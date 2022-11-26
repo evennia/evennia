@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Signals" href="Signals.html" />
-    <link rel="prev" title="TickerHandler" href="TickerHandler.html" /> 
+    <link rel="next" title="Commands" href="Commands.html" />
+    <link rel="prev" title="Permissions" href="Permissions.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Signals.html" title="Signals"
+          <a href="Commands.html" title="Commands"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="TickerHandler.html" title="TickerHandler"
+          <a href="Permissions.html" title="Permissions"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
@@ -63,28 +63,30 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Locks</a><ul>
-<li><a class="reference internal" href="#setting-and-checking-a-lock">Setting and checking a lock</a></li>
-<li><a class="reference internal" href="#defining-locks">Defining locks</a><ul>
+<li><a class="reference internal" href="#working-with-locks">Working with locks</a><ul>
+<li><a class="reference internal" href="#defining-locks">Defining locks</a></li>
 <li><a class="reference internal" href="#valid-access-types">Valid access_types</a></li>
 <li><a class="reference internal" href="#custom-access-types">Custom access_types</a></li>
 <li><a class="reference internal" href="#lock-functions">Lock functions</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#checking-simple-strings">Checking simple strings</a></li>
 <li><a class="reference internal" href="#default-locks">Default locks</a></li>
-<li><a class="reference internal" href="#more-lock-definition-examples">More Lock definition examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#more-lock-definition-examples">More Lock definition examples</a><ul>
 <li><a class="reference internal" href="#a-complete-example-of-setting-locks-on-an-object">A complete example of setting locks on an object</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#on-djangos-permission-system">On Django’s permission system</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="TickerHandler.html"
-                        title="previous chapter">TickerHandler</a></p>
+  <p class="topless"><a href="Permissions.html"
+                        title="previous chapter">Permissions</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Signals.html"
-                        title="next chapter">Signals</a></p>
+  <p class="topless"><a href="Commands.html"
+                        title="next chapter">Commands</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -118,21 +120,18 @@
   <section class="tex2jax_ignore mathjax_ignore" id="locks">
 <h1>Locks<a class="headerlink" href="#locks" title="Permalink to this headline">¶</a></h1>
 <p>For most games it is a good idea to restrict what people can do. In Evennia such restrictions are
-applied and checked by something called <em>locks</em>. All Evennia entities (<a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a>,
-<a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Help-System.html"><span class="doc std std-doc">Help System</span></a>,
-<a class="reference internal" href="Msg.html"><span class="doc std std-doc">messages</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">channels</span></a>) are accessed through locks.</p>
+applied and checked by something called <em>locks</em>. All Evennia entities (<a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Help-System.html"><span class="doc std std-doc">Help System</span></a>, <a class="reference internal" href="Msg.html"><span class="doc std std-doc">messages</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">channels</span></a>) are accessed through locks.</p>
 <p>A lock can be thought of as an “access rule” restricting a particular use of an Evennia entity.
 Whenever another entity wants that kind of access the lock will analyze that entity in different
-ways to determine if access should be granted or not. Evennia implements a “lockdown” philosophy -
-all entities are inaccessible unless you explicitly define a lock that allows some or full access.</p>
+ways to determine if access should be granted or not. Evennia implements a “lockdown” philosophy - all entities are inaccessible unless you explicitly define a lock that allows some or full access.</p>
 <p>Let’s take an example: An object has a lock on itself that restricts how people may “delete” that
 object. Apart from knowing that it restricts deletion, the lock also knows that only players with
 the specific ID of, say, <code class="docutils literal notranslate"><span class="pre">34</span></code> are allowed to delete it. So whenever a player tries to run <code class="docutils literal notranslate"><span class="pre">delete</span></code>
 on the object, the <code class="docutils literal notranslate"><span class="pre">delete</span></code> command makes sure to check if this player is really allowed to do so.
 It calls the lock, which in turn checks if the player’s id is <code class="docutils literal notranslate"><span class="pre">34</span></code>. Only then will it allow <code class="docutils literal notranslate"><span class="pre">delete</span></code>
 to go on with its job.</p>
-<section id="setting-and-checking-a-lock">
-<h2>Setting and checking a lock<a class="headerlink" href="#setting-and-checking-a-lock" title="Permalink to this headline">¶</a></h2>
+<section id="working-with-locks">
+<h2>Working with locks<a class="headerlink" href="#working-with-locks" title="Permalink to this headline">¶</a></h2>
 <p>The in-game command for setting locks on objects is <code class="docutils literal notranslate"><span class="pre">lock</span></code>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; lock obj = &lt;lockstring&gt;
 </pre></div>
@@ -154,9 +153,8 @@ command:</p>
          <span class="k">return</span>
 </pre></div>
 </div>
-</section>
 <section id="defining-locks">
-<h2>Defining locks<a class="headerlink" href="#defining-locks" title="Permalink to this headline">¶</a></h2>
+<h3>Defining locks<a class="headerlink" href="#defining-locks" title="Permalink to this headline">¶</a></h3>
 <p>Defining a lock (i.e. an access restriction) in Evennia is done by adding simple strings of lock
 definitions to the object’s <code class="docutils literal notranslate"><span class="pre">locks</span></code> property using <code class="docutils literal notranslate"><span class="pre">obj.locks.add()</span></code>.</p>
 <p>Here are some examples of lock strings (not including the quotes):</p>
@@ -181,6 +179,7 @@ the lockstring. The string below yields the same result as the previous example:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>delete:id(34);edit:all();get: not attr(very_weak) or perm(Admin)
 </pre></div>
 </div>
+</section>
 <section id="valid-access-types">
 <h3>Valid access_types<a class="headerlink" href="#valid-access-types" title="Permalink to this headline">¶</a></h3>
 <p>An <code class="docutils literal notranslate"><span class="pre">access_type</span></code>, the first part of a lockstring, defines what kind of capability a lock controls,
@@ -198,13 +197,8 @@ the default command set) actually checks for, as in the example of <code class="
 </li>
 <li><p><a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">control</span></code> - who is the “owner” of the object. Can set locks, delete it etc. Defaults to the
-creator of the object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">call</span></code> - who may call Object-commands stored on this Object except for the Object itself. By
-default, Objects share their Commands with anyone in the same location (e.g. so you can ‘press’ a
-<code class="docutils literal notranslate"><span class="pre">Button</span></code> object in the room). For Characters and Mobs (who likely only use those Commands for
-themselves and don’t want to share them) this should usually be turned off completely, using
-something like <code class="docutils literal notranslate"><span class="pre">call:false()</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">control</span></code> - who is the “owner” of the object. Can set locks, delete it etc. Defaults to the creator of the object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">call</span></code> - who may call Object-commands stored on this Object except for the Object itself. By default, Objects share their Commands with anyone in the same location (e.g. so you can ‘press’ a <code class="docutils literal notranslate"><span class="pre">Button</span></code> object in the room). For Characters and Mobs (who likely only use those Commands for themselves and don’t want to share them) this should usually be turned off completely, using something like <code class="docutils literal notranslate"><span class="pre">call:false()</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">examine</span></code> - who may examine this object’s properties.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">delete</span></code> - who may delete the object.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">edit</span></code> - who may edit properties and attributes of the object.</p></li>
@@ -264,14 +258,11 @@ boot listeners etc.</p></li>
 </ul>
 </li>
 </ul>
-<p>So to take an example, whenever an exit is to be traversed, a lock of the type <em>traverse</em> will be
-checked. Defining a suitable lock type for an exit object would thus involve a lockstring <code class="docutils literal notranslate"><span class="pre">traverse:</span> <span class="pre">&lt;lock</span> <span class="pre">functions&gt;</span></code>.</p>
+<p>So to take an example, whenever an exit is to be traversed, a lock of the type <em>traverse</em> will be checked. Defining a suitable lock type for an exit object would thus involve a lockstring <code class="docutils literal notranslate"><span class="pre">traverse:</span> <span class="pre">&lt;lock</span> <span class="pre">functions&gt;</span></code>.</p>
 </section>
 <section id="custom-access-types">
 <h3>Custom access_types<a class="headerlink" href="#custom-access-types" title="Permalink to this headline">¶</a></h3>
-<p>As stated above, the <code class="docutils literal notranslate"><span class="pre">access_type</span></code> part of the lock is simply the ‘name’ or ‘type’ of the lock. The
-text is an arbitrary string that must be unique for an object. If adding a lock with the same
-<code class="docutils literal notranslate"><span class="pre">access_type</span></code> as one that already exists on the object, the new one override the old one.</p>
+<p>As stated above, the <code class="docutils literal notranslate"><span class="pre">access_type</span></code> part of the lock is simply the ‘name’ or ‘type’ of the lock. The text is an arbitrary string that must be unique for an object. If adding a lock with the same <code class="docutils literal notranslate"><span class="pre">access_type</span></code> as one that already exists on the object, the new one override the old one.</p>
 <p>For example, if you wanted to create a bulletin board system and wanted to restrict who can either
 read a board or post to a board. You could then define locks such as:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;read:perm(Player);post:perm(Admin)&quot;</span><span class="p">)</span>
@@ -290,7 +281,7 @@ trying to read the board):</p>
 </section>
 <section id="lock-functions">
 <h3>Lock functions<a class="headerlink" href="#lock-functions" title="Permalink to this headline">¶</a></h3>
-<p>A lock function is a normal Python function put in a place Evennia looks for such functions. The
+<p>A <em>lock function</em> is a normal Python function put in a place Evennia looks for such functions. The
 modules Evennia looks at is the list <code class="docutils literal notranslate"><span class="pre">settings.LOCK_FUNC_MODULES</span></code>. <em>All functions</em> in any of those
 modules will automatically be considered a valid lock function. The default ones are found in
 <code class="docutils literal notranslate"><span class="pre">evennia/locks/lockfuncs.py</span></code> and you can start adding your own in <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/lockfuncs.py</span></code>.
@@ -352,9 +343,8 @@ permissions and dbrefs of <em>Accounts</em>, not on Characters.</p></li>
 setting set to a given value.</p></li>
 </ul>
 </section>
-</section>
 <section id="checking-simple-strings">
-<h2>Checking simple strings<a class="headerlink" href="#checking-simple-strings" title="Permalink to this headline">¶</a></h2>
+<h3>Checking simple strings<a class="headerlink" href="#checking-simple-strings" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes you don’t really need to look up a certain lock, you just want to check a lockstring. A
 common use is inside Commands, in order to check if a user has a certain permission. The lockhandler
 has a method <code class="docutils literal notranslate"><span class="pre">check_lockstring(accessing_obj,</span> <span class="pre">lockstring,</span> <span class="pre">bypass_superuser=False)</span></code> that allows this.</p>
@@ -364,11 +354,10 @@ has a method <code class="docutils literal notranslate"><span class="pre">check_
          <span class="k">return</span>
 </pre></div>
 </div>
-<p>Note here that the <code class="docutils literal notranslate"><span class="pre">access_type</span></code> can be left to a dummy value since this method does not actually do
-a Lock lookup.</p>
+<p>Note here that the <code class="docutils literal notranslate"><span class="pre">access_type</span></code> can be left to a dummy value since this method does not actually do a Lock lookup.</p>
 </section>
 <section id="default-locks">
-<h2>Default locks<a class="headerlink" href="#default-locks" title="Permalink to this headline">¶</a></h2>
+<h3>Default locks<a class="headerlink" href="#default-locks" title="Permalink to this headline">¶</a></h3>
 <p>Evennia sets up a few basic locks on all new objects and accounts (if we didn’t, noone would have
 any access to anything from the start).  This is all defined in the root <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>
 of the respective entity, in the hook method <code class="docutils literal notranslate"><span class="pre">basetype_setup()</span></code> (which you usually don’t want to
@@ -377,6 +366,7 @@ This is called once, before <code class="docutils literal notranslate"><span cla
 child object to change the default. Also creation commands like <code class="docutils literal notranslate"><span class="pre">create</span></code> changes the locks of
 objects you create - for example it sets the <code class="docutils literal notranslate"><span class="pre">control</span></code> lock_type so as to allow you, its creator, to
 control and delete the object.</p>
+</section>
 </section>
 <section id="more-lock-definition-examples">
 <h2>More Lock definition examples<a class="headerlink" href="#more-lock-definition-examples" title="Permalink to this headline">¶</a></h2>
@@ -414,9 +404,8 @@ would be be added as a lock string to the <code class="docutils literal notransl
 <p>This is how the <code class="docutils literal notranslate"><span class="pre">create</span></code> command sets up new objects. In sequence, this permission string sets the
 owner of this object be the creator (the one  running <code class="docutils literal notranslate"><span class="pre">create</span></code>). Builders may examine the object
 whereas only Admins and the creator may delete it. Everyone can pick it up.</p>
-</section>
 <section id="a-complete-example-of-setting-locks-on-an-object">
-<h2>A complete example of setting locks on an object<a class="headerlink" href="#a-complete-example-of-setting-locks-on-an-object" title="Permalink to this headline">¶</a></h2>
+<h3>A complete example of setting locks on an object<a class="headerlink" href="#a-complete-example-of-setting-locks-on-an-object" title="Permalink to this headline">¶</a></h3>
 <p>Assume we have two objects - one is ourselves (not superuser) and the other is an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a>
 called <code class="docutils literal notranslate"><span class="pre">box</span></code>.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; create/drop box
@@ -475,20 +464,11 @@ strength above 50 however and you’ll pick it up no problem. Done! A very heavy
 </pre></div>
 </div>
 </section>
+</section>
 <section id="on-djangos-permission-system">
 <h2>On Django’s permission system<a class="headerlink" href="#on-djangos-permission-system" title="Permalink to this headline">¶</a></h2>
-<p>Django also implements a comprehensive permission/security system of its own.  The reason we don’t
-use that is because it is app-centric (app in the Django sense).  Its permission strings are of the
-form <code class="docutils literal notranslate"><span class="pre">appname.permstring</span></code> and it automatically adds three of them for each database model in the app</p>
-<ul class="simple">
-<li><p>for the app evennia/object this would be for example ‘object.create’, ‘object.admin’ and
-‘object.edit’. This makes a lot of sense for a web application, not so much for a MUD, especially
-when we try to hide away as much of the underlying architecture as possible.</p></li>
-</ul>
-<p>The django permissions are not completely gone however. We use it for validating passwords during
-login. It is also used exclusively for managing Evennia’s web-based admin site, which is a graphical
-front-end for the database of Evennia. You edit and assign such permissions directly from the web
-interface. It’s stand-alone from the permissions described above.</p>
+<p>Django also implements a comprehensive permission/security system of its own.  The reason we don’t use that is because it is app-centric (app in the Django sense).  Its permission strings are of the form <code class="docutils literal notranslate"><span class="pre">appname.permstring</span></code> and it automatically adds three of them for each database model in the app - for the app evennia/object this would be for example ‘object.create’, ‘object.admin’ and ‘object.edit’. This makes a lot of sense for a web application, not so much for a MUD, especially when we try to hide away as much of the underlying architecture as possible.</p>
+<p>The django permissions are not completely gone however. We use it for validating passwords during login. It is also used exclusively for managing Evennia’s web-based admin site, which is a graphical front-end for the database of Evennia. You edit and assign such permissions directly from the web interface. It’s stand-alone from the permissions described above.</p>
 </section>
 </section>
 
@@ -508,10 +488,10 @@ interface. It’s stand-alone from the permissions described above.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Signals.html" title="Signals"
+          <a href="Commands.html" title="Commands"
              >next</a> |</li>
         <li class="right" >
-          <a href="TickerHandler.html" title="TickerHandler"
+          <a href="Permissions.html" title="Permissions"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>

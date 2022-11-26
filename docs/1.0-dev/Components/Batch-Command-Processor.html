@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Inputfuncs" href="Inputfuncs.html" />
-    <link rel="prev" title="Batch Code Processor" href="Batch-Code-Processor.html" /> 
+    <link rel="next" title="Batch Code Processor" href="Batch-Code-Processor.html" />
+    <link rel="prev" title="Batch Processors" href="Batch-Processors.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,13 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Inputfuncs.html" title="Inputfuncs"
+          <a href="Batch-Code-Processor.html" title="Batch Code Processor"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Batch-Code-Processor.html" title="Batch Code Processor"
+          <a href="Batch-Processors.html" title="Batch Processors"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="Batch-Processors.html" accesskey="U">Batch Processors</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Batch Command Processor</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -63,21 +64,20 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Batch Command Processor</a><ul>
-<li><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
 <li><a class="reference internal" href="#the-batch-file">The batch file</a></li>
 <li><a class="reference internal" href="#interactive-mode">Interactive mode</a></li>
 <li><a class="reference internal" href="#limitations-and-caveats">Limitations and Caveats</a></li>
-<li><a class="reference internal" href="#assorted-notes">Assorted notes</a></li>
+<li><a class="reference internal" href="#editor-highlighting-for-ev-files">Editor highlighting for .ev files</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Batch-Code-Processor.html"
-                        title="previous chapter">Batch Code Processor</a></p>
+  <p class="topless"><a href="Batch-Processors.html"
+                        title="previous chapter">Batch Processors</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Inputfuncs.html"
-                        title="next chapter">Inputfuncs</a></p>
+  <p class="topless"><a href="Batch-Code-Processor.html"
+                        title="next chapter">Batch Code Processor</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -113,10 +113,8 @@
 <p>For an introduction and motivation to using batch processors, see <a class="reference internal" href="Batch-Processors.html"><span class="doc std std-doc">here</span></a>. This
 page describes the Batch-<em>command</em> processor. The Batch-<em>code</em> one is covered [here](Batch-Code-
 Processor).</p>
-<section id="basic-usage">
-<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>The batch-command processor is a superuser-only function, invoked by</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand path.to.batchcmdfile
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; batchcommand path.to.batchcmdfile
 </pre></div>
 </div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">path.to.batchcmdfile</span></code> is the path to a <em>batch-command file</em> with the “<code class="docutils literal notranslate"><span class="pre">.ev</span></code>” file ending.
@@ -124,7 +122,7 @@ This path is given like a python path relative to a folder you define to hold yo
 with <code class="docutils literal notranslate"><span class="pre">BATCH_IMPORT_PATH</span></code> in your settings. Default folder is (assuming your game is in the <code class="docutils literal notranslate"><span class="pre">mygame</span></code>
 folder) <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>. So if you want to run the example batch file in
 <code class="docutils literal notranslate"><span class="pre">mygame/world/batch_cmds.ev</span></code>, you could use</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand batch_cmds
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; batchcommand batch_cmds
 </pre></div>
 </div>
 <p>A batch-command file contains a list of Evennia in-game commands separated by comments. The
@@ -132,30 +130,18 @@ processor will run the batch file from beginning to end. Note that <em>it will n
 it fail</em> (there is no universal way for the processor to know what a failure looks like for all
 different commands). So keep a close watch on the output, or use <em>Interactive mode</em> (see below) to
 run the file in a more controlled, gradual manner.</p>
-</section>
 <section id="the-batch-file">
 <h2>The batch file<a class="headerlink" href="#the-batch-file" title="Permalink to this headline">¶</a></h2>
 <p>The batch file is a simple plain-text file containing Evennia commands. Just like you would write
 them in-game, except you have more freedom with line breaks.</p>
 <p>Here are the rules of syntax of an <code class="docutils literal notranslate"><span class="pre">*.ev</span></code> file. You’ll find it’s really, really simple:</p>
 <ul class="simple">
-<li><p>All lines having the <code class="docutils literal notranslate"><span class="pre">#</span></code> (hash)-symbol <em>as the first one on the line</em> are considered <em>comments</em>.
-All non-comment lines are treated as a command and/or their arguments.</p></li>
-<li><p>Comment lines have an actual function – they mark the <em>end of the previous command definition</em>.
-So never put two commands directly after one another in the file - separate them with a comment, or
-the second of the two will be considered an argument to the first one. Besides, using plenty of
-comments is good practice anyway.</p></li>
-<li><p>A line that starts with the word <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> is a comment line but also signifies a special
-instruction. The syntax is <code class="docutils literal notranslate"><span class="pre">#INSERT</span> <span class="pre">&lt;path.batchfile&gt;</span></code> and tries to import a given batch-cmd file
-into this one. The inserted batch file (file ending <code class="docutils literal notranslate"><span class="pre">.ev</span></code>) will run normally from the point of the
-<code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> instruction.</p></li>
-<li><p>Extra whitespace in a command definition is <em>ignored</em>.  - A completely empty line translates in to
-a line break in texts. Two empty lines thus means a new paragraph (this is obviously only relevant
-for commands accepting such formatting, such as the <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code> command).</p></li>
+<li><p>All lines having the <code class="docutils literal notranslate"><span class="pre">#</span></code> (hash)-symbol <em>as the first one on the line</em> are considered <em>comments</em>. All non-comment lines are treated as a command and/or their arguments.</p></li>
+<li><p>Comment lines have an actual function – they mark the <em>end of the previous command definition</em>. So never put two commands directly after one another in the file - separate them with a comment, or the second of the two will be considered an argument to the first one. Besides, using plenty of comments is good practice anyway.</p></li>
+<li><p>A line that starts with the word <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> is a comment line but also signifies a special instruction. The syntax is <code class="docutils literal notranslate"><span class="pre">#INSERT</span> <span class="pre">&lt;path.batchfile&gt;</span></code> and tries to import a given batch-cmd file into this one. The inserted batch file (file ending <code class="docutils literal notranslate"><span class="pre">.ev</span></code>) will run normally from the point of the <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> instruction.</p></li>
+<li><p>Extra whitespace in a command definition is <em>ignored</em>.  - A completely empty line translates in to a line break in texts. Two empty lines thus means a new paragraph (this is obviously only relevant for commands accepting such formatting, such as the <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code> command).</p></li>
 <li><p>The very last command in the file is not required to end with a comment.</p></li>
-<li><p>You <em>cannot</em> nest another <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code> statement into your batch file. If you want to link many
-batch-files together, use the <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> batch instruction instead. You also cannot launch the
-<code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> command from your batch file, the two batch processors are not compatible.</p></li>
+<li><p>You <em>cannot</em> nest another <code class="docutils literal notranslate"><span class="pre">batchcommand</span></code> statement into your batch file. If you want to link many batch-files together, use the <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> batch instruction instead. You also cannot launch the <code class="docutils literal notranslate"><span class="pre">batchcode</span></code> command from your batch file, the two batch processors are not compatible.</p></li>
 </ul>
 <p>Below is a version of the example file found in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/batch_cmds.ev</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
@@ -201,23 +187,17 @@ batch-files together, use the <code class="docutils literal notranslate"><span c
 </pre></div>
 </div>
 <p>To test this, run <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code> on the file:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; @batchcommand contrib.tutorial_examples.batch_cmds
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; batchcommand contrib.tutorial_examples.batch_cmds
 </pre></div>
 </div>
-<p>A button will be created, described and dropped in Limbo. All commands will be executed by the user
-calling the command.</p>
+<p>A button will be created, described and dropped in Limbo. All commands will be executed by the user calling the command.</p>
 <blockquote>
-<div><p>Note that if you interact with the button, you might find that its description changes, loosing
-your custom-set description above. This is just the way this particular object works.</p>
+<div><p>Note that if you interact with the button, you might find that its description changes, loosing your custom-set description above. This is just the way this particular object works.</p>
 </div></blockquote>
 </section>
 <section id="interactive-mode">
 <h2>Interactive mode<a class="headerlink" href="#interactive-mode" title="Permalink to this headline">¶</a></h2>
-<p>Interactive mode allows you to more step-wise control over how the batch file is executed. This is
-useful for debugging and also if you have a large batch file and is only updating a small part of it
-– running the entire file again would be a waste of time (and in the case of <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code>-ing objects
-you would to end up with multiple copies of same-named objects, for example). Use <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code>
-with the <code class="docutils literal notranslate"><span class="pre">/interactive</span></code> flag to enter interactive mode.</p>
+<p>Interactive mode allows you to more step-wise control over how the batch file is executed. This is useful for debugging and also if you have a large batch file and is only updating a small part of it – running the entire file again would be a waste of time (and in the case of <code class="docutils literal notranslate"><span class="pre">create</span></code>-ing objects you would to end up with multiple copies of same-named objects, for example). Use <code class="docutils literal notranslate"><span class="pre">batchcommand</span></code> with the <code class="docutils literal notranslate"><span class="pre">/interactive</span></code> flag to enter interactive mode.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand/interactive tutorial_examples.batch_cmds
 </pre></div>
 </div>
@@ -225,62 +205,30 @@ with the <code class="docutils literal notranslate"><span class="pre">/interacti
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>01/04: @create button:tutorial_examples.red_button.RedButton  (hh for help) 
 </pre></div>
 </div>
-<p>This shows that you are on the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command, the first out of only four commands in this batch
-file. Observe that the command <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> has <em>not</em> been actually processed at this point!</p>
+<p>This shows that you are on the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command, the first out of only four commands in this batch file. Observe that the command <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> has <em>not</em> been actually processed at this point!</p>
 <p>To take a look at the full command you are about to run, use <code class="docutils literal notranslate"><span class="pre">ll</span></code> (a batch-processor version of
-<code class="docutils literal notranslate"><span class="pre">look</span></code>). Use <code class="docutils literal notranslate"><span class="pre">pp</span></code> to actually process the current command (this will actually <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> the button)
-– and make sure it worked as planned. Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> (next) to go to the next command.  Use <code class="docutils literal notranslate"><span class="pre">hh</span></code> for a
-list of commands.</p>
-<p>If there are errors, fix them in the batch file, then use <code class="docutils literal notranslate"><span class="pre">rr</span></code> to reload the file. You will still be
-at the same command and can rerun it easily with <code class="docutils literal notranslate"><span class="pre">pp</span></code> as needed. This makes for a simple debug
-cycle. It also allows you to rerun individual troublesome commands - as mentioned, in a large batch
-file this can be very useful. Do note that in many cases, commands depend on the previous ones (e.g.
-if <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> in the example above had failed, the following commands would have had nothing to
-operate on).</p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> and <code class="docutils literal notranslate"><span class="pre">bb</span></code> (next and back) to step through the file; e.g. <code class="docutils literal notranslate"><span class="pre">nn</span> <span class="pre">12</span></code> will jump 12 steps forward
-(without processing any command in between). All normal commands of Evennia should work too while
-working in interactive mode.</p>
+<code class="docutils literal notranslate"><span class="pre">look</span></code>). Use <code class="docutils literal notranslate"><span class="pre">pp</span></code> to actually process the current command (this will actually <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> the button) – and make sure it worked as planned. Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> (next) to go to the next command.  Use <code class="docutils literal notranslate"><span class="pre">hh</span></code> for a list of commands.</p>
+<p>If there are errors, fix them in the batch file, then use <code class="docutils literal notranslate"><span class="pre">rr</span></code> to reload the file. You will still be at the same command and can rerun it easily with <code class="docutils literal notranslate"><span class="pre">pp</span></code> as needed. This makes for a simple debug cycle. It also allows you to rerun individual troublesome commands - as mentioned, in a large batch file this can be very useful. Do note that in many cases, commands depend on the previous ones (e.g. if <code class="docutils literal notranslate"><span class="pre">create</span></code> in the example above had failed, the following commands would have had nothing to operate on).</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> and <code class="docutils literal notranslate"><span class="pre">bb</span></code> (next and back) to step through the file; e.g. <code class="docutils literal notranslate"><span class="pre">nn</span> <span class="pre">12</span></code> will jump 12 steps forward (without processing any command in between). All normal commands of Evennia should work too while working in interactive mode.</p>
 </section>
 <section id="limitations-and-caveats">
 <h2>Limitations and Caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">¶</a></h2>
-<p>The batch-command processor is great for automating smaller builds or for testing new commands and
-objects repeatedly without having to write so much. There are several caveats you have to be aware
-of when using the batch-command processor for building larger, complex worlds though.</p>
+<p>The batch-command processor is great for automating smaller builds or for testing new commands and objects repeatedly without having to write so much. There are several caveats you have to be aware of when using the batch-command processor for building larger, complex worlds though.</p>
 <p>The main issue is that when you run a batch-command script you (<em>you</em>, as in your superuser
-character) are actually moving around in the game creating and building rooms in sequence, just as
-if you had been entering those commands manually, one by one. You have to take this into account
-when creating the file, so that you can ‘walk’ (or teleport) to the right places in order.</p>
-<p>This also means there are several pitfalls when designing and adding certain types of objects. Here
-are some examples:</p>
+character) are actually moving around in the game creating and building rooms in sequence, just as if you had been entering those commands manually, one by one. You have to take this into account when creating the file, so that you can ‘walk’ (or teleport) to the right places in order.</p>
+<p>This also means there are several pitfalls when designing and adding certain types of objects. Here are some examples:</p>
 <ul class="simple">
-<li><p><em>Rooms that change your <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Set</span></a></em>: Imagine that you build a ‘dark’ room, which
-severely limits the cmdsets of those entering it (maybe you have to find the light switch to
-proceed). In your batch script you would create this room, then teleport to it - and promptly be
-shifted into the dark state where none of your normal build commands work …</p></li>
-<li><p><em>Auto-teleportation</em>: Rooms that automatically teleport those that enter them to another place
-(like a trap room, for example). You would be teleported away too.</p></li>
-<li><p><em>Mobiles</em>: If you add aggressive mobs, they might attack you, drawing you into combat. If they
-have AI they might even follow you around when building - or they might move away from you before
-you’ve had time to finish describing and equipping them!</p></li>
+<li><p><em>Rooms that change your <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Set</span></a></em>: Imagine that you build a ‘dark’ room, which severely limits the cmdsets of those entering it (maybe you have to find the light switch to proceed). In your batch script you would create this room, then teleport to it - and promptly be shifted into the dark state where none of your normal build commands work …</p></li>
+<li><p><em>Auto-teleportation</em>: Rooms that automatically teleport those that enter them to another place (like a trap room, for example). You would be teleported away too.</p></li>
+<li><p><em>Mobiles</em>: If you add aggressive mobs, they might attack you, drawing you into combat. If they have AI they might even follow you around when building - or they might move away from you before you’ve had time to finish describing and equipping them!</p></li>
 </ul>
-<p>The solution to all these is to plan ahead. Make sure that superusers are never affected by whatever
-effects are in play. Add an on/off switch to objects and make sure it’s always set to <em>off</em> upon
-creation. It’s all doable, one just needs to keep it in mind.</p>
+<p>The solution to all these is to plan ahead. Make sure that superusers are never affected by whatever effects are in play. Add an on/off switch to objects and make sure it’s always set to <em>off</em> upon creation. It’s all doable, one just needs to keep it in mind.</p>
 </section>
-<section id="assorted-notes">
-<h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
-<p>The fact that you build as ‘yourself’ can also be considered an advantage however, should you ever
-decide to change the default command to allow others than superusers to call the processor. Since
-normal access-checks are still performed, a malevolent builder with access to the processor should
-not be able to do all that much damage (this is the main drawback of the <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc std std-doc">Batch Code
-Processor</span></a>)</p>
+<section id="editor-highlighting-for-ev-files">
+<h2>Editor highlighting for .ev files<a class="headerlink" href="#editor-highlighting-for-ev-files" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="https://www.gnu.org/software/emacs/">GNU Emacs</a> users might find it interesting to use emacs’
-<em>evennia mode</em>. This is an Emacs major mode found in <code class="docutils literal notranslate"><span class="pre">evennia/utils/evennia-mode.el</span></code>. It offers
-correct syntax highlighting and indentation with <code class="docutils literal notranslate"><span class="pre">&lt;tab&gt;</span></code> when editing <code class="docutils literal notranslate"><span class="pre">.ev</span></code> files in Emacs. See the
-header of that file for installation instructions.</p></li>
-<li><p><a class="reference external" href="https://www.vim.org/">VIM</a> users can use amfl’s <a class="reference external" href="https://github.com/amfl/vim-evennia">vim-evennia</a>
-mode instead, see its readme for install instructions.</p></li>
+<li><p><a class="reference external" href="https://www.gnu.org/software/emacs/">GNU Emacs</a> users might find it interesting to use emacs’ <em>evennia mode</em>. This is an Emacs major mode found in <code class="docutils literal notranslate"><span class="pre">evennia/utils/evennia-mode.el</span></code>. It offers correct syntax highlighting and indentation with <code class="docutils literal notranslate"><span class="pre">&lt;tab&gt;</span></code> when editing <code class="docutils literal notranslate"><span class="pre">.ev</span></code> files in Emacs. See the header of that file for installation instructions.</p></li>
+<li><p><a class="reference external" href="https://www.vim.org/">VIM</a> users can use amfl’s <a class="reference external" href="https://github.com/amfl/vim-evennia">vim-evennia</a> mode instead, see its readme for install instructions.</p></li>
 </ul>
 </section>
 </section>
@@ -301,13 +249,14 @@ mode instead, see its readme for install instructions.</p></li>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Inputfuncs.html" title="Inputfuncs"
+          <a href="Batch-Code-Processor.html" title="Batch Code Processor"
              >next</a> |</li>
         <li class="right" >
-          <a href="Batch-Code-Processor.html" title="Batch Code Processor"
+          <a href="Batch-Processors.html" title="Batch Processors"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="Batch-Processors.html" >Batch Processors</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Batch Command Processor</a></li> 
       </ul>
         <div class="develop">develop branch</div>

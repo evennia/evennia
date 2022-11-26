@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Commands" href="Commands.html" />
-    <link rel="prev" title="Permissions" href="Permissions.html" /> 
+    <link rel="next" title="Sessions" href="Sessions.html" />
+    <link rel="prev" title="Core Components" href="Components-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Commands.html" title="Commands"
+          <a href="Sessions.html" title="Sessions"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Permissions.html" title="Permissions"
+          <a href="Components-Overview.html" title="Core Components"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
@@ -61,11 +61,11 @@
 </div>
 <script>$('#searchbox').show(0);</script>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Permissions.html"
-                        title="previous chapter">Permissions</a></p>
+  <p class="topless"><a href="Components-Overview.html"
+                        title="previous chapter">Core Components</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Commands.html"
-                        title="next chapter">Commands</a></p>
+  <p class="topless"><a href="Sessions.html"
+                        title="next chapter">Sessions</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -98,11 +98,6 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="portal-and-server">
 <h1>Portal And Server<a class="headerlink" href="#portal-and-server" title="Permalink to this headline">¶</a></h1>
-<p>Evennia consists of two processes, known as <em>Portal</em> and <em>Server</em>.  They can be controlled from
-inside the game or from the command line as described <a class="reference internal" href="../Setup/Running-Evennia.html"><span class="doc std std-doc">in the Running-Evennia doc</span></a>.</p>
-<p>In short, the Portal knows everything about internet protocols (telnet, websockets etc), but knows very little about the game.</p>
-<p>In contrast, the Server knows everything about the game. It knows that a player has connected but now <em>how</em> they connected.</p>
-<p>The effect of this is that you can fully <code class="docutils literal notranslate"><span class="pre">reload</span></code> the Server and have players still connected to the game. One the server comes back up, it will re-connect to the Portal and re-sync all players as if nothing happened.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Internet│  ┌──────────┐ ┌─┐           ┌─┐ ┌─────────┐
         │  │Portal    │ │S│   ┌───┐   │S│ │Server   │
     P   │  │          │ │e│   │AMP│   │e│ │         │
@@ -116,7 +111,14 @@ inside the game or from the command line as described <a class="reference intern
         │Evennia
 </pre></div>
 </div>
-<p>The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection. This allows the two programs to communicate seamlessly on the same machine.</p>
+<p>The <em>Portal</em> and <em>Server</em> consitutes the two main halves of Evennia.</p>
+<p>These are two separate <code class="docutils literal notranslate"><span class="pre">twistd</span></code> processes and can be controlled from inside the game or from the command line as described <a class="reference internal" href="../Setup/Running-Evennia.html"><span class="doc std std-doc">in the Running-Evennia doc</span></a>.</p>
+<ul class="simple">
+<li><p>The Portal knows everything about internet protocols (telnet, websockets etc), but knows very little about the game.</p></li>
+<li><p>The Server knows everything about the game. It knows that a player has connected but now <em>how</em> they connected.</p></li>
+</ul>
+<p>The effect of this is that you can fully <code class="docutils literal notranslate"><span class="pre">reload</span></code> the Server and have players still connected to the game. One the server comes back up, it will re-connect to the Portal and re-sync all players as if nothing happened.</p>
+<p>The Portal and Server are intended to always run on the same machine. They are glued together via an AMP (Asynchronous Messaging Protocol) connection. This allows the two programs to communicate seamlessly.</p>
 </section>
 
 
@@ -135,10 +137,10 @@ inside the game or from the command line as described <a class="reference intern
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Commands.html" title="Commands"
+          <a href="Sessions.html" title="Sessions"
              >next</a> |</li>
         <li class="right" >
-          <a href="Permissions.html" title="Permissions"
+          <a href="Components-Overview.html" title="Core Components"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>

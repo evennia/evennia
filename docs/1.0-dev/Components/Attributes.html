@@ -63,21 +63,21 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Attributes</a><ul>
-<li><a class="reference internal" href="#managing-attributes-in-code">Managing Attributes in Code</a><ul>
+<li><a class="reference internal" href="#working-with-attributes">Working with Attributes</a><ul>
 <li><a class="reference internal" href="#using-db">Using .db</a></li>
 <li><a class="reference internal" href="#using-attributes">Using .attributes</a></li>
 <li><a class="reference internal" href="#using-attributeproperty">Using AttributeProperty</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#properties-of-attributes">Properties of Attributes</a></li>
 <li><a class="reference internal" href="#managing-attributes-in-game">Managing Attributes in-game</a></li>
 <li><a class="reference internal" href="#locking-and-checking-attributes">Locking and checking Attributes</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#what-types-of-data-can-i-save-in-an-attribute">What types of data can I save in an Attribute?</a><ul>
 <li><a class="reference internal" href="#storing-single-objects">Storing single objects</a></li>
 <li><a class="reference internal" href="#storing-multiple-objects">Storing multiple objects</a></li>
 <li><a class="reference internal" href="#retrieving-mutable-objects">Retrieving Mutable objects</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#properties-of-attributes">Properties of Attributes</a></li>
 <li><a class="reference internal" href="#in-memory-attributes-nattributes">In-memory Attributes (NAttributes)</a><ul>
 <li><a class="reference internal" href="#persistent-vs-non-persistent">Persistent vs non-persistent</a></li>
 </ul>
@@ -155,27 +155,11 @@
 </pre></div>
 </div>
 </div>
-<p><em>Attributes</em> allow you to to store arbitrary data on objects and make sure the data survives a server reboot. An Attribute can store pretty much any
-Python data structure and data type, like numbers, strings, lists, dicts etc. You can also
-store (references to) database objects like characters and rooms.</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#what-types-of-data-can-i-save-in-an-attribute"><span class="std std-doc">What can be stored in an Attribute</span></a> is a must-read to avoid being surprised, also for experienced developers. Attributes can store <em>almost</em> everything
-but you need to know the quirks.</p></li>
-<li><p><a class="reference internal" href="#in-memory-attributes-nattributes"><span class="std std-doc">NAttributes</span></a> are the in-memory, non-persistent
-siblings of Attributes.</p></li>
-<li><p><a class="reference internal" href="#managing-attributes-in-game"><span class="std std-doc">Managing Attributes In-game</span></a> for in-game builder commands.</p></li>
-</ul>
-<section id="managing-attributes-in-code">
-<h2>Managing Attributes in Code<a class="headerlink" href="#managing-attributes-in-code" title="Permalink to this headline">¶</a></h2>
-<p>Attributes are usually handled in code. All <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities
-(<a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and
-<a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>) can (and usually do) have Attributes associated with them. There
+<p><em>Attributes</em> allow you to to store arbitrary data on objects and make sure the data survives a server reboot. An Attribute can store pretty much any Python data structure and data type, like numbers, strings, lists, dicts etc. You can also store (references to) database objects like characters and rooms.</p>
+<section id="working-with-attributes">
+<h2>Working with Attributes<a class="headerlink" href="#working-with-attributes" title="Permalink to this headline">¶</a></h2>
+<p>Attributes are usually handled in code. All <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities (<a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>) can (and usually do) have Attributes associated with them. There
 are three ways to manage Attributes, all of which can be mixed.</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#using-db"><span class="std std-doc">Using the <code class="docutils literal notranslate"><span class="pre">.db</span></code> property shortcut</span></a></p></li>
-<li><p><a class="reference internal" href="#using-attributes"><span class="std std-doc">Using the <code class="docutils literal notranslate"><span class="pre">.attributes</span></code> manager (<code class="docutils literal notranslate"><span class="pre">AttributeManager</span></code>)</span></a></p></li>
-<li><p><a class="reference internal" href="#using-attributeproperty"><span class="std std-doc">Using <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> for assigning Attributes in a way similar to Django fields</span></a></p></li>
-</ul>
 <section id="using-db">
 <h3>Using .db<a class="headerlink" href="#using-db" title="Permalink to this headline">¶</a></h3>
 <p>The simplest way to get/set Attributes is to use the <code class="docutils literal notranslate"><span class="pre">.db</span></code> shortcut. This allows for setting and getting Attributes that lack a <em>category</em> (having category <code class="docutils literal notranslate"><span class="pre">None</span></code>)</p>
@@ -239,8 +223,7 @@ the <a class="reference internal" href="../api/evennia.typeclasses.attributes.ht
 </pre></div>
 </div>
 <p>If you don’t specify a category, the Attribute’s <code class="docutils literal notranslate"><span class="pre">category</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> and can thus also be found via <code class="docutils literal notranslate"><span class="pre">.db</span></code>. <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered a category of its own, so you won’t find <code class="docutils literal notranslate"><span class="pre">None</span></code>-category Attributes mixed with Attributes having categories.</p>
-<p>Here are the methods of the <code class="docutils literal notranslate"><span class="pre">AttributeHandler</span></code>. See
-the <a class="reference internal" href="../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler" title="evennia.typeclasses.attributes.AttributeHandler"><span class="xref myst py py-class">AttributeHandler API</span></a> for more details.</p>
+<p>Here are the methods of the <code class="docutils literal notranslate"><span class="pre">AttributeHandler</span></code>. See the <a class="reference internal" href="../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler" title="evennia.typeclasses.attributes.AttributeHandler"><span class="xref myst py py-class">AttributeHandler API</span></a> for more details.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">has(...)</span></code> - this checks if the object has an Attribute with this key. This is equivalent
 to doing <code class="docutils literal notranslate"><span class="pre">obj.db.attrname</span></code> except you can also check for a specific `category.</p></li>
@@ -330,16 +313,45 @@ The drawback is that without a database precense you can’t find the Attribute 
 <span class="n">char</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleepy&quot;</span><span class="p">)</span>  <span class="c1"># now returns True</span>
 
 <span class="n">char</span><span class="o">.</span><span class="n">sleepy</span>  <span class="c1"># now returns True, involves db access</span>
-
 </pre></div>
 </div>
-<p>You can e.g. <code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">char.strength</span></code> to set the value back to the default (the value defined
-in the <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code>).</p>
+<p>You can e.g. <code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">char.strength</span></code> to set the value back to the default (the value defined in the <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code>).</p>
 <p>See the <a class="reference internal" href="../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty" title="evennia.typeclasses.attributes.AttributeProperty"><span class="xref myst py py-class">AttributeProperty API</span></a> for more details on how to create it with special options, like giving access-restrictions.</p>
 </section>
+<section id="properties-of-attributes">
+<h3>Properties of Attributes<a class="headerlink" href="#properties-of-attributes" title="Permalink to this headline">¶</a></h3>
+<p>An <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> object is stored in the database. It has the following properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> - the name of the Attribute. When doing e.g. <code class="docutils literal notranslate"><span class="pre">obj.db.attrname</span> <span class="pre">=</span> <span class="pre">value</span></code>, this property is set
+to <code class="docutils literal notranslate"><span class="pre">attrname</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> - this is the value of the Attribute. This value can be anything which can be pickled -
+objects, lists, numbers or what have you (see
+<a class="reference internal" href="#what-types-of-data-can-i-save-in-an-attribute"><span class="std std-doc">this section</span></a> for more info). In the
+example
+<code class="docutils literal notranslate"><span class="pre">obj.db.attrname</span> <span class="pre">=</span> <span class="pre">value</span></code>, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is stored here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">category</span></code> - this is an optional property that is set to None for most Attributes. Setting this
+allows to use Attributes for different functionality. This is usually not needed unless you want
+to use Attributes for very different functionality (<a class="reference internal" href="Nicks.html"><span class="doc std std-doc">Nicks</span></a> is an example of using
+Attributes in this way). To modify this property you need to use the <a class="reference internal" href="#attributes"><span class="std std-doc">Attribute Handler</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strvalue</span></code> - this is a separate value field that only accepts strings. This severely limits the
+data possible to store, but allows for easier database lookups. This property is usually not used
+except when re-using Attributes for some other purpose (<a class="reference internal" href="Nicks.html"><span class="doc std std-doc">Nicks</span></a> use it). It is only
+accessible via the <a class="reference internal" href="#attributes"><span class="std std-doc">Attribute Handler</span></a>.</p></li>
+</ul>
+<p>There are also two special properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">attrtype</span></code> - this is used internally by Evennia to separate <a class="reference internal" href="Nicks.html"><span class="doc std std-doc">Nicks</span></a>, from Attributes (Nicks
+use Attributes behind the scenes).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> - this is a <em>natural-key</em> describing the model this Attribute is attached to. This is on
+the form <em>appname.modelclass</em>, like <code class="docutils literal notranslate"><span class="pre">objects.objectdb</span></code>. It is used by the Attribute and
+NickHandler to quickly sort matches in the database.  Neither this nor <code class="docutils literal notranslate"><span class="pre">attrtype</span></code> should normally
+need to be modified.</p></li>
+</ul>
+<p>Non-database attributes are not stored in the database and have no equivalence
+to <code class="docutils literal notranslate"><span class="pre">category</span></code> nor <code class="docutils literal notranslate"><span class="pre">strvalue</span></code>, <code class="docutils literal notranslate"><span class="pre">attrtype</span></code> or <code class="docutils literal notranslate"><span class="pre">model</span></code>.</p>
 </section>
 <section id="managing-attributes-in-game">
-<h2>Managing Attributes in-game<a class="headerlink" href="#managing-attributes-in-game" title="Permalink to this headline">¶</a></h2>
+<h3>Managing Attributes in-game<a class="headerlink" href="#managing-attributes-in-game" title="Permalink to this headline">¶</a></h3>
 <p>Attributes are mainly used by code. But one can also allow the builder to use Attributes to
 ‘turn knobs’ in-game. For example a builder could want to manually tweak the “level” Attribute of an
 enemy NPC to lower its difficuly.</p>
@@ -375,7 +387,7 @@ set mypobj/mystring = [1, 2, foo]   # foo is invalid Python (no quotes)
 <p>For the last line you’ll get a warning and the value instead will be saved as a string <code class="docutils literal notranslate"><span class="pre">&quot;[1,</span> <span class="pre">2,</span> <span class="pre">foo]&quot;</span></code>.</p>
 </section>
 <section id="locking-and-checking-attributes">
-<h2>Locking and checking Attributes<a class="headerlink" href="#locking-and-checking-attributes" title="Permalink to this headline">¶</a></h2>
+<h3>Locking and checking Attributes<a class="headerlink" href="#locking-and-checking-attributes" title="Permalink to this headline">¶</a></h3>
 <p>While the <code class="docutils literal notranslate"><span class="pre">set</span></code> command is limited to builders, individual Attributes are usually not
 locked down. You may want to lock certain sensitive Attributes, in particular for games
 where you allow player building. You can add such limitations by adding a <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock string</span></a>
@@ -417,6 +429,7 @@ To check the <code class="docutils literal notranslate"><span class="pre">lockst
 </div>
 <p>The same keywords are available to use with <code class="docutils literal notranslate"><span class="pre">obj.attributes.set()</span></code> and <code class="docutils literal notranslate"><span class="pre">obj.attributes.remove()</span></code>,
 those will check for the <code class="docutils literal notranslate"><span class="pre">attredit</span></code> lock type.</p>
+</section>
 </section>
 <section id="what-types-of-data-can-i-save-in-an-attribute">
 <h2>What types of data can I save in an Attribute?<a class="headerlink" href="#what-types-of-data-can-i-save-in-an-attribute" title="Permalink to this headline">¶</a></h2>
@@ -612,38 +625,6 @@ database with the help of the <code class="docutils literal notranslate"><span c
 instead of <code class="docutils literal notranslate"><span class="pre">_SaverList</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code> instead of <code class="docutils literal notranslate"><span class="pre">_SaverDict</span></code> and so on). If you update it, you need to
 explicitly save it back to the Attribute for it to save.</p>
 </section>
-</section>
-<section id="properties-of-attributes">
-<h2>Properties of Attributes<a class="headerlink" href="#properties-of-attributes" title="Permalink to this headline">¶</a></h2>
-<p>An <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> object is stored in the database. It has the following properties:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> - the name of the Attribute. When doing e.g. <code class="docutils literal notranslate"><span class="pre">obj.db.attrname</span> <span class="pre">=</span> <span class="pre">value</span></code>, this property is set
-to <code class="docutils literal notranslate"><span class="pre">attrname</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> - this is the value of the Attribute. This value can be anything which can be pickled -
-objects, lists, numbers or what have you (see
-<a class="reference internal" href="#what-types-of-data-can-i-save-in-an-attribute"><span class="std std-doc">this section</span></a> for more info). In the
-example
-<code class="docutils literal notranslate"><span class="pre">obj.db.attrname</span> <span class="pre">=</span> <span class="pre">value</span></code>, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is stored here.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">category</span></code> - this is an optional property that is set to None for most Attributes. Setting this
-allows to use Attributes for different functionality. This is usually not needed unless you want
-to use Attributes for very different functionality (<a class="reference internal" href="Nicks.html"><span class="doc std std-doc">Nicks</span></a> is an example of using
-Attributes in this way). To modify this property you need to use the <a class="reference internal" href="#attributes"><span class="std std-doc">Attribute Handler</span></a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">strvalue</span></code> - this is a separate value field that only accepts strings. This severely limits the
-data possible to store, but allows for easier database lookups. This property is usually not used
-except when re-using Attributes for some other purpose (<a class="reference internal" href="Nicks.html"><span class="doc std std-doc">Nicks</span></a> use it). It is only
-accessible via the <a class="reference internal" href="#attributes"><span class="std std-doc">Attribute Handler</span></a>.</p></li>
-</ul>
-<p>There are also two special properties:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">attrtype</span></code> - this is used internally by Evennia to separate <a class="reference internal" href="Nicks.html"><span class="doc std std-doc">Nicks</span></a>, from Attributes (Nicks
-use Attributes behind the scenes).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> - this is a <em>natural-key</em> describing the model this Attribute is attached to. This is on
-the form <em>appname.modelclass</em>, like <code class="docutils literal notranslate"><span class="pre">objects.objectdb</span></code>. It is used by the Attribute and
-NickHandler to quickly sort matches in the database.  Neither this nor <code class="docutils literal notranslate"><span class="pre">attrtype</span></code> should normally
-need to be modified.</p></li>
-</ul>
-<p>Non-database attributes are not stored in the database and have no equivalence
-to <code class="docutils literal notranslate"><span class="pre">category</span></code> nor <code class="docutils literal notranslate"><span class="pre">strvalue</span></code>, <code class="docutils literal notranslate"><span class="pre">attrtype</span></code> or <code class="docutils literal notranslate"><span class="pre">model</span></code>.</p>
 </section>
 <section id="in-memory-attributes-nattributes">
 <h2>In-memory Attributes (NAttributes)<a class="headerlink" href="#in-memory-attributes-nattributes" title="Permalink to this headline">¶</a></h2>

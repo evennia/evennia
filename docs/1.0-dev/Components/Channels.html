@@ -63,19 +63,20 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Channels</a><ul>
-<li><a class="reference internal" href="#using-channels-in-game">Using channels in-game</a><ul>
+<li><a class="reference internal" href="#working-with-channels">Working with channels</a><ul>
 <li><a class="reference internal" href="#viewing-and-joining-channels">Viewing and joining channels</a></li>
-<li><a class="reference internal" href="#chat-on-channels">Chat on channels</a></li>
+<li><a class="reference internal" href="#talk-on-channels">Talk on channels</a></li>
 <li><a class="reference internal" href="#channel-administration">Channel administration</a><ul>
 <li><a class="reference internal" href="#restricting-channel-administration">Restricting channel administration</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#using-channels-in-code">Using channels in code</a><ul>
 <li><a class="reference internal" href="#allowing-characters-to-use-channels">Allowing Characters to use Channels</a></li>
 <li><a class="reference internal" href="#customizing-channel-output-and-behavior">Customizing channel output and behavior</a></li>
-<li><a class="reference internal" href="#channels-in-code">Channels in code</a></li>
-<li><a class="reference internal" href="#channel-logging">Channel logging</a><ul>
+<li><a class="reference internal" href="#channel-class">Channel class</a></li>
+<li><a class="reference internal" href="#channel-logging">Channel logging</a></li>
 <li><a class="reference internal" href="#properties-on-channels">Properties on Channels</a></li>
 </ul>
 </li>
@@ -143,15 +144,12 @@ it to every other subscriber.</p>
 <p><span class="versionmodified changed">Changed in version 1.0: </span>Channel system changed to use a central ‘channel’ command and nicks instead of
 auto-generated channel-commands and -cmdset. ChannelHandler was removed.</p>
 </div>
-<section id="using-channels-in-game">
-<h2>Using channels in-game<a class="headerlink" href="#using-channels-in-game" title="Permalink to this headline">¶</a></h2>
-<p>In the default command set, channels are all handled via the mighty
-<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">channel
-command</span></a>, <code class="docutils literal notranslate"><span class="pre">channel</span></code> (or
-<code class="docutils literal notranslate"><span class="pre">chan</span></code>).  By default, this command will assume all entities dealing with
-channels are <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>.</p>
+<section id="working-with-channels">
+<h2>Working with channels<a class="headerlink" href="#working-with-channels" title="Permalink to this headline">¶</a></h2>
 <section id="viewing-and-joining-channels">
 <h3>Viewing and joining channels<a class="headerlink" href="#viewing-and-joining-channels" title="Permalink to this headline">¶</a></h3>
+<p>In the default command set, channels are all handled via the mighty <a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">channel command</span></a>, <code class="docutils literal notranslate"><span class="pre">channel</span></code> (or <code class="docutils literal notranslate"><span class="pre">chan</span></code>).  By default, this command will assume all entities dealing with channels are <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>.</p>
+<p>Viewing channels</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel       - shows your subscriptions
 channel/all   - shows all subs available to you
 channel/who   - shows who subscribes to this channel
@@ -169,8 +167,8 @@ channel/unmute channelname
 </pre></div>
 </div>
 </section>
-<section id="chat-on-channels">
-<h3>Chat on channels<a class="headerlink" href="#chat-on-channels" title="Permalink to this headline">¶</a></h3>
+<section id="talk-on-channels">
+<h3>Talk on channels<a class="headerlink" href="#talk-on-channels" title="Permalink to this headline">¶</a></h3>
 <p>To speak on a channel, do</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel public Hello world!
 </pre></div>
@@ -255,8 +253,7 @@ channel/unban mychannel = annoyinguser123
 <p>Banning adds the user to the channels blacklist. This means they will not be
 able to <em>rejoin</em> if you boot them. You will need to run <code class="docutils literal notranslate"><span class="pre">channel/boot</span></code> to
 actually kick them out.</p>
-<p>See the <a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">Channel command</span></a> api
-docs (and in-game help) for more details.</p>
+<p>See the <a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">Channel command</span></a> api docs (and in-game help) for more details.</p>
 <p>Admin-level users can also modify channel’s <a class="reference internal" href="Locks.html"><span class="doc std std-doc">locks</span></a>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/lock buildchannel = listen:all();send:perm(Builders)
 </pre></div>
@@ -271,11 +268,7 @@ control over the channel you can edit it, boot users and do other management tas
 </ul>
 <section id="restricting-channel-administration">
 <h4>Restricting channel administration<a class="headerlink" href="#restricting-channel-administration" title="Permalink to this headline">¶</a></h4>
-<p>By default everyone can use the channel command (<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdChannel</span></a>)
-to create channels and will then control the channels they created (to boot/ban
-people etc). If you as a developer does not want regular players to do this
-(perhaps you want only staff to be able to spawn new channels), you can
-override the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command and change its <code class="docutils literal notranslate"><span class="pre">locks</span></code> property.</p>
+<p>By default everyone can use the channel command (<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdChannel</span></a>) to create channels and will then control the channels they created (to boot/ban people etc). If you as a developer does not want regular players to do this (perhaps you want only staff to be able to spawn new channels), you can override the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command and change its <code class="docutils literal notranslate"><span class="pre">locks</span></code> property.</p>
 <p>The default <code class="docutils literal notranslate"><span class="pre">help</span></code> command has the following <code class="docutils literal notranslate"><span class="pre">locks</span></code> property:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not perm(channel_banned); admin:all(); manage:all(); changelocks: perm(Admin)&quot;</span>
 </pre></div>
@@ -313,19 +306,18 @@ access-denied error when trying to use use these switches.</p>
 </section>
 </section>
 </section>
+<section id="using-channels-in-code">
+<h2>Using channels in code<a class="headerlink" href="#using-channels-in-code" title="Permalink to this headline">¶</a></h2>
+<p>For most common changes, the default channel, the recipient hooks and possibly
+overriding the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command will get you very far. But you can also tweak
+channels themselves.</p>
 <section id="allowing-characters-to-use-channels">
-<h2>Allowing Characters to use Channels<a class="headerlink" href="#allowing-characters-to-use-channels" title="Permalink to this headline">¶</a></h2>
-<p>The default <code class="docutils literal notranslate"><span class="pre">channel</span></code> command (<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdChannel</span></a>)
-sits in the <code class="docutils literal notranslate"><span class="pre">Account</span></code> <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">command set</span></a>. It is set up such that it will
-always operate on <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>, even if you were to add it to the
-<code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>.</p>
-<p>It’s a one-line change to make this command accept non-account callers. But for
-convenience we provide a version for Characters/Objects. Just import
-<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdObjectChannel" title="evennia.commands.default.comms.CmdObjectChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdObjectChannel</span></a>
-and inherit from that instead.</p>
+<h3>Allowing Characters to use Channels<a class="headerlink" href="#allowing-characters-to-use-channels" title="Permalink to this headline">¶</a></h3>
+<p>The default <code class="docutils literal notranslate"><span class="pre">channel</span></code> command (<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdChannel</span></a>) sits in the <code class="docutils literal notranslate"><span class="pre">Account</span></code> <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">command set</span></a>. It is set up such that it will always operate on <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>, even if you were to add it to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>.</p>
+<p>It’s a one-line change to make this command accept non-account callers. But for convenience we provide a version for Characters/Objects. Just import <a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdObjectChannel" title="evennia.commands.default.comms.CmdObjectChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdObjectChannel</span></a> and inherit from that instead.</p>
 </section>
 <section id="customizing-channel-output-and-behavior">
-<h2>Customizing channel output and behavior<a class="headerlink" href="#customizing-channel-output-and-behavior" title="Permalink to this headline">¶</a></h2>
+<h3>Customizing channel output and behavior<a class="headerlink" href="#customizing-channel-output-and-behavior" title="Permalink to this headline">¶</a></h3>
 <p>When distributing a message, the channel will call a series of hooks on itself
 and (more importantly) on each recipient. So you can customize things a lot by
 just modifying hooks on your normal Object/Account typeclasses.</p>
@@ -354,19 +346,10 @@ recipient is skipped.</p></li>
 So make sure you modify the set actually used by your subcribers (or both).
 Default channels all use <code class="docutils literal notranslate"><span class="pre">Account</span></code> subscribers.</p>
 </section>
-<section id="channels-in-code">
-<h2>Channels in code<a class="headerlink" href="#channels-in-code" title="Permalink to this headline">¶</a></h2>
-<p>For most common changes, the default channel, the recipient hooks and possibly
-overriding the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command will get you very far. But you can also tweak
-channels themselves.</p>
-<p>Channels are <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities. This means they are
-persistent in the database, can have <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">attributes</span></a> and <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a>
-and can be easily extended.</p>
-<p>To change which channel typeclass Evennia uses for default commands, change
-<code class="docutils literal notranslate"><span class="pre">settings.BASE_CHANNEL_TYPECLASS</span></code>. The base command class is
-<a class="reference internal" href="../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel" title="evennia.comms.comms.DefaultChannel"><span class="xref myst py py-class"><code class="docutils literal notranslate"><span class="pre">evennia.comms.comms.DefaultChannel</span></code></span></a>.
-There is an empty child class in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/channels.py</span></code>, same
-as for other typelass-bases.</p>
+<section id="channel-class">
+<h3>Channel class<a class="headerlink" href="#channel-class" title="Permalink to this headline">¶</a></h3>
+<p>Channels are <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities. This means they are persistent in the database, can have <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">attributes</span></a> and <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> and can be easily extended.</p>
+<p>To change which channel typeclass Evennia uses for default commands, change <code class="docutils literal notranslate"><span class="pre">settings.BASE_CHANNEL_TYPECLASS</span></code>. The base command class is <a class="reference internal" href="../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel" title="evennia.comms.comms.DefaultChannel"><span class="xref myst py py-class"><code class="docutils literal notranslate"><span class="pre">evennia.comms.comms.DefaultChannel</span></code></span></a>. There is an empty child class in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/channels.py</span></code>, same as for other typelass-bases.</p>
 <p>In code you create a new channel with <code class="docutils literal notranslate"><span class="pre">evennia.create_channel</span></code> or
 <code class="docutils literal notranslate"><span class="pre">Channel.create</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_channel</span><span class="p">,</span> <span class="n">search_object</span>
@@ -399,28 +382,24 @@ as for other typelass-bases.</p>
 </div>
 <p>The Channel’s <code class="docutils literal notranslate"><span class="pre">.connect</span></code> method will accept both <code class="docutils literal notranslate"><span class="pre">Account</span></code> and <code class="docutils literal notranslate"><span class="pre">Object</span></code> subscribers
 and will handle them transparently.</p>
-<p>The channel has many more hooks, both hooks shared with all typeclasses as well
-as special ones related to muting/banning etc. See the channel class for
+<p>The channel has many more hooks, both hooks shared with all typeclasses as well as special ones related to muting/banning etc. See the channel class for
 details.</p>
 </section>
 <section id="channel-logging">
-<h2>Channel logging<a class="headerlink" href="#channel-logging" title="Permalink to this headline">¶</a></h2>
+<h3>Channel logging<a class="headerlink" href="#channel-logging" title="Permalink to this headline">¶</a></h3>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 0.7: </span>Channels changed from using Msg to TmpMsg and optional log files.</p>
 </div>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.0: </span>Channels stopped supporting Msg and TmpMsg, using only log files.</p>
 </div>
-<p>The channel messages are not stored in the database. A channel is instead
-always logged to a regular text log-file
-<code class="docutils literal notranslate"><span class="pre">mygame/server/logs/channel_&lt;channelname&gt;.log</span></code>. This is where <code class="docutils literal notranslate"><span class="pre">channels/history</span> <span class="pre">channelname</span></code>
-gets its data from. A channel’s log will rotate when it grows too big, which
-thus also automatically limits the max amount of history a user can view with
+<p>The channel messages are not stored in the database. A channel is instead always logged to a regular text log-file <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/channel_&lt;channelname&gt;.log</span></code>. This is where <code class="docutils literal notranslate"><span class="pre">channels/history</span> <span class="pre">channelname</span></code> gets its data from. A channel’s log will rotate when it grows too big, which thus also automatically limits the max amount of history a user can view with
 <code class="docutils literal notranslate"><span class="pre">/history</span></code>.</p>
 <p>The log file name is set on the channel class as the <code class="docutils literal notranslate"><span class="pre">log_file</span></code> property. This
 is a string that takes the formatting token <code class="docutils literal notranslate"><span class="pre">{channelname}</span></code> to be replaced with
 the (lower-case) name of the channel. By default the log is written to in the
 channel’s <code class="docutils literal notranslate"><span class="pre">at_post_channel_msg</span></code> method.</p>
+</section>
 <section id="properties-on-channels">
 <h3>Properties on Channels<a class="headerlink" href="#properties-on-channels" title="Permalink to this headline">¶</a></h3>
 <p>Channels have all the standard properties of a Typeclassed entity (<code class="docutils literal notranslate"><span class="pre">key</span></code>,

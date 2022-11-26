@@ -1,18 +1,12 @@
 # Msg
 
-The [Msg](evennia.comms.models.Msg) object represents a database-saved
-piece of communication. Think of it as a discrete piece of email - it contains
-a message, some metadata and will always have a sender and one or more
-recipients.
+The [Msg](evennia.comms.models.Msg) object represents a database-saved piece of communication. Think of it as a discrete piece of email - it contains a message, some metadata and will always have a sender and one or more recipients.
 
-Once created, a Msg is normally not changed. It is persitently saved in the
-database. This allows for comprehensive logging of communications. Here are some
-good uses for `Msg` objects:
+Once created, a Msg is normally not changed. It is persitently saved in the database. This allows for comprehensive logging of communications. Here are some good uses for `Msg` objects:
 
 - page/tells (the `page` command is how Evennia uses them out of the box)
 - messages in a bulletin board
 - game-wide email stored in 'mailboxes'.
-
 
 ```{important}
 
@@ -29,13 +23,9 @@ good uses for `Msg` objects:
   Channels dropped Msg-support. Now only used in `page` command by default.
 ```
 
-## Msg in code
+## Working with Msg
 
-The Msg is intended to be used exclusively in code, to build other game systems. It is _not_
-a [Typeclassed](./Typeclasses.md) entity, which means it cannot (easily) be overridden. It
-doesn't support Attributes (but it _does_ support [Tags](./Tags.md)). It tries to be lean
-and small since a new one is created for every message.
-
+The Msg is intended to be used exclusively in code, to build other game systems. It is _not_ a [Typeclassed](./Typeclasses.md) entity, which means it cannot (easily) be overridden. It doesn't support Attributes (but it _does_ support [Tags](./Tags.md)). It tries to be lean and small since a new one is created for every message. 
 You create a new message with `evennia.create_message`:
 
 ```python
@@ -88,8 +78,4 @@ You can search for `Msg` objects in various ways:
 
 ## TempMsg
 
-[evennia.comms.models.TempMsg](evennia.comms.models.TempMsg) is an object
-that implements the same API as the regular `Msg`, but which has no database
-component (and thus cannot be searched). It's meant to plugged into systems
-expecting a `Msg` but where you just want to process the message without saving
-it.
+[evennia.comms.models.TempMsg](evennia.comms.models.TempMsg) is an object that implements the same API as the regular `Msg`, but which has no database component (and thus cannot be searched). It's meant to plugged into systems expecting a `Msg` but where you just want to process the message without saving it.

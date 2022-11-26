@@ -63,7 +63,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Msg</a><ul>
-<li><a class="reference internal" href="#msg-in-code">Msg in code</a><ul>
+<li><a class="reference internal" href="#working-with-msg">Working with Msg</a><ul>
 <li><a class="reference internal" href="#properties-on-msg">Properties on Msg</a></li>
 </ul>
 </li>
@@ -110,13 +110,8 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="msg">
 <h1>Msg<a class="headerlink" href="#msg" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="../api/evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><span class="xref myst py py-class">Msg</span></a> object represents a database-saved
-piece of communication. Think of it as a discrete piece of email - it contains
-a message, some metadata and will always have a sender and one or more
-recipients.</p>
-<p>Once created, a Msg is normally not changed. It is persitently saved in the
-database. This allows for comprehensive logging of communications. Here are some
-good uses for <code class="docutils literal notranslate"><span class="pre">Msg</span></code> objects:</p>
+<p>The <a class="reference internal" href="../api/evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><span class="xref myst py py-class">Msg</span></a> object represents a database-saved piece of communication. Think of it as a discrete piece of email - it contains a message, some metadata and will always have a sender and one or more recipients.</p>
+<p>Once created, a Msg is normally not changed. It is persitently saved in the database. This allows for comprehensive logging of communications. Here are some good uses for <code class="docutils literal notranslate"><span class="pre">Msg</span></code> objects:</p>
 <ul class="simple">
 <li><p>page/tells (the <code class="docutils literal notranslate"><span class="pre">page</span></code> command is how Evennia uses them out of the box)</p></li>
 <li><p>messages in a bulletin board</p></li>
@@ -133,13 +128,10 @@ actual in-game letter-object based on the Msg)</p>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.0: </span>Channels dropped Msg-support. Now only used in <code class="docutils literal notranslate"><span class="pre">page</span></code> command by default.</p>
 </div>
-<section id="msg-in-code">
-<h2>Msg in code<a class="headerlink" href="#msg-in-code" title="Permalink to this headline">¶</a></h2>
-<p>The Msg is intended to be used exclusively in code, to build other game systems. It is <em>not</em>
-a <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entity, which means it cannot (easily) be overridden. It
-doesn’t support Attributes (but it <em>does</em> support <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a>). It tries to be lean
-and small since a new one is created for every message.</p>
-<p>You create a new message with <code class="docutils literal notranslate"><span class="pre">evennia.create_message</span></code>:</p>
+<section id="working-with-msg">
+<h2>Working with Msg<a class="headerlink" href="#working-with-msg" title="Permalink to this headline">¶</a></h2>
+<p>The Msg is intended to be used exclusively in code, to build other game systems. It is <em>not</em> a <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entity, which means it cannot (easily) be overridden. It doesn’t support Attributes (but it <em>does</em> support <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a>). It tries to be lean and small since a new one is created for every message.
+You create a new message with <code class="docutils literal notranslate"><span class="pre">evennia.create_message</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_message</span>
     <span class="n">message</span> <span class="o">=</span> <span class="n">create_message</span><span class="p">(</span><span class="n">senders</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span>
                              <span class="n">locks</span><span class="o">=...</span><span class="p">,</span> <span class="n">tags</span><span class="o">=...</span><span class="p">,</span> <span class="n">header</span><span class="o">=...</span><span class="p">)</span>
@@ -188,11 +180,7 @@ target.</p></li>
 </section>
 <section id="tempmsg">
 <h2>TempMsg<a class="headerlink" href="#tempmsg" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../api/evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><span class="xref myst py py-class">evennia.comms.models.TempMsg</span></a> is an object
-that implements the same API as the regular <code class="docutils literal notranslate"><span class="pre">Msg</span></code>, but which has no database
-component (and thus cannot be searched). It’s meant to plugged into systems
-expecting a <code class="docutils literal notranslate"><span class="pre">Msg</span></code> but where you just want to process the message without saving
-it.</p>
+<p><a class="reference internal" href="../api/evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><span class="xref myst py py-class">evennia.comms.models.TempMsg</span></a> is an object that implements the same API as the regular <code class="docutils literal notranslate"><span class="pre">Msg</span></code>, but which has no database component (and thus cannot be searched). It’s meant to plugged into systems expecting a <code class="docutils literal notranslate"><span class="pre">Msg</span></code> but where you just want to process the message without saving it.</p>
 </section>
 </section>
 

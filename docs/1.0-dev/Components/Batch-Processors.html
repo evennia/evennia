@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Batch Code Processor" href="Batch-Code-Processor.html" />
-    <link rel="prev" title="Connection Screen" href="Connection-Screen.html" /> 
+    <link rel="next" title="Batch Command Processor" href="Batch-Command-Processor.html" />
+    <link rel="prev" title="Default Commands" href="Default-Commands.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Batch-Code-Processor.html" title="Batch Code Processor"
+          <a href="Batch-Command-Processor.html" title="Batch Command Processor"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Connection-Screen.html" title="Connection Screen"
+          <a href="Default-Commands.html" title="Default Commands"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
@@ -69,11 +69,11 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Connection-Screen.html"
-                        title="previous chapter">Connection Screen</a></p>
+  <p class="topless"><a href="Default-Commands.html"
+                        title="previous chapter">Default Commands</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Batch-Code-Processor.html"
-                        title="next chapter">Batch Code Processor</a></p>
+  <p class="topless"><a href="Batch-Command-Processor.html"
+                        title="next chapter">Batch Command Processor</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -106,74 +106,51 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="batch-processors">
 <h1>Batch Processors<a class="headerlink" href="#batch-processors" title="Permalink to this headline">¶</a></h1>
-<p>Building a game world is a lot of work, especially when starting out. Rooms should be created,
-descriptions have to be written, objects must be detailed and placed in their proper places. In many
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Batch-Command-Processor.html">Batch Command Processor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#the-batch-file">The batch file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#interactive-mode">Interactive mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#limitations-and-caveats">Limitations and Caveats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#editor-highlighting-for-ev-files">Editor highlighting for .ev files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Batch-Code-Processor.html">Batch Code Processor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#the-batch-file">The batch file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#debug-mode">Debug mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#interactive-mode">Interactive mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#limitations-and-caveats">Limitations and Caveats</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Building a game world is a lot of work, especially when starting out. Rooms should be created, descriptions have to be written, objects must be detailed and placed in their proper places. In many
 traditional MUD setups you had to do all this online, line by line, over a telnet session.</p>
-<p>Evennia already moves away from much of this by shifting the main coding work to external Python
-modules. But also building would be helped if one could do some or all of it externally. Enter
-Evennia’s <em>batch processors</em> (there are two of them). The processors allows you, as a game admin, to
-build your game completely offline in normal text files (<em>batch files</em>) that the processors
-understands. Then, when you are ready, you use the processors to read it all into Evennia (and into
-the database) in one go.</p>
-<p>You can of course still build completely online should you want to - this is certainly the easiest
-way to go when learning and for small build projects. But for major building work, the advantages of
-using the batch-processors are many:</p>
+<p>Evennia already moves away from much of this by shifting the main coding work to external Python modules. But also building would be helped if one could do some or all of it externally. Enter Evennia’s <em>batch processors</em> (there are two of them). The processors allows you, as a game admin, to build your game completely offline in normal text files (<em>batch files</em>) that the processors understands. Then, when you are ready, you use the processors to read it all into Evennia (and into the database) in one go.</p>
+<p>You can of course still build completely online should you want to - this is certainly the easiest way to go when learning and for small build projects. But for major building work, the advantages of using the batch-processors are many:</p>
 <ul class="simple">
-<li><p>It’s hard to compete with the comfort of a modern desktop text editor; Compared to a traditional
-MUD line input, you can get much better overview and many more features. Also, accidentally pressing
-Return won’t immediately commit things to the database.</p></li>
-<li><p>You might run external spell checkers on your batch files. In the case of one of the batch-
-processors (the one that deals with Python code), you could also run external debuggers and code
-analyzers on your file to catch problems before feeding it to Evennia.</p></li>
-<li><p>The batch files (as long as you keep them) are records of your work. They make a natural starting
-point for quickly re-building your world should you ever decide to start over.</p></li>
-<li><p>If you are an Evennia developer, using a batch file is a fast way to setup a test-game after
-having reset the database.</p></li>
-<li><p>The batch files might come in useful should you ever decide to distribute all or part of your
-world to others.</p></li>
+<li><p>It’s hard to compete with the comfort of a modern desktop text editor; Compared to a traditional MUD line input, you can get much better overview and many more features. Also, accidentally pressing Return won’t immediately commit things to the database.</p></li>
+<li><p>You might run external spell checkers on your batch files. In the case of one of the batch- processors (the one that deals with Python code), you could also run external debuggers and code analyzers on your file to catch problems before feeding it to Evennia.</p></li>
+<li><p>The batch files (as long as you keep them) are records of your work. They make a natural starting point for quickly re-building your world should you ever decide to start over.</p></li>
+<li><p>If you are an Evennia developer, using a batch file is a fast way to setup a test-game after having reset the database.</p></li>
+<li><p>The batch files might come in useful should you ever decide to distribute all or part of your world to others.</p></li>
 </ul>
 <p>There are two batch processors, the Batch-<em>command</em> processor and the Batch-<em>code</em> processor. The
 first one is the simpler of the two. It doesn’t require any programming knowledge - you basically
 just list in-game commands in a text file. The code-processor on the other hand is much more
 powerful but also more complex - it lets you use Evennia’s API to code your world in full-fledged
 Python code.</p>
-<ul class="simple">
-<li><p>The <a class="reference internal" href="Batch-Command-Processor.html"><span class="doc std std-doc">Batch Command Processor</span></a></p></li>
-<li><p>The <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc std std-doc">Batch Code Processor</span></a></p></li>
-</ul>
-<p>If you plan to use international characters in your batchfiles you are wise to read about <em>file
-encodings</em> below.</p>
 <section id="a-note-on-file-encodings">
 <h2>A note on File Encodings<a class="headerlink" href="#a-note-on-file-encodings" title="Permalink to this headline">¶</a></h2>
-<p>As mentioned, both the processors take text files as input and then proceed to process them. As long
-as you stick to the standard <a class="reference external" href="https://en.wikipedia.org/wiki/Ascii">ASCII</a> character set (which means
-the normal English characters, basically) you should not have to worry much about this section.</p>
-<p>Many languages however use characters outside the simple <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> table. Common examples are various
-apostrophes and umlauts but also completely different symbols like those of the greek or cyrillic
-alphabets.</p>
-<p>First, we should make it clear that Evennia itself handles international characters just fine. It
-(and Django) uses <a class="reference external" href="https://en.wikipedia.org/wiki/Unicode">unicode</a> strings internally.</p>
-<p>The problem is that when reading a text file like the batchfile, we need to know how to decode the
-byte-data stored therein to universal unicode. That means we need an <em>encoding</em> (a mapping) for how
-the file stores its data. There are many, many byte-encodings used around the world, with opaque
-names such as <code class="docutils literal notranslate"><span class="pre">Latin-1</span></code>, <code class="docutils literal notranslate"><span class="pre">ISO-8859-3</span></code> or <code class="docutils literal notranslate"><span class="pre">ARMSCII-8</span></code> to pick just a few examples. Problem is that
-it’s practially impossible to determine which encoding was used to save a file just by looking at it
-(it’s just a bunch of bytes!). You have to <em>know</em>.</p>
-<p>With this little introduction it should be clear that Evennia can’t guess but has to <em>assume</em> an
-encoding when trying to load a batchfile. The text editor and Evennia must speak the same “language”
-so to speak. Evennia will by default first try the international <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code> encoding, but you can have
-Evennia try any sequence of different encodings by customizing the <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> list in your settings
-file. Evennia will use the first encoding in the list that do not raise any errors. Only if none
-work will the server give up and return an error message.</p>
-<p>You can often change the text editor encoding (this depends on your editor though), otherwise you
-need to add the editor’s encoding to Evennia’s <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> list. If you are unsure, write a test
-file with lots of non-ASCII letters in the editor of your choice, then import to make sure it works
-as it should.</p>
-<p>More help with encodings can be found in the entry <a class="reference internal" href="../Concepts/Text-Encodings.html"><span class="doc std std-doc">Text Encodings</span></a> and also in the
-Wikipedia article <a class="reference external" href="https://en.wikipedia.org/wiki/Text_encodings">here</a>.</p>
+<p>As mentioned, both the processors take text files as input and then proceed to process them. As long as you stick to the standard <a class="reference external" href="https://en.wikipedia.org/wiki/Ascii">ASCII</a> character set (which means the normal English characters, basically) you should not have to worry much about this section.</p>
+<p>Many languages however use characters outside the simple <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> table. Common examples are various apostrophes and umlauts but also completely different symbols like those of the greek or cyrillic alphabets.</p>
+<p>First, we should make it clear that Evennia itself handles international characters just fine. It (and Django) uses <a class="reference external" href="https://en.wikipedia.org/wiki/Unicode">unicode</a> strings internally.</p>
+<p>The problem is that when reading a text file like the batchfile, we need to know how to decode the byte-data stored therein to universal unicode. That means we need an <em>encoding</em> (a mapping) for how the file stores its data. There are many, many byte-encodings used around the world, with opaque names such as <code class="docutils literal notranslate"><span class="pre">Latin-1</span></code>, <code class="docutils literal notranslate"><span class="pre">ISO-8859-3</span></code> or <code class="docutils literal notranslate"><span class="pre">ARMSCII-8</span></code> to pick just a few examples. Problem is that it’s practially impossible to determine which encoding was used to save a file just by looking at it (it’s just a bunch of bytes!). You have to <em>know</em>.</p>
+<p>With this little introduction it should be clear that Evennia can’t guess but has to <em>assume</em> an encoding when trying to load a batchfile. The text editor and Evennia must speak the same “language” so to speak. Evennia will by default first try the international <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code> encoding, but you can have Evennia try any sequence of different encodings by customizing the <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> list in your settings file. Evennia will use the first encoding in the list that do not raise any errors. Only if none work will the server give up and return an error message.</p>
+<p>You can often change the text editor encoding (this depends on your editor though), otherwise you need to add the editor’s encoding to Evennia’s <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> list. If you are unsure, write a test file with lots of non-ASCII letters in the editor of your choice, then import to make sure it works as it should.</p>
+<p>More help with encodings can be found in the entry <a class="reference internal" href="../Concepts/Text-Encodings.html"><span class="doc std std-doc">Text Encodings</span></a> and also in the Wikipedia article <a class="reference external" href="https://en.wikipedia.org/wiki/Text_encodings">here</a>.</p>
 <p><strong>A footnote for the batch-code processor</strong>: Just because <em>Evennia</em> can parse your file and your
-fancy special characters, doesn’t mean that <em>Python</em> allows their use. Python syntax only allows
-international characters inside <em>strings</em>. In all other source code only <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> set characters are
+fancy special characters, doesn’t mean that <em>Python</em> allows their use. Python syntax only allows international characters inside <em>strings</em>. In all other source code only <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> set characters are
 allowed.</p>
 </section>
 </section>
@@ -194,10 +171,10 @@ allowed.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Batch-Code-Processor.html" title="Batch Code Processor"
+          <a href="Batch-Command-Processor.html" title="Batch Command Processor"
              >next</a> |</li>
         <li class="right" >
-          <a href="Connection-Screen.html" title="Connection Screen"
+          <a href="Default-Commands.html" title="Default Commands"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>

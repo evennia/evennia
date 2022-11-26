@@ -1,14 +1,11 @@
 # Help System
 
-Evennia has an extensive help system covering both command-help and regular
-free-form help documentation. It supports subtopics and if failing to find a
-match it will provide suggestsions, first from alternative topics and then by
-finding mentions of the search term in help entries.
 
-
-    > help theatre
-
+```shell
+> help theatre
 ```
+
+```shell
 ------------------------------------------------------------------------------
 Help for The theatre (aliases: the hub, curtains)
 
@@ -22,9 +19,11 @@ Subtopics:
 ------------------------------------------------------------------------------
 ```
 
-    > help evennia
-
+```shell
+> help evennia
 ```
+
+```shell
 ------------------------------------------------------------------------------
 No help found
 
@@ -36,13 +35,23 @@ Suggestions:
 -----------------------------------------------------------------------------
 ```
 
-## Using the help system from in-game
+Evennia has an extensive help system covering both command-help and regular free-form help documentation. It supports subtopics and if failing to find a match it will provide suggestsions, first from alternative topics and then by finding mentions of the search term in help entries.
 
 The help system is accessed in-game by use of the `help` command:
 
     help <topic>
 
 Sub-topics are accessed as `help <topic>/<subtopic>/...`.
+
+## Working with three types of help entries
+
+There are three ways to generate help entries: 
+
+- In the database 
+- As Python modules
+- From Command doc strings
+
+### Database-stored help entries
 
 Creating a new help entry from in-game is done with
 
@@ -52,205 +61,24 @@ For example
 
     sethelp The Gods;pantheon, Lore = In the beginning all was dark ...
 
-Use the `/edit` switch to open the EvEditor for more convenient in-game writing
-(but note that devs can also create help entries outside the game using their
-regular code editor, see below).
+This will create a new help entry in the database. Use the `/edit` switch to open the EvEditor for more convenient in-game writing (but note that devs can also create help entries outside the game using their regular code editor, see below).
 
-> You can also create help entries as Python modules, outside of the game. See
-> _FileHelp_ entries below.
+The [HelpEntry](evennia.help.models.HelpEntry) stores database help. It is _not_ a Typeclassed entity and can't be extended using the typeclass mechanism.
 
-## Sources of help entries
-
-Evennia collects help entries from three sources:
-
-- _Auto-generated command help_ - this is literally the doc-strings of
-  the [Command classes](./Commands.md). The idea is that the command docs are
-  easier to maintain and keep up-to-date if the developer can change them at the
-  same time as they do the code.
-- _Database-stored help entries_ - These are created in-game (using the
-  default `sethelp` command as exemplified in the previous section).
-- _File-stored help entries_ - These are created outside the game, as dicts in
-  normal Python modules. They allows developers to write and maintain their help
-  files using a proper text editor.
-
-### The Help Entry
-
-All help entries (no matter the source) have the following properties:
-
-- `key` - This is the main topic-name. For Commands, this is literally the
-  command's `key`.
-- `aliases` - Alternate names for the help entry. This can be useful if the main
-  name is hard to remember.
-- `help_category` - The general grouping of the entry. This is optional. If not
-  given it will use the default category given by
-  `settings.COMMAND_DEFAULT_HELP_CATEGORY` for Commands and
-  `settings.DEFAULT_HELP_CATEGORY` for file+db help entries.
-- `locks` - Lock string (for commands) or LockHandler (all help entries).
-   This defines who may read this entry. See the next section.
-- `tags` - This is not used by default, but could be used to further organize
-  help entries.
-- `text` - The actual help entry text. This will be dedented and stripped of
-  extra space at beginning and end.
-
-A `text` that scrolls off the screen will automatically be paginated by
-the [EvMore](./EvMore.md) pager (you can control this with
-`settings.HELP_MORE_ENABLED=False`). If you use EvMore and want to control
-exactly where the pager should break the page, mark the break with the control
-character `\f`.
-
-#### Subtopics
-
-```{versionadded} 1.0
-```
-
-Rather than making a very long help entry, the `text` may also be broken up
-into _subtopics_. A list of the next level of subtopics are shown below the
-main help text and allows the user to read more about some particular detail
-that wouldn't fit in the main text.
-
-Subtopics use a markup slightly similar to markdown headings. The top level
-heading must be named `# subtopics` (non case-sensitive) and the following
-headers must be sub-headings to this (so `## subtopic name` etc). All headings
-are non-case sensitive (the help command will format them). The topics can be
-nested at most to a depth of 5 (which is probably too many levels already). The
-parser uses fuzzy matching to find the subtopic, so one does not have to type
-it all out exactly.
-
-Below is an example of a `text` with sub topics.
-
-```
-The theatre is the heart of the city, here you can find ...
-(This is the main help text, what you get with `help theatre`)
-
-# subtopics
-
-## lore
-
-The theatre holds many mysterious things...
-(`help theatre/lore`)
-
-### the grand opening
-
-The grand opening is the name for a mysterious event where ghosts appeared ...
-(`this is a subsub-topic to lore, accessible as `help theatre/lore/grand` or
-any other partial match).
-
-### the Phantom
-
-Deep under the theatre, rumors has it a monster hides ...
-(another subsubtopic, accessible as `help theatre/lore/phantom`)
-
-## layout
-
-The theatre is a two-story building situated at ...
-(`help theatre/layout`)
-
-## dramatis personae
-
-There are many interesting people prowling the halls of the theatre ...
-(`help theatre/dramatis` or `help theathre/drama` or `help theatre/personae` would work)
-
-### Primadonna Ada
-
-Everyone knows the primadonna! She is ...
-(A subtopic under dramatis personae, accessible as `help theatre/drama/ada` etc)
-
-### The gatekeeper
-
-He always keeps an eye on the door and ...
-(`help theatre/drama/gate`)
-
-```
-### Command Auto-help system
-
-The auto-help system uses the `__doc__` strings of your command classes and
-formats this to a nice- looking help entry. This makes for a very easy way to
-keep the help updated - just document your commands well and updating the help
-file is just a `reload` away.
-
-Example (from a module with command definitions):
-
+Here's how to create a database-help entry in code: 
 ```python
-    class CmdMyCmd(Command):
-       """
-       mycmd - my very own command
-
-       Usage:
-         mycmd[/switches] <args>
-
-       Switches:
-         test - test the command
-         run  - do something else
-
-       This is my own command that does this and that.
-
-       """
-       # [...]
-
-       locks = "cmd:all();read:all()"  # default
-       help_category = "General"       # default
-       auto_help = True                # default
-
-       # [...]
-```
-
-The text at the very top of the command class definition is the class'
-`__doc__`-string and will be shown to users looking for help. Try to use a
-consistent format - all default commands are using the structure shown above.
-
-You can limit access to the help entry by the `view` and/or `read` locks on the
-Command. See [the section below](./Help-System.md#locking-help-entries) for details.
-
-You should also supply the `help_category` class property if you can; this helps
-to group help entries together for people to more easily find them. See the
-`help` command in-game to see the default categories. If you don't specify the
-category, `settings.COMMAND_DEFAULT_HELP_CATEGORY` (default is "General") is
-used.
-
-If you don't want your command to be picked up by the auto-help system at all
-(like if you want to write its docs manually using the info in the next section
-or you use a [cmdset](./Command-Sets.md) that has its own help functionality) you
-can explicitly set `auto_help` class property to `False` in your command
-definition.
-
-Alternatively, you can keep the advantages of *auto-help* in commands, but
-control the display of command helps.  You can do so by overriding the command's
-`get_help(caller, cmdset)` method.  By default, this method will return the
-class docstring.  You could modify it to add custom behavior:  the text returned
-by this method will be displayed to the character asking for help in this
-command.
-
-### Database-help entries
-
-These are most commonly created in-game using the `sethelp` command. If you need to create one
-manually, you can do so with `evennia.create_help_entry()`:
-
-```python
-
 from evennia import create_help_entry
 entry = create_help_entry("emote",
                 "Emoting is important because ...",
                 category="Roleplaying", locks="view:all()")
 ```
 
-The entity being created is a [evennia.help.models.HelpEntry](evennia.help.models.HelpEntry)
-object. This is _not_ a [Typeclassed](./Typeclasses.md) entity and is not meant to
-be modified to any great degree. It holds the properties listed earlier. The
-text is stored in a field `entrytext`. It does not provide a `get_help` method
-like commands, stores and returns the `entrytext` directly.
-
-You can search for (db-)-`HelpEntry` objects using `evennia.search_help` but note that
-this will not return the two other types of help entries.
-
-### File-help entries
+### File-stored help entries
 
 ```{versionadded} 1.0
 ```
 
-File-help entries are created by the game development team outside of the game. The
-help entries are defined in normal Python modules (`.py` file ending) containing
-a `dict` to represent each entry. They require a server `reload` before any changes
-apply.
+File-help entries are created by the game development team outside of the game. The help entries are defined in normal Python modules (`.py` file ending) containing a `dict` to represent each entry. They require a server `reload` before any changes apply.
 
 - Evennia will look through all modules given by
   `settings.FILE_HELP_ENTRY_MODULES`. This should be a list of python-paths for
@@ -308,26 +136,37 @@ The help entry text will be dedented and will retain paragraphs. You should try
 to keep your strings a reasonable width (it will look better). Just reload the
 server and the file-based help entries will be available to view.
 
-## Entry priority
+### Command-help entries 
 
-Should you have clashing help-entries between the three types of available
-entries, the priority is
+The `__docstring__` of  [Command classes](./Commands.md) are automatically extracted into a help entry. You set `help_category` directly on the class. 
 
-    Command-auto-help > Db-help > File-help
+```python
+from evennia import Command
 
-So if you create a db-help entry 'foo', it will replace any file-based help
-entry 'foo'. But if there is a Command 'foo', that's the help you'll get when
-you enter `help foo`.
+class MyCommand(Command): 
+    """ 
+    This command is great! 
 
-The reasoning for this is that commands must always be understood in order to
-play the game. Meanwhile db-based help can be kept up-to-date from in-game
-builders and may be less 'static' than the file-based ones.
+    Usage: 
+      mycommand [argument]
 
-The `sethelp` command (which only deals with creating db-based help entries)
-will warn you if a new help entry might shadow/be shadowed by a
-same/similar-named command or file-based help entry.
+    When this command is called, great things happen. If you 
+    pass an argument, even GREATER things HAPPEN!
 
-## Locking help entries
+    """
+
+    key = "mycommand"
+
+    locks: "cmd:all();read:all()"   # default 
+    help_category = "General"       # default
+    auto_help = True                # default 
+
+    # ...
+```
+
+When you update your code, the command's help will follow. The idea is that the command docs are easier to maintain and keep up-to-date if the developer can change them at the same time as they do the code.
+
+### Locking help entries
 
 The default `help` command gather all available commands and help entries
 together so they can be searched or listed. By setting locks on the command/help
@@ -374,32 +213,101 @@ help_entry = {
    the new 'read' lock-type to control access to the entry itself.
 ```
 
-## Customizing the look of the help system
+### Customizing the look of the help system
 
-This is done almost exclusively by overriding the `help` command
-[evennia.commands.default.help.CmdHelp](evennia.commands.default.help.CmdHelp).
+This is done almost exclusively by overriding the `help` command [evennia.commands.default.help.CmdHelp](evennia.commands.default.help.CmdHelp).
 
-Since the available commands may vary from moment to moment, `help` is
-responsible for collating the three sources of help-entries (commands/db/file)
-together and search through them on the fly. It also does all the formatting of
-the output.
+Since the available commands may vary from moment to moment, `help` is responsible for collating the three sources of help-entries (commands/db/file) together and search through them on the fly. It also does all the formatting of the output.
 
-To make it easier to tweak the look, the parts of the code that changes the
-visual presentation and entity searching has been broken out into separate
-methods on the command class. Override these in your version of `help` to change
-the display or tweak as you please. See the api link above for details.
+To make it easier to tweak the look, the parts of the code that changes the visual presentation and entity searching has been broken out into separate methods on the command class. Override these in your version of `help` to change the display or tweak as you please. See the api link above for details. 
+
+## Subtopics
+
+```{versionadded} 1.0
+```
+
+Rather than making a very long help entry, the `text` may also be broken up into _subtopics_. A list of the next level of subtopics are shown below the main help text and allows the user to read more about some particular detail that wouldn't fit in the main text. 
+
+Subtopics use a markup slightly similar to markdown headings. The top level heading must be named `# subtopics` (non case-sensitive) and the following headers must be sub-headings to this (so `## subtopic name` etc). All headings are non-case sensitive (the help command will format them). The topics can be nested at most to a depth of 5 (which is probably too many levels already). The parser uses fuzzy matching to find the subtopic, so one does not have to type it all out exactly.
+
+Below is an example of a `text` with sub topics.
+
+```
+The theatre is the heart of the city, here you can find ...
+(This is the main help text, what you get with `help theatre`)
+
+# subtopics
+
+## lore
+
+The theatre holds many mysterious things...
+(`help theatre/lore`)
+
+### the grand opening
+
+The grand opening is the name for a mysterious event where ghosts appeared ...
+(`this is a subsub-topic to lore, accessible as `help theatre/lore/grand` or
+any other partial match).
+
+### the Phantom
+
+Deep under the theatre, rumors has it a monster hides ...
+(another subsubtopic, accessible as `help theatre/lore/phantom`)
+
+## layout
+
+The theatre is a two-story building situated at ...
+(`help theatre/layout`)
+
+## dramatis personae
+
+There are many interesting people prowling the halls of the theatre ...
+(`help theatre/dramatis` or `help theathre/drama` or `help theatre/personae` would work)
+
+### Primadonna Ada
+
+Everyone knows the primadonna! She is ...
+(A subtopic under dramatis personae, accessible as `help theatre/drama/ada` etc)
+
+### The gatekeeper
+
+He always keeps an eye on the door and ...
+(`help theatre/drama/gate`)
+
+```
+
 
 ## Technical notes
 
-Since it needs to search so different types of data, the help system has to
-collect all possibilities in memory before searching through the entire set. It
-uses the [Lunr](https://github.com/yeraydiazdiaz/lunr.py) search engine to
-search through the main bulk of help entries. Lunr is a mature engine used for
-web-pages and produces much more sensible results than previous solutions.
+#### Help-entry clashes 
 
-Once the main entry has been found, subtopics are then searched with
-simple `==`, `startswith` and `in` matching (there are so relatively few of them
-at that point).
+Should you have clashing help-entries (of the same name) between the three types of available entries, the priority is 
+
+    Command-auto-help > Db-help > File-help
+    
+The `sethelp` command (which only deals with creating db-based help entries) will warn you if a new help entry might shadow/be shadowed by a same/similar-named command or file-based help entry.
+
+#### The Help Entry container
+
+All help entries (no matter the source) are parsed into an object with the following properties:
+
+- `key` - This is the main topic-name. For Commands, this is literally the command's `key`.
+- `aliases` - Alternate names for the help entry. This can be useful if the main name is hard to remember.
+- `help_category` - The general grouping of the entry. This is optional. If not given it will use the default category given by `settings.COMMAND_DEFAULT_HELP_CATEGORY` for Commands and
+  `settings.DEFAULT_HELP_CATEGORY` for file+db help entries.
+- `locks` - Lock string (for commands) or LockHandler (all help entries). This defines who may read this entry. See the next section.
+- `tags` - This is not used by default, but could be used to further organize help entries.
+- `text` - The actual help entry text. This will be dedented and stripped of extra space at beginning and end.
+
+#### Help pagination
+
+A `text` that scrolls off the screen will automatically be paginated by the [EvMore](./EvMore.md) pager (you can control this with `settings.HELP_MORE_ENABLED=False`). If you use EvMore and want to control exactly where the pager should break the page, mark the break with the control character `\f`.
+
+#### Search engine
+
+Since it needs to search so different types of data, the help system has to collect all possibilities in memory before searching through the entire set. It uses the [Lunr](https://github.com/yeraydiazdiaz/lunr.py) search engine to search through the main bulk of help entries. Lunr is a mature engine used for web-pages and produces much more sensible results than previous solutions.
+
+Once the main entry has been found, subtopics are then searched with simple `==`, `startswith` and `in` matching (there are so relatively few of them at that point).
 
 ```{versionchanged} 1.0
   Replaced the old bag-of-words algorithm with lunr package.

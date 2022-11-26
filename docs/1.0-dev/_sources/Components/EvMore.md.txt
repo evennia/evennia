@@ -7,8 +7,6 @@ page of text at a time. It is usually used via its access function, `evmore.msg`
 
 The name comes from the famous unix pager utility *more* which performs just this function.
 
-## Using EvMore
-
 To use the pager, just pass the long text through it:
 
 ```python

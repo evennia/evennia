@@ -1,61 +1,55 @@
 # Typeclasses
 
-*Typeclasses* form the core of Evennia's data storage. It allows Evennia to represent any number of
-different game entities as Python classes, without having to modify the database schema for every
-new type.
+*Typeclasses* form the core of Evennia's data storage. It allows Evennia to represent any number of different game entities as Python classes, without having to modify the database schema for every new type.
 
 In Evennia the most important game entities, [Accounts](./Accounts.md), [Objects](./Objects.md), [Scripts](./Scripts.md) and [Channels](./Channels.md) are all Python classes inheriting, at varying distance, from `evennia.typeclasses.models.TypedObject`.  In the documentation we refer to these objects as being "typeclassed" or even "being a typeclass".
 
 This is how the inheritance looks for the typeclasses in Evennia:
 
 ```
-                  TypedObject
-      _________________|_________________________________
-     |                 |                 |               |
-1: AccountDB        ObjectDB           ScriptDB         ChannelDB
-     |                 |                 |               |
-2: DefaultAccount   DefaultObject      DefaultScript    DefaultChannel
-     |              DefaultCharacter     |               |
-     |              DefaultRoom          |               |
-     |              DefaultExit          |               |
-     |                 |                 |               |
-3: Account          Object              Script           Channel
-                   Character
-                   Room
-                   Exit
+                                  ┌───────────┐
+                                  │TypedObject│
+                                  └─────▲─────┘
+               ┌───────────────┬────────┴──────┬────────────────┐
+          ┌────┴────┐     ┌────┴───┐      ┌────┴────┐      ┌────┴───┐
+1:        │AccountDB│     │ScriptDB│      │ChannelDB│      │ObjectDB│
+          └────▲────┘     └────▲───┘      └────▲────┘      └────▲───┘
+       ┌───────┴──────┐ ┌──────┴──────┐ ┌──────┴───────┐ ┌──────┴──────┐
+2:     │DefaultAccount│ │DefaultScript│ │DefaultChannel│ │DefaultObject│
+       └───────▲──────┘ └──────▲──────┘ └──────▲───────┘ └──────▲──────┘
+               │               │               │                │  Evennia
+       ────────┼───────────────┼───────────────┼────────────────┼─────────
+               │               │               │                │  Gamedir
+           ┌───┴───┐       ┌───┴──┐        ┌───┴───┐   ┌──────┐ │
+3:         │Account│       │Script│        │Channel│   │Object├─┤
+           └───────┘       └──────┘        └───────┘   └──────┘ │
+                                                    ┌─────────┐ │
+                                                    │Character├─┤
+                                                    └─────────┘ │
+                                                         ┌────┐ │
+                                                         │Room├─┤
+                                                         └────┘ │
+                                                         ┌────┐ │
+                                                         │Exit├─┘
+                                                         └────┘
 ```
 
-- **Level 1** above is the "database model" level. This describes the database tables and fields
-(this is technically a [Django model](https://docs.djangoproject.com/en/2.2/topics/db/models/)).
-- **Level 2** is where we find Evennia's default implementations of the various game entities, on
-top of the database. These classes define all the hook methods that Evennia calls in various
-situations. `DefaultObject` is a little special since it's the parent for `DefaultCharacter`,
-`DefaultRoom` and `DefaultExit`. They are all grouped under level 2 because they all represents
-defaults to build from.
-- **Level 3**, finally, holds empty template classes created in your game directory. This is the
-level you are meant to modify and tweak as you please, overloading the defaults as befits your game.
-The templates inherit directly from their defaults, so `Object` inherits from `DefaultObject` and
-`Room` inherits from `DefaultRoom`.
+- **Level 1** above is the "database model" level. This describes the database tables and fields (this is technically a [Django model](https://docs.djangoproject.com/en/2.2/topics/db/models/)).
+- **Level 2** is where we find Evennia's default implementations of the various game entities, on top of the database. These classes define all the hook methods that Evennia calls in various situations. `DefaultObject` is a little special since it's the parent for `DefaultCharacter`, `DefaultRoom` and `DefaultExit`. They are all grouped under level 2 because they all represents defaults to build from.
+- **Level 3**, finally, holds empty template classes created in your game directory. This is the level you are meant to modify and tweak as you please, overloading the defaults as befits your game. The templates inherit directly from their defaults, so `Object` inherits from `DefaultObject` and `Room` inherits from `DefaultRoom`.
 
-The `typeclass/list` command will provide a list of all typeclasses known to
-Evennia. This can be useful for getting a feel for what is available. Note
-however that if you add a new module with a class in it but do not import that
-module from anywhere, the `typeclass/list` will not find it. To make it known
-to Evennia you must import that module from somewhere.
+> This diagram doesn't include the `ObjectParent` mixin for `Object`, `Character`, `Room` and `Exit`. This establishes a common parent for those classes, for shared properties. See [Objects](./Objects.md) for more details.
+
+The `typeclass/list` command will provide a list of all typeclasses known to Evennia. This can be useful for getting a feel for what is available. Note however that if you add a new module with a class in it but do not import that module from anywhere, the `typeclass/list` will not find it. To make it known to Evennia you must import that module from somewhere.
 
 
 ## Difference between typeclasses and classes
 
 All Evennia classes inheriting from class in the table above share one important feature and two
-important limitations. This is why we don't simply call them "classes" but "typeclasses".
+[]()important limitations. This is why we don't simply call them "classes" but "typeclasses".
 
- 1. A typeclass can save itself to the database. This means that some properties (actually not that
-many) on the class actually represents database fields and can only hold very specific data types.
-This is detailed [below](./Typeclasses.md#about-typeclass-properties).
- 1. Due to its connection to the database, the typeclass' name must be *unique* across the _entire_
-server namespace. That is, there must never be two same-named classes defined anywhere. So the below
-code would give an error (since `DefaultObject` is now globally found both in this module and in the
-default library):
+ 1. A typeclass can save itself to the database. This means that some properties (actually not that many) on the class actually represents database fields and can only hold very specific data types.
+ 1. Due to its connection to the database, the typeclass' name must be *unique* across the _entire_ server namespace. That is, there must never be two same-named classes defined anywhere. So the below code would give an error (since `DefaultObject` is now globally found both in this module and in the default library):
 
     ```python
     from evennia import DefaultObject as BaseObject
@@ -63,8 +57,8 @@ default library):
          pass
     ```
 
- 1. A typeclass' `__init__` method should normally not be overloaded. This has mostly to do with the fact that the `__init__` method is not called in a predictable way. Instead Evennia suggest you use the `at_*_creation` hooks (like `at_object_creation` for Objects) for setting things the very first time the typeclass is saved to the database or the `at_init` hook which is called every time the object is cached to memory. If you know what you are doing and want to use `__init__`, it *must* both accept arbitrary keyword arguments and use `super` to call its parent:
-
+ 1. A typeclass' `__init__` method should normally not be overloaded. This has mostly to do with the fact that the `__init__` method is not called in a predictable way. Instead Evennia suggest you use the `at_*_creation` hooks (like `at_object_creation` for Objects) for setting things the very first time the typeclass is saved to the database or the `at_init` hook which is called every time the object is cached to memory. If you know what you are doing and want to use `__init__`, it *must* both accept arbitrary keyword arguments and use `super` to call its parent: 
+ 
     ```python
     def __init__(self, **kwargs):
         # my content
@@ -75,8 +69,9 @@ default library):
 Apart from this, a typeclass works like any normal Python class and you can
 treat it as such.
 
+## Working with typeclasses
 
-## Creating a new typeclass
+### Creating a new typeclass
 
  It's easy to work with Typeclasses. Either you use an existing typeclass or you  create a new Python class inheriting from an existing typeclass. Here is an example of creating a new type of Object:
 
@@ -122,8 +117,6 @@ could point to it as `typeclasses.furniture.Furniture`. Since Evennia will itsel
 functions take a lot of extra keywords allowing you to set things like [Attributes](./Attributes.md) and
 [Tags](./Tags.md) all in one go. These keywords don't use the `db_*` prefix. This will also automatically
 save the new instance to the database, so you don't need to call `save()` explicitly.
-
-## About typeclass properties
 
 An example of a database field is `db_key`. This stores the "name" of the entity you are modifying
 and can thus only hold a string. This is one way of making sure to update the `db_key`:
@@ -187,14 +180,11 @@ respective pages for [Objects](./Objects.md), [Scripts](./Scripts.md), [Accounts
 entities using [Evennia's flat API](../Evennia-API.md) to explore which properties and methods they have
 available.
 
-## Overloading hooks
+### Overloading hooks
 
-The way to customize typeclasses is usually to overload *hook methods* on them. Hooks are methods
-that Evennia call in various situations. An example is the `at_object_creation` hook on `Objects`,
-which is only called once, the very first time this object is saved to the database.  Other examples
-are the `at_login` hook of Accounts and the `at_repeat` hook of Scripts.
+The way to customize typeclasses is usually to overload *hook methods* on them. Hooks are methods that Evennia call in various situations. An example is the `at_object_creation` hook on `Objects`, which is only called once, the very first time this object is saved to the database.  Other examples are the `at_login` hook of Accounts and the `at_repeat` hook of Scripts.
 
-## Querying for typeclasses
+### Querying for typeclasses
 
 Most of the time you search for objects in the database by using convenience methods like the
 `caller.search()` of [Commands](./Commands.md) or the search functions like `evennia.search_objects`.
@@ -235,7 +225,7 @@ matches = ScriptDB.objects.filter(db_key__contains="Combat")
 When querying from the database model parent you don't need to use `filter_family` or `get_family` -
 you will always query all children on the database model.
 
-## Updating existing typeclass instances
+### Updating existing typeclass instances
 
 If you already have created instances of Typeclasses, you can modify the *Python code* at any time -
 due to how Python inheritance works your changes will automatically be applied to all children once you have reloaded the server.
@@ -278,7 +268,7 @@ py from typeclasses.furniture import Furniture;
 It is recommended that you plan your game properly before starting to build, to avoid having to
 retroactively update objects more than necessary.
 
-## Swap typeclass
+### Swap typeclass
 
 If you want to swap an already existing typeclass, there are two ways to do so: From in-game and via code. From inside the game you can use the default `@typeclass` command:
 
@@ -309,7 +299,7 @@ models that are "real" in the typeclass system (that is, are represented by actu
 
 Evennia modifies Django's proxy model in various ways to allow them to work without any boiler plate (for example you don't need to set the Django "proxy" property in the model `Meta` subclass, Evennia handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as patches django to allow multiple inheritance from the same base class.
 
-## Caveats
+### Caveats
 
 Evennia uses the *idmapper* to cache its typeclasses (Django proxy models) in memory. The idmapper allows things like on-object handlers and properties to be stored on typeclass instances and to not get lost as long as the server is running (they will only be cleared on a Server reload). Django does not work like this by default; by default every time you search for an object in the database you'll get a *different* instance of that object back and anything you stored on it that was not in the database would be lost. The bottom line is that Evennia's Typeclass instances subside in memory a lot longer than vanilla Django model instance do. 
 

@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Coding Utils" href="Coding-Utils.html" />
-    <link rel="prev" title="Batch Command Processor" href="Batch-Command-Processor.html" /> 
+    <link rel="prev" title="Batch Code Processor" href="Batch-Code-Processor.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -33,7 +33,7 @@
           <a href="Coding-Utils.html" title="Coding Utils"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Batch-Command-Processor.html" title="Batch Command Processor"
+          <a href="Batch-Code-Processor.html" title="Batch Code Processor"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
@@ -76,16 +76,16 @@
 <li><a class="reference internal" href="#repeat">repeat</a></li>
 <li><a class="reference internal" href="#unrepeat">unrepeat</a></li>
 <li><a class="reference internal" href="#monitor">monitor</a></li>
+<li><a class="reference internal" href="#unmonitor">unmonitor</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#unmonitor">unmonitor</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Batch-Command-Processor.html"
-                        title="previous chapter">Batch Command Processor</a></p>
+  <p class="topless"><a href="Batch-Code-Processor.html"
+                        title="previous chapter">Batch Code Processor</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Coding-Utils.html"
                         title="next chapter">Coding Utils</a></p>
@@ -121,29 +121,45 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="inputfuncs">
 <h1>Inputfuncs<a class="headerlink" href="#inputfuncs" title="Permalink to this headline">¶</a></h1>
-<p>An <em>inputfunc</em> is an Evennia function that handles a particular input (an <a class="reference internal" href="../Concepts/OOB.html"><span class="doc std std-doc">inputcommand</span></a>) from
-the client. The inputfunc is the last destination for the inputcommand along the <span class="xref myst">ingoing message
-path</span>. The inputcommand always has the form <code class="docutils literal notranslate"><span class="pre">(commandname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code> and Evennia will use this to try to find and call an inputfunc on the form</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">commandname</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># ...</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          Internet│
+            ┌─────┐ │                                   ┌────────┐
+┌──────┐    │Text │ │  ┌────────────┐    ┌─────────┐    │Command │
+│Client├────┤JSON ├─┼──►commandtuple├────►Inputfunc├────►DB query│
+└──────┘    │etc  │ │  └────────────┘    └─────────┘    │etc     │
+            └─────┘ │                                   └────────┘
+                    │Evennia
+
+</pre></div>
+</div>
+<p>The Inputfunc is the last fixed step on the <a class="reference internal" href="../Concepts/Messagepath.html#ingoing-message-path"><span class="std std-doc">Ingoing message path</span></a>. The available Inputfuncs are looked up and called using <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> structures sent from the client. The job of the Inputfunc is to perform whatever action is requested, by firing a Command, performing a database query or whatever is needed.</p>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> on the form</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(commandname, (args), {kwargs})
+</pre></div>
+</div>
+<p>Evennia will try to find and call an Inputfunc on the form</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">commandname</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># ...</span>
 
 </pre></div>
 </div>
 <p>Or, if no match was found, it will call an inputfunc named “default” on this form</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># cmdname is the name of the mismatched inputcommand</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># cmdname is the name of the mismatched inputcommand</span>
 
 </pre></div>
 </div>
+<p>The default inputfuncs are found in <a class="reference internal" href="../api/evennia.server.inputfuncs.html#evennia-server-inputfuncs"><span class="std std-ref">evennia/server/inputfuncs.py</span></a>.</p>
 <section id="adding-your-own-inputfuncs">
 <h2>Adding your own inputfuncs<a class="headerlink" href="#adding-your-own-inputfuncs" title="Permalink to this headline">¶</a></h2>
-<p>This is simple. Add a function on the above form to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/inputfuncs.py</span></code>. Your
-function must be in the global, outermost scope of that module and not start with an underscore
-(<code class="docutils literal notranslate"><span class="pre">_</span></code>) to be recognized as an inputfunc.  Reload the server. That’s it. To overload a default
-inputfunc (see below), just add a function with the same name.</p>
-<p>The modules Evennia looks into for inputfuncs are defined in the list <code class="docutils literal notranslate"><span class="pre">settings.INPUT_FUNC_MODULES</span></code>.
-This list will be imported from left to right and later imported functions will replace earlier
-ones.</p>
+<ol class="simple">
+<li><p>Add a function on the above form to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/inputfuncs.py</span></code>. Your function must be in the global, outermost scope of that module and not start with an underscore (<code class="docutils literal notranslate"><span class="pre">_</span></code>) to be recognized as an inputfunc.  i</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reload</span></code> the server.</p></li>
+</ol>
+<p>To overload a default inputfunc (see below), just add a function with the same name. You can also extend the settings-list <code class="docutils literal notranslate"><span class="pre">INPUT_FUNC_MODULES</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>INPUT_FUNC_MODULES += [&quot;path.to.my.inputfunc.module&quot;]
+</pre></div>
+</div>
+<p>All global-level functions with a name not starting with <code class="docutils literal notranslate"><span class="pre">_</span></code> in these module(s) will be used by Evennia as an inputfunc. The list is imported from left to right, so latter imported functions will replace earlier ones.</p>
 </section>
 <section id="default-inputfuncs">
 <h2>Default inputfuncs<a class="headerlink" href="#default-inputfuncs" title="Permalink to this headline">¶</a></h2>
@@ -155,10 +171,8 @@ ones.</p>
 <li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;text&quot;,</span> <span class="pre">(textstring,),</span> <span class="pre">{})</span></code></p></li>
 <li><p>Output: Depends on Command triggered</p></li>
 </ul>
-<p>This is the most common of inputcommands, and the only one supported by every traditional mud. The
-argument is usually what the user sent from their command line. Since all text input from the user
-like this is considered a <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Command</span></a>, this inputfunc will do things like nick-replacement
-and then pass on the input to the central Commandhandler.</p>
+<p>This is the most common of inputs, and the only one supported by every traditional mud. The argument is usually what the user sent from their command line. Since all text input from the user
+like this is considered a <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Command</span></a>, this inputfunc will do things like nick-replacement and then pass on the input to the central Commandhandler.</p>
 </section>
 <section id="echo">
 <h3>echo<a class="headerlink" href="#echo" title="Permalink to this headline">¶</a></h3>
@@ -166,13 +180,11 @@ and then pass on the input to the central Commandhandler.</p>
 <li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;echo&quot;,</span> <span class="pre">(args),</span> <span class="pre">{})</span></code></p></li>
 <li><p>Output: <code class="docutils literal notranslate"><span class="pre">(&quot;text&quot;,</span> <span class="pre">(&quot;Echo</span> <span class="pre">returns:</span> <span class="pre">%s&quot;</span> <span class="pre">%</span> <span class="pre">args),</span> <span class="pre">{})</span></code></p></li>
 </ul>
-<p>This is a test input, which just echoes the argument back to the session as text. Can be used for
-testing custom client input.</p>
+<p>This is a test input, which just echoes the argument back to the session as text. Can be used for testing custom client input.</p>
 </section>
 <section id="default">
 <h3>default<a class="headerlink" href="#default" title="Permalink to this headline">¶</a></h3>
-<p>The default function, as mentioned above, absorbs all non-recognized inputcommands. The default one
-will just log an error.</p>
+<p>The default function, as mentioned above, absorbs all non-recognized inputcommands. The default one will just log an error.</p>
 </section>
 <section id="client-options">
 <h3>client_options<a class="headerlink" href="#client-options" title="Permalink to this headline">¶</a></h3>
@@ -203,8 +215,7 @@ as an outputcommand <code class="docutils literal notranslate"><span class="pre"
 <li><p>raw (bool): Leave text tags unparsed</p></li>
 </ul>
 <blockquote>
-<div><p>Note that there are two GMCP aliases to this inputfunc - <code class="docutils literal notranslate"><span class="pre">hello</span></code> and <code class="docutils literal notranslate"><span class="pre">supports_set</span></code>, which means
-it will be accessed via the GMCP <code class="docutils literal notranslate"><span class="pre">Hello</span></code> and <code class="docutils literal notranslate"><span class="pre">Supports.Set</span></code> instructions assumed by some clients.</p>
+<div><p>Note that there are two GMCP aliases to this inputfunc - <code class="docutils literal notranslate"><span class="pre">hello</span></code> and <code class="docutils literal notranslate"><span class="pre">supports_set</span></code>, which means it will be accessed via the GMCP <code class="docutils literal notranslate"><span class="pre">Hello</span></code> and <code class="docutils literal notranslate"><span class="pre">Supports.Set</span></code> instructions assumed by some clients.</p>
 </div></blockquote>
 </section>
 <section id="get-client-options">
@@ -213,8 +224,7 @@ it will be accessed via the GMCP <code class="docutils literal notranslate"><spa
 <li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;get_client_options,</span> <span class="pre">(),</span> <span class="pre">{key:value,</span> <span class="pre">...})</span></code></p></li>
 <li><p>Output: <code class="docutils literal notranslate"><span class="pre">(&quot;client_options,</span> <span class="pre">(),</span> <span class="pre">{key:value,</span> <span class="pre">...})</span></code></p></li>
 </ul>
-<p>This is a convenience wrapper that retrieves the current options by sending “get” to
-<code class="docutils literal notranslate"><span class="pre">client_options</span></code> above.</p>
+<p>This is a convenience wrapper that retrieves the current options by sending “get” to <code class="docutils literal notranslate"><span class="pre">client_options</span></code> above.</p>
 </section>
 <section id="get-inputfuncs">
 <h3>get_inputfuncs<a class="headerlink" href="#get-inputfuncs" title="Permalink to this headline">¶</a></h3>
@@ -222,8 +232,7 @@ it will be accessed via the GMCP <code class="docutils literal notranslate"><spa
 <li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;get_inputfuncs&quot;,</span> <span class="pre">(),</span> <span class="pre">{})</span></code></p></li>
 <li><p>Output: <code class="docutils literal notranslate"><span class="pre">(&quot;get_inputfuncs&quot;,</span> <span class="pre">(),</span> <span class="pre">{funcname:docstring,</span> <span class="pre">...})</span></code></p></li>
 </ul>
-<p>Returns an outputcommand on the form <code class="docutils literal notranslate"><span class="pre">(&quot;get_inputfuncs&quot;,</span> <span class="pre">(),</span> <span class="pre">{funcname:docstring,</span> <span class="pre">...})</span></code> - a list of
-all the available inputfunctions along with their docstrings.</p>
+<p>Returns an outputcommand on the form <code class="docutils literal notranslate"><span class="pre">(&quot;get_inputfuncs&quot;,</span> <span class="pre">(),</span> <span class="pre">{funcname:docstring,</span> <span class="pre">...})</span></code> - a list of all the available inputfunctions along with their docstrings.</p>
 </section>
 <section id="login">
 <h3>login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h3>
@@ -234,15 +243,13 @@ all the available inputfunctions along with their docstrings.</p>
 <li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;login&quot;,</span> <span class="pre">(username,</span> <span class="pre">password),</span> <span class="pre">{})</span></code></p></li>
 <li><p>Output: Depends on login hooks</p></li>
 </ul>
-<p>This performs the inputfunc version of a login operation on the current Session.</p>
+<p>This performs the inputfunc version of a login operation on the current Session. It’s meant to be used by custom client setups.</p>
 </section>
 <section id="get-value">
 <h3>get_value<a class="headerlink" href="#get-value" title="Permalink to this headline">¶</a></h3>
 <p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;get_value&quot;,</span> <span class="pre">(name,</span> <span class="pre">),</span> <span class="pre">{})</span></code>
 Output: <code class="docutils literal notranslate"><span class="pre">(&quot;get_value&quot;,</span> <span class="pre">(value,</span> <span class="pre">),</span> <span class="pre">{})</span></code></p>
-<p>Retrieves a value from the Character or Account currently controlled by this Session. Takes one
-argument, This will only accept particular white-listed names, you’ll need to overload the function
-to expand. By default the following values can be retrieved:</p>
+<p>Retrieves a value from the Character or Account currently controlled by this Session. Takes one argument, This will only accept particular white-listed names, you’ll need to overload the function to expand. By default the following values can be retrieved:</p>
 <ul class="simple">
 <li><p>“name” or “key”: The key of the Account or puppeted Character.</p></li>
 <li><p>“location”: Name of the current location, or “None”.</p></li>
@@ -252,16 +259,11 @@ to expand. By default the following values can be retrieved:</p>
 <section id="repeat">
 <h3>repeat<a class="headerlink" href="#repeat" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;repeat&quot;,</span> <span class="pre">(),</span> <span class="pre">{&quot;callback&quot;:funcname,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&quot;interval&quot;:</span> <span class="pre">secs,</span> <span class="pre">&quot;stop&quot;:</span> <span class="pre">False})</span></code></p></li>
+<li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;repeat&quot;,</span> <span class="pre">(),</span> <span class="pre">{&quot;callback&quot;:funcname,</span>&#160; <span class="pre">&quot;interval&quot;:</span> <span class="pre">secs,</span> <span class="pre">&quot;stop&quot;:</span> <span class="pre">False})</span></code></p></li>
 <li><p>Output: Depends on the repeated function. Will return <code class="docutils literal notranslate"><span class="pre">(&quot;text&quot;,</span> <span class="pre">(repeatlist),{}</span></code> with a list of
 accepted names if given an unfamiliar callback name.</p></li>
 </ul>
-<p>This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes
-this will set up a <a class="reference internal" href="TickerHandler.html"><span class="doc std std-doc">Ticker</span></a>. Only previously acceptable functions are possible to
-repeat-call in this way, you’ll need to overload this inputfunc to add the ones you want to offer.
-By default only two example functions are allowed, “test1” and “test2”, which will just echo a text
-back at the given interval. Stop the repeat by sending <code class="docutils literal notranslate"><span class="pre">&quot;stop&quot;:</span> <span class="pre">True</span></code> (note that you must include
-both the callback name and interval for Evennia to know what to stop).</p>
+<p>This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes this will set up a <a class="reference internal" href="TickerHandler.html"><span class="doc std std-doc">Ticker</span></a>. Only previously acceptable functions are possible to repeat-call in this way, you’ll need to overload this inputfunc to add the ones you want to offer. By default only two example functions are allowed, “test1” and “test2”, which will just echo a text back at the given interval. Stop the repeat by sending <code class="docutils literal notranslate"><span class="pre">&quot;stop&quot;:</span> <span class="pre">True</span></code> (note that you must include both the callback name and interval for Evennia to know what to stop).</p>
 </section>
 <section id="unrepeat">
 <h3>unrepeat<a class="headerlink" href="#unrepeat" title="Permalink to this headline">¶</a></h3>
@@ -277,27 +279,22 @@ both the callback name and interval for Evennia to know what to stop).</p>
 <li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;monitor&quot;,</span> <span class="pre">(),</span> <span class="pre">(&quot;name&quot;:field_or_argname,</span> <span class="pre">stop=False)</span></code></p></li>
 <li><p>Output (on change): <code class="docutils literal notranslate"><span class="pre">(&quot;monitor&quot;,</span> <span class="pre">(),</span> <span class="pre">{&quot;name&quot;:name,</span> <span class="pre">&quot;value&quot;:value})</span></code></p></li>
 </ul>
-<p>This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute
-changes in any way, the outputcommand will be sent. This is using the
-<a class="reference internal" href="MonitorHandler.html"><span class="doc std std-doc">MonitorHandler</span></a> behind the scenes. Pass the “stop” key to stop monitoring. Note
-that you must supply the name also when stopping to let the system know which monitor should be
-cancelled.</p>
-<p>Only fields/attributes in a whitelist are allowed to be used, you have to overload this function to
-add more. By default the following fields/attributes can be monitored:</p>
+<p>This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute changes in any way, the outputcommand will be sent. This is using the <a class="reference internal" href="MonitorHandler.html"><span class="doc std std-doc">MonitorHandler</span></a> behind the scenes. Pass the “stop” key to stop monitoring. Note that you must supply the name also when stopping to let the system know which monitor should be cancelled.</p>
+<p>Only fields/attributes in a whitelist are allowed to be used, you have to overload this function to add more. By default the following fields/attributes can be monitored:</p>
 <ul class="simple">
 <li><p>“name”: The current character name</p></li>
 <li><p>“location”: The current location</p></li>
 <li><p>“desc”: The description Argument</p></li>
 </ul>
 </section>
-</section>
 <section id="unmonitor">
-<h2>unmonitor<a class="headerlink" href="#unmonitor" title="Permalink to this headline">¶</a></h2>
+<h3>unmonitor<a class="headerlink" href="#unmonitor" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;unmonitor&quot;,</span> <span class="pre">(),</span> <span class="pre">{&quot;name&quot;:name})</span></code></p></li>
 <li><p>Output: None</p></li>
 </ul>
 <p>A convenience wrapper that sends “stop” to the <code class="docutils literal notranslate"><span class="pre">monitor</span></code> function.</p>
+</section>
 </section>
 </section>
 
@@ -320,7 +317,7 @@ add more. By default the following fields/attributes can be monitored:</p>
           <a href="Coding-Utils.html" title="Coding Utils"
              >next</a> |</li>
         <li class="right" >
-          <a href="Batch-Command-Processor.html" title="Batch Command Processor"
+          <a href="Batch-Code-Processor.html" title="Batch Code Processor"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>

@@ -54,14 +54,57 @@ class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
 
 ## Multisession mode and multi-playing
 
-The multisession modes are described in detail in the [Session documentation](../Components/Sessions.md#multisession-mode). In brief, this is controlled by a [setting](../Setup/Settings.md). Here's the default: 
+The number of sessions possible to connect to a given account at the same time and how it works is given by the `MULTISESSION_MODE` setting:
 
-    MULTISESSION_MODE = 0
+* `MULTISESSION_MODE=0`: One session per account. When connecting with a new session the old one is disconnected. This is the default mode and emulates many classic mud code bases.
+    ```
+    ┌──────┐ │   ┌───────┐    ┌───────┐   ┌─────────┐
+    │Client├─┼──►│Session├───►│Account├──►│Character│
+    └──────┘ │   └───────┘    └───────┘   └─────────┘
+    ```
+* `MULTISESSION_MODE=1`: Many sessions per account, input/output from/to each session is treated the same. For the player this means they can connect to the game from multiple clients and see the same output in all of them. The result of a command given in one client (that is, through one Session) will be returned to *all* connected Sessions/clients with no distinction.       
+    ```
+             │
+    ┌──────┐ │   ┌───────┐
+    │Client├─┼──►│Session├──┐
+    └──────┘ │   └───────┘  └──►┌───────┐   ┌─────────┐
+             │                  │Account├──►│Character│
+    ┌──────┐ │   ┌───────┐  ┌──►└───────┘   └─────────┘
+    │Client├─┼──►│Session├──┘
+    └──────┘ │   └───────┘
+             │
+    ```
 
-- `MULTISESSION_MODE=0`: One [Session](../Components/Sessions.md) per [Account](../Components/Accounts.md), routed to one [puppet](../Components/Objects.md). If connecting with a new session/client, it will kick the previous one. 
-- `MULTISESSION_MODE=1`: Multiple sessions per Account, all routed to one puppet. Allows you to control one puppet from multiple client windows.
-- `MULTISESSION_MODE=2`: Multiple sessions per Account, each routed to a different puppet. This allows for multi-playing.
-- `MULTISESSION_MODE=3`: Multiple sessions per account, And multiple sessions per puppet. This is full multi-playing, including being able to control each puppet from multiple clients.
+* `MULTISESSION_MODE=2`: Many sessions per account, one character per session. In this mode, puppeting an Object/Character will link the puppet back only to the particular Session doing the puppeting. That is, input from that Session will make use of the CmdSet of that Object/Character and outgoing messages (such as the result of a `look`) will be passed back only to that puppeting Session. If another Session tries to puppet the same Character, the old Session will automatically un-puppet it. From the player's perspective, this will mean that they can open separate game clients and play a different Character in each using one game account.
+    ```
+             │                 ┌───────┐
+    ┌──────┐ │   ┌───────┐     │Account│    ┌─────────┐
+    │Client├─┼──►│Session├──┐  │       │  ┌►│Character│
+    └──────┘ │   └───────┘  └──┼───────┼──┘ └─────────┘
+             │                 │       │
+    ┌──────┐ │   ┌───────┐  ┌──┼───────┼──┐ ┌─────────┐
+    │Client├─┼──►│Session├──┘  │       │  └►│Character│
+    └──────┘ │   └───────┘     │       │    └─────────┘
+             │                 └───────┘
+    ```
+* `MULTISESSION_MODE=3`: Many sessions per account *and* character. This is the full multi-puppeting mode, where multiple sessions may not only connect to the player account but multiple sessions may also puppet a single character at the same time. From the user's perspective it means one can open multiple client windows, some for controlling different Characters and some that share a Character's input/output like in mode 1. This mode otherwise works the same as mode 2.
+    ```
+             │                 ┌───────┐
+    ┌──────┐ │   ┌───────┐     │Account│    ┌─────────┐
+    │Client├─┼──►│Session├──┐  │       │  ┌►│Character│
+    └──────┘ │   └───────┘  └──┼───────┼──┘ └─────────┘
+             │                 │       │
+    ┌──────┐ │   ┌───────┐  ┌──┼───────┼──┐
+    │Client├─┼──►│Session├──┘  │       │  └►┌─────────┐
+    └──────┘ │   └───────┘     │       │    │Character│
+             │                 │       │  ┌►└─────────┘
+    ┌──────┐ │   ┌───────┐  ┌──┼───────┼──┘             ▼
+    │Client├─┼──►│Session├──┘  │       │
+    └──────┘ │   └───────┘     └───────┘
+             │
+    ```
+
+> Note that even if multiple Sessions puppet one Character, there is only ever one instance of that Character.
 
 Mode `0` is the default and mimics how many legacy codebases work, especially in the DIKU world. The equivalence of higher modes are often 'hacked' into existing servers to allow for players to have multiple characters. 
 

@@ -64,10 +64,12 @@
   <ul>
 <li><a class="reference internal" href="#">EvEditor</a><ul>
 <li><a class="reference internal" href="#launching-the-editor">Launching the editor</a></li>
-<li><a class="reference internal" href="#example-of-usage">Example of usage</a></li>
+<li><a class="reference internal" href="#working-with-eveditor">Working with EvEditor</a><ul>
 <li><a class="reference internal" href="#persistent-editor">Persistent editor</a></li>
 <li><a class="reference internal" href="#line-editor-usage">Line editor usage</a></li>
 <li><a class="reference internal" href="#the-eveditor-to-edit-code">The EvEditor to edit code</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -137,8 +139,8 @@ It has no other mechanical function.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code> (default <code class="docutils literal notranslate"><span class="pre">False</span></code>): if set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the editor will survive a reboot.</p></li>
 </ul>
 </section>
-<section id="example-of-usage">
-<h2>Example of usage<a class="headerlink" href="#example-of-usage" title="Permalink to this headline">¶</a></h2>
+<section id="working-with-eveditor">
+<h2>Working with EvEditor<a class="headerlink" href="#working-with-eveditor" title="Permalink to this headline">¶</a></h2>
 <p>This is an example command for setting a specific Attribute using the editor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">eveditor</span>
@@ -171,9 +173,8 @@ It has no other mechanical function.</p></li>
                           <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
 <section id="persistent-editor">
-<h2>Persistent editor<a class="headerlink" href="#persistent-editor" title="Permalink to this headline">¶</a></h2>
+<h3>Persistent editor<a class="headerlink" href="#persistent-editor" title="Permalink to this headline">¶</a></h3>
 <p>If you set the <code class="docutils literal notranslate"><span class="pre">persistent</span></code> keyword to <code class="docutils literal notranslate"><span class="pre">True</span></code> when creating the editor, it will remain open even
 when reloading the game.  In order to be persistent, an editor needs to have its callback functions
 (<code class="docutils literal notranslate"><span class="pre">loadfunc</span></code>, <code class="docutils literal notranslate"><span class="pre">savefunc</span></code> and <code class="docutils literal notranslate"><span class="pre">quitfunc</span></code>) as top-level functions defined in the module.  Since these
@@ -214,7 +215,7 @@ functions will be stored, Python will need to find them.</p>
 </div>
 </section>
 <section id="line-editor-usage">
-<h2>Line editor usage<a class="headerlink" href="#line-editor-usage" title="Permalink to this headline">¶</a></h2>
+<h3>Line editor usage<a class="headerlink" href="#line-editor-usage" title="Permalink to this headline">¶</a></h3>
 <p>The editor mimics the <code class="docutils literal notranslate"><span class="pre">VIM</span></code> editor as best as possible. The below is an excerpt of the return from
 the in-editor help command (<code class="docutils literal notranslate"><span class="pre">:h</span></code>).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> &lt;txt&gt;  - any non-command is appended to the end of the buffer.
@@ -260,28 +261,20 @@ the in-editor help command (<code class="docutils literal notranslate"><span cla
 </div>
 </section>
 <section id="the-eveditor-to-edit-code">
-<h2>The EvEditor to edit code<a class="headerlink" href="#the-eveditor-to-edit-code" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> is also used to edit some Python code in Evennia.  The <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command supports an
-<code class="docutils literal notranslate"><span class="pre">/edit</span></code> switch that will open the EvEditor in code mode.  This mode isn’t significantly different
-from the standard one, except it handles automatic indentation of blocks and a few options to
-control this behavior.</p>
+<h3>The EvEditor to edit code<a class="headerlink" href="#the-eveditor-to-edit-code" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> is also used to edit some Python code in Evennia.  The <code class="docutils literal notranslate"><span class="pre">py</span></code> command supports an <code class="docutils literal notranslate"><span class="pre">/edit</span></code> switch that will open the EvEditor in code mode.  This mode isn’t significantly different from the standard one, except it handles automatic indentation of blocks and a few options to control this behavior.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">:&lt;</span></code> to remove a level of indentation for the future lines.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">:+</span></code> to add a level of indentation for the future lines.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">:=</span></code> to disable automatic indentation altogether.</p></li>
 </ul>
-<p>Automatic indentation is there to make code editing more simple.  Python needs correct indentation,
-not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The
-EvEditor will try to guess the next level of indentation.  If you type a block “if”, for instance,
-the EvEditor will propose you an additional level of indentation at the next line.  This feature
-cannot be perfect, however, and sometimes, you will have to use the above options to handle
-indentation.</p>
+<p>Automatic indentation is there to make code editing more simple.  Python needs correct indentation, not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The EvEditor will try to guess the next level of indentation.  If you type a block “if”, for instance, the EvEditor will propose you an additional level of indentation at the next line.  This feature cannot be perfect, however, and sometimes, you will have to use the above options to handle indentation.</p>
 <p><code class="docutils literal notranslate"><span class="pre">:=</span></code> can be used to turn automatic indentation off completely.  This can be very useful when trying
 to paste several lines of code that are already correctly indented, for instance.</p>
-<p>To see the EvEditor in code mode, you can use the <code class="docutils literal notranslate"><span class="pre">&#64;py/edit</span></code> command.  Type in your code (on one or
-several lines).  You can then use the <code class="docutils literal notranslate"><span class="pre">:w</span></code> option (save without quitting) and the code you have
+<p>To see the EvEditor in code mode, you can use the <code class="docutils literal notranslate"><span class="pre">&#64;py/edit</span></code> command.  Type in your code (on one or several lines).  You can then use the <code class="docutils literal notranslate"><span class="pre">:w</span></code> option (save without quitting) and the code you have
 typed will be executed.  The <code class="docutils literal notranslate"><span class="pre">:!</span></code> will do the same thing.  Executing code while not closing the
 editor can be useful if you want to test the code you have typed but add new lines after your test.</p>
+</section>
 </section>
 </section>
 

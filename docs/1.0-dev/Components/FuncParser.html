@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>The Inline Function Parser &#8212; Evennia 1.0-dev documentation</title>
+    <title>FuncParser inline text parsing &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -37,7 +37,7 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">The Inline Function Parser</a></li> 
+        <li class="nav-item nav-item-this"><a href="">FuncParser inline text parsing</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,15 +62,14 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">The Inline Function Parser</a><ul>
-<li><a class="reference internal" href="#uses-in-default-evennia">Uses in default Evennia</a></li>
-<li><a class="reference internal" href="#using-the-funcparser">Using the FuncParser</a></li>
+<li><a class="reference internal" href="#">FuncParser inline text parsing</a><ul>
+<li><a class="reference internal" href="#working-with-funcparser">Working with FuncParser</a></li>
 <li><a class="reference internal" href="#defining-custom-callables">Defining custom callables</a><ul>
 <li><a class="reference internal" href="#escaping-special-character">Escaping special character</a></li>
 <li><a class="reference internal" href="#safe-convertion-of-inputs">Safe convertion of inputs</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#default-callables">Default callables</a><ul>
+<li><a class="reference internal" href="#default-funcparser-callables">Default funcparser callables</a><ul>
 <li><a class="reference internal" href="#evennia-utils-funcparser-funcparser-callables"><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.FUNCPARSER_CALLABLES</span></code></a></li>
 <li><a class="reference internal" href="#evennia-utils-funcparser-searching-callables"><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.SEARCHING_CALLABLES</span></code></a></li>
 <li><a class="reference internal" href="#evennia-utils-funcparser-actor-stance-callables"><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.ACTOR_STANCE_CALLABLES</span></code></a></li>
@@ -117,8 +116,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="the-inline-function-parser">
-<h1>The Inline Function Parser<a class="headerlink" href="#the-inline-function-parser" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="funcparser-inline-text-parsing">
+<h1>FuncParser inline text parsing<a class="headerlink" href="#funcparser-inline-text-parsing" title="Permalink to this headline">¶</a></h1>
 <p>The <a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser" title="evennia.utils.funcparser.FuncParser"><span class="xref myst py py-class">FuncParser</span></a> extracts and executes ‘inline functions’ embedded in a string on the form <code class="docutils literal notranslate"><span class="pre">$funcname(args,</span> <span class="pre">kwargs)</span></code>. Under the hood, this will lead to a call to a Python function you control. The inline function call will be replaced by the return from the function.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
 
@@ -147,32 +146,20 @@
 <span class="s2">&quot;This is an escaped $pow(4) and so is this $pow(3)&quot;</span>
 </pre></div>
 </div>
-<section id="uses-in-default-evennia">
-<h2>Uses in default Evennia<a class="headerlink" href="#uses-in-default-evennia" title="Permalink to this headline">¶</a></h2>
+<section id="working-with-funcparser">
+<h2>Working with FuncParser<a class="headerlink" href="#working-with-funcparser" title="Permalink to this headline">¶</a></h2>
 <p>The FuncParser can be applied to any string. Out of the box it’s applied in a few situations:</p>
 <ul class="simple">
-<li><p><em>Outgoing messages</em>. All messages sent from the server is processed through FuncParser and every
-callable is provided the <a class="reference internal" href="Sessions.html"><span class="doc std std-doc">Session</span></a> of the object receiving the message. This potentially
-allows a message to be modified on the fly to look different for different recipients.</p></li>
-<li><p><em>Prototype values</em>. A <a class="reference internal" href="Prototypes.html"><span class="doc std std-doc">Prototype</span></a> dict’s values are run through the parser such that every
-callable gets a reference to the rest of the prototype. In the Prototype ORM, this would allow builders
-to safely call functions to set non-string values to prototype values, get random values, reference
+<li><p><em>Outgoing messages</em>. All messages sent from the server is processed through FuncParser and every callable is provided the <a class="reference internal" href="Sessions.html"><span class="doc std std-doc">Session</span></a> of the object receiving the message. This potentially allows a message to be modified on the fly to look different for different recipients.</p></li>
+<li><p><em>Prototype values</em>. A <a class="reference internal" href="Prototypes.html"><span class="doc std std-doc">Prototype</span></a> dict’s values are run through the parser such that every callable gets a reference to the rest of the prototype. In the Prototype ORM, this would allow builders to safely call functions to set non-string values to prototype values, get random values, reference
 other fields of the prototype, and more.</p></li>
-<li><p><em>Actor-stance in messages to others</em>. In the
-<a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">Object.msg_contents</span></a> method,
-the outgoing string is parsed for special <code class="docutils literal notranslate"><span class="pre">$You()</span></code> and <code class="docutils literal notranslate"><span class="pre">$conj()</span></code> callables to decide if a given recipient
+<li><p><em>Actor-stance in messages to others</em>. In the <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">Object.msg_contents</span></a> method, the outgoing string is parsed for special <code class="docutils literal notranslate"><span class="pre">$You()</span></code> and <code class="docutils literal notranslate"><span class="pre">$conj()</span></code> callables to decide if a given recipient
 should see “You” or the character’s name.</p></li>
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>The inline-function parser is not intended as a ‘softcode’ programming language. It does not
-have things like loops and conditionals, for example. While you could in principle extend it to
-do very advanced things and allow builders a lot of power, all-out coding is something
-Evennia expects you to do in a proper text editor, outside of the game, not from inside it.</p>
+<p>The inline-function parser is not intended as a ‘softcode’ programming language. It does not have things like loops and conditionals, for example. While you could in principle extend it to do very advanced things and allow builders a lot of power, all-out coding is something Evennia expects you to do in a proper text editor, outside of the game, not from inside it.</p>
 </div>
-</section>
-<section id="using-the-funcparser">
-<h2>Using the FuncParser<a class="headerlink" href="#using-the-funcparser" title="Permalink to this headline">¶</a></h2>
 <p>You can apply inline function parsing to any string. The
 <a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser" title="evennia.utils.funcparser.FuncParser"><span class="xref myst py py-class">FuncParser</span></a> is imported as <code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">funcparser</span>
@@ -237,8 +224,7 @@ is the <code class="docutils literal notranslate"><span class="pre">raise_errors
       <span class="n">funcparser</span><span class="o">=&lt;</span><span class="n">FuncParser</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">mydefault=2</span></code> kwarg could be overwritten if we made the call as <code class="docutils literal notranslate"><span class="pre">$test(mydefault=...)</span></code>
-but <code class="docutils literal notranslate"><span class="pre">myreserved=[1,</span> <span class="pre">2,</span> <span class="pre">3]</span></code> will <em>always</em> be sent as-is and will override a call <code class="docutils literal notranslate"><span class="pre">$test(myreserved=...)</span></code>.
+<p>The <code class="docutils literal notranslate"><span class="pre">mydefault=2</span></code> kwarg could be overwritten if we made the call as <code class="docutils literal notranslate"><span class="pre">$test(mydefault=...)</span></code> but <code class="docutils literal notranslate"><span class="pre">myreserved=[1,</span> <span class="pre">2,</span> <span class="pre">3]</span></code> will <em>always</em> be sent as-is and will override a call <code class="docutils literal notranslate"><span class="pre">$test(myreserved=...)</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">funcparser</span></code>/<code class="docutils literal notranslate"><span class="pre">raise_errors</span></code> kwargs are also always included as reserved kwargs.</p>
 </section>
 <section id="defining-custom-callables">
@@ -250,20 +236,15 @@ The <code class="docutils literal notranslate"><span class="pre">funcparser</spa
 </pre></div>
 </div>
 <blockquote>
-<div><p>The <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> must always be included. If you are unsure how <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> work in Python,
-<a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-to-use-args-and-kwargs-in-python-3">read about them here</a>.</p>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> must always be included. If you are unsure how <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> work in Python, <a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-to-use-args-and-kwargs-in-python-3">read about them here</a>.</p>
 </div></blockquote>
 <p>The input from the innermost <code class="docutils literal notranslate"><span class="pre">$funcname(...)</span></code> call in your callable will always be a <code class="docutils literal notranslate"><span class="pre">str</span></code>. Here’s
 an example of an <code class="docutils literal notranslate"><span class="pre">$toint</span></code> function; it converts numbers to integers.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&quot;There&#39;s a $toint(22.0)% chance of survival.&quot;
 </pre></div>
 </div>
-<p>What will enter the <code class="docutils literal notranslate"><span class="pre">$toint</span></code> callable (as <code class="docutils literal notranslate"><span class="pre">args[0]</span></code>) is the <em>string</em> <code class="docutils literal notranslate"><span class="pre">&quot;22.0&quot;</span></code>. The function is responsible
-for converting this to a number so that we can convert it to an integer. We must also properly handle invalid
-inputs (like non-numbers).</p>
-<p>If you want to mark an error, raise <code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.ParsingError</span></code>. This stops the entire parsing
-of the string and may or may not raise the exception depending on what you set <code class="docutils literal notranslate"><span class="pre">raise_errors</span></code> to when you
-created the parser.</p>
+<p>What will enter the <code class="docutils literal notranslate"><span class="pre">$toint</span></code> callable (as <code class="docutils literal notranslate"><span class="pre">args[0]</span></code>) is the <em>string</em> <code class="docutils literal notranslate"><span class="pre">&quot;22.0&quot;</span></code>. The function is responsible for converting this to a number so that we can convert it to an integer. We must also properly handle invalid inputs (like non-numbers).</p>
+<p>If you want to mark an error, raise <code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.ParsingError</span></code>. This stops the entire parsing of the string and may or may not raise the exception depending on what you set <code class="docutils literal notranslate"><span class="pre">raise_errors</span></code> to when you created the parser.</p>
 <p>However, if you <em>nest</em> functions, the return of the innermost function may be something other than
 a string. Let’s introduce the <code class="docutils literal notranslate"><span class="pre">$eval</span></code> function, which evaluates simple expressions using
 Python’s <code class="docutils literal notranslate"><span class="pre">literal_eval</span></code> and/or <code class="docutils literal notranslate"><span class="pre">simple_eval</span></code>. It returns whatever data type it
@@ -275,18 +256,14 @@ evaluates to.</p>
 It evaluates this and returns the <code class="docutils literal notranslate"><span class="pre">float</span></code> <code class="docutils literal notranslate"><span class="pre">22.0</span></code>. This time the outermost <code class="docutils literal notranslate"><span class="pre">$toint</span></code> will be called with
 this <code class="docutils literal notranslate"><span class="pre">float</span></code> instead of with a string.</p>
 <blockquote>
-<div><p>It’s important to safely validate your inputs since users may end up nesting your callables in any order.
-See the next section for useful tools to help with this.</p>
+<div><p>It’s important to safely validate your inputs since users may end up nesting your callables in any order. See the next section for useful tools to help with this.</p>
 </div></blockquote>
-<p>In these examples, the result will be embedded in the larger string, so the result of the entire parsing
-will be a string:</p>
+<p>In these examples, the result will be embedded in the larger string, so the result of the entire parsing will be a string:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">above_string</span><span class="p">)</span>
   <span class="s2">&quot;There&#39;s a 22</span><span class="si">% c</span><span class="s2">hance of survival.&quot;</span>
 </pre></div>
 </div>
-<p>However, if you use the <code class="docutils literal notranslate"><span class="pre">parse_to_any</span></code> (or <code class="docutils literal notranslate"><span class="pre">parse(...,</span> <span class="pre">return_str=False)</span></code>) and
-<em>don’t add any extra string around the outermost function call</em>,
-you’ll get the return type of the outermost callable back:</p>
+<p>However, if you use the <code class="docutils literal notranslate"><span class="pre">parse_to_any</span></code> (or <code class="docutils literal notranslate"><span class="pre">parse(...,</span> <span class="pre">return_str=False)</span></code>) and <em>don’t add any extra string around the outermost function call</em>, you’ll get the return type of the outermost callable back:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">parse_to_any</span><span class="p">(</span><span class="s2">&quot;$toint($eval(10 * 2.2)&quot;</span><span class="p">)</span>
 <span class="mi">22</span>
 <span class="n">parser</span><span class="o">.</span><span class="n">parse_to_any</span><span class="p">(</span><span class="s2">&quot;the number $toint($eval(10 * 2.2).&quot;</span><span class="p">)</span>
@@ -342,9 +319,7 @@ can support. This is because FunctionParser strings can be used by
 non-developer players/builders and some things (such as complex
 classes/callables etc) are just not safe/possible to convert from string
 representation.</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">evennia.utils.utils</span></code> is a helper called
-<a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.safe_convert_to_types" title="evennia.utils.utils.safe_convert_to_types"><span class="xref myst py py-func">safe_convert_to_types</span></a>. This function
-automates the conversion of simple data types in a safe way:</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">evennia.utils.utils</span></code> is a helper called <a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.safe_convert_to_types" title="evennia.utils.utils.safe_convert_to_types"><span class="xref myst py py-func">safe_convert_to_types</span></a>. This function automates the conversion of simple data types in a safe way:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">safe_convert_to_types</span>
 
 <span class="k">def</span> <span class="nf">_process_callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -360,43 +335,24 @@ automates the conversion of simple data types in a safe way:</p>
 
 </pre></div>
 </div>
-<p>In other words, in the callable <code class="docutils literal notranslate"><span class="pre">$process(expression,</span> <span class="pre">local,</span> <span class="pre">extra1=..,</span> <span class="pre">extra2=...)</span></code>, the first argument will be handled by the ‘py’ converter
-(described below), the second will passed through regular Python <code class="docutils literal notranslate"><span class="pre">str</span></code>,
-kwargs will be handled by <code class="docutils literal notranslate"><span class="pre">int</span></code> and <code class="docutils literal notranslate"><span class="pre">str</span></code> respectively. You can supply
-your own converter function as long as it takes one argument and returns
-the converted result.</p>
-<p>In other words,</p>
+<p>In other words, in the callable <code class="docutils literal notranslate"><span class="pre">$process(expression,</span> <span class="pre">local,</span> <span class="pre">extra1=..,</span> <span class="pre">extra2=...)</span></code>, the first argument will be handled by the ‘py’ converter (described below), the second will passed through regular Python <code class="docutils literal notranslate"><span class="pre">str</span></code>, kwargs will be handled by <code class="docutils literal notranslate"><span class="pre">int</span></code> and <code class="docutils literal notranslate"><span class="pre">str</span></code> respectively. You can supply your own converter function as long as it takes one argument and returns the converted result.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">safe_convert_to_type</span><span class="p">(</span>
         <span class="p">(</span><span class="n">tuple_of_arg_converters</span><span class="p">,</span> <span class="n">dict_of_kwarg_converters</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The special converter <code class="docutils literal notranslate"><span class="pre">&quot;py&quot;</span></code> will try to convert a string argument to a Python structure with the help of the
-following tools (which you may also find useful to experiment with on your own):</p>
+<p>The special converter <code class="docutils literal notranslate"><span class="pre">&quot;py&quot;</span></code> will try to convert a string argument to a Python structure with the help of the following tools (which you may also find useful to experiment with on your own):</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3.8/library/ast.html#ast.literal_eval">ast.literal_eval</a> is an in-built Python
-function. It
-<em>only</em> supports strings, bytes, numbers, tuples, lists, dicts, sets, booleans and <code class="docutils literal notranslate"><span class="pre">None</span></code>. That’s
-it - no arithmetic or modifications of data is allowed. This is good for converting individual values and
-lists/dicts from the input line to real Python objects.</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/simpleeval/">simpleeval</a> is a third-party tool included with Evennia. This
-allows for evaluation of simple (and thus safe) expressions. One can operate on numbers and strings
-with <code class="docutils literal notranslate"><span class="pre">+-/*</span></code> as well as do simple comparisons like <code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">&gt;</span> <span class="pre">3</span></code> and more. It does <em>not</em> accept more complex
-containers like lists/dicts etc, so this and <code class="docutils literal notranslate"><span class="pre">literal_eval</span></code> are complementary to each other.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3.8/library/ast.html#ast.literal_eval">ast.literal_eval</a> is an in-built Python function. It <em>only</em> supports strings, bytes, numbers, tuples, lists, dicts, sets, booleans and <code class="docutils literal notranslate"><span class="pre">None</span></code>. That’s it - no arithmetic or modifications of data is allowed. This is good for converting individual values and lists/dicts from the input line to real Python objects.</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/simpleeval/">simpleeval</a> is a third-party tool included with Evennia. This allows for evaluation of simple (and thus safe) expressions. One can operate on numbers and strings with <code class="docutils literal notranslate"><span class="pre">+-/*</span></code> as well as do simple comparisons like <code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">&gt;</span> <span class="pre">3</span></code> and more. It does <em>not</em> accept more complex containers like lists/dicts etc, so this and <code class="docutils literal notranslate"><span class="pre">literal_eval</span></code> are complementary to each other.</p></li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>It may be tempting to run use Python’s in-built <code class="docutils literal notranslate"><span class="pre">eval()</span></code> or <code class="docutils literal notranslate"><span class="pre">exec()</span></code> functions as converters since
-these are able to convert any valid Python source code to Python. NEVER DO THIS unless you really, really
-know that ONLY developers will ever modify the string going into the callable. The parser is intended
-for untrusted users (if you were trusted you’d have access to Python already). Letting untrusted users
-pass strings to <code class="docutils literal notranslate"><span class="pre">eval</span></code>/<code class="docutils literal notranslate"><span class="pre">exec</span></code> is a MAJOR security risk. It allows the caller to run arbitrary
-Python code on your server. This is the path to maliciously deleted hard drives. Just don’t do it and
-sleep better at night.</p>
+<p>It may be tempting to run use Python’s in-built <code class="docutils literal notranslate"><span class="pre">eval()</span></code> or <code class="docutils literal notranslate"><span class="pre">exec()</span></code> functions as converters since these are able to convert any valid Python source code to Python. NEVER DO THIS unless you really, really know that ONLY developers will ever modify the string going into the callable. The parser is intended for untrusted users (if you were trusted you’d have access to Python already). Letting untrusted users pass strings to <code class="docutils literal notranslate"><span class="pre">eval</span></code>/<code class="docutils literal notranslate"><span class="pre">exec</span></code> is a MAJOR security risk. It allows the caller to run arbitrary Python code on your server. This is the path to maliciously deleted hard drives. Just don’t do it and sleep better at night.</p>
 </div>
 </section>
 </section>
-<section id="default-callables">
-<h2>Default callables<a class="headerlink" href="#default-callables" title="Permalink to this headline">¶</a></h2>
+<section id="default-funcparser-callables">
+<h2>Default funcparser callables<a class="headerlink" href="#default-funcparser-callables" title="Permalink to this headline">¶</a></h2>
 <p>These are some example callables you can import and add your parser. They are divided into
 global-level dicts in <code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser</span></code>. Just import the dict(s) and merge/add one or
 more to them when you create your <code class="docutils literal notranslate"><span class="pre">FuncParser</span></code> instance to have those callables be available.</p>
@@ -404,47 +360,28 @@ more to them when you create your <code class="docutils literal notranslate"><sp
 <h3><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.FUNCPARSER_CALLABLES</span></code><a class="headerlink" href="#evennia-utils-funcparser-funcparser-callables" title="Permalink to this headline">¶</a></h3>
 <p>These are the ‘base’ callables.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">$eval(expression)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_eval" title="evennia.utils.funcparser.funcparser_callable_eval"><span class="xref myst py py-func">code</span></a>) -
-this uses <code class="docutils literal notranslate"><span class="pre">literal_eval</span></code> and <code class="docutils literal notranslate"><span class="pre">simple_eval</span></code> (see previous section) attemt to convert a string expression
-to a python object. This handles e.g. lists of literals <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3]</span></code> and simple expressions like <code class="docutils literal notranslate"><span class="pre">&quot;1</span> <span class="pre">+</span> <span class="pre">2&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$toint(number)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_toint" title="evennia.utils.funcparser.funcparser_callable_toint"><span class="xref myst py py-func">code</span></a>) -
-always converts an output to an integer, if possible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$eval(expression)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_eval" title="evennia.utils.funcparser.funcparser_callable_eval"><span class="xref myst py py-func">code</span></a>) - this uses <code class="docutils literal notranslate"><span class="pre">literal_eval</span></code> and <code class="docutils literal notranslate"><span class="pre">simple_eval</span></code> (see previous section) attemt to convert a string expression to a python object. This handles e.g. lists of literals <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3]</span></code> and simple expressions like <code class="docutils literal notranslate"><span class="pre">&quot;1</span> <span class="pre">+</span> <span class="pre">2&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$toint(number)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_toint" title="evennia.utils.funcparser.funcparser_callable_toint"><span class="xref myst py py-func">code</span></a>) - always converts an output to an integer, if possible.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$add/sub/mult/div(obj1,</span> <span class="pre">obj2)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_add" title="evennia.utils.funcparser.funcparser_callable_add"><span class="xref myst py py-func">code</span></a>) -
-this adds/subtracts/multiplies and divides to elements together. While simple addition could be done with
-<code class="docutils literal notranslate"><span class="pre">$eval</span></code>, this could for example be used also to add two lists together, which is not possible with <code class="docutils literal notranslate"><span class="pre">eval</span></code>;
-for example <code class="docutils literal notranslate"><span class="pre">$add($eval([1,2,3]),</span> <span class="pre">$eval([4,5,6]))</span> <span class="pre">-&gt;</span> <span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6]</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$round(float,</span> <span class="pre">significant)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_round" title="evennia.utils.funcparser.funcparser_callable_round"><span class="xref myst py py-func">code</span></a>) -
-rounds an input float into the number of provided significant digits. For example <code class="docutils literal notranslate"><span class="pre">$round(3.54343,</span> <span class="pre">3)</span> <span class="pre">-&gt;</span> <span class="pre">3.543</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$random([start,</span> <span class="pre">[end]])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_random" title="evennia.utils.funcparser.funcparser_callable_random"><span class="xref myst py py-func">code</span></a>) -
-this works like the Python <code class="docutils literal notranslate"><span class="pre">random()</span></code> function, but will randomize to an integer value if both start/end are
+this adds/subtracts/multiplies and divides to elements together. While simple addition could be done with <code class="docutils literal notranslate"><span class="pre">$eval</span></code>, this could for example be used also to add two lists together, which is not possible with <code class="docutils literal notranslate"><span class="pre">eval</span></code>; for example <code class="docutils literal notranslate"><span class="pre">$add($eval([1,2,3]),</span> <span class="pre">$eval([4,5,6]))</span> <span class="pre">-&gt;</span> <span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$round(float,</span> <span class="pre">significant)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_round" title="evennia.utils.funcparser.funcparser_callable_round"><span class="xref myst py py-func">code</span></a>) - rounds an input float into the number of provided significant digits. For example <code class="docutils literal notranslate"><span class="pre">$round(3.54343,</span> <span class="pre">3)</span> <span class="pre">-&gt;</span> <span class="pre">3.543</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$random([start,</span> <span class="pre">[end]])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_random" title="evennia.utils.funcparser.funcparser_callable_random"><span class="xref myst py py-func">code</span></a>) - this works like the Python <code class="docutils literal notranslate"><span class="pre">random()</span></code> function, but will randomize to an integer value if both start/end are
 integers. Without argument, will return a float between 0 and 1.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$randint([start,</span> <span class="pre">[end]])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_randint" title="evennia.utils.funcparser.funcparser_callable_randint"><span class="xref myst py py-func">code</span></a>) -
-works like the <code class="docutils literal notranslate"><span class="pre">randint()</span></code> python function and always returns an integer.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$choice(list)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_choice" title="evennia.utils.funcparser.funcparser_callable_choice"><span class="xref myst py py-func">code</span></a>) -
-the input will automatically be parsed the same way as <code class="docutils literal notranslate"><span class="pre">$eval</span></code> and is expected to be an iterable. A random
-element of this list will be returned.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$pad(text[,</span> <span class="pre">width,</span> <span class="pre">align,</span> <span class="pre">fillchar])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pad" title="evennia.utils.funcparser.funcparser_callable_pad"><span class="xref myst py py-func">code</span></a>) -
-this will pad content. <code class="docutils literal notranslate"><span class="pre">$pad(&quot;Hello&quot;,</span> <span class="pre">30,</span> <span class="pre">c,</span> <span class="pre">-)</span></code> will lead to a text centered in a 30-wide block surrounded by <code class="docutils literal notranslate"><span class="pre">-</span></code>
-characters.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$crop(text,</span> <span class="pre">width=78,</span> <span class="pre">suffix='[...]')</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_crop" title="evennia.utils.funcparser.funcparser_callable_crop"><span class="xref myst py py-func">code</span></a>) -
-this will crop a text longer than the width, by default ending it with a <code class="docutils literal notranslate"><span class="pre">[...]</span></code>-suffix that also fits within
-the width. If no width is given, the client width or <code class="docutils literal notranslate"><span class="pre">settings.DEFAULT_CLIENT_WIDTH</span></code> will be used.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$space(num)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_space" title="evennia.utils.funcparser.funcparser_callable_space"><span class="xref myst py py-func">code</span></a>) -
-this will insert <code class="docutils literal notranslate"><span class="pre">num</span></code> spaces.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$just(string,</span> <span class="pre">width=40,</span> <span class="pre">align=c,</span> <span class="pre">indent=2)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_justify" title="evennia.utils.funcparser.funcparser_callable_justify"><span class="xref myst py py-func">code</span></a>) -
-justifies the text to a given width, aligning it left/right/center or ‘f’ for full (spread text across width).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$randint([start,</span> <span class="pre">[end]])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_randint" title="evennia.utils.funcparser.funcparser_callable_randint"><span class="xref myst py py-func">code</span></a>) - works like the <code class="docutils literal notranslate"><span class="pre">randint()</span></code> python function and always returns an integer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$choice(list)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_choice" title="evennia.utils.funcparser.funcparser_callable_choice"><span class="xref myst py py-func">code</span></a>) - the input will automatically be parsed the same way as <code class="docutils literal notranslate"><span class="pre">$eval</span></code> and is expected to be an iterable. A random element of this list will be returned.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$pad(text[,</span> <span class="pre">width,</span> <span class="pre">align,</span> <span class="pre">fillchar])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pad" title="evennia.utils.funcparser.funcparser_callable_pad"><span class="xref myst py py-func">code</span></a>) - this will pad content. <code class="docutils literal notranslate"><span class="pre">$pad(&quot;Hello&quot;,</span> <span class="pre">30,</span> <span class="pre">c,</span> <span class="pre">-)</span></code> will lead to a text centered in a 30-wide block surrounded by <code class="docutils literal notranslate"><span class="pre">-</span></code> characters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$crop(text,</span> <span class="pre">width=78,</span> <span class="pre">suffix='[...]')</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_crop" title="evennia.utils.funcparser.funcparser_callable_crop"><span class="xref myst py py-func">code</span></a>) - this will crop a text longer than the width, by default ending it with a <code class="docutils literal notranslate"><span class="pre">[...]</span></code>-suffix that also fits within the width. If no width is given, the client width or <code class="docutils literal notranslate"><span class="pre">settings.DEFAULT_CLIENT_WIDTH</span></code> will be used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$space(num)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_space" title="evennia.utils.funcparser.funcparser_callable_space"><span class="xref myst py py-func">code</span></a>) - this will insert <code class="docutils literal notranslate"><span class="pre">num</span></code> spaces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$just(string,</span> <span class="pre">width=40,</span> <span class="pre">align=c,</span> <span class="pre">indent=2)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_justify" title="evennia.utils.funcparser.funcparser_callable_justify"><span class="xref myst py py-func">code</span></a>) - justifies the text to a given width, aligning it left/right/center or ‘f’ for full (spread text across width).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$ljust</span></code> - shortcut to justify-left. Takes all other kwarg of <code class="docutils literal notranslate"><span class="pre">$just</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$rjust</span></code> - shortcut to right justify.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$cjust</span></code> - shortcut to center justify.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$clr(startcolor,</span> <span class="pre">text[,</span> <span class="pre">endcolor])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_clr" title="evennia.utils.funcparser.funcparser_callable_clr"><span class="xref myst py py-func">code</span></a>) -
-color text. The color is given with one or two characters without the preceeding <code class="docutils literal notranslate"><span class="pre">|</span></code>. If no endcolor is
-given, the string will go back to neutral, so <code class="docutils literal notranslate"><span class="pre">$clr(r,</span> <span class="pre">Hello)</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">|rHello|n</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$clr(startcolor,</span> <span class="pre">text[,</span> <span class="pre">endcolor])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_clr" title="evennia.utils.funcparser.funcparser_callable_clr"><span class="xref myst py py-func">code</span></a>) - color text. The color is given with one or two characters without the preceeding <code class="docutils literal notranslate"><span class="pre">|</span></code>. If no endcolor is given, the string will go back to neutral, so <code class="docutils literal notranslate"><span class="pre">$clr(r,</span> <span class="pre">Hello)</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">|rHello|n</span></code>.</p></li>
 </ul>
 </section>
 <section id="evennia-utils-funcparser-searching-callables">
 <h3><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.SEARCHING_CALLABLES</span></code><a class="headerlink" href="#evennia-utils-funcparser-searching-callables" title="Permalink to this headline">¶</a></h3>
-<p>These are callables that requires access-checks in order to search for objects. So they require some
-extra reserved kwargs to be passed when running the parser:</p>
+<p>These are callables that requires access-checks in order to search for objects. So they require some extra reserved kwargs to be passed when running the parser:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="n">parser</span><span class="o">.</span><span class="n">parse_to_any</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">caller</span><span class="o">=&lt;</span><span class="nb">object</span> <span class="ow">or</span> <span class="n">account</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 
@@ -453,27 +390,20 @@ extra reserved kwargs to be passed when running the parser:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">caller</span></code> is required, it’s the the object to do the access-check for. The <code class="docutils literal notranslate"><span class="pre">access</span></code> kwarg is the
 <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock type</span></a> to check, default being <code class="docutils literal notranslate"><span class="pre">&quot;control&quot;</span></code>.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">$search(query,type=account|script,return_list=False)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_search" title="evennia.utils.funcparser.funcparser_callable_search"><span class="xref myst py py-func">code</span></a>) -
-this will look up and try to match an object by key or alias. Use the <code class="docutils literal notranslate"><span class="pre">type</span></code> kwarg to
-search for <code class="docutils literal notranslate"><span class="pre">account</span></code> or <code class="docutils literal notranslate"><span class="pre">script</span></code> instead. By default this will return nothing if there are more than one
-match; if <code class="docutils literal notranslate"><span class="pre">return_list</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> a list of 0, 1 or more matches will be returned instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$search(query,type=account|script,return_list=False)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_search" title="evennia.utils.funcparser.funcparser_callable_search"><span class="xref myst py py-func">code</span></a>) - this will look up and try to match an object by key or alias. Use the <code class="docutils literal notranslate"><span class="pre">type</span></code> kwarg to search for <code class="docutils literal notranslate"><span class="pre">account</span></code> or <code class="docutils literal notranslate"><span class="pre">script</span></code> instead. By default this will return nothing if there are more than one match; if <code class="docutils literal notranslate"><span class="pre">return_list</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> a list of 0, 1 or more matches will be returned instead.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$obj(query)</span></code>, <code class="docutils literal notranslate"><span class="pre">$dbref(query)</span></code> - legacy aliases for <code class="docutils literal notranslate"><span class="pre">$search</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$objlist(query)</span></code> - legacy alias for <code class="docutils literal notranslate"><span class="pre">$search</span></code>, always returning a list.</p></li>
 </ul>
 </section>
 <section id="evennia-utils-funcparser-actor-stance-callables">
 <h3><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.ACTOR_STANCE_CALLABLES</span></code><a class="headerlink" href="#evennia-utils-funcparser-actor-stance-callables" title="Permalink to this headline">¶</a></h3>
-<p>These are used to implement actor-stance emoting. They are used by the
-<a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">DefaultObject.msg_contents</span></a> method
-by default. You can read a lot more about this on the page
+<p>These are used to implement actor-stance emoting. They are used by the <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">DefaultObject.msg_contents</span></a> method by default. You can read a lot more about this on the page
 <a class="reference internal" href="../Concepts/Change-Message-Per-Receiver.html"><span class="doc std std-doc">Change messages per receiver</span></a>.</p>
-<p>On the parser side, all these inline functions require extra kwargs be passed into the parser
-(done by <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> by default):</p>
+<p>On the parser side, all these inline functions require extra kwargs be passed into the parser (done by <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> by default):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">caller</span><span class="o">=&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>Here the <code class="docutils literal notranslate"><span class="pre">caller</span></code> is the one sending the message and <code class="docutils literal notranslate"><span class="pre">receiver</span></code> the one to see it. The <code class="docutils literal notranslate"><span class="pre">mapping</span></code> contains
-references to other objects accessible via these callables.</p>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">caller</span></code> is the one sending the message and <code class="docutils literal notranslate"><span class="pre">receiver</span></code> the one to see it. The <code class="docutils literal notranslate"><span class="pre">mapping</span></code> contains references to other objects accessible via these callables.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">$you([key])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_you" title="evennia.utils.funcparser.funcparser_callable_you"><span class="xref myst py py-func">code</span></a>) -
 if no <code class="docutils literal notranslate"><span class="pre">key</span></code> is given, this represents the <code class="docutils literal notranslate"><span class="pre">caller</span></code>, otherwise an object from <code class="docutils literal notranslate"><span class="pre">mapping</span></code>
@@ -555,7 +485,7 @@ all the defaults (like <code class="docutils literal notranslate"><span class="p
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">The Inline Function Parser</a></li> 
+        <li class="nav-item nav-item-this"><a href="">FuncParser inline text parsing</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

@@ -63,20 +63,20 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Scripts</a><ul>
-<li><a class="reference internal" href="#in-game-command-examples">In-game command examples</a></li>
+<li><a class="reference internal" href="#working-with-scripts">Working with Scripts</a><ul>
 <li><a class="reference internal" href="#code-examples">Code examples</a></li>
 <li><a class="reference internal" href="#defining-new-scripts">Defining new Scripts</a><ul>
 <li><a class="reference internal" href="#simple-storage-script">Simple storage script</a></li>
+<li><a class="reference internal" href="#timed-script">Timed Script</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#timed-scripts">Timed Scripts</a><ul>
 <li><a class="reference internal" href="#script-timers-vs-delay-repeat">Script timers vs delay/repeat</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#script-attached-to-another-object">Script attached to another object</a></li>
 <li><a class="reference internal" href="#other-script-methods">Other Script methods</a></li>
-<li><a class="reference internal" href="#the-global-scripts-container">The GLOBAL_SCRIPTS container</a></li>
-<li><a class="reference internal" href="#hints-dealing-with-script-errors">Hints: Dealing with Script Errors</a></li>
+<li><a class="reference internal" href="#dealing-with-script-errors">Dealing with Script Errors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-global-scripts">Using GLOBAL_SCRIPTS</a></li>
 </ul>
 </li>
 </ul>
@@ -120,39 +120,20 @@
   <section class="tex2jax_ignore mathjax_ignore" id="scripts">
 <h1>Scripts<a class="headerlink" href="#scripts" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference internal" href="../api/evennia.scripts.scripts.html#evennia-scripts-scripts"><span class="std std-ref">Script API reference</span></a></p>
-<p><em>Scripts</em> are the out-of-character siblings to the in-character
-<a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>. Scripts are so flexible that the name “Script” is a bit limiting
-in itself - but we had to pick <em>something</em> to name them. Other possible names
-(depending on what you’d use them for) would be <code class="docutils literal notranslate"><span class="pre">OOBObjects</span></code>, <code class="docutils literal notranslate"><span class="pre">StorageContainers</span></code> or <code class="docutils literal notranslate"><span class="pre">TimerObjects</span></code>.</p>
-<p>If you ever consider creating an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> with a <code class="docutils literal notranslate"><span class="pre">None</span></code>-location just to store some game data,
-you should really be using a Script instead.</p>
+<p><em>Scripts</em> are the out-of-character siblings to the in-character <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>. Scripts are so flexible that the name “Script” is a bit limiting in itself - but we had to pick <em>something</em> to name them. Other possible names (depending on what you’d use them for) would be <code class="docutils literal notranslate"><span class="pre">OOBObjects</span></code>, <code class="docutils literal notranslate"><span class="pre">StorageContainers</span></code> or <code class="docutils literal notranslate"><span class="pre">TimerObjects</span></code>.</p>
+<p>If you ever consider creating an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> with a <code class="docutils literal notranslate"><span class="pre">None</span></code>-location just to store some game data, you should really be using a Script instead.</p>
 <ul class="simple">
-<li><p>Scripts are full <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities - they have <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> and
-can be modified in the same way. But they have <em>no in-game existence</em>, so no
-location or command-execution like <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a> and no connection to a particular
-player/session like <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>. This means they are perfectly suitable for acting
-as database-storage backends for game <em>systems</em>: Storing the current state of the economy,
-who is involved in the current fight, tracking an ongoing barter and so on. They are great as
-persistent system handlers.</p></li>
-<li><p>Scripts have an optional <em>timer component</em>. This means that you can set up the script
-to tick the <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> hook on the Script at a certain interval. The timer can be controlled
-independently of the rest of the script as needed. This component is optional
-and complementary to other timing functions in Evennia, like
-<a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.delay" title="evennia.utils.utils.delay"><span class="xref myst py py-func">evennia.utils.delay</span></a> and
-<a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.repeat" title="evennia.utils.utils.repeat"><span class="xref myst py py-func">evennia.utils.repeat</span></a>.</p></li>
-<li><p>Scripts can <em>attach</em> to Objects and Accounts via e.g. <code class="docutils literal notranslate"><span class="pre">obj.scripts.add/remove</span></code>. In the
-script you can then access the object/account as <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> or <code class="docutils literal notranslate"><span class="pre">self.account</span></code>. This can be used to
-dynamically extend other typeclasses but also to use the timer component to affect the parent object
-in various ways. For historical reasons, a Script <em>not</em> attached to an object is referred to as a
-<em>Global</em> Script.</p></li>
+<li><p>Scripts are full <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities - they have <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> and can be modified in the same way. But they have <em>no in-game existence</em>, so no location or command-execution like <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a> and no connection to a particular player/session like <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>. This means they are perfectly suitable for acting as database-storage backends for game <em>systems</em>: Storing the current state of the economy, who is involved in the current fight, tracking an ongoing barter and so on. They are great as persistent system handlers.</p></li>
+<li><p>Scripts have an optional <em>timer component</em>. This means that you can set up the script to tick the <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> hook on the Script at a certain interval. The timer can be controlled independently of the rest of the script as needed. This component is optional and complementary to other timing functions in Evennia, like <a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.delay" title="evennia.utils.utils.delay"><span class="xref myst py py-func">evennia.utils.delay</span></a> and <a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.repeat" title="evennia.utils.utils.repeat"><span class="xref myst py py-func">evennia.utils.repeat</span></a>.</p></li>
+<li><p>Scripts can <em>attach</em> to Objects and Accounts via e.g. <code class="docutils literal notranslate"><span class="pre">obj.scripts.add/remove</span></code>. In the script you can then access the object/account as <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> or <code class="docutils literal notranslate"><span class="pre">self.account</span></code>. This can be used to dynamically extend other typeclasses but also to use the timer component to affect the parent object in various ways. For historical reasons, a Script <em>not</em> attached to an object is referred to as a <em>Global</em> Script.</p></li>
 </ul>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.0: </span>In previus Evennia versions, stopping the Script’s timer also meant deleting the Script object.
 Starting with this version, the timer can be start/stopped separately and <code class="docutils literal notranslate"><span class="pre">.delete()</span></code> must be called
 on the Script explicitly to delete it.</p>
 </div>
-<section id="in-game-command-examples">
-<h2>In-game command examples<a class="headerlink" href="#in-game-command-examples" title="Permalink to this headline">¶</a></h2>
+<section id="working-with-scripts">
+<h2>Working with Scripts<a class="headerlink" href="#working-with-scripts" title="Permalink to this headline">¶</a></h2>
 <p>There are two main commands controlling scripts in the default cmdset:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">addscript</span></code> command is used for attaching scripts to existing objects:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; addscript obj = bodyfunctions.BodyFunctions
@@ -169,9 +150,8 @@ on the Script explicitly to delete it.</p>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.0: </span>The <code class="docutils literal notranslate"><span class="pre">addscript</span></code> command used to be only <code class="docutils literal notranslate"><span class="pre">script</span></code> which was easy to confuse with <code class="docutils literal notranslate"><span class="pre">scripts</span></code>.</p>
 </div>
-</section>
 <section id="code-examples">
-<h2>Code examples<a class="headerlink" href="#code-examples" title="Permalink to this headline">¶</a></h2>
+<h3>Code examples<a class="headerlink" href="#code-examples" title="Permalink to this headline">¶</a></h3>
 <p>Here are some examples of working with Scripts in-code (more details to follow in later
 sections).</p>
 <p>Create a new script:</p>
@@ -217,11 +197,11 @@ sections).</p>
 </div>
 </section>
 <section id="defining-new-scripts">
-<h2>Defining new Scripts<a class="headerlink" href="#defining-new-scripts" title="Permalink to this headline">¶</a></h2>
+<h3>Defining new Scripts<a class="headerlink" href="#defining-new-scripts" title="Permalink to this headline">¶</a></h3>
 <p>A Script is defined as a class and is created in the same way as other
 <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">typeclassed</span></a> entities. The parent class is <code class="docutils literal notranslate"><span class="pre">evennia.DefaultScript</span></code>.</p>
 <section id="simple-storage-script">
-<h3>Simple storage script<a class="headerlink" href="#simple-storage-script" title="Permalink to this headline">¶</a></h3>
+<h4>Simple storage script<a class="headerlink" href="#simple-storage-script" title="Permalink to this headline">¶</a></h4>
 <p>In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/scripts.py</span></code> is an empty <code class="docutils literal notranslate"><span class="pre">Script</span></code> class already set up. You
 can use this as a base for your own scripts.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
@@ -259,13 +239,10 @@ you set in your <code class="docutils literal notranslate"><span class="pre">at_
 
 </pre></div>
 </div>
-<p>See the <a class="reference internal" href="../api/evennia.utils.create.html#evennia.utils.create.create_script" title="evennia.utils.create.create_script"><span class="xref myst py py-func">create_script</span></a> and
-<a class="reference internal" href="../api/evennia.utils.search.html#evennia.utils.search.search_script" title="evennia.utils.search.search_script"><span class="xref myst py py-func">search_script</span></a> API documentation for more options
-on creating and finding Scripts.</p>
+<p>See the <a class="reference internal" href="../api/evennia.utils.create.html#evennia.utils.create.create_script" title="evennia.utils.create.create_script"><span class="xref myst py py-func">create_script</span></a> and <a class="reference internal" href="../api/evennia.utils.search.html#evennia.utils.search.search_script" title="evennia.utils.search.search_script"><span class="xref myst py py-func">search_script</span></a> API documentation for more options on creating and finding Scripts.</p>
 </section>
-</section>
-<section id="timed-scripts">
-<h2>Timed Scripts<a class="headerlink" href="#timed-scripts" title="Permalink to this headline">¶</a></h2>
+<section id="timed-script">
+<h4>Timed Script<a class="headerlink" href="#timed-script" title="Permalink to this headline">¶</a></h4>
 <p>There are several properties one can set on the Script to control its timer component.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
 
@@ -293,8 +270,7 @@ to help identifying what does what.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">interval</span></code> (int): The amount of time (in seconds) between every ‘tick’ of the timer. Note that
 it’s generally bad practice to use sub-second timers for anything in a text-game - the player will
 not be able to appreciate the precision (and if you print it, it will just spam the screen). For
-calculations you can pretty much always do them on-demand, or at a much slower interval without the
-player being the wiser.</p></li>
+calculations you can pretty much always do them on-demand, or at a much slower interval without the player being the wiser.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">start_delay</span></code> (bool): If timer should start right away or wait <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds first.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">repeats</span></code> (int): If &gt;0, the timer will only run this many times before stopping. Otherwise the
 number of repeats are infinite. If set to 1, the Script mimics a <code class="docutils literal notranslate"><span class="pre">delay</span></code> action.</p></li>
@@ -320,30 +296,18 @@ at which time the <code class="docutils literal notranslate"><span class="pre">m
 <li><p><code class="docutils literal notranslate"><span class="pre">.time_until_next_repeat()</span></code> - get the time until next time the timer fires.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.remaining_repeats()</span></code> - get the number of repeats remaining, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if repeats are infinite.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.reset_callcount()</span></code> - this resets the repeat counter to start over from 0. Only useful if <code class="docutils literal notranslate"><span class="pre">repeats&gt;0</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.force_repeat()</span></code> - this prematurely forces <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> to be called right away. Doing so will reset the
-countdown so that next call will again happen after <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.force_repeat()</span></code> - this prematurely forces <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> to be called right away. Doing so will reset the countdown so that next call will again happen after <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds.</p></li>
 </ul>
+</section>
+</section>
 <section id="script-timers-vs-delay-repeat">
 <h3>Script timers vs delay/repeat<a class="headerlink" href="#script-timers-vs-delay-repeat" title="Permalink to this headline">¶</a></h3>
-<p>If the <em>only</em> goal is to get a repeat/delay effect, the
-<a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.delay" title="evennia.utils.utils.delay"><span class="xref myst py py-func">evennia.utils.delay</span></a> and
-<a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.repeat" title="evennia.utils.utils.repeat"><span class="xref myst py py-func">evennia.utils.repeat</span></a> functions
-should generally be considered first. A Script is a lot ‘heavier’ to create/delete on the fly.
-In fact, for making a single delayed call (<code class="docutils literal notranslate"><span class="pre">script.repeats==1</span></code>), the <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> call is
-probably always the better choice.</p>
-<p>For repeating tasks, the <code class="docutils literal notranslate"><span class="pre">utils.repeat</span></code> is optimized for quick repeating of a large number of objects. It
-uses the TickerHandler under the hood. Its subscription-based model makes it very efficient to
-start/stop the repeating action for an object. The side effect is however that all objects set to tick
-at a given interval will <em>all do so at the same time</em>. This may or may not look strange in-game depending
-on the situation. By contrast the Script uses its own ticker that will operate independently from the
-tickers of all other Scripts.</p>
-<p>It’s also worth noting that once the script object has <em>already been created</em>,
-starting/stopping/pausing/unpausing the timer has very little overhead. The pause/unpause and update
-methods of the script also offers a bit more fine-control than using <code class="docutils literal notranslate"><span class="pre">utils.delays/repeat</span></code>.</p>
-</section>
+<p>If the <em>only</em> goal is to get a repeat/delay effect, the <a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.delay" title="evennia.utils.utils.delay"><span class="xref myst py py-func">evennia.utils.delay</span></a> and <a class="reference internal" href="../api/evennia.utils.utils.html#evennia.utils.utils.repeat" title="evennia.utils.utils.repeat"><span class="xref myst py py-func">evennia.utils.repeat</span></a> functions should generally be considered first. A Script is a lot ‘heavier’ to create/delete on the fly. In fact, for making a single delayed call (<code class="docutils literal notranslate"><span class="pre">script.repeats==1</span></code>), the <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> call is probably always the better choice.</p>
+<p>For repeating tasks, the <code class="docutils literal notranslate"><span class="pre">utils.repeat</span></code> is optimized for quick repeating of a large number of objects. It uses the TickerHandler under the hood. Its subscription-based model makes it very efficient to start/stop the repeating action for an object. The side effect is however that all objects set to tick at a given interval will <em>all do so at the same time</em>. This may or may not look strange in-game depending on the situation. By contrast the Script uses its own ticker that will operate independently from the tickers of all other Scripts.</p>
+<p>It’s also worth noting that once the script object has <em>already been created</em>, starting/stopping/pausing/unpausing the timer has very little overhead. The pause/unpause and update methods of the script also offers a bit more fine-control than using <code class="docutils literal notranslate"><span class="pre">utils.delays/repeat</span></code>.</p>
 </section>
 <section id="script-attached-to-another-object">
-<h2>Script attached to another object<a class="headerlink" href="#script-attached-to-another-object" title="Permalink to this headline">¶</a></h2>
+<h3>Script attached to another object<a class="headerlink" href="#script-attached-to-another-object" title="Permalink to this headline">¶</a></h3>
 <p>Scripts can be attached to an <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> or (more commonly) an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a>.
 If so, the ‘parent object’ will be available to the script as either <code class="docutils literal notranslate"><span class="pre">.obj</span></code> or <code class="docutils literal notranslate"><span class="pre">.account</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/scripts.py</span>
@@ -392,20 +356,16 @@ but only <code class="docutils literal notranslate"><span class="pre">scripts.We
 </div>
 </section>
 <section id="other-script-methods">
-<h2>Other Script methods<a class="headerlink" href="#other-script-methods" title="Permalink to this headline">¶</a></h2>
+<h3>Other Script methods<a class="headerlink" href="#other-script-methods" title="Permalink to this headline">¶</a></h3>
 <p>A Script has all the properties of a typeclassed object, such as <code class="docutils literal notranslate"><span class="pre">db</span></code> and <code class="docutils literal notranslate"><span class="pre">ndb</span></code>(see
 <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>). Setting <code class="docutils literal notranslate"><span class="pre">key</span></code> is useful in order to manage scripts (delete them by name
 etc). These are usually set up in the Script’s typeclass, but can also be assigned on the fly as
 keyword arguments to <code class="docutils literal notranslate"><span class="pre">evennia.create_script</span></code>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">at_script_creation()</span></code> - this is only called once - when the script is first created.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_server_reload()</span></code> - this is called whenever the server is warm-rebooted (e.g. with the
-<code class="docutils literal notranslate"><span class="pre">reload</span></code> command). It’s a good place to save non-persistent data you might want to survive a
-reload.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_reload()</span></code> - this is called whenever the server is warm-rebooted (e.g. with the <code class="docutils literal notranslate"><span class="pre">reload</span></code> command). It’s a good place to save non-persistent data you might want to survive a reload.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">at_server_shutdown()</span></code> - this is called when a system reset or systems shutdown is invoked.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_server_start()</span></code> - this is called when the server comes back (from reload/shutdown/reboot). It
-can be usuful for initializations and caching of non-persistent data when starting up a script’s
-functionality.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_start()</span></code> - this is called when the server comes back (from reload/shutdown/reboot). It can be usuful for initializations and caching of non-persistent data when starting up a script’s functionality.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">at_repeat()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">at_start()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">at_pause()</span></code></p></li>
@@ -413,12 +373,33 @@ functionality.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">delete()</span></code> - same as for other typeclassed entities, this will delete the Script. Of note is that
 it will also stop the timer (if it runs), leading to the <code class="docutils literal notranslate"><span class="pre">at_stop</span></code> hook being called.</p></li>
 </ul>
-<p>In addition, Scripts support <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a>, <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> and <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> etc like other
-Typeclassed entities.</p>
-<p>See also the methods involved in controlling a <a class="reference internal" href="#timed-scripts"><span class="std std-doc">Timed Script</span></a> above.</p>
+<p>In addition, Scripts support <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a>, <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> and <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> etc like other Typeclassed entities.</p>
+<p>See also the methods involved in controlling a <a class="reference internal" href="#timed-script"><span class="std std-doc">Timed Script</span></a> above.</p>
 </section>
-<section id="the-global-scripts-container">
-<h2>The GLOBAL_SCRIPTS container<a class="headerlink" href="#the-global-scripts-container" title="Permalink to this headline">¶</a></h2>
+<section id="dealing-with-script-errors">
+<h3>Dealing with Script Errors<a class="headerlink" href="#dealing-with-script-errors" title="Permalink to this headline">¶</a></h3>
+<p>Errors inside a timed, executing script can sometimes be rather terse or point to parts of the execution mechanism that is hard to interpret. One way to make it easier to debug scripts is to import Evennia’s native logger and wrap your functions in a try/catch block. Evennia’s logger can show you where the traceback occurred in your script.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+
+<span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
+
+    <span class="c1"># [...]</span>
+
+    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># [...]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">evennia</span><span class="o">/</span><span class="n">evennia</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">evennia</span><span class="o">/</span><span class="n">contrib</span><span class="o">/</span><span class="n">tutorial_examples</span><span class="o">/</span><span class="n">example_batch_cmds</span><span class="o">.</span><span class="n">ev</span>
+
+</pre></div>
+</div>
+</section>
+</section>
+<section id="using-global-scripts">
+<h2>Using GLOBAL_SCRIPTS<a class="headerlink" href="#using-global-scripts" title="Permalink to this headline">¶</a></h2>
 <p>A Script not attached to another entity is commonly referred to as a <em>Global</em> script since it’t available
 to access from anywhere. This means they need to be searched for in order to be used.</p>
 <p>Evennia supplies a convenient “container” <code class="docutils literal notranslate"><span class="pre">evennia.GLOBAL_SCRIPTS</span></code> to help organize your global
@@ -438,13 +419,7 @@ scripts. All you need is the Script’s <code class="docutils literal notranslat
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Note that global scripts appear as properties on `GLOBAL_SCRIPTS` based on their `key`.
-If you were to create two global scripts with the same `key` (even with different typeclasses),
-the `GLOBAL_SCRIPTS` container will only return one of them (which one depends on order in
-the database). Best is to organize your scripts so that this does not happen. Otherwise, use
-`evennia.search_scripts` to get exactly the script you want.
-</pre></div>
-</div>
+<p>Note that global scripts appear as properties on <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code> based on their <code class="docutils literal notranslate"><span class="pre">key</span></code>. If you were to create two global scripts with the same <code class="docutils literal notranslate"><span class="pre">key</span></code> (even with different typeclasses), the <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code> container will only return one of them (which one depends on order in the database). Best is to organize your scripts so that this does not happen. Otherwise, use <code class="docutils literal notranslate"><span class="pre">evennia.search_scripts</span></code> to get exactly the script you want.</p>
 </div>
 <p>There are two ways to make a script appear as a property on <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>:</p>
 <ol class="simple">
@@ -469,18 +444,10 @@ script keys are globally unique.</p></li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Above we add two scripts with keys <code class="docutils literal notranslate"><span class="pre">myscript</span></code> and <code class="docutils literal notranslate"><span class="pre">storagescript</span></code>respectively. The following dict
-can be empty - the <code class="docutils literal notranslate"><span class="pre">settings.BASE_SCRIPT_TYPECLASS</span></code> will then be used. Under the hood, the provided
-dict (along with the <code class="docutils literal notranslate"><span class="pre">key</span></code>) will be passed into <code class="docutils literal notranslate"><span class="pre">create_script</span></code> automatically, so
-all the <a class="reference internal" href="../api/evennia.utils.create.html#evennia.utils.create.create_script" title="evennia.utils.create.create_script"><span class="xref myst py py-func">same keyword arguments as for create_script</span></a> are
-supported here.</p>
+<p>Above we add two scripts with keys <code class="docutils literal notranslate"><span class="pre">myscript</span></code> and <code class="docutils literal notranslate"><span class="pre">storagescript</span></code>respectively. The following dict can be empty - the <code class="docutils literal notranslate"><span class="pre">settings.BASE_SCRIPT_TYPECLASS</span></code> will then be used. Under the hood, the provided dict (along with the <code class="docutils literal notranslate"><span class="pre">key</span></code>) will be passed into <code class="docutils literal notranslate"><span class="pre">create_script</span></code> automatically, so all the <a class="reference internal" href="../api/evennia.utils.create.html#evennia.utils.create.create_script" title="evennia.utils.create.create_script"><span class="xref myst py py-func">same keyword arguments as for create_script</span></a> are supported here.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Before setting up Evennia to manage your script like this, make sure that your Script typeclass
-does not have any critical errors (test it separately). If there are, you&#39;ll see errors in your log
-and your Script will temporarily fall back to being a `DefaultScript` type.
-</pre></div>
-</div>
+<p>Before setting up Evennia to manage your script like this, make sure that your Script typeclass does not have any critical errors (test it separately). If there are, you’ll see errors in your log and your Script will temporarily fall back to being a <code class="docutils literal notranslate"><span class="pre">DefaultScript</span></code> type.</p>
 </div>
 <p>Moreover, a script defined this way is <em>guaranteed</em> to exist when you try to access it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
@@ -493,29 +460,6 @@ and your Script will temporarily fall back to being a `DefaultScript` type.
 </div>
 <p>That is, if the script is deleted, next time you get it from <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>, Evennia will use the
 information in settings to recreate it for you on the fly.</p>
-</section>
-<section id="hints-dealing-with-script-errors">
-<h2>Hints: Dealing with Script Errors<a class="headerlink" href="#hints-dealing-with-script-errors" title="Permalink to this headline">¶</a></h2>
-<p>Errors inside a timed, executing script can sometimes be rather terse or point to
-parts of the execution mechanism that is hard to interpret. One way to make it
-easier to debug scripts is to import Evennia’s native logger and wrap your
-functions in a try/catch block. Evennia’s logger can show you where the
-traceback occurred in your script.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-
-<span class="k">class</span> <span class="nc">Weather</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
-
-    <span class="c1"># [...]</span>
-
-    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># [...]</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
-</pre></div>
-</div>
 </section>
 </section>
 

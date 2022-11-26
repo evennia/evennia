@@ -13,8 +13,7 @@ There are two components to having a command running - the *Command* class and t
 1. A *Command* is a python class containing all the functioning code for what a command does - for example, a *get* command would contain code for picking up objects.
 1. A *Command Set* (often referred to as a CmdSet or cmdset) is like a container for one or more Commands. A given Command can go into any number of different command sets. Only by putting the command set on a character object you will make all the commands therein available to use by that character. You can also store command sets on normal objects if you want users to be able to use the object in various ways. Consider a "Tree" object with a cmdset defining the commands *climb* and *chop down*. Or a "Clock" with a cmdset containing the single command *check time*.
 
-This page goes into full detail about how to use Commands. To fully use them you must also read the page detailing [Command Sets](./Command-Sets.md).  There is also a step-by-step [Adding Command Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md) that will get you started quickly without the
-extra explanations.
+This page goes into full detail about how to use Commands. To fully use them you must also read the page detailing [Command Sets](./Command-Sets.md).  There is also a step-by-step [Adding Command Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md) that will get you started quickly without the extra explanations.
 
 ## Defining Commands
 

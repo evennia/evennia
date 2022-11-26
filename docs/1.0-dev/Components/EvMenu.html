@@ -63,10 +63,6 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">EvMenu</a><ul>
-<li><a class="reference internal" href="#introduction">Introduction</a><ul>
-<li><a class="reference internal" href="#examples">Examples</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#launching-the-menu">Launching the menu</a></li>
 <li><a class="reference internal" href="#the-menu-nodes">The Menu nodes</a><ul>
 <li><a class="reference internal" href="#input-arguments-to-the-node">Input arguments to the node</a></li>
@@ -80,16 +76,25 @@
 <li><a class="reference internal" href="#option-key-goto">option-key ‘goto’</a></li>
 </ul>
 </li>
-</ul>
-</li>
 <li><a class="reference internal" href="#temporary-storage">Temporary storage</a></li>
 <li><a class="reference internal" href="#customizing-menu-formatting">Customizing Menu formatting</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#evmenu-templating-language">EvMenu templating language</a><ul>
 <li><a class="reference internal" href="#template-options">Template Options</a></li>
 <li><a class="reference internal" href="#templating-example">Templating example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id1">Examples:</a><ul>
+<li><a class="reference internal" href="#asking-for-one-line-input">Asking for one-line input</a><ul>
+<li><a class="reference internal" href="#the-yield-way">The <code class="docutils literal notranslate"><span class="pre">yield</span></code> way</a></li>
+<li><a class="reference internal" href="#the-get-input-way">The <code class="docutils literal notranslate"><span class="pre">get_input</span></code> way</a><ul>
+<li><a class="reference internal" href="#example-yes-no-prompt">Example: Yes/No prompt</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-list-node-decorator">The <code class="docutils literal notranslate"><span class="pre">&#64;list_node</span></code> decorator</a></li>
+<li><a class="reference internal" href="#example-menus">Example Menus</a><ul>
 <li><a class="reference internal" href="#example-simple-branching-menu">Example: Simple branching menu</a></li>
 <li><a class="reference internal" href="#example-dynamic-goto">Example: Dynamic goto</a></li>
 <li><a class="reference internal" href="#example-set-caller-properties">Example: Set caller properties</a></li>
@@ -99,16 +104,6 @@
 <li><a class="reference internal" href="#defining-nodes-in-a-dictionary">Defining nodes in a dictionary</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ask-for-simple-input">Ask for simple input</a><ul>
-<li><a class="reference internal" href="#the-yield-way">The <code class="docutils literal notranslate"><span class="pre">yield</span></code> way</a></li>
-<li><a class="reference internal" href="#the-get-input-way">The <code class="docutils literal notranslate"><span class="pre">get_input</span></code> way</a><ul>
-<li><a class="reference internal" href="#example-yes-no-prompt">Example: Yes/No prompt</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#the-list-node-decorator">The <code class="docutils literal notranslate"><span class="pre">&#64;list_node</span></code> decorator</a></li>
-<li><a class="reference internal" href="#assorted-notes">Assorted notes</a></li>
 </ul>
 </li>
 </ul>
@@ -151,37 +146,25 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="evmenu">
 <h1>EvMenu<a class="headerlink" href="#evmenu" title="Permalink to this headline">¶</a></h1>
-<p>EvMenu is used for generate branching multi-choice menus. Each menu ‘node’ can
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Is your answer yes or no?
+_________________________________________
+<span class="o">[</span>Y<span class="o">]</span>es! - Answer yes.
+<span class="o">[</span>N<span class="o">]</span>o! - Answer no.
+<span class="o">[</span>A<span class="o">]</span>bort - Answer neither, and abort.
+
+&gt; Y
+You chose yes!
+
+Thanks <span class="k">for</span> your answer. Goodbye!
+</pre></div>
+</div>
+<p><em>EvMenu</em> is used for generate branching multi-choice menus. Each menu ‘node’ can
 accepts specific options as input or free-form input. Depending what the player
 chooses, they are forwarded to different nodes in the menu.</p>
-<section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> utility class is located in <a class="reference internal" href="../api/evennia.utils.evmenu.html#evennia-utils-evmenu"><span class="std std-ref">evennia/utils/evmenu.py</span></a>.
 It allows for easily adding interactive menus to the game; for example to implement Character
 creation, building commands or similar. Below is an example of offering NPC conversation choices:</p>
-<section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>This section gives some examples of how menus work in-game. A menu is a state
-(it’s actually a custom cmdset) where menu-specific commands are made available
-to you. An EvMenu is usually started from inside a command, but could also
-just be put in a file and run with <code class="docutils literal notranslate"><span class="pre">py</span></code>.</p>
-<p>This is how the example menu will look in-game:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Is your answer yes or no?
-_________________________________________
-[Y]es! - Answer yes.
-[N]o! - Answer no.
-[A]bort - Answer neither, and abort.
-</pre></div>
-</div>
-<p>If you pick (for example) Y(es), you will see</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>You chose yes!
-
-Thanks for your answer. Goodbye!
-</pre></div>
-</div>
-<p>After which the menu will end (in this example at least - it could also continue
-on to other questions and choices or even repeat the same node over and over!)</p>
-<p>Here’s the full EvMenu code for this example:</p>
+<p>This is how the example menu at the top of this page will look in code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmenu</span>
 
 <span class="k">def</span> <span class="nf">_handle_answer</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -317,8 +300,6 @@ uses the template-string and a mapping of callables (we must add
 means depends on your game) to decide if your approach succeeded. It may then
 choose to point you to nodes that continue the conversation or maybe dump you
 into combat!</p>
-</section>
-</section>
 <section id="launching-the-menu">
 <h2>Launching the menu<a class="headerlink" href="#launching-the-menu" title="Permalink to this headline">¶</a></h2>
 <p>Initializing the menu is done using a call to the <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.EvMenu</span></code> class. This is the
@@ -354,39 +335,14 @@ most common way to do so - from inside a <a class="reference internal" href="Com
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> (Object or Account): is a reference to the object using the menu. This object will get a
-new <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> assigned to it, for handling the menu.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">menu_data</span></code> (str, module or dict): is a module or python path to a module where the global-level
-functions will each be considered to be a menu node. Their names in the module will be the names
-by which they are referred to in the module. Importantly, function names starting with an
-underscore
-<code class="docutils literal notranslate"><span class="pre">_</span></code> will be ignored by the loader. Alternatively, this can be a direct mapping
+<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> (Object or Account): is a reference to the object using the menu. This object will get a new <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> assigned to it, for handling the menu.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">menu_data</span></code> (str, module or dict): is a module or python path to a module where the global-level functions will each be considered to be a menu node. Their names in the module will be the names by which they are referred to in the module. Importantly, function names starting with an underscore <code class="docutils literal notranslate"><span class="pre">_</span></code> will be ignored by the loader. Alternatively, this can be a direct mapping
 <code class="docutils literal notranslate"><span class="pre">{&quot;nodename&quot;:function,</span> <span class="pre">...}</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">startnode</span></code> (str): is the name of the menu-node to start the menu at. Changing this means that
-you can jump into a menu tree at different positions depending on circumstance and thus possibly
-re-use menu entries.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cmdset_mergetype</span></code> (str): This is usually one of “Replace” or “Union” (see [CmdSets](Command-
-Sets).
-The first means that the menu is exclusive - the user has no access to any other commands while
-in the menu. The Union mergetype means the menu co-exists with previous commands (and may
-overload
-them, so be careful as to what to name your menu entries in this case).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cmdset_priority</span></code> (int): The priority with which to merge in the menu cmdset. This allows for
-advanced usage.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">auto_quit</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_look</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_help</span></code> (bool): If either of these are <code class="docutils literal notranslate"><span class="pre">True</span></code>, the menu
-automatically makes a <code class="docutils literal notranslate"><span class="pre">quit</span></code>, <code class="docutils literal notranslate"><span class="pre">look</span></code> or <code class="docutils literal notranslate"><span class="pre">help</span></code> command available to the user. The main reason why
-you’d want to turn this off is if  you want to use the aliases “q”, “l” or “h” for something in
-your
-menu. Nevertheless, at least <code class="docutils literal notranslate"><span class="pre">quit</span></code> is highly recommend - if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the menu <em>must</em> itself
-supply
-an “exit node” (a node without any options), or the user will be stuck in the menu until the
-server
-reloads (or eternally if the menu is <code class="docutils literal notranslate"><span class="pre">persistent</span></code>)!</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cmd_on_exit</span></code> (str): This command string will be executed right <em>after</em> the menu has closed down.
-From experience, it’s useful to trigger a “look” command to make sure the user is aware of the
-change of state; but any command can be used. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no command will be triggered
-after
-exiting the menu.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">startnode</span></code> (str): is the name of the menu-node to start the menu at. Changing this means that you can jump into a menu tree at different positions depending on circumstance and thus possibly re-use menu entries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdset_mergetype</span></code> (str): This is usually one of “Replace” or “Union” (see [CmdSets](Command- Sets). The first means that the menu is exclusive - the user has no access to any other commands while in the menu. The Union mergetype means the menu co-exists with previous commands (and may overload them, so be careful as to what to name your menu entries in this case).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdset_priority</span></code> (int): The priority with which to merge in the menu cmdset. This allows for advanced usage.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auto_quit</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_look</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_help</span></code> (bool): If either of these are <code class="docutils literal notranslate"><span class="pre">True</span></code>, the menu automatically makes a <code class="docutils literal notranslate"><span class="pre">quit</span></code>, <code class="docutils literal notranslate"><span class="pre">look</span></code> or <code class="docutils literal notranslate"><span class="pre">help</span></code> command available to the user. The main reason why you’d want to turn this off is if  you want to use the aliases “q”, “l” or “h” for something in your menu. Nevertheless, at least <code class="docutils literal notranslate"><span class="pre">quit</span></code> is highly recommend - if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the menu <em>must</em> itself supply an “exit node” (a node without any options), or the user will be stuck in the menu until the server reloads (or eternally if the menu is <code class="docutils literal notranslate"><span class="pre">persistent</span></code>)!</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmd_on_exit</span></code> (str): This command string will be executed right <em>after</em> the menu has closed down. From experience, it’s useful to trigger a “look” command to make sure the user is aware of the change of state; but any command can be used. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no command will be triggered after exiting the menu.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code> (bool) - if <code class="docutils literal notranslate"><span class="pre">True</span></code>, the menu will survive a reload (so the user will not be kicked
 out by the reload - make sure they can exit on their own!)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">startnode_input</span></code> (str or (str, dict) tuple): Pass an input text or a input text + kwargs to the
@@ -397,9 +353,7 @@ start a menu differently depending on the Command’s arguments in which it was 
 <li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code> (bool): If set, the <code class="docutils literal notranslate"><span class="pre">menudebug</span></code> command will be made available in the menu. Use it to
 list the current state of the menu and use <code class="docutils literal notranslate"><span class="pre">menudebug</span> <span class="pre">&lt;variable&gt;</span></code> to inspect a specific state
 variable from the list.</p></li>
-<li><p>All other keyword arguments will be available as initial data for the nodes. They will be
-available in all nodes as properties on <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> (see below). These will also
-survive a <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> if the menu is <code class="docutils literal notranslate"><span class="pre">persistent</span></code>.</p></li>
+<li><p>All other keyword arguments will be available as initial data for the nodes. They will be available in all nodes as properties on <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> (see below). These will also survive a <code class="docutils literal notranslate"><span class="pre">reload</span></code> if the menu is <code class="docutils literal notranslate"><span class="pre">persistent</span></code>.</p></li>
 </ul>
 <p>You don’t need to store the EvMenu instance anywhere - the very act of initializing it will store it
 as <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> on the <code class="docutils literal notranslate"><span class="pre">caller</span></code>. This object will be deleted automatically when the menu
@@ -601,9 +555,8 @@ goto-callable. This functionality comes from a time before goto could be a calla
 </div></blockquote>
 </section>
 </section>
-</section>
 <section id="temporary-storage">
-<h2>Temporary storage<a class="headerlink" href="#temporary-storage" title="Permalink to this headline">¶</a></h2>
+<h3>Temporary storage<a class="headerlink" href="#temporary-storage" title="Permalink to this headline">¶</a></h3>
 <p>When the menu starts, the EvMenu instance is stored on the caller as <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code>. Through
 this object you can in principle reach the menu’s internal state if you know what you are doing.
 This is also a good place to store temporary, more global variables that may be cumbersome to keep
@@ -614,7 +567,7 @@ that this will remain after the menu closes though, so you need to handle any ne
 yourself.</p>
 </section>
 <section id="customizing-menu-formatting">
-<h2>Customizing Menu formatting<a class="headerlink" href="#customizing-menu-formatting" title="Permalink to this headline">¶</a></h2>
+<h3>Customizing Menu formatting<a class="headerlink" href="#customizing-menu-formatting" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> display of nodes, options etc are controlled by a series of formatting methods on the
 <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> class. To customize these, simply create a new child class of <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> and override as
 needed. Here is an example:</p>
@@ -677,6 +630,7 @@ needed. Here is an example:</p>
 </pre></div>
 </div>
 <p>See <code class="docutils literal notranslate"><span class="pre">evennia/utils/evmenu.py</span></code> for the details of their default implementations.</p>
+</section>
 </section>
 <section id="evmenu-templating-language">
 <h2>EvMenu templating language<a class="headerlink" href="#evmenu-templating-language" title="Permalink to this headline">¶</a></h2>
@@ -827,8 +781,171 @@ myfunc(foo)      # error!
 </div>
 </section>
 </section>
-<section id="id1">
-<h2>Examples:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="asking-for-one-line-input">
+<h2>Asking for one-line input<a class="headerlink" href="#asking-for-one-line-input" title="Permalink to this headline">¶</a></h2>
+<p>This describes two ways for asking for simple questions from the user. Using Python’s <code class="docutils literal notranslate"><span class="pre">input</span></code>
+will <em>not</em> work in Evennia. <code class="docutils literal notranslate"><span class="pre">input</span></code> will <em>block</em> the entire server for <em>everyone</em> until that one
+player has entered their text, which is not what you want.</p>
+<section id="the-yield-way">
+<h3>The <code class="docutils literal notranslate"><span class="pre">yield</span></code> way<a class="headerlink" href="#the-yield-way" title="Permalink to this headline">¶</a></h3>
+<p>In the <code class="docutils literal notranslate"><span class="pre">func</span></code> method of your Commands (only) you can use Python’s built-in <code class="docutils literal notranslate"><span class="pre">yield</span></code> command to
+request input in a similar way to <code class="docutils literal notranslate"><span class="pre">input</span></code>. It looks like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Please enter your answer:&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will send “Please enter your answer” to the Command’s <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> and then pause at that
+point. All other players at the server will be unaffected. Once caller enteres a reply, the code
+execution will continue and you can do stuff with the <code class="docutils literal notranslate"><span class="pre">result</span></code>. Here is an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="k">class</span> <span class="nc">CmdTestInput</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Please enter something:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You entered </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">result2</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Now enter something else:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You now entered </span><span class="si">{</span><span class="n">result2</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">yield</span></code> is simple and intuitive, but it will only access input from <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> and you
+cannot abort or time out the pause until the player has responded. Under the hood, it is actually
+just a wrapper calling <code class="docutils literal notranslate"><span class="pre">get_input</span></code> described in the following section.</p>
+<blockquote>
+<div><p>Important Note: In Python you <em>cannot mix <code class="docutils literal notranslate"><span class="pre">yield</span></code> and <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">&lt;value&gt;</span></code> in the same method</em>. It has
+to do with <code class="docutils literal notranslate"><span class="pre">yield</span></code> turning the method into a
+<a class="reference external" href="https://www.learnpython.org/en/Generators">generator</a>. A <code class="docutils literal notranslate"><span class="pre">return</span></code> without an argument works, you
+can just not do <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">&lt;value&gt;</span></code>. This is usually not something you need to do in <code class="docutils literal notranslate"><span class="pre">func()</span></code> anyway,
+but worth keeping in mind.</p>
+</div></blockquote>
+</section>
+<section id="the-get-input-way">
+<h3>The <code class="docutils literal notranslate"><span class="pre">get_input</span></code> way<a class="headerlink" href="#the-get-input-way" title="Permalink to this headline">¶</a></h3>
+<p>The evmenu module offers a helper function named <code class="docutils literal notranslate"><span class="pre">get_input</span></code>. This is wrapped by the <code class="docutils literal notranslate"><span class="pre">yield</span></code>
+statement which is often easier and more intuitive to use. But <code class="docutils literal notranslate"><span class="pre">get_input</span></code> offers more flexibility
+and power if you need it. While in the same module as <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>, <code class="docutils literal notranslate"><span class="pre">get_input</span></code> is technically unrelated
+to it. The <code class="docutils literal notranslate"><span class="pre">get_input</span></code> allows you to ask and receive simple one-line input from the user without
+launching the full power of a menu to do so. To use, call <code class="docutils literal notranslate"><span class="pre">get_input</span></code> like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">caller</span></code> is the entity that should receive the prompt for input given as <code class="docutils literal notranslate"><span class="pre">prompt</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">callback</span></code> is a callable <code class="docutils literal notranslate"><span class="pre">function(caller,</span> <span class="pre">prompt,</span> <span class="pre">user_input)</span></code> that you define to handle the answer
+from the user. When run, the caller will see <code class="docutils literal notranslate"><span class="pre">prompt</span></code> appear on their screens and <em>any</em> text they
+enter will be sent into the callback for whatever processing you want.</p>
+<p>Below is a fully explained callback and example call:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">get_input</span>
+
+<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">user_input</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a callback you define yourself.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        caller (Account or Object): The one being asked</span>
+<span class="sd">          for input</span>
+<span class="sd">        prompt (str): A copy of the current prompt</span>
+<span class="sd">        user_input (str): The input from the account.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        repeat (bool): If not set or False, exit the</span>
+<span class="sd">          input prompt and clean up. If returning anything</span>
+<span class="sd">          True, stay in the prompt, which means this callback</span>
+<span class="sd">          will be called again with the next user input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;When asked &#39;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&#39;, you answered &#39;</span><span class="si">{</span><span class="n">user_input</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+<span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;Write something! &quot;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will show as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Write something!
+&gt; Hello
+When asked &#39;Write something!&#39;, you answered &#39;Hello&#39;.
+
+</pre></div>
+</div>
+<p>Normally, the <code class="docutils literal notranslate"><span class="pre">get_input</span></code> function quits after any input, but as seen in the example docs, you could
+return True from the callback to repeat the prompt until you pass whatever check you want.</p>
+<blockquote>
+<div><p>Note: You <em>cannot</em> link consecutive questions by putting a new <code class="docutils literal notranslate"><span class="pre">get_input</span></code> call inside the
+callback If you want that you should use an EvMenu instead (see the <a class="reference internal" href="#example-repeating-the-same-node"><span class="std std-doc">Repeating the same
+node</span></a> example above). Otherwise you can either peek at the
+implementation of <code class="docutils literal notranslate"><span class="pre">get_input</span></code> and implement your own mechanism (it’s just using cmdset nesting) or
+you can look at <a class="reference external" href="https://groups.google.com/forum/#%21category-topic/evennia/evennia-questions/16pi0SfMO5U">this extension suggested on the mailing
+list</a>.</p>
+</div></blockquote>
+<section id="example-yes-no-prompt">
+<h4>Example: Yes/No prompt<a class="headerlink" href="#example-yes-no-prompt" title="Permalink to this headline">¶</a></h4>
+<p>Below is an example of a Yes/No prompt using the <code class="docutils literal notranslate"><span class="pre">get_input</span></code> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">yesno</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">):</span>
+        <span class="c1"># do stuff to handle the yes/no answer</span>
+        <span class="c1"># ...</span>
+        <span class="c1"># if we return None/False the prompt state</span>
+        <span class="c1"># will quit after this</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># the answer is not on the right yes/no form</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Please answer Yes or No. </span><span class="se">\n</span><span class="si">{prompt}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="o">@</span>        <span class="c1"># returning True will make sure the prompt state is not exited</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<span class="c1"># ask the question</span>
+<span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;Is Evennia great (Yes/No)?&quot;</span><span class="p">,</span> <span class="n">yesno</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="the-list-node-decorator">
+<h2>The <code class="docutils literal notranslate"><span class="pre">&#64;list_node</span></code> decorator<a class="headerlink" href="#the-list-node-decorator" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.list_node</span></code> is an advanced decorator for use with <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> node functions.
+It is used to quickly create menus for manipulating large numbers of items.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="n">here</span>
+<span class="n">______________________________________________</span>
+
+<span class="mf">1.</span> <span class="n">option1</span>     <span class="mf">7.</span> <span class="n">option7</span>      <span class="mf">13.</span> <span class="n">option13</span>
+<span class="mf">2.</span> <span class="n">option2</span>     <span class="mf">8.</span> <span class="n">option8</span>      <span class="mf">14.</span> <span class="n">option14</span>
+<span class="mf">3.</span> <span class="n">option3</span>     <span class="mf">9.</span> <span class="n">option9</span>      <span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="n">revius</span> <span class="n">page</span>
+<span class="mf">4.</span> <span class="n">option4</span>    <span class="mf">10.</span> <span class="n">option10</span>      <span class="n">page</span> <span class="mi">2</span>
+<span class="mf">5.</span> <span class="n">option5</span>    <span class="mf">11.</span> <span class="n">option11</span>     <span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="n">ext</span> <span class="n">page</span>
+<span class="mf">6.</span> <span class="n">option6</span>    <span class="mf">12.</span> <span class="n">option12</span>
+
+</pre></div>
+</div>
+<p>The menu will automatically create an multi-page option listing that one can flip through. One can
+inpect each entry and then select them with prev/next. This is how it is used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">list_node</span>
+
+
+<span class="o">...</span>
+
+<span class="n">_options</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;option1&#39;</span><span class="p">,</span> <span class="s1">&#39;option2&#39;</span><span class="p">,</span> <span class="o">...</span> <span class="s1">&#39;option100&#39;</span><span class="p">]</span>
+
+<span class="n">_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menuchoice</span><span class="p">,</span> <span class="n">available_choices</span><span class="p">):</span>
+    <span class="c1"># analyze choice</span>
+    <span class="k">return</span> <span class="s2">&quot;next_node&quot;</span>
+
+<span class="nd">@list_node</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="n">_select</span><span class="p">,</span> <span class="n">pagesize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">node_mylist</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> argument to <code class="docutils literal notranslate"><span class="pre">list_node</span></code> is either a list, a generator or a callable returning a list
+of strings for each option that should be displayed in the node.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">select</span></code> is a callable in the example above but could also be the name of a menu node. If a
+callable, the <code class="docutils literal notranslate"><span class="pre">menuchoice</span></code> argument holds the selection done and <code class="docutils literal notranslate"><span class="pre">available_choices</span></code> holds all the
+options available. The callable should return the menu to go to depending on the selection (or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> to rerun the same node). If the name of a menu node, the selection will be passed as
+<code class="docutils literal notranslate"><span class="pre">selection</span></code> kwarg to that node.</p>
+<p>The decorated node itself should return <code class="docutils literal notranslate"><span class="pre">text</span></code> to display in the node. It must return at least an
+empty dictionary for its options. It returning options, those will supplement the options
+auto-created by the <code class="docutils literal notranslate"><span class="pre">list_node</span></code> decorator.</p>
+</section>
+<section id="example-menus">
+<h2>Example Menus<a class="headerlink" href="#example-menus" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong><a class="reference internal" href="#example-simple-branching-menu"><span class="std std-doc">Simple branching menu</span></a></strong> - choose from options</p></li>
 <li><p><strong><a class="reference internal" href="#example-dynamic-goto"><span class="std std-doc">Dynamic goto</span></a></strong> - jumping to different nodes based on response</p></li>
@@ -844,8 +961,7 @@ helper function accessed as <code class="docutils literal notranslate"><span cla
 </ul>
 <section id="example-simple-branching-menu">
 <h3>Example: Simple branching menu<a class="headerlink" href="#example-simple-branching-menu" title="Permalink to this headline">¶</a></h3>
-<p>Below is an example of a simple branching menu node leading to different other nodes depending on
-choice:</p>
+<p>Below is an example of a simple branching menu node leading to different other nodes depending on choice:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/mychargen.py</span>
 
 <span class="k">def</span> <span class="nf">define_character</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
@@ -1064,9 +1180,7 @@ when the user exits the menu.</p>
 </section>
 <section id="example-repeating-the-same-node">
 <h3>Example: Repeating the same node<a class="headerlink" href="#example-repeating-the-same-node" title="Permalink to this headline">¶</a></h3>
-<p>Sometimes you want to make a chain of menu nodes one after another, but you don’t want the user to
-be able to continue to the next node until you have verified that what they input in the previous
-node is ok. A common example is a login menu:</p>
+<p>Sometimes you want to make a chain of menu nodes one after another, but you don’t want the user to be able to continue to the next node until you have verified that what they input in the previous node is ok. A common example is a login menu:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">def</span> <span class="nf">_check_username</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># we assume lookup_username() exists</span>
@@ -1176,178 +1290,6 @@ function - for example you can’t use other Python keywords like <code class="d
 probably more work than it’s worth: You can create dynamic menus by instead making each node
 function more clever. See the <a class="reference internal" href="../Howtos/Tutorial-NPC-Merchants.html"><span class="doc std std-doc">NPC shop tutorial</span></a> for an example of this.</p>
 </section>
-</section>
-<section id="ask-for-simple-input">
-<h2>Ask for simple input<a class="headerlink" href="#ask-for-simple-input" title="Permalink to this headline">¶</a></h2>
-<p>This describes two ways for asking for simple questions from the user. Using Python’s <code class="docutils literal notranslate"><span class="pre">input</span></code>
-will <em>not</em> work in Evennia. <code class="docutils literal notranslate"><span class="pre">input</span></code> will <em>block</em> the entire server for <em>everyone</em> until that one
-player has entered their text, which is not what you want.</p>
-<section id="the-yield-way">
-<h3>The <code class="docutils literal notranslate"><span class="pre">yield</span></code> way<a class="headerlink" href="#the-yield-way" title="Permalink to this headline">¶</a></h3>
-<p>In the <code class="docutils literal notranslate"><span class="pre">func</span></code> method of your Commands (only) you can use Python’s built-in <code class="docutils literal notranslate"><span class="pre">yield</span></code> command to
-request input in a similar way to <code class="docutils literal notranslate"><span class="pre">input</span></code>. It looks like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Please enter your answer:&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This will send “Please enter your answer” to the Command’s <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> and then pause at that
-point. All other players at the server will be unaffected. Once caller enteres a reply, the code
-execution will continue and you can do stuff with the <code class="docutils literal notranslate"><span class="pre">result</span></code>. Here is an example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
-<span class="k">class</span> <span class="nc">CmdTestInput</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Please enter something:&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You entered </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-        <span class="n">result2</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Now enter something else:&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You now entered </span><span class="si">{</span><span class="n">result2</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Using <code class="docutils literal notranslate"><span class="pre">yield</span></code> is simple and intuitive, but it will only access input from <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> and you
-cannot abort or time out the pause until the player has responded. Under the hood, it is actually
-just a wrapper calling <code class="docutils literal notranslate"><span class="pre">get_input</span></code> described in the following section.</p>
-<blockquote>
-<div><p>Important Note: In Python you <em>cannot mix <code class="docutils literal notranslate"><span class="pre">yield</span></code> and <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">&lt;value&gt;</span></code> in the same method</em>. It has
-to do with <code class="docutils literal notranslate"><span class="pre">yield</span></code> turning the method into a
-<a class="reference external" href="https://www.learnpython.org/en/Generators">generator</a>. A <code class="docutils literal notranslate"><span class="pre">return</span></code> without an argument works, you
-can just not do <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">&lt;value&gt;</span></code>. This is usually not something you need to do in <code class="docutils literal notranslate"><span class="pre">func()</span></code> anyway,
-but worth keeping in mind.</p>
-</div></blockquote>
-</section>
-<section id="the-get-input-way">
-<h3>The <code class="docutils literal notranslate"><span class="pre">get_input</span></code> way<a class="headerlink" href="#the-get-input-way" title="Permalink to this headline">¶</a></h3>
-<p>The evmenu module offers a helper function named <code class="docutils literal notranslate"><span class="pre">get_input</span></code>. This is wrapped by the <code class="docutils literal notranslate"><span class="pre">yield</span></code>
-statement which is often easier and more intuitive to use. But <code class="docutils literal notranslate"><span class="pre">get_input</span></code> offers more flexibility
-and power if you need it. While in the same module as <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>, <code class="docutils literal notranslate"><span class="pre">get_input</span></code> is technically unrelated
-to it. The <code class="docutils literal notranslate"><span class="pre">get_input</span></code> allows you to ask and receive simple one-line input from the user without
-launching the full power of a menu to do so. To use, call <code class="docutils literal notranslate"><span class="pre">get_input</span></code> like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Here <code class="docutils literal notranslate"><span class="pre">caller</span></code> is the entity that should receive the prompt for input given as <code class="docutils literal notranslate"><span class="pre">prompt</span></code>. The
-<code class="docutils literal notranslate"><span class="pre">callback</span></code> is a callable <code class="docutils literal notranslate"><span class="pre">function(caller,</span> <span class="pre">prompt,</span> <span class="pre">user_input)</span></code> that you define to handle the answer
-from the user. When run, the caller will see <code class="docutils literal notranslate"><span class="pre">prompt</span></code> appear on their screens and <em>any</em> text they
-enter will be sent into the callback for whatever processing you want.</p>
-<p>Below is a fully explained callback and example call:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">get_input</span>
-
-<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">user_input</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is a callback you define yourself.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        caller (Account or Object): The one being asked</span>
-<span class="sd">          for input</span>
-<span class="sd">        prompt (str): A copy of the current prompt</span>
-<span class="sd">        user_input (str): The input from the account.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        repeat (bool): If not set or False, exit the</span>
-<span class="sd">          input prompt and clean up. If returning anything</span>
-<span class="sd">          True, stay in the prompt, which means this callback</span>
-<span class="sd">          will be called again with the next user input.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;When asked &#39;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&#39;, you answered &#39;</span><span class="si">{</span><span class="n">user_input</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
-
-<span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;Write something! &quot;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This will show as</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Write something!
-&gt; Hello
-When asked &#39;Write something!&#39;, you answered &#39;Hello&#39;.
-
-</pre></div>
-</div>
-<p>Normally, the <code class="docutils literal notranslate"><span class="pre">get_input</span></code> function quits after any input, but as seen in the example docs, you could
-return True from the callback to repeat the prompt until you pass whatever check you want.</p>
-<blockquote>
-<div><p>Note: You <em>cannot</em> link consecutive questions by putting a new <code class="docutils literal notranslate"><span class="pre">get_input</span></code> call inside the
-callback If you want that you should use an EvMenu instead (see the <a class="reference internal" href="#example-repeating-the-same-node"><span class="std std-doc">Repeating the same
-node</span></a> example above). Otherwise you can either peek at the
-implementation of <code class="docutils literal notranslate"><span class="pre">get_input</span></code> and implement your own mechanism (it’s just using cmdset nesting) or
-you can look at <a class="reference external" href="https://groups.google.com/forum/#%21category-topic/evennia/evennia-questions/16pi0SfMO5U">this extension suggested on the mailing
-list</a>.</p>
-</div></blockquote>
-<section id="example-yes-no-prompt">
-<h4>Example: Yes/No prompt<a class="headerlink" href="#example-yes-no-prompt" title="Permalink to this headline">¶</a></h4>
-<p>Below is an example of a Yes/No prompt using the <code class="docutils literal notranslate"><span class="pre">get_input</span></code> function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">yesno</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">):</span>
-        <span class="c1"># do stuff to handle the yes/no answer</span>
-        <span class="c1"># ...</span>
-        <span class="c1"># if we return None/False the prompt state</span>
-        <span class="c1"># will quit after this</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># the answer is not on the right yes/no form</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Please answer Yes or No. </span><span class="se">\n</span><span class="si">{prompt}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="o">@</span>        <span class="c1"># returning True will make sure the prompt state is not exited</span>
-        <span class="k">return</span> <span class="kc">True</span>
-
-<span class="c1"># ask the question</span>
-<span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;Is Evennia great (Yes/No)?&quot;</span><span class="p">,</span> <span class="n">yesno</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-</section>
-<section id="the-list-node-decorator">
-<h2>The <code class="docutils literal notranslate"><span class="pre">&#64;list_node</span></code> decorator<a class="headerlink" href="#the-list-node-decorator" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.list_node</span></code> is an advanced decorator for use with <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> node functions.
-It is used to quickly create menus for manipulating large numbers of items.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="n">here</span>
-<span class="n">______________________________________________</span>
-
-<span class="mf">1.</span> <span class="n">option1</span>     <span class="mf">7.</span> <span class="n">option7</span>      <span class="mf">13.</span> <span class="n">option13</span>
-<span class="mf">2.</span> <span class="n">option2</span>     <span class="mf">8.</span> <span class="n">option8</span>      <span class="mf">14.</span> <span class="n">option14</span>
-<span class="mf">3.</span> <span class="n">option3</span>     <span class="mf">9.</span> <span class="n">option9</span>      <span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="n">revius</span> <span class="n">page</span>
-<span class="mf">4.</span> <span class="n">option4</span>    <span class="mf">10.</span> <span class="n">option10</span>      <span class="n">page</span> <span class="mi">2</span>
-<span class="mf">5.</span> <span class="n">option5</span>    <span class="mf">11.</span> <span class="n">option11</span>     <span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="n">ext</span> <span class="n">page</span>
-<span class="mf">6.</span> <span class="n">option6</span>    <span class="mf">12.</span> <span class="n">option12</span>
-
-</pre></div>
-</div>
-<p>The menu will automatically create an multi-page option listing that one can flip through. One can
-inpect each entry and then select them with prev/next. This is how it is used:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">list_node</span>
-
-
-<span class="o">...</span>
-
-<span class="n">_options</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;option1&#39;</span><span class="p">,</span> <span class="s1">&#39;option2&#39;</span><span class="p">,</span> <span class="o">...</span> <span class="s1">&#39;option100&#39;</span><span class="p">]</span>
-
-<span class="n">_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menuchoice</span><span class="p">,</span> <span class="n">available_choices</span><span class="p">):</span>
-    <span class="c1"># analyze choice</span>
-    <span class="k">return</span> <span class="s2">&quot;next_node&quot;</span>
-
-<span class="nd">@list_node</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="n">_select</span><span class="p">,</span> <span class="n">pagesize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">node_mylist</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="o">...</span>
-
-    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
-
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> argument to <code class="docutils literal notranslate"><span class="pre">list_node</span></code> is either a list, a generator or a callable returning a list
-of strings for each option that should be displayed in the node.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">select</span></code> is a callable in the example above but could also be the name of a menu node. If a
-callable, the <code class="docutils literal notranslate"><span class="pre">menuchoice</span></code> argument holds the selection done and <code class="docutils literal notranslate"><span class="pre">available_choices</span></code> holds all the
-options available. The callable should return the menu to go to depending on the selection (or
-<code class="docutils literal notranslate"><span class="pre">None</span></code> to rerun the same node). If the name of a menu node, the selection will be passed as
-<code class="docutils literal notranslate"><span class="pre">selection</span></code> kwarg to that node.</p>
-<p>The decorated node itself should return <code class="docutils literal notranslate"><span class="pre">text</span></code> to display in the node. It must return at least an
-empty dictionary for its options. It returning options, those will supplement the options
-auto-created by the <code class="docutils literal notranslate"><span class="pre">list_node</span></code> decorator.</p>
-</section>
-<section id="assorted-notes">
-<h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
-<p>The EvMenu is implemented using <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a>. When you start a new EvMenu, the user of the
-menu will be assigned a <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> with the commands they need to navigate the menu.
-This means that if you were to, from inside the menu, assign a new command set to the caller, <em>you
-may override the Menu Cmdset and kill the menu</em>. If you want to assign cmdsets to the caller as part
-of the menu, you should store the cmdset on <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> and wait to actually assign it
-until the exit node.</p>
 </section>
 </section>
 

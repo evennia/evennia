@@ -250,6 +250,10 @@ div.highlight {
     border-radius: 5px;
 }
 
+div.highlight-shell.notranslate > div.highlight .nb { 
+    color: #79ecff !important;
+}
+
 
 div.note {
     background-color: #eee;

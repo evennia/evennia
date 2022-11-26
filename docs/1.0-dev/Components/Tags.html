@@ -63,11 +63,13 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Tags</a><ul>
+<li><a class="reference internal" href="#working-with-tags">Working with Tags</a><ul>
 <li><a class="reference internal" href="#properties-of-tags-and-aliases-and-permissions">Properties of Tags (and Aliases and Permissions)</a></li>
 <li><a class="reference internal" href="#adding-removing-tags">Adding/Removing Tags</a></li>
 <li><a class="reference internal" href="#searching-for-objects-with-a-given-tag">Searching for objects with a given tag</a></li>
-<li><a class="reference internal" href="#using-aliases-and-permissions">Using Aliases and Permissions</a></li>
-<li><a class="reference internal" href="#assorted-notes">Assorted notes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#aliases-and-permissions">Aliases and Permissions</a></li>
 </ul>
 </li>
 </ul>
@@ -137,8 +139,10 @@
 <p>Above, the tags inform us that the <code class="docutils literal notranslate"><span class="pre">Sword</span></code> is both sharp and can be wielded. If that’s all they do, they could just be a normal Python flag. When tags become important is if there are a lot of objects with different combinations of tags. Maybe you have a magical spell that dulls <em>all</em> sharp-edged objects in the castle - whether sword, dagger, spear or kitchen knife! You can then just grab all objects with the <code class="docutils literal notranslate"><span class="pre">has_sharp_edge</span></code> tag.
 Another example would be a weather script affecting all rooms tagged as <code class="docutils literal notranslate"><span class="pre">outdoors</span></code> or finding all characters tagged with <code class="docutils literal notranslate"><span class="pre">belongs_to_fighter_guild</span></code>.</p>
 <p>In Evennia, Tags are technically also used to implement <code class="docutils literal notranslate"><span class="pre">Aliases</span></code> (alternative names for objects) and <code class="docutils literal notranslate"><span class="pre">Permissions</span></code> (simple strings for <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> to check for).</p>
+<section id="working-with-tags">
+<h2>Working with Tags<a class="headerlink" href="#working-with-tags" title="Permalink to this headline">¶</a></h2>
 <section id="properties-of-tags-and-aliases-and-permissions">
-<h2>Properties of Tags (and Aliases and Permissions)<a class="headerlink" href="#properties-of-tags-and-aliases-and-permissions" title="Permalink to this headline">¶</a></h2>
+<h3>Properties of Tags (and Aliases and Permissions)<a class="headerlink" href="#properties-of-tags-and-aliases-and-permissions" title="Permalink to this headline">¶</a></h3>
 <p>Tags are <em>unique</em>. This means that there is only ever one Tag object with a given key and category.</p>
 <blockquote>
 <div><p>Not specifying a category (default) gives the tag a category of <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is also considered a
@@ -172,10 +176,8 @@ free up the <em>category</em> property for any use you desire.</p></li>
 </ul>
 </section>
 <section id="adding-removing-tags">
-<h2>Adding/Removing Tags<a class="headerlink" href="#adding-removing-tags" title="Permalink to this headline">¶</a></h2>
-<p>You can tag any <em>typeclassed</em> object, namely <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>,
-<a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>. General tags are added by the <em>Taghandler</em>.  The
-tag handler is accessed as a property <code class="docutils literal notranslate"><span class="pre">tags</span></code> on the relevant entity:</p>
+<h3>Adding/Removing Tags<a class="headerlink" href="#adding-removing-tags" title="Permalink to this headline">¶</a></h3>
+<p>You can tag any <em>typeclassed</em> object, namely <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>. General tags are added by the <em>Taghandler</em>.  The tag handler is accessed as a property <code class="docutils literal notranslate"><span class="pre">tags</span></code> on the relevant entity:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span>
      <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;luxurious&quot;</span><span class="p">)</span>
      <span class="n">myroom</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;dungeon#01&quot;</span><span class="p">)</span>
@@ -198,7 +200,7 @@ You can also use the default <code class="docutils literal notranslate"><span cl
 <p>This tags the chair with a ‘furniture’ Tag (the one with a <code class="docutils literal notranslate"><span class="pre">None</span></code> category).</p>
 </section>
 <section id="searching-for-objects-with-a-given-tag">
-<h2>Searching for objects with a given tag<a class="headerlink" href="#searching-for-objects-with-a-given-tag" title="Permalink to this headline">¶</a></h2>
+<h3>Searching for objects with a given tag<a class="headerlink" href="#searching-for-objects-with-a-given-tag" title="Permalink to this headline">¶</a></h3>
 <p>Usually tags are used as a quick way to find tagged database entities. You can retrieve all objects
 with a given Tag like this in code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">import</span> <span class="nn">evennia</span>
@@ -222,14 +224,9 @@ with a given Tag like this in code:</p>
 </pre></div>
 </div>
 <blockquote>
-<div><p>Note that searching for just “furniture” will only return the objects tagged with the “furniture”
-tag that
-has a category of <code class="docutils literal notranslate"><span class="pre">None</span></code>. We must explicitly give the category to get the “luxurious” furniture.</p>
+<div><p>Note that searching for just “furniture” will only return the objects tagged with the “furniture” tag that has a category of <code class="docutils literal notranslate"><span class="pre">None</span></code>. We must explicitly give the category to get the “luxurious” furniture.</p>
 </div></blockquote>
-<p>Using any of the <code class="docutils literal notranslate"><span class="pre">search_tag</span></code> variants will all return <a class="reference external" href="https://docs.djangoproject.com/en/2.1/ref/models/querysets/">Django
-Querysets</a>, including if you only have
-one match. You can treat querysets as lists and iterate over them, or continue building search
-queries with them.</p>
+<p>Using any of the <code class="docutils literal notranslate"><span class="pre">search_tag</span></code> variants will all return <a class="reference external" href="https://docs.djangoproject.com/en/2.1/ref/models/querysets/">Django Querysets</a>, including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them.</p>
 <p>Remember when searching that not setting a category means setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code> - this does <em>not</em>
 mean that category is undefined, rather <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered the default, unnamed category.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span> 
@@ -244,16 +241,16 @@ mean that category is undefined, rather <code class="docutils literal notranslat
 <span class="n">objs</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_tag</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="c1"># or</span>
 <span class="n">objs</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_tag</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
-
 </pre></div>
 </div>
 <p>There is also an in-game command that deals with assigning and using (<a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object-</span></a>) tags:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @tag/search furniture
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> tag/search furniture
 </pre></div>
 </div>
 </section>
-<section id="using-aliases-and-permissions">
-<h2>Using Aliases and Permissions<a class="headerlink" href="#using-aliases-and-permissions" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="aliases-and-permissions">
+<h2>Aliases and Permissions<a class="headerlink" href="#aliases-and-permissions" title="Permalink to this headline">¶</a></h2>
 <p>Aliases and Permissions are implemented using normal TagHandlers that simply save Tags with a
 different <code class="docutils literal notranslate"><span class="pre">tagtype</span></code>. These handlers are named <code class="docutils literal notranslate"><span class="pre">aliases</span></code> and <code class="docutils literal notranslate"><span class="pre">permissions</span></code> on all Objects. They are
 used in the same way as Tags above:</p>
@@ -266,17 +263,6 @@ used in the same way as Tags above:</p>
 </div>
 <p>and so on. Similarly to how <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> works in-game, there is also the <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code> command for assigning
 permissions and <code class="docutils literal notranslate"><span class="pre">&#64;alias</span></code> command for aliases.</p>
-</section>
-<section id="assorted-notes">
-<h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
-<p>Generally, tags are enough on their own for grouping objects. Having no tag <code class="docutils literal notranslate"><span class="pre">category</span></code> is perfectly
-fine and the normal operation. Simply adding a new Tag for grouping objects is often better than
-making a new category. So think hard before deciding you really need to categorize your Tags.</p>
-<p>That said, tag categories can be useful if you build some game system that uses tags. You can then
-use tag categories to make sure to separate tags created with this system from any other tags
-created elsewhere. You can then supply custom search methods that <em>only</em> find objects tagged with
-tags of that category. An example of this
-is found in the <a class="reference internal" href="../Concepts/Zones.html"><span class="doc std std-doc">Zone tutorial</span></a>.</p>
 </section>
 </section>
 

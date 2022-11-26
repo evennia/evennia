@@ -158,16 +158,62 @@
 </section>
 <section id="multisession-mode-and-multi-playing">
 <h2>Multisession mode and multi-playing<a class="headerlink" href="#multisession-mode-and-multi-playing" title="Permalink to this headline">¶</a></h2>
-<p>The multisession modes are described in detail in the <a class="reference internal" href="../Components/Sessions.html#multisession-mode"><span class="std std-doc">Session documentation</span></a>. In brief, this is controlled by a <a class="reference internal" href="../Setup/Settings.html"><span class="doc std std-doc">setting</span></a>. Here’s the default:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MULTISESSION_MODE = 0
+<p>The number of sessions possible to connect to a given account at the same time and how it works is given by the <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> setting:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=0</span></code>: One session per account. When connecting with a new session the old one is disconnected. This is the default mode and emulates many classic mud code bases.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌──────┐ │   ┌───────┐    ┌───────┐   ┌─────────┐
+│Client├─┼──►│Session├───►│Account├──►│Character│
+└──────┘ │   └───────┘    └───────┘   └─────────┘
 </pre></div>
 </div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=0</span></code>: One <a class="reference internal" href="../Components/Sessions.html"><span class="doc std std-doc">Session</span></a> per <a class="reference internal" href="../Components/Accounts.html"><span class="doc std std-doc">Account</span></a>, routed to one <a class="reference internal" href="../Components/Objects.html"><span class="doc std std-doc">puppet</span></a>. If connecting with a new session/client, it will kick the previous one.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=1</span></code>: Multiple sessions per Account, all routed to one puppet. Allows you to control one puppet from multiple client windows.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=2</span></code>: Multiple sessions per Account, each routed to a different puppet. This allows for multi-playing.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=3</span></code>: Multiple sessions per account, And multiple sessions per puppet. This is full multi-playing, including being able to control each puppet from multiple clients.</p></li>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=1</span></code>: Many sessions per account, input/output from/to each session is treated the same. For the player this means they can connect to the game from multiple clients and see the same output in all of them. The result of a command given in one client (that is, through one Session) will be returned to <em>all</em> connected Sessions/clients with no distinction.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         │
+┌──────┐ │   ┌───────┐
+│Client├─┼──►│Session├──┐
+└──────┘ │   └───────┘  └──►┌───────┐   ┌─────────┐
+         │                  │Account├──►│Character│
+┌──────┐ │   ┌───────┐  ┌──►└───────┘   └─────────┘
+│Client├─┼──►│Session├──┘
+└──────┘ │   └───────┘
+         │
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=2</span></code>: Many sessions per account, one character per session. In this mode, puppeting an Object/Character will link the puppet back only to the particular Session doing the puppeting. That is, input from that Session will make use of the CmdSet of that Object/Character and outgoing messages (such as the result of a <code class="docutils literal notranslate"><span class="pre">look</span></code>) will be passed back only to that puppeting Session. If another Session tries to puppet the same Character, the old Session will automatically un-puppet it. From the player’s perspective, this will mean that they can open separate game clients and play a different Character in each using one game account.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         │                 ┌───────┐
+┌──────┐ │   ┌───────┐     │Account│    ┌─────────┐
+│Client├─┼──►│Session├──┐  │       │  ┌►│Character│
+└──────┘ │   └───────┘  └──┼───────┼──┘ └─────────┘
+         │                 │       │
+┌──────┐ │   ┌───────┐  ┌──┼───────┼──┐ ┌─────────┐
+│Client├─┼──►│Session├──┘  │       │  └►│Character│
+└──────┘ │   └───────┘     │       │    └─────────┘
+         │                 └───────┘
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=3</span></code>: Many sessions per account <em>and</em> character. This is the full multi-puppeting mode, where multiple sessions may not only connect to the player account but multiple sessions may also puppet a single character at the same time. From the user’s perspective it means one can open multiple client windows, some for controlling different Characters and some that share a Character’s input/output like in mode 1. This mode otherwise works the same as mode 2.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         │                 ┌───────┐
+┌──────┐ │   ┌───────┐     │Account│    ┌─────────┐
+│Client├─┼──►│Session├──┐  │       │  ┌►│Character│
+└──────┘ │   └───────┘  └──┼───────┼──┘ └─────────┘
+         │                 │       │
+┌──────┐ │   ┌───────┐  ┌──┼───────┼──┐
+│Client├─┼──►│Session├──┘  │       │  └►┌─────────┐
+└──────┘ │   └───────┘     │       │    │Character│
+         │                 │       │  ┌►└─────────┘
+┌──────┐ │   ┌───────┐  ┌──┼───────┼──┘             ▼
+│Client├─┼──►│Session├──┘  │       │
+└──────┘ │   └───────┘     └───────┘
+         │
+</pre></div>
+</div>
+</li>
 </ul>
+<blockquote>
+<div><p>Note that even if multiple Sessions puppet one Character, there is only ever one instance of that Character.</p>
+</div></blockquote>
 <p>Mode <code class="docutils literal notranslate"><span class="pre">0</span></code> is the default and mimics how many legacy codebases work, especially in the DIKU world. The equivalence of higher modes are often ‘hacked’ into existing servers to allow for players to have multiple characters.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MAX_NR_SIMULTANEOUS_PUPPETS = 1
 </pre></div>
