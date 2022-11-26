@@ -49,9 +49,9 @@ Here are the import paths for the relevant child classes in the game dir
 - `mygame.typeclasses.rooms.Room` (inherits from `DefaultRoom`)
 - `mygame.typeclasses.exits.Exit` (inherits from `DefaultExit`)
 
-## How to create your own object types
+## Working with Objects
 
-You can easily add your own in-game behavior by either modifying one of the typeclasses in  your game dir or by inheriting from them. 
+You can easily add your own in-game behavior by either modifying one of the typeclasses in  your game dir or by inheriting from them.  
 
 You can put your new typeclass directly in the relevant module, or you could organize your code in some other way. Here we assume we make a new module `mygame/typeclasses/flowers.py`: 
 
@@ -71,13 +71,11 @@ You can put your new typeclass directly in the relevant module, or you could org
             self.db.desc = "This is a pretty rose with thorns."     
 ```
    
-Now you just need to point to the class *Rose* with the `create` command
-to make a new rose:
+Now you just need to point to the class *Rose* with the `create` command to make a new rose:
 
      create/drop MyRose:flowers.Rose
 
-What the `create` command actually *does* is to use the [evennia.create_object](evennia.utils.create.create_object) 
-function. You can do the same thing yourself in code:
+What the `create` command actually *does* is to use the [evennia.create_object](evennia.utils.create.create_object)  function. You can do the same thing yourself in code:
 
 ```python
     from evennia import create_object
@@ -91,31 +89,9 @@ your own building commands).
 
 This particular Rose class doesn't really do much, all it does it make sure the attribute
 `desc`(which is what the `look` command looks for) is pre-set, which is pretty pointless since you
-will usually want to change this at build time (using the `desc` command or using the
-[Spawner](./Prototypes.md)). 
+will usually want to change this at build time (using the `desc` command or using the [Spawner](./Prototypes.md)). 
 
-## Adding common functionality 
-
-`Object`, `Character`, `Room` and `Exit` also inherit from `mygame.typeclasses.objects.ObjectParent`.
-This is an empty 'mixin' class. Optionally, you can modify this class if you want to easily add some _common_ functionality to all your Objects, Characters, Rooms and Exits at once. You can still customize each subclass separately (see the Python docs on [multiple inheritance](https://docs.python.org/3/tutorial/classes.html#multiple-inheritance) for details).
-
-Here is an example: 
-
-```python
-# in mygame/typeclasses/objects.py
-# ... 
-
-from evennia.objects.objects import DefaultObject 
-
-class ObjectParent:
-    def at_pre_get(self, getter, **kwargs):
-       # make all entities by default un-pickable
-      return False
-```
-
-Now all of `Object`, `Exit`. `Room` and `Character` default to not being able to be picked up using the `get` command.
-
-## Properties and functions on Objects
+### Properties and functions on Objects
 
 Beyond the properties assigned to all [typeclassed](./Typeclasses.md) objects (see that page for a list
 of those), the Object also has the following custom properties:
@@ -149,23 +125,46 @@ The Object also has a host of useful utility functions. See the function headers
 
 The Object Typeclass defines many more *hook methods* beyond `at_object_creation`. Evennia calls these hooks at various points.  When implementing your custom objects, you will inherit from the base parent and overload these hooks with your own custom code. See `evennia.objects.objects` for an updated list of all the available hooks or the [API for DefaultObject here](evennia.objects.objects.DefaultObject).
 
-## Subclasses of `Object`
 
-There are three special subclasses of *Object* in default Evennia - *Characters*, *Rooms* and *Exits*. The reason they are separated is because these particular object types are fundamental, something you will always need and in some cases requires some extra attention in order to be recognized by the game engine (there is nothing stopping you from redefining them though). In practice they are all pretty similar to the base Object.
+## Characters
 
-### Characters
+The [DefaultCharacters](evennia.objects.objects.DefaultCharacter) is the root class for player in-game entities. They are usually _puppeted_ by  [Accounts](./Accounts.md). 
 
-Characters are objects controlled by [Accounts](./Accounts.md). When a new Account logs in to Evennia for the first time, a new `Character` object is created and the Account object is assigned to the `account` attribute. A `Character` object must have a [Default Commandset](./Command-Sets.md) set on itself at creation, or the account will not be able to issue any commands! If you just inherit your own class from `evennia.DefaultCharacter` and make sure to use `super()` to call the parent methods you should be fine. In `mygame/typeclasses/characters.py` is an empty `Character` class ready for you to modify.
+When a new Account logs in to Evennia for the first time, a new `Character` object is created and the Account object is assigned to the `account` attribute (but Evennia supports [alternative connection-styles](../Concepts/Connection-Styles.md) if so desired).
 
-### Rooms
+A `Character` object must have a [Default Commandset](./Command-Sets.md) set on itself at creation, or the account will not be able to issue any commands! 
 
-*Rooms* are the root containers of all other objects. The only thing really separating a room from any other object is that they have no `location` of their own and that default commands like `@dig` creates objects of this class - so if you want to expand your rooms with more functionality, just inherit from `ev.DefaultRoom`. In `mygame/typeclasses/rooms.py` is an empty `Room` class ready for you to modify. 
+If you want to change the default character created by the default commands, you can change it in settings: 
 
-### Exits
+    BASE_CHARACTER_TYPECLASS = "typeclasses.characters.Character"
+    
+This deafult points at the empty class in  `mygame/typeclasses/characters.py` , ready for you to modify as you please.
+
+## Rooms
+
+[Rooms](evennia.objects.objects.DefaultRoom) are the root containers of all other objects. 
+
+The only thing really separating a room from any other object is that they have no `location` of their own and that default commands like `dig` creates objects of this class - so if you want to expand your rooms with more functionality, just inherit from `evennia.DefaultRoom`. 
+
+To change the default room created by `dig`, `tunnel` and other commands, change it in settings: 
+
+    BASE_ROOM_TYPECLASS = "typeclases.rooms.Room"
+
+The empty class in `mygame/typeclasses/rooms.py` is a good place to start! 
+
+## Exits
 
 *Exits* are objects connecting other objects (usually *Rooms*) together. An object named *North* or *in* might be an exit, as well as *door*, *portal* or *jump out the window*. An exit has two things that separate them from other objects. Firstly, their *destination* property is set and points to a valid object. This fact makes it easy and fast to locate exits in the database. Secondly, exits define a special [Transit Command](./Commands.md) on themselves when they are created. This command is named the same as the exit object and will, when called, handle the practicalities of moving the character to the Exits's *destination* - this allows you to just enter the name of the exit on its own to move around, just as you would expect.
 
-The exit functionality is all defined on the Exit typeclass, so you could in principle completely change how exits work in your game (it's not recommended though, unless you really know what you are doing). Exits are [locked](./Locks.md) using an access_type called *traverse* and also make use of a few hook methods for giving feedback if the traversal fails.  See `evennia.DefaultExit` for more info. In `mygame/typeclasses/exits.py` there is an empty `Exit` class for you to modify.
+The exit functionality is all defined on the Exit typeclass, so you could in principle completely change how exits work in your game (it's not recommended though, unless you really know what you are doing). Exits are [locked](./Locks.md) using an access_type called *traverse* and also make use of a few hook methods for giving feedback if the traversal fails.  See `evennia.DefaultExit` for more info. 
+
+Exits are normally overridden on a case-by-case basis, but if you want to change the default exit createad by rooms like `dig` ,  `tunnel` or `open` you can change it in settings:
+
+    BASE_EXIT_TYPECLASS = "typeclasses.exits.Exit"
+
+In `mygame/typeclasses/exits.py` there is an empty `Exit` class for you to modify.
+
+### Exit details 
 
 The process of traversing an exit is as follows:
 
@@ -183,3 +182,24 @@ The process of traversing an exit is as follows:
 1. On the Exit object, `at_post_traverse(obj, source)` is triggered.
 
 If the move fails for whatever reason, the Exit will look for an Attribute `err_traverse` on itself and display this as an error message. If this is not found, the Exit will instead call `at_failed_traverse(obj)` on itself. 
+
+##  Adding common functionality
+
+`Object`, `Character`, `Room` and `Exit` also inherit from `mygame.typeclasses.objects.ObjectParent`.
+This is an empty 'mixin' class. Optionally, you can modify this class if you want to easily add some _common_ functionality to all your Objects, Characters, Rooms and Exits at once. You can still customize each subclass separately (see the Python docs on [multiple inheritance](https://docs.python.org/3/tutorial/classes.html#multiple-inheritance) for details).
+
+Here is an example: 
+
+```python
+# in mygame/typeclasses/objects.py
+# ... 
+
+from evennia.objects.objects import DefaultObject 
+
+class ObjectParent:
+    def at_pre_get(self, getter, **kwargs):
+       # make all entities by default un-pickable
+      return False
+```
+
+Now all of `Object`, `Exit`. `Room` and `Character` default to not being able to be picked up using the `get` command.

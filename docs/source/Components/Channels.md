@@ -27,15 +27,13 @@ Channels can be used both for chats between [Accounts](./Accounts.md) and betwee
 
 ```
 
-## Using channels in-game
-
-In the default command set, channels are all handled via the mighty
-[channel
-command](evennia.commands.default.comms.CmdChannel), `channel` (or
-`chan`).  By default, this command will assume all entities dealing with
-channels are `Accounts`.
+## Working with channels
 
 ### Viewing and joining channels
+
+In the default command set, channels are all handled via the mighty [channel command](evennia.commands.default.comms.CmdChannel), `channel` (or `chan`).  By default, this command will assume all entities dealing with channels are `Accounts`.
+
+Viewing channels
 
     channel       - shows your subscriptions
     channel/all   - shows all subs available to you
@@ -52,7 +50,7 @@ unsubscribing), you can mute it:
     channel/mute channelname
     channel/unmute channelname
 
-### Chat on channels
+### Talk on channels
 
 To speak on a channel, do
 
@@ -141,8 +139,7 @@ Banning adds the user to the channels blacklist. This means they will not be
 able to _rejoin_ if you boot them. You will need to run `channel/boot` to
 actually kick them out.
 
-See the [Channel command](evennia.commands.default.comms.CmdChannel) api
-docs (and in-game help) for more details.
+See the [Channel command](evennia.commands.default.comms.CmdChannel) api docs (and in-game help) for more details.
 
 Admin-level users can also modify channel's [locks](./Locks.md):
 
@@ -159,11 +156,7 @@ Channels use three lock-types by default:
 
 #### Restricting channel administration
 
-By default everyone can use the channel command ([evennia.commands.default.comms.CmdChannel](evennia.commands.default.comms.CmdChannel))
-to create channels and will then control the channels they created (to boot/ban
-people etc). If you as a developer does not want regular players to do this
-(perhaps you want only staff to be able to spawn new channels), you can
-override the `channel` command and change its `locks` property.
+By default everyone can use the channel command ([evennia.commands.default.comms.CmdChannel](evennia.commands.default.comms.CmdChannel)) to create channels and will then control the channels they created (to boot/ban people etc). If you as a developer does not want regular players to do this (perhaps you want only staff to be able to spawn new channels), you can override the `channel` command and change its `locks` property. 
 
 The default `help` command has the following `locks` property:
 
@@ -203,19 +196,19 @@ channels you could override the `help` command and change the lockstring to:
 Add this custom command to your default cmdset and regular users wil now get an
 access-denied error when trying to use use these switches.
 
-## Allowing Characters to use Channels
+## Using channels in code
 
-The default `channel` command ([evennia.commands.default.comms.CmdChannel](evennia.commands.default.comms.CmdChannel))
-sits in the `Account` [command set](./Command-Sets.md). It is set up such that it will
-always operate on `Accounts`, even if you were to add it to the
-`CharacterCmdSet`.
+For most common changes, the default channel, the recipient hooks and possibly
+overriding the `channel` command will get you very far. But you can also tweak
+channels themselves.
 
-It's a one-line change to make this command accept non-account callers. But for
-convenience we provide a version for Characters/Objects. Just import
-[evennia.commands.default.comms.CmdObjectChannel](evennia.commands.default.comms.CmdObjectChannel)
-and inherit from that instead.
+### Allowing Characters to use Channels
 
-## Customizing channel output and behavior
+The default `channel` command ([evennia.commands.default.comms.CmdChannel](evennia.commands.default.comms.CmdChannel)) sits in the `Account` [command set](./Command-Sets.md). It is set up such that it will always operate on `Accounts`, even if you were to add it to the `CharacterCmdSet`.
+
+It's a one-line change to make this command accept non-account callers. But for convenience we provide a version for Characters/Objects. Just import [evennia.commands.default.comms.CmdObjectChannel](evennia.commands.default.comms.CmdObjectChannel) and inherit from that instead.
+
+### Customizing channel output and behavior
 
 When distributing a message, the channel will call a series of hooks on itself
 and (more importantly) on each recipient. So you can customize things a lot by
@@ -243,21 +236,11 @@ Note that `Accounts` and `Objects` both have their have separate sets of hooks.
 So make sure you modify the set actually used by your subcribers (or both).
 Default channels all use `Account` subscribers.
 
-## Channels in code
+### Channel class
 
-For most common changes, the default channel, the recipient hooks and possibly
-overriding the `channel` command will get you very far. But you can also tweak
-channels themselves.
+Channels are [Typeclassed](./Typeclasses.md) entities. This means they are persistent in the database, can have [attributes](./Attributes.md) and [Tags](./Tags.md) and can be easily extended. 
 
-Channels are [Typeclassed](./Typeclasses.md) entities. This means they are
-persistent in the database, can have [attributes](./Attributes.md) and [Tags](./Tags.md)
-and can be easily extended.
-
-To change which channel typeclass Evennia uses for default commands, change
-`settings.BASE_CHANNEL_TYPECLASS`. The base command class is
-[`evennia.comms.comms.DefaultChannel`](evennia.comms.comms.DefaultChannel).
-There is an empty child class in `mygame/typeclasses/channels.py`, same
-as for other typelass-bases.
+To change which channel typeclass Evennia uses for default commands, change `settings.BASE_CHANNEL_TYPECLASS`. The base command class is [`evennia.comms.comms.DefaultChannel`](evennia.comms.comms.DefaultChannel). There is an empty child class in `mygame/typeclasses/channels.py`, same as for other typelass-bases.
 
 In code you create a new channel with `evennia.create_channel` or
 `Channel.create`:
@@ -294,11 +277,10 @@ In code you create a new channel with `evennia.create_channel` or
 The Channel's `.connect` method will accept both `Account` and `Object` subscribers
 and will handle them transparently.
 
-The channel has many more hooks, both hooks shared with all typeclasses as well
-as special ones related to muting/banning etc. See the channel class for
+The channel has many more hooks, both hooks shared with all typeclasses as well as special ones related to muting/banning etc. See the channel class for
 details.
 
-## Channel logging
+### Channel logging
 
 ```{versionchanged} 0.7
 
@@ -309,18 +291,13 @@ details.
   Channels stopped supporting Msg and TmpMsg, using only log files.
 ```
 
-The channel messages are not stored in the database. A channel is instead
-always logged to a regular text log-file
-`mygame/server/logs/channel_<channelname>.log`. This is where `channels/history channelname`
-gets its data from. A channel's log will rotate when it grows too big, which
-thus also automatically limits the max amount of history a user can view with
+The channel messages are not stored in the database. A channel is instead always logged to a regular text log-file `mygame/server/logs/channel_<channelname>.log`. This is where `channels/history channelname` gets its data from. A channel's log will rotate when it grows too big, which thus also automatically limits the max amount of history a user can view with
 `/history`.
 
 The log file name is set on the channel class as the `log_file` property. This
 is a string that takes the formatting token `{channelname}` to be replaced with
 the (lower-case) name of the channel. By default the log is written to in the
 channel's `at_post_channel_msg` method.
-
 
 ### Properties on Channels
 

@@ -17,7 +17,7 @@ This makes the superuser impossible to lock out, but makes it unsuitable to actu
 test the game's locks and restrictions with (see `quell` below). Usually there is no need to have
 but one superuser.
 
-## Managing Permissions
+## Working with Permissions
 
 In-game, you use the `perm` command to add and remove permissions
 
@@ -49,7 +49,7 @@ typeclassed entities as the property `.permissions`:
     obj.permissions.remove("Blacksmith")
 ```
 
-## The permission hierarchy
+### The permission hierarchy
 
 Selected permission strings can be organized in a *permission hierarchy* by editing the tuple
 `settings.PERMISSION_HIERARCHY`.  Evennia's default permission hierarchy is as follows
@@ -67,7 +67,7 @@ Selected permission strings can be organized in a *permission hierarchy* by edit
 
 When checking a hierarchical permission (using one of the methods to follow), you will pass checks for your level and all *below* you. That is, even if the check explicitly checks for "Builder" level access, you will actually pass if you have one of "Builder", "Admin" or "Developer". By contrast, if you check for a non-hierarchical permission, like "Blacksmith" you *must* have exactly that permission to pass.
 
-## Checking permissions
+### Checking permissions
 
 It's important to note that you check for the permission of a *puppeted* [Object](./Objects.md) (like a Character), the check will always first use the permissions of any `Account` connected to that Object before checking for permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the Account permission will always be used (this stops an Account from escalating their permission by puppeting a high-level Character). If the permission looked for is not in the hierarchy, an exact match is required, first on the Account and if not found there (or if no Account is connected), then on the Object itself.
 
@@ -165,16 +165,6 @@ An example of a puppet with a connected account:
                                  # precedence.
 ```
 
-## Superusers
-
-There is normally only one *superuser* account and that is the one first created
-when starting Evennia (User #1). This is sometimes known as the "Owner" or "God"
-user.  A superuser has more than full access - it completely *bypasses* all
-locks and will always pass the `PermissionHandler.check()` check. This allows
-for the superuser to always have access to everything in an emergency. But it
-could also hide any eventual errors you might have made in your lock definitions. So
-when trying out game systems you should either use quelling (see below) or make
-a second Developer-level character that does not bypass such checks.
 
 ## Quelling
 
