@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Outputfuncs" href="Outputfuncs.html" />
+    <link rel="next" title="Coding Utils" href="Coding-Utils.html" />
     <link rel="prev" title="Batch Command Processor" href="Batch-Command-Processor.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,7 +30,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Outputfuncs.html" title="Outputfuncs"
+          <a href="Coding-Utils.html" title="Coding Utils"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Batch-Command-Processor.html" title="Batch Command Processor"
@@ -87,8 +87,8 @@
   <p class="topless"><a href="Batch-Command-Processor.html"
                         title="previous chapter">Batch Command Processor</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Outputfuncs.html"
-                        title="next chapter">Outputfuncs</a></p>
+  <p class="topless"><a href="Coding-Utils.html"
+                        title="next chapter">Coding Utils</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -122,8 +122,8 @@
   <section class="tex2jax_ignore mathjax_ignore" id="inputfuncs">
 <h1>Inputfuncs<a class="headerlink" href="#inputfuncs" title="Permalink to this headline">¶</a></h1>
 <p>An <em>inputfunc</em> is an Evennia function that handles a particular input (an <a class="reference internal" href="../Concepts/OOB.html"><span class="doc std std-doc">inputcommand</span></a>) from
-the client. The inputfunc is the last destination for the inputcommand along the <a class="reference internal" href="../Concepts/Messagepath.html#the-ingoing-message-path"><span class="std std-doc">ingoing message
-path</span></a>. The inputcommand always has the form <code class="docutils literal notranslate"><span class="pre">(commandname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code> and Evennia will use this to try to find and call an inputfunc on the form</p>
+the client. The inputfunc is the last destination for the inputcommand along the <span class="xref myst">ingoing message
+path</span>. The inputcommand always has the form <code class="docutils literal notranslate"><span class="pre">(commandname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code> and Evennia will use this to try to find and call an inputfunc on the form</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">commandname</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># ...</span>
 
@@ -317,7 +317,7 @@ add more. By default the following fields/attributes can be monitored:</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Outputfuncs.html" title="Outputfuncs"
+          <a href="Coding-Utils.html" title="Coding Utils"
              >next</a> |</li>
         <li class="right" >
           <a href="Batch-Command-Processor.html" title="Batch Command Processor"

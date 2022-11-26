@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Messagepath &#8212; Evennia 1.0-dev documentation</title>
+    <title>The Message path &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="OOB" href="OOB.html" />
-    <link rel="prev" title="Using MUX as a Standard" href="Using-MUX-as-a-Standard.html" /> 
+    <link rel="next" title="Out-of-Band messaging" href="OOB.html" />
+    <link rel="prev" title="Core Concepts" href="Concepts-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,14 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="OOB.html" title="OOB"
+          <a href="OOB.html" title="Out-of-Band messaging"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Using-MUX-as-a-Standard.html" title="Using MUX as a Standard"
+          <a href="Concepts-Overview.html" title="Core Concepts"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" accesskey="U">Core Concepts</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Messagepath</a></li> 
+        <li class="nav-item nav-item-this"><a href="">The Message path</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,23 +62,20 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Messagepath</a><ul>
-<li><a class="reference internal" href="#the-ingoing-message-path">The ingoing message path</a><ul>
-<li><a class="reference internal" href="#client-ingoing">Client (ingoing)</a></li>
-<li><a class="reference internal" href="#portal-session-ingoing">Portal Session (ingoing)</a></li>
-<li><a class="reference internal" href="#portalsessionhandler-ingoing">PortalSessionHandler (ingoing)</a></li>
-<li><a class="reference internal" href="#serversessionhandler-ingoing">ServerSessionHandler (ingoing)</a></li>
-<li><a class="reference internal" href="#serversession-ingoing">ServerSession (ingoing)</a></li>
-<li><a class="reference internal" href="#inputfunc">Inputfunc</a></li>
+<li><a class="reference internal" href="#">The Message path</a><ul>
+<li><a class="reference internal" href="#ingoing-message-path">Ingoing message path</a><ul>
+<li><a class="reference internal" href="#incoming-command-tuples">Incoming command tuples</a></li>
+<li><a class="reference internal" href="#inputfuncs">Inputfuncs</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#the-outgoing-message-path">The outgoing message path</a><ul>
-<li><a class="reference internal" href="#msg">msg</a></li>
-<li><a class="reference internal" href="#serversession-outgoing">ServerSession (outgoing)</a></li>
-<li><a class="reference internal" href="#serversessionhandler-outgoing">ServerSessionHandler (outgoing)</a></li>
-<li><a class="reference internal" href="#portalsessionhandler-outgoing">PortalSessionHandler (outgoing)</a></li>
-<li><a class="reference internal" href="#portalsession-outgoing">PortalSession (outgoing)</a></li>
-<li><a class="reference internal" href="#client-outgoing">Client (outgoing)</a></li>
+<li><a class="reference internal" href="#outgoing-message-path">Outgoing message path</a><ul>
+<li><a class="reference internal" href="#msg-to-outgoing-commandtuple"><code class="docutils literal notranslate"><span class="pre">msg</span></code>  to outgoing commandtuple</a></li>
+<li><a class="reference internal" href="#outputfuncs">outputfuncs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#components-along-the-path">Components along the path</a><ul>
+<li><a class="reference internal" href="#ingoing">Ingoing</a></li>
+<li><a class="reference internal" href="#outgoing">Outgoing</a></li>
 </ul>
 </li>
 </ul>
@@ -86,11 +83,11 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Using-MUX-as-a-Standard.html"
-                        title="previous chapter">Using MUX as a Standard</a></p>
+  <p class="topless"><a href="Concepts-Overview.html"
+                        title="previous chapter">Core Concepts</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="OOB.html"
-                        title="next chapter">OOB</a></p>
+                        title="next chapter">Out-of-Band messaging</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -121,201 +118,177 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="messagepath">
-<h1>Messagepath<a class="headerlink" href="#messagepath" title="Permalink to this headline">¶</a></h1>
-<p>The main functionality of Evennia is to communicate with clients connected to it; a player enters
-commands or their client queries for a gui update (ingoing data). The server responds or sends data
-on its own as the game changes (outgoing data). It’s important to understand how this flow of
-information works in Evennia.</p>
-<section id="the-ingoing-message-path">
-<h2>The ingoing message path<a class="headerlink" href="#the-ingoing-message-path" title="Permalink to this headline">¶</a></h2>
-<p>We’ll start by tracing data from the client to the server. Here it is in short:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Client -&gt;
- PortalSession -&gt;
-  PortalSessionhandler -&gt;
-   (AMP) -&gt;
-    ServerSessionHandler -&gt;
-      ServerSession -&gt;
-        Inputfunc
-</pre></div>
-</div>
-<section id="client-ingoing">
-<h3>Client (ingoing)<a class="headerlink" href="#client-ingoing" title="Permalink to this headline">¶</a></h3>
-<p>The client sends data to Evennia in two ways.</p>
-<ul class="simple">
-<li><p>When first connecting, the client can send data to the server about its
-capabilities. This is things like “I support xterm256 but not unicode” and is
-mainly used when a Telnet client connects. This is called a “handshake” and
-will generally set some flags on the <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="doc std std-doc">Portal Session</span></a> that
-are later synced to the Server Session. Since this is not something the player
-controls, we’ll not explore this further here.</p></li>
-<li><p>The client can send an <em>inputcommand</em> to the server. Traditionally this only
-happens when the player enters text on the command line. But with a custom
-client GUI, a command could also come from the pressing of a button. Finally
-the client may send commands based on a timer or some trigger.</p></li>
-</ul>
-<p>Exactly how the inputcommand looks when it travels from the client to Evennia
-depends on the <a class="reference internal" href="Custom-Protocols.html"><span class="doc std std-doc">Protocol</span></a> used:</p>
-<ul class="simple">
-<li><p>Telnet: A string. If GMCP or MSDP OOB protocols are used, this string will
-be formatted in a special way, but it’s still a raw string. If Telnet SSL is
-active, the string will be encrypted.</p></li>
-<li><p>SSH: An encrypted string</p></li>
-<li><p>Webclient: A JSON-serialized string.</p></li>
-</ul>
-</section>
-<section id="portal-session-ingoing">
-<h3>Portal Session (ingoing)<a class="headerlink" href="#portal-session-ingoing" title="Permalink to this headline">¶</a></h3>
-<p>Each client is connected to the game via a <em>Portal Session</em>, one per connection. This Session is
-different depending on the type of connection (telnet, webclient etc) and thus know how to handle
-that particular data type. So regardless of how the data arrives, the Session will identify the type
-of the instruction and any arguments it should have. For example, the telnet protocol will figure
-that anything arriving normally over the wire should be passed on as a “text” type.</p>
-</section>
-<section id="portalsessionhandler-ingoing">
-<h3>PortalSessionHandler (ingoing)<a class="headerlink" href="#portalsessionhandler-ingoing" title="Permalink to this headline">¶</a></h3>
-<p>The <em>PortalSessionhandler</em> manages all connected Sessions in the Portal. Its <code class="docutils literal notranslate"><span class="pre">data_in</span></code> method
-(called by each Portal Session) will parse the command names and arguments from the protocols and
-convert them to a standardized form we call the <em>inputcommand</em>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="p">(</span><span class="n">commandname</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>All inputcommands must have a name, but they may or may not have arguments and keyword arguments -
-in fact no default inputcommands use kwargs at all. The most common inputcommand is “text”, which
-has the argument the player input on the command line:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,),</span> <span class="p">{})</span>
-</pre></div>
-</div>
-<p>This inputcommand-structure is pickled together with the unique session-id of the Session to which
-it belongs. This is then sent over the AMP connection.</p>
-</section>
-<section id="serversessionhandler-ingoing">
-<h3>ServerSessionHandler (ingoing)<a class="headerlink" href="#serversessionhandler-ingoing" title="Permalink to this headline">¶</a></h3>
-<p>On the Server side, the AMP unpickles the data and associates the session id with the server-side
-<a class="reference internal" href="../Components/Sessions.html"><span class="doc std std-doc">Session</span></a>. Data and Session are passed to the server-side <code class="docutils literal notranslate"><span class="pre">SessionHandler.data_in</span></code>. This
-in turn calls <code class="docutils literal notranslate"><span class="pre">ServerSession.data_in()</span></code></p>
-</section>
-<section id="serversession-ingoing">
-<h3>ServerSession (ingoing)<a class="headerlink" href="#serversession-ingoing" title="Permalink to this headline">¶</a></h3>
-<p>The method <code class="docutils literal notranslate"><span class="pre">ServerSession.data_in</span></code> is meant to offer a single place to override if they want to
-examine <em>all</em> data passing into the server from the client. It is meant to call the
-<code class="docutils literal notranslate"><span class="pre">ssessionhandler.call_inputfuncs</span></code> with the (potentially processed) data (so this is technically a
-sort of detour back to the sessionhandler).</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">call_inputfuncs</span></code>, the inputcommand’s name is compared against the names of all the <em>inputfuncs</em>
-registered with the server. The inputfuncs are named the same as the inputcommand they are supposed
-to handle, so the (default) inputfunc for handling our “look” command is called “text”. These are
-just normal functions and one can plugin new ones by simply putting them in a module where Evennia
-looks for such functions.</p>
-<p>If a matching inputfunc is found, it will be called with the Session and the inputcommand’s
-arguments:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">text</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,),</span> <span class="o">**</span><span class="p">{})</span>
-</pre></div>
-</div>
-<p>If no matching inputfunc is found, an inputfunc named “default” will be tried and if that is also
-not found, an error will be raised.</p>
-</section>
-<section id="inputfunc">
-<h3>Inputfunc<a class="headerlink" href="#inputfunc" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference internal" href="../Components/Inputfuncs.html"><span class="doc std std-doc">Inputfunc</span></a> must be on the form <code class="docutils literal notranslate"><span class="pre">func(session,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code>. An exception is
-the <code class="docutils literal notranslate"><span class="pre">default</span></code> inputfunc which has form <code class="docutils literal notranslate"><span class="pre">default(session,</span> <span class="pre">cmdname,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code>, where <code class="docutils literal notranslate"><span class="pre">cmdname</span></code>
-is the un-matched inputcommand string.</p>
-<p>This is where the message’s path diverges, since just what happens next depends on the type of
-inputfunc was triggered. In the example of sending “look”, the inputfunc is named “text”. It will
-pass the argument to the <code class="docutils literal notranslate"><span class="pre">cmdhandler</span></code> which will eventually lead to the <code class="docutils literal notranslate"><span class="pre">look</span></code> command being
-executed.</p>
-</section>
-</section>
-<section id="the-outgoing-message-path">
-<h2>The outgoing message path<a class="headerlink" href="#the-outgoing-message-path" title="Permalink to this headline">¶</a></h2>
-<p>Next let’s trace the passage from server to client.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>msg -&gt;
- ServerSession -&gt;
-  ServerSessionHandler -&gt;
-   (AMP) -&gt;
-    PortalSessionHandler -&gt;
-     PortalSession -&gt;
-      Client
-</pre></div>
-</div>
-<section id="msg">
-<h3>msg<a class="headerlink" href="#msg" title="Permalink to this headline">¶</a></h3>
-<p>All outgoing messages start in the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method. This is accessible from three places:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Object.msg</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Account.msg</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Session.msg</span></code></p></li>
-</ul>
-<p>The call sign of the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method looks like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>For our purposes, what is important to know is that with the exception of <code class="docutils literal notranslate"><span class="pre">from_obj</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code> and
-<code class="docutils literal notranslate"><span class="pre">options</span></code>, all keywords given to the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method is the name of an <em>outputcommand</em> and its
-arguments. So <code class="docutils literal notranslate"><span class="pre">text</span></code> is actually such a command, taking a string as its argument. The reason <code class="docutils literal notranslate"><span class="pre">text</span></code>
-sits as the first keyword argument is that it’s so commonly used (<code class="docutils literal notranslate"><span class="pre">caller.msg(&quot;Text&quot;)</span></code> for example).
-Here are some examples</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">)</span>   <span class="c1"># using the &#39;text&#39; outputfunc</span>
-    <span class="n">msg</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;HP: </span><span class="si">{</span><span class="n">HP</span><span class="si">}</span><span class="s2">, SP: </span><span class="si">{</span><span class="n">SP</span><span class="si">}</span><span class="s2">, MP: </span><span class="si">{</span><span class="n">MP</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">msg</span><span class="p">(</span><span class="n">mycommand</span><span class="o">=</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
+  <section class="tex2jax_ignore mathjax_ignore" id="the-message-path">
+<h1>The Message path<a class="headerlink" href="#the-message-path" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt; look
 
+A Meadow 
+
+This is a beautiful meadow. It is full of flowers.
+
+You see: a flower
+Exits: north, east
 </pre></div>
 </div>
-<p>Note the form of the <code class="docutils literal notranslate"><span class="pre">mycommand</span></code> outputfunction. This explicitly defines the arguments and keyword
-arguments for the function. In the case of the <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">prompt</span></code> calls we just specify a string -
-this works too: The system will convert this into a single argument for us later in the message
-path.</p>
-<blockquote>
-<div><p>Note: The <code class="docutils literal notranslate"><span class="pre">msg</span></code> method sits on your Object- and Account typeclasses. It means you can easily
-override <code class="docutils literal notranslate"><span class="pre">msg</span></code> and make custom- or per-object modifications to the flow of data as it passes
-through.</p>
-</div></blockquote>
-</section>
-<section id="serversession-outgoing">
-<h3>ServerSession (outgoing)<a class="headerlink" href="#serversession-outgoing" title="Permalink to this headline">¶</a></h3>
-<p>Nothing is processed on the Session, it just serves as a gathering points for all different <code class="docutils literal notranslate"><span class="pre">msg</span></code>.
-It immediately passes the data on to …</p>
-</section>
-<section id="serversessionhandler-outgoing">
-<h3>ServerSessionHandler (outgoing)<a class="headerlink" href="#serversessionhandler-outgoing" title="Permalink to this headline">¶</a></h3>
-<p>In the <em>ServerSessionhandler</em>, the keywords from the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method are collated into one or more
-<em>outputcommands</em> on a standardized form (identical to inputcommands):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="p">(</span><span class="n">commandname</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">})</span>
+<p>When you send a command like <code class="docutils literal notranslate"><span class="pre">look</span></code> into Evennia - what actually happens? How does that <code class="docutils literal notranslate"><span class="pre">look</span></code> string end up being handled by the <code class="docutils literal notranslate"><span class="pre">CmdLook</span></code> class? What happens when we use e.g. <code class="docutils literal notranslate"><span class="pre">caller.msg()</span></code> to send the message back</p>
+<p>Understanding this flow of data - the <em>message path</em> is important in order to understand how Evennia works.</p>
+<section id="ingoing-message-path">
+<h2>Ingoing message path<a class="headerlink" href="#ingoing-message-path" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>            Internet│
+            ┌─────┐ │                                   ┌────────┐
+┌──────┐    │Text │ │  ┌────────────┐    ┌─────────┐    │Command │
+│Client├────┤JSON ├─┼──►commandtuple├────►Inputfunc├────►DB query│
+└──────┘    │etc  │ │  └────────────┘    └─────────┘    │etc     │
+            └─────┘ │                                   └────────┘
+                    │Evennia
 </pre></div>
 </div>
-<p>This will intelligently convert different input to the same form. So <code class="docutils literal notranslate"><span class="pre">msg(&quot;Hello&quot;)</span></code> will end up as
-an outputcommand <code class="docutils literal notranslate"><span class="pre">(&quot;text&quot;,</span> <span class="pre">(&quot;Hello&quot;,),</span> <span class="pre">{})</span></code>.</p>
-<p>This is also the point where the <a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser</span></a>) is applied, depending on the
-session to receive the data. Said data is pickled together with the Session id then sent over the
-AMP bridge.</p>
+<section id="incoming-command-tuples">
+<h3>Incoming command tuples<a class="headerlink" href="#incoming-command-tuples" title="Permalink to this headline">¶</a></h3>
+<p>Ingoing data from the client (coming in as raw strings or serialized JSON) is converted by Evennia to a <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code>. Thesa are the same regardless of what client or connection was used. A <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> is a simple tuple with three elements:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">commandname</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>For the <code class="docutils literal notranslate"><span class="pre">look</span></code>-command (and anything else written by the player), the <code class="docutils literal notranslate"><span class="pre">text</span></code> <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> is generated:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,),</span> <span class="p">{})</span>
+</pre></div>
+</div>
 </section>
-<section id="portalsessionhandler-outgoing">
-<h3>PortalSessionHandler (outgoing)<a class="headerlink" href="#portalsessionhandler-outgoing" title="Permalink to this headline">¶</a></h3>
-<p>After the AMP connection has unpickled the data and paired the session id to the matching
-PortalSession, the handler next determines if this Session has a suitable method for handling the
-outputcommand.</p>
-<p>The situation is analogous to how inputfuncs work, except that protocols are fixed things that don’t
-need a plugin infrastructure like the inputfuncs are handled. So instead of an “outputfunc”, the
-handler looks for methods on the PortalSession with names of the form <code class="docutils literal notranslate"><span class="pre">send_&lt;commandname&gt;</span></code>.</p>
-<p>For example, the common sending of text expects a PortalSession method <code class="docutils literal notranslate"><span class="pre">send_text</span></code>. This will be
-called as <code class="docutils literal notranslate"><span class="pre">send_text(*(&quot;Hello&quot;,),</span> <span class="pre">**{})</span></code>. If the “prompt” outputfunction was used, send_prompt is
-called. In all other cases the <code class="docutils literal notranslate"><span class="pre">send_default(cmdname,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code> will be called - this is the
-case for all client-custom outputcommands, like when wanting to tell the client to update a graphic
-or play a sound.</p>
+<section id="inputfuncs">
+<h3>Inputfuncs<a class="headerlink" href="#inputfuncs" title="Permalink to this headline">¶</a></h3>
+<p>On the Evennia server side, a list of <span class="xref myst">inputfucs</span> are registered. You can add your own by extending <code class="docutils literal notranslate"><span class="pre">settings.INPUT_FUNC_MODULES</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inputfunc_commandname</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">session</span></code> represents the unique client connection this is coming from (that is, it’s identifying just <em>who</em> is sending this input).</p>
+<p>One such inputfunc is named <code class="docutils literal notranslate"><span class="pre">text</span></code>. For sending a <code class="docutils literal notranslate"><span class="pre">look</span></code>, it will be called as</p>
+<aside class="sidebar">
+<p>If you know how <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> work in Python, you’ll see that this is the same as a call <code class="docutils literal notranslate"><span class="pre">text(session,</span> <span class="pre">&quot;look&quot;)</span></code></p>
+</aside>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,),</span> <span class="o">**</span><span class="p">{})</span>  
+</pre></div>
+</div>
+<p>What an <code class="docutils literal notranslate"><span class="pre">inputfunc</span></code> does with this depends. For an <a class="reference internal" href="OOB.html"><span class="doc std std-doc">Out-of-band</span></a> instruction, it could fetch the health of a player or tick down some counter.</p>
+<aside class="sidebar">
+<p class="sidebar-title">No text parsing happens before this</p>
+<p>If you send <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">here</span></code>, the call would be <code class="docutils literal notranslate"><span class="pre">text(session,</span> <span class="pre">*(&quot;look</span> <span class="pre">here&quot;,</span> <span class="pre">**{})</span></code>. All parsing of the text input happens in the command-parser, after this step.</p>
+</aside>
+<p>For the <code class="docutils literal notranslate"><span class="pre">text</span></code> <code class="docutils literal notranslate"><span class="pre">inputfunc</span></code> the Evennia <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">CommandHandler</span></a> is invoked and the argument is parsed further in order to figure which command was intended.</p>
+<p>In the example of <code class="docutils literal notranslate"><span class="pre">look</span></code>, the <code class="docutils literal notranslate"><span class="pre">CmdLook</span></code> command-class will be invoked. This will retrieve the description of the current location.</p>
 </section>
-<section id="portalsession-outgoing">
-<h3>PortalSession (outgoing)<a class="headerlink" href="#portalsession-outgoing" title="Permalink to this headline">¶</a></h3>
-<p>At this point it is up to the session to convert the command into a form understood by this
-particular protocol. For telnet, <code class="docutils literal notranslate"><span class="pre">send_text</span></code> will just send the argument as a string (since that is
-what telnet clients expect when “text” is coming). If <code class="docutils literal notranslate"><span class="pre">send_default</span></code> was called (basically
-everything that is not traditional text or a prompt), it will pack the data as an GMCP or MSDP
-command packet if the telnet client supports either (otherwise it won’t send at all). If sending to
-the webclient, the data will get packed into a JSON structure at all times.</p>
 </section>
-<section id="client-outgoing">
-<h3>Client (outgoing)<a class="headerlink" href="#client-outgoing" title="Permalink to this headline">¶</a></h3>
-<p>Once arrived at the client, the outputcommand is handled in the way supported by the client (or it
-may be quietly ignored if not). “text” commands will be displayed in the main window while others
-may trigger changes in the GUI or play a sound etc.</p>
+<section id="outgoing-message-path">
+<h2>Outgoing message path<a class="headerlink" href="#outgoing-message-path" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>            Internet│
+            ┌─────┐ │
+┌──────┐    │Text │ │  ┌──────────┐    ┌────────────┐   ┌─────┐
+│Client◄────┤JSON ├─┼──┤outputfunc◄────┤commandtuple◄───┤msg()│
+└──────┘    │etc  │ │  └──────────┘    └────────────┘   └─────┘
+            └─────┘ │
+                    │Evennia
+</pre></div>
+</div>
+<section id="msg-to-outgoing-commandtuple">
+<h3><code class="docutils literal notranslate"><span class="pre">msg</span></code>  to outgoing commandtuple<a class="headerlink" href="#msg-to-outgoing-commandtuple" title="Permalink to this headline">¶</a></h3>
+<p>When the <code class="docutils literal notranslate"><span class="pre">inputfunc</span></code> has finished whatever it is supposed to, the server may or may not decide to return a result (Some types of <code class="docutils literal notranslate"><span class="pre">inputcommands</span></code> may not expect or require a response at all). The server also often sends outgoing messages without any prior matching ingoing data.</p>
+<p>Whenever data needs to be sent “out” of Evennia,  we must generalize it into a (now outgoing) <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> <code class="docutils literal notranslate"><span class="pre">(commandname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code>. This we do with the  <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method. For convenience, this methods is available on every major entity, such as <code class="docutils literal notranslate"><span class="pre">Object.msg()</span></code> and <code class="docutils literal notranslate"><span class="pre">Account.msg()</span></code>. They all link back to <code class="docutils literal notranslate"><span class="pre">Session.msg()</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">text</span></code> is so common that it is given as the default:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;A meadow</span><span class="se">\n\n</span><span class="s2">This is a beautiful meadow...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is converted to a <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code>  looking like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;A meadow</span><span class="se">\n\n</span><span class="s2">This is a beutiful meadow...&quot;</span><span class="p">,)</span> <span class="p">{})</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method allows you to define the <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> directly, for whatever outgoing instruction you want to find:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">msg</span><span class="p">(</span><span class="n">current_status</span><span class="o">=</span><span class="p">((</span><span class="s2">&quot;healthy&quot;</span><span class="p">,</span> <span class="s2">&quot;charged&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;hp&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s2">&quot;mp&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">}))</span>
+</pre></div>
+</div>
+<p>This will be converted to a <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> looking like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s2">&quot;current_status&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;healthy&quot;</span><span class="p">,</span> <span class="s2">&quot;charged&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;hp&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s2">&quot;mp&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="outputfuncs">
+<h3>outputfuncs<a class="headerlink" href="#outputfuncs" title="Permalink to this headline">¶</a></h3>
+<aside class="sidebar">
+<p><code class="docutils literal notranslate"><span class="pre">outputfuncs</span></code> are tightly coupled to the protocol and you usually don’t need to touch them, unless you are adding a new protocol entirely.</p>
+</aside>
+<p>Since <code class="docutils literal notranslate"><span class="pre">msg()</span></code> is aware of which <a class="reference internal" href="../Components/Sessions.html"><span class="doc std std-doc">Session</span></a> to send to, the outgoing <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> is always end up pointed at the right client.</p>
+<p>Each supported Evennia Protocol (Telnet, SSH, Webclient etc) has their own <code class="docutils literal notranslate"><span class="pre">outputfunc</span></code>, which converts the generic <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> into a form that particular protocol understands, such as telnet instructions or JSON.</p>
+<p>For telnet (no SSL), the <code class="docutils literal notranslate"><span class="pre">look</span></code> will return over the wire as plain text:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A meadow\n\nThis is a beautiful meadow...
+</pre></div>
+</div>
+<p>When sending to the webclient, the <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> is converted as serialized JSON, like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;[&quot;look&quot;, [&quot;A meadow\\n\\nThis is a beautiful meadow...&quot;], {}]&#39;
+</pre></div>
+</div>
+<p>This is then sent to the client over the wire. It’s then up to the client to interpret and handle the data properly.</p>
+</section>
+</section>
+<section id="components-along-the-path">
+<h2>Components along the path<a class="headerlink" href="#components-along-the-path" title="Permalink to this headline">¶</a></h2>
+<section id="ingoing">
+<h3>Ingoing<a class="headerlink" href="#ingoing" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                ┌──────┐                ┌─────────────────────────┐
+                │Client│                │                         │
+                └──┬───┘                │  ┌────────────────────┐ │
+                   │             ┌──────┼─►│ServerSessionHandler│ │
+┌──────────────────┼──────┐      │      │  └───┬────────────────┘ │
+│ Portal           │      │      │      │      │                  │
+│        ┌─────────▼───┐  │    ┌─┴─┐    │  ┌───▼─────────┐        │
+│        │PortalSession│  │    │AMP│    │  │ServerSession│        │
+│        └─────────┬───┘  │    └─┬─┘    │  └───┬─────────┘        │
+│                  │      │      │      │      │                  │
+│ ┌────────────────▼───┐  │      │      │  ┌───▼─────┐            │
+│ │PortalSessionHandler├──┼──────┘      │  │Inputfunc│            │
+│ └────────────────────┘  │             │  └─────────┘            │
+│                         │             │                  Server │
+└─────────────────────────┘             └─────────────────────────┘
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Client - sends handshake or commands over the wire. This is received by the Evennia <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="doc std std-doc">Portal</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PortalSession</span></code> represents one client connection. It understands the communiation protocol used. It converts the protocol-specific input to a generic  <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> structure <code class="docutils literal notranslate"><span class="pre">(cmdname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PortalSessionHandler</span></code> handles all connections. It pickles the <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> together with the session-id.</p></li>
+<li><p>Pickled data is sent  across the <code class="docutils literal notranslate"><span class="pre">AMP</span></code> (Asynchronous Message Protocol) connection to the <span class="xref myst">Server</span> part of Evennia.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ServerSessionHandler</span></code> unpickles the <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> and matches the session-id to a matching <code class="docutils literal notranslate"><span class="pre">SessionSession</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ServerSession</span></code> represents the session-connection on the Server side. It looks through its registry of <a class="reference internal" href="../Components/Inputfuncs.html"><span class="doc std std-doc">Inputfuncs</span></a> to find a match.</p></li>
+<li><p>The appropriate <code class="docutils literal notranslate"><span class="pre">Inputfunc</span></code> is called with the args/kwargs included in the <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code>. Depending on <code class="docutils literal notranslate"><span class="pre">Inputfunc</span></code>, this could have different effects. For the <code class="docutils literal notranslate"><span class="pre">text</span></code> inputfunc, it fires the <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">CommandHandler</span></a>.</p></li>
+</ol>
+</section>
+<section id="outgoing">
+<h3>Outgoing<a class="headerlink" href="#outgoing" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                ┌──────┐                ┌─────────────────────────┐
+                │Client│                │                         │
+                └──▲───┘                │  ┌────────────────────┐ │
+                   │             ┌──────┼──┤ServerSessionHandler│ │
+┌──────────────────┼──────┐      │      │  └───▲────────────────┘ │
+│ Portal           │      │      │      │      │                  │
+│        ┌─────────┴───┐  │    ┌─┴─┐    │  ┌───┴─────────┐        │
+│        │PortalSession│  │    │AMP│    │  │ServerSession│        │
+│        └─────────▲───┘  │    └─┬─┘    │  └───▲─────────┘        │
+│                  │      │      │      │      │                  │
+│ ┌────────────────┴───┐  │      │      │  ┌───┴──────┐           │
+│ │PortalSessionHandler◄──┼──────┘      │  │msg() call│           │
+│ └────────────────────┘  │             │  └──────────┘           │
+│                         │             │                  Server │
+└─────────────────────────┘             └─────────────────────────┘
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method is called</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ServerSession</span></code> and in particular <code class="docutils literal notranslate"><span class="pre">ServerSession.msg()</span></code>  is the central point through which all <code class="docutils literal notranslate"><span class="pre">msg()</span></code> calls are routed in order to send data to that <a class="reference internal" href="../Components/Sessions.html"><span class="doc std std-doc">Session</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ServerSessionHandler</span></code> converts the <code class="docutils literal notranslate"><span class="pre">msg</span></code> input to a proper <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> structure <code class="docutils literal notranslate"><span class="pre">(cmdname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code>.   It pickles the <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> together with the session-id.</p></li>
+<li><p>Pickled data is sent across across the <code class="docutils literal notranslate"><span class="pre">AMP</span></code> (Asynchronous Message Protocol) connection to the <span class="xref myst">Portal</span> part of Evennia.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PortalSessionHandler</span></code> unpickles the <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> and matches its session id to a matching <code class="docutils literal notranslate"><span class="pre">PortalSession</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">PortalSession</span></code> is now responsible for converting the generic <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> to the communication protocol used by that particular connection.</p></li>
+<li><p>The Client receives the data and can act on it.</p></li>
+</ol>
 </section>
 </section>
 </section>
@@ -336,14 +309,14 @@ may trigger changes in the GUI or play a sound etc.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="OOB.html" title="OOB"
+          <a href="OOB.html" title="Out-of-Band messaging"
              >next</a> |</li>
         <li class="right" >
-          <a href="Using-MUX-as-a-Standard.html" title="Using MUX as a Standard"
+          <a href="Concepts-Overview.html" title="Core Concepts"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Messagepath</a></li> 
+        <li class="nav-item nav-item-this"><a href="">The Message path</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

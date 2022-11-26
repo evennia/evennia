@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Bootstrap Components and Utilities &#8212; Evennia 1.0-dev documentation</title>
+    <title>Bootstrap frontend framework &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -37,7 +37,7 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Bootstrap Components and Utilities</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Bootstrap frontend framework</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,20 +62,23 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Bootstrap Components and Utilities</a><ul>
-<li><a class="reference internal" href="#general-styling">General Styling</a><ul>
+<li><a class="reference internal" href="#">Bootstrap frontend framework</a><ul>
+<li><a class="reference internal" href="#grid-system">Grid system</a><ul>
+<li><a class="reference internal" href="#the-container">The container</a></li>
+<li><a class="reference internal" href="#the-grid">The grid</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#general-styling-elements">General Styling elements</a><ul>
 <li><a class="reference internal" href="#color">Color</a></li>
 <li><a class="reference internal" href="#borders">Borders</a></li>
 <li><a class="reference internal" href="#spacing">Spacing</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#components">Components</a><ul>
 <li><a class="reference internal" href="#buttons">Buttons</a></li>
 <li><a class="reference internal" href="#cards">Cards</a></li>
 <li><a class="reference internal" href="#jumbotron">Jumbotron</a></li>
 <li><a class="reference internal" href="#forms">Forms</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#further-reading">Further reading</a></li>
 </ul>
 </li>
 </ul>
@@ -89,7 +92,7 @@
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Components/Bootstrap-Components-and-Utilities.md.txt"
+      <li><a href="../_sources/Components/Web-Bootstrap-Framework.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -105,7 +108,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Bootstrap-Components-and-Utilities.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Web-Bootstrap-Framework.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -116,17 +119,88 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="bootstrap-components-and-utilities">
-<h1>Bootstrap Components and Utilities<a class="headerlink" href="#bootstrap-components-and-utilities" title="Permalink to this headline">¶</a></h1>
-<p>Bootstrap provides many utilities and components you can use when customizing Evennia’s web
-presence. We’ll go over a few examples here that you might find useful.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="bootstrap-frontend-framework">
+<h1>Bootstrap frontend framework<a class="headerlink" href="#bootstrap-frontend-framework" title="Permalink to this headline">¶</a></h1>
+<p>Evennia’s default web page uses a framework called <a class="reference external" href="https://getbootstrap.com/">Bootstrap</a>. This framework is in use across the internet - you’ll probably start to recognize its influence once you learn some of the common design patterns. This switch is great for web developers, perhaps like yourself, because instead of wondering about setting up different grid systems or what custom class another designer used, we have a base, a bootstrap, to work from. Bootstrap is responsive by default, and comes with some default styles that Evennia has lightly overrode to keep some of the same colors and styles you’re used to from the previous design.</p>
+<p>e, a brief overview of Bootstrap follows. For more in-depth info, please
+read <a class="reference external" href="https://getbootstrap.com/docs/4.0/getting-started/introduction/">the documentation</a>.</p>
+<section id="grid-system">
+<h2>Grid system<a class="headerlink" href="#grid-system" title="Permalink to this headline">¶</a></h2>
+<p>Other than the basic styling Bootstrap includes, it also includes <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/">a built in layout and grid system</a>.</p>
+<section id="the-container">
+<h3>The container<a class="headerlink" href="#the-container" title="Permalink to this headline">¶</a></h3>
+<p>The first part of the grid system is <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/#containers">the container</a>.</p>
+<p>The container is meant to hold all your page content. Bootstrap provides two types: fixed-width and
+full-width. Fixed-width containers take up a certain max-width of the page - they’re useful for limiting the width on Desktop or Tablet platforms, instead of making the content span the width of the page.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;div class=&quot;container&quot;&gt;
+    &lt;!--- Your content here --&gt;
+&lt;/div&gt;
+</pre></div>
+</div>
+<p>Full width containers take up the maximum width available to them - they’ll span across a wide-
+screen desktop or a smaller screen phone, edge-to-edge.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;div class=&quot;container-fluid&quot;&gt;
+    &lt;!--- This content will span the whole page --&gt;
+&lt;/div&gt;
+</pre></div>
+</div>
+</section>
+<section id="the-grid">
+<h3>The grid<a class="headerlink" href="#the-grid" title="Permalink to this headline">¶</a></h3>
+<p>The second part of the layout system is <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/grid/">the grid</a>.</p>
+<p>This is the bread-and-butter of the layout of Bootstrap - it allows you to change the size of elements depending on the size of the screen, without writing any media queries. We’ll briefly go over it - to learn more, please read the docs or look at the source code for Evennia’s home page in your browser.</p>
 <blockquote>
-<div><p>Please take a look at either <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part5/Add-a-simple-new-web-page.html"><span class="doc std std-doc">the basic web tutorial</span></a> or
-<a class="reference internal" href="../Howtos/Web-Character-View-Tutorial.html"><span class="doc std std-doc">the web character view tutorial</span></a>
-to get a feel for how to add pages to Evennia’s website to test these examples.</p>
+<div><p>Important! Grid elements should be in a .container or .container-fluid. This will center the
+contents of your site.</p>
 </div></blockquote>
-<section id="general-styling">
-<h2>General Styling<a class="headerlink" href="#general-styling" title="Permalink to this headline">¶</a></h2>
+<p>Bootstrap’s grid system allows you to create rows and columns by applying classes based on breakpoints. The default breakpoints are extra small, small, medium, large, and extra-large. If you’d like to know more about these breakpoints, please <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/#responsive-breakpoints">take a look at the documentation for
+them.</a></p>
+<p>To use the grid system, first create a container for your content, then add your rows and columns like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col&quot;</span><span class="o">&gt;</span>
+           <span class="mi">1</span> <span class="n">of</span> <span class="mi">3</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col&quot;</span><span class="o">&gt;</span>
+           <span class="mi">2</span> <span class="n">of</span> <span class="mi">3</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col&quot;</span><span class="o">&gt;</span>
+           <span class="mi">3</span> <span class="n">of</span> <span class="mi">3</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>This layout would create three equal-width columns.</p>
+<p>To specify your sizes - for instance, Evennia’s default site has three columns on desktop and
+tablet, but reflows to single-column on smaller screens. Try it out!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col col-md-6 col-lg-3&quot;</span><span class="o">&gt;</span>
+            <span class="mi">1</span> <span class="n">of</span> <span class="mi">4</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col col-md-6 col-lg-3&quot;</span><span class="o">&gt;</span>
+            <span class="mi">2</span> <span class="n">of</span> <span class="mi">4</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col col-md-6 col-lg-3&quot;</span><span class="o">&gt;</span>
+            <span class="mi">3</span> <span class="n">of</span> <span class="mi">4</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col col-md-6 col-lg-3&quot;</span><span class="o">&gt;</span>
+            <span class="mi">4</span> <span class="n">of</span> <span class="mi">4</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>This layout would be 4 columns on large screens, 2 columns on medium screens, and 1 column on
+anything smaller.</p>
+<p>To learn more about Bootstrap’s grid, please <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/grid/">take a look at the
+docs</a>
+I</p>
+</section>
+</section>
+<section id="general-styling-elements">
+<h2>General Styling elements<a class="headerlink" href="#general-styling-elements" title="Permalink to this headline">¶</a></h2>
 <p>Bootstrap provides base styles for your site. These can be customized through CSS, but the default
 styles are intended to provide a consistent, clean look for sites.</p>
 <section id="color">
@@ -151,19 +225,12 @@ info, please <a class="reference external" href="https://getbootstrap.com/docs/4
 </section>
 <section id="spacing">
 <h3>Spacing<a class="headerlink" href="#spacing" title="Permalink to this headline">¶</a></h3>
-<p>Bootstrap provides classes to easily add responsive margin and padding. Most of the time, you might
-like to add margins or padding through CSS itself - however these classes are used in the default
-Evennia site. <a class="reference external" href="https://getbootstrap.com/docs/4.0/utilities/spacing/">Take a look at the docs</a> to
+<p>Bootstrap provides classes to easily add responsive margin and padding. Most of the time, you might like to add margins or padding through CSS itself - however these classes are used in the default Evennia site. <a class="reference external" href="https://getbootstrap.com/docs/4.0/utilities/spacing/">Take a look at the docs</a> to
 learn more.</p>
 </section>
-</section>
-<hr class="docutils" />
-<section id="components">
-<h2>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
 <section id="buttons">
 <h3>Buttons<a class="headerlink" href="#buttons" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://getbootstrap.com/docs/4.0/components/buttons/">Buttons</a> in Bootstrap are very easy to use -
-button styling can be added to <code class="docutils literal notranslate"><span class="pre">&lt;button&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;a&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;input&gt;</span></code> elements.</p>
+<p><a class="reference external" href="https://getbootstrap.com/docs/4.0/components/buttons/">Buttons</a> in Bootstrap are very easy to use - button styling can be added to <code class="docutils literal notranslate"><span class="pre">&lt;button&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;a&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;input&gt;</span></code> elements.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;a class=&quot;btn btn-primary&quot; href=&quot;#&quot; role=&quot;button&quot;&gt;I&#39;m a Button&lt;/a&gt;
 &lt;button class=&quot;btn btn-primary&quot; type=&quot;submit&quot;&gt;Me too!&lt;/button&gt;
 &lt;input class=&quot;btn btn-primary&quot; type=&quot;button&quot; value=&quot;Button&quot;&gt;
@@ -210,6 +277,10 @@ For a more in-depth look at how to use forms and their styles in your own Evenni
 over <a class="reference internal" href="../Howtos/Web-Character-Generation.html"><span class="doc std std-doc">the web character gen tutorial.</span></a></p>
 </section>
 </section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<p>Bootstrap also provides a huge amount of utilities, as well as styling and content elements. To learn more about them, please [read the Bootstrap docs](<a class="reference external" href="https://getbootstrap.com/docs/4.0/getting-">https://getbootstrap.com/docs/4.0/getting-</a> started/introduction/) or read one of our other web tutorials.</p>
+</section>
 </section>
 
 
@@ -235,7 +306,7 @@ over <a class="reference internal" href="../Howtos/Web-Character-Generation.html
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Bootstrap Components and Utilities</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Bootstrap frontend framework</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

@@ -121,19 +121,9 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="game-website">
 <h1>Game website<a class="headerlink" href="#game-website" title="Permalink to this headline">¶</a></h1>
-<p>When Evennia starts it will also start a <a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a> as part of the
-<a class="reference internal" href="Portal-And-Server.html"><span class="doc std std-doc">Server</span></a> process. This uses <a class="reference external" href="https://docs.djangoproject.com">Django</a>
-to present a simple but functional default game website.  With the default setup,
-open your browser to <a class="reference external" href="http://localhost:4001">localhost:4001</a> or <a class="reference external" href="http://127.0.0.1:4001">127.0.0.1:4001</a>
-to see it.</p>
-<p>The website allows existing players to log in using an account-name and
-password they previously used to register with the game. If a user logs in with
-the <a class="reference internal" href="Webclient.html"><span class="doc std std-doc">Webclient</span></a> they will also log into the website and vice-versa.
-So if you are logged into the website, opening the webclient will automatically
-log you into the game as that account.</p>
-<p>The default website shows a “Welcome!” page with a few links to useful
-resources. It also shows some statistics about how many players are currently
-connected.</p>
+<p>When Evennia starts it will also start a <a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a> as part of the <a class="reference internal" href="Portal-And-Server.html"><span class="doc std std-doc">Server</span></a> process. This uses <a class="reference external" href="https://docs.djangoproject.com">Django</a> to present a simple but functional default game website.  With the default setup, open your browser to <a class="reference external" href="http://localhost:4001">localhost:4001</a> or <a class="reference external" href="http://127.0.0.1:4001">127.0.0.1:4001</a> to see it.</p>
+<p>The website allows existing players to log in using an account-name and password they previously used to register with the game. If a user logs in with the <a class="reference internal" href="Webclient.html"><span class="doc std std-doc">Webclient</span></a> they will also log into the website and vice-versa. So if you are logged into the website, opening the webclient will automatically log you into the game as that account.</p>
+<p>The default website shows a “Welcome!” page with a few links to useful resources. It also shows some statistics about how many players are currently connected.</p>
 <p>In the top menu you can find</p>
 <ul class="simple">
 <li><p><em>Home</em> - Get back to front page.</p></li>
@@ -160,10 +150,7 @@ creating a new account upon first logging into the game).</p></li>
 </ul>
 <section id="modifying-the-default-website">
 <h2>Modifying the default Website<a class="headerlink" href="#modifying-the-default-website" title="Permalink to this headline">¶</a></h2>
-<p>You can modify and override all aspects of the web site from your game dir.
-You’ll mostly be doing so in your settings file
-(<code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and in the gamedir’s <code class="docutils literal notranslate"><span class="pre">web/folder</span></code>
-(<code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> if your game folder is <code class="docutils literal notranslate"><span class="pre">mygame/</span></code>).</p>
+<p>You can modify and override all aspects of the web site from your game dir. You’ll mostly be doing so in your settings file (<code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and in the gamedir’s <code class="docutils literal notranslate"><span class="pre">web/folder</span></code> (<code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> if your game folder is <code class="docutils literal notranslate"><span class="pre">mygame/</span></code>).</p>
 <blockquote>
 <div><p>When testing your modifications, it’s a good idea to add <code class="docutils literal notranslate"><span class="pre">DEBUG</span> <span class="pre">=</span> <span class="pre">True</span></code> to
 your settings file. This will give you nice informative tracebacks directly
@@ -171,8 +158,7 @@ in your browser instead of generic 404 or 500 error pages. Just remember that
 DEBUG mode leaks memory (for retaining debug info) and is <em>not</em> safe to use
 for a production game!</p>
 </div></blockquote>
-<p>As explained on the <a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a> page, the process for getting a web
-page is</p>
+<p>As explained on the <a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a> page, the process for getting a web page is</p>
 <ol class="simple">
 <li><p>Web browser sends HTTP request to server with an URL</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">urls.py</span></code> uses regex to match that URL to a <em>view</em> (a Python function or callable class).</p></li>
@@ -184,8 +170,7 @@ A HTML page may also in turn point to static resources (usually CSS, sometimes i
 the HTML page requires static resources are requested, the browser will
 fetch those separately before displaying it to the user.</p></li>
 </ol>
-<p>If you look at the <a class="reference external" href="https://github.com/evennia/evennia/blob/develop/evennia/web">evennia/web/</a> directory you’ll find the following
-structure (leaving out stuff not relevant to the website):</p>
+<p>If you look at the <a class="reference external" href="https://github.com/evennia/evennia/blob/develop/evennia/web">evennia/web/</a> directory you’ll find the following structure (leaving out stuff not relevant to the website):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">evennia</span><span class="o">/</span><span class="n">web</span><span class="o">/</span>
     <span class="o">...</span>
     <span class="n">static</span><span class="o">/</span>
@@ -208,8 +193,7 @@ structure (leaving out stuff not relevant to the website):</p>
 
 </pre></div>
 </div>
-<p>The top-level <code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code> file ‘includes’ the <code class="docutils literal notranslate"><span class="pre">web/website/urls.py</span></code> file -
-that way all the website-related url-handling is kept in the same place.</p>
+<p>The top-level <code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code> file ‘includes’ the <code class="docutils literal notranslate"><span class="pre">web/website/urls.py</span></code> file - that way all the website-related url-handling is kept in the same place.</p>
 <p>This is the layout of the <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> folder relevant for the website:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">mygame</span><span class="o">/</span><span class="n">web</span><span class="o">/</span>
     <span class="o">...</span>
@@ -235,16 +219,9 @@ convenient <code class="docutils literal notranslate"><span class="pre">mygame/w
 you should copy over the missing <code class="docutils literal notranslate"><span class="pre">evennia/game_template/web/</span></code> folders from
 there, as well as the main <a class="reference external" href="http://urls.py">urls.py</a> file.</p>
 </div>
-<p>As you can see, the <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> folder is a copy of the <code class="docutils literal notranslate"><span class="pre">evennia/web/</span></code> folder
-structure except the <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folders are mostly empty.</p>
-<p>For static- and template-files, Evennia will <em>first</em>
-look in <code class="docutils literal notranslate"><span class="pre">mygame/static</span></code> and <code class="docutils literal notranslate"><span class="pre">mygame/templates</span></code> before going to the default
-locations in <code class="docutils literal notranslate"><span class="pre">evennia/web/</span></code>.  So override these resources, you just need to put
-a file with the same name in the right spot under <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> (and then
-reload the server). Easiest is often to copy the original over and modify it.</p>
-<p>Overridden views (Python modules) also need an additional tweak to the
-<code class="docutils literal notranslate"><span class="pre">website/urls.py</span></code> file - you must make sure to repoint the url to the new
-version rather than it using the original.</p>
+<p>As you can see, the <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> folder is a copy of the <code class="docutils literal notranslate"><span class="pre">evennia/web/</span></code> folder structure except the <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folders are mostly empty.</p>
+<p>For static- and template-files, Evennia will <em>first</em> look in <code class="docutils literal notranslate"><span class="pre">mygame/static</span></code> and <code class="docutils literal notranslate"><span class="pre">mygame/templates</span></code> before going to the default locations in <code class="docutils literal notranslate"><span class="pre">evennia/web/</span></code>.  So override these resources, you just need to put a file with the same name in the right spot under <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> (and then reload the server). Easiest is often to copy the original over and modify it.</p>
+<p>Overridden views (Python modules) also need an additional tweak to the <code class="docutils literal notranslate"><span class="pre">website/urls.py</span></code> file - you must make sure to repoint the url to the new version rather than it using the original.</p>
 </section>
 <section id="examples-of-commom-web-changes">
 <h2>Examples of commom web changes<a class="headerlink" href="#examples-of-commom-web-changes" title="Permalink to this headline">¶</a></h2>
@@ -282,48 +259,21 @@ documents - they contain a special templating language marked with <code class="
 <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">...</span> <span class="pre">}}</span></code>.</p>
 <p>Some important things to know:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extends</span> <span class="pre">&quot;base.html&quot;</span> <span class="pre">%}</span></code> - This is equivalent to a Python
-<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">othermodule</span> <span class="pre">import</span> <span class="pre">*</span></code> statement, but for templates. It allows a given template
-to use everything from the imported (extended) template, but also to override anything
-it wants to change. This makes it easy to keep all pages looking the same and avoids
-a lot of boiler plate.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">blockname</span> <span class="pre">%}...{%</span> <span class="pre">endblock</span> <span class="pre">%}</span></code> - Blocks are inheritable, named pieces of code
-that are modified in one place and then used elsewhere. This works a bit in reverse to
-normal inheritance, because it’s commonly in such a way that <code class="docutils literal notranslate"><span class="pre">base.html</span></code> defines an empty
-block, let’s say <code class="docutils literal notranslate"><span class="pre">contents</span></code>: <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">contents</span> <span class="pre">%}{%</span> <span class="pre">endblock</span> <span class="pre">%}</span></code> but makes sure to put
-that <em>in the right place</em>, say in the main body, next to the sidebar etc. Then each page
-does <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extends</span> <span class="pre">&quot;base.html</span> <span class="pre">%&quot;}</span></code> and makes their own <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">contents}</span> <span class="pre">&lt;actual</span> <span class="pre">content&gt;</span> <span class="pre">{%</span> <span class="pre">endblock</span> <span class="pre">%}</span></code>.
-Their <code class="docutils literal notranslate"><span class="pre">contents</span></code> block will now override the empty one in <code class="docutils literal notranslate"><span class="pre">base.html</span></code> and appear in the right
-place in the document, without the extending template having to specifying everything else
+<li><p><code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extends</span> <span class="pre">&quot;base.html&quot;</span> <span class="pre">%}</span></code> - This is equivalent to a Python <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">othermodule</span> <span class="pre">import</span> <span class="pre">*</span></code> statement, but for templates. It allows a given template to use everything from the imported (extended) template, but also to override anything it wants to change. This makes it easy to keep all pages looking the same and avoids a lot of boiler plate.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">blockname</span> <span class="pre">%}...{%</span> <span class="pre">endblock</span> <span class="pre">%}</span></code> - Blocks are inheritable, named pieces of code that are modified in one place and then used elsewhere. This works a bit in reverse to normal inheritance, because it’s commonly in such a way that <code class="docutils literal notranslate"><span class="pre">base.html</span></code> defines an empty block, let’s say <code class="docutils literal notranslate"><span class="pre">contents</span></code>: <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">contents</span> <span class="pre">%}{%</span> <span class="pre">endblock</span> <span class="pre">%}</span></code> but makes sure to put that <em>in the right place</em>, say in the main body, next to the sidebar etc. Then each page does <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extends</span> <span class="pre">&quot;base.html</span> <span class="pre">%&quot;}</span></code> and makes their own <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">contents}</span> <span class="pre">&lt;actual</span> <span class="pre">content&gt;</span> <span class="pre">{%</span> <span class="pre">endblock</span> <span class="pre">%}</span></code>. Their <code class="docutils literal notranslate"><span class="pre">contents</span></code> block will now override the empty one in <code class="docutils literal notranslate"><span class="pre">base.html</span></code> and appear in the right place in the document, without the extending template having to specifying everything else
 around it!</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">...</span> <span class="pre">}}</span></code> are ‘slots’ usually embedded inside HTML tags or content. They reference a
-<em>context</em> (basically a dict) that the Python <em>view</em> makes available to it.
-Keys on the context are accessed with dot-notation, so if you provide a
-context <code class="docutils literal notranslate"><span class="pre">{&quot;stats&quot;:</span> <span class="pre">{&quot;hp&quot;:</span> <span class="pre">10,</span> <span class="pre">&quot;mp&quot;:</span> <span class="pre">5}}</span></code> to your template, you could access
-that as  <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">stats.hp</span> <span class="pre">}}</span></code> to display <code class="docutils literal notranslate"><span class="pre">10</span></code> at that location to display <code class="docutils literal notranslate"><span class="pre">10</span></code> at
-that location.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">...</span> <span class="pre">}}</span></code> are ‘slots’ usually embedded inside HTML tags or content. They reference a <em>context</em> (basically a dict) that the Python <em>view</em> makes available to it. Keys on the context are accessed with dot-notation, so if you provide a context <code class="docutils literal notranslate"><span class="pre">{&quot;stats&quot;:</span> <span class="pre">{&quot;hp&quot;:</span> <span class="pre">10,</span> <span class="pre">&quot;mp&quot;:</span> <span class="pre">5}}</span></code> to your template, you could access that as  <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">stats.hp</span> <span class="pre">}}</span></code> to display <code class="docutils literal notranslate"><span class="pre">10</span></code> at that location to display <code class="docutils literal notranslate"><span class="pre">10</span></code> at that location.</p></li>
 </ul>
-<p>This allows for template inheritance (making it easier to make all
-pages look the same without rewriting the same thing over and over)</p>
+<p>This allows for template inheritance (making it easier to make all pages look the same without rewriting the same thing over and over)</p>
 <p>There’s a lot more information to be found in the <a class="reference external" href="https://docs.djangoproject.com/en/3.2/ref/templates/language/">Django template language documentation</a>.</p>
 </section>
 <section id="change-webpage-colors-and-styling">
 <h3>Change webpage colors and styling<a class="headerlink" href="#change-webpage-colors-and-styling" title="Permalink to this headline">¶</a></h3>
-<p>You can tweak the <a class="reference external" href="https://en.wikipedia.org/wiki/Cascading_Style_Sheets">CSS</a> of the entire
-website. If you investigate the <code class="docutils literal notranslate"><span class="pre">evennia/web/templates/website/base.html</span></code> file you’ll see that we
-use the <a class="reference external" href="https://getbootstrap.com/docs/4.6/getting-started/introduction/">Bootstrap
-4</a> toolkit.</p>
-<p>Much structural HTML functionality is actually coming from bootstrap, so you
-will often be able to just add bootstrap CSS classes to elements in the HTML
-file to get various effects like text-centering or similar.</p>
-<p>The website’s custom CSS is found in
-<code class="docutils literal notranslate"><span class="pre">evennia/web/static/website/css/website.css</span></code> but we also look for a (currently
-empty) <code class="docutils literal notranslate"><span class="pre">custom.css</span></code> in the same location. You can override either, but it may
-be easier to revert your changes if you only add things to <code class="docutils literal notranslate"><span class="pre">custom.css</span></code>.</p>
-<p>Copy the CSS file you want to modify to the corresponding location in <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code>.
-Modify it and reload the server to see your changes.</p>
-<p>You can also apply static files without reloading, but running this in the
-terminal:</p>
+<p>You can tweak the <a class="reference external" href="https://en.wikipedia.org/wiki/Cascading_Style_Sheets">CSS</a> of the entire website. If you investigate the <code class="docutils literal notranslate"><span class="pre">evennia/web/templates/website/base.html</span></code> file you’ll see that we use the <a class="reference external" href="https://getbootstrap.com/docs/4.6/getting-started/introduction/">Bootstrap 4</a> toolkit.</p>
+<p>Much structural HTML functionality is actually coming from bootstrap, so you will often be able to just add bootstrap CSS classes to elements in the HTML file to get various effects like text-centering or similar.</p>
+<p>The website’s custom CSS is found in <code class="docutils literal notranslate"><span class="pre">evennia/web/static/website/css/website.css</span></code> but we also look for a (currently empty) <code class="docutils literal notranslate"><span class="pre">custom.css</span></code> in the same location. You can override either, but it may be easier to revert your changes if you only add things to <code class="docutils literal notranslate"><span class="pre">custom.css</span></code>.</p>
+<p>Copy the CSS file you want to modify to the corresponding location in <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code>. Modify it and reload the server to see your changes.</p>
+<p>You can also apply static files without reloading, but running this in the terminal:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia collectstatic --no-input
 </pre></div>
 </div>
@@ -332,8 +282,7 @@ terminal:</p>
 <div><p>Note that before you see new CSS files applied you may need to refresh your
 browser without cache (Ctrl-F5 in Firefox, for example).</p>
 </div></blockquote>
-<p>As an example, add/copy <code class="docutils literal notranslate"><span class="pre">custom.css</span></code> to <code class="docutils literal notranslate"><span class="pre">mygame/web/static/website/css/</span></code> and
-add the following:</p>
+<p>As an example, add/copy <code class="docutils literal notranslate"><span class="pre">custom.css</span></code> to <code class="docutils literal notranslate"><span class="pre">mygame/web/static/website/css/</span></code> and add the following:</p>
 <div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="nc">navbar</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#7a3d54</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -352,8 +301,7 @@ the .css file only when you want to make the changes permanent.</p>
 </section>
 <section id="change-front-page-functionality">
 <h3>Change front page functionality<a class="headerlink" href="#change-front-page-functionality" title="Permalink to this headline">¶</a></h3>
-<p>The logic is all in the view. To find where the index-page view is found, we
-look in <code class="docutils literal notranslate"><span class="pre">evennia/web/website/urls.py</span></code>. Here we find the following line:</p>
+<p>The logic is all in the view. To find where the index-page view is found, we look in <code class="docutils literal notranslate"><span class="pre">evennia/web/website/urls.py</span></code>. Here we find the following line:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evennia/web/website/urls.py</span>
 
   <span class="o">...</span>
@@ -366,8 +314,7 @@ look in <code class="docutils literal notranslate"><span class="pre">evennia/web
 <p>The first <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> is the empty url - root - what you get if you just enter <code class="docutils literal notranslate"><span class="pre">localhost:4001/</span></code>
 with no extra path. As expected, this leads to the index page. By looking at the imports
 we find the view is in in <code class="docutils literal notranslate"><span class="pre">evennia/web/website/views/index.py</span></code>.</p>
-<p>Copy this file to the corresponding location in <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code>. Then tweak your <code class="docutils literal notranslate"><span class="pre">mygame/web/website/urls.py</span></code>
-file to point to the new file:</p>
+<p>Copy this file to the corresponding location in <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code>. Then tweak your <code class="docutils literal notranslate"><span class="pre">mygame/web/website/urls.py</span></code> file to point to the new file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/website/urls.py</span>
 
 <span class="c1"># ...</span>
@@ -382,42 +329,24 @@ file to point to the new file:</p>
 
 </pre></div>
 </div>
-<p>So we just import <code class="docutils literal notranslate"><span class="pre">index</span></code> from the new location and point to it. After a reload
-the front page will now redirect to use your copy rather than the original.</p>
-<p>The frontpage view is a class <code class="docutils literal notranslate"><span class="pre">EvenniaIndexView</span></code>. This is a <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/class-based-views/">Django class-based view</a>.
-It’s a little less visible what happens in a class-based view than in a function (since
-the class implements a lot of functionality as methods), but it’s powerful and
-much easier to extend/modify.</p>
-<p>The class property <code class="docutils literal notranslate"><span class="pre">template_name</span></code> sets the location of the template used under
-the <code class="docutils literal notranslate"><span class="pre">templates/</span></code> folder. So <code class="docutils literal notranslate"><span class="pre">website/index.html</span></code> points to
-<code class="docutils literal notranslate"><span class="pre">web/templates/website/index.html</span></code> (as we already explored above.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">get_context_data</span></code> is a convenient method for providing the context for the
-template. In the index-page’s case we want the game stats (number of recent
-players etc). These are then made available to use in <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">...</span> <span class="pre">}}</span></code> slots in the
-template as described in the previous section.</p>
+<p>So we just import <code class="docutils literal notranslate"><span class="pre">index</span></code> from the new location and point to it. After a reload the front page will now redirect to use your copy rather than the original.</p>
+<p>The frontpage view is a class <code class="docutils literal notranslate"><span class="pre">EvenniaIndexView</span></code>. This is a <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/class-based-views/">Django class-based view</a>. It’s a little less visible what happens in a class-based view than in a function (since the class implements a lot of functionality as methods), but it’s powerful and much easier to extend/modify.</p>
+<p>The class property <code class="docutils literal notranslate"><span class="pre">template_name</span></code> sets the location of the template used under the <code class="docutils literal notranslate"><span class="pre">templates/</span></code> folder. So <code class="docutils literal notranslate"><span class="pre">website/index.html</span></code> points to <code class="docutils literal notranslate"><span class="pre">web/templates/website/index.html</span></code> (as we already explored above.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">get_context_data</span></code> is a convenient method for providing the context for the template. In the index-page’s case we want the game stats (number of recent players etc). These are then made available to use in <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">...</span> <span class="pre">}}</span></code> slots in the template as described in the previous section.</p>
 </section>
 <section id="change-other-website-pages">
 <h3>Change other website pages<a class="headerlink" href="#change-other-website-pages" title="Permalink to this headline">¶</a></h3>
-<p>The other sub pages are handled in the same way - copy the template or static
-resource to the right place, or copy the view and repoint your <code class="docutils literal notranslate"><span class="pre">website/urls.py</span></code> to
-your copy. Just remember to reload.</p>
+<p>The other sub pages are handled in the same way - copy the template or static resource to the right place, or copy the view and repoint your <code class="docutils literal notranslate"><span class="pre">website/urls.py</span></code> to your copy. Just remember to reload.</p>
 </section>
 </section>
 <section id="adding-a-new-web-page">
 <h2>Adding a new web page<a class="headerlink" href="#adding-a-new-web-page" title="Permalink to this headline">¶</a></h2>
 <section id="using-flat-pages">
 <h3>Using Flat Pages<a class="headerlink" href="#using-flat-pages" title="Permalink to this headline">¶</a></h3>
-<p>The absolutely simplest way to add a new web page is to use the <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">Pages</span></code>
-app available in the <a class="reference internal" href="Web-Admin.html"><span class="doc std std-doc">Web Admin</span></a>. The page will appear with the same
-styling as the rest of the site.</p>
-<p>For the <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">pages</span></code> module to work you must first set up a <em>Site</em> (or
-domain) to use. You only need to this once.</p>
+<p>The absolutely simplest way to add a new web page is to use the <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">Pages</span></code> app available in the <a class="reference internal" href="Web-Admin.html"><span class="doc std std-doc">Web Admin</span></a>. The page will appear with the same styling as the rest of the site.</p>
+<p>For the <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">pages</span></code> module to work you must first set up a <em>Site</em> (or domain) to use. You only need to this once.</p>
 <ul class="simple">
-<li><p>Go to the Web admin and select <code class="docutils literal notranslate"><span class="pre">Sites</span></code>. If your
-game is at <code class="docutils literal notranslate"><span class="pre">mygreatgame.com</span></code>, that’s the domain you need to add. For local
-experimentation, add the domain <code class="docutils literal notranslate"><span class="pre">localhost:4001</span></code>. Note the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the domain
-(look at the url when you click on the new domain, if it’s for example
-<code class="docutils literal notranslate"><span class="pre">http://localhost:4001/admin/sites/site/2/change/</span></code>, then the id is <code class="docutils literal notranslate"><span class="pre">2</span></code>).</p></li>
+<li><p>Go to the Web admin and select <code class="docutils literal notranslate"><span class="pre">Sites</span></code>. If your game is at <code class="docutils literal notranslate"><span class="pre">mygreatgame.com</span></code>, that’s the domain you need to add. For local experimentation, add the domain <code class="docutils literal notranslate"><span class="pre">localhost:4001</span></code>. Note the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the domain (look at the url when you click on the new domain, if it’s for example <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/admin/sites/site/2/change/</span></code>, then the id is <code class="docutils literal notranslate"><span class="pre">2</span></code>).</p></li>
 <li><p>Now add the line <code class="docutils literal notranslate"><span class="pre">SITE_ID</span> <span class="pre">=</span> <span class="pre">&lt;id&gt;</span></code> to your settings file.</p></li>
 </ul>
 <p>Next you create new pages easily.</p>
@@ -434,16 +363,12 @@ add <code class="docutils literal notranslate"><span class="pre">/test/</span></
 </section>
 <section id="add-custom-new-page">
 <h3>Add Custom new page<a class="headerlink" href="#add-custom-new-page" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">Pages</span></code> page doesn’t allow for (much) dynamic content and customization. For
-this you need to add the needed components yourself.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">Pages</span></code> page doesn’t allow for (much) dynamic content and customization. For this you need to add the needed components yourself.</p>
 <p>Let’s see how to make a <code class="docutils literal notranslate"><span class="pre">/test/</span></code> page from scratch.</p>
 <ul>
-<li><p>Add a new <code class="docutils literal notranslate"><span class="pre">test.html</span></code> file under <code class="docutils literal notranslate"><span class="pre">mygame/web/templates/website/</span></code>. Easiest is to base
-this off an existing file. Make sure to <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extend</span> <span class="pre">base.html</span> <span class="pre">%}</span></code> if you want to
-get the same styling as the rest of your site.</p></li>
+<li><p>Add a new <code class="docutils literal notranslate"><span class="pre">test.html</span></code> file under <code class="docutils literal notranslate"><span class="pre">mygame/web/templates/website/</span></code>. Easiest is to base this off an existing file. Make sure to <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extend</span> <span class="pre">base.html</span> <span class="pre">%}</span></code> if you want to get the same styling as the rest of your site.</p></li>
 <li><p>Add a new view <code class="docutils literal notranslate"><span class="pre">testview.py</span></code> under <code class="docutils literal notranslate"><span class="pre">mygame/web/website/views/</span></code> (don’t name it <code class="docutils literal notranslate"><span class="pre">test.py</span></code> or
-Django/Evennia will think it contains unit tests). Add a view there to process
-your page. This is a minimal view to start from (read much more <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/class-based-views/">in the Django docs</a>):</p>
+Django/Evennia will think it contains unit tests). Add a view there to process your page. This is a minimal view to start from (read much more <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/class-based-views/">in the Django docs</a>):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/website/views/testview.py</span>
 
 <span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">TemplateView</span>
@@ -496,8 +421,7 @@ This specifies <em>fields</em> on itself that define how to validate that piece 
 <p>The form is then linked into the view-class by adding <code class="docutils literal notranslate"><span class="pre">form_class</span> <span class="pre">=</span> <span class="pre">MyFormClass</span></code> to
 the view (next to <code class="docutils literal notranslate"><span class="pre">template_name</span></code>).</p>
 <p>There are several example forms in <code class="docutils literal notranslate"><span class="pre">evennia/web/website/forms.py</span></code>. It’s also a good
-idea to read <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/forms/#building-a-form-in-django">Building a form in Django</a>
-on the Django website - it covers all you need.</p>
+idea to read <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/forms/#building-a-form-in-django">Building a form in Django</a> on the Django website - it covers all you need.</p>
 </section>
 </section>
 

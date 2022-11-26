@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Sending different messages depending on viewpoint and receiver &#8212; Evennia 1.0-dev documentation</title>
+    <title>Messages varying per receiver &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Clickable links" href="Clickable-Links.html" />
-    <link rel="prev" title="In-text tags parsed by Evennia" href="Inline-Tags-and-Functions.html" /> 
+    <link rel="next" title="Internationalization" href="Internationalization.html" />
+    <link rel="prev" title="Inline functions" href="Inline-Functions.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,14 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Clickable-Links.html" title="Clickable links"
+          <a href="Internationalization.html" title="Internationalization"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Inline-Tags-and-Functions.html" title="In-text tags parsed by Evennia"
+          <a href="Inline-Functions.html" title="Inline functions"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" accesskey="U">Core Concepts</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Sending different messages depending on viewpoint and receiver</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Messages varying per receiver</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,28 +62,28 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Sending different messages depending on viewpoint and receiver</a><ul>
+<li><a class="reference internal" href="#">Messages varying per receiver</a><ul>
 <li><a class="reference internal" href="#director-stance">Director Stance</a></li>
 <li><a class="reference internal" href="#actor-stance">Actor Stance</a><ul>
 <li><a class="reference internal" href="#more-on-pron">More on $pron()</a></li>
 </ul>
 </li>
-</ul>
-</li>
 <li><a class="reference internal" href="#referencing-other-objects">Referencing other objects</a></li>
 <li><a class="reference internal" href="#recog-systems-and-roleplaying">Recog systems and roleplaying</a></li>
 </ul>
+</li>
+</ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Inline-Tags-and-Functions.html"
-                        title="previous chapter">In-text tags parsed by Evennia</a></p>
+  <p class="topless"><a href="Inline-Functions.html"
+                        title="previous chapter">Inline functions</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Clickable-Links.html"
-                        title="next chapter">Clickable links</a></p>
+  <p class="topless"><a href="Internationalization.html"
+                        title="next chapter">Internationalization</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Concepts/Change-Messages-Per-Receiver.md.txt"
+      <li><a href="../_sources/Concepts/Change-Message-Per-Receiver.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -99,7 +99,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Change-Messages-Per-Receiver.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Change-Message-Per-Receiver.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -110,10 +110,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="sending-different-messages-depending-on-viewpoint-and-receiver">
-<h1>Sending different messages depending on viewpoint and receiver<a class="headerlink" href="#sending-different-messages-depending-on-viewpoint-and-receiver" title="Permalink to this headline">¶</a></h1>
-<p>Sending messages to everyong in a location is handled by the
-<a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">msg_contents</span></a> method on
+  <section class="tex2jax_ignore mathjax_ignore" id="messages-varying-per-receiver">
+<h1>Messages varying per receiver<a class="headerlink" href="#messages-varying-per-receiver" title="Permalink to this headline">¶</a></h1>
+<p>Sending messages to everyong in a location is handled by the <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">msg_contents</span></a> method on
 all <a class="reference internal" href="../Components/Objects.html"><span class="doc std std-doc">Objects</span></a>. It’s most commonly called on rooms.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;Anna walks into the room.&quot;</span><span class="p">)</span>
 </pre></div>
@@ -126,12 +125,9 @@ all <a class="reference internal" href="../Components/Objects.html"><span class=
 </pre></div>
 </div>
 <p>Use <code class="docutils literal notranslate"><span class="pre">exclude=object_or_list_of_object</span></code> to skip sending the message one or more targets.</p>
-<p>The advantage of this is that <code class="docutils literal notranslate"><span class="pre">anna_object.get_display_name(looker)</span></code> will be called
-for every onlooker; this allows the <code class="docutils literal notranslate"><span class="pre">{anna}</span></code> stanza to be different depending on who
-sees the strings. How this is to work depends on the <em>stance</em> of your game.</p>
+<p>The advantage of this is that <code class="docutils literal notranslate"><span class="pre">anna_object.get_display_name(looker)</span></code> will be called for every onlooker; this allows the <code class="docutils literal notranslate"><span class="pre">{anna}</span></code> stanza to be different depending on who sees the strings. How this is to work depends on the <em>stance</em> of your game.</p>
 <p>The stance indicates how your game echoes its messages to the player. Knowing how you want to
-handle the stance is important for a text game. There are two main stances that are usually considered,
-<em>Actor stance</em> and <em>Director stance</em>.</p>
+handle the stance is important for a text game. There are two main stances that are usually considered, <em>Actor stance</em> and <em>Director stance</em>.</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Stance</p></th>
@@ -150,12 +146,10 @@ handle the stance is important for a text game. There are two main stances that 
 </tr>
 </tbody>
 </table>
-<p>It’s not unheard of to mix the two stances - with commands from the game being told
-in Actor stance while Director stance is used for complex emoting and roleplaying. One should
-usually try to be consistent however.</p>
+<p>It’s not unheard of to mix the two stances - with commands from the game being told in Actor stance while Director stance is used for complex emoting and roleplaying. One should usually try to be consistent however.</p>
 <section id="director-stance">
 <h2>Director Stance<a class="headerlink" href="#director-stance" title="Permalink to this headline">¶</a></h2>
-<p>While not so common as Actor stance, director stance has the advantage of simplicity, particularly
+<p>While not as common as Actor stance, director stance has the advantage of simplicity, particularly
 in roleplaying MUDs where longer roleplaying emotes are used. It is also a pretty simple stance to
 implement technically since everyone sees the same text, regardless of viewpoint.</p>
 <p>Here’s an example of a flavorful text to show the room:</p>
@@ -174,8 +168,7 @@ technically, it’s also easy to write for the player.</p>
 </section>
 <section id="actor-stance">
 <h2>Actor Stance<a class="headerlink" href="#actor-stance" title="Permalink to this headline">¶</a></h2>
-<p>This means that the game addresses “you” when it does things. In actor stance, whenever you perform
-an action, you should get a different message than those <em>observing</em> you doing that action.</p>
+<p>This means that the game addresses “you” when it does things. In actor stance, whenever you perform an action, you should get a different message than those <em>observing</em> you doing that action.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tom picks up the gun, whistling to himself.
 </pre></div>
 </div>
@@ -183,14 +176,8 @@ an action, you should get a different message than those <em>observing</em> you 
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You pick up the gun, whistling to yourself.
 </pre></div>
 </div>
-<p>Not only do you need to map “Tom” to “You” above, there are also grammatical differences -
-“Tom walks” vs “You walk” and “himself” vs “yourself”. This is a lot more complex to handle. For a
-developer making simple “You/Tom pick/picks up the stone” messages, you could in principle hand-craft
-the strings from every view point, but there’s a better way.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> method helps by parsing the ingoing string with a
-<a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser functions</span></a> with some very specific <code class="docutils literal notranslate"><span class="pre">$inline-functions</span></code>. The inline funcs
-basically provides you with a mini-language for building <em>one</em> string that will change
-appropriately depending on who sees it.</p>
+<p>Not only do you need to map “Tom” to “You” above, there are also grammatical differences - “Tom walks” vs “You walk” and “himself” vs “yourself”. This is a lot more complex to handle. For a developer making simple “You/Tom pick/picks up the stone” messages, you could in principle hand-craft the strings from every view point, but there’s a better way.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> method helps by parsing the ingoing string with a <a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser functions</span></a> with some very specific <code class="docutils literal notranslate"><span class="pre">$inline-functions</span></code>. The inline funcs basically provides you with a mini-language for building <em>one</em> string that will change appropriately depending on who sees it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;$You() $conj(pick) up the gun, whistling to $pron(yourself).&quot;</span>
 <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;gun&quot;</span><span class="p">:</span> <span class="n">gun_object</span><span class="p">})</span>
 </pre></div>
@@ -203,8 +190,7 @@ the one sending the text and with the return from <code class="docutils literal 
 to <code class="docutils literal notranslate"><span class="pre">picks</span></code>). Enter the root form of the verb.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$pron(pronoun[,options])</span></code> - A pronoun is a word you want to use instead of a proper noun, like
 <em>him</em>, <em>herself</em>, <em>its</em>, <em>me</em>, <em>I</em>, <em>their</em> and so on. The <code class="docutils literal notranslate"><span class="pre">options</span></code> is a space- or comma-separated
-set of options to help the system map your pronoun from 1st/2nd person to 3rd person and vice versa.
-See next section.</p></li>
+set of options to help the system map your pronoun from 1st/2nd person to 3rd person and vice versa. See next section.</p></li>
 </ul>
 <section id="more-on-pron">
 <h3>More on $pron()<a class="headerlink" href="#more-on-pron" title="Permalink to this headline">¶</a></h3>
@@ -293,16 +279,7 @@ it translates between this table …</p>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<div><p>*) The neutral 3rd person possessive pronoun is not actually used in English. We set it to “theirs”
-just to have something to show should someone accidentally ask for a neutral possessive pronoun.</p>
-</div></blockquote>
-<p>Some mappings are easy. For example, if you write <code class="docutils literal notranslate"><span class="pre">$pron(yourselves)</span></code> then the 3rd-person
-form is always <code class="docutils literal notranslate"><span class="pre">themselves</span></code>. But because English grammar is the way it is, not all mappings
-are 1:1. For example, if you write
-<code class="docutils literal notranslate"><span class="pre">$pron(you)</span></code>, Evennia will not know which 3rd-persion equivalent this should map to - you need to
-provide more info to help out. This can either be provided as a second space-separated option
-to <code class="docutils literal notranslate"><span class="pre">$pron</span></code> or the system will try to figure it out on its own.</p>
+<p>Some mappings are easy. For example, if you write <code class="docutils literal notranslate"><span class="pre">$pron(yourselves)</span></code> then the 3rd-person form is always <code class="docutils literal notranslate"><span class="pre">themselves</span></code>. But because English grammar is the way it is, not all mappings are 1:1. For example, if you write <code class="docutils literal notranslate"><span class="pre">$pron(you)</span></code>, Evennia will not know which 3rd-persion equivalent this should map to - you need to provide more info to help out. This can either be provided as a second space-separated option to <code class="docutils literal notranslate"><span class="pre">$pron</span></code> or the system will try to figure it out on its own.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">pronoun_type</span></code> - this is one of the columns in the table and can be set as a <code class="docutils literal notranslate"><span class="pre">$pron</span></code> option.</p>
 <ul class="simple">
@@ -419,15 +396,12 @@ not, 2nd person is assumed wherever the viewpoint is unclear.</p>
 </tr>
 </tbody>
 </table>
-<p>Note the three last examples - instead of specifying the 2nd person form you
-can also specify the 3rd-person and do a ‘reverse’ lookup - you will still see the proper 1st/2nd text.
-So writing <code class="docutils literal notranslate"><span class="pre">$pron(her)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">$pron(you,</span> <span class="pre">op</span> <span class="pre">f)</span></code> gives the same result.</p>
+<p>Note the three last examples - instead of specifying the 2nd person form you can also specify the 3rd-person and do a ‘reverse’ lookup - you will still see the proper 1st/2nd text. So writing <code class="docutils literal notranslate"><span class="pre">$pron(her)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">$pron(you,</span> <span class="pre">op</span> <span class="pre">f)</span></code> gives the same result.</p>
 <p>The <a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun" title="evennia.utils.funcparser.funcparser_callable_pronoun"><span class="xref myst py py-func">$pron inlinefunc api is found here</span></a></p>
 </section>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="referencing-other-objects">
-<h1>Referencing other objects<a class="headerlink" href="#referencing-other-objects" title="Permalink to this headline">¶</a></h1>
+<section id="referencing-other-objects">
+<h2>Referencing other objects<a class="headerlink" href="#referencing-other-objects" title="Permalink to this headline">¶</a></h2>
 <p>There is one more inlinefunc understood by <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code>. This can be used natively to spruce up
 your strings (for both director- and actor stance):</p>
 <ul class="simple">
@@ -447,17 +421,14 @@ control capitalization.</p></li>
 <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;gun&quot;</span><span class="p">:</span> <span class="n">gun_object</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>Depending on your game, Tom may now see himself picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rusty</span> <span class="pre">old</span> <span class="pre">gun</span></code>, whereas an onlooker
-with a high gun smith skill may instead see him picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rare-make</span> <span class="pre">Smith</span> <span class="pre">&amp;</span> <span class="pre">Wesson</span> <span class="pre">model</span> <span class="pre">686</span> <span class="pre">in</span> <span class="pre">poor</span> <span class="pre">condition&quot;</span> <span class="pre">...</span></code></p>
+<p>Depending on your game, Tom may now see himself picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rusty</span> <span class="pre">old</span> <span class="pre">gun</span></code>, whereas an onlooker with a high gun smith skill may instead see him picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rare-make</span> <span class="pre">Smith</span> <span class="pre">&amp;</span> <span class="pre">Wesson</span> <span class="pre">model</span> <span class="pre">686</span> <span class="pre">in</span> <span class="pre">poor</span> <span class="pre">condition&quot;</span> <span class="pre">...</span></code></p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="recog-systems-and-roleplaying">
-<h1>Recog systems and roleplaying<a class="headerlink" href="#recog-systems-and-roleplaying" title="Permalink to this headline">¶</a></h1>
+<section id="recog-systems-and-roleplaying">
+<h2>Recog systems and roleplaying<a class="headerlink" href="#recog-systems-and-roleplaying" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">$funcparser</span></code> inline functions are very powerful for the game developer, but they may
 be a bit too much to write for the regular player.</p>
-<p>The <a class="reference internal" href="../api/evennia.contrib.rpg.rpsystem.html#evennia-contrib-rpg-rpsystem"><span class="std std-ref">rpsystem contrib</span></a> implements a full dynamic emote/pose and recognition
-system with short-descriptions and disguises. It uses director stance with a custom markup
-language, like <code class="docutils literal notranslate"><span class="pre">/me</span></code> <code class="docutils literal notranslate"><span class="pre">/gun</span></code> and <code class="docutils literal notranslate"><span class="pre">/tall</span> <span class="pre">man</span></code> to refer to players and objects in the location. It can be
-worth checking out for inspiration.</p>
+<p>The <a class="reference internal" href="../api/evennia.contrib.rpg.rpsystem.html#evennia-contrib-rpg-rpsystem"><span class="std std-ref">rpsystem contrib</span></a> implements a full dynamic emote/pose and recognition system with short-descriptions and disguises. It uses director stance with a custom markup language, like <code class="docutils literal notranslate"><span class="pre">/me</span></code> <code class="docutils literal notranslate"><span class="pre">/gun</span></code> and <code class="docutils literal notranslate"><span class="pre">/tall</span> <span class="pre">man</span></code> to refer to players and objects in the location. It can be worth checking out for inspiration.</p>
+</section>
 </section>
 
 
@@ -476,14 +447,14 @@ worth checking out for inspiration.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Clickable-Links.html" title="Clickable links"
+          <a href="Internationalization.html" title="Internationalization"
              >next</a> |</li>
         <li class="right" >
-          <a href="Inline-Tags-and-Functions.html" title="In-text tags parsed by Evennia"
+          <a href="Inline-Functions.html" title="Inline functions"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Sending different messages depending on viewpoint and receiver</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Messages varying per receiver</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

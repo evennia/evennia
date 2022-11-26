@@ -109,7 +109,7 @@ In some game styles, players have the ability to create objects and even script 
 
 Regular, untrusted users should never be allowed to execute raw Python
 code (such as what you can do with the `py` command). You can
-[read more about Evennia's stance on softcode here](../../../Concepts/Soft-Code.md). If you want users to do limited scripting, it's suggested that this is accomplished by adding more powerful build-commands for them to use.
+[read more about Evennia's stance on softcode here](../../../Coding/Soft-Code.md). If you want users to do limited scripting, it's suggested that this is accomplished by adding more powerful build-commands for them to use.
 
 **EvAdventure Answer**
 

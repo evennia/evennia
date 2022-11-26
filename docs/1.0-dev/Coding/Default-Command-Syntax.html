@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Outputfuncs &#8212; Evennia 1.0-dev documentation</title>
+    <title>Default Command Syntax &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Coding Utils" href="Coding-Utils.html" />
-    <link rel="prev" title="Inputfuncs" href="Inputfuncs.html" /> 
+    <link rel="next" title="Soft Code" href="Soft-Code.html" />
+    <link rel="prev" title="Evennia Code Style" href="Evennia-Code-Style.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,14 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Coding-Utils.html" title="Coding Utils"
+          <a href="Soft-Code.html" title="Soft Code"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Inputfuncs.html" title="Inputfuncs"
+          <a href="Evennia-Code-Style.html" title="Evennia Code Style"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Outputfuncs</a></li> 
+          <li class="nav-item nav-item-1"><a href="Coding-Overview.html" accesskey="U">Coding and development help</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Default Command Syntax</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -61,15 +61,15 @@
 </div>
 <script>$('#searchbox').show(0);</script>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Inputfuncs.html"
-                        title="previous chapter">Inputfuncs</a></p>
+  <p class="topless"><a href="Evennia-Code-Style.html"
+                        title="previous chapter">Evennia Code Style</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Coding-Utils.html"
-                        title="next chapter">Coding Utils</a></p>
+  <p class="topless"><a href="Soft-Code.html"
+                        title="next chapter">Soft Code</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Components/Outputfuncs.md.txt"
+      <li><a href="../_sources/Coding/Default-Command-Syntax.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -85,7 +85,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Outputfuncs.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Default-Command-Syntax.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -96,9 +96,21 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="outputfuncs">
-<h1>Outputfuncs<a class="headerlink" href="#outputfuncs" title="Permalink to this headline">¶</a></h1>
-<p>TODO. For now info about outputfuncs are found in <a class="reference internal" href="../Concepts/OOB.html"><span class="doc std std-doc">OOB</span></a>.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="default-command-syntax">
+<h1>Default Command Syntax<a class="headerlink" href="#default-command-syntax" title="Permalink to this headline">¶</a></h1>
+<p>Evennia allows for any command syntax.</p>
+<p>If you like the way DikuMUDs, LPMuds or MOOs handle things, you could emulate that with Evennia. If you are ambitious you could even design a whole new style, perfectly fitting your own dreams of the ideal game. See the <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">Command</span></a> documentation for how to do this.</p>
+<p>We do offer a default however. The default Evennia setup tends to <em>resemble</em> <a class="reference external" href="https://www.tinymux.org/">MUX2</a>, and its cousins <a class="reference external" href="https://www.pennmush.org">PennMUSH</a>, <a class="reference external" href="https://github.com/TinyMUSH/TinyMUSH/wiki">TinyMUSH</a>, and <a class="reference external" href="http://www.rhostmush.com/">RhostMUSH</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">command</span><span class="p">[</span><span class="o">/</span><span class="n">switches</span><span class="p">]</span> <span class="nb">object</span> <span class="p">[</span><span class="o">=</span> <span class="n">options</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>While the reason for this similarity is partly historical, these codebases offer very mature feature sets for administration and building.</p>
+<p>Evennia is <em>not</em> a MUX system though. It works very differently in many ways. For example, Evennia
+deliberately lacks an online softcode language (a policy explained on our <a class="reference internal" href="Soft-Code.html"><span class="doc std std-doc">softcode policy page</span></a>). Evennia also does not shy from using its own syntax when deemed appropriate: the
+MUX syntax has grown organically over a long time and is, frankly, rather arcane in places.  All in
+all the default command syntax should at most be referred to as “MUX-like” or “MUX-inspired”.</p>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 
 
@@ -117,14 +129,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Coding-Utils.html" title="Coding Utils"
+          <a href="Soft-Code.html" title="Soft Code"
              >next</a> |</li>
         <li class="right" >
-          <a href="Inputfuncs.html" title="Inputfuncs"
+          <a href="Evennia-Code-Style.html" title="Evennia Code Style"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Outputfuncs</a></li> 
+          <li class="nav-item nav-item-1"><a href="Coding-Overview.html" >Coding and development help</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Default Command Syntax</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

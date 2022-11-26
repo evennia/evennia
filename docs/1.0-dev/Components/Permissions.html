@@ -63,6 +63,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Permissions</a><ul>
+<li><a class="reference internal" href="#the-super-user">The super user</a></li>
 <li><a class="reference internal" href="#managing-permissions">Managing Permissions</a></li>
 <li><a class="reference internal" href="#the-permission-hierarchy">The permission hierarchy</a></li>
 <li><a class="reference internal" href="#checking-permissions">Checking permissions</a><ul>
@@ -115,34 +116,38 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="permissions">
 <h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
-<p>A <em>permission</em> is simply a text string stored in the handler <code class="docutils literal notranslate"><span class="pre">permissions</span></code> on <code class="docutils literal notranslate"><span class="pre">Objects</span></code>
-and <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>. Think of it as a specialized sort of <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tag</span></a> - one specifically dedicated
-to access checking. They are thus often tightly coupled to <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a>.
-Permission strings are not case-sensitive, so “Builder” is the same as “builder”
-etc.</p>
-<p>Permissions are used as a convenient way to structure access levels and
-hierarchies. It is set by the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command and checked by the
-<code class="docutils literal notranslate"><span class="pre">PermissionHandler.check</span></code> method as well as by the specially the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">pperm()</span></code> <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock functions</span></a>.</p>
-<p>All new accounts are given a default set of permissions defined by
-<code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_ACCOUNT_DEFAULT</span></code>.</p>
+<p>A <em>permission</em> is simply a text string stored in the handler <code class="docutils literal notranslate"><span class="pre">permissions</span></code> on <code class="docutils literal notranslate"><span class="pre">Objects</span></code> and <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>. Think of it as a specialized sort of <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tag</span></a> - one specifically dedicated to access checking. They are thus often tightly coupled to <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a>. Permission strings are not case-sensitive, so “Builder” is the same as “builder” etc.</p>
+<p>Permissions are used as a convenient way to structure access levels and hierarchies. It is set by the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command and checked by the <code class="docutils literal notranslate"><span class="pre">PermissionHandler.check</span></code> method as well as by the specially the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> and <code class="docutils literal notranslate"><span class="pre">pperm()</span></code> <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock functions</span></a>.</p>
+<p>All new accounts are given a default set of permissions defined by <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_ACCOUNT_DEFAULT</span></code>.</p>
+<section id="the-super-user">
+<h2>The super user<a class="headerlink" href="#the-super-user" title="Permalink to this headline">¶</a></h2>
+<p>There are strictly speaking two types of users in Evennia, the <em>super user</em> and everyone else. The
+superuser is the first user you create, object <code class="docutils literal notranslate"><span class="pre">#1</span></code>. This is the all-powerful server-owner account.
+Technically the superuser not only has access to everything, it <em>bypasses</em> the permission checks
+entirely.</p>
+<p>This makes the superuser impossible to lock out, but makes it unsuitable to actually play-
+test the game’s locks and restrictions with (see <code class="docutils literal notranslate"><span class="pre">quell</span></code> below). Usually there is no need to have
+but one superuser.</p>
+</section>
 <section id="managing-permissions">
 <h2>Managing Permissions<a class="headerlink" href="#managing-permissions" title="Permalink to this headline">¶</a></h2>
-<p>In-game, you use the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command to add and remove permissions
-j
-perm/account Tommy = Builders
-perm/account/del Tommy = Builders</p>
-<p>Note the use of the <code class="docutils literal notranslate"><span class="pre">/account</span></code> switch. It means you assign the permission to the
-<a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a> Tommy instead of any <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Character</span></a> that also
-happens to be named “Tommy”.</p>
-<p>There can be reasons for putting permissions on Objects (especially NPCS), but
-for granting powers to players, you should usually put the permission on the
-<code class="docutils literal notranslate"><span class="pre">Account</span></code> - this guarantees that they are kept, <em>regardless</em>
-of which Character they are currently puppeting. This is especially important to
-remember when assigning permissions from the <em>hierarchy tree</em> (see below), as an
-Account’s permissions will overrule that of its character. So to be sure to
-avoid confusion you should generally put hierarchy permissions on the Account,
-not on their Characters (but see also <a class="reference internal" href="#quelling"><span class="std std-doc">quelling</span></a>).</p>
+<p>In-game, you use the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command to add and remove permissions</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; perm/account Tommy = Builders
+ &gt; perm/account/del Tommy = Builders
+</pre></div>
+</div>
+<p>Note the use of the <code class="docutils literal notranslate"><span class="pre">/account</span></code> switch. It means you assign the permission to the <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a> Tommy instead of any <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Character</span></a> that also happens to be named “Tommy”. If you don’t want to use <code class="docutils literal notranslate"><span class="pre">/account</span></code>, you can also prefix the name with <code class="docutils literal notranslate"><span class="pre">*</span></code> to indicate an Account is sought:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; perm *Tommy = Builders
+</pre></div>
+</div>
+<p>There can be reasons for putting permissions on Objects (especially NPCS), but for granting powers to players, you should usually put the permission on the <code class="docutils literal notranslate"><span class="pre">Account</span></code> - this guarantees that they are kept, <em>regardless</em> of which Character they are currently puppeting.</p>
+<p>This is especially important to remember when assigning permissions from the <em>hierarchy tree</em> (see below), as an Account’s permissions will overrule that of its character. So to be sure to avoid confusion you should generally put hierarchy permissions on the Account, not on their Characters/puppets.</p>
+<p>If you <em>do</em> want to start using the permissions on your <em>puppet</em>, you use <code class="docutils literal notranslate"><span class="pre">quell</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quell 
+&gt; unquell   
+</pre></div>
+</div>
+<p>This drops to the permissions on the puppeted object, and then back to your Account-permissions again. Quelling is useful if you want to try something “as” someone else. It’s also useful for superusers since this makes them susceptible to locks (so they can test things).</p>
 <p>In code, you add/remove Permissions via the <code class="docutils literal notranslate"><span class="pre">PermissionHandler</span></code>, which sits on all
 typeclassed entities as the property <code class="docutils literal notranslate"><span class="pre">.permissions</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">)</span>
@@ -164,34 +169,18 @@ typeclassed entities as the property <code class="docutils literal notranslate">
  Developer        # like superuser but affected by locks (highest)
 </pre></div>
 </div>
-<p>(Besides being case-insensitive, hierarchical permissions also understand the
-plural form, so you could use <code class="docutils literal notranslate"><span class="pre">Developers</span></code> and <code class="docutils literal notranslate"><span class="pre">Developer</span></code> interchangeably).</p>
+<p>(Besides being case-insensitive, hierarchical permissions also understand the plural form, so you could use <code class="docutils literal notranslate"><span class="pre">Developers</span></code> and <code class="docutils literal notranslate"><span class="pre">Developer</span></code> interchangeably).</p>
 <blockquote>
-<div><p>There is also a <code class="docutils literal notranslate"><span class="pre">Guest</span></code> level below <code class="docutils literal notranslate"><span class="pre">Player</span></code> that is only active if <code class="docutils literal notranslate"><span class="pre">settings.GUEST_ENABLED</span></code> is
-set. The Guest is is never part of <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.</p>
+<div><p>There is also a <code class="docutils literal notranslate"><span class="pre">Guest</span></code> level below <code class="docutils literal notranslate"><span class="pre">Player</span></code> that is only active if <code class="docutils literal notranslate"><span class="pre">settings.GUEST_ENABLED</span></code> is set. The Guest is is never part of <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.</p>
 </div></blockquote>
-<p>When checking a hierarchical permission (using one of the methods to follow),
-you will pass checks for your level and all <em>below</em> you. That is, even if the
-check explicitly checks for “Builder” level access, you will actually pass if you have
-one of “Builder”, “Admin” or “Developer”. By contrast, if you check for a
-non-hierarchical permission, like “Blacksmith” you <em>must</em> have exactly
-that permission to pass.</p>
+<p>When checking a hierarchical permission (using one of the methods to follow), you will pass checks for your level and all <em>below</em> you. That is, even if the check explicitly checks for “Builder” level access, you will actually pass if you have one of “Builder”, “Admin” or “Developer”. By contrast, if you check for a non-hierarchical permission, like “Blacksmith” you <em>must</em> have exactly that permission to pass.</p>
 </section>
 <section id="checking-permissions">
 <h2>Checking permissions<a class="headerlink" href="#checking-permissions" title="Permalink to this headline">¶</a></h2>
-<p>It’s important to note that you check for the permission of a <em>puppeted</em>
-<a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> (like a Character), the check will always first use the
-permissions of any <code class="docutils literal notranslate"><span class="pre">Account</span></code> connected to that Object before checking for
-permissions on the Object. In the case of hierarchical permissions (Admins,
-Builders etc), the Account permission will always be used (this stops an Account
-from escalating their permission by puppeting a high-level Character). If the
-permission looked for is not in the hierarchy, an exact match is required, first
-on the Account and if not found there (or if no Account is connected), then on
-the Object itself.</p>
+<p>It’s important to note that you check for the permission of a <em>puppeted</em> <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> (like a Character), the check will always first use the permissions of any <code class="docutils literal notranslate"><span class="pre">Account</span></code> connected to that Object before checking for permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the Account permission will always be used (this stops an Account from escalating their permission by puppeting a high-level Character). If the permission looked for is not in the hierarchy, an exact match is required, first on the Account and if not found there (or if no Account is connected), then on the Object itself.</p>
 <section id="checking-with-obj-permissions-check">
 <h3>Checking with obj.permissions.check()<a class="headerlink" href="#checking-with-obj-permissions-check" title="Permalink to this headline">¶</a></h3>
-<p>The simplest way to check if an entity has a permission is to check its
-<em>PermissionHandler</em>, stored as <code class="docutils literal notranslate"><span class="pre">.permissions</span></code>  on all typeclassed entities.</p>
+<p>The simplest way to check if an entity has a permission is to check its <em>PermissionHandler</em>, stored as <code class="docutils literal notranslate"><span class="pre">.permissions</span></code>  on all typeclassed entities.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if obj.permissions.check(&quot;Builder&quot;):
     # allow builder to do stuff
 

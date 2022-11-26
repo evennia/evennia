@@ -7,7 +7,7 @@ the defaults can be quite useful.
 Connect and log into your new game and you will end up in the "Limbo" location. This
 is the only room in the game at this point. Let's explore the commands a little.
 
-The default commands has syntax [similar to MUX](../../../Concepts/Using-MUX-as-a-Standard.md):
+The default commands has syntax [similar to MUX](../../../Coding/Default-Command-Syntax.md):
 
      command[/switch/switch...] [arguments ...]
 

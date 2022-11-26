@@ -127,23 +127,18 @@ spend most time working with. Objects are <a class="reference internal" href="Ty
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                                               ┌────────────┐
                             Evennia│           │ObjectParent│
                             library│           └──────▲─────┘
-                                   │                  │
 ┌─────────────┐                    │    ┌──────┐      │
 │DefaultObject◄────────────────────┼────┤Object├──────┤
 └──────▲──────┘                    │    └──────┘      │
-       │                           │                  │
        │        ┌────────────────┐ │    ┌─────────┐   │
        ├────────┤DefaultCharacter◄─┼────┤Character├───┤
        │        └────────────────┘ │    └─────────┘   │
-       │                           │                  │
        │        ┌────────────────┐ │    ┌────┐        │
        ├────────┤DefaultRoom     ◄─┼────┤Room├────────┤
        │        └────────────────┘ │    └────┘        │
-       │                           │                  │
        │        ┌────────────────┐ │    ┌────┐        │
        └────────┤DefaultExit     ◄─┼────┤Exit├────────┘
                 └────────────────┘ │    └────┘
-                                   │
                                    │Game-dir
 </pre></div>
 </div>

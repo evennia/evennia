@@ -325,7 +325,7 @@ test coverage and which does not. All help is appreciated!</p>
 <section id="unit-testing-contribs-with-custom-models">
 <h3>Unit testing contribs with custom models<a class="headerlink" href="#unit-testing-contribs-with-custom-models" title="Permalink to this headline">¶</a></h3>
 <p>A special case is if you were to create a contribution to go to the <code class="docutils literal notranslate"><span class="pre">evennia/contrib</span></code> folder that
-uses its <a class="reference internal" href="../Concepts/New-Models.html"><span class="doc std std-doc">own database models</span></a>. The problem with this is that Evennia (and Django) will
+uses its <a class="reference internal" href="../Concepts/Models.html"><span class="doc std std-doc">own database models</span></a>. The problem with this is that Evennia (and Django) will
 only recognize models in <code class="docutils literal notranslate"><span class="pre">settings.INSTALLED_APPS</span></code>. If a user wants to use your contrib, they will
 be required to add your models to their settings file. But since contribs are optional you cannot
 add the model to Evennia’s central <code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code> file - this would always create your

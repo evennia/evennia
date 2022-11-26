@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Bootstrap Components and Utilities" href="Bootstrap-Components-and-Utilities.html" />
+    <link rel="next" title="Bootstrap frontend framework" href="Web-Bootstrap-Framework.html" />
     <link rel="prev" title="Webserver" href="Webserver.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,7 +30,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Bootstrap-Components-and-Utilities.html" title="Bootstrap Components and Utilities"
+          <a href="Web-Bootstrap-Framework.html" title="Bootstrap frontend framework"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Webserver.html" title="Webserver"
@@ -73,8 +73,8 @@
   <p class="topless"><a href="Webserver.html"
                         title="previous chapter">Webserver</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Bootstrap-Components-and-Utilities.html"
-                        title="next chapter">Bootstrap Components and Utilities</a></p>
+  <p class="topless"><a href="Web-Bootstrap-Framework.html"
+                        title="next chapter">Bootstrap frontend framework</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -108,10 +108,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="evennia-rest-api">
 <h1>Evennia REST API<a class="headerlink" href="#evennia-rest-api" title="Permalink to this headline">¶</a></h1>
 <p>Evennia makes its database accessible via a REST API found on
-<a class="reference external" href="http://localhost:4001/api">http://localhost:4001/api</a> if running locally with
-default setup. The API allows you to retrieve, edit and create resources from
-outside the game, for example with your own custom client or game editor.</p>
-<p>While you can view and learn about the api in the web browser, it is really
+<a class="reference external" href="http://localhost:4001/api">http://localhost:4001/api</a> if running locally with default setup. The API allows you to retrieve, edit and create resources from outside the game, for example with your own custom client or game editor.  While you can view and learn about the api in the web browser, it is really
 meant to be accessed in code, by other programs.</p>
 <p>The API is using <a class="reference external" href="https://www.django-rest-framework.org/">Django Rest Framework</a>. This automates the process
 of setting up <em>views</em> (Python code) to process the result of web requests.
@@ -156,14 +153,8 @@ website you’ll get a fancy graphical presentation of the available endpoints.<
 &quot;results&quot; : [{&quot;db_key&quot;: &quot;A rusty longsword&quot;, &quot;id&quot;: 57, &quot;db_location&quot;: 213, ...}]}
 </pre></div>
 </div>
-<p>In the above example, it now displays the objects inside the “results” array,
-while it has a “count” value for the number of total objects, and “next” and
-“previous” links for the next and previous page, if any.  This is called
-<a class="reference external" href="https://www.django-rest-framework.org/api-guide/pagination/">pagination</a>, and the link displays “limit” and “offset” as query
-parameters that can be added to the url to control the output.</p>
-<p>Other query parameters can be defined as <a class="reference external" href="https://www.django-rest-framework.org/api-guide/filtering/#filtering">filters</a> which allow you to
-further narrow the results. For example, to only get accounts with developer
-permissions:</p>
+<p>In the above example, it now displays the objects inside the “results” array, while it has a “count” value for the number of total objects, and “next” and “previous” links for the next and previous page, if any.  This is called <a class="reference external" href="https://www.django-rest-framework.org/api-guide/pagination/">pagination</a>, and the link displays “limit” and “offset” as query parameters that can be added to the url to control the output.</p>
+<p>Other query parameters can be defined as <a class="reference external" href="https://www.django-rest-framework.org/api-guide/filtering/#filtering">filters</a> which allow you to further narrow the results. For example, to only get accounts with developer permissions:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; response = requests.get(&quot;https://www.mygame.com/api/accounts/?permission=developer&quot;,
                             auth=(&quot;MyUserName&quot;, &quot;password123&quot;))
 &gt;&gt;&gt; response.json()
@@ -181,11 +172,7 @@ permissions:</p>
 {&quot;db_key&quot;: &quot;A shiny sword&quot;, &quot;id&quot;: 214, &quot;db_location&quot;: None, ...}
 </pre></div>
 </div>
-<p>Here we made a HTTP POST request to the <code class="docutils literal notranslate"><span class="pre">/api/objects</span></code> endpoint with the <code class="docutils literal notranslate"><span class="pre">db_key</span></code>
-we wanted. We got back info for the newly created object. You can now make
-another request with PUT (replace everything) or PATCH (replace only what you
-provide). By providing the id to the endpoint (<code class="docutils literal notranslate"><span class="pre">/api/objects/214</span></code>),
-we make sure to update the right sword:</p>
+<p>Here we made a HTTP POST request to the <code class="docutils literal notranslate"><span class="pre">/api/objects</span></code> endpoint with the <code class="docutils literal notranslate"><span class="pre">db_key</span></code> we wanted. We got back info for the newly created object. You can now make another request with PUT (replace everything) or PATCH (replace only what you provide). By providing the id to the endpoint (<code class="docutils literal notranslate"><span class="pre">/api/objects/214</span></code>), we make sure to update the right sword:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; data = {&quot;db_key&quot;: &quot;An even SHINIER sword&quot;, &quot;db_location&quot;: 50}
 &gt;&gt;&gt; response = requests.put(&quot;https://www.mygame.com/api/objects/214&quot;,
                             data=data, auth=(&quot;Anotherusername&quot;, &quot;mypassword&quot;))
@@ -236,7 +223,7 @@ copy over <code class="docutils literal notranslate"><span class="pre">evennia/w
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Bootstrap-Components-and-Utilities.html" title="Bootstrap Components and Utilities"
+          <a href="Web-Bootstrap-Framework.html" title="Bootstrap frontend framework"
              >next</a> |</li>
         <li class="right" >
           <a href="Webserver.html" title="Webserver"

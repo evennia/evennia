@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Using MUX as a Standard &#8212; Evennia 1.0-dev documentation</title>
+    <title>Inline functions &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Messagepath" href="Messagepath.html" />
-    <link rel="prev" title="Soft Code" href="Soft-Code.html" /> 
+    <link rel="next" title="Messages varying per receiver" href="Change-Message-Per-Receiver.html" />
+    <link rel="prev" title="Clickable links" href="Clickable-Links.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,14 +30,15 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Messagepath.html" title="Messagepath"
+          <a href="Change-Message-Per-Receiver.html" title="Messages varying per receiver"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Soft-Code.html" title="Soft Code"
+          <a href="Clickable-Links.html" title="Clickable links"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" accesskey="U">Core Concepts</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Using MUX as a Standard</a></li> 
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="Tags-Parsed-By-Evennia.html" accesskey="U">In-text tags parsed by Evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Inline functions</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -61,15 +62,15 @@
 </div>
 <script>$('#searchbox').show(0);</script>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Soft-Code.html"
-                        title="previous chapter">Soft Code</a></p>
+  <p class="topless"><a href="Clickable-Links.html"
+                        title="previous chapter">Clickable links</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Messagepath.html"
-                        title="next chapter">Messagepath</a></p>
+  <p class="topless"><a href="Change-Message-Per-Receiver.html"
+                        title="next chapter">Messages varying per receiver</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Concepts/Using-MUX-as-a-Standard.md.txt"
+      <li><a href="../_sources/Concepts/Inline-Functions.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -85,7 +86,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Using-MUX-as-a-Standard.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Inline-Functions.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -96,15 +97,29 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="using-mux-as-a-standard">
-<h1>Using MUX as a Standard<a class="headerlink" href="#using-mux-as-a-standard" title="Permalink to this headline">¶</a></h1>
-<p>Evennia allows for any command syntax. If you like the way DikuMUDs, LPMuds or MOOs handle things, you could emulate that with Evennia. If you are ambitious you could even design a whole new style, perfectly fitting your own dreams of the ideal game.</p>
-<p>We do offer a default however. The default Evennia setup tends to <em>resemble</em> <a class="reference external" href="https://www.tinymux.org/">MUX2</a>, and its cousins <a class="reference external" href="https://www.pennmush.org">PennMUSH</a>, <a class="reference external" href="https://github.com/TinyMUSH/TinyMUSH/wiki">TinyMUSH</a>, and <a class="reference external" href="http://www.rhostmush.com/">RhostMUSH</a>. While the reason for this similarity is partly historical, these codebases offer very mature feature sets for administration and building.</p>
-<p>Evennia is <em>not</em> a MUX system though. It works very differently in many ways. For example, Evennia
-deliberately lacks an online softcode language (a policy explained on our <a class="reference internal" href="Soft-Code.html"><span class="doc std std-doc">softcode policy
-page</span></a>). Evennia also does not shy from using its own syntax when deemed appropriate: the
-MUX syntax has grown organically over a long time and is, frankly, rather arcane in places.  All in
-all the default command syntax should at most be referred to as “MUX-like” or “MUX-inspired”.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="inline-functions">
+<h1>Inline functions<a class="headerlink" href="#inline-functions" title="Permalink to this headline">¶</a></h1>
+<aside class="sidebar">
+<p>For much more information about inline functions, see the <a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser</span></a> documentation</p>
+</aside>
+<p><em>Inline functions</em>, also known as <em>funcparser functions</em> are embedded strings on the form</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$funcname(args, kwargs)
+</pre></div>
+</div>
+<p>For example</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; say the answer is $eval(24 * 12)!
+You say, &quot;the answer is 288!&quot;
+</pre></div>
+</div>
+<p>General processing of outgoing strings is disabled by default. To activate inline-function parsing of outgoing strings, add this to your settings file:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED=True    
+</pre></div>
+</div>
+<p>Inline functions are provided by the <a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser</span></a>. It is enabled in a few other situations:</p>
+<ul class="simple">
+<li><p>Processing of <a class="reference internal" href="../Components/Prototypes.html"><span class="doc std std-doc">Prototypes</span></a>; these ‘prototypefuncs’ allow for prototypes whose values change dynamically upon spawning. For example, you would set <code class="docutils literal notranslate"><span class="pre">{key:</span> <span class="pre">'$choice([&quot;Bo&quot;,</span> <span class="pre">&quot;Anne&quot;,</span> <span class="pre">&quot;Tom&quot;])'</span></code>  and spawn a random-named character every time.</p></li>
+<li><p>Processing of strings to the <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> method. This allows for <a class="reference internal" href="Change-Message-Per-Receiver.html"><span class="doc std std-doc">sending different messages depending on who will see them</span></a>.</p></li>
+</ul>
 </section>
 
 
@@ -123,14 +138,15 @@ all the default command syntax should at most be referred to as “MUX-like” o
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Messagepath.html" title="Messagepath"
+          <a href="Change-Message-Per-Receiver.html" title="Messages varying per receiver"
              >next</a> |</li>
         <li class="right" >
-          <a href="Soft-Code.html" title="Soft Code"
+          <a href="Clickable-Links.html" title="Clickable links"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Using MUX as a Standard</a></li> 
+          <li class="nav-item nav-item-2"><a href="Tags-Parsed-By-Evennia.html" >In-text tags parsed by Evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Inline functions</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

@@ -1,10 +1,6 @@
 # The Inline Function Parser
 
-The [FuncParser](evennia.utils.funcparser.FuncParser) extracts and executes
-'inline functions'
-embedded in a string on the form `$funcname(args, kwargs)`. Under the hood, this will
-lead to a call to a Python function you control. The inline function call will be replaced by
-the return from the function.
+The [FuncParser](evennia.utils.funcparser.FuncParser) extracts and executes 'inline functions' embedded in a string on the form `$funcname(args, kwargs)`. Under the hood, this will lead to a call to a Python function you control. The inline function call will be replaced by the return from the function.
 
 ```python
 from evennia.utils.funcparser import FuncParser
@@ -378,7 +374,7 @@ The `caller` is required, it's the the object to do the access-check for. The `a
 These are used to implement actor-stance emoting. They are used by the
 [DefaultObject.msg_contents](evennia.objects.objects.DefaultObject.msg_contents) method
 by default. You can read a lot more about this on the page
-[Change messages per receiver](../Concepts/Change-Messages-Per-Receiver.md).
+[Change messages per receiver](../Concepts/Change-Message-Per-Receiver.md).
 
 On the parser side, all these inline functions require extra kwargs be passed into the parser
 (done by `msg_contents` by default):

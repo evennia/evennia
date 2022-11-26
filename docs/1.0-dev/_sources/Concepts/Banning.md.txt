@@ -7,10 +7,7 @@ admin tools to handle this, primarily `ban`, `unban`, and `boot`.
 
 ## Creating a ban
 
-Say we have a troublesome player "YouSuck" - this is a person that refuses common courtesy - an
-abusive
-and spammy account that is clearly created by some bored internet hooligan only to cause grief. You
-have tried to be nice. Now you just want this troll gone. 
+Say we have a troublesome player "YouSuck" - this is a person that refuses common courtesy - an abusive and spammy account that is clearly created by some bored internet hooligan only to cause grief. You have tried to be nice. Now you just want this troll gone. 
 
 ### Name ban
 
@@ -18,16 +15,13 @@ The easiest recourse is to block the account YouSuck from ever connecting again.
 
      ban YouSuck
 
-This will lock the name YouSuck (as well as 'yousuck' and any other capitalization combination), and
-next time they try to log in with this name the server will not let them!
+This will lock the name YouSuck (as well as 'yousuck' and any other capitalization combination), and next time they try to log in with this name the server will not let them! 
 
-You can also give a reason so you remember later why this was a good thing (the banned account will
-never see this)
+You can also give a reason so you remember later why this was a good thing (the banned account will never see this) 
 
      ban YouSuck:This is just a troll.
 
-If you are sure this is just a spam account, you might even consider deleting the player account
-outright:
+If you are sure this is just a spam account, you might even consider deleting the player account outright:
 
      accounts/delete YouSuck
 
@@ -36,9 +30,7 @@ change your mind you can always remove the block later whereas a deletion is per
 
 ### IP ban
 
-Just because you block YouSuck's name might not mean the trolling human behind that account gives
-up. They can just create a new account YouSuckMore and be back at it. One way to make things harder
-for them is to tell the server to not allow connections from their particular IP address.
+Just because you block YouSuck's name might not mean the trolling human behind that account gives up. They can just create a new account YouSuckMore and be back at it. One way to make things harder for them is to tell the server to not allow connections from their particular IP address.
 
 First, when the offending account is online, check which IP address they use. This you can do with
 the `who` command, which will show you something like this:
@@ -46,42 +38,31 @@ the `who` command, which will show you something like this:
      Account Name     On for     Idle     Room     Cmds     Host          
      YouSuckMore      01:12      2m       22       212      237.333.0.223 
 
-The "Host" bit is the IP address from which the account is connecting. Use this to define the ban
-instead of the name:
+The "Host" bit is the IP address from which the account is connecting. Use this to define the ban instead of the name:
 
      ban 237.333.0.223
 
-This will stop YouSuckMore connecting from their computer. Note however that IP address might change
-easily - either due to how the player's Internet Service Provider operates or by the user simply
-changing computers. You can make a more general ban by putting asterisks `*` as wildcards for the
-groups of three digits in the address. So if you figure out that !YouSuckMore mainly connects from
-237.333.0.223, 237.333.0.225, and 237.333.0.256 (only changes in their subnet), it might be an idea
-to put down a ban like this to include any number in that subnet:
+This will stop YouSuckMore connecting from their computer. Note however that IP address might change easily - either due to how the player's Internet Service Provider operates or by the user simply changing computers. You can make a more general ban by putting asterisks `*` as wildcards for the groups of three digits in the address. So if you figure out that !YouSuckMore mainly connects from `237.333.0.223`, `237.333.0.225`, and `237.333.0.256` (only changes in their subnet), it might be an idea to put down a ban like this to include any number in that subnet:
 
      ban 237.333.0.*
 
-You should combine the IP ban with a name-ban too of course, so the account YouSuckMore is truly
-locked regardless of where they connect from.
+You should combine the IP ban with a name-ban too of course, so the account YouSuckMore is truly locked regardless of where they connect from.
 
-Be careful with too general IP bans however (more asterisks above). If you are unlucky you could be
-blocking out innocent players who just happen to connect from the same subnet as the offender.
+Be careful with too general IP bans however (more asterisks above). If you are unlucky you could be blocking out innocent players who just happen to connect from the same subnet as the offender.
 
 ## Booting
 
-YouSuck is not really noticing all this banning yet though - and won't until having logged out and
-trying to log back in again. Let's help the troll along.
+YouSuck is not really noticing all this banning yet though - and won't until having logged out and trying to log back in again. Let's help the troll along.
 
      boot YouSuck
 
-Good riddance. You can give a reason for booting too (to be echoed to the player before getting
-kicked out).
+Good riddance. You can give a reason for booting too (to be echoed to the player before getting kicked out).
 
      boot YouSuck:Go troll somewhere else.
 
 ### Lifting a ban
 
-Use the `unban` (or `ban`) command without any arguments and you will see a list of all currently
-active bans:
+Use the `unban` (or `ban`) command without any arguments and you will see a list of all currently active bans:
 
     Active bans
     id   name/ip       date                      reason 
@@ -113,32 +94,21 @@ is not what you want in this case.
 - **unban 34** -- Remove ban with id #34
 
 - **cboot mychannel = thomas** -- Boot a subscriber from a channel you control
-- **clock mychannel = control:perm(Admin);listen:all();send:all()** -- Fine control of access to
-your channel using [lock definitions](../Components/Locks.md).
+- **clock mychannel = control:perm(Admin);listen:all();send:all()** -- Fine control of access to your channel using [lock definitions](../Components/Locks.md).
 
 Locking a specific command (like `page`) is accomplished like so: 
-1. Examine the source of the command. [The default `page` command class](
-https://github.com/evennia/evennia/blob/master/evennia/commands/default/comms.py#L686) has the lock
-string **"cmd:not pperm(page_banned)"**. This means that unless the player has the 'permission'
-"page_banned" they can use this command. You can assign any lock string to allow finer customization
-in your commands. You might look for the value of an [Attribute](../Components/Attributes.md) or [Tag](../Components/Tags.md), your
-current location etc.
-2. **perm/account thomas = page_banned** -- Give the account the 'permission' which causes (in this
-case) the lock to fail.
+1. Examine the source of the command. [The default `page` command class]( https://github.com/evennia/evennia/blob/master/evennia/commands/default/comms.py#L686) has the lock string **"cmd:not pperm(page_banned)"**. This means that unless the player has the 'permission' "page_banned" they can use this command. You can assign any lock string to allow finer customization in your commands. You might look for the value of an [Attribute](../Components/Attributes.md) or [Tag](../Components/Tags.md), your current location etc.
+2. **perm/account thomas = page_banned** -- Give the account the 'permission' which causes (in this case) the lock to fail.
 
-- **perm/del/account thomas = page_banned** -- Remove the given permission
-
+- **perm/del/account thomas = page_banned** -- Remove the given permission 
 - **tel thomas = jail** -- Teleport a player to a specified location or #dbref
-- **type thomas = FlowerPot** -- Turn an annoying player into a flower pot (assuming you have a
-`FlowerPot` typeclass ready)
+- **type thomas = FlowerPot** -- Turn an annoying player into a flower pot (assuming you have a `FlowerPot` typeclass ready)
 - **userpassword thomas = fooBarFoo** -- Change a user's password
 - **accounts/delete thomas** -- Delete a player account (not recommended, use **ban** instead)
 
-- **server** -- Show server statistics, such as CPU load, memory usage, and how many objects are
-cached
+- **server** -- Show server statistics, such as CPU load, memory usage, and how many objects are cached
 - **time** -- Gives server uptime, runtime, etc
 - **reload** -- Reloads the server without disconnecting anyone
 - **reset** -- Restarts the server, kicking all connections
 - **shutdown** -- Stops the server cold without it auto-starting again
-- **py** -- Executes raw Python code, allows for direct inspection of the database and account
-objects on the fly. For advanced users.
+- **py** -- Executes raw Python code, allows for direct inspection of the database and account objects on the fly. For advanced users.

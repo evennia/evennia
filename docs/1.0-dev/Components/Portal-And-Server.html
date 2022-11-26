@@ -105,15 +105,15 @@ inside the game or from the command line as described <a class="reference intern
 <p>The effect of this is that you can fully <code class="docutils literal notranslate"><span class="pre">reload</span></code> the Server and have players still connected to the game. One the server comes back up, it will re-connect to the Portal and re-sync all players as if nothing happened.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Internet│  ┌──────────┐ ┌─┐           ┌─┐ ┌─────────┐
         │  │Portal    │ │S│   ┌───┐   │S│ │Server   │
-    P   │  │          ├─┤e├───┤AMP├───┤e├─┤         │
-    l ──┼──┤ Telnet   │ │s│   │   │   │s│ │         │
-    a   │  │ Webclient├─┤s├───┤   ├───┤s├─┤ Game    │
-    y ──┼──┤ SSH      │ │i│   │   │   │i│ │ Database│
-    e   │  │ ...      ├─┤o├───┤   ├───┤o├─┤         │
-    r ──┼──┤          │ │n│   │   │   │n│ │         │
+    P   │  │          │ │e│   │AMP│   │e│ │         │
+    l ──┼──┤ Telnet   ├─┤s├───┤   ├───┤s├─┤         │
+    a   │  │ Webclient│ │s│   │   │   │s│ │ Game    │
+    y ──┼──┤ SSH      ├─┤i├───┤   ├───┤i├─┤ Database│
+    e   │  │ ...      │ │o│   │   │   │o│ │         │
+    r ──┼──┤          ├─┤n├───┤   ├───┤n├─┤         │
     s   │  │          │ │s│   └───┘   │s│ │         │
         │  └──────────┘ └─┘           └─┘ └─────────┘
-        │Evennia 
+        │Evennia
 </pre></div>
 </div>
 <p>The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection. This allows the two programs to communicate seamlessly on the same machine.</p>

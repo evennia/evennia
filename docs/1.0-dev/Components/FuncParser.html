@@ -119,11 +119,7 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="the-inline-function-parser">
 <h1>The Inline Function Parser<a class="headerlink" href="#the-inline-function-parser" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser" title="evennia.utils.funcparser.FuncParser"><span class="xref myst py py-class">FuncParser</span></a> extracts and executes
-‘inline functions’
-embedded in a string on the form <code class="docutils literal notranslate"><span class="pre">$funcname(args,</span> <span class="pre">kwargs)</span></code>. Under the hood, this will
-lead to a call to a Python function you control. The inline function call will be replaced by
-the return from the function.</p>
+<p>The <a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser" title="evennia.utils.funcparser.FuncParser"><span class="xref myst py py-class">FuncParser</span></a> extracts and executes ‘inline functions’ embedded in a string on the form <code class="docutils literal notranslate"><span class="pre">$funcname(args,</span> <span class="pre">kwargs)</span></code>. Under the hood, this will lead to a call to a Python function you control. The inline function call will be replaced by the return from the function.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
 
 <span class="k">def</span> <span class="nf">_power_callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -470,7 +466,7 @@ match; if <code class="docutils literal notranslate"><span class="pre">return_li
 <p>These are used to implement actor-stance emoting. They are used by the
 <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">DefaultObject.msg_contents</span></a> method
 by default. You can read a lot more about this on the page
-<a class="reference internal" href="../Concepts/Change-Messages-Per-Receiver.html"><span class="doc std std-doc">Change messages per receiver</span></a>.</p>
+<a class="reference internal" href="../Concepts/Change-Message-Per-Receiver.html"><span class="doc std std-doc">Change messages per receiver</span></a>.</p>
 <p>On the parser side, all these inline functions require extra kwargs be passed into the parser
 (done by <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> by default):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">caller</span><span class="o">=&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
