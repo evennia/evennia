@@ -2,6 +2,7 @@
 Godot Websocket - ChrisLR 2022
 
 This file contains the code necessary to dedicate a port to communicate with Godot via Websockets.
+It uses the plugin system and should be plugged via settings as detailed in the readme.
 """
 import json
 
