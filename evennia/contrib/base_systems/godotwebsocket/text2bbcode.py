@@ -263,6 +263,15 @@ class TextToBBCODEparser(TextToHTMLparser):
     """
 
     def convert_urls(self, text):
+        """
+        Converts urls within text to bbcode style
+
+        Args:
+            text (str): Text to parse
+
+        Returns:
+             text (str): Processed text
+        """
         # Converts to bbcode styled urls
         return self.re_url.sub(r'[url=\1]\1[/url]\2', text)
 
