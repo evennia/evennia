@@ -96,7 +96,6 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         callback for when the URL is gotten
         """
         data = json.loads(str(payload, "utf-8"))
-        logger.log_info(f"payload: {data}")
         if url := data.get("url"):
             self.gateway = f"{url}/?v={DISCORD_API_VERSION}&encoding=json".encode("utf-8")
             useragent = kwargs.pop("useragent", DISCORD_USER_AGENT)
@@ -485,10 +484,8 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
 
         """
         action_type = data.get("t", "UNKNOWN")
-        logger.log_msg(f"DISCORD: Received an action of type {action_type}.")
 
         if action_type == "MESSAGE_CREATE":
-            logger.log_msg(str(data))
             data = data["d"]
             if data["author"]["id"] == self.discord_id:
                 return

@@ -620,12 +620,7 @@ class DiscordBot(Bot):
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         # these will be made available as properties on the protocol factory
         configdict = {"uid": self.dbid}
-        logger.log_info("starting discord bot session")
         _SESSIONS.start_bot_session(self.factory_path, configdict)
-
-    def at_msg_send(self, **kwargs):
-        "Skip this to avoid looping, presumably"
-        pass
 
     def at_pre_channel_msg(self, message, channel, senders=None, **kwargs):
         """
