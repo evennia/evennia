@@ -34,12 +34,11 @@ from django.core.validators import validate_email as django_validate_email
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
+from evennia.utils import logger
 from simpleeval import simple_eval
 from twisted.internet import reactor, threads
 from twisted.internet.defer import returnValue  # noqa - used as import target
 from twisted.internet.task import deferLater
-
-from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
@@ -51,6 +50,7 @@ ENCODINGS = settings.ENCODINGS
 _TASK_HANDLER = None
 _TICKER_HANDLER = None
 _STRIP_UNSAFE_TOKENS = None
+_ANSISTRING = None
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -236,6 +236,13 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         justified (str): The justified and indented block of text.
 
     """
+    # we need to retain ansitrings
+    global _ANSISTRING
+    if not _ANSISTRING:
+        from evennia.utils.ansi import ANSIString as _ANSISTRING
+
+    is_ansi = isinstance(text, _ANSISTRING)
+    lb = _ANSISTRING("\n") if is_ansi else "\n"
 
     def _process_line(line):
         """
@@ -244,7 +251,9 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         distribute odd spaces to one of the gaps.
         """
         line_rest = width - (wlen + ngaps)
-        gap = " "  # minimum gap between words
+
+        gap = _ANSISTRING(" ") if is_ansi else " "
+
         if line_rest > 0:
             if align == "l":
                 if line[-1] == "\n\n":
@@ -284,23 +293,25 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
             else:
                 line = crop(line, width=width, suffix="")
             abs_lines.append(line)
-        return "\n".join(abs_lines)
+        return lb.join(abs_lines)
 
     # all other aligns requires splitting into paragraphs and words
 
     # split into paragraphs and words
-    paragraphs = re.split("\n\s*?\n", text, re.MULTILINE)
+    paragraphs = [text]  # re.split("\n\s*?\n", text, re.MULTILINE)
     words = []
     for ip, paragraph in enumerate(paragraphs):
         if ip > 0:
             words.append(("\n", 0))
         words.extend((word, len(word)) for word in paragraph.split())
-    ngaps, wlen, line = 0, 0, []
 
     if not words:
         # Just whitespace!
         return sp * width
 
+    ngaps = 0
+    wlen = 0
+    line = []
     lines = []
 
     while words:
@@ -328,8 +339,8 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     if line:  # catch any line left behind
         lines.append(_process_line(line))
     indentstring = sp * indent
-    out = "\n".join([indentstring + line for line in lines])
-    return "\n".join([indentstring + line for line in lines])
+    out = lb.join([indentstring + line for line in lines])
+    return lb.join([indentstring + line for line in lines])
 
 
 def columnize(string, columns=2, spacing=4, align="l", width=None):

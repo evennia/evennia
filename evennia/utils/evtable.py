@@ -118,7 +118,6 @@ from copy import copy, deepcopy
 from textwrap import TextWrapper
 
 from django.conf import settings
-
 from evennia.utils.ansi import ANSIString
 from evennia.utils.utils import display_len as d_len
 from evennia.utils.utils import is_iter, justify

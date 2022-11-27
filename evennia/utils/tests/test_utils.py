@@ -11,12 +11,11 @@ from datetime import datetime, timedelta
 
 import mock
 from django.test import TestCase
-from parameterized import parameterized
-from twisted.internet import task
-
 from evennia.utils import utils
 from evennia.utils.ansi import ANSIString
 from evennia.utils.test_resources import BaseEvenniaTest
+from parameterized import parameterized
+from twisted.internet import task
 
 
 class TestIsIter(TestCase):
@@ -759,3 +758,17 @@ class TestJustify(TestCase):
     def test_center_justify_small(self, width, expected):
         result = utils.justify("Task ID", width, align="c", indent=0, fillchar=" ")
         self.assertEqual(expected, result)
+
+    def test_justify_ansi(self):
+        """
+        Justify ansistring
+
+        """
+
+        from evennia.utils.ansi import ANSI_RED
+
+        line = ANSIString("This is a |rred|n word")
+
+        result = utils.justify(line, align="c", width=30)
+
+        self.assertIn(ANSI_RED, str(result))
