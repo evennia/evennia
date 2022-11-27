@@ -44,7 +44,7 @@ Evennia has a [contrib](./Contribs-Overview.md) directory which contains optiona
 
     It's often a good idea to import useful resources in `__init__.py` to make it easier to import them.
 - Your code should abide by the [Evennia Style Guide](../Coding/Evennia-Code-Style.md). Write it to be easy to read.
-- Your contribution _must_ be covered by [unit tests](../Coding/Unit-Testing.md). Put your tests in a module `tests.py` under your contrib folder (as seen above) - Evennia will find them automatically.
+- Your contribution _must_ be covered by [unit tests](../Coding/Unit-Testing.md). Put your tests in a module `tests.py` under your contrib folder (as seen above) - Evennia will find them automatically. Use a folder `tests/` to group your tests if there are many of them across multiple modules.
 -  The `README.md` file will be parsed and converted into a document linked from [the contrib overview page](./Contribs-Overview.md). It needs to be on the following form:
 
     ```markdown
