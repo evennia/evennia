@@ -542,9 +542,9 @@ It is a common design pattern in RPGs, particularly action games.
 
 ### `character_creator`
 
-_Commands for managing and initiating an in-game character-creation menu._
+_Contribution by InspectorCaracal, 2022_
 
-Contribution by InspectorCaracal, 2022
+Commands for managing and initiating an in-game character-creation menu.
 
 [Read the documentation](./Contrib-Character-Creator.md) - [Browse the Code](evennia.contrib.rpg.character_creator)
 
