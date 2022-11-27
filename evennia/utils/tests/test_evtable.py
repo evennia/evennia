@@ -330,3 +330,20 @@ class TestEvTable(EvenniaTestCase):
         """
 
         self._validate(expected, str(table))
+
+    def test_color_transfer(self):
+        """
+        Testing https://github.com/evennia/evennia/issues/2986
+
+        EvTable swallowing color tags.
+
+        """
+        from evennia.utils.ansi import ANSI_CYAN, ANSI_RED
+
+        row1 = "|cAn entire colored row|n"
+        row2 = "A single |rred|n word"
+
+        table = evtable.EvTable(table=[[row1, row2]])
+
+        self.assertIn(ANSI_RED, str(table))
+        self.assertIn(ANSI_CYAN, str(table))
