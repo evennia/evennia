@@ -1,7 +1,7 @@
 # Default Commands
 
 The full set of default Evennia commands currently contains 88 commands in 9 source
-files. Our policy for adding default commands is outlined [here](../Concepts/Using-MUX-as-a-Standard.md). The
+files. Our policy for adding default commands is outlined [here](../Coding/Default-Command-Syntax.md). The
 [Commands](./Commands.md) documentation explains how Commands work as well as how to make new or customize
 existing ones.
 

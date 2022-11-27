@@ -2,14 +2,11 @@
 
 
 For most games it is a good idea to restrict what people can do. In Evennia such restrictions are
-applied and checked by something called *locks*. All Evennia entities ([Commands](./Commands.md),
-[Objects](./Objects.md), [Scripts](./Scripts.md), [Accounts](./Accounts.md), [Help System](./Help-System.md),
-[messages](./Msg.md) and [channels](./Channels.md)) are accessed through locks.
+applied and checked by something called *locks*. All Evennia entities ([Commands](./Commands.md), [Objects](./Objects.md), [Scripts](./Scripts.md), [Accounts](./Accounts.md), [Help System](./Help-System.md), [messages](./Msg.md) and [channels](./Channels.md)) are accessed through locks. 
 
 A lock can be thought of as an "access rule" restricting a particular use of an Evennia entity.
 Whenever another entity wants that kind of access the lock will analyze that entity in different
-ways to determine if access should be granted or not. Evennia implements a "lockdown" philosophy -
-all entities are inaccessible unless you explicitly define a lock that allows some or full access.
+ways to determine if access should be granted or not. Evennia implements a "lockdown" philosophy - all entities are inaccessible unless you explicitly define a lock that allows some or full access.
 
 Let's take an example: An object has a lock on itself that restricts how people may "delete" that
 object. Apart from knowing that it restricts deletion, the lock also knows that only players with
@@ -18,7 +15,7 @@ on the object, the `delete` command makes sure to check if this player is really
 It calls the lock, which in turn checks if the player's id is `34`. Only then will it allow `delete`
 to go on with its job.
 
-## Setting and checking a lock
+## Working with locks
 
 The in-game command for setting locks on objects is `lock`:
 
@@ -46,7 +43,7 @@ command:
          return
 ```
 
-## Defining locks
+### Defining locks
 
 Defining a lock (i.e. an access restriction) in Evennia is done by adding simple strings of lock
 definitions to the object's `locks` property using `obj.locks.add()`.
@@ -92,32 +89,27 @@ the default command set) actually checks for, as in the example of `delete` abov
 
 Below are the access_types checked by the default commandset.
 
-- [Commands](./Commands.md)
-  - `cmd` - this defines who may call this command at all.
-- [Objects](./Objects.md):
-  - `control` - who is the "owner" of the object. Can set locks, delete it etc. Defaults to the
-creator of the object.
-  - `call` - who may call Object-commands stored on this Object except for the Object itself. By
-default, Objects share their Commands with anyone in the same location (e.g. so you can 'press' a
-`Button` object in the room). For Characters and Mobs (who likely only use those Commands for
-themselves and don't want to share them) this should usually be turned off completely, using
-something like `call:false()`.
-  - `examine` - who may examine this object's properties.
-  - `delete` - who may delete the object.
-  - `edit` - who may edit properties and attributes of the object.
-  - `view` - if the `look` command will display/list this object in descriptions
+- [Commands](./Commands.md) 
+    - `cmd` - this defines who may call this command at all.
+- [Objects](./Objects.md): 
+    - `control` - who is the "owner" of the object. Can set locks, delete it etc. Defaults to the creator of the object.
+    - `call` - who may call Object-commands stored on this Object except for the Object itself. By default, Objects share their Commands with anyone in the same location (e.g. so you can 'press' a `Button` object in the room). For Characters and Mobs (who likely only use those Commands for themselves and don't want to share them) this should usually be turned off completely, using something like `call:false()`.
+    - `examine` - who may examine this object's properties.
+   - `delete` - who may delete the object.
+   - `edit` - who may edit properties and attributes of the object.
+   - `view` - if the `look` command will display/list this object in descriptions
     and if you will be able to see its description. Note that if
     you target it specifically by name, the system will still find it, just
     not be able to look at it. See `search` lock to completely hide the item.
-  - `search` - this controls if the object can be found with the
+   - `search` - this controls if the object can be found with the
     `DefaultObject.search` method (usually referred to with `caller.search`
     in Commands). This is how to create entirely 'undetectable' in-game objects.
     If not setting this lock excplicitly, all objects are assumed searchable.
     Note that if you are aiming to make some _permanently invisible game system,
     using a [Script](./Scripts.md) is a better bet.
-  - `get`- who may pick up the object and carry it around.
-  - `puppet` - who may "become" this object and control it as their "character".
-  - `attrcreate` - who may create new attributes on the object (default True)
+   - `get`- who may pick up the object and carry it around.
+   - `puppet` - who may "become" this object and control it as their "character".
+   - `attrcreate` - who may create new attributes on the object (default True)
 - [Characters](./Objects.md#characters):
   - Same as for Objects
 - [Exits](./Objects.md#exits):
@@ -141,15 +133,11 @@ boot listeners etc.
   - `examine` - who may view this help entry (usually everyone)
   - `edit` - who may edit this help entry.
 
-So to take an example, whenever an exit is to be traversed, a lock of the type *traverse* will be
-checked. Defining a suitable lock type for an exit object would thus involve a lockstring `traverse:
-<lock functions>`.
+So to take an example, whenever an exit is to be traversed, a lock of the type *traverse* will be checked. Defining a suitable lock type for an exit object would thus involve a lockstring `traverse: <lock functions>`.
 
 ### Custom access_types
 
-As stated above, the `access_type` part of the lock is simply the 'name' or 'type' of the lock. The
-text is an arbitrary string that must be unique for an object. If adding a lock with the same
-`access_type` as one that already exists on the object, the new one override the old one.
+As stated above, the `access_type` part of the lock is simply the 'name' or 'type' of the lock. The text is an arbitrary string that must be unique for an object. If adding a lock with the same `access_type` as one that already exists on the object, the new one override the old one. 
 
 For example, if you wanted to create a bulletin board system and wanted to restrict who can either
 read a board or post to a board. You could then define locks such as:
@@ -172,7 +160,7 @@ trying to read the board):
 
 ### Lock functions
 
-A lock function is a normal Python function put in a place Evennia looks for such functions. The
+A _lock function_ is a normal Python function put in a place Evennia looks for such functions. The
 modules Evennia looks at is the list `settings.LOCK_FUNC_MODULES`. *All functions* in any of those
 modules will automatically be considered a valid lock function. The default ones are found in
 `evennia/locks/lockfuncs.py` and you can start adding your own in `mygame/server/conf/lockfuncs.py`.
@@ -240,7 +228,7 @@ permissions and dbrefs of *Accounts*, not on Characters.
 - `serversetting(settingname, value)` - Only returns True if Evennia has a given setting or a
 setting set to a given value.
 
-## Checking simple strings
+### Checking simple strings
 
 Sometimes you don't really need to look up a certain lock, you just want to check a lockstring. A
 common use is inside Commands, in order to check if a user has a certain permission. The lockhandler
@@ -253,10 +241,9 @@ has a method `check_lockstring(accessing_obj, lockstring, bypass_superuser=False
          return
 ```
 
-Note here that the `access_type` can be left to a dummy value since this method does not actually do
-a Lock lookup.
+Note here that the `access_type` can be left to a dummy value since this method does not actually do a Lock lookup. 
 
-## Default locks
+### Default locks
 
 Evennia sets up a few basic locks on all new objects and accounts (if we didn't, noone would have
 any access to anything from the start).  This is all defined in the root [Typeclasses](./Typeclasses.md)
@@ -307,7 +294,7 @@ This is how the `create` command sets up new objects. In sequence, this permissi
 owner of this object be the creator (the one  running `create`). Builders may examine the object
 whereas only Admins and the creator may delete it. Everyone can pick it up.
 
-## A complete example of setting locks on an object
+### A complete example of setting locks on an object
 
 Assume we have two objects - one is ourselves (not superuser) and the other is an [Object](./Objects.md)
 called `box`.
@@ -374,14 +361,6 @@ If you wanted to set this up in python code, it would look something like this:
 
 ## On Django's permission system
 
-Django also implements a comprehensive permission/security system of its own.  The reason we don't
-use that is because it is app-centric (app in the Django sense).  Its permission strings are of the
-form `appname.permstring` and it automatically adds three of them for each database model in the app
-- for the app evennia/object this would be for example 'object.create', 'object.admin' and
-'object.edit'. This makes a lot of sense for a web application, not so much for a MUD, especially
-when we try to hide away as much of the underlying architecture as possible.
+Django also implements a comprehensive permission/security system of its own.  The reason we don't use that is because it is app-centric (app in the Django sense).  Its permission strings are of the form `appname.permstring` and it automatically adds three of them for each database model in the app - for the app evennia/object this would be for example 'object.create', 'object.admin' and 'object.edit'. This makes a lot of sense for a web application, not so much for a MUD, especially when we try to hide away as much of the underlying architecture as possible. 
 
-The django permissions are not completely gone however. We use it for validating passwords during
-login. It is also used exclusively for managing Evennia's web-based admin site, which is a graphical
-front-end for the database of Evennia. You edit and assign such permissions directly from the web
-interface. It's stand-alone from the permissions described above.
+The django permissions are not completely gone however. We use it for validating passwords during login. It is also used exclusively for managing Evennia's web-based admin site, which is a graphical front-end for the database of Evennia. You edit and assign such permissions directly from the web interface. It's stand-alone from the permissions described above.

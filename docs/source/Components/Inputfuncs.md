@@ -1,34 +1,49 @@
 # Inputfuncs
 
+```
+          Internet│
+            ┌─────┐ │                                   ┌────────┐
+┌──────┐    │Text │ │  ┌────────────┐    ┌─────────┐    │Command │
+│Client├────┤JSON ├─┼──►commandtuple├────►Inputfunc├────►DB query│
+└──────┘    │etc  │ │  └────────────┘    └─────────┘    │etc     │
+            └─────┘ │                                   └────────┘
+                    │Evennia
 
-An *inputfunc* is an Evennia function that handles a particular input (an [inputcommand](../Concepts/OOB.md)) from
-the client. The inputfunc is the last destination for the inputcommand along the [ingoing message
-path](../Concepts/Messagepath.md#the-ingoing-message-path). The inputcommand always has the form `(commandname,
-(args), {kwargs})` and Evennia will use this to try to find and call an inputfunc on the form
+```
+
+The Inputfunc is the last fixed step on the [Ingoing message path](../Concepts/Messagepath.md#ingoing-message-path). The available Inputfuncs are looked up and called using `commandtuple` structures sent from the client. The job of the Inputfunc is to perform whatever action is requested, by firing a Command, performing a database query or whatever is needed.
+
+Given a `commandtuple` on the form 
+
+    (commandname, (args), {kwargs})
+
+Evennia will try to find and call an Inputfunc on the form 
 
 ```python
-    def commandname(session, *args, **kwargs):
-        # ...
+def commandname(session, *args, **kwargs):
+    # ...
 
 ```
 Or, if no match was found, it will call an inputfunc named "default" on this form
 
 ```python
-    def default(session, cmdname, *args, **kwargs):
-        # cmdname is the name of the mismatched inputcommand
+def default(session, cmdname, *args, **kwargs):
+    # cmdname is the name of the mismatched inputcommand
 
 ```
 
+The default inputfuncs are found in [evennia/server/inputfuncs.py](evennia.server.inputfuncs). 
+
 ## Adding your own inputfuncs
 
-This is simple. Add a function on the above form to `mygame/server/conf/inputfuncs.py`. Your
-function must be in the global, outermost scope of that module and not start with an underscore
-(`_`) to be recognized as an inputfunc.  Reload the server. That's it. To overload a default
-inputfunc (see below), just add a function with the same name.
+1. Add a function on the above form to `mygame/server/conf/inputfuncs.py`. Your function must be in the global, outermost scope of that module and not start with an underscore (`_`) to be recognized as an inputfunc.  i
+2. `reload` the server. 
 
-The modules Evennia looks into for inputfuncs are defined in the list `settings.INPUT_FUNC_MODULES`.
-This list will be imported from left to right and later imported functions will replace earlier
-ones.
+To overload a default inputfunc (see below), just add a function with the same name. You can also extend the settings-list `INPUT_FUNC_MODULES`.
+
+    INPUT_FUNC_MODULES += ["path.to.my.inputfunc.module"]
+
+All global-level functions with a name not starting with `_` in these module(s) will be used by Evennia as an inputfunc. The list is imported from left to right, so latter imported functions will replace earlier ones.
 
 ## Default inputfuncs
 
@@ -40,23 +55,19 @@ Evennia defines a few default inputfuncs to handle the common cases. These are d
  - Input: `("text", (textstring,), {})`
  - Output: Depends on Command triggered
 
-This is the most common of inputcommands, and the only one supported by every traditional mud. The
-argument is usually what the user sent from their command line. Since all text input from the user
-like this is considered a [Command](./Commands.md), this inputfunc will do things like nick-replacement
-and then pass on the input to the central Commandhandler.
+This is the most common of inputs, and the only one supported by every traditional mud. The argument is usually what the user sent from their command line. Since all text input from the user
+like this is considered a [Command](./Commands.md), this inputfunc will do things like nick-replacement and then pass on the input to the central Commandhandler.
 
 ### echo
 
  - Input: `("echo", (args), {})`
  - Output: `("text", ("Echo returns: %s" % args), {})`
 
-This is a test input, which just echoes the argument back to the session as text. Can be used for
-testing custom client input.
+This is a test input, which just echoes the argument back to the session as text. Can be used for testing custom client input.
 
 ### default
 
-The default function, as mentioned above, absorbs all non-recognized inputcommands. The default one
-will just log an error.
+The default function, as mentioned above, absorbs all non-recognized inputcommands. The default one will just log an error.
 
 ### client_options
 
@@ -85,24 +96,21 @@ as an outputcommand `("client_options", (), {key=value, ...})`-
  - nomarkup (bool): Strip all text tags
  - raw (bool): Leave text tags unparsed 
 
-> Note that there are two GMCP aliases to this inputfunc - `hello` and `supports_set`, which means
-it will be accessed via the GMCP `Hello` and `Supports.Set` instructions assumed by some clients.
+> Note that there are two GMCP aliases to this inputfunc - `hello` and `supports_set`, which means it will be accessed via the GMCP `Hello` and `Supports.Set` instructions assumed by some clients.
 
 ### get_client_options
 
  - Input: `("get_client_options, (), {key:value, ...})`
  - Output: `("client_options, (), {key:value, ...})`
 
-This is a convenience wrapper that retrieves the current options by sending "get" to
-`client_options` above.
+This is a convenience wrapper that retrieves the current options by sending "get" to `client_options` above.
 
 ### get_inputfuncs
 
 - Input: `("get_inputfuncs", (), {})`
 - Output: `("get_inputfuncs", (), {funcname:docstring, ...})`
  
-Returns an outputcommand on the form `("get_inputfuncs", (), {funcname:docstring, ...})` - a list of
-all the available inputfunctions along with their docstrings.
+Returns an outputcommand on the form `("get_inputfuncs", (), {funcname:docstring, ...})` - a list of all the available inputfunctions along with their docstrings. 
 
 ### login
 
@@ -111,16 +119,14 @@ all the available inputfunctions along with their docstrings.
  - Input: `("login", (username, password), {})`
  - Output: Depends on login hooks
 
-This performs the inputfunc version of a login operation on the current Session.
+This performs the inputfunc version of a login operation on the current Session. It's meant to be used by custom client setups.
 
 ### get_value
 
 Input: `("get_value", (name, ), {})`
 Output: `("get_value", (value, ), {})`
 
-Retrieves a value from the Character or Account currently controlled by this Session. Takes one
-argument, This will only accept particular white-listed names, you'll need to overload the function
-to expand. By default the following values can be retrieved:
+Retrieves a value from the Character or Account currently controlled by this Session. Takes one argument, This will only accept particular white-listed names, you'll need to overload the function to expand. By default the following values can be retrieved:  
 
  - "name" or "key": The key of the Account or puppeted Character.
  - "location": Name of the current location, or "None".
@@ -128,17 +134,11 @@ to expand. By default the following values can be retrieved:
 
 ### repeat 
 
- - Input: `("repeat", (), {"callback":funcname, 
-                       "interval": secs, "stop": False})` 
+ - Input: `("repeat", (), {"callback":funcname,  "interval": secs, "stop": False})` 
  - Output: Depends on the repeated function. Will return `("text", (repeatlist),{}` with a list of
 accepted names if given an unfamiliar callback name.
 
-This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes
-this will set up a [Ticker](./TickerHandler.md). Only previously acceptable functions are possible to
-repeat-call in this way, you'll need to overload this inputfunc to add the ones you want to offer.
-By default only two example functions are allowed, "test1" and "test2", which will just echo a text
-back at the given interval. Stop the repeat by sending `"stop": True` (note that you must include
-both the callback name and interval for Evennia to know what to stop).
+This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes this will set up a [Ticker](./TickerHandler.md). Only previously acceptable functions are possible to repeat-call in this way, you'll need to overload this inputfunc to add the ones you want to offer. By default only two example functions are allowed, "test1" and "test2", which will just echo a text back at the given interval. Stop the repeat by sending `"stop": True` (note that you must include both the callback name and interval for Evennia to know what to stop).
 
 ### unrepeat
 
@@ -153,20 +153,15 @@ This is a convenience wrapper for sending "stop" to the `repeat` inputfunc.
  - Input: `("monitor", (), ("name":field_or_argname, stop=False)`
  - Output (on change): `("monitor", (), {"name":name, "value":value})`
 
-This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute
-changes in any way, the outputcommand will be sent. This is using the
-[MonitorHandler](./MonitorHandler.md) behind the scenes. Pass the "stop" key to stop monitoring. Note
-that you must supply the name also when stopping to let the system know which monitor should be
-cancelled.
+This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute changes in any way, the outputcommand will be sent. This is using the [MonitorHandler](./MonitorHandler.md) behind the scenes. Pass the "stop" key to stop monitoring. Note that you must supply the name also when stopping to let the system know which monitor should be cancelled.
 
-Only fields/attributes in a whitelist are allowed to be used, you have to overload this function to
-add more. By default the following fields/attributes can be monitored:
+Only fields/attributes in a whitelist are allowed to be used, you have to overload this function to add more. By default the following fields/attributes can be monitored:
 
  - "name": The current character name 
  - "location": The current location
  - "desc": The description Argument
 
-## unmonitor
+### unmonitor
 
  - Input: `("unmonitor", (), {"name":name})`
  - Output: None

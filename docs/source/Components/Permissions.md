@@ -1,38 +1,43 @@
 # Permissions
 
-A *permission* is simply a text string stored in the handler `permissions` on `Objects`
-and `Accounts`. Think of it as a specialized sort of [Tag](./Tags.md) - one specifically dedicated
-to access checking. They are thus often tightly coupled to [Locks](./Locks.md).
-Permission strings are not case-sensitive, so "Builder" is the same as "builder"
-etc.
+A *permission* is simply a text string stored in the handler `permissions` on `Objects` and `Accounts`. Think of it as a specialized sort of [Tag](./Tags.md) - one specifically dedicated to access checking. They are thus often tightly coupled to [Locks](./Locks.md). Permission strings are not case-sensitive, so "Builder" is the same as "builder" etc.
 
-Permissions are used as a convenient way to structure access levels and
-hierarchies. It is set by the `perm` command and checked by the
-`PermissionHandler.check` method as well as by the specially the `perm()` and
-`pperm()` [lock functions](./Locks.md).
+Permissions are used as a convenient way to structure access levels and hierarchies. It is set by the `perm` command and checked by the `PermissionHandler.check` method as well as by the specially the `perm()` and `pperm()` [lock functions](./Locks.md).
 
-All new accounts are given a default set of permissions defined by
-`settings.PERMISSION_ACCOUNT_DEFAULT`.
+All new accounts are given a default set of permissions defined by `settings.PERMISSION_ACCOUNT_DEFAULT`.
 
-## Managing Permissions
+## The super user
+
+There are strictly speaking two types of users in Evennia, the *super user* and everyone else. The
+superuser is the first user you create, object `#1`. This is the all-powerful server-owner account.
+Technically the superuser not only has access to everything, it *bypasses* the permission checks
+entirely. 
+
+This makes the superuser impossible to lock out, but makes it unsuitable to actually play-
+test the game's locks and restrictions with (see `quell` below). Usually there is no need to have
+but one superuser.
+
+## Working with Permissions
 
 In-game, you use the `perm` command to add and remove permissions
-j
-     perm/account Tommy = Builders
-     perm/account/del Tommy = Builders
 
-Note the use of the `/account` switch. It means you assign the permission to the
-[Accounts](./Accounts.md) Tommy instead of any [Character](./Objects.md) that also
-happens to be named "Tommy".
+     > perm/account Tommy = Builders
+     > perm/account/del Tommy = Builders
 
-There can be reasons for putting permissions on Objects (especially NPCS), but
-for granting powers to players, you should usually put the permission on the
-`Account` - this guarantees that they are kept, *regardless*
-of which Character they are currently puppeting. This is especially important to
-remember when assigning permissions from the *hierarchy tree* (see below), as an
-Account's permissions will overrule that of its character. So to be sure to
-avoid confusion you should generally put hierarchy permissions on the Account,
-not on their Characters (but see also [quelling](#quelling)).
+Note the use of the `/account` switch. It means you assign the permission to the [Accounts](./Accounts.md) Tommy instead of any [Character](./Objects.md) that also happens to be named "Tommy". If you don't want to use `/account`, you can also prefix the name with `*` to indicate an Account is sought: 
+
+    > perm *Tommy = Builders
+    
+There can be reasons for putting permissions on Objects (especially NPCS), but for granting powers to players, you should usually put the permission on the `Account` - this guarantees that they are kept, *regardless* of which Character they are currently puppeting. 
+
+This is especially important to remember when assigning permissions from the *hierarchy tree* (see below), as an Account's permissions will overrule that of its character. So to be sure to avoid confusion you should generally put hierarchy permissions on the Account, not on their Characters/puppets.
+
+If you _do_ want to start using the permissions on your _puppet_, you use `quell`
+
+    > quell 
+    > unquell   
+
+This drops to the permissions on the puppeted object, and then back to your Account-permissions again. Quelling is useful if you want to try something "as" someone else. It's also useful for superusers since this makes them susceptible to locks (so they can test things).
 
 In code, you add/remove Permissions via the `PermissionHandler`, which sits on all
 typeclassed entities as the property `.permissions`:
@@ -44,8 +49,7 @@ typeclassed entities as the property `.permissions`:
     obj.permissions.remove("Blacksmith")
 ```
 
-
-## The permission hierarchy
+### The permission hierarchy
 
 Selected permission strings can be organized in a *permission hierarchy* by editing the tuple
 `settings.PERMISSION_HIERARCHY`.  Evennia's default permission hierarchy is as follows
@@ -57,35 +61,19 @@ Selected permission strings can be organized in a *permission hierarchy* by edit
      Admin            # can administrate accounts
      Developer        # like superuser but affected by locks (highest)
 
-(Besides being case-insensitive, hierarchical permissions also understand the
-plural form, so you could use `Developers` and `Developer` interchangeably).
+(Besides being case-insensitive, hierarchical permissions also understand the plural form, so you could use `Developers` and `Developer` interchangeably).
 
-> There is also a `Guest` level below `Player` that is only active if `settings.GUEST_ENABLED` is
-set. The Guest is is never part of `settings.PERMISSION_HIERARCHY`.
+> There is also a `Guest` level below `Player` that is only active if `settings.GUEST_ENABLED` is set. The Guest is is never part of `settings.PERMISSION_HIERARCHY`.
 
-When checking a hierarchical permission (using one of the methods to follow),
-you will pass checks for your level and all *below* you. That is, even if the
-check explicitly checks for "Builder" level access, you will actually pass if you have
-one of "Builder", "Admin" or "Developer". By contrast, if you check for a
-non-hierarchical permission, like "Blacksmith" you *must* have exactly
-that permission to pass.
+When checking a hierarchical permission (using one of the methods to follow), you will pass checks for your level and all *below* you. That is, even if the check explicitly checks for "Builder" level access, you will actually pass if you have one of "Builder", "Admin" or "Developer". By contrast, if you check for a non-hierarchical permission, like "Blacksmith" you *must* have exactly that permission to pass.
 
-## Checking permissions
+### Checking permissions
 
-It's important to note that you check for the permission of a *puppeted*
-[Object](./Objects.md) (like a Character), the check will always first use the
-permissions of any `Account` connected to that Object before checking for
-permissions on the Object. In the case of hierarchical permissions (Admins,
-Builders etc), the Account permission will always be used (this stops an Account
-from escalating their permission by puppeting a high-level Character). If the
-permission looked for is not in the hierarchy, an exact match is required, first
-on the Account and if not found there (or if no Account is connected), then on
-the Object itself.
+It's important to note that you check for the permission of a *puppeted* [Object](./Objects.md) (like a Character), the check will always first use the permissions of any `Account` connected to that Object before checking for permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the Account permission will always be used (this stops an Account from escalating their permission by puppeting a high-level Character). If the permission looked for is not in the hierarchy, an exact match is required, first on the Account and if not found there (or if no Account is connected), then on the Object itself.
 
 ### Checking with obj.permissions.check()
 
-The simplest way to check if an entity has a permission is to check its
-_PermissionHandler_, stored as `.permissions`  on all typeclassed entities.
+The simplest way to check if an entity has a permission is to check its _PermissionHandler_, stored as `.permissions`  on all typeclassed entities.
 
     if obj.permissions.check("Builder"):
         # allow builder to do stuff
@@ -177,16 +165,6 @@ An example of a puppet with a connected account:
                                  # precedence.
 ```
 
-## Superusers
-
-There is normally only one *superuser* account and that is the one first created
-when starting Evennia (User #1). This is sometimes known as the "Owner" or "God"
-user.  A superuser has more than full access - it completely *bypasses* all
-locks and will always pass the `PermissionHandler.check()` check. This allows
-for the superuser to always have access to everything in an emergency. But it
-could also hide any eventual errors you might have made in your lock definitions. So
-when trying out game systems you should either use quelling (see below) or make
-a second Developer-level character that does not bypass such checks.
 
 ## Quelling
 

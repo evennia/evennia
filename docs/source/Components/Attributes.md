@@ -25,26 +25,12 @@ class MyObject(DefaultObject):
 
 ```
 
-_Attributes_ allow you to to store arbitrary data on objects and make sure the data survives a server reboot. An Attribute can store pretty much any
-Python data structure and data type, like numbers, strings, lists, dicts etc. You can also
-store (references to) database objects like characters and rooms.
+_Attributes_ allow you to to store arbitrary data on objects and make sure the data survives a server reboot. An Attribute can store pretty much any Python data structure and data type, like numbers, strings, lists, dicts etc. You can also store (references to) database objects like characters and rooms.
 
-- [What can be stored in an Attribute](#what-types-of-data-can-i-save-in-an-attribute) is a must-read to avoid being surprised, also for experienced developers. Attributes can store _almost_ everything
-  but you need to know the quirks.
-- [NAttributes](#in-memory-attributes-nattributes) are the in-memory, non-persistent
-  siblings of Attributes.
-- [Managing Attributes In-game](#managing-attributes-in-game) for in-game builder commands.
+## Working with Attributes
 
-## Managing Attributes in Code
-
-Attributes are usually handled in code. All [Typeclassed](./Typeclasses.md) entities
-([Accounts](./Accounts.md), [Objects](./Objects.md), [Scripts](./Scripts.md) and
-[Channels](./Channels.md)) can (and usually do) have Attributes associated with them. There
+Attributes are usually handled in code. All [Typeclassed](./Typeclasses.md) entities ([Accounts](./Accounts.md), [Objects](./Objects.md), [Scripts](./Scripts.md) and [Channels](./Channels.md)) can (and usually do) have Attributes associated with them. There
 are three ways to manage Attributes, all of which can be mixed.
-
-- [Using the `.db` property shortcut](#using-db)
-- [Using the `.attributes` manager (`AttributeManager`)](#using-attributes)
-- [Using `AttributeProperty` for assigning Attributes in a way similar to Django fields](#using-attributeproperty)
 
 ### Using .db
 
@@ -115,8 +101,7 @@ neck_armor = obj.attributes.get("neck", category="armor")
 
 If you don't specify a category, the Attribute's `category` will be `None` and can thus also be found via `.db`. `None` is considered a category of its own, so you won't find `None`-category Attributes mixed with Attributes having categories.
 
-Here are the methods of the `AttributeHandler`. See
-the [AttributeHandler API](evennia.typeclasses.attributes.AttributeHandler) for more details.
+Here are the methods of the `AttributeHandler`. See the [AttributeHandler API](evennia.typeclasses.attributes.AttributeHandler) for more details.
 
 - `has(...)` - this checks if the object has an Attribute with this key. This is equivalent
   to doing `obj.db.attrname` except you can also check for a specific `category.
@@ -214,16 +199,46 @@ char.db.sleepy   # now returns True!
 char.attributes.get("sleepy")  # now returns True
 
 char.sleepy  # now returns True, involves db access
-
 ```
 
-You can e.g. `del char.strength` to set the value back to the default (the value defined
-in the `AttributeProperty`).
+You can e.g. `del char.strength` to set the value back to the default (the value defined in the `AttributeProperty`).
 
 See the [AttributeProperty API](evennia.typeclasses.attributes.AttributeProperty) for more details on how to create it with special options, like giving access-restrictions.
 
+### Properties of Attributes
 
-## Managing Attributes in-game
+An `Attribute` object is stored in the database. It has the following properties:
+
+- `key` - the name of the Attribute. When doing e.g. `obj.db.attrname = value`, this property is set
+  to `attrname`.
+- `value` - this is the value of the Attribute. This value can be anything which can be pickled -
+  objects, lists, numbers or what have you (see
+  [this section](./Attributes.md#what-types-of-data-can-i-save-in-an-attribute) for more info). In the
+  example
+  `obj.db.attrname = value`, the `value` is stored here.
+- `category` - this is an optional property that is set to None for most Attributes. Setting this
+  allows to use Attributes for different functionality. This is usually not needed unless you want
+  to use Attributes for very different functionality ([Nicks](./Nicks.md) is an example of using
+  Attributes in this way). To modify this property you need to use the [Attribute Handler](#attributes)
+- `strvalue` - this is a separate value field that only accepts strings. This severely limits the
+  data possible to store, but allows for easier database lookups. This property is usually not used
+  except when re-using Attributes for some other purpose ([Nicks](./Nicks.md) use it). It is only
+  accessible via the [Attribute Handler](#attributes).
+
+There are also two special properties:
+
+- `attrtype` - this is used internally by Evennia to separate [Nicks](./Nicks.md), from Attributes (Nicks
+  use Attributes behind the scenes).
+- `model` - this is a *natural-key* describing the model this Attribute is attached to. This is on
+  the form *appname.modelclass*, like `objects.objectdb`. It is used by the Attribute and
+  NickHandler to quickly sort matches in the database.  Neither this nor `attrtype` should normally
+  need to be modified.
+
+Non-database attributes are not stored in the database and have no equivalence
+to `category` nor `strvalue`, `attrtype` or `model`.
+
+
+### Managing Attributes in-game
 
 Attributes are mainly used by code. But one can also allow the builder to use Attributes to
 'turn knobs' in-game. For example a builder could want to manually tweak the "level" Attribute of an
@@ -261,7 +276,7 @@ string.
 
 For the last line you'll get a warning and the value instead will be saved as a string `"[1, 2, foo]"`.
 
-## Locking and checking Attributes
+### Locking and checking Attributes
 
 While the `set` command is limited to builders, individual Attributes are usually not
 locked down. You may want to lock certain sensitive Attributes, in particular for games
@@ -312,6 +327,7 @@ To check the `lockstring` you provided, make sure you include `accessing_obj` an
 
 The same keywords are available to use with `obj.attributes.set()` and `obj.attributes.remove()`,
 those will check for the `attredit` lock type.
+
 
 ## What types of data can I save in an Attribute?
 
@@ -519,37 +535,6 @@ The result of this operation will be a structure only consisting of normal Pytho
 instead of `_SaverList`, `dict` instead of `_SaverDict` and so on). If you update it, you need to
 explicitly save it back to the Attribute for it to save.
 
-## Properties of Attributes
-
-An `Attribute` object is stored in the database. It has the following properties:
-
-- `key` - the name of the Attribute. When doing e.g. `obj.db.attrname = value`, this property is set
-  to `attrname`.
-- `value` - this is the value of the Attribute. This value can be anything which can be pickled -
-  objects, lists, numbers or what have you (see
-  [this section](./Attributes.md#what-types-of-data-can-i-save-in-an-attribute) for more info). In the
-  example
-  `obj.db.attrname = value`, the `value` is stored here.
-- `category` - this is an optional property that is set to None for most Attributes. Setting this
-  allows to use Attributes for different functionality. This is usually not needed unless you want
-  to use Attributes for very different functionality ([Nicks](./Nicks.md) is an example of using
-  Attributes in this way). To modify this property you need to use the [Attribute Handler](#attributes)
-- `strvalue` - this is a separate value field that only accepts strings. This severely limits the
-  data possible to store, but allows for easier database lookups. This property is usually not used
-  except when re-using Attributes for some other purpose ([Nicks](./Nicks.md) use it). It is only
-  accessible via the [Attribute Handler](#attributes).
-
-There are also two special properties:
-
-- `attrtype` - this is used internally by Evennia to separate [Nicks](./Nicks.md), from Attributes (Nicks
-  use Attributes behind the scenes).
-- `model` - this is a *natural-key* describing the model this Attribute is attached to. This is on
-  the form *appname.modelclass*, like `objects.objectdb`. It is used by the Attribute and
-  NickHandler to quickly sort matches in the database.  Neither this nor `attrtype` should normally
-  need to be modified.
-
-Non-database attributes are not stored in the database and have no equivalence
-to `category` nor `strvalue`, `attrtype` or `model`.
 
 ## In-memory Attributes (NAttributes)
 

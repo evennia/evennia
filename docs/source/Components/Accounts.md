@@ -2,7 +2,7 @@
 
 ```
 ┌──────┐ │   ┌───────┐    ┌───────┐   ┌──────┐
-│Client├─┼──►│Session├───►│Account├──►│Object│
+│Client├─┼──►│Session├───►│Account├──►│Object│  
 └──────┘ │   └───────┘    └───────┘   └──────┘
                               ^
 ```
@@ -12,7 +12,7 @@ An _Account_ represents a unique game account - one player playing the game. Whe
 The Account object has no in-game representation. In order to actually get on the game the Account must *puppet* an [Object](./Objects.md) (normally a [Character](./Objects.md#characters)).
 
 Exactly how many Sessions can interact with an Account and its Puppets at once is determined by
-Evennia's [MULTISESSION_MODE](./Sessions.md#multisession-mode) setting.
+Evennia's [MULTISESSION_MODE](../Concepts/Connection-Styles.md#multisession-mode-and-multiplaying)
 
 Apart from storing login information and other account-specific data, the Account object is what is chatting on Evennia's default [Channels](./Channels.md).  It is also a good place to store [Permissions](./Locks.md) to be consistent between different in-game characters. It can also hold player-level configuration options. 
 
@@ -29,7 +29,7 @@ This re-puppets the latest character.
 Note that the Account object can have, and often does have, a different set of [Permissions](./Permissions.md) from the Character they control.  Normally you should put your permissions on the Account level - this will overrule permissions set on the Character level. For the permissions of the Character to come into play the default `quell` command can be used. This allows for exploring the game using a different permission set (but you can't escalate your permissions this way - for hierarchical permissions like `Builder`, `Admin` etc, the *lower* of the permissions on the Character/Account will always be used). 
 
 
-## How to customize your own Account types
+## Working with Accounts
 
 You will usually not want more than one Account typeclass for all new accounts.
 
@@ -66,7 +66,7 @@ You should now see the Attributes on yourself.
 > If you wanted Evennia to default to a completely *different* Account class located elsewhere, you > must point Evennia to it. Add `BASE_ACCOUNT_TYPECLASS` to your settings file, and give the python path to your custom class as its value. By default this points to `typeclasses.accounts.Account`, the empty template we used above.
 
 
-## Properties on Accounts
+### Properties on Accounts
 
 Beyond those properties assigned to all typeclassed objects (see [Typeclasses](./Typeclasses.md)), the Account also has the following custom properties:
 

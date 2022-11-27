@@ -1,6 +1,6 @@
 # Colors
 
-*Note that the Documentation does not display colour the way it would look on the screen.*
+> Note that the Documentation does not display colour the way it would look on the screen.
 
 Color can be a very useful tool for your game. It can be used to increase readability and make your
 game more appealing visually.
@@ -130,8 +130,11 @@ For a detailed explanation of these caveats, see the [Understanding Color Tags](
 Tags) tutorial. But most of the time you might be better off to simply avoid `|*` and mark your text
 manually instead.
 
-### Xterm256 Colours
+## Xterm256 Colours
 
+```{sidebar}
+See the [Understanding Color Tags](../Howtos/Tutorial-Understanding-Color-Tags.md) tutorial, for more on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
+```
 The _Xterm256_ standard is a colour scheme that supports 256 colours for text and/or background. It can be combined freely with ANSI colors (above), but some ANSI tags don't affect Xterm256 tags. 
 
 While this offers many more possibilities than traditional ANSI colours, be wary that too many text
@@ -170,7 +173,3 @@ If you have a client that supports Xterm256, you can use
 
 to get a table of all the 256 colours and the codes that produce them. If the table looks broken up
 into a few blocks of colors, it means Xterm256 is not supported and ANSI are used as a replacement. You can use the `options` command to see if xterm256 is active for you. This depends on if your client told Evennia what it supports - if not, and you know what your client supports, you may have to activate some features manually.
-
-## More reading
-
-There is an [Understanding Color Tags](../Howtos/Tutorial-Understanding-Color-Tags.md) tutorial which expands on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.

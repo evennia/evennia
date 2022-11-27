@@ -29,8 +29,9 @@ Another example would be a weather script affecting all rooms tagged as `outdoor
 
 In Evennia, Tags are technically also used to implement `Aliases` (alternative names for objects) and `Permissions` (simple strings for [Locks](./Locks.md) to check for).
 
+## Working with Tags
 
-## Properties of Tags (and Aliases and Permissions)
+### Properties of Tags (and Aliases and Permissions)
 
 Tags are *unique*. This means that there is only ever one Tag object with a given key and category.
 
@@ -63,11 +64,9 @@ each entity type for correctly storing the data behind the  scenes.
 *Aliases* and *Permissions*. The Taghandlers using this special field are especially intended to
 free up the *category* property for any use you desire.
 
-## Adding/Removing Tags
+### Adding/Removing Tags
 
-You can tag any *typeclassed* object, namely [Objects](./Objects.md), [Accounts](./Accounts.md),
-[Scripts](./Scripts.md) and [Channels](./Channels.md). General tags are added by the *Taghandler*.  The
-tag handler is accessed as a property `tags` on the relevant entity:
+You can tag any *typeclassed* object, namely [Objects](./Objects.md), [Accounts](./Accounts.md), [Scripts](./Scripts.md) and [Channels](./Channels.md). General tags are added by the *Taghandler*.  The tag handler is accessed as a property `tags` on the relevant entity:
 
 ```python
      mychair.tags.add("furniture")
@@ -92,7 +91,7 @@ You can also use the default `@tag` command:
 
 This tags the chair with a 'furniture' Tag (the one with a `None` category). 
 
-## Searching for objects with a given tag
+### Searching for objects with a given tag
 
 Usually tags are used as a quick way to find tagged database entities. You can retrieve all objects
 with a given Tag like this in code:
@@ -118,14 +117,9 @@ with a given Tag like this in code:
      accounts = evennia.search_tag_account("guestaccount")          
 ```
 
-> Note that searching for just "furniture" will only return the objects tagged with the "furniture"
-tag that
-has a category of `None`. We must explicitly give the category to get the "luxurious" furniture. 
+> Note that searching for just "furniture" will only return the objects tagged with the "furniture" tag that has a category of `None`. We must explicitly give the category to get the "luxurious" furniture. 
 
-Using any of the `search_tag` variants will all return [Django
-Querysets](https://docs.djangoproject.com/en/2.1/ref/models/querysets/), including if you only have
-one match. You can treat querysets as lists and iterate over them, or continue building search
-queries with them.
+Using any of the `search_tag` variants will all return [Django Querysets](https://docs.djangoproject.com/en/2.1/ref/models/querysets/), including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them.
 
 Remember when searching that not setting a category means setting it to `None` - this does *not*
 mean that category is undefined, rather `None` is considered the default, unnamed category.
@@ -143,16 +137,13 @@ objs = evennia.search_tag("foo")
 objs = evennia.search_tag("foo", category="bar")
 # or
 objs = evennia.search_tag(category="bar")
-
 ```
-
-
 
 There is also an in-game command that deals with assigning and using ([Object-](./Objects.md)) tags:
 
-     @tag/search furniture
+     tag/search furniture
 
-## Using Aliases and Permissions
+## Aliases and Permissions
 
 Aliases and Permissions are implemented using normal TagHandlers that simply save Tags with a
 different `tagtype`. These handlers are named `aliases` and `permissions` on all Objects. They are
@@ -169,14 +160,3 @@ used in the same way as Tags above:
 and so on. Similarly to how `@tag` works in-game, there is also the `@perm` command for assigning
 permissions and `@alias` command for aliases.
 
-## Assorted notes
-
-Generally, tags are enough on their own for grouping objects. Having no tag `category` is perfectly
-fine and the normal operation. Simply adding a new Tag for grouping objects is often better than
-making a new category. So think hard before deciding you really need to categorize your Tags.
-
-That said, tag categories can be useful if you build some game system that uses tags. You can then
-use tag categories to make sure to separate tags created with this system from any other tags
-created elsewhere. You can then supply custom search methods that *only* find objects tagged with
-tags of that category. An example of this
-is found in the [Zone tutorial](../Concepts/Zones.md). 
