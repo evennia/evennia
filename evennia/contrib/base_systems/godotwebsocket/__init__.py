@@ -10,3 +10,5 @@ You could also pass extra data to this client for advanced functionality.
 
 See the docs for more information.
 """
+from evennia.contrib.base_systems.godotwebsocket.text2bbcode import parse_to_bbcode, BBCODE_PARSER
+from evennia.contrib.base_systems.godotwebsocket.webclient import GodotWebSocketClient
