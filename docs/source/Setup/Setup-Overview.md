@@ -43,5 +43,4 @@ Client-Support-Grid
 Security-Practices
 Config-HAProxy
 Config-Apache-Proxy
-
 ```

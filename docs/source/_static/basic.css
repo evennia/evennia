@@ -104,6 +104,12 @@ img {
     max-width: 100%;
 }
 
+/* images in the body */ 
+p > img {
+    float: right;
+    padding:0.5em 1em 0.5em 1em;
+}
+
 /* -- search page ----------------------------------------------------------- */
 
 ul.search {
