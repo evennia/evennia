@@ -215,7 +215,7 @@ Exits: north, east
 <section id="outputfuncs">
 <h3>outputfuncs<a class="headerlink" href="#outputfuncs" title="Permalink to this headline">¶</a></h3>
 <aside class="sidebar">
-<p><code class="docutils literal notranslate"><span class="pre">outputfuncs</span></code> are tightly coupled to the protocol and you usually don’t need to touch them, unless you are adding a new protocol entirely.</p>
+<p><code class="docutils literal notranslate"><span class="pre">outputfuncs</span></code> are tightly coupled to the protocol and you usually don’t need to touch them, unless you are <a class="reference internal" href="Protocols.html"><span class="doc std std-doc">adding a new protocol</span></a> entirely.</p>
 </aside>
 <p>Since <code class="docutils literal notranslate"><span class="pre">msg()</span></code> is aware of which <a class="reference internal" href="../Components/Sessions.html"><span class="doc std std-doc">Session</span></a> to send to, the outgoing <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> is always end up pointed at the right client.</p>
 <p>Each supported Evennia Protocol (Telnet, SSH, Webclient etc) has their own <code class="docutils literal notranslate"><span class="pre">outputfunc</span></code>, which converts the generic <code class="docutils literal notranslate"><span class="pre">commandtuple</span></code> into a form that particular protocol understands, such as telnet instructions or JSON.</p>

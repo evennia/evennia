@@ -116,7 +116,7 @@ This will be converted to a `commandtuple` looking like this:
 ### outputfuncs 
 
 ```{sidebar}
-`outputfuncs` are tightly coupled to the protocol and you usually don't need to touch them, unless you are adding a new protocol entirely.
+`outputfuncs` are tightly coupled to the protocol and you usually don't need to touch them, unless you are [adding a new protocol](./Protocols.md) entirely.
 ```
 Since `msg()` is aware of which [Session](../Components/Sessions.md) to send to, the outgoing `commandtuple` is always end up pointed at the right client. 
 
