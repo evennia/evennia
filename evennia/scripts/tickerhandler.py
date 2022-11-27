@@ -68,13 +68,12 @@ call the handler's `save()` and `restore()` methods when the server reboots.
 import inspect
 
 from django.core.exceptions import ObjectDoesNotExist
-from twisted.internet.defer import inlineCallbacks
-
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils import inherits_from, variable_from_module
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
 from evennia.utils.logger import log_err, log_trace
+from twisted.internet.defer import inlineCallbacks
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -174,7 +173,7 @@ class Ticker(object):
         using it.
 
         Args:
-            start_delay (int): Time to way before starting.
+            start_delay (int, optional): Time to way before starting.
 
         """
         subs = self.subscriptions
@@ -286,8 +285,7 @@ class TickerPool(object):
         restoring the pool will automatically re-populate the pool.
 
         Args:
-            interval (int, optional): Only stop tickers with this
-                interval.
+            interval (int, optional): Only stop tickers with this interval.
 
         """
         if interval and interval in self.tickers:
@@ -495,22 +493,26 @@ class TickerHandler(object):
         Add subscription to tickerhandler
 
         Args:
-            interval (int, optional): Interval in seconds between calling
+
+            *args: Will be passed into the callback every time it's called. This must be
+                data possible to pickle.
+
+        Keyword Args:
+            interval (int): Interval in seconds between calling
                 `callable(*args, **kwargs)`
-            callable (callable function or method, optional): This
+            callable (callable function or method): This
                 should either be a stand-alone function or a method on a
                 typeclassed entity (that is, one that can be saved to the
                 database).
-            idstring (str, optional): Identifier for separating
+            idstring (str): Identifier for separating
                 this ticker-subscription from others with the same
                 interval. Allows for managing multiple calls with
                 the same time interval and callback.
-            persistent (bool, optional): A ticker will always survive
+            persistent (bool): A ticker will always survive
                 a server reload. If this is unset, the ticker will be
                 deleted by a server shutdown.
-            args, kwargs (optional): These will be passed into the
-                callback every time it is called. This must be data possible
-                to pickle!
+            **kwargs Will be passed into the callback every time it is called.
+                This must be data possible to pickle.
 
         Returns:
             store_key (tuple): The immutable store-key for this ticker. This can
@@ -539,13 +541,13 @@ class TickerHandler(object):
         """
         Remove ticker subscription from handler.
 
-        Args:
-            interval (int, optional): Interval of ticker to remove.
+        Keyword Args:
+            interval (int): Interval of ticker to remove.
             callback (callable function or method): Either a function or
                 the method of a typeclassed object.
-            idstring (str, optional): Identifier id of ticker to remove.
-            persistent (bool, optional): Whether this ticker is persistent or not.
-            store_key (str, optional): If given, all other kwargs are ignored and only
+            idstring (str): Identifier id of ticker to remove.
+            persistent (bool): Whether this ticker is persistent or not.
+            store_key (str): If given, all other kwargs are ignored and only
                 this is used to identify the ticker.
 
         Raises:
@@ -576,7 +578,7 @@ class TickerHandler(object):
         Stop/remove tickers from handler.
 
         Args:
-            interval (int): Only stop tickers with this interval.
+            interval (int, optional): Only stop tickers with this interval.
 
         Notes:
             This is the only supported way to kill tickers related to
@@ -596,16 +598,15 @@ class TickerHandler(object):
 
     def all(self, interval=None):
         """
-        Get all subscriptions.
+        Get all ticker subscriptions.
 
         Args:
-            interval (int): Limit match to tickers with this interval.
+            interval (int, optional): Limit match to tickers with this interval.
 
         Returns:
-            tickers (list): If `interval` was given, this is a list of
-                tickers using that interval.
-            tickerpool_layout (dict): If `interval` was *not* given,
-                this is a dict {interval1: [ticker1, ticker2, ...],  ...}
+            list or dict: If `interval` was given, this is a list of tickers using that interval.
+            If `interval` was *not* given, this is a dict
+            `{interval1: [ticker1, ticker2, ...],  ...}`
 
         """
         if interval is None:
