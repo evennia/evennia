@@ -129,7 +129,8 @@ You can also  <a class="reference internal" href="Installation-Git.html"><span c
 <ul class="simple">
 <li><p>Evennia requires <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9, 3.10 or 3.11 (recommended). Any OS that supports Python should work.</p>
 <ul>
-<li><p>Windows: In the installer, make sure you select <code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">python</span> <span class="pre">to</span> <span class="pre">path</span></code>.  If you have multiple versions of Python installed, use <code class="docutils literal notranslate"><span class="pre">py</span></code> command instead of <code class="docutils literal notranslate"><span class="pre">python</span></code> to have Windows automatically use the latest.</p></li>
+<li><p><em>Windows</em>: In the installer, make sure you select <code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">python</span> <span class="pre">to</span> <span class="pre">path</span></code>.  If you have multiple versions of Python installed, use <code class="docutils literal notranslate"><span class="pre">py</span></code> command instead of <code class="docutils literal notranslate"><span class="pre">python</span></code> to have Windows automatically use the latest.</p></li>
+<li><p><em>Windows:</em> If you want to use Python 3.11, you must also install the <a class="reference external" href="https://aka.ms/vs/16/release/vs_buildtools.exe">Windows SDK</a>. Run the linked installer. Click the <code class="docutils literal notranslate"><span class="pre">Individual</span> <span class="pre">Components</span></code> tab at the top, then search and checkbox the latest <code class="docutils literal notranslate"><span class="pre">Windows</span> <span class="pre">10</span> <span class="pre">SDK</span></code> (also for older/newer Windows versions). Then click <code class="docutils literal notranslate"><span class="pre">Install</span></code>. If you have trouble, use Python 6.10 for now (2022).</p></li>
 </ul>
 </li>
 <li><p>Using a light-weight  <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">Python virtual environment</span></a> is optional, but <em>highly recommended</em> in order to keep your Evennia installation independent from the system libraries. Using virtualenvs like this is common Python praxis.</p></li>
@@ -143,8 +144,7 @@ You can also  <a class="reference internal" href="Installation-Git.html"><span c
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia
 </pre></div>
 </div>
-<p>Optional: If you use a <a class="reference internal" href="../Contribs/Contribs-Overview.html"><span class="doc std std-doc">contrib</span></a> that warns you that it needs additional packages, you can
-install all extra dependencies with</p>
+<p>Optional: If you use a <a class="reference internal" href="../Contribs/Contribs-Overview.html"><span class="doc std std-doc">contrib</span></a> that warns you that it needs additional packages, you can  install all extra dependencies with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia[extra]
 </pre></div>
 </div>

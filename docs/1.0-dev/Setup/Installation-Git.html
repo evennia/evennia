@@ -208,18 +208,11 @@ at the top of your mud directory tree (so you see the <code class="docutils lite
 <section id="mac-install">
 <h2>Mac Install<a class="headerlink" href="#mac-install" title="Permalink to this headline">¶</a></h2>
 <p>The Evennia server is a terminal program. Open the terminal e.g. from
-<em>Applications-&gt;Utilities-&gt;Terminal</em>. <a class="reference external" href="https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line">Here is an introduction to the Mac
-terminal</a>
-if you are unsure how it works.</p>
+<em>Applications-&gt;Utilities-&gt;Terminal</em>. <a class="reference external" href="https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line">Here is an introduction to the Mac terminal</a> if you are unsure how it works.</p>
 <ul class="simple">
-<li><p>Python should already be installed but you must make sure it’s a high enough version - go for
-3.11.
-(<a class="reference external" href="https://docs.python-guide.org/en/latest/starting/install/osx/">This</a> discusses how you may upgrade it).</p></li>
-<li><p>GIT can be obtained with
-<a class="reference external" href="https://code.google.com/p/git-osx-installer/">git-osx-installer</a> or via MacPorts <a class="reference external" href="https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac">as described
-here</a>.</p></li>
-<li><p>If you run into issues with installing <code class="docutils literal notranslate"><span class="pre">Twisted</span></code> later you may need to
-install gcc and the Python headers.</p></li>
+<li><p>Python should already be installed but you must make sure it’s a high enough version - go for 3.11. (<a class="reference external" href="https://docs.python-guide.org/en/latest/starting/install/osx/">This</a> discusses how you may upgrade it).</p></li>
+<li><p>GIT can be obtained with <a class="reference external" href="https://code.google.com/p/git-osx-installer/">git-osx-installer</a> or via MacPorts <a class="reference external" href="https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac">as described here</a>.</p></li>
+<li><p>If you run into issues with installing <code class="docutils literal notranslate"><span class="pre">Twisted</span></code> later you may need to install <code class="docutils literal notranslate"><span class="pre">gcc</span></code> and the Python headers.</p></li>
 </ul>
 <p>After this point you should not need <code class="docutils literal notranslate"><span class="pre">sudo</span></code> or any higher privileges to install anything.</p>
 <p>Now create a folder where you want to do all your Evennia development:</p>
@@ -231,8 +224,7 @@ install gcc and the Python headers.</p></li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">evennia</span><span class="o">/</span><span class="n">evennia</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
-<p>A new folder <code class="docutils literal notranslate"><span class="pre">evennia</span></code> will appear containing the Evennia library. This only
-contains the source code though, it is not <em>installed</em> yet.</p>
+<p>A new folder <code class="docutils literal notranslate"><span class="pre">evennia</span></code> will appear containing the Evennia library. This only contains the source code though, it is not <em>installed</em> yet.</p>
 <p>At this point it’s now optional but recommended that you initialize and activate a <a class="reference internal" href="#virtualenv"><span class="std std-doc">virtualenv</span></a>.</p>
 <p>Next, install Evennia (system-wide, or into your active virtualenv). Make sure you are standing
 at the top of your mud directory tree (so you see the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code>, and likely the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> virtualenv
@@ -248,22 +240,13 @@ folder) and do</p>
 <section id="windows-install">
 <h2>Windows Install<a class="headerlink" href="#windows-install" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>If you are running Windows10+, consider using the <em>Windows Subsystem for Linux</em>
-(<a class="reference external" href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">WSL</a>) instead. Just set up WSL with an Ubuntu image and follow the Linux install instructions above.</p>
+<div><p>If you are running Windows10+, consider using the <em>Windows Subsystem for Linux</em> &gt; (<a class="reference external" href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">WSL</a>) instead. Just set up WSL with an Ubuntu image and follow the Linux install instructions above.</p>
 </div></blockquote>
-<p>The Evennia server itself is a command line program. In the Windows launch
-menu, start <em>All Programs -&gt; Accessories -&gt; command prompt</em> and you will get
-the Windows command line interface. Here is <a class="reference external" href="https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/">one of many tutorials on using the Windows command line</a> if you are unfamiliar with it.</p>
+<p>The Evennia server itself is a command line program. In the Windows launch menu, start <em>All Programs -&gt; Accessories -&gt; command prompt</em> and you will get the Windows command line interface. Here is <a class="reference external" href="https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/">one of many tutorials on using the Windows command line</a> if you are unfamiliar with it.</p>
 <ul class="simple">
-<li><p>Install Python <a class="reference external" href="https://www.python.org/downloads/windows/">from the Python homepage</a>. You will need to be a
-Windows Administrator to install packages. Get Python <strong>3.11</strong>, usually
-the 64-bit version (although it doesn’t matter too much). <strong>When installing, make sure
-to check-mark <em>all</em> install options, especially the one about making Python
-available on the path (you may have to scroll to see it)</strong>. This allows you to
-just write <code class="docutils literal notranslate"><span class="pre">python</span></code> (or possibly <code class="docutils literal notranslate"><span class="pre">py</span></code>) in any console without first finding where the <code class="docutils literal notranslate"><span class="pre">python</span></code>
-program actually sits on your hard drive.</p></li>
+<li><p>Install Python <a class="reference external" href="https://www.python.org/downloads/windows/">from the Python homepage</a>. You will need to be a Windows Administrator to install packages. Get Python <strong>3.11</strong>, 64-bit version. Use the default settings; make sure the <code class="docutils literal notranslate"><span class="pre">py</span></code> launcher gets installed.</p></li>
 <li><p>You need to also get <a class="reference external" href="https://git-scm.com/downloads">GIT</a> and install it. You can use the default install options but when you get asked to “Adjust your PATH environment”, you should select the second option “Use Git from the Windows Command Prompt”, which gives you more freedom as to where you can use the program.</p></li>
-<li><p>Finally you must install the <a class="reference external" href="https://aka.ms/vs/16/release/vs_buildtools.exe">Microsoft Visual C++ compiler for Python</a>. Download and run the linked installer and install the C++ tools. Keep all the defaults. Allow the install of the “Win10 SDK”, even if you are on Win7 (not tested on older Windows versions). If you later have issues with installing Evennia due to a failure to build the “Twisted wheels”, this is where you are missing things.</p></li>
+<li><p>If you run Python 3.11: You must also install the <a class="reference external" href="https://aka.ms/vs/16/release/vs_buildtools.exe">Windows SDK</a>. Download and run the linked installer. Click the  <code class="docutils literal notranslate"><span class="pre">Individual</span> <span class="pre">Components</span></code> tab at the top. Search and checkmark the latest <code class="docutils literal notranslate"><span class="pre">Windows</span> <span class="pre">10</span> <span class="pre">SDK</span></code> (also for older and newer Windows versions). Click <code class="docutils literal notranslate"><span class="pre">Install</span></code>. If you later have issues with installing Evennia due to a failure to build the “Twisted wheels”, this is where you are missing things. If you have trouble, use Python 3.10 for now (2022)</p></li>
 <li><p>You <em>may</em> need the <a class="reference external" href="https://pypi.python.org/pypi/pypiwin32">pypiwin32</a> Python headers. Install these only if you have issues.</p></li>
 </ul>
 <p>You can install Evennia wherever you want. <code class="docutils literal notranslate"><span class="pre">cd</span></code> to that location and create a
