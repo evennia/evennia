@@ -172,6 +172,10 @@ because the order of how tags are opened and closed are important to display in 
 
 
 class RootTag:
+    """
+    The Root tag class made to contain other tags.
+    """
+
     __slots__ = ('child',)
 
     def __init__(self):
@@ -182,6 +186,10 @@ class RootTag:
 
 
 class ChildTag:
+    """
+    A node made to be contained.
+    """
+
     def __init__(self, parent):
         self.parent = parent
         if parent:
@@ -194,6 +202,11 @@ class ChildTag:
 
 
 class TextTag(ChildTag):
+    """
+    A BBCodeTag node to output regular text.
+    Output: SomeText
+    """
+
     __slots__ = ('parent', 'child', 'text')
 
     def __init__(self, parent, text):
@@ -206,6 +219,10 @@ class TextTag(ChildTag):
 
 
 class BBCodeTag(ChildTag):
+    """
+    Base BBCodeTag node to encapsulate and be encapsulated.
+    """
+
     __slots__ = ('parent', 'child',)
 
     code = ''
@@ -219,14 +236,29 @@ class BBCodeTag(ChildTag):
 
 
 class UnderlineTag(BBCodeTag):
+    """
+    A BBCodeTag node for underlined text.
+    Output: [u]Underlined Text[/u]
+    """
+
     code = 'u'
 
 
 class BlinkTag(BBCodeTag):
+    """
+    A BBCodeTag node for blinking text.
+    Output: [blink]Blinking Text[/blink]
+    """
+
     code = 'blink'
 
 
 class ColorTag(BBCodeTag):
+    """
+    A BBCodeTag node for foreground color.
+    Output: [fgcolor=#000000]Colorized Text[/fgcolor]
+    """
+
     __slots__ = ('parent', 'child', 'color_hex',)
 
     code = 'color'
@@ -240,10 +272,21 @@ class ColorTag(BBCodeTag):
 
 
 class BGColorTag(ColorTag):
+    """
+    A BBCodeTag node for background color.
+    Output: [bgcolor=#000000]Colorized Text[/bgcolor]
+    """
+
     code = 'bgcolor'
 
 
 class UrlTag(BBCodeTag):
+    """
+    A BBCodeTag node used for urls.
+    Output: [url=www.example.com]Child Text[/url]
+
+    """
+
     __slots__ = ('parent', 'child', 'url_data',)
 
     code = 'url'
