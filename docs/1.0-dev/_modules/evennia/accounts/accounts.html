@@ -1138,7 +1138,7 @@
                 <span class="c1"># normal message</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sender_string</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_prefix&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;emit&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_prefix&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;emit&quot;</span><span class="p">):</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">channel_prefix</span><span class="p">()</span> <span class="o">+</span> <span class="n">message</span>
 
         <span class="k">return</span> <span class="n">message</span></div>
