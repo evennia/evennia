@@ -110,18 +110,11 @@ Next you can continue initializing your game from the regular [Installation inst
 ## Mac Install
 
 The Evennia server is a terminal program. Open the terminal e.g. from
-*Applications->Utilities->Terminal*. [Here is an introduction to the Mac
-terminal](https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line)
-if you are unsure how it works.
+*Applications->Utilities->Terminal*. [Here is an introduction to the Mac terminal](https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line) if you are unsure how it works.
 
-* Python should already be installed but you must make sure it's a high enough version - go for
- 3.11.
-([This](https://docs.python-guide.org/en/latest/starting/install/osx/) discusses how you may upgrade it).
-* GIT can be obtained with
-[git-osx-installer](https://code.google.com/p/git-osx-installer/) or via MacPorts [as described
-here](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
-* If you run into issues with installing `Twisted` later you may need to
-install gcc and the Python headers.
+* Python should already be installed but you must make sure it's a high enough version - go for 3.11. ([This](https://docs.python-guide.org/en/latest/starting/install/osx/) discusses how you may upgrade it).
+* GIT can be obtained with [git-osx-installer](https://code.google.com/p/git-osx-installer/) or via MacPorts [as described here](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
+* If you run into issues with installing `Twisted` later you may need to install `gcc` and the Python headers.
 
 After this point you should not need `sudo` or any higher privileges to install anything.
 
@@ -138,8 +131,7 @@ Next we fetch Evennia itself:
 git clone https://github.com/evennia/evennia.git
 ```
 
-A new folder `evennia` will appear containing the Evennia library. This only
-contains the source code though, it is not *installed* yet. 
+A new folder `evennia` will appear containing the Evennia library. This only contains the source code though, it is not *installed* yet. 
 
 At this point it's now optional but recommended that you initialize and activate a [virtualenv](#virtualenv). 
 
@@ -159,22 +151,13 @@ Next you can continue initializing your game from the regular [Installation inst
 
 ## Windows Install
 
-> If you are running Windows10+, consider using the _Windows Subsystem for Linux_
-> ([WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) instead. Just set up WSL with an Ubuntu image and follow the Linux install instructions above.
+> If you are running Windows10+, consider using the _Windows Subsystem for Linux_ > ([WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) instead. Just set up WSL with an Ubuntu image and follow the Linux install instructions above.
 
-The Evennia server itself is a command line program. In the Windows launch
-menu, start *All Programs -> Accessories -> command prompt* and you will get
-the Windows command line interface. Here is [one of many tutorials on using the Windows command line](https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/) if you are unfamiliar with it.
+The Evennia server itself is a command line program. In the Windows launch menu, start *All Programs -> Accessories -> command prompt* and you will get the Windows command line interface. Here is [one of many tutorials on using the Windows command line](https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/) if you are unfamiliar with it.
 
-* Install Python [from the Python homepage](https://www.python.org/downloads/windows/). You will need to be a
-Windows Administrator to install packages. Get Python **3.11**, usually
-the 64-bit version (although it doesn't matter too much). **When installing, make sure
-to check-mark *all* install options, especially the one about making Python
-available on the path (you may have to scroll to see it)**. This allows you to
-just write `python` (or possibly `py`) in any console without first finding where the `python`
-program actually sits on your hard drive.
+* Install Python [from the Python homepage](https://www.python.org/downloads/windows/). You will need to be a Windows Administrator to install packages. Get Python **3.11**, 64-bit version. Use the default settings; make sure the `py` launcher gets installed. 
 * You need to also get [GIT](https://git-scm.com/downloads) and install it. You can use the default install options but when you get asked to "Adjust your PATH environment", you should select the second option "Use Git from the Windows Command Prompt", which gives you more freedom as to where you can use the program.
-* Finally you must install the [Microsoft Visual C++ compiler for Python](https://aka.ms/vs/16/release/vs_buildtools.exe). Download and run the linked installer and install the C++ tools. Keep all the defaults. Allow the install of the "Win10 SDK", even if you are on Win7 (not tested on older Windows versions). If you later have issues with installing Evennia due to a failure to build the "Twisted wheels", this is where you are missing things. 
+* If you run Python 3.11: You must also install the [Windows SDK](https://aka.ms/vs/16/release/vs_buildtools.exe). Download and run the linked installer. Click the  `Individual Components` tab at the top. Search and checkmark the latest `Windows 10 SDK` (also for older and newer Windows versions). Click `Install`. If you later have issues with installing Evennia due to a failure to build the "Twisted wheels", this is where you are missing things. If you have trouble, use Python 3.10 for now (2022)
 * You *may* need the [pypiwin32](https://pypi.python.org/pypi/pypiwin32) Python headers. Install these only if you have issues.
 
 You can install Evennia wherever you want. `cd` to that location and create a
