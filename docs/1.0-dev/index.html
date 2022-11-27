@@ -60,7 +60,7 @@
 <li><a class="reference internal" href="#">Evennia Documentation</a><ul>
 <li><a class="reference internal" href="#setup">Setup</a></li>
 <li><a class="reference internal" href="#tutorials-and-howtos">Tutorials and Howtos</a></li>
-<li><a class="reference internal" href="#developing-with-evennia">Developing with Evennia</a></li>
+<li><a class="reference internal" href="#the-evennia-library">The Evennia Library</a></li>
 <li><a class="reference internal" href="#contributions-and-info">Contributions and Info</a></li>
 <li><a class="reference internal" href="#all-sections">All Sections</a><ul>
 </ul>
@@ -114,6 +114,7 @@ or the original github wiki. You have been warned.</p>
 <p>This is the manual of <a class="reference external" href="https://www.evennia.com">Evennia</a>, the open source Python <code class="docutils literal notranslate"><span class="pre">MU*</span></code> creation system. Use the Search bar on the left to find or discover interesting articles.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="Evennia-Introduction.html"><span class="doc std std-doc">Introduction</span></a> - what is this Evennia thing?</p></li>
+<li><p><a class="reference internal" href="Evennia-In-Pictures.html"><span class="doc std std-doc">Evennia in Pictures</span></a> - a visual overview of Evennia</p></li>
 <li><p><a class="reference internal" href="Contributing.html"><span class="doc std std-doc">Contributing and Getting help</span></a> - when you get stuck or want to chip in</p></li>
 </ul>
 <section id="setup">
@@ -131,25 +132,24 @@ or the original github wiki. You have been warned.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="Howtos/Howtos-Overview.html#beginner-tutorial"><span class="std std-doc">The Beginner Tutorial</span></a> - learn the basics and build a small game (in progress)</p></li>
 <li><p><a class="reference internal" href="Howtos/Howtos-Overview.html#howtos"><span class="std std-doc">Tutorials and Howto’s</span></a> - mixed tutorials and help articles to learn Evennia</p></li>
+<li><p><a class="reference internal" href="Coding/Coding-Overview.html"><span class="doc std std-doc">Coding with Evennia</span></a> - resources and hints for coding and development</p></li>
 </ul>
 </section>
-<section id="developing-with-evennia">
-<h2>Developing with Evennia<a class="headerlink" href="#developing-with-evennia" title="Permalink to this headline">¶</a></h2>
+<section id="the-evennia-library">
+<h2>The Evennia Library<a class="headerlink" href="#the-evennia-library" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="Coding/Coding-Overview.html"><span class="doc std std-doc">Coding with Evennia</span></a> - coding and development hints and resources</p></li>
 <li><p><a class="reference internal" href="Components/Components-Overview.html"><span class="doc std std-doc">Core components</span></a> - the core building blocks of Evennia</p></li>
 <li><p><a class="reference internal" href="Concepts/Concepts-Overview.html"><span class="doc std std-doc">Core Concepts</span></a> - larger-scale concepts and features</p></li>
 <li><p><a class="reference internal" href="Evennia-API.html"><span class="doc std std-doc">API</span></a> - the full API-reference, generated from source</p></li>
-<li><p><a class="reference internal" href="Components/Default-Commands.html"><span class="doc std std-doc">Default Commands</span></a> - list of game commands included out of the box</p></li>
 </ul>
 </section>
 <section id="contributions-and-info">
 <h2>Contributions and Info<a class="headerlink" href="#contributions-and-info" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="Contribs/Contribs-Overview.html"><span class="doc std std-doc">Contribs</span></a> - game-specific code and snippets to use for your game</p></li>
-<li><p><a class="reference internal" href="Contributing-Docs.html"><span class="doc std std-doc">Documentation - how to contribute</span></a> - if you want to help out</p></li>
-<li><p><a class="reference internal" href="Links.html"><span class="doc std std-doc">Links</span></a> - useful external links for extra reading</p></li>
+<li><p><a class="reference internal" href="Contributing-Docs.html"><span class="doc std std-doc">Documentation - how to contribute</span></a> - if you want to help out with this manual</p></li>
 <li><p><a class="reference internal" href="Licensing.html"><span class="doc std std-doc">License</span></a> - Evennia licensing FAQ</p></li>
+<li><p><a class="reference internal" href="Links.html"><span class="doc std std-doc">Links</span></a> - useful links if you need extra reading</p></li>
 </ul>
 </section>
 <hr class="docutils" />
@@ -162,14 +162,40 @@ or the original github wiki. You have been warned.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Evennia-Introduction.html">Evennia Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-Introduction.html#what-is-evennia">What is Evennia?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-Introduction.html#bare-bones">Bare-bones?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-Introduction.html#framework">Framework?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-Introduction.html#server">Server?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-Introduction.html#python">Python?</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Evennia-Introduction.html#can-i-test-it-somewhere">Can I test it somewhere?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Evennia-Introduction.html#what-you-need-to-know-to-work-with-evennia">What you need to know to work with Evennia</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-Introduction.html#what-do-i-need-to-know-to-work-with-evennia">What do I need to know to work with Evennia?</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Evennia-Introduction.html#i-dont-know-or-dont-want-to-do-any-programming-i-just-want-to-run-a-game">I don’t know (or don’t want to do) any programming - I just want to run a game!</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Evennia-Introduction.html#i-know-basic-python-or-i-am-willing-to-learn">I know basic Python, or I am willing to learn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Evennia-Introduction.html#i-know-my-python-stuff-and-i-am-willing-to-use-it">I know my Python stuff and I am willing to use it!</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Evennia-Introduction.html#where-to-from-here">Where to from here?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Evennia-In-Pictures.html">Evennia in pictures</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-In-Pictures.html#the-two-main-evennia-pieces">The two main Evennia pieces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-In-Pictures.html#initializing-the-game-folder">Initializing the game folder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-In-Pictures.html#the-database">The database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-In-Pictures.html#from-database-to-python">From database to Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-In-Pictures.html#attributes">Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-In-Pictures.html#controlling-the-action">Controlling the action</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-In-Pictures.html#commands">Commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-In-Pictures.html#command-sets">Command Sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Evennia-In-Pictures.html#merging-command-sets">Merging Command Sets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-In-Pictures.html#now-go-and-explore">Now go and explore!</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Setup/Running-Evennia.html">Start Stop Reload</a><ul>

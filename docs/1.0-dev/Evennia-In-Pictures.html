@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Evennia in pictures &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Start Stop Reload" href="Setup/Running-Evennia.html" />
+    <link rel="prev" title="Evennia Introduction" href="Evennia-Introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Setup/Running-Evennia.html" title="Start Stop Reload"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Evennia-Introduction.html" title="Evennia Introduction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia in pictures</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Evennia in pictures</a><ul>
+<li><a class="reference internal" href="#the-two-main-evennia-pieces">The two main Evennia pieces</a><ul>
+<li><a class="reference internal" href="#initializing-the-game-folder">Initializing the game folder</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-database">The database</a><ul>
+<li><a class="reference internal" href="#from-database-to-python">From database to Python</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#controlling-the-action">Controlling the action</a><ul>
+<li><a class="reference internal" href="#commands">Commands</a></li>
+<li><a class="reference internal" href="#command-sets">Command Sets</a></li>
+<li><a class="reference internal" href="#merging-command-sets">Merging Command Sets</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#now-go-and-explore">Now go and explore!</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Evennia-Introduction.html"
+                        title="previous chapter">Evennia Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Setup/Running-Evennia.html"
+                        title="next chapter">Start Stop Reload</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Evennia-In-Pictures.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Evennia-In-Pictures.html">1.0-dev (develop branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-in-pictures">
+<h1>Evennia in pictures<a class="headerlink" href="#evennia-in-pictures" title="Permalink to this headline">¶</a></h1>
+<aside class="sidebar">
+<p>This is <em>not</em> an exhaustive overview. Think of it as a snapshot of some interesting things to start looking into.</p>
+</aside>
+<p>This article tries to give a high-level overview of the Evennia server and some of its moving parts. It should hopefully give a better understanding of how everything hangs together.</p>
+<div style="clear: right;"></div>
+<section id="the-two-main-evennia-pieces">
+<h2>The two main Evennia pieces<a class="headerlink" href="#the-two-main-evennia-pieces" title="Permalink to this headline">¶</a></h2>
+<p><img alt="evennia portal and server" src="https://2.bp.blogspot.com/-0-oir21e76k/W3kaUuGrg3I/AAAAAAAAJLU/qlQWmXlAiGUz_eKG_oYYVRf0yP6KVDdmQCEwYBhgL/s1600/Evennia_illustrated_fig1.png" /></p>
+<p>What you see in this figure is the part of Evennia that you download from us. It will <em>not</em> start a game on its own. We’ll soon create the missing ‘jigsaw puzzle piece’. But first, let’s see what we have.</p>
+<p>First, you’ll notice that Evennia has two main components - the <a class="reference internal" href="Components/Portal-And-Server.html"><span class="doc std std-doc">Portal and Server</span></a>. These are separate processes.</p>
+<p>The Portal tracks all connections to the outside world and understands Telnet protocols, websockets, SSH and so on. It knows nothing about the database or the game state. Data sent between the Portal and the Server is protocol-agnostic, meaning the Server sends/receives the same data regardless of how the user is connected. Hiding behind the Portal also means that the Server can be completely rebooted without anyone getting disconnected.</p>
+<p>The Server is the main “mud driver” and handles everything related to the game world and its database. It’s asynchronous and uses <a class="reference external" href="http://twistedmatrix.com/trac/">Twisted</a>.</p>
+<p>In the same process of the Server is also the Evennia <a class="reference internal" href="Components/Webserver.html"><span class="doc std std-doc">Web Server</span></a> . This serves the game’s website.</p>
+<div style="clear: right;"></div>
+<section id="initializing-the-game-folder">
+<h3>Initializing the game folder<a class="headerlink" href="#initializing-the-game-folder" title="Permalink to this headline">¶</a></h3>
+<p><img alt="creating the game folder" src="https://4.bp.blogspot.com/-TuLk-PIVyK8/W3kaUi-e-MI/AAAAAAAAJLc/DA9oMA6m5ooObZlf0Ao6ywW1jHqsPQZAQCEwYBhgL/s1600/Evennia_illustrated_fig2.png" /></p>
+<p>After <a class="reference internal" href="Setup/Installation.html"><span class="doc std std-doc">installing evennia</span></a> you will have the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command available. Using this you create a game directory (let’s call it <code class="docutils literal notranslate"><span class="pre">mygame</span></code>). This is the darker grey piece in this figure. It was missing previously. This is where you will create your dream game!</p>
+<p>During initialization, Evennia will create Python module templates in <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> and link up all configurations to make mygame a fully functioning, if empty, game, ready to start extending.</p>
+<p>As part of the intialization, you’ll create the database and then start the server. From this point on, your new game is up and running and you can connect to your new game with telnet on localhost:4000 or by pointing your browser to <a class="reference external" href="http://localhost:4001">http://localhost:4001</a>.</p>
+<p>Now, our new mygame world needs Characters, locations, items and more!</p>
+</section>
+</section>
+<section id="the-database">
+<h2>The database<a class="headerlink" href="#the-database" title="Permalink to this headline">¶</a></h2>
+<p><img alt="image3" src="https://3.bp.blogspot.com/-81zsySVi_EE/W3kaVRn4IWI/AAAAAAAAJLc/yA-j1Nwy4H8F28BF403EDdCquYZ9sN4ZgCEwYBhgL/s1600/Evennia_illustrated_fig3.png" /></p>
+<p>Evennia is fully persistent and abstracts its database in Python using <a class="reference external" href="https://www.djangoproject.com/">Django</a>. The database tables are few and generic, each represented by a single Python class. As seen in this figure, the example <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code> Python class represents one database table. The properties on the class are the columns (fields) of the table. Each row is an instance of the class (one entity in the game).</p>
+<p>Among the example columns shown is the key (name) of the <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code> entity as well as a <a class="reference external" href="https://en.wikipedia.org/wiki/Foreign_key">Foreign key</a>-relationship for its current “location”.</p>
+<p>From the figure we can see that <em>Trigger</em> is in the <em>Dungeon</em>, carrying his trusty crossbow <em>Old Betsy</em>!</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">db_typeclass_path</span></code> is an important field. This is a python-style path and tells Evennia which subclass of <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code> is actually representing this entity. This is the core of Evennia’s <a class="reference internal" href="Components/Typeclasses.html"><span class="doc std std-doc">Typeclass system</span></a>, which allows you to work with database entities using normal Python.</p>
+<section id="from-database-to-python">
+<h3>From database to Python<a class="headerlink" href="#from-database-to-python" title="Permalink to this headline">¶</a></h3>
+<p><img alt="image4" src="https://2.bp.blogspot.com/--4_MqVdHj8Q/W3kaVpdAZKI/AAAAAAAAJLk/jvTsuBBUlkEbBCaV9vyIU0IWiuF6PLsSwCEwYBhgL/s1600/Evennia_illustrated_fig4.png" /></p>
+<p>Here we see the (somewhat simplified) Python class inheritance tree that you as an Evennia developer will see, along with the three instanced entities.</p>
+<p><a class="reference internal" href="Components/Objects.html"><span class="doc std std-doc">Objects</span></a> represent stuff you will actually see in-game and its child classes implement all the handlers, helper code and the hook methods that Evennia makes use of. In your <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> folder you just import these and overload the things you want to modify. In this way, the <code class="docutils literal notranslate"><span class="pre">Crossbow</span></code> is modified to do the stuff only crossbows can do and <code class="docutils literal notranslate"><span class="pre">CastleRoom</span></code> adds whatever it is that is special about rooms in the castle.</p>
+<p>When creating a new entity in-game, a new row will automatically be created in the database table and then <code class="docutils literal notranslate"><span class="pre">Trigger</span></code> will appear in-game! If we, in code, search the database for Trigger, we will get an instance of the <a class="reference internal" href="Components/Objects.html#characters"><span class="std std-doc">Character</span></a> class back - a Python object we can work with normally.</p>
+<p>Looking at this you may think that you will be making a lot of classes for every different object in the game. Your exact layout is up to you but Evennia also offers other ways to customize each individual object. Read on.</p>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<p><img alt="image5" src="https://3.bp.blogspot.com/-6ulv5T_gUCI/W3kaViWBBfI/AAAAAAAAJLU/0NqeAsz3YVsQKwpODzsmjzR-7tICw1pTQCEwYBhgL/s1600/Evennia_illustrated_fig5.png" /></p>
+<p>The <a class="reference internal" href="Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> is another class directly tied to the database behind the scenes. Each <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> basically has a key, a value and a ForeignKey relation to another <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code>.</p>
+<p>An <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> serializes Python constructs into the database, meaning you can store basically any valid Python, like the dictionary of skills in this image. The “strength” and “skills” Attributes will henceforth be reachable directly from the <em>Trigger</em> object. This (and a few other resources) allow you to create individualized entities while only needing to create classes for those that really behave fundamentally different.</p>
+<div style="clear: right;"></div>
+</section>
+</section>
+<section id="controlling-the-action">
+<h2>Controlling the action<a class="headerlink" href="#controlling-the-action" title="Permalink to this headline">¶</a></h2>
+<p><img alt="image6" src="https://4.bp.blogspot.com/-u-npXjlq6VI/W3kaVwAoiUI/AAAAAAAAJLY/T9bhrzhJJuQwTR8nKHH9GUxQ74hyldKOgCEwYBhgL/s1600/Evennia_illustrated_fig6.png" /></p>
+<p><em>Trigger</em> is most likely played by a human. This human connects to the game via one or more <a class="reference internal" href="Components/Sessions.html"><span class="doc std std-doc">Sessions</span></a>, one for each client they connect with.</p>
+<p>Their account on <code class="docutils literal notranslate"><span class="pre">mygame</span></code> is represented by a <a class="reference internal" href="Components/Accounts.html"><span class="doc std std-doc">Account</span></a> entity. The <code class="docutils literal notranslate"><span class="pre">AccountDB</span></code> holds the password and other account info but has no existence in the game world. Through the <code class="docutils literal notranslate"><span class="pre">Account</span></code> entity, <code class="docutils literal notranslate"><span class="pre">Sessions</span></code> can control (“puppet”) one or more <code class="docutils literal notranslate"><span class="pre">Object</span></code> entities in-game.</p>
+<p>In this figure, a user is connected to the game with three <code class="docutils literal notranslate"><span class="pre">Session</span></code>s simultaneously. They are logged in to their player <code class="docutils literal notranslate"><span class="pre">Account</span></code> named <em>Richard</em>. Through these <code class="docutils literal notranslate"><span class="pre">Session</span></code>s they are simultaneously puppeting the in-game entities <em>Trigger</em> and <em>Sir Hiss</em>. Evennia can be configured to allow or disallow a range of different <a class="reference internal" href="Concepts/Connection-Styles.html"><span class="doc std std-doc">Connection Styles</span></a> like this.</p>
+<section id="commands">
+<h3>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
+<p><img alt="image7" src="https://3.bp.blogspot.com/-_RM9-Pb2uKg/W3kaWIs4ndI/AAAAAAAAJLc/n45Hcvk1PiYhNdBbAAr_JjkebRVReffTgCEwYBhgL/s1600/Evennia_illustrated_fig7.png" /></p>
+<p>For users to be able to control their game entities and actually play the game, they need to be able to send <a class="reference internal" href="Components/Commands.html"><span class="doc std std-doc">Commands</span></a>.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Command</span></code> can be made to represent anything a user can input actively to the game, such as the <code class="docutils literal notranslate"><span class="pre">look</span></code> command, <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">quit</span></code>, <code class="docutils literal notranslate"><span class="pre">emote</span></code> and so on.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Command</span></code> handles both argument parsing and execution. Since each Command is described with a normal Python class, it means that you can implement parsing once and then just have the rest of your commands inherit the effect. In the above figure, the <code class="docutils literal notranslate"><span class="pre">DIKUCommand</span></code> parent class implements parsing of all the syntax common for all DIKU-style commands so <code class="docutils literal notranslate"><span class="pre">CmdLook</span></code> and others won’t have to.</p>
+</section>
+<section id="command-sets">
+<h3>Command Sets<a class="headerlink" href="#command-sets" title="Permalink to this headline">¶</a></h3>
+<p><img alt="image8" src="https://2.bp.blogspot.com/-pgpYPsd4CLM/W3kaWG2ffuI/AAAAAAAAJLg/LKl4m4-1xkYxVA7JXXuVP28Q9ZqhNZXTACEwYBhgL/s1600/Evennia_illustrated_fig8.png" /></p>
+<p>All Evennia Commands are are always joined together in <code class="docutils literal notranslate"><span class="pre">CommandSet</span></code>s. These are containers that can hold many <code class="docutils literal notranslate"><span class="pre">Command</span></code> instances. A given <code class="docutils literal notranslate"><span class="pre">Command</span></code> class can contribute instances to any number of <code class="docutils literal notranslate"><span class="pre">CommandSet</span></code>s. These sets are always associated with game entities.</p>
+<p>In this figure, <em>Trigger</em> has received a <code class="docutils literal notranslate"><span class="pre">CommandSet</span></code> with a bunch of useful commands that he (and by extension his controlling <code class="docutils literal notranslate"><span class="pre">Account</span></code>/Player) can now use.</p>
+<p><img alt="image9" src="https://3.bp.blogspot.com/-acmVo7kUZCk/W3kaWZWlT0I/AAAAAAAAJLk/nnFrNaq_TNoO08MDleadwhHfVQLdO74eACEwYBhgL/s1600/Evennia_illustrated_fig9.png" /></p>
+<p><em>Trigger</em>’s <code class="docutils literal notranslate"><span class="pre">CommandSet</span></code> is only available to himself. In this figure we put a <code class="docutils literal notranslate"><span class="pre">CommandSet</span></code> with three commands on the Dungeon room. The room itself has no use for commands but we configure this set to affect those <em>inside it</em> instead. Note that we let these be <em>different versions</em> of these commands (hence the different color)! We’ll explain why below.</p>
+<div style="clear: right;"></div>
+</section>
+<section id="merging-command-sets">
+<h3>Merging Command Sets<a class="headerlink" href="#merging-command-sets" title="Permalink to this headline">¶</a></h3>
+<p><img alt="image10" src="https://4.bp.blogspot.com/--lixKOYjEe4/W3kaUl9SFXI/AAAAAAAAJLQ/tCGd-dFhZ8gfLH1HAsQbZdaIS_OQuvU3wCEwYBhgL/s1600/Evennia_illustrated_fig10.png" /></p>
+<p>Multiple <code class="docutils literal notranslate"><span class="pre">CommandSet</span></code>s can be dynamically (and temporarily) merged together in a similar fashion as <a class="reference external" href="https://en.wikipedia.org/wiki/Set_theory">Set Theory</a>, except the merge priority can be customized. In this figure we see a <em>Union</em>-type merger where the Commands from Dungeon of the same name temporarily override the commands from Trigger. While in the Dungeon, Trigger will be using this version of those commands. When Trigger leaves, his own <code class="docutils literal notranslate"><span class="pre">CommandSet</span></code> will be restored unharmed.</p>
+<p>Why would we want to do this? Consider for example that the dungeon is in darkness. We can then let the Dungeon’s version of the <code class="docutils literal notranslate"><span class="pre">look</span></code> command show only the contents of the room if Trigger is carrying a light source. You might also not be able to easily get things in the room without light - you might even be fumbling randomly in your inventory!</p>
+<p>Any number of Command Sets can be merged on the fly. This allows you to implement multiple overlapping states (like combat in a darkened room while intoxicated) without needing huge if statements for every possible combination. The merger is non-destructive, so you can remove cmdsets to get back previous states as needed.</p>
+</section>
+</section>
+<section id="now-go-and-explore">
+<h2>Now go and explore!<a class="headerlink" href="#now-go-and-explore" title="Permalink to this headline">¶</a></h2>
+<p>This is by no means a full list of Evennia features. But it should give you a bunch of interesting concepts to read more about.</p>
+<p>You can find a lot more detail in the  <a class="reference internal" href="Components/Components-Overview.html"><span class="doc std std-doc">Core Components</span></a> and <a class="reference internal" href="Concepts/Concepts-Overview.html"><span class="doc std std-doc">Core Concepts</span></a> sections of this manual.  If you haven’t read it already, you should also check out the <a class="reference internal" href="Evennia-Introduction.html"><span class="doc std std-doc">Evennia Introduction</span></a>.</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Setup/Running-Evennia.html" title="Start Stop Reload"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Evennia-Introduction.html" title="Evennia Introduction"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia in pictures</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

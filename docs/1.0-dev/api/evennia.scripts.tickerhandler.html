@@ -178,7 +178,7 @@ way it operates.</p>
 using it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>start_delay</strong> (<em>int</em>) – Time to way before starting.</p>
+<dd class="field-odd"><p><strong>start_delay</strong> (<em>int</em><em>, </em><em>optional</em>) – Time to way before starting.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -270,8 +270,7 @@ subscribed objects at given times.</p>
 restoring the pool will automatically re-populate the pool.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Only stop tickers with this
-interval.</p>
+<dd class="field-odd"><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Only stop tickers with this interval.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -331,30 +330,29 @@ non-persistent tickers must be killed.</p>
 <dd><p>Add subscription to tickerhandler</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Interval in seconds between calling
+<dd class="field-odd"><p><strong>*args</strong> – Will be passed into the callback every time it’s called. This must be
+data possible to pickle.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>interval</strong> (<em>int</em>) – Interval in seconds between calling
 <strong>callable(*args, **kwargs)</strong></p></li>
-<li><p><strong>callable</strong> (<em>callable function</em><em> or </em><em>method</em><em>, </em><em>optional</em>) – This
+<li><p><strong>callable</strong> (<em>callable function</em><em> or </em><em>method</em>) – This
 should either be a stand-alone function or a method on a
 typeclassed entity (that is, one that can be saved to the
 database).</p></li>
-<li><p><strong>idstring</strong> (<em>str</em><em>, </em><em>optional</em>) – Identifier for separating
+<li><p><strong>idstring</strong> (<em>str</em>) – Identifier for separating
 this ticker-subscription from others with the same
 interval. Allows for managing multiple calls with
 the same time interval and callback.</p></li>
-<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – A ticker will always survive
+<li><p><strong>persistent</strong> (<em>bool</em>) – A ticker will always survive
 a server reload. If this is unset, the ticker will be
 deleted by a server shutdown.</p></li>
-<li><p><strong>args</strong> (<em>optional</em>) – These will be passed into the
-callback every time it is called. This must be data possible
-to pickle!</p></li>
-<li><p><strong>kwargs</strong> (<em>optional</em>) – These will be passed into the
-callback every time it is called. This must be data possible
-to pickle!</p></li>
+<li><p><strong>Will be passed into the callback every time it is called.</strong> (<em>**kwargs</em>) – This must be data possible to pickle.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>store_key (tuple)</em> –</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>store_key (tuple)</em> –</p>
 <dl class="simple">
 <dt>The immutable store-key for this ticker. This can</dt><dd><p>be stored and passed into <strong>.remove(store_key=store_key)</strong> later to
 easily stop this ticker later.</p>
@@ -377,14 +375,14 @@ when wanting to modify/remove the ticker later.</p>
 <code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">callback</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove ticker subscription from handler.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Interval of ticker to remove.</p></li>
+<li><p><strong>interval</strong> (<em>int</em>) – Interval of ticker to remove.</p></li>
 <li><p><strong>callback</strong> (<em>callable function</em><em> or </em><em>method</em>) – Either a function or
 the method of a typeclassed object.</p></li>
-<li><p><strong>idstring</strong> (<em>str</em><em>, </em><em>optional</em>) – Identifier id of ticker to remove.</p></li>
-<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether this ticker is persistent or not.</p></li>
-<li><p><strong>store_key</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, all other kwargs are ignored and only
+<li><p><strong>idstring</strong> (<em>str</em>) – Identifier id of ticker to remove.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em>) – Whether this ticker is persistent or not.</p></li>
+<li><p><strong>store_key</strong> (<em>str</em>) – If given, all other kwargs are ignored and only
 this is used to identify the ticker.</p></li>
 </ul>
 </dd>
@@ -403,7 +401,7 @@ but if the <strong>store_key</strong> is explicitly given, this is used instead.
 <dd><p>Stop/remove tickers from handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>interval</strong> (<em>int</em>) – Only stop tickers with this interval.</p>
+<dd class="field-odd"><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Only stop tickers with this interval.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -414,20 +412,15 @@ non-db objects.</p>
 <dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.all">
 <code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.all" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all subscriptions.</p>
+<dd><p>Get all ticker subscriptions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>interval</strong> (<em>int</em>) – Limit match to tickers with this interval.</p>
+<dd class="field-odd"><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Limit match to tickers with this interval.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>tickers (list)</em> –</p>
-<dl class="simple">
-<dt>If <strong>interval</strong> was given, this is a list of</dt><dd><p>tickers using that interval.</p>
-</dd>
-<dt>tickerpool_layout (dict): If <strong>interval</strong> was <em>not</em> given,</dt><dd><p>this is a dict {interval1: [ticker1, ticker2, …],  …}</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>list or dict</em> – If <strong>interval</strong> was given, this is a list of tickers using that interval.
+If <strong>interval</strong> was <em>not</em> given, this is a dict
+<strong>{interval1: [ticker1, ticker2, …],  …}</strong></p>
 </dd>
 </dl>
 </dd></dl>
