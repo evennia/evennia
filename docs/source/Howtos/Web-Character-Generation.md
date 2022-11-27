@@ -10,15 +10,14 @@ log into the game and play immediately (the Character will not require staff app
 like that). This guide does not go over how to create an AccountDB on the website with the right
 permissions to transfer to their web-created characters.
 
-It is probably most useful to set `MULTISESSION_MODE = 2` or `3` (which gives you a character-
-selection screen when you log into the game later). Other modes can be used with some adaptation to
-auto-puppet the new Character.
+It is probably most useful to set `AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False` so that all player
+characters can be created through this.
 
 You should have some familiarity with how Django sets up its Model Template View framework. You need
-to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-
-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look
-at the [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django
-does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website
+to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-Tutorial).
+If you don’t understand the listed tutorial or have a grasp of Django basics, please look at the
+[Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django does,
+before throwing Evennia into the mix (Evennia shares its API and attributes with the website
 interface). This guide will outline the format of the models, views, urls, and html templates
 needed.
 
