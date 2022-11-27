@@ -13,6 +13,7 @@
 This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles.
 
 - [Introduction](./Evennia-Introduction.md) - what is this Evennia thing? 
+- [Evennia in Pictures](./Evennia-In-Pictures.md) - a visual overview of Evennia
 - [Contributing and Getting help](./Contributing.md) - when you get stuck or want to chip in
 
 ## Setup
@@ -27,21 +28,20 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 - [The Beginner Tutorial](Howtos/Howtos-Overview.md#beginner-tutorial) - learn the basics and build a small game (in progress)
 - [Tutorials and Howto's](Howtos/Howtos-Overview.md#howtos) - mixed tutorials and help articles to learn Evennia
+- [Coding with Evennia](Coding/Coding-Overview.md) - resources and hints for coding and development
 
-## Developing with Evennia
+## The Evennia Library
 
-- [Coding with Evennia](Coding/Coding-Overview.md) - coding and development hints and resources
 - [Core components](Components/Components-Overview.md) - the core building blocks of Evennia
 - [Core Concepts](Concepts/Concepts-Overview.md) - larger-scale concepts and features
 - [API](./Evennia-API.md) - the full API-reference, generated from source
-- [Default Commands](Components/Default-Commands.md) - list of game commands included out of the box
 
 ## Contributions and Info
 
 - [Contribs](Contribs/Contribs-Overview.md) - game-specific code and snippets to use for your game
-- [Documentation - how to contribute](./Contributing-Docs.md) - if you want to help out
-- [Links](./Links.md) - useful external links for extra reading
+- [Documentation - how to contribute](./Contributing-Docs.md) - if you want to help out with this manual
 - [License](./Licensing.md) - Evennia licensing FAQ
+- [Links](./Links.md) - useful links if you need extra reading
 
 ----
 
@@ -56,6 +56,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 :maxdepth: 3
 
 Evennia-Introduction
+Evennia-In-Pictures
 Setup/Running-Evennia
 Setup/Updating-Evennia
 Setup/Setup-Overview

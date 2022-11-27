@@ -14,7 +14,7 @@ It is probably most useful to set `AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False` s
 characters can be created through this.
 
 You should have some familiarity with how Django sets up its Model Template View framework. You need
-to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-Tutorial).
+to understand what is happening in the basic [Web Character View tutorial](./Web-Character-View-Tutorial.md).
 If you don’t understand the listed tutorial or have a grasp of Django basics, please look at the
 [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django does,
 before throwing Evennia into the mix (Evennia shares its API and attributes with the website
