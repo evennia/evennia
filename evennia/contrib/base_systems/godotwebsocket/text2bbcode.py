@@ -171,7 +171,7 @@ because the order of how tags are opened and closed are important to display in 
 """
 
 
-class RootTag(object):
+class RootTag:
     __slots__ = ('child',)
 
     def __init__(self):
@@ -181,7 +181,7 @@ class RootTag(object):
         return str(self.child) if self.child else ""
 
 
-class ChildTag(object):
+class ChildTag:
     def __init__(self, parent):
         self.parent = parent
         if parent:
