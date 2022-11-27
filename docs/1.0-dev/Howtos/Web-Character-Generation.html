@@ -150,14 +150,13 @@ finishing character generation the Character will be created immediately and the
 log into the game and play immediately (the Character will not require staff approval or anything
 like that). This guide does not go over how to create an AccountDB on the website with the right
 permissions to transfer to their web-created characters.</p>
-<p>It is probably most useful to set <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span> <span class="pre">=</span> <span class="pre">2</span></code> or <code class="docutils literal notranslate"><span class="pre">3</span></code> (which gives you a character-
-selection screen when you log into the game later). Other modes can be used with some adaptation to
-auto-puppet the new Character.</p>
+<p>It is probably most useful to set <code class="docutils literal notranslate"><span class="pre">AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span> <span class="pre">=</span> <span class="pre">False</span></code> so that all player
+characters can be created through this.</p>
 <p>You should have some familiarity with how Django sets up its Model Template View framework. You need
-to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-
-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look
-at the <a class="reference external" href="https://docs.djangoproject.com/en/1.8/intro/">Django tutorial</a> to get a taste of what Django
-does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website
+to understand what is happening in the basic <a class="reference internal" href="Web-Character-View-Tutorial.html"><span class="doc std std-doc">Web Character View tutorial</span></a>.
+If you don’t understand the listed tutorial or have a grasp of Django basics, please look at the
+<a class="reference external" href="https://docs.djangoproject.com/en/1.8/intro/">Django tutorial</a> to get a taste of what Django does,
+before throwing Evennia into the mix (Evennia shares its API and attributes with the website
 interface). This guide will outline the format of the models, views, urls, and html templates
 needed.</p>
 </section>
