@@ -149,9 +149,10 @@ Extra Installation Instructions:
 
 """
 import re
-from string import punctuation
 from collections import defaultdict
+from string import punctuation
 
+import inflect
 from django.conf import settings
 
 from evennia.commands.cmdset import CmdSet
@@ -159,9 +160,13 @@ from evennia.commands.command import Command
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultObject
 from evennia.utils import ansi, logger
-from evennia.utils.utils import iter_to_str, lazy_property, make_iter, variable_from_module
+from evennia.utils.utils import (
+    iter_to_str,
+    lazy_property,
+    make_iter,
+    variable_from_module,
+)
 
-import inflect
 _INFLECT = inflect.engine()
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
@@ -1525,6 +1530,7 @@ class ContribRPObject(DefaultObject):
         """
         Get the ‘characters’ component of the object description. Called by return_appearance.
         """
+
         def _filter_visible(obj_list):
             return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
 
@@ -1533,7 +1539,7 @@ class ContribRPObject(DefaultObject):
             char.get_display_name(looker, pose=pose, **kwargs) for char in characters
         )
 
-        return f"\n{character_names}" if character_names else ""        
+        return f"\n{character_names}" if character_names else ""
 
     def get_display_things(self, looker, pose=True, **kwargs):
         """
@@ -1562,9 +1568,9 @@ class ContribRPObject(DefaultObject):
             if not pose:
                 pose = ""
             posed_things[pose].append(thing)
-        
+
         display_strings = []
-        
+
         for pose, thinglist in posed_things.items():
             grouped_things = defaultdict(list)
             for thing in thinglist:
@@ -1588,7 +1594,7 @@ class ContribRPObject(DefaultObject):
             return ""
 
         return "\n" + "\n".join(display_strings)
-  
+
 
 class ContribRPRoom(ContribRPObject):
     """

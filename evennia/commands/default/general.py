@@ -4,6 +4,7 @@ General Character commands usually available to all characters
 import re
 
 from django.conf import settings
+
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
 

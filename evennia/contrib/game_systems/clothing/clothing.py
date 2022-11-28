@@ -73,7 +73,9 @@ with which to test the system:
 
 """
 from collections import defaultdict
+
 from django.conf import settings
+
 from evennia import DefaultCharacter, DefaultObject, default_cmds
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils import at_search_result, evtable, inherits_from, iter_to_str

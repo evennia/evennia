@@ -3,8 +3,9 @@ Unit tests for verb conjugation.
 
 """
 
-from parameterized import parameterized
 from django.test import TestCase
+from parameterized import parameterized
+
 from . import conjugate, pronouns
 
 
