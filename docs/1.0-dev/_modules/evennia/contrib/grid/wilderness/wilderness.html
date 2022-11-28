@@ -201,8 +201,9 @@
     <span class="n">create_object</span><span class="p">,</span>
     <span class="n">create_script</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+
 
 <div class="viewcode-block" id="create_wilderness"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.create_wilderness">[docs]</a><span class="k">def</span> <span class="nf">create_wilderness</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">mapprovider</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preserve_items</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -296,7 +297,7 @@
     <span class="c1"># Stores a dictionary of items on the map with their coordinates</span>
     <span class="c1"># The key is the item, the value are the coordinates as (x, y) tuple.</span>
     <span class="n">itemcoordinates</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">()</span>
-    
+
     <span class="c1"># Determines whether or not rooms are recycled despite containing non-player objects</span>
     <span class="c1"># True means that leaving behind a non-player object will prevent the room from being recycled</span>
     <span class="c1"># in order to preserve the object</span>
@@ -321,7 +322,7 @@
         <span class="c1"># allows quick retrieval if a new room is needed without having to</span>
         <span class="c1"># create it.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span> <span class="o">=</span> <span class="p">[]</span></div>
-        
+
 <div class="viewcode-block" id="WildernessScript.at_server_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after the server is started or reloaded.</span>
@@ -378,7 +379,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            [Object, ]: list of Objects at coordinates</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">[</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">item_coords</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">item_coords</span> <span class="o">==</span> <span class="n">coordinates</span> <span class="ow">and</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">item</span>
+            <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">item_coords</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">item_coords</span> <span class="o">==</span> <span class="n">coordinates</span> <span class="ow">and</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">]</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WildernessScript.move_obj"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.move_obj">[docs]</a>    <span class="k">def</span> <span class="nf">move_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">):</span>
@@ -413,7 +418,13 @@
                     <span class="c1"># Should we preserve rooms with any objects?</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_items</span><span class="p">:</span>
                         <span class="c1"># Yes - check if ANY objects besides the exits are in old_room</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">([</span><span class="n">ob</span> <span class="k">for</span> <span class="n">ob</span> <span class="ow">in</span> <span class="n">old_room</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">ob</span><span class="p">,</span> <span class="n">WildernessExit</span><span class="p">)]):</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+                            <span class="p">[</span>
+                                <span class="n">ob</span>
+                                <span class="k">for</span> <span class="n">ob</span> <span class="ow">in</span> <span class="n">old_room</span><span class="o">.</span><span class="n">contents</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">ob</span><span class="p">,</span> <span class="n">WildernessExit</span><span class="p">)</span>
+                            <span class="p">]</span>
+                        <span class="p">):</span>
                             <span class="c1"># There is, so we&#39;ll create a new room</span>
                             <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
@@ -501,7 +512,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Moves a room back to storage. If room is not a WildernessRoom or there</span>
 <span class="sd">        is something left inside the room, then this does nothing.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Implementation note: If `preserve_items` is False (the default) then any</span>
 <span class="sd">        objects left in the rooms will be moved to None. You may want to implement</span>
 <span class="sd">        your own cleanup or recycling routine for these objects.</span>
@@ -703,11 +714,11 @@
 
         <span class="n">name</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">name</span></div>
-    
+
 <div class="viewcode-block" id="WildernessRoom.get_display_desc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessRoom.get_display_desc">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the description of the room. This is a core evennia hook.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Allows the room&#39;s description to be customized in an ndb value,</span>
 <span class="sd">        avoiding having to write to the database on moving.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -718,6 +729,7 @@
 
         <span class="c1"># Otherwise, use the normal description hook.</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
 
 <div class="viewcode-block" id="WildernessExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessExit">[docs]</a><span class="k">class</span> <span class="nc">WildernessExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
