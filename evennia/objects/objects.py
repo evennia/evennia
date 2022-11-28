@@ -18,6 +18,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripthandler import ScriptHandler
+from evennia.server.signals import SIGNAL_EXIT_TRAVERSED
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import ansi, create, funcparser, logger, search
@@ -2886,6 +2887,7 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
         if self.obj.access(self.caller, "traverse"):
             # we may traverse the exit.
             self.obj.at_traverse(self.caller, self.obj.destination)
+            SIGNAL_EXIT_TRAVERSED.send(sender=self.obj, traverser=self.caller)
         else:
             # exit is locked
             if self.obj.db.err_traverse:
