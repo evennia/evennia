@@ -7,12 +7,12 @@ to your in-game channels to communicate between in-game and out.
 ## Configuring Discord
 
 The first thing you'll need is to set up a Discord bot to connect to your game.
-Go to the [bot applications](https://discord.com/developers/applications) page page and make a new application. You'll need the
+Go to the [bot applications](https://discord.com/developers/applications) page and make a new application. You'll need the
 "MESSAGE CONTENT" toggle flipped On, and to add your bot token to your settings.
 
 ```python
 # mygame/server/conf/secret_settings.py
-DISCORD_BOT_TOKEN = <your Discord bot token>
+DISCORD_BOT_TOKEN = '<your Discord bot token>'
 ```
 
 You will also need the `pyopenssl` module, if it isn't already installed.
@@ -37,9 +37,9 @@ Adding a new channel link is done with the following command:
 The `evennia_channel` argument must be the name of an existing Evennia channel,
 and `discord_channel_id` is the full numeric ID of the Discord channel.
 
-> Your bot needs to be added to the correct server with access to the channel
-> in order to send or receive messages. This command does NOT verify that your
-> bot has access!
+> Your bot needs to be added to the correct Discord server with access to the
+> channel in order to send or receive messages. This command does NOT verify that
+> your bot has Discord permissions!
 
 ## Step-By-Step Discord Setup
 
@@ -53,7 +53,7 @@ steps already, feel free to skip to the next.
 > in order to connect Evennia to it. This assumes you already do.
 
 Make sure you're logged in on the Discord website, then visit
-[https://discord.com/developers/applications]. Click the "New Application"
+https://discord.com/developers/applications. Click the "New Application"
 button in the upper right corner, then enter the name for your new app - the
 name of your Evennia game is a good option.
 
@@ -69,7 +69,7 @@ Next, add this token to your _secret_ settings.
 ```python
 # file: mygame/server/conf/secret_settings.py
 
-DISCORD_BOT_TOKEN = <token>
+DISCORD_BOT_TOKEN = '<token>'
 ```
 
 Once that is saved, scroll down the Bot page a little more and find the toggle for
@@ -167,3 +167,13 @@ DISCORD_BOT_CLASS = 'accounts.bots.DiscordBot'
 > If you had already set up a Discord relay and are changing this, make sure you
 > either delete the old bot account in Evennia or change its typeclass or it won't
 > take effect.
+
+The core DiscordBot account class has several useful hooks already set up for
+processing and relaying channel messages between Discord and Evennia channels,
+along with the (unused by default) `direct_msg` hook for processing DMs sent to
+the bot on Discord.
+
+Only messages and server updates are processed by default, but the Discord custom
+protocol passes all other unprocessed dispatch data on to the Evennia bot account
+so you can add additional handling yourself. However, **this integration is not a full library**
+and does not document the full range of possible Discord events.

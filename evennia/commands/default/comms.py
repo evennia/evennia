@@ -1964,8 +1964,8 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
         if not discord_bot:
             if "name" in self.switches:
                 # create a new discord bot
-                # TODO: reference settings for custom typeclass
-                discord_bot = create.create_account(self.lhs, None, None, typeclass=bots.DiscordBot)
+                bot_class = class_from_module(settings.DISCORD_BOT_CLASS, fallback=bots.DiscordBot)
+                discord_bot = create.create_account(self.lhs, None, None, typeclass=bot_class)
                 discord_bot.start()
             else:
                 self.msg("Please set up your Discord bot first: discord2chan/name <bot_name>")
