@@ -6,7 +6,6 @@ import re
 from django.conf import settings
 from django.db.models import Q
 from django.db.models.fields import exceptions
-
 from evennia.server import signals
 from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
 from evennia.utils.utils import (
@@ -50,7 +49,7 @@ class ObjectDBManager(TypedObjectManager):
     get_objs_with_db_property_match
     get_objs_with_key_or_alias
     get_contents
-    object_search (interface to many of the above methods,
+    search_object (interface to many of the above methods,
                    equivalent to evennia.search_object)
     copy_object
 
@@ -375,6 +374,7 @@ class ObjectDBManager(TypedObjectManager):
         candidates=None,
         exact=True,
         use_dbref=True,
+        tags=None,
     ):
         """
         Search as an object globally or in a list of candidates and
@@ -410,6 +410,9 @@ class ObjectDBManager(TypedObjectManager):
                 searching for attributes/properties.
             use_dbref (bool): If False, bypass direct lookup of a string
                 on the form #dbref and treat it like any string.
+            tags (list): A list of tuples `(tagkey, tagcategory)` where the
+                matched object must have _all_ tags in order to be considered
+                a match.
 
         Returns:
             matches (list): Matching objects
@@ -437,7 +440,20 @@ class ObjectDBManager(TypedObjectManager):
                     searchdata, exact=exact, candidates=candidates, typeclasses=typeclass
                 )
 
+        def _search_by_tag(query, taglist):
+            if not query:
+                query = self.all()
+
+            for tagkey, tagcategory in taglist:
+                query = query.filter(db_tags__db_key=tagkey, db_tags__db_category=tagcategory)
+
+            return query
+
         if not searchdata and searchdata != 0:
+
+            if tags:
+                return _search_by_tag(make_iter(tags))
+
             return self.none()
 
         if typeclass:
@@ -477,6 +493,7 @@ class ObjectDBManager(TypedObjectManager):
         # always run first check exact - we don't want partial matches
         # if on the form of 1-keyword etc.
         matches = _searcher(searchdata, candidates, typeclass, exact=True)
+
         if not matches:
             # no matches found - check if we are dealing with N-keyword
             # query - if so, strip it.
@@ -495,6 +512,9 @@ class ObjectDBManager(TypedObjectManager):
                     matches = _searcher(stripped_searchdata, candidates, typeclass, exact=False)
             elif not exact:
                 matches = _searcher(searchdata, candidates, typeclass, exact=False)
+
+        if tags:
+            matches = _search_by_tag(matches, make_iter(tags))
 
         # deal with result
         if len(matches) == 1 and match_number is not None and match_number != 0:

@@ -13,7 +13,6 @@ from collections import defaultdict
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
-
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -330,6 +329,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         nofound_string=None,
         multimatch_string=None,
         use_dbref=None,
+        tags=None,
         stacked=0,
     ):
         """
@@ -393,6 +393,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 will be treated like a normal string. If `None` (default), the ability to query by
                 #dbref is turned on if `self` has the permission 'Builder' and is turned off
                 otherwise.
+            tags (list or tuple): Find objects matching one or more Tags. This should be one or
+                more tag definitions on the form `tagname` or `(tagname, tagcategory)`.
             stacked (int, optional): If > 0, multimatches will be analyzed to determine if they
                 only contains identical objects; these are then assumed 'stacked' and no multi-match
                 error will be generated, instead `stacked` number of matches will be returned. If
@@ -462,13 +464,16 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     # included in location.contents
                     candidates.append(self)
 
-        results = ObjectDB.objects.object_search(
+        tags = [(tagkey, tagcat[0] if tagcat else None) for tagkey, *tagcat in make_iter(tags)]
+
+        results = ObjectDB.objects.search_object(
             searchdata,
             attribute_name=attribute_name,
             typeclass=typeclass,
             candidates=candidates,
             exact=exact,
             use_dbref=use_dbref,
+            tags=tags,
         )
 
         if use_locks:
