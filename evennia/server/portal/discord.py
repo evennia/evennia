@@ -35,8 +35,8 @@ DISCORD_API_VERSION = 10
 DISCORD_API_BASE_URL = f"https://discord.com/api/v{DISCORD_API_VERSION}"
 
 DISCORD_USER_AGENT = f"Evennia (https://www.evennia.com, {get_evennia_version(mode='short')})"
-DISCORD_BOT_TOKEN = getattr(settings, "DISCORD_BOT_TOKEN", None)
-DISCORD_BOT_INTENTS = getattr(settings, "DISCORD_BOT_INTENTS", 105985)
+DISCORD_BOT_TOKEN = settings.DISCORD_BOT_TOKEN
+DISCORD_BOT_INTENTS = settings.DISCORD_BOT_INTENTS
 
 # Discord OP codes, alphabetic
 OP_DISPATCH = 0
@@ -83,7 +83,7 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         )
 
         def cbResponse(response):
-            # check status code here to verify it was a successful connection first
+            # TODO: check status code here to verify it was a successful connection first
             # then schedule a retry if not
             d = readBody(response)
             d.addCallback(self.websocket_init, *args, **kwargs)
@@ -176,7 +176,6 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         de-registering the session and then reattaching a new one.
 
         """
-        self.bot.stopping = True
         self.bot.transport.loseConnection()
         self.sessionhandler.server_disconnect(self.bot)
         if self.resume_url:
@@ -228,8 +227,6 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         """
         self.restart_downtime = None
         self.restart_task = None
-
-        self.stopping = False
         self.factory.bot = self
 
         self.init_session("discord", "discord.gg", self.factory.sessionhandler)
@@ -275,11 +272,13 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
             else:
                 self.identify()
         elif data["op"] == OP_HEARTBEAT_ACK:
+            # our last heartbeat was acknowledged, so reset the "pending" flag
             self.pending_heartbeat = False
         elif data["op"] == OP_HEARTBEAT:
+            # Discord wants us to send a heartbeat immediately
             self.doHeartbeat(force=True)
         elif data["op"] == OP_INVALID_SESSION:
-            # reconnect
+            # Discord doesn't like our current session; reconnect for a new one
             logger.log_msg("Discord: received 'Invalid Session' opcode. Reconnecting.")
             if data["d"] == False:
                 # can't resume, clear existing resume data
@@ -287,10 +286,13 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
                 self.factory.resume_url = None
             self.factory.reconnect()
         elif data["op"] == OP_RECONNECT:
+            # reconnect as requested; Discord does this regularly for server load balancing
             logger.log_msg("Discord: received 'Reconnect' opcode. Reconnecting.")
             self.factory.reconnect()
         elif data["op"] == OP_DISPATCH:
+            # handle the general dispatch opcode events by type
             if data["t"] == "READY":
+                # our recent identification is valid; process new session info
                 self.connection_ready(data["d"])
             else:
                 # general message, pass on to data_in
@@ -331,7 +333,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         Post JSON data to a REST API endpoint
 
         Args:
-            url (str) -
+            url (str) - The API path which is being posted to
             data (dict) - Content to be sent
         """
         url = f"{DISCORD_API_BASE_URL}/{url}"
@@ -350,7 +352,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         )
 
         def cbResponse(response):
-            # check status code here to verify it was a successful connection first
+            # TODO: check status code here to verify it was a successful connection first
             # then schedule a retry if not
             d = readBody(response)
             d.addCallback(self.post_response)
@@ -388,6 +390,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
             # we have no known state to resume from, identify normally
             self.identify()
 
+        # build a RESUME request for Discord and send it
         data = {
             "op": OP_RESUME,
             "d": {
@@ -445,8 +448,10 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         if not self.pending_heartbeat or kwargs.get("force"):
             if self.nextHeartbeatCall:
                 self.nextHeartbeatCall.cancel()
+            # send the heartbeat
             data = {"op": 1, "d": self.last_sequence}
             self._send_json(data)
+            # track that we sent a heartbeat, in case we don't receive an ACK
             self.pending_heartbeat = True
             self.nextHeartbeatCall = self.factory._batched_timer.call_later(
                 self.interval,
@@ -477,23 +482,25 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
 
     def data_in(self, data, **kwargs):
         """
+        Process incoming data from Discord and sent to the Evennia server
 
-        Send data grapevine -> Evennia
-        Keyword Args:
+        Args:
             data (dict): Converted json data.
 
         """
         action_type = data.get("t", "UNKNOWN")
 
         if action_type == "MESSAGE_CREATE":
+            # someone posted a message on Discord that the bot can see
             data = data["d"]
             if data["author"]["id"] == self.discord_id:
+                # it's by the bot itself! disregard
                 return
             message = data["content"]
             channel_id = data["channel_id"]
             keywords = {"channel_id": channel_id}
             if "guild_id" in data:
-                # channel message
+                # message received to a Discord channel
                 keywords["type"] = "channel"
                 author = data["member"]["nick"] or data["author"]["username"]
                 author_id = data["author"]["id"]
@@ -501,15 +508,17 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
                 keywords["guild_id"] = data["guild_id"]
 
             else:
-                # direct message
+                # message sent directly to the bot account via DM
                 keywords["type"] = "direct"
                 author = data["author"]["username"]
                 author_id = data["author"]["id"]
                 keywords["sender"] = (author_id, author)
 
+            # pass the processed data to the server
             self.sessionhandler.data_in(self, bot_data_in=(message, keywords))
 
         elif action_type in ("GUILD_CREATE", "GUILD_UPDATE"):
+            # we received the current status of a guild the bot is on; process relevant info
             data = data["d"]
             keywords = {"type": "guild", "guild_id": data["id"], "guild_name": data["name"]}
             keywords["channels"] = {
@@ -517,15 +526,16 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
                 for chan in data["channels"]
                 if chan["type"] == 0
             }
+            # send the possibly-updated guild and channel data to the server
             self.sessionhandler.data_in(self, bot_data_in=("", keywords))
 
         elif "DELETE" in action_type:
-            # deletes should probably be handled separately to check for channel removal
+            # deletes should possibly be handled separately to check for channel removal
             # for now, just ignore
             pass
 
         else:
-            # send all the data on to the bot as-is for optional bot-side handling
+            # send the data for any other action types on to the bot as-is for optional server-side handling
             keywords = {"type": action_type}
             keywords.update(data["d"])
             self.sessionhandler.data_in(self, bot_data_in=("", keywords))
