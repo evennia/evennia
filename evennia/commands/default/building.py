@@ -6,7 +6,6 @@ import re
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
-
 from evennia import InterruptCommand
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
@@ -3366,8 +3365,10 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
         if scripts:
             return scripts
         # try typeclass path
-        scripts = ScriptDB.objects.filter(db_typeclass_path__iendswith=args).exclude(
-            db_typeclass_path__in=self.hide_script_paths
+        scripts = (
+            ScriptDB.objects.filter(db_typeclass_path__iendswith=args)
+            .exclude(db_typeclass_path__in=self.hide_script_paths)
+            .order_by("id")
         )
         if scripts:
             return scripts
@@ -3375,8 +3376,10 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
             # may be a dbref-range
             val1, val2 = (dbref(part.strip()) for part in args.split("-", 1))
             if val1 and val2:
-                scripts = ScriptDB.objects.filter(id__in=(range(val1, val2 + 1))).exclude(
-                    db_typeclass_path__in=self.hide_script_paths
+                scripts = (
+                    ScriptDB.objects.filter(id__in=(range(val1, val2 + 1)))
+                    .exclude(db_typeclass_path__in=self.hide_script_paths)
+                    .order_by("id")
                 )
                 if scripts:
                     return scripts
