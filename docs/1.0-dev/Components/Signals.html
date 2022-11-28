@@ -189,6 +189,7 @@ kwargs passed are <code class="docutils literal notranslate"><span class="pre">o
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_SCRIPT_POST_CREATE</span></code> - fires when a script is first created, after any hooks.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_CHANNEL_POST_CREATE</span></code> - fires when a Channel is first created, after any hooks.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_HELPENTRY_POST_CREATE</span></code> - fires when a help entry is first created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_EXIT_TRAVERSED</span></code> - fires when an exit is traversed, just after <code class="docutils literal notranslate"><span class="pre">at_traverse</span></code> hook. The <code class="docutils literal notranslate"><span class="pre">sender</span></code> is the exit itself, <code class="docutils literal notranslate"><span class="pre">traverser=</span></code> keyword hold the one traversing the exit.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">evennia.signals</span></code> module also gives you conveneient access to the default Django signals (these
 use a

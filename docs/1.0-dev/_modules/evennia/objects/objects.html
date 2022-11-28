@@ -91,12 +91,12 @@
 <span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectManager</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripthandler</span> <span class="kn">import</span> <span class="n">ScriptHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_EXIT_TRAVERSED</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">ModelAttributeBackend</span><span class="p">,</span> <span class="n">NickHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">funcparser</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
@@ -408,6 +408,7 @@
         <span class="n">nofound_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">multimatch_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">stacked</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -471,6 +472,8 @@
 <span class="sd">                will be treated like a normal string. If `None` (default), the ability to query by</span>
 <span class="sd">                #dbref is turned on if `self` has the permission &#39;Builder&#39; and is turned off</span>
 <span class="sd">                otherwise.</span>
+<span class="sd">            tags (list or tuple): Find objects matching one or more Tags. This should be one or</span>
+<span class="sd">                more tag definitions on the form `tagname` or `(tagname, tagcategory)`.</span>
 <span class="sd">            stacked (int, optional): If &gt; 0, multimatches will be analyzed to determine if they</span>
 <span class="sd">                only contains identical objects; these are then assumed &#39;stacked&#39; and no multi-match</span>
 <span class="sd">                error will be generated, instead `stacked` number of matches will be returned. If</span>
@@ -540,13 +543,16 @@
                     <span class="c1"># included in location.contents</span>
                     <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">object_search</span><span class="p">(</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tagcat</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">tagkey</span><span class="p">,</span> <span class="o">*</span><span class="n">tagcat</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)]</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span>
             <span class="n">searchdata</span><span class="p">,</span>
             <span class="n">attribute_name</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">,</span>
             <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span>
             <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span>
             <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span>
             <span class="n">use_dbref</span><span class="o">=</span><span class="n">use_dbref</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">use_locks</span><span class="p">:</span>
@@ -2959,6 +2965,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">):</span>
             <span class="c1"># we may traverse the exit.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">)</span>
+            <span class="n">SIGNAL_EXIT_TRAVERSED</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">traverser</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># exit is locked</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">err_traverse</span><span class="p">:</span>

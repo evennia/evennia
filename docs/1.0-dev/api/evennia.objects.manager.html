@@ -130,7 +130,7 @@ get_objs_with_db_property
 get_objs_with_db_property_match
 get_objs_with_key_or_alias
 get_contents
-object_search (interface to many of the above methods,</p>
+search_object (interface to many of the above methods,</p>
 <blockquote>
 <div><p>equivalent to evennia.search_object)</p>
 </div></blockquote>
@@ -298,7 +298,7 @@ using <strong>evennia.utils.utils.string_partial_matching</strong> algorithm.</p
 
 <dl class="py method">
 <dt id="evennia.objects.manager.ObjectDBManager.search_object">
-<code class="sig-name descname">search_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/manager.html#ObjectDBManager.search_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.manager.ObjectDBManager.search_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/manager.html#ObjectDBManager.search_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.manager.ObjectDBManager.search_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search as an object globally or in a list of candidates and
 return results. The result is always an Object. Always returns
 a list.</p>
@@ -333,6 +333,9 @@ number of possibilities. This value has no meaning if
 searching for attributes/properties.</p></li>
 <li><p><strong>use_dbref</strong> (<em>bool</em>) – If False, bypass direct lookup of a string
 on the form #dbref and treat it like any string.</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – A list of tuples <strong>(tagkey, tagcategory)</strong> where the
+matched object must have _all_ tags in order to be considered
+a match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -343,7 +346,7 @@ on the form #dbref and treat it like any string.</p></li>
 
 <dl class="py method">
 <dt id="evennia.objects.manager.ObjectDBManager.object_search">
-<code class="sig-name descname">object_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.manager.ObjectDBManager.object_search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">object_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.manager.ObjectDBManager.object_search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search as an object globally or in a list of candidates and
 return results. The result is always an Object. Always returns
 a list.</p>
@@ -378,6 +381,9 @@ number of possibilities. This value has no meaning if
 searching for attributes/properties.</p></li>
 <li><p><strong>use_dbref</strong> (<em>bool</em>) – If False, bypass direct lookup of a string
 on the form #dbref and treat it like any string.</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – A list of tuples <strong>(tagkey, tagcategory)</strong> where the
+matched object must have _all_ tags in order to be considered
+a match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -388,7 +394,7 @@ on the form #dbref and treat it like any string.</p></li>
 
 <dl class="py method">
 <dt id="evennia.objects.manager.ObjectDBManager.search">
-<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.manager.ObjectDBManager.search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.manager.ObjectDBManager.search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search as an object globally or in a list of candidates and
 return results. The result is always an Object. Always returns
 a list.</p>
@@ -423,6 +429,9 @@ number of possibilities. This value has no meaning if
 searching for attributes/properties.</p></li>
 <li><p><strong>use_dbref</strong> (<em>bool</em>) – If False, bypass direct lookup of a string
 on the form #dbref and treat it like any string.</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – A list of tuples <strong>(tagkey, tagcategory)</strong> where the
+matched object must have _all_ tags in order to be considered
+a match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

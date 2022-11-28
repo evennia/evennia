@@ -84,7 +84,6 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">django.db.models.fields</span> <span class="kn">import</span> <span class="n">exceptions</span>
-
 <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypeclassManager</span><span class="p">,</span> <span class="n">TypedObjectManager</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -128,7 +127,7 @@
 <span class="sd">    get_objs_with_db_property_match</span>
 <span class="sd">    get_objs_with_key_or_alias</span>
 <span class="sd">    get_contents</span>
-<span class="sd">    object_search (interface to many of the above methods,</span>
+<span class="sd">    search_object (interface to many of the above methods,</span>
 <span class="sd">                   equivalent to evennia.search_object)</span>
 <span class="sd">    copy_object</span>
 
@@ -453,6 +452,7 @@
         <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">use_dbref</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search as an object globally or in a list of candidates and</span>
@@ -488,6 +488,9 @@
 <span class="sd">                searching for attributes/properties.</span>
 <span class="sd">            use_dbref (bool): If False, bypass direct lookup of a string</span>
 <span class="sd">                on the form #dbref and treat it like any string.</span>
+<span class="sd">            tags (list): A list of tuples `(tagkey, tagcategory)` where the</span>
+<span class="sd">                matched object must have _all_ tags in order to be considered</span>
+<span class="sd">                a match.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            matches (list): Matching objects</span>
@@ -515,7 +518,20 @@
                     <span class="n">searchdata</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="n">typeclass</span>
                 <span class="p">)</span>
 
+        <span class="k">def</span> <span class="nf">_search_by_tag</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">taglist</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcategory</span> <span class="ow">in</span> <span class="n">taglist</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">tagcategory</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">query</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">searchdata</span> <span class="ow">and</span> <span class="n">searchdata</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_search_by_tag</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
+
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
@@ -555,6 +571,7 @@
         <span class="c1"># always run first check exact - we don&#39;t want partial matches</span>
         <span class="c1"># if on the form of 1-keyword etc.</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
             <span class="c1"># no matches found - check if we are dealing with N-keyword</span>
             <span class="c1"># query - if so, strip it.</span>
@@ -573,6 +590,9 @@
                     <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">stripped_searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
                 <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">_search_by_tag</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
 
         <span class="c1"># deal with result</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">match_number</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>

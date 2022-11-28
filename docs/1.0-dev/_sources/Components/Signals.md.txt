@@ -93,6 +93,7 @@ Extra
 - `SIGNAL_SCRIPT_POST_CREATE` - fires when a script is first created, after any hooks.
 - `SIGNAL_CHANNEL_POST_CREATE` - fires when a Channel is first created, after any hooks.
 - `SIGNAL_HELPENTRY_POST_CREATE` - fires when a help entry is first created.
+- `SIGNAL_EXIT_TRAVERSED` - fires when an exit is traversed, just after `at_traverse` hook. The `sender` is the exit itself, `traverser=` keyword hold the one traversing the exit.
 
 The `evennia.signals` module also gives you conveneient access to the default Django signals (these
 use a

@@ -120,7 +120,7 @@ there is only one match) unless noted otherwise.</p>
 &gt; match = Object.objects.get_object_with_account(…)</p>
 <dl class="py function">
 <dt id="evennia.utils.search.search_object">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search as an object globally or in a list of candidates and
 return results. The result is always an Object. Always returns
 a list.</p>
@@ -155,6 +155,9 @@ number of possibilities. This value has no meaning if
 searching for attributes/properties.</p></li>
 <li><p><strong>use_dbref</strong> (<em>bool</em>) – If False, bypass direct lookup of a string
 on the form #dbref and treat it like any string.</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – A list of tuples <strong>(tagkey, tagcategory)</strong> where the
+matched object must have _all_ tags in order to be considered
+a match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
