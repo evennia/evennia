@@ -465,7 +465,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     # included in location.contents
                     candidates.append(self)
 
-        tags = [(tagkey, tagcat[0] if tagcat else None) for tagkey, *tagcat in make_iter(tags)]
+        if tags:
+            tags = [(tagkey, tagcat[0] if tagcat else None) for tagkey, *tagcat in make_iter(tags)]
 
         results = ObjectDB.objects.search_object(
             searchdata,
