@@ -123,8 +123,9 @@ from evennia import (
     create_object,
     create_script,
 )
-from evennia.utils import inherits_from
 from evennia.typeclasses.attributes import AttributeProperty
+from evennia.utils import inherits_from
+
 
 def create_wilderness(name="default", mapprovider=None, preserve_items=False):
     """
@@ -218,7 +219,7 @@ class WildernessScript(DefaultScript):
     # Stores a dictionary of items on the map with their coordinates
     # The key is the item, the value are the coordinates as (x, y) tuple.
     itemcoordinates = AttributeProperty()
-    
+
     # Determines whether or not rooms are recycled despite containing non-player objects
     # True means that leaving behind a non-player object will prevent the room from being recycled
     # in order to preserve the object
@@ -243,7 +244,7 @@ class WildernessScript(DefaultScript):
         # allows quick retrieval if a new room is needed without having to
         # create it.
         self.db.unused_rooms = []
-        
+
     def at_server_start(self):
         """
         Called after the server is started or reloaded.
@@ -300,7 +301,11 @@ class WildernessScript(DefaultScript):
         Returns:
             [Object, ]: list of Objects at coordinates
         """
-        result = [ item for item, item_coords in self.itemcoordinates.items() if item_coords == coordinates and item is not None ]
+        result = [
+            item
+            for item, item_coords in self.itemcoordinates.items()
+            if item_coords == coordinates and item is not None
+        ]
         return list(result)
 
     def move_obj(self, obj, new_coordinates):
@@ -335,7 +340,13 @@ class WildernessScript(DefaultScript):
                     # Should we preserve rooms with any objects?
                     if self.preserve_items:
                         # Yes - check if ANY objects besides the exits are in old_room
-                        if len([ob for ob in old_room.contents if not inherits_from(ob, WildernessExit)]):
+                        if len(
+                            [
+                                ob
+                                for ob in old_room.contents
+                                if not inherits_from(ob, WildernessExit)
+                            ]
+                        ):
                             # There is, so we'll create a new room
                             room = self._create_room(new_coordinates, obj)
                         else:
@@ -423,7 +434,7 @@ class WildernessScript(DefaultScript):
         """
         Moves a room back to storage. If room is not a WildernessRoom or there
         is something left inside the room, then this does nothing.
-        
+
         Implementation note: If `preserve_items` is False (the default) then any
         objects left in the rooms will be moved to None. You may want to implement
         your own cleanup or recycling routine for these objects.
@@ -625,11 +636,11 @@ class WildernessRoom(DefaultRoom):
 
         name += " {0}".format(self.coordinates)
         return name
-    
+
     def get_display_desc(self, looker, **kwargs):
         """
         Displays the description of the room. This is a core evennia hook.
-        
+
         Allows the room's description to be customized in an ndb value,
         avoiding having to write to the database on moving.
         """
@@ -640,6 +651,7 @@ class WildernessRoom(DefaultRoom):
 
         # Otherwise, use the normal description hook.
         return super().get_display_desc(looker, **kwargs)
+
 
 class WildernessExit(DefaultExit):
     """
