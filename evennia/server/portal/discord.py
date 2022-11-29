@@ -25,6 +25,7 @@ from twisted.web.http_headers import Headers
 
 from evennia.server.session import Session
 from evennia.utils import class_from_module, get_evennia_version, logger
+from evennia.utils.utils import delay
 
 _AGENT = Agent(reactor)
 
@@ -47,6 +48,25 @@ OP_IDENTIFY = 2
 OP_INVALID_SESSION = 9
 OP_RECONNECT = 7
 OP_RESUME = 6
+
+
+def should_retry(status_code):
+    """
+    Helper function to check if the request should be retried later.
+
+    Args:
+        status_code (int) - The HTTP status code
+
+    Returns:
+        retry (bool) - True if request should be retried False otherwise
+    """
+    if status_code >= 500 and status_code <= 504:
+        # these are common server error codes when the server is temporarily malfunctioning
+        # in these cases, we should retry
+        return True
+    else:
+        # handle all other cases; this can be expanded later if needed for special cases
+        return False
 
 
 class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.ReconnectingClientFactory):
@@ -83,11 +103,12 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         )
 
         def cbResponse(response):
-            # TODO: check status code here to verify it was a successful connection first
-            # then schedule a retry if not
-            d = readBody(response)
-            d.addCallback(self.websocket_init, *args, **kwargs)
-            return d
+            if response.code == 200:
+                d = readBody(response)
+                d.addCallback(self.websocket_init, *args, **kwargs)
+                return d
+            elif should_retry(response.code):
+                delay(300, self.get_gateway_url, *args, **kwargs)
 
         d.addCallback(cbResponse)
 
@@ -113,7 +134,6 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
             )
             self.start()
         else:
-            # TODO: set this up to schedule a retry instead
             logger.log_err("Discord did not return a websocket URL; connection cancelled.")
 
     def buildProtocol(self, addr):
@@ -166,8 +186,7 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
             reason (str): The reason for the failure.
 
         """
-        # what is the purpose of this check??? do i need it
-        if not self.bot:
+        if self.do_retry and not self.bot:
             self.retry(connector)
 
     def reconnect(self):
@@ -209,13 +228,12 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
     heartbeat_interval = None
     last_sequence = 0
     session_id = None
+    discord_id = None
 
     def __init__(self):
         WebSocketClientProtocol.__init__(self)
         _BASE_SESSION_CLASS.__init__(self)
         self.restart_downtime = None
-
-    #        self.discord_id
 
     def at_login(self):
         pass
@@ -352,11 +370,12 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         )
 
         def cbResponse(response):
-            # TODO: check status code here to verify it was a successful connection first
-            # then schedule a retry if not
-            d = readBody(response)
-            d.addCallback(self.post_response)
-            return d
+            if response.code == 200:
+                d = readBody(response)
+                d.addCallback(self.post_response)
+                return d
+            elif should_retry(response.code):
+                delay(300, self._post_json, url, data, **kwargs)
 
         d.addCallback(cbResponse)
 
