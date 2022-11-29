@@ -1962,7 +1962,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
 
         discord_bot = bots.DiscordBot.objects.filter_family()
         if not discord_bot:
-            if "name" in self.switches:
+            if "name" in self.switches and self.args:
                 # create a new discord bot
                 bot_class = class_from_module(settings.DISCORD_BOT_CLASS, fallback=bots.DiscordBot)
                 discord_bot = create.create_account(self.lhs, None, None, typeclass=bot_class)
@@ -1975,11 +1975,14 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             discord_bot = discord_bot[0]
 
         if "name" in self.switches:
-            new_name = self.args.strip()
-            if bots.DiscordBot.validate_username(new_name):
-                discord_bot.name = new_name
-                self.msg(f"The Discord relay account is now named {new_name} in-game.")
-                return
+            if self.args:
+                new_name = self.args.strip()
+                if bots.DiscordBot.validate_username(new_name):
+                    discord_bot.name = new_name
+                    self.msg(f"The Discord relay bot is now named {new_name} in-game.")
+            else:
+                self.msg("Please enter a name for your Discord relay bot.")
+            return
 
         if "guild" in self.switches:
             discord_bot.db.tag_guild = not discord_bot.db.tag_guild
@@ -2008,7 +2011,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
                 # load in the pretty names for the discord channels from cache
                 dc_chan_names = discord_bot.attributes.get("discord_channels", {})
                 for i, (evchan, dcchan) in enumerate(channel_list):
-                    dc_info = dc_chan_names.get(dcchan, {"name": "unknown", "guild": "unknown"})
+                    dc_info = dc_chan_names.get(dcchan, {"name": dcchan, "guild": "unknown"})
                     table.add_row(
                         i, evchan, f"#{dc_info.get('name','?')}@{dc_info.get('guild','?')}"
                     )
@@ -2055,10 +2058,8 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
                 results = False
                 for i, (evchan, dcchan) in enumerate(channel_list):
                     if evchan.lower() == ev_channel.lower():
-                        dc_info = dc_chan_names.get(dcchan, {"name": "unknown", "guild": "unknown"})
-                        table.add_row(
-                            i, evchan, f"#{dc_info.get('name','?')}@{dc_info.get('guild','?')}"
-                        )
+                        dc_info = dc_chan_names.get(dcchan, {"name": dcchan, "guild": "unknown"})
+                        table.add_row(i, evchan, f"#{dc_info['name']}@{dc_info['guild']}")
                         results = True
                 if results:
                     self.msg(table)
@@ -2071,7 +2072,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
         # check if link already exists
         if channel_list := discord_bot.db.channels:
             if (ev_channel, dc_channel) in channel_list:
-                self.msg(f"Those channels are already linked.")
+                self.msg("Those channels are already linked.")
                 return
         else:
             discord_bot.db.channels = []
@@ -2082,6 +2083,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             return
         channel_obj = channel_obj[0]
         discord_bot.db.channels.append((channel_obj.name, dc_channel))
+        channel_obj.connect(discord_bot)
         if dc_chans := discord_bot.db.discord_channels:
             dc_channel_name = dc_chans.get(dc_channel, {}).get("name", dc_channel)
         else:
