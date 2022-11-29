@@ -2022,8 +2022,6 @@ class TestDiscord(BaseEvenniaCommandTest):
         [
             ("", "No Discord connections found."),
             ("/list", "No Discord connections found."),
-            ("/name", "Please enter a name for your Discord relay bot."),
-            ("/name DiscordBot", "The Discord relay bot is now named DiscordBot in-game."),
             ("/guild", "Messages to Evennia will include the Discord server."),
             ("/channel", "Relayed messages will include the originating channel."),
         ]
