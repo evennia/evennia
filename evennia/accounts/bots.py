@@ -49,7 +49,7 @@ class BotStarter(DefaultScript):
         Kick bot into gear.
 
         """
-        if not len(self.account.sessions.all()):
+        if not self.account.sessions.all():
             self.account.start()
 
     def at_repeat(self):
@@ -626,21 +626,22 @@ class DiscordBot(Bot):
         """
         Called by the Channel just before passing a message into `channel_msg`.
 
-        We overload this to force off the channel tag prefix.
+        We overload this to set the channel tag prefix.
         """
         kwargs["no_prefix"] = not self.db.tag_channel
         return super().at_pre_channel_msg(message, channel, senders=senders, **kwargs)
 
-    def channel_msg(self, message, channel, senders=None, **kwargs):
+    def channel_msg(self, message, channel, senders=None, relayed=False, **kwargs):
         """
         Passes channel messages received on to discord
 
         Args:
-            message (str): Incoming text from channel.
-            channel (Channel): The channel the message is being received from
+            message (str) - Incoming text from channel.
+            channel (Channel) - The channel the message is being received from
 
         Keyword Args:
-            senders (list or None): Object(s) sending the message
+            senders (list or None) - Object(s) sending the message
+            relayed (bool) - A flag identifying whether the message was relayed by the bot.
 
         """
         if kwargs.get("relayed"):
@@ -661,6 +662,9 @@ class DiscordBot(Bot):
             message (str)  - Incoming text from Discord.
             sender (tuple) - The Discord info for the sender in the form (id, nickname)
 
+        Keyword args:
+            kwargs (optional) - Unused by default, but can carry additional data from the protocol.
+
         """
         pass
 
@@ -678,7 +682,7 @@ class DiscordBot(Bot):
             sender (tuple) - The Discord info for the sender in the form (id, nickname)
             from_channel (str) - The Discord channel name
             from_server (str) - The Discord server name
-
+            kwargs - Any additional keywords. Unused by default, but available for adding additional flags or parameters.
         """
 
         tag_str = ""
@@ -701,7 +705,7 @@ class DiscordBot(Bot):
 
     def execute_cmd(
         self,
-        txt=None,
+        content=None,
         session=None,
         type=None,
         sender=None,
@@ -710,6 +714,18 @@ class DiscordBot(Bot):
         """
         Take incoming data from protocol and send it to connected channel. This is
         triggered by the bot_data_in Inputfunc.
+
+        Keyword args:
+            content (str) - The content of the message from Discord.
+            session (Session) - The protocol session this command came from.
+            type (str, optional) - Indicates the type of activity from Discord, if
+                the protocol pre-processed it.
+            sender (tuple) - Identifies the author of the Discord activity in a tuple of two
+                strings, in the form of (id, nickname)
+
+            kwargs - Any additional data specific to a particular type of actions. The data for
+                any Discord actions not pre-processed by the protocol will also be passed via kwargs.
+
         """
         # normal channel message
         if type == "channel":
@@ -726,12 +742,12 @@ class DiscordBot(Bot):
                     if not channel:
                         continue
                     channel = channel[0]
-                    self.relay_to_channel(txt, channel, sender, channel_name, guild)
+                    self.relay_to_channel(content, channel, sender, channel_name, guild)
 
         # direct message
         elif type == "direct":
             # pass on to the DM hook
-            self.direct_msg(txt, sender, **kwargs)
+            self.direct_msg(content, sender, **kwargs)
 
         # guild info update
         elif type == "guild":

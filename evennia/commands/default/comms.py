@@ -1921,7 +1921,6 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
       discord2chan/name <bot_name>
 
     Switches:
-        /name    - Assign a name for the Discord bot to use on Evennia channels
         /list    - (or no switch) show existing Evennia <-> Discord links
         /remove  - remove an existing link by link ID
         /delete  - alias to remove
@@ -1940,12 +1939,10 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
     key = "discord2chan"
     aliases = ("discord",)
     switch_options = (
-        "available",
         "channel",
         "delete",
         "guild",
         "list",
-        "name",
         "remove",
     )
     locks = "cmd:serversetting(DISCORD_ENABLED) and pperm(Developer)"
@@ -1960,29 +1957,22 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             )
             return
 
-        discord_bot = bots.DiscordBot.objects.filter_family()
+        discord_bot = [
+            bot for bot in AccountDB.objects.filter(db_is_bot=True, username="DiscordBot")
+        ]
         if not discord_bot:
-            if "name" in self.switches and self.args:
-                # create a new discord bot
-                bot_class = class_from_module(settings.DISCORD_BOT_CLASS, fallback=bots.DiscordBot)
-                discord_bot = create.create_account(self.lhs, None, None, typeclass=bot_class)
-                discord_bot.start()
-            else:
-                self.msg("Please set up your Discord bot first: discord2chan/name <bot_name>")
-                return
+            # create a new discord bot
+            bot_class = class_from_module(settings.DISCORD_BOT_CLASS, fallback=bots.DiscordBot)
+            discord_bot = create.create_account("DiscordBot", None, None, typeclass=bot_class)
+            discord_bot.start()
 
         else:
             discord_bot = discord_bot[0]
 
-        if "name" in self.switches:
-            if self.args:
-                new_name = self.args.strip()
-                if bots.DiscordBot.validate_username(new_name):
-                    discord_bot.name = new_name
-                    self.msg(f"The Discord relay bot is now named {new_name} in-game.")
-            else:
-                self.msg("Please enter a name for your Discord relay bot.")
-            return
+        if not discord_bot.is_typeclass(settings.DISCORD_BOT_CLASS, exact=True):
+            self.msg(
+                f"WARNING: The Discord bot's typeclass is '{discord_bot.typeclass_path}'. This does not match {settings.DISCORD_BOT_CLASS} in settings!"
+            )
 
         if "guild" in self.switches:
             discord_bot.db.tag_guild = not discord_bot.db.tag_guild

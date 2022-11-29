@@ -27,12 +27,12 @@ DISCORD_ENABLED = True
 ```
 
 Start/reload Evennia and log in as a privileged user. You should now have a new
-command available: `@discord2chan`. Enter `help discord2chan` for an explanation
+command available: `discord2chan`. Enter `help discord2chan` for an explanation
 of its options.
 
 Adding a new channel link is done with the following command:
 
-     @discord2chan <evennia_channel> = <discord_channel_id>
+     discord2chan <evennia_channel> = <discord_channel_id>
 
 The `evennia_channel` argument must be the name of an existing Evennia channel,
 and `discord_channel_id` is the full numeric ID of the Discord channel.
@@ -122,12 +122,12 @@ DISCORD_ENABLED = True
 Start or reload your game to apply the changed settings, then log in as an account
 with at least `Developer` permissions and initialize the bot account on Evennia:
 
-    @discord2chan/name <your bot name>
+    discord2chan/name <your bot name>
 
 The name you assign it can be anything; it will show up in the `who` list for your
 game and your game's channels, but is otherwise unused.
 
-Lastly, confirm that it's fully enabled by entering `@discord2chan` on its own.
+Lastly, confirm that it's fully enabled by entering `discord2chan` on its own.
 You should receive a message that there are no active connections to Discord.
 
 ### Connecting an Evennia channel to a Discord channel
@@ -140,7 +140,7 @@ then your channel ID is `12345678901234567890`
 
 Link the two channels with the following command:
 
-    @discord2chan <evennia channel> = <discord channel id>
+    discord2chan <evennia channel> = <discord channel id>
 
 The two channels should now relay to each other. Confirm this works by posting a
 message on the evennia channel, and another on the Discord channel - they should
