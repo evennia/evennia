@@ -248,7 +248,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg(f"No nicks found matching '{self,lhs}'")
+                caller.msg(f"No nicks found matching '{self.lhs}'")
             return
 
         if not self.rhs and self.lhs:
