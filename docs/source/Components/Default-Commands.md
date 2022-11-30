@@ -1,6 +1,6 @@
 # Default Commands
 
-The full set of default Evennia commands currently contains 88 commands in 9 source
+The full set of default Evennia commands currently contains 89 commands in 9 source
 files. Our policy for adding default commands is outlined [here](../Coding/Default-Command-Syntax.md). The
 [Commands](./Commands.md) documentation explains how Commands work as well as how to make new or customize
 existing ones.
@@ -59,6 +59,7 @@ with [EvEditor](./EvEditor.md), flipping pages in [EvMore](./EvMore.md) or using
 - [**color**](CmdColorTest) (cmdset: [AccountCmdSet](AccountCmdSet), help-category: _General_)
 - [**connect** [co, con, conn]](CmdUnconnectedConnect) (cmdset: [UnloggedinCmdSet](UnloggedinCmdSet), help-category: _General_)
 - [**create** [cr, cre]](CmdUnconnectedCreate) (cmdset: [UnloggedinCmdSet](UnloggedinCmdSet), help-category: _General_)
+- [**discord2chan** [discord]](CmdDiscord2Chan) (cmdset: [AccountCmdSet](AccountCmdSet), help-category: _Comms_)
 - [**drop**](CmdDrop) (cmdset: [CharacterCmdSet](CharacterCmdSet), help-category: _General_)
 - [**encoding** [encode]](CmdUnconnectedEncoding) (cmdset: [UnloggedinCmdSet](UnloggedinCmdSet), help-category: _General_)
 - [**get** [grab]](CmdGet) (cmdset: [CharacterCmdSet](CharacterCmdSet), help-category: _General_)

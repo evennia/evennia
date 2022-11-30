@@ -10,8 +10,8 @@ added to `server/conf/secret_settings.py` as your  DISCORD_BOT_TOKEN
 """
 import json
 import os
-from random import random
 from io import BytesIO
+from random import random
 
 from autobahn.twisted.websocket import (
     WebSocketClientFactory,

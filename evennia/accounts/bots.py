@@ -8,7 +8,6 @@ import time
 
 from django.conf import settings
 from django.utils.translation import gettext as _
-
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import logger, search, utils
@@ -566,8 +565,9 @@ class GrapevineBot(Bot):
 
 class DiscordBot(Bot):
     """
-    Discord bot relay. You will need to set up your own bot (https://discord.com/developers/applications)
-    and add the bot token as `DISCORD_BOT_TOKEN` to `secret_settings.py` to use
+    Discord bot relay. You will need to set up your own bot
+    (https://discord.com/developers/applications) and add the bot token as `DISCORD_BOT_TOKEN` to
+    `secret_settings.py` to use
     """
 
     factory_path = "evennia.server.portal.discord.DiscordWebsocketServerFactory"
@@ -575,9 +575,11 @@ class DiscordBot(Bot):
     def at_init(self):
         """
         Load required channels back into memory
+
         """
         if channel_links := self.db.channels:
-            # this attribute contains a list of evennia<->discord links in the form of ("evennia_channel", "discord_chan_id")
+            # this attribute contains a list of evennia<->discord links in the form
+            # of ("evennia_channel", "discord_chan_id")
             # grab Evennia channels, cache and connect
             channel_set = {evchan for evchan, dcid in channel_links}
             self.ndb.ev_channels = {}
@@ -602,7 +604,8 @@ class DiscordBot(Bot):
                 channel.connect(self)
 
         elif channel_links := self.db.channels:
-            # this attribute contains a list of evennia<->discord links in the form of ("evennia_channel", "discord_chan_id")
+            # this attribute contains a list of evennia<->discord links in the form
+            # of ("evennia_channel", "discord_chan_id")
             # grab Evennia channels, cache and connect
             channel_set = {evchan for evchan, dcid in channel_links}
             self.ndb.ev_channels = {}
@@ -627,6 +630,7 @@ class DiscordBot(Bot):
         Called by the Channel just before passing a message into `channel_msg`.
 
         We overload this to set the channel tag prefix.
+
         """
         kwargs["no_prefix"] = not self.db.tag_channel
         return super().at_pre_channel_msg(message, channel, senders=senders, **kwargs)
@@ -663,7 +667,7 @@ class DiscordBot(Bot):
             sender (tuple) - The Discord info for the sender in the form (id, nickname)
 
         Keyword args:
-            kwargs (optional) - Unused by default, but can carry additional data from the protocol.
+            **kwargs (optional) - Unused by default, but can carry additional data from the protocol.
 
         """
         pass
@@ -672,17 +676,20 @@ class DiscordBot(Bot):
         self, message, to_channel, sender=None, from_channel=None, from_server=None, **kwargs
     ):
         """
-        Formats and sends a Discord -> Evennia message. Called when the Discord bot receives a channel message on Discord.
+        Formats and sends a Discord -> Evennia message. Called when the Discord bot receives a
+        channel message on Discord.
 
         Args:
             message (str)  - Incoming text from Discord.
             to_channel (Channel) - The Evennia channel receiving the message
 
         Keyword args:
-            sender (tuple) - The Discord info for the sender in the form (id, nickname)
+            sender (tuple) - The Discord info for the sender in the form `(id, nickname)`
             from_channel (str) - The Discord channel name
             from_server (str) - The Discord server name
-            kwargs - Any additional keywords. Unused by default, but available for adding additional flags or parameters.
+            kwargs - Any additional keywords. Unused by default, but available for adding additional
+                flags or parameters.
+
         """
 
         tag_str = ""
