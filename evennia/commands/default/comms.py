@@ -1965,7 +1965,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             bot_class = class_from_module(settings.DISCORD_BOT_CLASS, fallback=bots.DiscordBot)
             discord_bot = create.create_account("DiscordBot", None, None, typeclass=bot_class)
             discord_bot.start()
-
+            self.msg("Created and initialized a new Discord relay bot.")
         else:
             discord_bot = discord_bot[0]
 

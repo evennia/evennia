@@ -2011,7 +2011,7 @@ class TestDiscord(BaseEvenniaCommandTest):
         self.cmddiscord.account_caller = False
         # create bot manually so it doesn't get started
         self.discordbot = create.create_account(
-            "DiscordTest", None, None, typeclass="evennia.accounts.bots.DiscordBot"
+            "DiscordBot", None, None, typeclass="evennia.accounts.bots.DiscordBot"
         )
 
     def tearDown(self):

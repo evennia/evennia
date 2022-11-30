@@ -120,15 +120,9 @@ DISCORD_ENABLED = True
 ```
 
 Start or reload your game to apply the changed settings, then log in as an account
-with at least `Developer` permissions and initialize the bot account on Evennia:
-
-    discord2chan/name <your bot name>
-
-The name you assign it can be anything; it will show up in the `who` list for your
-game and your game's channels, but is otherwise unused.
-
-Lastly, confirm that it's fully enabled by entering `discord2chan` on its own.
-You should receive a message that there are no active connections to Discord.
+with at least `Developer` permissions and initialize the bot account on Evennia with
+the `discord2chan` command. You should receive a message that the bot was created, and
+that there are no active connections to Discord.
 
 ### Connecting an Evennia channel to a Discord channel
 
