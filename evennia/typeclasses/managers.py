@@ -8,6 +8,7 @@ import shlex
 
 from django.db.models import Count, ExpressionWrapper, F, FloatField, Q
 from django.db.models.functions import Cast
+
 from evennia.typeclasses.attributes import Attribute
 from evennia.typeclasses.tags import Tag
 from evennia.utils import idmapper
