@@ -11,19 +11,17 @@ from django.utils.translation import gettext as _
 
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
-from evennia.utils import search, utils
+from evennia.utils import logger, search, utils
+from evennia.utils.ansi import strip_ansi
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
 _IRC_ENABLED = settings.IRC_ENABLED
 _RSS_ENABLED = settings.RSS_ENABLED
 _GRAPEVINE_ENABLED = settings.GRAPEVINE_ENABLED
-
+_DISCORD_ENABLED = settings.DISCORD_ENABLED and hasattr(settings, "DISCORD_BOT_TOKEN")
 
 _SESSIONS = None
-
-
-# Bot helper utilities
 
 
 class BotStarter(DefaultScript):
@@ -42,16 +40,17 @@ class BotStarter(DefaultScript):
         self.key = "botstarter"
         self.desc = "bot start/keepalive"
         self.persistent = True
-        self.db.started = False
+
+    def at_server_start(self):
+        self.at_start()
 
     def at_start(self):
         """
         Kick bot into gear.
 
         """
-        if not self.db.started:
+        if not self.account.sessions.all():
             self.account.start()
-            self.db.started = True
 
     def at_repeat(self):
         """
@@ -67,21 +66,6 @@ class BotStarter(DefaultScript):
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         for session in _SESSIONS.sessions_from_account(self.account):
             session.update_session_counters(idle=True)
-
-    def at_server_reload(self):
-        """
-        If server reloads we don't need to reconnect the protocol
-        again, this is handled by the portal reconnect mechanism.
-
-        """
-        self.db.started = True
-
-    def at_server_shutdown(self):
-        """
-        Make sure we are shutdown.
-
-        """
-        self.db.started = False
 
 
 #
@@ -110,8 +94,7 @@ class Bot(DefaultAccount):
         )
         self.locks.add(lockstring)
         # set the basics of being a bot
-        script_key = str(self.key)
-        self.scripts.add(BotStarter, key=script_key)
+        self.scripts.add(BotStarter, key="bot_starter")
         self.is_bot = True
 
     def start(self, **kwargs):
@@ -576,3 +559,202 @@ class GrapevineBot(Bot):
                 self.ndb.ev_channel = self.db.ev_channel
             if self.ndb.ev_channel:
                 self.ndb.ev_channel.msg(text, senders=self)
+
+
+# Discord
+
+
+class DiscordBot(Bot):
+    """
+    Discord bot relay. You will need to set up your own bot (https://discord.com/developers/applications)
+    and add the bot token as `DISCORD_BOT_TOKEN` to `secret_settings.py` to use
+    """
+
+    factory_path = "evennia.server.portal.discord.DiscordWebsocketServerFactory"
+
+    def at_init(self):
+        """
+        Load required channels back into memory
+        """
+        if channel_links := self.db.channels:
+            # this attribute contains a list of evennia<->discord links in the form of ("evennia_channel", "discord_chan_id")
+            # grab Evennia channels, cache and connect
+            channel_set = {evchan for evchan, dcid in channel_links}
+            self.ndb.ev_channels = {}
+            for channel_name in list(channel_set):
+                channel = search.search_channel(channel_name)
+                if not channel:
+                    raise RuntimeError(f"Evennia Channel {channel_name} not found.")
+                channel = channel[0]
+                self.ndb.ev_channels[channel_name] = channel
+
+    def start(self):
+        """
+        Tell the Discord protocol to connect.
+
+        """
+        if not _DISCORD_ENABLED:
+            self.delete()
+            return
+
+        if self.ndb.ev_channels:
+            for channel in self.ndb.ev_channels.values():
+                channel.connect(self)
+
+        elif channel_links := self.db.channels:
+            # this attribute contains a list of evennia<->discord links in the form of ("evennia_channel", "discord_chan_id")
+            # grab Evennia channels, cache and connect
+            channel_set = {evchan for evchan, dcid in channel_links}
+            self.ndb.ev_channels = {}
+            for channel_name in list(channel_set):
+                channel = search.search_channel(channel_name)
+                if not channel:
+                    raise RuntimeError(f"Evennia Channel {channel_name} not found.")
+                channel = channel[0]
+                self.ndb.ev_channels[channel_name] = channel
+                channel.connect(self)
+
+        # connect
+        global _SESSIONS
+        if not _SESSIONS:
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
+        # these will be made available as properties on the protocol factory
+        configdict = {"uid": self.dbid}
+        _SESSIONS.start_bot_session(self.factory_path, configdict)
+
+    def at_pre_channel_msg(self, message, channel, senders=None, **kwargs):
+        """
+        Called by the Channel just before passing a message into `channel_msg`.
+
+        We overload this to set the channel tag prefix.
+        """
+        kwargs["no_prefix"] = not self.db.tag_channel
+        return super().at_pre_channel_msg(message, channel, senders=senders, **kwargs)
+
+    def channel_msg(self, message, channel, senders=None, relayed=False, **kwargs):
+        """
+        Passes channel messages received on to discord
+
+        Args:
+            message (str) - Incoming text from channel.
+            channel (Channel) - The channel the message is being received from
+
+        Keyword Args:
+            senders (list or None) - Object(s) sending the message
+            relayed (bool) - A flag identifying whether the message was relayed by the bot.
+
+        """
+        if kwargs.get("relayed"):
+            # don't relay our own relayed messages
+            return
+        if channel_list := self.db.channels:
+            # get all the discord channels connected to this evennia channel
+            channel_name = channel.name
+            for dc_chan in [dcid for evchan, dcid in channel_list if evchan == channel_name]:
+                # send outputfunc channel(msg, discord channel)
+                super().msg(channel=(strip_ansi(message.strip()), dc_chan))
+
+    def direct_msg(self, message, sender, **kwargs):
+        """
+        Called when the Discord bot receives a direct message on Discord.
+
+        Args:
+            message (str)  - Incoming text from Discord.
+            sender (tuple) - The Discord info for the sender in the form (id, nickname)
+
+        Keyword args:
+            kwargs (optional) - Unused by default, but can carry additional data from the protocol.
+
+        """
+        pass
+
+    def relay_to_channel(
+        self, message, to_channel, sender=None, from_channel=None, from_server=None, **kwargs
+    ):
+        """
+        Formats and sends a Discord -> Evennia message. Called when the Discord bot receives a channel message on Discord.
+
+        Args:
+            message (str)  - Incoming text from Discord.
+            to_channel (Channel) - The Evennia channel receiving the message
+
+        Keyword args:
+            sender (tuple) - The Discord info for the sender in the form (id, nickname)
+            from_channel (str) - The Discord channel name
+            from_server (str) - The Discord server name
+            kwargs - Any additional keywords. Unused by default, but available for adding additional flags or parameters.
+        """
+
+        tag_str = ""
+        if from_channel and self.db.tag_channel:
+            tag_str = f"#{from_channel}"
+        if from_server and self.db.tag_guild:
+            if tag_str:
+                tag_str += f"@{from_server}"
+            else:
+                tag_str = from_server
+
+        if tag_str:
+            tag_str = f"[{tag_str}] "
+
+        if sender:
+            sender_name = f"|c{sender[1]}|n: "
+
+        message = f"{tag_str}{sender_name}{message}"
+        to_channel.msg(message, senders=None, relayed=True)
+
+    def execute_cmd(
+        self,
+        content=None,
+        session=None,
+        type=None,
+        sender=None,
+        **kwargs,
+    ):
+        """
+        Take incoming data from protocol and send it to connected channel. This is
+        triggered by the bot_data_in Inputfunc.
+
+        Keyword args:
+            content (str) - The content of the message from Discord.
+            session (Session) - The protocol session this command came from.
+            type (str, optional) - Indicates the type of activity from Discord, if
+                the protocol pre-processed it.
+            sender (tuple) - Identifies the author of the Discord activity in a tuple of two
+                strings, in the form of (id, nickname)
+
+            kwargs - Any additional data specific to a particular type of actions. The data for
+                any Discord actions not pre-processed by the protocol will also be passed via kwargs.
+
+        """
+        # normal channel message
+        if type == "channel":
+            channel_id = kwargs.get("channel_id")
+            channel_name = self.db.discord_channels.get(channel_id, {}).get("name", channel_id)
+            guild_id = kwargs.get("guild_id")
+            guild = self.db.guilds.get(guild_id)
+
+            if channel_links := self.db.channels:
+                for ev_channel in [
+                    ev_chan for ev_chan, dc_id in channel_links if dc_id == channel_id
+                ]:
+                    channel = search.channel_search(ev_channel)
+                    if not channel:
+                        continue
+                    channel = channel[0]
+                    self.relay_to_channel(content, channel, sender, channel_name, guild)
+
+        # direct message
+        elif type == "direct":
+            # pass on to the DM hook
+            self.direct_msg(content, sender, **kwargs)
+
+        # guild info update
+        elif type == "guild":
+            if guild_id := kwargs.get("guild_id"):
+                if not self.db.guilds:
+                    self.db.guilds = {}
+                self.db.guilds[guild_id] = kwargs.get("guild_name", "Unidentified")
+                if not self.db.discord_channels:
+                    self.db.discord_channels = {}
+                self.db.discord_channels.update(kwargs.get("channels", {}))

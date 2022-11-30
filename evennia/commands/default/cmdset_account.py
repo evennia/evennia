@@ -72,6 +72,7 @@ class AccountCmdSet(CmdSet):
         self.add(comms.CmdIRCStatus())
         self.add(comms.CmdRSS2Chan())
         self.add(comms.CmdGrapevine2Chan())
+        self.add(comms.CmdDiscord2Chan())
         # self.add(comms.CmdChannels())
         # self.add(comms.CmdAddCom())
         # self.add(comms.CmdDelCom())
