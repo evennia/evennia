@@ -2002,6 +2002,58 @@ class TestComms(BaseEvenniaCommandTest):
         )
 
 
+@override_settings(DISCORD_BOT_TOKEN="notarealtoken", DISCORD_ENABLED=True)
+class TestDiscord(BaseEvenniaCommandTest):
+    def setUp(self):
+        super().setUp()
+        self.channel = create.create_channel(key="testchannel", desc="A test channel")
+        self.cmddiscord = cmd_comms.CmdDiscord2Chan
+        self.cmddiscord.account_caller = False
+        # create bot manually so it doesn't get started
+        self.discordbot = create.create_account(
+            "DiscordBot", None, None, typeclass="evennia.accounts.bots.DiscordBot"
+        )
+
+    def tearDown(self):
+        if self.channel.pk:
+            self.channel.delete()
+
+    @parameterized.expand(
+        [
+            ("", "No Discord connections found."),
+            ("/list", "No Discord connections found."),
+            ("/guild", "Messages to Evennia will include the Discord server."),
+            ("/channel", "Relayed messages will include the originating channel."),
+        ]
+    )
+    def test_discord__switches(self, cmd_args, expected):
+        self.call(self.cmddiscord(), cmd_args, expected)
+
+    def test_discord__linking(self):
+        self.call(
+            self.cmddiscord(), "nosuchchannel = 5555555", "There is no channel 'nosuchchannel'"
+        )
+        self.call(
+            self.cmddiscord(),
+            "testchannel = 5555555",
+            "Discord connection created: testchannel <-> #5555555",
+        )
+        self.assertTrue(self.discordbot in self.channel.subscriptions.all())
+        self.assertTrue(("testchannel", "5555555") in self.discordbot.db.channels)
+        self.call(self.cmddiscord(), "testchannel = 5555555", "Those channels are already linked.")
+
+    def test_discord__list(self):
+        self.discordbot.db.channels = [("testchannel", "5555555")]
+        cmdobj = self.cmddiscord()
+        cmdobj.msg = lambda text, **kwargs: setattr(self, "out", str(text))
+        self.call(cmdobj, "", None)
+        self.assertIn("testchannel", self.out)
+        self.assertIn("5555555", self.out)
+        self.call(cmdobj, "testchannel", None)
+        self.assertIn("testchannel", self.out)
+        self.assertIn("5555555", self.out)
+
+
 class TestBatchProcess(BaseEvenniaCommandTest):
     """
     Test the batch processor.
