@@ -2080,6 +2080,58 @@
         <span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="TestDiscord"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestDiscord">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="n">DISCORD_BOT_TOKEN</span><span class="o">=</span><span class="s2">&quot;notarealtoken&quot;</span><span class="p">,</span> <span class="n">DISCORD_ENABLED</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TestDiscord</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDiscord.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestDiscord.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;A test channel&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmddiscord</span> <span class="o">=</span> <span class="n">cmd_comms</span><span class="o">.</span><span class="n">CmdDiscord2Chan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmddiscord</span><span class="o">.</span><span class="n">account_caller</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># create bot manually so it doesn&#39;t get started</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discordbot</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span>
+            <span class="s2">&quot;DiscordBot&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;evennia.accounts.bots.DiscordBot&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestDiscord.tearDown"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestDiscord.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;No Discord connections found.&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;/list&quot;</span><span class="p">,</span> <span class="s2">&quot;No Discord connections found.&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;/guild&quot;</span><span class="p">,</span> <span class="s2">&quot;Messages to Evennia will include the Discord server.&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;/channel&quot;</span><span class="p">,</span> <span class="s2">&quot;Relayed messages will include the originating channel.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_discord__switches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_args</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmddiscord</span><span class="p">(),</span> <span class="n">cmd_args</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestDiscord.test_discord__linking"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestDiscord.test_discord__linking">[docs]</a>    <span class="k">def</span> <span class="nf">test_discord__linking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmddiscord</span><span class="p">(),</span> <span class="s2">&quot;nosuchchannel = 5555555&quot;</span><span class="p">,</span> <span class="s2">&quot;There is no channel &#39;nosuchchannel&#39;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmddiscord</span><span class="p">(),</span>
+            <span class="s2">&quot;testchannel = 5555555&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Discord connection created: testchannel &lt;-&gt; #5555555&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discordbot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span> <span class="s2">&quot;5555555&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discordbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmddiscord</span><span class="p">(),</span> <span class="s2">&quot;testchannel = 5555555&quot;</span><span class="p">,</span> <span class="s2">&quot;Those channels are already linked.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestDiscord.test_discord__list"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestDiscord.test_discord__list">[docs]</a>    <span class="k">def</span> <span class="nf">test_discord__list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discordbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span> <span class="s2">&quot;5555555&quot;</span><span class="p">)]</span>
+        <span class="n">cmdobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmddiscord</span><span class="p">()</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;5555555&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">,</span> <span class="s2">&quot;testchannel&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;5555555&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">)</span></div></div>
+
+
 <div class="viewcode-block" id="TestBatchProcess"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess">[docs]</a><span class="k">class</span> <span class="nc">TestBatchProcess</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the batch processor.</span>

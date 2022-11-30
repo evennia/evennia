@@ -81,7 +81,7 @@
 
 <span class="sd">- channel</span>
 <span class="sd">- page</span>
-<span class="sd">- irc/rss/grapevine linking</span>
+<span class="sd">- irc/rss/grapevine/discord linking</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -92,7 +92,7 @@
 <span class="kn">from</span> <span class="nn">evennia.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">ask_yes_no</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">tail_log_file</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">strip_unsafe_input</span>
@@ -112,6 +112,7 @@
     <span class="s2">&quot;CmdIRCStatus&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdRSS2Chan&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdGrapevine2Chan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdDiscord2Chan&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">_DEFAULT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
 
@@ -1986,6 +1987,176 @@
 
         <span class="n">bot</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">ev_channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">grapevine_channel</span><span class="o">=</span><span class="n">grapevine_channel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Grapevine connection created </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> &lt;-&gt; </span><span class="si">{</span><span class="n">grapevine_channel</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdDiscord2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdDiscord2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdDiscord2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Link an Evennia channel to an external Discord channel</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      discord2chan[/switches]</span>
+<span class="sd">      discord2chan[/switches] &lt;evennia_channel&gt; [= &lt;discord_channel_id&gt;]</span>
+<span class="sd">      discord2chan/name &lt;bot_name&gt;</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">        /list    - (or no switch) show existing Evennia &lt;-&gt; Discord links</span>
+<span class="sd">        /remove  - remove an existing link by link ID</span>
+<span class="sd">        /delete  - alias to remove</span>
+<span class="sd">        /guild   - toggle the Discord server tag on/off</span>
+<span class="sd">        /channel - toggle the Evennia/Discord channel tags on/off</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        discord2chan mydiscord = 555555555555555</span>
+
+<span class="sd">    This creates a link between an in-game Evennia channel and an external</span>
+<span class="sd">    Discord channel. You must have a valid Discord bot application</span>
+<span class="sd">    (https://discord.com/developers/applications)) and your DISCORD_BOT_TOKEN</span>
+<span class="sd">    must be added to settings. (Please put it in secret_settings !)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;discord2chan&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;discord&quot;</span><span class="p">,)</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;channel&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;delete&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;guild&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;list&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;remove&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:serversetting(DISCORD_ENABLED) and pperm(Developer)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+<div class="viewcode-block" id="CmdDiscord2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdDiscord2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Manage the Evennia&lt;-&gt;Discord channel links&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_TOKEN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;You must add your Discord bot application token to settings as DISCORD_BOT_TOKEN&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">discord_bot</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">bot</span> <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;DiscordBot&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="p">:</span>
+            <span class="c1"># create a new discord bot</span>
+            <span class="n">bot_class</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_CLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">bots</span><span class="o">.</span><span class="n">DiscordBot</span><span class="p">)</span>
+            <span class="n">discord_bot</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span><span class="s2">&quot;DiscordBot&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">bot_class</span><span class="p">)</span>
+            <span class="n">discord_bot</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Created and initialized a new Discord relay bot.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">discord_bot</span> <span class="o">=</span> <span class="n">discord_bot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_CLASS</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;WARNING: The Discord bot&#39;s typeclass is &#39;</span><span class="si">{</span><span class="n">discord_bot</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">&#39;. This does not match </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_CLASS</span><span class="si">}</span><span class="s2"> in settings!&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;guild&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Messages to Evennia |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span> <span class="k">else</span> <span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude the Discord server.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="s2">&quot;channel&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Relayed messages |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span> <span class="k">else</span> <span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude the originating channel.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="c1"># show all connections</span>
+            <span class="k">if</span> <span class="n">channel_list</span> <span class="o">:=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span>
+                    <span class="s2">&quot;|wLink ID|n&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wEvennia|n&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wDiscord|n&quot;</span><span class="p">,</span>
+                    <span class="n">border</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">,</span>
+                    <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="c1"># iterate through the channel links</span>
+                <span class="c1"># load in the pretty names for the discord channels from cache</span>
+                <span class="n">dc_chan_names</span> <span class="o">=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;discord_channels&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">evchan</span><span class="p">,</span> <span class="n">dcchan</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channel_list</span><span class="p">):</span>
+                    <span class="n">dc_info</span> <span class="o">=</span> <span class="n">dc_chan_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dcchan</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">dcchan</span><span class="p">,</span> <span class="s2">&quot;guild&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">})</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                        <span class="n">i</span><span class="p">,</span> <span class="n">evchan</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">dc_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">dc_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;guild&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No Discord connections found.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;disconnect&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;remove&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">channel_list</span> <span class="o">:=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">lid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: discord2chan/remove &lt;link id&gt;&quot;</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="k">if</span> <span class="n">lid</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel_list</span><span class="p">):</span>
+                    <span class="n">ev_chan</span><span class="p">,</span> <span class="n">dc_chan</span> <span class="o">=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">lid</span><span class="p">)</span>
+                    <span class="n">dc_chan_names</span> <span class="o">=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;discord_channels&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="n">dc_info</span> <span class="o">=</span> <span class="n">dc_chan_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dc_chan</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span> <span class="s2">&quot;guild&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">})</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Removed link between </span><span class="si">{</span><span class="n">ev_chan</span><span class="si">}</span><span class="s2"> and #</span><span class="si">{</span><span class="n">dc_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">dc_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;guild&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;There are no active connections to Discord.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="n">ev_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+        <span class="n">dc_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+
+        <span class="k">if</span> <span class="n">ev_channel</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dc_channel</span><span class="p">:</span>
+            <span class="c1"># show all discord channels linked to self.lhs</span>
+            <span class="k">if</span> <span class="n">channel_list</span> <span class="o">:=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span>
+                    <span class="s2">&quot;|wLink ID|n&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wEvennia|n&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wDiscord|n&quot;</span><span class="p">,</span>
+                    <span class="n">border</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">,</span>
+                    <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="c1"># iterate through the channel links</span>
+                <span class="c1"># load in the pretty names for the discord channels from cache</span>
+                <span class="n">dc_chan_names</span> <span class="o">=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;discord_channels&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">evchan</span><span class="p">,</span> <span class="n">dcchan</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channel_list</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">evchan</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">ev_channel</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                        <span class="n">dc_info</span> <span class="o">=</span> <span class="n">dc_chan_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dcchan</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">dcchan</span><span class="p">,</span> <span class="s2">&quot;guild&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">})</span>
+                        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">evchan</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">dc_info</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">dc_info</span><span class="p">[</span><span class="s1">&#39;guild&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">results</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There are no Discord channels connected to </span><span class="si">{</span><span class="n">ev_channel</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;There are no active connections to Discord.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># check if link already exists</span>
+        <span class="k">if</span> <span class="n">channel_list</span> <span class="o">:=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ev_channel</span><span class="p">,</span> <span class="n">dc_channel</span><span class="p">)</span> <span class="ow">in</span> <span class="n">channel_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Those channels are already linked.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># create the new link</span>
+        <span class="n">channel_obj</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_channel</span><span class="p">(</span><span class="n">ev_channel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel_obj</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is no channel &#39;</span><span class="si">{</span><span class="n">ev_channel</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">channel_obj</span> <span class="o">=</span> <span class="n">channel_obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">channel_obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dc_channel</span><span class="p">))</span>
+        <span class="n">channel_obj</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">discord_bot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dc_chans</span> <span class="o">:=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">discord_channels</span><span class="p">:</span>
+            <span class="n">dc_channel_name</span> <span class="o">=</span> <span class="n">dc_chans</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dc_channel</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">dc_channel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dc_channel_name</span> <span class="o">=</span> <span class="n">dc_channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Discord connection created: </span><span class="si">{</span><span class="n">channel_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &lt;-&gt; #</span><span class="si">{</span><span class="n">dc_channel_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

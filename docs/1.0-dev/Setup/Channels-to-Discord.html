@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Connect Evennia channels to Discord &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Connect Evennia channels to Discord</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Connect Evennia channels to Discord</a><ul>
+<li><a class="reference internal" href="#configuring-discord">Configuring Discord</a></li>
+<li><a class="reference internal" href="#step-by-step-discord-setup">Step-By-Step Discord Setup</a><ul>
+<li><a class="reference internal" href="#creating-a-discord-bot-application">Creating a Discord Bot Application</a></li>
+<li><a class="reference internal" href="#adding-your-bot-to-your-server">Adding your bot to your server</a></li>
+<li><a class="reference internal" href="#activating-discord-in-evennia">Activating Discord in Evennia</a></li>
+<li><a class="reference internal" href="#connecting-an-evennia-channel-to-a-discord-channel">Connecting an Evennia channel to a Discord channel</a></li>
+<li><a class="reference internal" href="#further-customization">Further Customization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Setup/Channels-to-Discord.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Channels-to-Discord.html">1.0-dev (develop branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="connect-evennia-channels-to-discord">
+<h1>Connect Evennia channels to Discord<a class="headerlink" href="#connect-evennia-channels-to-discord" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://discord.com">Discord</a> is a popular chat service, especially for game
+communities. If you have a discord server for your game, you can connect it
+to your in-game channels to communicate between in-game and out.</p>
+<section id="configuring-discord">
+<h2>Configuring Discord<a class="headerlink" href="#configuring-discord" title="Permalink to this headline">¶</a></h2>
+<p>The first thing you’ll need is to set up a Discord bot to connect to your game.
+Go to the <a class="reference external" href="https://discord.com/developers/applications">bot applications</a> page and make a new application. You’ll need the
+“MESSAGE CONTENT” toggle flipped On, and to add your bot token to your settings.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/server/conf/secret_settings.py</span>
+<span class="n">DISCORD_BOT_TOKEN</span> <span class="o">=</span> <span class="s1">&#39;&lt;your Discord bot token&gt;&#39;</span>
+</pre></div>
+</div>
+<p>You will also need the <code class="docutils literal notranslate"><span class="pre">pyopenssl</span></code> module, if it isn’t already installed.
+Install it into your Evennia python environment with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install pyopenssl
+</pre></div>
+</div>
+<p>Lastly, enable Discord in your settings</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DISCORD_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Start/reload Evennia and log in as a privileged user. You should now have a new
+command available: <code class="docutils literal notranslate"><span class="pre">discord2chan</span></code>. Enter <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">discord2chan</span></code> for an explanation
+of its options.</p>
+<p>Adding a new channel link is done with the following command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> discord2chan &lt;evennia_channel&gt; = &lt;discord_channel_id&gt;
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">evennia_channel</span></code> argument must be the name of an existing Evennia channel,
+and <code class="docutils literal notranslate"><span class="pre">discord_channel_id</span></code> is the full numeric ID of the Discord channel.</p>
+<blockquote>
+<div><p>Your bot needs to be added to the correct Discord server with access to the
+channel in order to send or receive messages. This command does NOT verify that
+your bot has Discord permissions!</p>
+</div></blockquote>
+</section>
+<section id="step-by-step-discord-setup">
+<h2>Step-By-Step Discord Setup<a class="headerlink" href="#step-by-step-discord-setup" title="Permalink to this headline">¶</a></h2>
+<p>This section will walk through the entire process of setting up a Discord
+connection to your Evennia game, step by step. If you’ve completed any of the
+steps already, feel free to skip to the next.</p>
+<section id="creating-a-discord-bot-application">
+<h3>Creating a Discord Bot Application<a class="headerlink" href="#creating-a-discord-bot-application" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>You will need an active Discord account and admin access to a Discord server
+in order to connect Evennia to it. This assumes you already do.</p>
+</div></blockquote>
+<p>Make sure you’re logged in on the Discord website, then visit
+<a class="reference external" href="https://discord.com/developers/applications">https://discord.com/developers/applications</a>. Click the “New Application”
+button in the upper right corner, then enter the name for your new app - the
+name of your Evennia game is a good option.</p>
+<p>You’ll next be brought to the settings page for the new application. Click “Bot”
+on the sidebar menu, then “Build-a-Bot” to create your bot account.</p>
+<p><strong>Save the displayed token!</strong> This will be the ONLY time that Discord will allow
+you to see that token - if you lose it, you will have to reset it. This token is
+how your bot confirms its identity, so it’s very important.</p>
+<p>Next, add this token to your <em>secret</em> settings.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file: mygame/server/conf/secret_settings.py</span>
+
+<span class="n">DISCORD_BOT_TOKEN</span> <span class="o">=</span> <span class="s1">&#39;&lt;token&gt;&#39;</span>
+</pre></div>
+</div>
+<p>Once that is saved, scroll down the Bot page a little more and find the toggle for
+“Message Content Intent”. You’ll need this to be toggled to ON, or you bot won’t
+be able to read anyone’s messages.</p>
+<p>Finally, you can add any additional settings to your new bot account: a display image,
+display nickname, bio, etc. You can come back and change these at any time, so
+don’t worry about it too much now.</p>
+</section>
+<section id="adding-your-bot-to-your-server">
+<h3>Adding your bot to your server<a class="headerlink" href="#adding-your-bot-to-your-server" title="Permalink to this headline">¶</a></h3>
+<p>While still in your new application, click “OAuth2” on the side menu, then “URL
+Generator”. On this page, you’ll generate an invite URL for your app, then visit
+that URL to add it to your server.</p>
+<p>In the top box, find the checkbox for <code class="docutils literal notranslate"><span class="pre">bot</span></code> and check it: this will make a second
+permissions box appear. In that box, you’ll want to check off at least the
+following boxes:</p>
+<ul class="simple">
+<li><p>Read Messages/View Channels (in “General Permissions”)</p></li>
+<li><p>Send Messages (in “Text Permissions”)</p></li>
+</ul>
+<p>Lastly, scroll down to the bottom of the page and copy the resulting URL. It should
+look something like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>https://discord.com/api/oauth2/authorize?client_id=55555555555555555&amp;permissions=3072&amp;scope=bot
+</pre></div>
+</div>
+<p>Visit that link, select the server for your Evennia connection, and confirm.</p>
+<p>After the bot is added to your server, you can fine-tune the permissions further
+through the usual Discord server administration.</p>
+</section>
+<section id="activating-discord-in-evennia">
+<h3>Activating Discord in Evennia<a class="headerlink" href="#activating-discord-in-evennia" title="Permalink to this headline">¶</a></h3>
+<p>You’ll need to do two additional things with your Evennia game before it can connect
+to Discord.</p>
+<p>First, install <code class="docutils literal notranslate"><span class="pre">pyopenssl</span></code> to your virtual environment, if you haven’t already.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install pyopenssl
+</pre></div>
+</div>
+<p>Second, enable the Discord integration in your settings file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file: server/conf/settings.py</span>
+<span class="n">DISCORD_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Start or reload your game to apply the changed settings, then log in as an account
+with at least <code class="docutils literal notranslate"><span class="pre">Developer</span></code> permissions and initialize the bot account on Evennia with
+the <code class="docutils literal notranslate"><span class="pre">discord2chan</span></code> command. You should receive a message that the bot was created, and
+that there are no active connections to Discord.</p>
+</section>
+<section id="connecting-an-evennia-channel-to-a-discord-channel">
+<h3>Connecting an Evennia channel to a Discord channel<a class="headerlink" href="#connecting-an-evennia-channel-to-a-discord-channel" title="Permalink to this headline">¶</a></h3>
+<p>You will need the name of your Evennia channel, and the channel ID for your Discord
+channel. The channel ID is the last part of the URL when you visit a channel.</p>
+<p>e.g. if the url is <code class="docutils literal notranslate"><span class="pre">https://discord.com/channels/55555555555555555/12345678901234567890</span></code>
+then your channel ID is <code class="docutils literal notranslate"><span class="pre">12345678901234567890</span></code></p>
+<p>Link the two channels with the following command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>discord2chan &lt;evennia channel&gt; = &lt;discord channel id&gt;
+</pre></div>
+</div>
+<p>The two channels should now relay to each other. Confirm this works by posting a
+message on the evennia channel, and another on the Discord channel - they should
+both show up on the other end.</p>
+<blockquote>
+<div><p>If you don’t see any messages coming to or from Discord, make sure that your bot
+has permission to read and send messages and that your application has the
+“Message Content Intents” flag set.</p>
+</div></blockquote>
+</section>
+<section id="further-customization">
+<h3>Further Customization<a class="headerlink" href="#further-customization" title="Permalink to this headline">¶</a></h3>
+<p>The help file for <code class="docutils literal notranslate"><span class="pre">discord2chan</span></code> has more information on how to use the command to
+customize your relayed messages.</p>
+<p>For anything more complex, however, you can create your own child class of
+<code class="docutils literal notranslate"><span class="pre">DiscordBot</span></code> and add it to your settings.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file: mygame/server/conf/settings.py</span>
+<span class="c1"># EXAMPLE</span>
+<span class="n">DISCORD_BOT_CLASS</span> <span class="o">=</span> <span class="s1">&#39;accounts.bots.DiscordBot&#39;</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>If you had already set up a Discord relay and are changing this, make sure you
+either delete the old bot account in Evennia or change its typeclass or it won’t
+take effect.</p>
+</div></blockquote>
+<p>The core DiscordBot account class has several useful hooks already set up for
+processing and relaying channel messages between Discord and Evennia channels,
+along with the (unused by default) <code class="docutils literal notranslate"><span class="pre">direct_msg</span></code> hook for processing DMs sent to
+the bot on Discord.</p>
+<p>Only messages and server updates are processed by default, but the Discord custom
+protocol passes all other unprocessed dispatch data on to the Evennia bot account
+so you can add additional handling yourself. However, <strong>this integration is not a full library</strong>
+and does not document the full range of possible Discord events.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Connect Evennia channels to Discord</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

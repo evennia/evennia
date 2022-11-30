@@ -985,6 +985,21 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># them. These are secret and should thus be overridden in secret_settings file</span>
 <span class="n">GRAPEVINE_CLIENT_ID</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 <span class="n">GRAPEVINE_CLIENT_SECRET</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="c1"># Discord (discord.com) is a popular communication service for many, especially</span>
+<span class="c1"># for game communities. Evennia&#39;s channels can be connected to Discord channels</span>
+<span class="c1"># and relay messages between Evennia and Discord. To use, you will need to create</span>
+<span class="c1"># your own Discord application and bot.</span>
+<span class="c1"># Discord also requires installing the pyopenssl library.</span>
+<span class="c1"># Full step-by-step instructions are available in the official Evennia documentation.</span>
+<span class="n">DISCORD_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># The Intents bitmask required by Discord bots to request particular API permissions.</span>
+<span class="c1"># By default, this includes the basic guild status and message read/write flags.</span>
+<span class="n">DISCORD_BOT_INTENTS</span> <span class="o">=</span> <span class="mi">105985</span>
+<span class="c1"># The authentication token for the Discord bot. This should be kept secret and</span>
+<span class="c1"># put in your secret_settings file.</span>
+<span class="n">DISCORD_BOT_TOKEN</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># The account typeclass which the Evennia-side Discord relay bot will use.</span>
+<span class="n">DISCORD_BOT_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.accounts.bots.DiscordBot&quot;</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># Django web features</span>

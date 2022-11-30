@@ -543,7 +543,8 @@
                     <span class="c1"># included in location.contents</span>
                     <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="n">tags</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tagcat</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">tagkey</span><span class="p">,</span> <span class="o">*</span><span class="n">tagcat</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tagcat</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">tagkey</span><span class="p">,</span> <span class="o">*</span><span class="n">tagcat</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)]</span>
 
         <span class="n">results</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span>
             <span class="n">searchdata</span><span class="p">,</span>
