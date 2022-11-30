@@ -220,6 +220,7 @@ Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.9, 3.10, 3.11.  Post
 - `EvTable` now supports passing `EvColumn`s as a list directly, (`EvTable(table=[colA,colB])`)
 - Add `tags=` search criterion to `DefaultObject.search`.
 - Add `AT_EXIT_TRAVERSE` signal, firing when an exit is traversed.
+- Add integration between Evennia and Discord channels (PR by Inspector Cararacal)
 
 ## Evennia 0.9.5
 

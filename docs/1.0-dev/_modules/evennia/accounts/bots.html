@@ -86,7 +86,6 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
@@ -644,8 +643,9 @@
 
 <div class="viewcode-block" id="DiscordBot"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot">[docs]</a><span class="k">class</span> <span class="nc">DiscordBot</span><span class="p">(</span><span class="n">Bot</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Discord bot relay. You will need to set up your own bot (https://discord.com/developers/applications)</span>
-<span class="sd">    and add the bot token as `DISCORD_BOT_TOKEN` to `secret_settings.py` to use</span>
+<span class="sd">    Discord bot relay. You will need to set up your own bot</span>
+<span class="sd">    (https://discord.com/developers/applications) and add the bot token as `DISCORD_BOT_TOKEN` to</span>
+<span class="sd">    `secret_settings.py` to use</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">factory_path</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.discord.DiscordWebsocketServerFactory&quot;</span>
@@ -653,9 +653,11 @@
 <div class="viewcode-block" id="DiscordBot.at_init"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load required channels back into memory</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">channel_links</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
-            <span class="c1"># this attribute contains a list of evennia&lt;-&gt;discord links in the form of (&quot;evennia_channel&quot;, &quot;discord_chan_id&quot;)</span>
+            <span class="c1"># this attribute contains a list of evennia&lt;-&gt;discord links in the form</span>
+            <span class="c1"># of (&quot;evennia_channel&quot;, &quot;discord_chan_id&quot;)</span>
             <span class="c1"># grab Evennia channels, cache and connect</span>
             <span class="n">channel_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">evchan</span> <span class="k">for</span> <span class="n">evchan</span><span class="p">,</span> <span class="n">dcid</span> <span class="ow">in</span> <span class="n">channel_links</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">ev_channels</span> <span class="o">=</span> <span class="p">{}</span>
@@ -680,7 +682,8 @@
                 <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">channel_links</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
-            <span class="c1"># this attribute contains a list of evennia&lt;-&gt;discord links in the form of (&quot;evennia_channel&quot;, &quot;discord_chan_id&quot;)</span>
+            <span class="c1"># this attribute contains a list of evennia&lt;-&gt;discord links in the form</span>
+            <span class="c1"># of (&quot;evennia_channel&quot;, &quot;discord_chan_id&quot;)</span>
             <span class="c1"># grab Evennia channels, cache and connect</span>
             <span class="n">channel_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">evchan</span> <span class="k">for</span> <span class="n">evchan</span><span class="p">,</span> <span class="n">dcid</span> <span class="ow">in</span> <span class="n">channel_links</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">ev_channels</span> <span class="o">=</span> <span class="p">{}</span>
@@ -705,6 +708,7 @@
 <span class="sd">        Called by the Channel just before passing a message into `channel_msg`.</span>
 
 <span class="sd">        We overload this to set the channel tag prefix.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;no_prefix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_pre_channel_msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="n">senders</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -741,7 +745,7 @@
 <span class="sd">            sender (tuple) - The Discord info for the sender in the form (id, nickname)</span>
 
 <span class="sd">        Keyword args:</span>
-<span class="sd">            kwargs (optional) - Unused by default, but can carry additional data from the protocol.</span>
+<span class="sd">            **kwargs (optional) - Unused by default, but can carry additional data from the protocol.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -750,17 +754,20 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">to_channel</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_server</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Formats and sends a Discord -&gt; Evennia message. Called when the Discord bot receives a channel message on Discord.</span>
+<span class="sd">        Formats and sends a Discord -&gt; Evennia message. Called when the Discord bot receives a</span>
+<span class="sd">        channel message on Discord.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            message (str)  - Incoming text from Discord.</span>
 <span class="sd">            to_channel (Channel) - The Evennia channel receiving the message</span>
 
 <span class="sd">        Keyword args:</span>
-<span class="sd">            sender (tuple) - The Discord info for the sender in the form (id, nickname)</span>
+<span class="sd">            sender (tuple) - The Discord info for the sender in the form `(id, nickname)`</span>
 <span class="sd">            from_channel (str) - The Discord channel name</span>
 <span class="sd">            from_server (str) - The Discord server name</span>
-<span class="sd">            kwargs - Any additional keywords. Unused by default, but available for adding additional flags or parameters.</span>
+<span class="sd">            kwargs - Any additional keywords. Unused by default, but available for adding additional</span>
+<span class="sd">                flags or parameters.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">tag_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>

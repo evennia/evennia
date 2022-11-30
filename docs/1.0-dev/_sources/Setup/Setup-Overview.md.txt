@@ -26,8 +26,9 @@ Updating-Evennia
 Settings
 Settings-Default
 Choosing-a-Database
-Channels-to-IRC
+Channels-to-Discord
 Channels-to-Grapevine
+Channels-to-IRC
 Channels-to-RSS
 Channels-to-Twitter
 ```

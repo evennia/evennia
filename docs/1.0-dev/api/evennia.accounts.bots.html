@@ -510,8 +510,9 @@ triggered by the bot_data_in Inputfunc.</p>
 <dt id="evennia.accounts.bots.DiscordBot">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.accounts.bots.</code><code class="sig-name descname">DiscordBot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/bots.html#DiscordBot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.bots.DiscordBot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.accounts.bots.Bot" title="evennia.accounts.bots.Bot"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.bots.Bot</span></code></a></p>
-<p>Discord bot relay. You will need to set up your own bot (<a class="reference external" href="https://discord.com/developers/applications">https://discord.com/developers/applications</a>)
-and add the bot token as <strong>DISCORD_BOT_TOKEN</strong> to <strong>secret_settings.py</strong> to use</p>
+<p>Discord bot relay. You will need to set up your own bot
+(<a class="reference external" href="https://discord.com/developers/applications">https://discord.com/developers/applications</a>) and add the bot token as <strong>DISCORD_BOT_TOKEN</strong> to
+<strong>secret_settings.py</strong> to use</p>
 <dl class="py attribute">
 <dt id="evennia.accounts.bots.DiscordBot.factory_path">
 <code class="sig-name descname">factory_path</code><em class="property"> = 'evennia.server.portal.discord.DiscordWebsocketServerFactory'</em><a class="headerlink" href="#evennia.accounts.bots.DiscordBot.factory_path" title="Permalink to this definition">¶</a></dt>
@@ -568,7 +569,7 @@ and add the bot token as <strong>DISCORD_BOT_TOKEN</strong> to <strong>secret_se
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>kwargs</strong> (<em>optional</em>) – </p>
+<dd class="field-even"><p><strong>**kwargs</strong> (<em>optional</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -576,7 +577,8 @@ and add the bot token as <strong>DISCORD_BOT_TOKEN</strong> to <strong>secret_se
 <dl class="py method">
 <dt id="evennia.accounts.bots.DiscordBot.relay_to_channel">
 <code class="sig-name descname">relay_to_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">to_channel</span></em>, <em class="sig-param"><span class="n">sender</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_channel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_server</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/bots.html#DiscordBot.relay_to_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.bots.DiscordBot.relay_to_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Formats and sends a Discord -&gt; Evennia message. Called when the Discord bot receives a channel message on Discord.</p>
+<dd><p>Formats and sends a Discord -&gt; Evennia message. Called when the Discord bot receives a
+channel message on Discord.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -586,10 +588,10 @@ and add the bot token as <strong>DISCORD_BOT_TOKEN</strong> to <strong>secret_se
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>sender</strong> (<em>tuple</em><em>) </em><em>- The Discord info for the sender in the form</em><em> (</em><a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB.id" title="evennia.accounts.models.AccountDB.id"><em>id</em></a><em>, </em><a class="reference internal" href="evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.nickname" title="evennia.server.portal.irc.IRCBot.nickname"><em>nickname</em></a>) – </p></li>
+<li><p><strong>sender</strong> (tuple) - The Discord info for the sender in the form <a href="#id1"><span class="problematic" id="id2">**</span></a>(id, nickname) – </p></li>
 <li><p><strong>from_channel</strong> (<em>str</em>) – </p></li>
 <li><p><strong>from_server</strong> (<em>str</em>) – </p></li>
-<li><p><strong>- Any additional keywords. Unused by default</strong><strong>, </strong><strong>but available for adding additional flags</strong><strong> or </strong><strong>parameters.</strong> (<em>kwargs</em>) – </p></li>
+<li><p><strong>- Any additional keywords. Unused by default</strong><strong>, </strong><strong>but available for adding additional</strong> (<em>kwargs</em>) – flags or parameters.</p></li>
 </ul>
 </dd>
 </dl>
