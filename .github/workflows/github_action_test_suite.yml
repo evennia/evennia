@@ -5,188 +5,135 @@ name: test-suite
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [master, develop]
     paths-ignore:
-      - 'docs/**'
+      - "docs/**"
   pull_request:
-    branches: [ master, develop ]
+    branches: [master, develop]
 
 jobs:
-  build:
+  test:
+    name: Test
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.10', '3.11']
-        TESTING_DB: ['sqlite3', 'postgresql', 'mysql']
+        python-version: ["3.9", "3.10", "3.11"]
+        TESTING_DB: ["sqlite3", "postgresql", "mysql"]
+        include:
+          - coverage-test: false
+          - coverage-test: true
+            python-version: "3.10"
+            TESTING_DB: "sqlite3"
 
     steps:
+      - uses: actions/checkout@v3
 
-    - uses: actions/checkout@v3
+      - name: Set up database (${{ matrix.TESTING_DB }})
+        uses: ./.github/actions/setup-database
+        with:
+          database: ${{ matrix.TESTING_DB }}
+        timeout-minutes: 5
 
-    - name: Set up PostgreSQL server
-      uses: harmon758/postgresql-action@v1
-      if: ${{ matrix.TESTING_DB == 'postgresql' }}
-      with:
-        postgresql version: '11'
-        postgresql db: 'evennia'
-        postgresql user: 'evennia'
-        postgresql password: 'password'
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
 
-    - name: Set up MySQL server
-      uses: mirromutth/mysql-action@v1.1
-      if: ${{ matrix.TESTING_DB == 'mysql'}}
-      with:
-        host port: 3306
-        # character set server: 'utf8mb4'
-        # collation server: 'utf8mb4_unicode_ci'
-        character set server: 'utf8'
-        collation server: 'utf8_general_ci'
-        mysql database: 'evennia'
-        mysql user: 'evennia'
-        mysql password: 'password'
-        mysql root password: root_password
+      - name: Install package dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel
+          pip install psycopg2-binary==2.9.5   # req by postgresql
+          pip install mysqlclient
+          pip install coveralls
+          pip install tblib
+          pip install .
+          pip install .[extra]
 
-    # wait for db to activate
-    - name: wait for db to activate
-      if: matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql'
-      run: |
+      - name: Initialize evennia
+        run: |
+          evennia --init testing_mygame
+          cp .github/workflows/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
+          cd testing_mygame
+          evennia migrate
+          evennia collectstatic --noinput
 
-        if [ ${{ matrix.TESTING_DB }} = mysql ]
-        then
-          while ! mysqladmin ping -h 127.0.0.1 -u root -proot_password -s >/dev/null 2>&1
-          do
-            sleep 1
-            echo -n .
-          done
-          echo
-        else
-          while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
-          do
-            sleep 1
-            echo -n .
-          done
-          echo
-        fi
+      # OBS - it's important to not run the coverage tests with --parallel, it messes up the coverage
+      # calculation!
+      - name: Run test suite with coverage
+        if: matrix.coverage-test
+        working-directory: testing_mygame
+        run: |
+          coverage run \
+            --source=../evennia \
+            --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
+            ../bin/unix/evennia test \
+              --settings=settings \
+              --timing \
+              evennia
+          coverage xml
+          coverage --version
+          coverage report | grep TOTAL
 
-    - name: mysql privileges
-      if: matrix.TESTING_DB == 'mysql'
-      run: |
-
-        cat <<EOF | mysql -u root -proot_password -h 127.0.0.1 mysql
-          create user 'evennia'@'%' identified by 'password';
-          grant all on \`evennia%\`.* to 'evennia'@'%';
-          grant process on *.* to 'evennia'@'%';
-          flush privileges
-        EOF
-
-    # get logs from db start
-    - name: Database container logs
-      if: matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql'
-      uses: jwalton/gh-docker-logs@v2
-
-    - name: Check running containers
-      if: matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql'
-      run: docker ps -a
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: pip
-        cache-dependency-path: |
-          pyproject.toml 
-
-    - name: Install package dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install wheel
-        pip install psycopg2-binary==2.9.5   # req by postgresql
-        pip install mysqlclient
-        pip install coveralls
-        pip install tblib
-        pip install .
-        pip install .[extra]
-
-    - name: Initialize evennia
-      run: |
-        evennia --init testing_mygame
-        cp .github/workflows/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
-        cd testing_mygame
-        evennia migrate
-        evennia collectstatic --noinput
-
-    # OBS - it's important to not run the coverage tests with --parallel, it messes up the coverage
-    # calculation! 
-    - name: Run test suite with coverage
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
-      working-directory: testing_mygame
-      run: |
-        coverage run \
-          --source=../evennia \
-          --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
-          ../bin/unix/evennia test \
+      # For other runs, run tests in parallel
+      - name: Run test suite
+        if: ! matrix.coverage-test
+        working-directory: testing_mygame
+        run: |
+          evennia test \
             --settings=settings \
+            --keepdb \
+            --parallel 4 \
             --timing \
             evennia
-        coverage xml
-        coverage --version
-        coverage report | grep TOTAL
 
-    # For other runs, run tests in parallel
-    - name: Run test suite
-      if: matrix.TESTING_DB != 'sqlite3' || matrix.python-version != '3.10'
-      working-directory: testing_mygame
-      run: |
-        evennia test \
-          --settings=settings \
-          --keepdb \
-          --parallel 4 \
-          --timing \
-          evennia
-
-    # we only want to run coverall once, so we only do it for one of the matrix combinations
-    # it's also not critical if pushing to either service fails (happens for PRs since env is not
-    # available outside of the evennia org)
-    - name: Send data to Coveralls
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-      continue-on-error: true
-      env:
+      # we only want to run coverall once, so we only do it for one of the matrix combinations
+      # it's also not critical if pushing to either service fails (happens for PRs since env is not
+      # available outside of the evennia org)
+      - name: Send data to Coveralls
+        if: matrix.coverage-test && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+        continue-on-error: true
+        env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: |
-        cd testing_mygame
-        coveralls
+        run: |
+          cd testing_mygame
+          coveralls
 
-    # docker setup and push
-    -
-      name: Set up QEMU
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
-      uses: docker/setup-qemu-action@v2
-    -
-      name: Set up Docker Buildx
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
-      uses: docker/setup-buildx-action@v2
-    -
-      name: Login to DockerHub
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    -
-      name: Build and push for master
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && github.ref == 'refs/heads/master'
-      id: docker_build_master
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        tags: evennia/evennia:latest
-    -
-      name: Build and push for develop
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && github.ref == 'refs/heads/develop'
-      id: docker_build_develop
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        tags: evennia/evennia:develop
+  deploy:
+    name: Deploy Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push for master
+        if: github.ref == 'refs/heads/master'
+        id: docker_build_master
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: evennia/evennia:latest
+
+      - name: Build and push for develop
+        if: github.ref == 'refs/heads/develop'
+        id: docker_build_develop
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: evennia/evennia:develop
