@@ -46,7 +46,8 @@ The `contrib` folder structure was changed from 0.9.5. All contribs are now in s
 
 ## Translations 
 
-- New Latin (la) i18n translation (jamalainm)
+- New Latin (la) translation (jamalainm)
+- New German (de) translation (Zhuraj)
 - Updated Italian translation (rpolve)
 - Updated Swedish translation
 

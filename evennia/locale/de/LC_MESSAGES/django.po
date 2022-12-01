@@ -1,0 +1,490 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-28 21:18+0100\n"
+"PO-Revision-Date: 2022-11-29 20:06+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2\n"
+
+#: accounts/accounts.py:278
+msgid "You are already puppeting this object."
+msgstr "Sie steuern dieses Objekt bereits."
+
+#: accounts/accounts.py:282
+#, python-brace-format
+msgid "You don't have permission to puppet '{key}'."
+msgstr "Sie haben nicht die Berechtigung ‚{key}‘ zu steuern."
+
+#: accounts/accounts.py:303
+#, python-brace-format
+msgid "|c{key}|R is already puppeted by another Account."
+msgstr "|c{key}|R  wird schon von einem anderen Account gesteuert."
+
+#: accounts/accounts.py:499
+msgid "Too many login failures; please try again in a few minutes."
+msgstr ""
+"Zu viele falsche Loginversuche. Bitte versuchen Sie es in ein paar Minuten "
+"erneut."
+
+#: accounts/accounts.py:512 accounts/accounts.py:772
+msgid ""
+"|rYou have been banned and cannot continue from here.\n"
+"If you feel this ban is in error, please email an admin.|x"
+msgstr ""
+"|Du wurdest gebannt und kannst von hier aus nicht weitermachen.\n"
+"Wenn Sie der Meinung sind, dass diese Sperre zu Unrecht erfolgt ist, senden "
+"Sie bitte eine E-Mail an einen Administrator.|x"
+
+#: accounts/accounts.py:524
+msgid "Username and/or password is incorrect."
+msgstr "Benutzername und/oder Passwort ist falsch."
+
+#: accounts/accounts.py:743
+msgid ""
+"You are creating too many accounts. Please log into an existing account."
+msgstr ""
+"Sie erstellen zu viele Konten. Bitte melden Sie sich bei einem bestehenden "
+"Konto an."
+
+#: accounts/accounts.py:789
+msgid ""
+"There was an error creating the Account. If this problem persists, contact "
+"an admin."
+msgstr ""
+"Beim Erstellen des Kontos ist ein Fehler aufgetreten. Wenn dieses Problem "
+"weiterhin besteht, wenden Sie sich an einen Administrator."
+
+#: accounts/accounts.py:824 accounts/accounts.py:1639
+msgid "An error occurred. Please e-mail an admin if the problem persists."
+msgstr ""
+"Es ist ein Fehler aufgetreten. Bitte senden Sie eine E-Mail an einen "
+"Administrator, wenn das Problem weiterhin besteht."
+
+#: accounts/accounts.py:851
+msgid "Account being deleted."
+msgstr "Account wird gelöscht."
+
+#: accounts/accounts.py:1307 accounts/accounts.py:1656
+#, python-brace-format
+msgid "|G{key} connected|n"
+msgstr "|G{key} verbunden|n"
+
+#: accounts/accounts.py:1314 accounts/accounts.py:1321
+msgid "The Character does not exist."
+msgstr "Der Charakter existiert nicht."
+
+#: accounts/accounts.py:1360
+#, python-brace-format
+msgid "|R{key} disconnected{reason}|n"
+msgstr "|R{key} getrennt{reason}|n"
+
+#: accounts/accounts.py:1467
+#, python-brace-format
+msgid "{target} has no in-game appearance."
+msgstr "{target} Hat kein Aussehen im Spiel."
+
+#: accounts/accounts.py:1511
+msgid ""
+"\n"
+"\n"
+" You don't have any characters yet. See |whelp @charcreate|n for creating "
+"one."
+msgstr ""
+"\n"
+"\n"
+"Du hast noch keine Charaktere. Siehe |whelp @charcreate|n um einen zu "
+"erstellen."
+
+#: accounts/accounts.py:1592
+msgid "Guest accounts are not enabled on this server."
+msgstr "Gastkonten sind auf diesem Server nicht aktiviert."
+
+#: accounts/accounts.py:1602
+msgid "All guest accounts are in use. Please try again later."
+msgstr ""
+"Alle Gastaccounts sind bereits in Benutzung. Bitte versuchen Sie es später "
+"nocheinmal."
+
+#: accounts/bots.py:333
+#, python-brace-format
+msgid ""
+"Nicks at {chstr}:\n"
+" {nicklist}"
+msgstr ""
+"Nicks: {chstr}:\n"
+" {nicklist}"
+
+#: accounts/bots.py:344
+#, python-brace-format
+msgid "IRC ping return from {chstr} took {time}s."
+msgstr "Die IRC Ping Antwort von {chstr}benötigte {time}s."
+
+#: commands/cmdhandler.py:738
+msgid "There were multiple matches."
+msgstr "Es gab mehrere Treffer."
+
+#: commands/cmdhandler.py:763
+#, python-brace-format
+msgid "Command '{command}' is not available."
+msgstr "Der Befehlt‚{command}‘ ist nicht verfügbar."
+
+#: commands/cmdhandler.py:773
+#, python-brace-format
+msgid " Maybe you meant {command}?"
+msgstr "Meinten Sie {command}?"
+
+#: commands/cmdhandler.py:774
+msgid "or"
+msgstr "Oder"
+
+#: commands/cmdhandler.py:777
+msgid " Type \"help\" for help."
+msgstr " Geben Sie \"help\" für Hilfe ein."
+
+#: commands/cmdsethandler.py:88
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Fehler beim laden von cmdset ‚{path}‘\n"
+"(Traceback wurde protokolliert {timestamp})"
+
+#: commands/cmdsethandler.py:94
+#, python-brace-format
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"Fehler beim laden von cmdset: Keine cmdset Klasse‚{classname}‘ in "
+"‚{path}‘.\n"
+"(Traceback wurde protokolliert {timestamp})"
+
+#: commands/cmdsethandler.py:99
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"SyntaxError beim laden von cmdset ‚{path}‘.\n"
+"(Traceback wurde protokolliert {timestamp})"
+
+#: commands/cmdsethandler.py:105
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Kompilierung/Laufzeit Fehler beim laden von cmdset ‚{path}‘.“,\n"
+"(Traceback wurde protokolliert{timestamp})"
+
+#: commands/cmdsethandler.py:111
+#, python-brace-format
+msgid ""
+"\n"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+msgstr ""
+"\n"
+"Fehler im cmdset bei Pfad ‚{path}‘.\n"
+"Ersetze mit fallback Pfad‚{fallback_path}‘.\n"
+
+#: commands/cmdsethandler.py:117
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr "Fallback Pfad ‚{fallback_path}‘ konnte kein cmdset generieren."
+
+#: commands/cmdsethandler.py:187 commands/cmdsethandler.py:199
+#, python-brace-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '{path}')."
+msgstr ""
+"\n"
+"(Unerfolgreich bei Pfad {path}’)."
+
+#: commands/cmdsethandler.py:329
+#, python-brace-format
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr "Selbsterstellter {mergetype} in cmdset ‚{cmdset}‘"
+
+#: commands/cmdsethandler.py:451
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr "Es können nur CmdSets zum cmdsethandler hinzugefügt werden!"
+
+#: comms/channelhandler.py:103
+msgid "Say what?"
+msgstr "Wie bitte?"
+
+#: comms/channelhandler.py:108
+#, python-format
+msgid "Channel '%s' not found."
+msgstr "Kanal ‚%s’ nicht gefunden."
+
+#: comms/channelhandler.py:111
+#, python-format
+msgid "You are not connected to channel '%s'."
+msgstr "Sie sind nicht mit dem Channel ‚%s‘. Verbunden."
+
+#: comms/channelhandler.py:115
+#, python-format
+msgid "You are not permitted to send to channel '%s'."
+msgstr "Es ist Ihnen nicht gestattet, an den Kanal ‚%s’ zu senden."
+
+#: comms/channelhandler.py:122
+#, python-format
+msgid "You start listening to %s."
+msgstr "Du fängst an %s zuzuhören."
+
+#: comms/channelhandler.py:124
+#, python-format
+msgid "You were already listening to %s."
+msgstr "Du hörst bereits %s zu."
+
+#: comms/channelhandler.py:130
+#, python-format
+msgid "You stop listening to %s."
+msgstr "Du hörst auf %s zuzuhören."
+
+#: comms/channelhandler.py:132
+#, python-format
+msgid "You were already not listening to %s."
+msgstr "Du hörst bereits %s NICHT zu."
+
+#: comms/channelhandler.py:147
+#, python-format
+msgid "You currently have %s muted."
+msgstr "Du hast zurzeit %s stumm geschaltet."
+
+#: comms/channelhandler.py:161
+msgid " (channel)"
+msgstr " (Kanal)"
+
+#: help/manager.py:134
+#, python-brace-format
+msgid "Help database moved to category {default_category}"
+msgstr "Hilfe Datenbank in Kategorie verschoben: {default_category}"
+
+#: locks/lockhandler.py:236
+#, python-format
+msgid "Lock: lock-function '%s' is not available."
+msgstr "Sperre: Sperrfunktion ‚%s‘ ist nicht verfügbar."
+
+#: locks/lockhandler.py:256
+#, python-brace-format
+msgid "Lock: definition '{lock_string}' has syntax errors."
+msgstr "Sperre: Definition ’{lock_string}’ hat syntax Fehler."
+
+#: locks/lockhandler.py:265
+#, python-format
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+msgstr ""
+"LockHandler in %(obj)s: Zugriffstyp‚%(access_type)s‘ wechselte von "
+"‚%(source)s‘ zu ‚%(goal)s‘ "
+
+#: locks/lockhandler.py:339
+#, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr "Sperre: ‚{lockdef}‘ Enthält keinen Doppelpunkt(:)."
+
+#: locks/lockhandler.py:348
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr ""
+"Sperre: ‚{lockdef}‘ Hat keinen access_type (die linke Seite des "
+"Doppelpunkts ist leer)."
+
+#: locks/lockhandler.py:356
+#, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "Sperre: ’{lockdef}’ Hat nicht übereinstimmende Klammern."
+
+#: locks/lockhandler.py:363
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr "Sperre: ‚{lockdef}‘ Hat keine gültigen Sperrfunktionen."
+
+#: objects/objects.py:804
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr ""
+"Bewegung konnte nicht ausgeführt werden (%s). Kontaktieren Sie einen "
+"Administrator."
+
+#: objects/objects.py:814
+msgid "The destination doesn't exist."
+msgstr "Das Ziel existiert nicht."
+
+#: objects/objects.py:905
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "Standard-Zuhause konnte nicht gefunden werden‚(#%d)‘."
+
+#: objects/objects.py:921
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr ""
+"Etwas ist schief gelaufen! Sie werden ins Nirgendwo abgeworfen. "
+"Kontaktieren Sie einen Administrator."
+
+#: objects/objects.py:1070
+#, python-brace-format
+msgid "Your character {key} has been destroyed."
+msgstr "Dein Charakter {key} wurde zerstört."
+
+#: scripts/scripthandler.py:52
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+"\n"
+" ‚%(key)s‘ (%(next_repeat)s/%(interval)s, %(repeats)s Wiederholungen): "
+"%(desc)s"
+
+#: scripts/scripts.py:198
+#, python-format
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+"Skript %(key)s(#%(dbid)s) vom Typen ‚%(cname)s‘: at_repeat() Fehler "
+"‚%(err)s‘."
+
+#: server/initial_setup.py:29
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Account #1 you can create a demo/tutorial area with '|wbatchcommand "
+"tutorial_world.build|n'.\n"
+"    "
+msgstr ""
+"\n"
+"Willkommen bei deinem neuen Spiel auf Evennia-Basis! Besuchen Sie http://"
+"www.evennia.com, wenn Sie\n"
+"hilfe brauchst, etwas beitragen, Probleme melden oder einfach der Community "
+"beitreten willst.\n"
+"Als Account #1 kannst du einen Demo/Tutorial-Bereich mit '|wbatchcommand "
+"tutorial_world.build|n' erstellen.\n"
+"    "
+
+#: server/initial_setup.py:94
+msgid "This is User #1."
+msgstr "Dies ist Benutzer #1."
+
+#: server/initial_setup.py:110
+msgid "Limbo"
+msgstr "Limbus"
+
+#: server/server.py:159
+msgid "idle timeout exceeded"
+msgstr "Leerlauf-Timeout überschritten"
+
+#: server/sessionhandler.py:402
+msgid " ... Server restarted."
+msgstr " … Server wurde neugestartet."
+
+#: server/sessionhandler.py:627
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "Von anderswo aus eingeloggt. Getrennt."
+
+#: server/sessionhandler.py:655
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "Leerlauf-Timeout überschritten, Trenne Verbindung."
+
+#: server/validators.py:31
+msgid "Sorry, that username is reserved."
+msgstr "Entschuldigung, dieser Benutzername ist reserviert."
+
+#: server/validators.py:38
+msgid "Sorry, that username is already taken."
+msgstr "Endschuldigung, dieser Benutzername ist bereits vergeben."
+
+#: server/validators.py:88
+#, python-format
+msgid ""
+"%s From a terminal client, you can also use a phrase of multiple words if "
+"you enclose the password in double quotes."
+msgstr ""
+"%s Von einem Terminal-Client aus können Sie auch eine Phrase aus mehreren "
+"Wörtern verwenden, wenn Sie das Passwort in doppelte Anführungszeichen "
+"setzen."
+
+#: utils/evmenu.py:292
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice or try 'q' to abort."
+msgstr ""
+"Der Menüknoten '{nodename}' ist entweder nicht implementiert oder hat einen "
+"Fehler verursacht. \n"
+"Treffen Sie eine andere Wahl oder versuchen Sie 'q', um abzubrechen."
+
+#: utils/evmenu.py:295
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr "Fehler im Menüknoten '{nodename}'."
+
+#: utils/evmenu.py:296
+msgid "No description."
+msgstr "Keine Beschreibung."
+
+#: utils/evmenu.py:297
+msgid "Commands: <menu option>, help, quit"
+msgstr "Befehle: <menu option>, Hilfe, Beenden"
+
+#: utils/evmenu.py:298
+msgid "Commands: <menu option>, help"
+msgstr "Befehle: <menu option>, Hilfe"
+
+#: utils/evmenu.py:299
+msgid "Commands: help, quit"
+msgstr "Befehle: Hilfe, Beenden"
+
+#: utils/evmenu.py:300
+msgid "Commands: help"
+msgstr "Befehle: Hilfe"
+
+#: utils/evmenu.py:301 utils/evmenu.py:1665
+msgid "Choose an option or try 'help'."
+msgstr "Wähle eine Option oder versuche ‚Hilfe‘."
+
+#: utils/utils.py:1923
+#, python-format
+msgid "Could not find '%s'."
+msgstr "Kann ‚%s‘. Nicht finden."
+
+#: utils/utils.py:1930
+#, python-brace-format
+msgid "More than one match for '{query}' (please narrow target):\n"
+msgstr "Mehr als ein Treffer für ‚{query}‘ (Bitte das Ziel präzisieren):\n"
+
+#: utils/validatorfuncs.py:62
+#, python-brace-format
+msgid "No {option_key} entered!"
+msgstr "Kein {option_key} eingegeben!"
+
+#: utils/validatorfuncs.py:71
+#, python-brace-format
+msgid "Timezone string '{acct_tz}' is not a valid timezone ({err})"
+msgstr "Zeitzonen string ‚{acct_tz}‘ ist keine Gültige Zeitzone({err})"
