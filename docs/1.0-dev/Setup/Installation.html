@@ -130,17 +130,20 @@ You can also  <a class="reference internal" href="Installation-Git.html"><span c
 <li><p>Evennia requires <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9, 3.10 or 3.11 (recommended). Any OS that supports Python should work.</p>
 <ul>
 <li><p><em>Windows</em>: In the installer, make sure you select <code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">python</span> <span class="pre">to</span> <span class="pre">path</span></code>.  If you have multiple versions of Python installed, use <code class="docutils literal notranslate"><span class="pre">py</span></code> command instead of <code class="docutils literal notranslate"><span class="pre">python</span></code> to have Windows automatically use the latest.</p></li>
-<li><p><em>Windows:</em> If you want to use Python 3.11, you must also install the <a class="reference external" href="https://aka.ms/vs/16/release/vs_buildtools.exe">Windows SDK</a>. Run the linked installer. Click the <code class="docutils literal notranslate"><span class="pre">Individual</span> <span class="pre">Components</span></code> tab at the top, then search and checkbox the latest <code class="docutils literal notranslate"><span class="pre">Windows</span> <span class="pre">10</span> <span class="pre">SDK</span></code> (also for older/newer Windows versions). Then click <code class="docutils literal notranslate"><span class="pre">Install</span></code>. If you have trouble, use Python 6.10 for now (2022).</p></li>
+<li><p><em>Windows:</em> If you want to use Python 3.11, you must also install the <a class="reference external" href="https://aka.ms/vs/16/release/vs_buildtools.exe">Windows SDK</a>. Run the linked installer. Click the <code class="docutils literal notranslate"><span class="pre">Individual</span> <span class="pre">Components</span></code> tab at the top, then search and checkbox the latest <code class="docutils literal notranslate"><span class="pre">Windows</span> <span class="pre">10</span> <span class="pre">SDK</span></code> (also for older/newer Windows versions). Then click <code class="docutils literal notranslate"><span class="pre">Install</span></code>. If you have trouble, use Python 3.10 for now (2022).</p></li>
 </ul>
 </li>
-<li><p>Using a light-weight  <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">Python virtual environment</span></a> is optional, but <em>highly recommended</em> in order to keep your Evennia installation independent from the system libraries. Using virtualenvs like this is common Python praxis.</p></li>
 <li><p>Don’t install Evennia as administrator or superuser.</p></li>
 <li><p>If you run into trouble, see <a class="reference internal" href="Installation-Troubleshooting.html"><span class="doc std std-doc">installation troubleshooting</span></a>.</p></li>
 </ul>
 </section>
 <section id="install-with-pip">
 <h2>Install with <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#install-with-pip" title="Permalink to this headline">¶</a></h2>
-<p>Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you install Evennia with</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Using a light-weight <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">Python virtual environment</span></a> is optional, but <em>highly recommended</em> in order to keep your Evennia installation independent from the system libraries. The virtualenv system is a part of Python and will make your life easier!</p>
+</div>
+<p>Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you - after activating your virtualenv if you are using one - install Evennia with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia
 </pre></div>
 </div>

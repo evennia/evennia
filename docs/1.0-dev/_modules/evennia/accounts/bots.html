@@ -726,7 +726,7 @@
 <span class="sd">            relayed (bool) - A flag identifying whether the message was relayed by the bot.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;relayed&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">relayed</span><span class="p">:</span>
             <span class="c1"># don&#39;t relay our own relayed messages</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">channel_list</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
@@ -790,7 +790,7 @@
 
 <div class="viewcode-block" id="DiscordBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -801,7 +801,7 @@
 <span class="sd">        triggered by the bot_data_in Inputfunc.</span>
 
 <span class="sd">        Keyword args:</span>
-<span class="sd">            content (str) - The content of the message from Discord.</span>
+<span class="sd">            txt (str) - The content of the message from Discord.</span>
 <span class="sd">            session (Session) - The protocol session this command came from.</span>
 <span class="sd">            type (str, optional) - Indicates the type of activity from Discord, if</span>
 <span class="sd">                the protocol pre-processed it.</span>
@@ -827,12 +827,12 @@
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
                         <span class="k">continue</span>
                     <span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">relay_to_channel</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">relay_to_channel</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
 
         <span class="c1"># direct message</span>
         <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;direct&quot;</span><span class="p">:</span>
             <span class="c1"># pass on to the DM hook</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">direct_msg</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">direct_msg</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># guild info update</span>
         <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;guild&quot;</span><span class="p">:</span>

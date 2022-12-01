@@ -599,13 +599,13 @@ channel message on Discord.</p>
 
 <dl class="py method">
 <dt id="evennia.accounts.bots.DiscordBot.execute_cmd">
-<code class="sig-name descname">execute_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sender</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/bots.html#DiscordBot.execute_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.bots.DiscordBot.execute_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">execute_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sender</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/bots.html#DiscordBot.execute_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.bots.DiscordBot.execute_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take incoming data from protocol and send it to connected channel. This is
 triggered by the bot_data_in Inputfunc.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>content</strong> (<em>str</em>) – </p></li>
+<li><p><strong>txt</strong> (<em>str</em>) – </p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – </p></li>
 <li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – the protocol pre-processed it.</p></li>
 <li><p><strong>sender</strong> (<em>tuple</em>) – strings, in the form of (id, nickname)</p></li>
