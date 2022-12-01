@@ -62,6 +62,18 @@ jobs:
           evennia migrate
           evennia collectstatic --noinput
 
+      # For non-coverage tests, run them in parallel.
+      - name: Run test suite
+        if: ! ${{ matrix.coverage-test }}
+        working-directory: testing_mygame
+        run: |
+          evennia test \
+            --settings=settings \
+            --keepdb \
+            --parallel 4 \
+            --timing \
+            evennia
+
       # OBS - it's important to not run the coverage tests with --parallel, it messes up the coverage
       # calculation!
       - name: Run test suite with coverage
@@ -78,18 +90,6 @@ jobs:
           coverage xml
           coverage --version
           coverage report | grep TOTAL
-
-      # For other runs, run tests in parallel
-      - name: Run test suite
-        if: ! ${{ matrix.coverage-test }}
-        working-directory: testing_mygame
-        run: |
-          evennia test \
-            --settings=settings \
-            --keepdb \
-            --parallel 4 \
-            --timing \
-            evennia
 
       # we only want to run coverall once, so we only do it for the designated matrix combination(s)
       # it's also not critical if pushing to either service fails (happens for PRs since env is not
