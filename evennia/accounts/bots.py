@@ -648,7 +648,7 @@ class DiscordBot(Bot):
             relayed (bool) - A flag identifying whether the message was relayed by the bot.
 
         """
-        if kwargs.get("relayed"):
+        if relayed:
             # don't relay our own relayed messages
             return
         if channel_list := self.db.channels:
@@ -712,7 +712,7 @@ class DiscordBot(Bot):
 
     def execute_cmd(
         self,
-        content=None,
+        txt=None,
         session=None,
         type=None,
         sender=None,
@@ -723,7 +723,7 @@ class DiscordBot(Bot):
         triggered by the bot_data_in Inputfunc.
 
         Keyword args:
-            content (str) - The content of the message from Discord.
+            txt (str) - The content of the message from Discord.
             session (Session) - The protocol session this command came from.
             type (str, optional) - Indicates the type of activity from Discord, if
                 the protocol pre-processed it.
@@ -749,12 +749,12 @@ class DiscordBot(Bot):
                     if not channel:
                         continue
                     channel = channel[0]
-                    self.relay_to_channel(content, channel, sender, channel_name, guild)
+                    self.relay_to_channel(txt, channel, sender, channel_name, guild)
 
         # direct message
         elif type == "direct":
             # pass on to the DM hook
-            self.direct_msg(content, sender, **kwargs)
+            self.direct_msg(txt, sender, **kwargs)
 
         # guild info update
         elif type == "guild":
