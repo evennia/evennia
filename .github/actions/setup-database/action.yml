@@ -83,3 +83,4 @@ runs:
     - name: Check running containers
       if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
       run: docker ps -a
+      shell: bash
