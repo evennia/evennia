@@ -14,14 +14,17 @@ Installing Evennia doesn't make anything visible online. Apart from installation
 ```
 - Evennia requires [Python](https://www.python.org/downloads/) 3.9, 3.10 or 3.11 (recommended). Any OS that supports Python should work.
 	- _Windows_: In the installer, make sure you select `add python to path`.  If you have multiple versions of Python installed, use `py` command instead of `python` to have Windows automatically use the latest.
-	- _Windows:_ If you want to use Python 3.11, you must also install the [Windows SDK](https://aka.ms/vs/16/release/vs_buildtools.exe). Run the linked installer. Click the `Individual Components` tab at the top, then search and checkbox the latest `Windows 10 SDK` (also for older/newer Windows versions). Then click `Install`. If you have trouble, use Python 6.10 for now (2022).
-- Using a light-weight  [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended_ in order to keep your Evennia installation independent from the system libraries. Using virtualenvs like this is common Python praxis.
+	- _Windows:_ If you want to use Python 3.11, you must also install the [Windows SDK](https://aka.ms/vs/16/release/vs_buildtools.exe). Run the linked installer. Click the `Individual Components` tab at the top, then search and checkbox the latest `Windows 10 SDK` (also for older/newer Windows versions). Then click `Install`. If you have trouble, use Python 3.10 for now (2022).
 - Don't install Evennia as administrator or superuser. 
 - If you run into trouble, see [installation troubleshooting](./Installation-Troubleshooting.md).
 
 ## Install with `pip`
 
-Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you install Evennia with
+```{important}
+Using a light-weight [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended_ in order to keep your Evennia installation independent from the system libraries. The virtualenv system is a part of Python and will make your life easier!
+```
+
+Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you - after activating your virtualenv if you are using one - install Evennia with
 
     pip install evennia
 
