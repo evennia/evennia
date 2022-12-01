@@ -13,7 +13,6 @@ description: "Activates the database server for the passed in service and ensure
 inputs:
   database:
     description: "Database service being initialized."
-    type: string
     required: true
 
 runs:
