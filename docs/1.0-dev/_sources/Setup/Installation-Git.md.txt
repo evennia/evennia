@@ -37,7 +37,11 @@ not recognize `localhost`).
 
 ## Virtualenv 
 
-A Python [virtual environment](https://docs.python.org/3/library/venv.html) allows you to install Evennia in its own little folder, separate from the rest of the system. You also won't need any extra permissions. It's optional to use a virtualenv, but it's highly recommended. Python supports this natively: 
+A Python [virtual environment](https://docs.python.org/3/library/venv.html) allows you to install Evennia and all its dependenceis in its own little isolated folder, separate from the rest of the system. This also means you can install without any extra permissions - it all goes into a folder on your drive. 
+
+It's optional to use a virtualenv, but it's highly recommended. Not only is this common Python praxis, it will make your life easier and avoid clashes with other Python programs you may have. 
+
+Python supports virtualenv natively: 
 
 ```{sidebar} Using py on Windows
 If you have older versions of Python installed on Windows, you should instead use `py` here instead of `python`. The `py` launcher automatically selects the latest python version among those you installed.
@@ -52,12 +56,14 @@ Activate it like this:
 
 ```
 source evenv/bin/activate (Linux, Mac)
+
 evenv\Scripts\activate    (Windows Console)
+
 .\evenv\scripts\activate  (Windows PS Shell, 
                            Git Bash etc)
 ```
 The text `(evenv)` should appear next to your prompt to show that the virtual
-environment is active. You _don't_ need to actually be in or near the `evenv` folder for 
+environment is enabled. You do _not_ need to actually be in or near the `evenv` folder for 
 the environment to be active.
 
 ```{important}

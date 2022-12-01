@@ -5,7 +5,7 @@ This sums up all steps of maintaining your Evennia game from first installation 
 ## Installation and running 
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 Installation
 Installation-Git

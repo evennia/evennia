@@ -146,7 +146,9 @@ not recognize <code class="docutils literal notranslate"><span class="pre">local
 </section>
 <section id="virtualenv">
 <h2>Virtualenv<a class="headerlink" href="#virtualenv" title="Permalink to this headline">¶</a></h2>
-<p>A Python <a class="reference external" href="https://docs.python.org/3/library/venv.html">virtual environment</a> allows you to install Evennia in its own little folder, separate from the rest of the system. You also won’t need any extra permissions. It’s optional to use a virtualenv, but it’s highly recommended. Python supports this natively:</p>
+<p>A Python <a class="reference external" href="https://docs.python.org/3/library/venv.html">virtual environment</a> allows you to install Evennia and all its dependenceis in its own little isolated folder, separate from the rest of the system. This also means you can install without any extra permissions - it all goes into a folder on your drive.</p>
+<p>It’s optional to use a virtualenv, but it’s highly recommended. Not only is this common Python praxis, it will make your life easier and avoid clashes with other Python programs you may have.</p>
+<p>Python supports virtualenv natively:</p>
 <aside class="sidebar">
 <p class="sidebar-title">Using py on Windows</p>
 <p>If you have older versions of Python installed on Windows, you should instead use <code class="docutils literal notranslate"><span class="pre">py</span></code> here instead of <code class="docutils literal notranslate"><span class="pre">python</span></code>. The <code class="docutils literal notranslate"><span class="pre">py</span></code> launcher automatically selects the latest python version among those you installed.</p>
@@ -158,13 +160,15 @@ python -m venv evenv       <span class="o">(</span>Windows<span class="o">)</spa
 <p>This will create a new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> in your current directory.
 Activate it like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">evenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span> <span class="p">(</span><span class="n">Linux</span><span class="p">,</span> <span class="n">Mac</span><span class="p">)</span>
+
 <span class="n">evenv</span>\<span class="n">Scripts</span>\<span class="n">activate</span>    <span class="p">(</span><span class="n">Windows</span> <span class="n">Console</span><span class="p">)</span>
+
 <span class="o">.</span>\<span class="n">evenv</span>\<span class="n">scripts</span>\<span class="n">activate</span>  <span class="p">(</span><span class="n">Windows</span> <span class="n">PS</span> <span class="n">Shell</span><span class="p">,</span> 
                            <span class="n">Git</span> <span class="n">Bash</span> <span class="n">etc</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The text <code class="docutils literal notranslate"><span class="pre">(evenv)</span></code> should appear next to your prompt to show that the virtual
-environment is active. You <em>don’t</em> need to actually be in or near the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> folder for
+environment is enabled. You do <em>not</em> need to actually be in or near the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> folder for
 the environment to be active.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
