@@ -21,7 +21,7 @@ runs:
 
   steps:
     - name: Set up PostgreSQL server
-      if: ${{ inputs.database == "postgresql" }}
+      if: ${{ inputs.database == 'postgresql' }}
       uses: harmon758/postgresql-action@v1
       with:
         postgresql version: "11"
@@ -30,7 +30,7 @@ runs:
         postgresql password: "password"
 
     - name: Wait for PostgreSQL to activate
-      if: ${{ inputs.database == "postgresql" }}
+      if: ${{ inputs.database == 'postgresql' }}
       run: |
         while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
         do
@@ -41,7 +41,7 @@ runs:
       shell: bash
 
     - name: Set up MySQL server
-      if: ${{ inputs.database == "mysql" }}
+      if: ${{ inputs.database == 'mysql' }}
       uses: mirromutth/mysql-action@v1.1
       with:
         host port: 3306
@@ -55,7 +55,7 @@ runs:
         mysql root password: root_password
 
     - name: Wait for MySQL to activate
-      if: ${{ inputs.database == "mysql" }}
+      if: ${{ inputs.database == 'mysql' }}
       run: |
         while ! mysqladmin ping -h 127.0.0.1 -u root -proot_password -s >/dev/null 2>&1
         do
@@ -66,7 +66,7 @@ runs:
       shell: bash
 
     - name: Set up MySQL Privileges
-      if: ${{ inputs.database == "mysql" }}
+      if: ${{ inputs.database == 'mysql' }}
       run: |
         cat <<EOF | mysql -u root -proot_password -h 127.0.0.1 mysql
           create user 'evennia'@'%' identified by 'password';
@@ -78,9 +78,9 @@ runs:
 
     # get logs from db start
     - name: Database container logs
-      if: ${{ inputs.database == "postgresql" || inputs.database == "mysql" }}
+      if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
       uses: jwalton/gh-docker-logs@v2
 
     - name: Check running containers
-      if: ${{ inputs.database == "postgresql" || inputs.database == "mysql" }}
+      if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
       run: docker ps -a
