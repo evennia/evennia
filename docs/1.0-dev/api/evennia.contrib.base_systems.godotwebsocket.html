@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>evennia.contrib.base_systems.ingame_python &#8212; Evennia 1.0-dev documentation</title>
+    <title>evennia.contrib.base_systems.godotwebsocket &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="evennia.contrib.base_systems.ingame_python.callbackhandler" href="evennia.contrib.base_systems.ingame_python.callbackhandler.html" />
-    <link rel="prev" title="evennia.contrib.base_systems.godotwebsocket.webclient" href="evennia.contrib.base_systems.godotwebsocket.webclient.html" /> 
+    <link rel="next" title="evennia.contrib.base_systems.godotwebsocket.test_text2bbcode" href="evennia.contrib.base_systems.godotwebsocket.test_text2bbcode.html" />
+    <link rel="prev" title="evennia.contrib.base_systems.email_login.tests" href="evennia.contrib.base_systems.email_login.tests.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.base_systems.ingame_python.callbackhandler.html" title="evennia.contrib.base_systems.ingame_python.callbackhandler"
+          <a href="evennia.contrib.base_systems.godotwebsocket.test_text2bbcode.html" title="evennia.contrib.base_systems.godotwebsocket.test_text2bbcode"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.base_systems.godotwebsocket.webclient.html" title="evennia.contrib.base_systems.godotwebsocket.webclient"
+          <a href="evennia.contrib.base_systems.email_login.tests.html" title="evennia.contrib.base_systems.email_login.tests"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
@@ -41,7 +41,7 @@
           <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
           <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
           <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" accesskey="U">evennia.contrib.base_systems</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.ingame_python</a></li> 
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.godotwebsocket</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -65,15 +65,15 @@
 </div>
 <script>$('#searchbox').show(0);</script>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="evennia.contrib.base_systems.godotwebsocket.webclient.html"
-                        title="previous chapter">evennia.contrib.base_systems.godotwebsocket.webclient</a></p>
+  <p class="topless"><a href="evennia.contrib.base_systems.email_login.tests.html"
+                        title="previous chapter">evennia.contrib.base_systems.email_login.tests</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="evennia.contrib.base_systems.ingame_python.callbackhandler.html"
-                        title="next chapter">evennia.contrib.base_systems.ingame_python.callbackhandler</a></p>
+  <p class="topless"><a href="evennia.contrib.base_systems.godotwebsocket.test_text2bbcode.html"
+                        title="next chapter">evennia.contrib.base_systems.godotwebsocket.test_text2bbcode</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.contrib.base_systems.ingame_python.md.txt"
+      <li><a href="../_sources/api/evennia.contrib.base_systems.godotwebsocket.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -89,7 +89,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="evennia.contrib.base_systems.ingame_python.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.base_systems.godotwebsocket.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -100,17 +100,20 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-base-systems-ingame-python">
-<h1>evennia.contrib.base_systems.ingame_python<a class="headerlink" href="#evennia-contrib-base-systems-ingame-python" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.base_systems.godotwebsocket">
+<span id="evennia-contrib-base-systems-godotwebsocket"></span><h1>evennia.contrib.base_systems.godotwebsocket<a class="headerlink" href="#module-evennia.contrib.base_systems.godotwebsocket" title="Permalink to this headline">¶</a></h1>
+<p>Godot Websocket - ChrisLR 2022</p>
+<p>This provides parsing the ansi text to bbcode used by Godot for their RichTextLabel
+and also provides the proper portal service to dedicate a port for Godot’s Websockets.</p>
+<p>This allows you to connect both the regular webclient and a godot specific webclient.
+You can simply connect the resulting text to Godot’s RichTextLabel and have the proper display.
+You could also pass extra data to this client for advanced functionality.</p>
+<p>See the docs for more information.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.ingame_python.callbackhandler.html">evennia.contrib.base_systems.ingame_python.callbackhandler</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.ingame_python.commands.html">evennia.contrib.base_systems.ingame_python.commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.ingame_python.eventfuncs.html">evennia.contrib.base_systems.ingame_python.eventfuncs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.ingame_python.scripts.html">evennia.contrib.base_systems.ingame_python.scripts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.ingame_python.tests.html">evennia.contrib.base_systems.ingame_python.tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.ingame_python.typeclasses.html">evennia.contrib.base_systems.ingame_python.typeclasses</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.ingame_python.utils.html">evennia.contrib.base_systems.ingame_python.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.godotwebsocket.test_text2bbcode.html">evennia.contrib.base_systems.godotwebsocket.test_text2bbcode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.godotwebsocket.text2bbcode.html">evennia.contrib.base_systems.godotwebsocket.text2bbcode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.godotwebsocket.webclient.html">evennia.contrib.base_systems.godotwebsocket.webclient</a></li>
 </ul>
 </div>
 </section>
@@ -131,10 +134,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.base_systems.ingame_python.callbackhandler.html" title="evennia.contrib.base_systems.ingame_python.callbackhandler"
+          <a href="evennia.contrib.base_systems.godotwebsocket.test_text2bbcode.html" title="evennia.contrib.base_systems.godotwebsocket.test_text2bbcode"
              >next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.base_systems.godotwebsocket.webclient.html" title="evennia.contrib.base_systems.godotwebsocket.webclient"
+          <a href="evennia.contrib.base_systems.email_login.tests.html" title="evennia.contrib.base_systems.email_login.tests"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
@@ -142,7 +145,7 @@
           <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
           <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
           <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.ingame_python</a></li> 
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.godotwebsocket</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

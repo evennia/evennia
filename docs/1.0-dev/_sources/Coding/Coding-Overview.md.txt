@@ -26,3 +26,8 @@ Setting-up-PyCharm.md
 Changelog.md
 ```
 
+
+```{toctree}
+:hidden:
+Release-Notes-1.0
+```
