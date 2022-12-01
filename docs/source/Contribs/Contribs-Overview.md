@@ -7,7 +7,7 @@ in the [Community Contribs & Snippets][forum] forum.
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all **46** contribs currently included
+This page is auto-generated and summarizes all **47** contribs currently included
 with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
@@ -33,12 +33,12 @@ If you want to add a contrib, see [the contrib guidelines](./Contribs-Guidelines
 | [buffs](#buffs) | [building_menu](#building_menu) | [character_creator](#character_creator) | [clothing](#clothing) | [color_markups](#color_markups) |
 | [components](#components) | [cooldowns](#cooldowns) | [crafting](#crafting) | [custom_gametime](#custom_gametime) | [dice](#dice) |
 | [email_login](#email_login) | [evadventure](#evadventure) | [evscaperoom](#evscaperoom) | [extended_room](#extended_room) | [fieldfill](#fieldfill) |
-| [gendersub](#gendersub) | [git_integration](#git_integration) | [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) |
-| [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) |
-| [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) |
-| [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) |
-| [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) |
-| [xyzgrid](#xyzgrid) |
+| [gendersub](#gendersub) | [git_integration](#git_integration) | [godotwebsocket](#godotwebsocket) | [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) |
+| [ingame_python](#ingame_python) | [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) |
+| [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) |
+| [red_button](#red_button) | [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [talking_npc](#talking_npc) |
+| [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) |
+| [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
 
 
 
@@ -62,6 +62,7 @@ Contrib-Color-Markups.md
 Contrib-Components.md
 Contrib-Custom-Gametime.md
 Contrib-Email-Login.md
+Contrib-Godotwebsocket.md
 Contrib-Ingame-Python.md
 Contrib-Menu-Login.md
 Contrib-Mux-Comms-Cmds.md
@@ -140,6 +141,18 @@ instead of a username to login. Note that it does not verify the email,
 it just uses it as the identifier rather than a username.
 
 [Read the documentation](./Contrib-Email-Login.md) - [Browse the Code](evennia.contrib.base_systems.email_login)
+
+
+
+### `godotwebsocket`
+
+_Contribution by ChrisLR, 2022_
+
+This contrib allows you to connect a Godot Client directly to your mud,
+and display regular text with color in Godot's RichTextLabel using BBCode.
+You can use Godot to provide advanced functionality with proper Evennia support.
+
+[Read the documentation](./Contrib-Godotwebsocket.md) - [Browse the Code](evennia.contrib.base_systems.godotwebsocket)
 
 
 
