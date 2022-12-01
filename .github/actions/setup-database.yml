@@ -1,0 +1,86 @@
+# evennia/setup-database
+
+# Use this action in a workflow for when you need to do initialization of database services
+# (such as with PostgreSQL and MySQL) before you initiate unit tests that will employ that
+# database service.
+
+# NOTE: This action was intended for use with the core Evennia workflows ONLY.
+
+name: Set up Evennia database service
+author: dvoraen
+description: "Activates the database server for the passed in service and ensures it's ready for use."
+
+inputs:
+  database:
+    description: "Database service being initialized."
+    type: string
+    required: true
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Set up PostgreSQL server
+      if: ${{ inputs.database == "postgresql" }}
+      uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: "11"
+        postgresql db: "evennia"
+        postgresql user: "evennia"
+        postgresql password: "password"
+
+    - name: Wait for PostgreSQL to activate
+      if: ${{ inputs.database == "postgresql" }}
+      run: |
+        while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
+        do
+          sleep 1
+          echo -n .
+        done
+        echo
+      shell: bash
+
+    - name: Set up MySQL server
+      if: ${{ inputs.database == "mysql" }}
+      uses: mirromutth/mysql-action@v1.1
+      with:
+        host port: 3306
+        # character set server: "utf8mb4"
+        # collation server: "utf8mb4_unicode_ci"
+        character set server: "utf8"
+        collation server: "utf8_general_ci"
+        mysql database: "evennia"
+        mysql user: "evennia"
+        mysql password: "password"
+        mysql root password: root_password
+
+    - name: Wait for MySQL to activate
+      if: ${{ inputs.database == "mysql" }}
+      run: |
+        while ! mysqladmin ping -h 127.0.0.1 -u root -proot_password -s >/dev/null 2>&1
+        do
+          sleep 1
+          echo -n .
+        done
+        echo
+      shell: bash
+
+    - name: Set up MySQL Privileges
+      if: ${{ inputs.database == "mysql" }}
+      run: |
+        cat <<EOF | mysql -u root -proot_password -h 127.0.0.1 mysql
+          create user 'evennia'@'%' identified by 'password';
+          grant all on \`evennia%\`.* to 'evennia'@'%';
+          grant process on *.* to 'evennia'@'%';
+          flush privileges
+        EOF
+      shell: bash
+
+    # get logs from db start
+    - name: Database container logs
+      if: ${{ inputs.database == "postgresql" || inputs.database == "mysql" }}
+      uses: jwalton/gh-docker-logs@v2
+
+    - name: Check running containers
+      if: ${{ inputs.database == "postgresql" || inputs.database == "mysql" }}
+      run: docker ps -a
