@@ -48,8 +48,8 @@ runs:
       uses: mirromutth/mysql-action@v1.1
       with:
         host port: 3306
-        # character set server: 'utf8mb4'
-        # collation server: 'utf8mb4_unicode_ci'
+        # character set server: "utf8mb4"
+        # collation server: "utf8mb4_unicode_ci"
         character set server: "utf8"
         collation server: "utf8_general_ci"
         mysql database: "evennia"
@@ -81,9 +81,9 @@ runs:
 
     # get logs from db start
     - name: Database container logs
-      if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
+      if: ${{ inputs.database == "postgresql" || inputs.database == "mysql" }}
       uses: jwalton/gh-docker-logs@v2
 
     - name: Check running containers
-      if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
+      if: ${{ inputs.database == "postgresql" || inputs.database == "mysql" }}
       run: docker ps -a
