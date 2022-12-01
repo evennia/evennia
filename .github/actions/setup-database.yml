@@ -20,9 +20,6 @@ runs:
   using: "composite"
 
   steps:
-    # - name: Set up SQLite
-    #   if: inputs.database == "sqlite3"
-
     - name: Set up PostgreSQL server
       if: ${{ inputs.database == "postgresql" }}
       uses: harmon758/postgresql-action@v1

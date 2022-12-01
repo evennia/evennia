@@ -64,7 +64,7 @@ jobs:
 
       # For non-coverage tests, run them in parallel.
       - name: Run test suite
-        if: ! ${{ matrix.coverage-test }}
+        if: ${{ ! matrix.coverage-test }}
         working-directory: testing_mygame
         run: |
           evennia test \
