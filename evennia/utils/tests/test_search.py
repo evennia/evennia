@@ -84,7 +84,7 @@ class TestSearch(EvenniaTest):
             
     def test_search_object_attribute(self):
         """Check that an object can be found by its attributes."""
-        script, errors = DefaultObject.create("an-object")
+        object, errors = DefaultObject.create("an-object")
         object.db.an_attribute = "some value"
         found = search_object_attribute(key="an_attribute", value="some value")
         self.assertEqual(len(found), 1, errors)
@@ -92,7 +92,7 @@ class TestSearch(EvenniaTest):
 
     def test_search_object_attribute_wrong(self):
         """Check that an object cannot be found by wrong value of its attributes."""
-        script, errors = DefaultObject.create("an-object")
-        script.db.an_attribute = "some value"
+        object, errors = DefaultObject.create("an-object")
+        object.db.an_attribute = "some value"
         found = search_object_attribute(key="an_attribute", value="wrong value")
         self.assertEqual(len(found), 0, errors)
