@@ -75,6 +75,7 @@
 <li><a class="reference internal" href="#the-components-contrib">The Components Contrib</a><ul>
 <li><a class="reference internal" href="#custom-gametime"><code class="docutils literal notranslate"><span class="pre">custom_gametime</span></code></a></li>
 <li><a class="reference internal" href="#email-login"><code class="docutils literal notranslate"><span class="pre">email_login</span></code></a></li>
+<li><a class="reference internal" href="#godotwebsocket"><code class="docutils literal notranslate"><span class="pre">godotwebsocket</span></code></a></li>
 <li><a class="reference internal" href="#ingame-python"><code class="docutils literal notranslate"><span class="pre">ingame_python</span></code></a></li>
 <li><a class="reference internal" href="#menu-login"><code class="docutils literal notranslate"><span class="pre">menu_login</span></code></a></li>
 <li><a class="reference internal" href="#mux-comms-cmds"><code class="docutils literal notranslate"><span class="pre">mux_comms_cmds</span></code></a></li>
@@ -183,7 +184,7 @@ in the <a class="reference external" href="https://github.com/evennia/evennia/di
 <p><em>Contribs</em> are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than ‘core’ Evennia.
-This page is auto-generated and summarizes all <strong>46</strong> contribs currently included
+This page is auto-generated and summarizes all <strong>47</strong> contribs currently included
 with the Evennia distribution.</p>
 <p>All contrib categories are imported from <code class="docutils literal notranslate"><span class="pre">evennia.contrib</span></code>, such as</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from evennia.contrib.base_systems import building_menu
@@ -253,36 +254,36 @@ copy its entire folder to your game directory and modify/use it from there.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gendersub"><span class="std std-doc">gendersub</span></a></p></td>
 <td><p><a class="reference internal" href="#git-integration"><span class="std std-doc">git_integration</span></a></p></td>
+<td><p><a class="reference internal" href="#godotwebsocket"><span class="std std-doc">godotwebsocket</span></a></p></td>
 <td><p><a class="reference internal" href="#health-bar"><span class="std std-doc">health_bar</span></a></p></td>
 <td><p><a class="reference internal" href="#ingame-map-display"><span class="std std-doc">ingame_map_display</span></a></p></td>
-<td><p><a class="reference internal" href="#ingame-python"><span class="std std-doc">ingame_python</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mail"><span class="std std-doc">mail</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ingame-python"><span class="std std-doc">ingame_python</span></a></p></td>
+<td><p><a class="reference internal" href="#mail"><span class="std std-doc">mail</span></a></p></td>
 <td><p><a class="reference internal" href="#mapbuilder"><span class="std std-doc">mapbuilder</span></a></p></td>
 <td><p><a class="reference internal" href="#menu-login"><span class="std std-doc">menu_login</span></a></p></td>
 <td><p><a class="reference internal" href="#mirror"><span class="std std-doc">mirror</span></a></p></td>
-<td><p><a class="reference internal" href="#multidescer"><span class="std std-doc">multidescer</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mux-comms-cmds"><span class="std std-doc">mux_comms_cmds</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#multidescer"><span class="std std-doc">multidescer</span></a></p></td>
+<td><p><a class="reference internal" href="#mux-comms-cmds"><span class="std std-doc">mux_comms_cmds</span></a></p></td>
 <td><p><a class="reference internal" href="#name-generator"><span class="std std-doc">name_generator</span></a></p></td>
 <td><p><a class="reference internal" href="#puzzles"><span class="std std-doc">puzzles</span></a></p></td>
 <td><p><a class="reference internal" href="#random-string-generator"><span class="std std-doc">random_string_generator</span></a></p></td>
-<td><p><a class="reference internal" href="#red-button"><span class="std std-doc">red_button</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rpsystem"><span class="std std-doc">rpsystem</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#red-button"><span class="std std-doc">red_button</span></a></p></td>
+<td><p><a class="reference internal" href="#rpsystem"><span class="std std-doc">rpsystem</span></a></p></td>
 <td><p><a class="reference internal" href="#simpledoor"><span class="std std-doc">simpledoor</span></a></p></td>
 <td><p><a class="reference internal" href="#slow-exit"><span class="std std-doc">slow_exit</span></a></p></td>
 <td><p><a class="reference internal" href="#talking-npc"><span class="std std-doc">talking_npc</span></a></p></td>
-<td><p><a class="reference internal" href="#traits"><span class="std std-doc">traits</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#tree-select"><span class="std std-doc">tree_select</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#traits"><span class="std std-doc">traits</span></a></p></td>
+<td><p><a class="reference internal" href="#tree-select"><span class="std std-doc">tree_select</span></a></p></td>
 <td><p><a class="reference internal" href="#turnbattle"><span class="std std-doc">turnbattle</span></a></p></td>
 <td><p><a class="reference internal" href="#tutorial-world"><span class="std std-doc">tutorial_world</span></a></p></td>
 <td><p><a class="reference internal" href="#unixcommand"><span class="std std-doc">unixcommand</span></a></p></td>
-<td><p><a class="reference internal" href="#wilderness"><span class="std std-doc">wilderness</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#xyzgrid"><span class="std std-doc">xyzgrid</span></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wilderness"><span class="std std-doc">wilderness</span></a></p></td>
+<td><p><a class="reference internal" href="#xyzgrid"><span class="std std-doc">xyzgrid</span></a></p></td>
 <td><p></p></td>
 <td><p></p></td>
 <td><p></p></td>
@@ -310,6 +311,7 @@ login systems, new command syntaxes, and build helpers.</em></p>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Components.html#full-example">Full Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Custom-Gametime.html">Custom gameime</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Email-Login.html">Email-based login system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Godotwebsocket.html">Godot Websocket</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Ingame-Python.html">Evennia in-game Python system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Menu-Login.html">Menu-based login system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Mux-Comms-Cmds.html">Legacy Comms-commands</a></li>
@@ -368,6 +370,14 @@ in-game times, but now taking this custom calendar into account.</p>
 instead of a username to login. Note that it does not verify the email,
 it just uses it as the identifier rather than a username.</p>
 <p><a class="reference internal" href="Contrib-Email-Login.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.email_login.html#evennia-contrib-base-systems-email-login"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="godotwebsocket">
+<h2><code class="docutils literal notranslate"><span class="pre">godotwebsocket</span></code><a class="headerlink" href="#godotwebsocket" title="Permalink to this headline">¶</a></h2>
+<p><em>Contribution by ChrisLR, 2022</em></p>
+<p>This contrib allows you to connect a Godot Client directly to your mud,
+and display regular text with color in Godot’s RichTextLabel using BBCode.
+You can use Godot to provide advanced functionality with proper Evennia support.</p>
+<p><a class="reference internal" href="Contrib-Godotwebsocket.html"><span class="doc std std-doc">Read the documentation</span></a> - <span class="xref myst">Browse the Code</span></p>
 </section>
 <section id="ingame-python">
 <h2><code class="docutils literal notranslate"><span class="pre">ingame_python</span></code><a class="headerlink" href="#ingame-python" title="Permalink to this headline">¶</a></h2>

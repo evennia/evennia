@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Godot Websocket &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Evennia in-game Python system" href="Contrib-Ingame-Python.html" />
+    <link rel="prev" title="Email-based login system" href="Contrib-Email-Login.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Ingame-Python.html" title="Evennia in-game Python system"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Email-Login.html" title="Email-based login system"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Godot Websocket</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Godot Websocket</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#known-issues">Known Issues</a></li>
+<li><a class="reference internal" href="#godot-3-example">Godot 3 Example</a></li>
+<li><a class="reference internal" href="#godot-4-example">Godot 4 Example</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Email-Login.html"
+                        title="previous chapter">Email-based login system</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Ingame-Python.html"
+                        title="next chapter">Evennia in-game Python system</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Godotwebsocket.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Godotwebsocket.html">1.0-dev (develop branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="godot-websocket">
+<h1>Godot Websocket<a class="headerlink" href="#godot-websocket" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by ChrisLR, 2022</p>
+<p>This contrib allows you to connect a Godot Client directly to your mud,
+and display regular text with color in Godot’s RichTextLabel using BBCode.
+You can use Godot to provide advanced functionality with proper Evennia support.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>You need to add the following settings in your <a class="reference external" href="http://settings.py">settings.py</a> and restart evennia.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;evennia.contrib.base_systems.godotwebsocket.webclient&#39;</span><span class="p">)</span>
+<span class="n">GODOT_CLIENT_WEBSOCKET_PORT</span> <span class="o">=</span> <span class="mi">4008</span>
+<span class="n">GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+</pre></div>
+</div>
+<p>This will make evennia listen on the port 4008 for Godot.
+You can change the port and interface as you want.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The tl;dr of it is to connect using a Godot Websocket using the port defined above.
+It will let you transfer data from Evennia to Godot, allowing you
+to get styled text in a RichTextLabel with bbcode enabled or to handle
+the extra data given from Evennia as needed.</p>
+<p>This section assumes you have basic knowledge on how to use Godot.
+You can read the following url for more details on Godot Websockets
+and to implement a minimal client.</p>
+<p><a class="reference external" href="https://docs.godotengine.org/en/stable/tutorials/networking/websocket.html">https://docs.godotengine.org/en/stable/tutorials/networking/websocket.html</a></p>
+<p>The rest of this document will be for Godot 3, an example is left at the bottom
+of this readme for Godot 4.</p>
+<p>At the top of the file you must change the url to point at your mud.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">extends</span> <span class="n">Node</span>
+
+<span class="c1"># The URL we will connect to</span>
+<span class="n">export</span> <span class="n">var</span> <span class="n">websocket_url</span> <span class="o">=</span> <span class="s2">&quot;ws://localhost:4008&quot;</span>
+
+</pre></div>
+</div>
+<p>You must also remove the protocol from the <code class="docutils literal notranslate"><span class="pre">connect_to_url</span></code> call made
+within the <code class="docutils literal notranslate"><span class="pre">_ready</span></code> function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">_ready</span><span class="p">():</span> 
+    <span class="c1"># ...</span>
+    <span class="c1"># Change the following line from this</span>
+    <span class="n">var</span> <span class="n">err</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">connect_to_url</span><span class="p">(</span><span class="n">websocket_url</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;lws-mirror-protocol&quot;</span><span class="p">])</span>
+    <span class="c1"># To this</span>
+    <span class="n">var</span> <span class="n">err</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">connect_to_url</span><span class="p">(</span><span class="n">websocket_url</span><span class="p">)</span>
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>This will allow you to connect to your mud.
+After that you need to properly handle the data sent by evennia.
+To do this, you should replace your <code class="docutils literal notranslate"><span class="pre">_on_data</span></code> method.
+You will need to parse the JSON received to properly act on the data.
+Here is an example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">_on_data</span><span class="p">():</span>
+    <span class="c1"># The following two lines will get us the data from Evennia.</span>
+	<span class="n">var</span> <span class="n">data</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_packet</span><span class="p">()</span><span class="o">.</span><span class="n">get_string_from_utf8</span><span class="p">()</span>
+	<span class="n">var</span> <span class="n">json_data</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">result</span>
+	<span class="c1"># The json_data is an array</span>
+	
+	<span class="c1"># The first element informs us this is simple text</span>
+	<span class="c1"># so we add it to the RichTextlabel</span>
+	<span class="k">if</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> 			<span class="n">label</span><span class="o">.</span><span class="n">append_bbcode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+	
+	<span class="c1"># Always useful to print the data and see what we got.</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first element is the type, it will be <code class="docutils literal notranslate"><span class="pre">text</span></code> if it is a message
+It can be anything you would provide to the Evennia <code class="docutils literal notranslate"><span class="pre">msg</span></code> function.
+The second element will be the data related to the type of message, in this case it is a list of text to display.
+Since it is parsed BBCode, we can add that directly to a RichTextLabel by calling its append_bbcode method.</p>
+<p>If you want anything better than fancy text in Godot, you will have
+to leverage Evennia’s OOB to send extra data.</p>
+<p>You can <a class="reference external" href="https://www.evennia.com/docs/latest/OOB.html#oob">read more on OOB here</a>.</p>
+<p>In this example, we send coordinates whenever we message our character.</p>
+<p>Evennia</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Godot</p>
+<div class="highlight-gdscript notranslate"><div class="highlight"><pre><span></span><span class="k">func</span><span class="w"> </span><span class="n">_on_data</span><span class="p">():</span><span class="w"></span>
+<span class="w">    </span><span class="o">...</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="w"></span>
+<span class="w">		</span><span class="k">for</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="w"> 			</span><span class="n">label</span><span class="o">.</span><span class="n">append_bbcode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span>
+<span class="w">	</span><span class="c1"># Notice the first element is the name of the kwarg we used from evennia.</span><span class="w"></span>
+<span class="w">	</span><span class="k">elif</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;coordinates&#39;</span><span class="p">:</span><span class="w"></span>
+<span class="w">		</span><span class="k">var</span><span class="w"> </span><span class="n">coords_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"></span>
+<span class="w">		</span><span class="n">player</span><span class="o">.</span><span class="n">set_pos</span><span class="p">(</span><span class="n">coords_data</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span>
+<span class="w">    </span><span class="o">...</span><span class="w"></span>
+</pre></div>
+</div>
+<p>A good idea would be to set up Godot Signals you can trigger based on the data
+you receive, so you can manage the code better.</p>
+</section>
+<section id="known-issues">
+<h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Sending SaverDicts and similar objects straight from Evennia .DB will cause issues,
+cast them to dict() or list() before doing so.</p></li>
+<li><p>Background colors are only supported by Godot 4.</p></li>
+</ul>
+</section>
+<section id="godot-3-example">
+<h2>Godot 3 Example<a class="headerlink" href="#godot-3-example" title="Permalink to this headline">¶</a></h2>
+<p>This is an example of a Script to use in Godot 3.
+The script can be attached to the root UI node.</p>
+<div class="highlight-gdscript notranslate"><div class="highlight"><pre><span></span><span class="k">extends</span><span class="w"> </span><span class="n">Node</span><span class="w"></span>
+
+<span class="c1"># The URL to connect to, should be your mud.</span><span class="w"></span>
+<span class="k">export</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">websocket_url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ws://127.0.0.1:4008&quot;</span><span class="w"></span>
+
+<span class="c1"># These are references to controls in the scene</span><span class="w"></span>
+<span class="k">onready</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_parent</span><span class="p">()</span><span class="w"></span>
+<span class="k">onready</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parent</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;%ChatLog&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="k">onready</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">txtEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parent</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;%ChatInput&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="k">onready</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">room</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/World/Room&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="c1"># Our WebSocketClient instance</span><span class="w"></span>
+<span class="k">var</span><span class="w"> </span><span class="n">_client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebSocketClient</span><span class="o">.</span><span class="n">new</span><span class="p">()</span><span class="w"></span>
+
+<span class="k">var</span><span class="w"> </span><span class="n">is_connected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">false</span><span class="w"></span>
+
+<span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># Connect base signals to get notified of connection open, close, errors and messages</span><span class="w"></span>
+<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_closed&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_closed&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_error&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_closed&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_established&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_connected&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;data_received&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_on_data&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ready&#39;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">	</span><span class="c1"># Initiate connection to the given URL.</span><span class="w"></span>
+<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_client</span><span class="o">.</span><span class="n">connect_to_url</span><span class="p">(</span><span class="n">websocket_url</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">OK</span><span class="p">:</span><span class="w"></span>
+<span class="w">		</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to connect&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span><span class="n">set_process</span><span class="p">(</span><span class="bp">false</span><span class="p">)</span><span class="w"></span>
+
+<span class="k">func</span><span class="w"> </span><span class="n">_closed</span><span class="p">(</span><span class="n">was_clean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">false</span><span class="p">):</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># was_clean will tell you if the disconnection was correctly notified</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># by the remote peer before closing the socket.</span><span class="w"></span>
+<span class="w">	</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Closed, clean: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">was_clean</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="n">set_process</span><span class="p">(</span><span class="bp">false</span><span class="p">)</span><span class="w"></span>
+
+<span class="k">func</span><span class="w"> </span><span class="n">_connected</span><span class="p">(</span><span class="n">proto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">):</span><span class="w"></span>
+<span class="w">	</span><span class="n">is_connected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="w"></span>
+<span class="w">	</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected with protocol: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">proto</span><span class="p">)</span><span class="w"></span>
+
+<span class="k">func</span><span class="w"> </span><span class="n">_on_data</span><span class="p">():</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># This is called when Godot receives data from evennia</span><span class="w"></span>
+<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_packet</span><span class="p">()</span><span class="o">.</span><span class="n">get_string_from_utf8</span><span class="p">()</span><span class="w"></span>
+<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">json_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># Here we have the data from Evennia which is an array.</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># The first element will be text if it is a message</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># and would be the key of the OOB data you passed otherwise.</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="w"></span>
+<span class="w">		</span><span class="c1"># In this case, we simply append the data as bbcode to our label.</span><span class="w"></span>
+<span class="w">		</span><span class="k">for</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="w"> 			</span><span class="n">label</span><span class="o">.</span><span class="n">append_bbcode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="k">elif</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;coordinates&#39;</span><span class="p">:</span><span class="w"></span>
+<span class="w">		</span><span class="c1"># Dummy signal emitted if we wanted to handle the new coordinates</span><span class="w"></span>
+<span class="w">		</span><span class="c1"># elsewhere in the project.</span><span class="w"></span>
+<span class="w">		</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_signal</span><span class="p">(</span><span class="s1">&#39;updated_coordinates&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="w"></span>
+
+<span class="w">	</span>
+<span class="w">	</span><span class="c1"># We only print this for easier debugging.</span><span class="w"></span>
+<span class="w">	</span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"></span>
+
+<span class="k">func</span><span class="w"> </span><span class="n">_process</span><span class="p">(</span><span class="n">delta</span><span class="p">):</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># Required for websocket to properly react</span><span class="w"></span>
+<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span><span class="w"></span>
+
+<span class="k">func</span><span class="w"> </span><span class="n">_on_button_send</span><span class="p">():</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># This is called when we press the button in the scene</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># with a connected signal, it sends the written message to Evennia.</span><span class="w"></span>
+<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">txtEdit</span><span class="o">.</span><span class="n">text</span><span class="w"></span>
+<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">msg_arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">msg</span><span class="p">],</span><span class="w"> </span><span class="p">{}]</span><span class="w"></span>
+<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">msg_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">msg_arr</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">put_packet</span><span class="p">(</span><span class="n">msg_str</span><span class="o">.</span><span class="n">to_utf8</span><span class="p">())</span><span class="w"></span>
+
+<span class="k">func</span><span class="w"> </span><span class="n">_notification</span><span class="p">(</span><span class="n">what</span><span class="p">):</span><span class="w"></span>
+<span class="w">	</span><span class="c1"># This is a special method that allows us to notify Evennia we are closing.</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="n">what</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">MainLoop</span><span class="o">.</span><span class="n">NOTIFICATION_WM_QUIT_REQUEST</span><span class="p">:</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="n">is_connected</span><span class="p">:</span><span class="w"></span>
+<span class="w">			</span><span class="k">var</span><span class="w"> </span><span class="n">msg_arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;quit&#39;</span><span class="p">],</span><span class="w"> </span><span class="p">{}]</span><span class="w"></span>
+<span class="w">			</span><span class="k">var</span><span class="w"> </span><span class="n">msg_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">msg_arr</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">put_packet</span><span class="p">(</span><span class="n">msg_str</span><span class="o">.</span><span class="n">to_utf8</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">get_tree</span><span class="p">()</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span><span class="w"> </span><span class="c1"># default behavior</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="godot-4-example">
+<h2>Godot 4 Example<a class="headerlink" href="#godot-4-example" title="Permalink to this headline">¶</a></h2>
+<p>This is an example of a Script to use in Godot 4.
+Note that the version is not final so the code may break.
+It requires a WebSocketClientNode as a child of the root node.
+The script can be attached to the root UI node.</p>
+<div class="highlight-gdscript notranslate"><div class="highlight"><pre><span></span>extends Control
+
+# The URL to connect to, should be your mud.
+var websocket_url = &quot;ws://127.0.0.1:4008&quot;
+
+# These are references to controls in the scene
+@onready
+var label: RichTextLabel = get_node(&quot;%ChatLog&quot;)
+@onready
+var txtEdit: TextEdit = get_node(&quot;%ChatInput&quot;)
+@onready
+var websocket = get_node(&quot;WebSocketClient&quot;)
+
+func _ready():
+	# We connect the various signals
+	websocket.connect(&#39;connected_to_server&#39;, self._connected)
+	websocket.connect(&#39;connection_closed&#39;, self._closed)
+	websocket.connect(&#39;message_received&#39;, self._on_data)
+	
+	# We attempt to connect and print out the error if we have one.
+	var result = websocket.connect_to_url(websocket_url)
+	if result != OK:
+		print(&#39;Could not connect:&#39; + str(result))
+
+
+func _closed():
+	# This emits if the connection was closed by the remote host or unexpectedly
+	print(&#39;Connection closed.&#39;)
+	set_process(false)
+
+func _connected():
+	# This emits when the connection succeeds.
+	print(&#39;Connected!&#39;)
+
+func _on_data(data):
+	# This is called when Godot receives data from evennia
+	var json_data = JSON.parse_string(data)
+	# Here we have the data from Evennia which is an array.
+	# The first element will be text if it is a message
+	# and would be the key of the OOB data you passed otherwise.
+	if json_data[0] == &#39;text&#39;:
+		# In this case, we simply append the data as bbcode to our label.
+		for msg in json_data[1]: 			# Here we include a newline at every message.
+			label.append_text(&quot;\n&quot; + msg)
+	elif json_data[0] == &#39;coordinates&#39;:
+		# Dummy signal emitted if we wanted to handle the new coordinates
+		# elsewhere in the project.
+		self.emit_signal(&#39;updated_coordinates&#39;, json_data[1])
+
+	# We only print this for easier debugging.
+	print(data)
+
+func _on_button_pressed():
+	# This is called when we press the button in the scene
+	# with a connected signal, it sends the written message to Evennia.
+	var msg = txtEdit.text
+	var msg_arr = [&#39;text&#39;, [msg], {}]
+	var msg_str = JSON.stringify(msg_arr)
+	websocket.send(msg_str)
+
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/godotwebsocket/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Ingame-Python.html" title="Evennia in-game Python system"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Email-Login.html" title="Email-based login system"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Godot Websocket</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
