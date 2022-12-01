@@ -20,14 +20,13 @@ from autobahn.twisted.websocket import (
 )
 from django.conf import settings
 from twisted.internet import protocol, reactor, ssl, task
-from twisted.web.client import Agent, FileBodyProducer, readBody
+from twisted.web.client import Agent, FileBodyProducer, HTTPConnectionPool, readBody
 from twisted.web.http_headers import Headers
 
 from evennia.server.session import Session
 from evennia.utils import class_from_module, get_evennia_version, logger
 from evennia.utils.utils import delay
 
-_AGENT = Agent(reactor)
 
 _BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
@@ -48,6 +47,21 @@ OP_IDENTIFY = 2
 OP_INVALID_SESSION = 9
 OP_RECONNECT = 7
 OP_RESUME = 6
+
+
+# create quiet HTTP pool to muffle GET/POST requests
+class QuietConnectionPool(HTTPConnectionPool):
+    """
+    A quiet version of the HTTPConnectionPool which sets the factory's
+    `noisy` property to False to muffle log output.
+    """
+
+    def __init__(self, reactor, persistent=True):
+        super().__init__(reactor, persistent)
+        self._factory.noisy = False
+
+
+_AGENT = Agent(reactor, pool=QuietConnectionPool(reactor))
 
 
 def should_retry(status_code):
@@ -78,11 +92,13 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
     initialDelay = 1
     factor = 1.5
     maxDelay = 60
+    noisy = False
     gateway = None
     resume_url = None
+    do_retry = True
 
     def __init__(self, sessionhandler, *args, **kwargs):
-        self.uid = kwargs.pop("uid")
+        self.uid = kwargs.get("uid")
         self.sessionhandler = sessionhandler
         self.port = None
         self.bot = None
@@ -186,7 +202,7 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
             reason (str): The reason for the failure.
 
         """
-        if self.do_retry and not self.bot:
+        if self.do_retry or not self.bot:
             self.retry(connector)
 
     def reconnect(self):
@@ -195,8 +211,13 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         de-registering the session and then reattaching a new one.
 
         """
+        # set the retry flag to False so it doesn't attempt an automatic retry
+        # and duplicate the connection
+        self.do_retry = False
+        # disconnect everything
         self.bot.transport.loseConnection()
         self.sessionhandler.server_disconnect(self.bot)
+        # set up the reconnection
         if self.resume_url:
             self.url = self.resume_url
         elif self.gateway:
@@ -215,12 +236,14 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
             # get the gateway URL from Discord
             self.get_gateway_url()
         else:
+            # set the retry flag so we maintain this connection
+            self.do_retry = True
             connectWS(self)
 
 
 class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
     """
-    Implements the grapevine client
+    Implements the Discord client
     """
 
     nextHeartbeatCall = None
@@ -269,7 +292,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         if seqid := data.get("s"):
             self.last_sequence = seqid
 
-        # not sure if that error json format is for websockets
+        # not sure if that error json format is for websockets, so
         # check for it just in case
         if "errors" in data:
             self.handle_error(data)
