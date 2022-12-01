@@ -222,6 +222,7 @@ Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.9, 3.10, 3.11.  Post
 - Add `AT_EXIT_TRAVERSE` signal, firing when an exit is traversed.
 - Add integration between Evennia and Discord channels (PR by Inspector Cararacal)
 - Support for using a Godot-powered client with Evennia (PR by ChrisLR)
+- Added German translation (patch by Zhuraj)
 
 ## Evennia 0.9.5
 
