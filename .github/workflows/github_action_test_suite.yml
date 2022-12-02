@@ -51,7 +51,7 @@ jobs:
           pip install mysqlclient
           pip install coveralls
           pip install tblib
-          pip install .
+          pip install -e .
           pip install .[extra]
 
       - name: Initialize evennia
