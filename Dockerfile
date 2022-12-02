@@ -34,17 +34,19 @@ LABEL maintainer="https://www.evennia.com"
 
 # install compilation environment
 RUN apk update && apk add bash gcc jpeg-dev musl-dev procps \
-libffi-dev openssl-dev zlib-dev gettext
+libffi-dev openssl-dev zlib-dev gettext \
+g++ gfortran python3-dev cmake openblas-dev
 
 # add the files required for pip installation
 COPY ./pyproject.toml /usr/src/evennia/
 COPY ./setup.py /usr/src/evennia/
-COPY ./evennia/VERSION.txt /usr/src/evennia/evennia/
 COPY ./bin /usr/src/evennia/bin/
 
 # install dependencies
-RUN pip install --upgrade pip && pip install -e /usr/src/evennia --trusted-host pypi.python.org
-RUN pip install cryptography pyasn1 service_identity
+RUN pip install --upgrade pip && \
+    pip install cryptography pyasn1 service_identity && \
+    pip install -e /usr/src/evennia --trusted-host pypi.python.org && \
+    pip install evennia[extra]
 
 # add the project source; this should always be done after all
 # expensive operations have completed to avoid prematurely
@@ -63,8 +65,9 @@ VOLUME /usr/src/game
 # set the working directory
 WORKDIR /usr/src/game
 
-# set bash prompt
-ENV PS1 "evennia|docker \w $ "
+# set bash prompt and pythonpath to evennia lib
+ENV PS1 "evennia|docker \w $ " 
+ENV PYTHONPATH /usr/src/evennia
 
 # create and switch to a non-root user for runtime security
 # -D - do not set a password
