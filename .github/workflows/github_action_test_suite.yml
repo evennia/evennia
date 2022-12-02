@@ -87,7 +87,7 @@ jobs:
         working-directory: testing_mygame
         run: |
           coverage run \
-            --source=../evennia \
+            --source=**/site-packages/evennia \
             --parallel-mode \
             --debug=sys,trace \
             --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
@@ -96,6 +96,7 @@ jobs:
               --parallel 4 \
               --timing \
               evennia
+          coverage combine
           coverage xml
           coverage --version
           coverage report | grep TOTAL
