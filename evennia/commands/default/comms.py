@@ -1918,7 +1918,6 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
     Usage:
       discord2chan[/switches]
       discord2chan[/switches] <evennia_channel> [= <discord_channel_id>]
-      discord2chan/name <bot_name>
 
     Switches:
         /list    - (or no switch) show existing Evennia <-> Discord links
@@ -1932,7 +1931,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
 
     This creates a link between an in-game Evennia channel and an external
     Discord channel. You must have a valid Discord bot application
-    (https://discord.com/developers/applications)) and your DISCORD_BOT_TOKEN
+    ( https://discord.com/developers/applications ) and your DISCORD_BOT_TOKEN
     must be added to settings. (Please put it in secret_settings !)
     """
 
