@@ -87,9 +87,7 @@ jobs:
         working-directory: testing_mygame
         run: |
           coverage run \
-            --source=*/site-packages/evennia/* \
-            --parallel-mode \
-            --debug=sys,trace \
+            --source=*/site-packages/evennia,../evennia \
             --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
             ../bin/unix/evennia test \
               --settings=settings \
