@@ -26,6 +26,12 @@ jobs:
             TESTING_DB: "sqlite3"
             coverage-test: true
 
+    # TODO: Remove(?) in the future
+    # REASON FOR ADD: PostgreSQL jobs are sometimes stalling until GitHub's timeout of 6 hours.
+    # Timeout chosen based on coverage test runs seeming to last around 20-25 minutes.
+    # -dvo
+    timeout-minutes: 35
+
     steps:
       - uses: actions/checkout@v3
 
@@ -82,9 +88,12 @@ jobs:
         run: |
           coverage run \
             --source=../evennia \
+            --parallel-mode \
+            --debug=sys,trace \
             --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
             ../bin/unix/evennia test \
               --settings=settings \
+              --parallel 4 \
               --timing \
               evennia
           coverage xml
