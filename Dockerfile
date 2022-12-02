@@ -28,17 +28,17 @@
 # as a base for creating your own custom containerized Evennia game. For more
 # info, see https://evennia.com/docs/latest/Setup/Installation-Docker
 #
-FROM python:3.10-alpine
+FROM python:3.11-alpine
 
-LABEL maintainer="www.evennia.com"
+LABEL maintainer="https://www.evennia.com"
 
 # install compilation environment
 RUN apk update && apk add bash gcc jpeg-dev musl-dev procps \
 libffi-dev openssl-dev zlib-dev gettext
 
 # add the files required for pip installation
+COPY ./pyproject.toml /usr/src/evennia/
 COPY ./setup.py /usr/src/evennia/
-COPY ./requirements.txt /usr/src/evennia/
 COPY ./evennia/VERSION.txt /usr/src/evennia/evennia/
 COPY ./bin /usr/src/evennia/bin/
 
@@ -70,8 +70,8 @@ ENV PS1 "evennia|docker \w $ "
 # -D - do not set a password
 # -H - do not create a home directory
 # -s /bin/false - set login shell to /bin/false
-RUN adduser -D -H -s /bin/false evennia
-USER evennia
+# RUN adduser -D -H -s /bin/false evennia
+# USER evennia
 
 # startup a shell when we start the container
 ENTRYPOINT ["/usr/src/evennia/bin/unix/evennia-docker-start.sh"]
