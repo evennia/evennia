@@ -51,7 +51,7 @@ jobs:
           pip install mysqlclient
           pip install coveralls
           pip install tblib
-          pip install -e .
+          pip install .
           pip install .[extra]
 
       - name: Initialize evennia
@@ -81,7 +81,7 @@ jobs:
         working-directory: testing_mygame
         run: |
           coverage run \
-            --source=../evennia \
+            --source=evennia \
             --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
             ../bin/unix/evennia test \
               --settings=settings \
