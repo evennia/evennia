@@ -81,7 +81,7 @@ class TestSearch(EvenniaTest):
         DefaultObject.create("test_obj_2")
         with self.assertRaises(ImportError):
             search_typeclass("not.a.typeclass")
-            
+
     def test_search_object_attribute(self):
         """Check that an object can be found by its attributes."""
         object, errors = DefaultObject.create("an-object")
