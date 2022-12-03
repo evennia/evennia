@@ -201,7 +201,7 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
             reason (str): The reason for the failure.
 
         """
-        if self.do_retry or not self.bot:
+        if self.do_retry and self.bot:
             self.retry(connector)
 
     def reconnect(self):
