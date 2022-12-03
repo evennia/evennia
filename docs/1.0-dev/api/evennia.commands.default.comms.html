@@ -1326,8 +1326,7 @@ must be added to game settings.</p>
 <p>Link an Evennia channel to an external Discord channel</p>
 <dl>
 <dt>Usage:</dt><dd><p>discord2chan[/switches]
-discord2chan[/switches] &lt;evennia_channel&gt; [= &lt;discord_channel_id&gt;]
-discord2chan/name &lt;bot_name&gt;</p>
+discord2chan[/switches] &lt;evennia_channel&gt; [= &lt;discord_channel_id&gt;]</p>
 </dd>
 <dt>Switches:</dt><dd><dl class="option-list">
 <dt><kbd><span class="option">/list</span></kbd></dt>
@@ -1358,7 +1357,7 @@ discord2chan/name &lt;bot_name&gt;</p>
 <p>discord2chan mydiscord = 555555555555555</p>
 <p>This creates a link between an in-game Evennia channel and an external
 Discord channel. You must have a valid Discord bot application
-(<a class="reference external" href="https://discord.com/developers/applications">https://discord.com/developers/applications</a>)) and your DISCORD_BOT_TOKEN
+( <a class="reference external" href="https://discord.com/developers/applications">https://discord.com/developers/applications</a> ) and your DISCORD_BOT_TOKEN
 must be added to settings. (Please put it in secret_settings !)</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdDiscord2Chan.key">
@@ -1398,7 +1397,7 @@ must be added to settings. (Please put it in secret_settings !)</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdDiscord2Chan.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'discord', 'category': 'comms', 'key': 'discord2chan', 'no_prefix': ' discord', 'tags': '', 'text': '\n    Link an Evennia channel to an external Discord channel\n\n    Usage:\n      discord2chan[/switches]\n      discord2chan[/switches] &lt;evennia_channel&gt; [= &lt;discord_channel_id&gt;]\n      discord2chan/name &lt;bot_name&gt;\n\n    Switches:\n        /list    - (or no switch) show existing Evennia &lt;-&gt; Discord links\n        /remove  - remove an existing link by link ID\n        /delete  - alias to remove\n        /guild   - toggle the Discord server tag on/off\n        /channel - toggle the Evennia/Discord channel tags on/off\n\n    Example:\n        discord2chan mydiscord = 555555555555555\n\n    This creates a link between an in-game Evennia channel and an external\n    Discord channel. You must have a valid Discord bot application\n    (https://discord.com/developers/applications)) and your DISCORD_BOT_TOKEN\n    must be added to settings. (Please put it in secret_settings !)\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDiscord2Chan.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'discord', 'category': 'comms', 'key': 'discord2chan', 'no_prefix': ' discord', 'tags': '', 'text': '\n    Link an Evennia channel to an external Discord channel\n\n    Usage:\n      discord2chan[/switches]\n      discord2chan[/switches] &lt;evennia_channel&gt; [= &lt;discord_channel_id&gt;]\n\n    Switches:\n        /list    - (or no switch) show existing Evennia &lt;-&gt; Discord links\n        /remove  - remove an existing link by link ID\n        /delete  - alias to remove\n        /guild   - toggle the Discord server tag on/off\n        /channel - toggle the Evennia/Discord channel tags on/off\n\n    Example:\n        discord2chan mydiscord = 555555555555555\n\n    This creates a link between an in-game Evennia channel and an external\n    Discord channel. You must have a valid Discord bot application\n    ( https://discord.com/developers/applications ) and your DISCORD_BOT_TOKEN\n    must be added to settings. (Please put it in secret_settings !)\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDiscord2Chan.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

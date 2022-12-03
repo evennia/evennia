@@ -113,6 +113,20 @@ added to <strong>server/conf/secret_settings.py</strong> as your  DISCORD_BOT_TO
 <code class="sig-prename descclassname">evennia.server.portal.discord.</code><code class="sig-name descname">random</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; x in the interval [0, 1).<a class="headerlink" href="#evennia.server.portal.discord.random" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py class">
+<dt id="evennia.server.portal.discord.QuietConnectionPool">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.discord.</code><code class="sig-name descname">QuietConnectionPool</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reactor</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#QuietConnectionPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.discord.QuietConnectionPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.client.HTTPConnectionPool</span></code></p>
+<p>A quiet version of the HTTPConnectionPool which sets the factory’s
+<strong>noisy</strong> property to False to muffle log output.</p>
+<dl class="py method">
+<dt id="evennia.server.portal.discord.QuietConnectionPool.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reactor</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#QuietConnectionPool.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.discord.QuietConnectionPool.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt id="evennia.server.portal.discord.should_retry">
 <code class="sig-prename descclassname">evennia.server.portal.discord.</code><code class="sig-name descname">should_retry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">status_code</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#should_retry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.discord.should_retry" title="Permalink to this definition">¶</a></dt>
@@ -148,6 +162,11 @@ added to <strong>server/conf/secret_settings.py</strong> as your  DISCORD_BOT_TO
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.noisy">
+<code class="sig-name descname">noisy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.noisy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.gateway">
 <code class="sig-name descname">gateway</code><em class="property"> = None</em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.gateway" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -155,6 +174,11 @@ added to <strong>server/conf/secret_settings.py</strong> as your  DISCORD_BOT_TO
 <dl class="py attribute">
 <dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.resume_url">
 <code class="sig-name descname">resume_url</code><em class="property"> = None</em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.resume_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.do_retry">
+<code class="sig-name descname">do_retry</code><em class="property"> = True</em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.do_retry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -246,7 +270,7 @@ de-registering the session and then reattaching a new one.</p>
 <dt id="evennia.server.portal.discord.DiscordClient">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.discord.</code><code class="sig-name descname">DiscordClient</code><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">autobahn.twisted.websocket.WebSocketClientProtocol</span></code>, <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code></a></p>
-<p>Implements the grapevine client</p>
+<p>Implements the Discord client</p>
 <dl class="py attribute">
 <dt id="evennia.server.portal.discord.DiscordClient.nextHeartbeatCall">
 <code class="sig-name descname">nextHeartbeatCall</code><em class="property"> = None</em><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.nextHeartbeatCall" title="Permalink to this definition">¶</a></dt>

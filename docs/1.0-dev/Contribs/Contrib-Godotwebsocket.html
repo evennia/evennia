@@ -147,7 +147,7 @@ of this readme for Godot 4.</p>
 </div>
 <p>You must also remove the protocol from the <code class="docutils literal notranslate"><span class="pre">connect_to_url</span></code> call made
 within the <code class="docutils literal notranslate"><span class="pre">_ready</span></code> function.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">_ready</span><span class="p">():</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">_ready</span><span class="p">():</span>
     <span class="c1"># ...</span>
     <span class="c1"># Change the following line from this</span>
     <span class="n">var</span> <span class="n">err</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">connect_to_url</span><span class="p">(</span><span class="n">websocket_url</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;lws-mirror-protocol&quot;</span><span class="p">])</span>
@@ -166,12 +166,12 @@ Here is an example</p>
 	<span class="n">var</span> <span class="n">data</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_packet</span><span class="p">()</span><span class="o">.</span><span class="n">get_string_from_utf8</span><span class="p">()</span>
 	<span class="n">var</span> <span class="n">json_data</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">result</span>
 	<span class="c1"># The json_data is an array</span>
-	
+
 	<span class="c1"># The first element informs us this is simple text</span>
 	<span class="c1"># so we add it to the RichTextlabel</span>
 	<span class="k">if</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
 		<span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> 			<span class="n">label</span><span class="o">.</span><span class="n">append_bbcode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-	
+
 	<span class="c1"># Always useful to print the data and see what we got.</span>
 	<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
@@ -189,17 +189,17 @@ to leverage Evennia’s OOB to send extra data.</p>
 </pre></div>
 </div>
 <p>Godot</p>
-<div class="highlight-gdscript notranslate"><div class="highlight"><pre><span></span><span class="k">func</span><span class="w"> </span><span class="n">_on_data</span><span class="p">():</span><span class="w"></span>
-<span class="w">    </span><span class="o">...</span><span class="w"></span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="w"></span>
-<span class="w">		</span><span class="k">for</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="w"> 			</span><span class="n">label</span><span class="o">.</span><span class="n">append_bbcode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span>
-<span class="w">	</span><span class="c1"># Notice the first element is the name of the kwarg we used from evennia.</span><span class="w"></span>
-<span class="w">	</span><span class="k">elif</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;coordinates&#39;</span><span class="p">:</span><span class="w"></span>
-<span class="w">		</span><span class="k">var</span><span class="w"> </span><span class="n">coords_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"></span>
-<span class="w">		</span><span class="n">player</span><span class="o">.</span><span class="n">set_pos</span><span class="p">(</span><span class="n">coords_data</span><span class="p">)</span><span class="w"></span>
-<span class="w">		</span>
-<span class="w">    </span><span class="o">...</span><span class="w"></span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">_on_data</span><span class="p">():</span>
+    <span class="o">...</span>
+	<span class="k">if</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> 			<span class="n">label</span><span class="o">.</span><span class="n">append_bbcode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+	<span class="c1"># Notice the first element is the name of the kwarg we used from evennia.</span>
+	<span class="k">elif</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span>
+		<span class="n">var</span> <span class="n">coords_data</span> <span class="o">=</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+		<span class="n">player</span><span class="o">.</span><span class="n">set_pos</span><span class="p">(</span><span class="n">coords_data</span><span class="p">)</span>
+
+    <span class="o">...</span>
 </pre></div>
 </div>
 <p>A good idea would be to set up Godot Signals you can trigger based on the data
@@ -217,86 +217,87 @@ cast them to dict() or list() before doing so.</p></li>
 <h2>Godot 3 Example<a class="headerlink" href="#godot-3-example" title="Permalink to this headline">¶</a></h2>
 <p>This is an example of a Script to use in Godot 3.
 The script can be attached to the root UI node.</p>
-<div class="highlight-gdscript notranslate"><div class="highlight"><pre><span></span><span class="k">extends</span><span class="w"> </span><span class="n">Node</span><span class="w"></span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">extends</span> <span class="n">Node</span>
 
-<span class="c1"># The URL to connect to, should be your mud.</span><span class="w"></span>
-<span class="k">export</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">websocket_url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ws://127.0.0.1:4008&quot;</span><span class="w"></span>
+<span class="c1"># The URL to connect to, should be your mud.</span>
+<span class="n">export</span> <span class="n">var</span> <span class="n">websocket_url</span> <span class="o">=</span> <span class="s2">&quot;ws://127.0.0.1:4008&quot;</span>
 
-<span class="c1"># These are references to controls in the scene</span><span class="w"></span>
-<span class="k">onready</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_parent</span><span class="p">()</span><span class="w"></span>
-<span class="k">onready</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parent</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;%ChatLog&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="k">onready</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">txtEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parent</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;%ChatInput&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="c1"># These are references to controls in the scene</span>
+<span class="n">onready</span> <span class="n">var</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">get_parent</span><span class="p">()</span>
+<span class="n">onready</span> <span class="n">var</span> <span class="n">label</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;%ChatLog&quot;</span><span class="p">)</span>
+<span class="n">onready</span> <span class="n">var</span> <span class="n">txtEdit</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;%ChatInput&quot;</span><span class="p">)</span>
 
-<span class="k">onready</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">room</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/World/Room&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="n">onready</span> <span class="n">var</span> <span class="n">room</span> <span class="o">=</span> <span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/World/Room&quot;</span><span class="p">)</span>
 
-<span class="c1"># Our WebSocketClient instance</span><span class="w"></span>
-<span class="k">var</span><span class="w"> </span><span class="n">_client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebSocketClient</span><span class="o">.</span><span class="n">new</span><span class="p">()</span><span class="w"></span>
+<span class="c1"># Our WebSocketClient instance</span>
+<span class="n">var</span> <span class="n">_client</span> <span class="o">=</span> <span class="n">WebSocketClient</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
 
-<span class="k">var</span><span class="w"> </span><span class="n">is_connected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">false</span><span class="w"></span>
+<span class="n">var</span> <span class="n">is_connected</span> <span class="o">=</span> <span class="n">false</span>
 
-<span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># Connect base signals to get notified of connection open, close, errors and messages</span><span class="w"></span>
-<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_closed&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_closed&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_error&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_closed&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_established&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_connected&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;data_received&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_on_data&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ready&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="n">func</span> <span class="n">_ready</span><span class="p">():</span>
+	<span class="c1"># Connect base signals to get notified of connection open, close, errors and messages</span>
+	<span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_closed&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_closed&quot;</span><span class="p">)</span>
+	<span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_error&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_closed&quot;</span><span class="p">)</span>
+	<span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;connection_established&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_connected&quot;</span><span class="p">)</span>
+	<span class="n">_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;data_received&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_on_data&quot;</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ready&#39;</span><span class="p">)</span>
 
-<span class="w">	</span><span class="c1"># Initiate connection to the given URL.</span><span class="w"></span>
-<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_client</span><span class="o">.</span><span class="n">connect_to_url</span><span class="p">(</span><span class="n">websocket_url</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">OK</span><span class="p">:</span><span class="w"></span>
-<span class="w">		</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to connect&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">		</span><span class="n">set_process</span><span class="p">(</span><span class="bp">false</span><span class="p">)</span><span class="w"></span>
+	<span class="c1"># Initiate connection to the given URL.</span>
+	<span class="n">var</span> <span class="n">err</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">connect_to_url</span><span class="p">(</span><span class="n">websocket_url</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">OK</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to connect&quot;</span><span class="p">)</span>
+		<span class="n">set_process</span><span class="p">(</span><span class="n">false</span><span class="p">)</span>
 
-<span class="k">func</span><span class="w"> </span><span class="n">_closed</span><span class="p">(</span><span class="n">was_clean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">false</span><span class="p">):</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># was_clean will tell you if the disconnection was correctly notified</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># by the remote peer before closing the socket.</span><span class="w"></span>
-<span class="w">	</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Closed, clean: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">was_clean</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span><span class="n">set_process</span><span class="p">(</span><span class="bp">false</span><span class="p">)</span><span class="w"></span>
+<span class="n">func</span> <span class="n">_closed</span><span class="p">(</span><span class="n">was_clean</span> <span class="o">=</span> <span class="n">false</span><span class="p">):</span>
+	<span class="c1"># was_clean will tell you if the disconnection was correctly notified</span>
+	<span class="c1"># by the remote peer before closing the socket.</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Closed, clean: &quot;</span><span class="p">,</span> <span class="n">was_clean</span><span class="p">)</span>
+	<span class="n">set_process</span><span class="p">(</span><span class="n">false</span><span class="p">)</span>
 
-<span class="k">func</span><span class="w"> </span><span class="n">_connected</span><span class="p">(</span><span class="n">proto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">):</span><span class="w"></span>
-<span class="w">	</span><span class="n">is_connected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="w"></span>
-<span class="w">	</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected with protocol: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">proto</span><span class="p">)</span><span class="w"></span>
+<span class="n">func</span> <span class="n">_connected</span><span class="p">(</span><span class="n">proto</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+	<span class="n">is_connected</span> <span class="o">=</span> <span class="n">true</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected with protocol: &quot;</span><span class="p">,</span> <span class="n">proto</span><span class="p">)</span>
 
-<span class="k">func</span><span class="w"> </span><span class="n">_on_data</span><span class="p">():</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># This is called when Godot receives data from evennia</span><span class="w"></span>
-<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_packet</span><span class="p">()</span><span class="o">.</span><span class="n">get_string_from_utf8</span><span class="p">()</span><span class="w"></span>
-<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">json_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># Here we have the data from Evennia which is an array.</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># The first element will be text if it is a message</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># and would be the key of the OOB data you passed otherwise.</span><span class="w"></span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="w"></span>
-<span class="w">		</span><span class="c1"># In this case, we simply append the data as bbcode to our label.</span><span class="w"></span>
-<span class="w">		</span><span class="k">for</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="w"> 			</span><span class="n">label</span><span class="o">.</span><span class="n">append_bbcode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span><span class="k">elif</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;coordinates&#39;</span><span class="p">:</span><span class="w"></span>
-<span class="w">		</span><span class="c1"># Dummy signal emitted if we wanted to handle the new coordinates</span><span class="w"></span>
-<span class="w">		</span><span class="c1"># elsewhere in the project.</span><span class="w"></span>
-<span class="w">		</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_signal</span><span class="p">(</span><span class="s1">&#39;updated_coordinates&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="w"></span>
+<span class="n">func</span> <span class="n">_on_data</span><span class="p">():</span>
+	<span class="c1"># This is called when Godot receives data from evennia</span>
+	<span class="n">var</span> <span class="n">data</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_packet</span><span class="p">()</span><span class="o">.</span><span class="n">get_string_from_utf8</span><span class="p">()</span>
+	<span class="n">var</span> <span class="n">json_data</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">result</span>
+	<span class="c1"># Here we have the data from Evennia which is an array.</span>
+	<span class="c1"># The first element will be text if it is a message</span>
+	<span class="c1"># and would be the key of the OOB data you passed otherwise.</span>
+	<span class="k">if</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
+		<span class="c1"># In this case, we simply append the data as bbcode to our label.</span>
+		<span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> 			<span class="n">label</span><span class="o">.</span><span class="n">append_bbcode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+	<span class="k">elif</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span>
+		<span class="c1"># Dummy signal emitted if we wanted to handle the new coordinates</span>
+		<span class="c1"># elsewhere in the project.</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">emit_signal</span><span class="p">(</span><span class="s1">&#39;updated_coordinates&#39;</span><span class="p">,</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="w">	</span>
-<span class="w">	</span><span class="c1"># We only print this for easier debugging.</span><span class="w"></span>
-<span class="w">	</span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"></span>
 
-<span class="k">func</span><span class="w"> </span><span class="n">_process</span><span class="p">(</span><span class="n">delta</span><span class="p">):</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># Required for websocket to properly react</span><span class="w"></span>
-<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span><span class="w"></span>
+	<span class="c1"># We only print this for easier debugging.</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-<span class="k">func</span><span class="w"> </span><span class="n">_on_button_send</span><span class="p">():</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># This is called when we press the button in the scene</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># with a connected signal, it sends the written message to Evennia.</span><span class="w"></span>
-<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">txtEdit</span><span class="o">.</span><span class="n">text</span><span class="w"></span>
-<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">msg_arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">msg</span><span class="p">],</span><span class="w"> </span><span class="p">{}]</span><span class="w"></span>
-<span class="w">	</span><span class="k">var</span><span class="w"> </span><span class="n">msg_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">msg_arr</span><span class="p">)</span><span class="w"></span>
-<span class="w">	</span><span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">put_packet</span><span class="p">(</span><span class="n">msg_str</span><span class="o">.</span><span class="n">to_utf8</span><span class="p">())</span><span class="w"></span>
+<span class="n">func</span> <span class="n">_process</span><span class="p">(</span><span class="n">delta</span><span class="p">):</span>
+	<span class="c1"># Required for websocket to properly react</span>
+	<span class="n">_client</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
 
-<span class="k">func</span><span class="w"> </span><span class="n">_notification</span><span class="p">(</span><span class="n">what</span><span class="p">):</span><span class="w"></span>
-<span class="w">	</span><span class="c1"># This is a special method that allows us to notify Evennia we are closing.</span><span class="w"></span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="n">what</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">MainLoop</span><span class="o">.</span><span class="n">NOTIFICATION_WM_QUIT_REQUEST</span><span class="p">:</span><span class="w"></span>
-<span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="n">is_connected</span><span class="p">:</span><span class="w"></span>
-<span class="w">			</span><span class="k">var</span><span class="w"> </span><span class="n">msg_arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;quit&#39;</span><span class="p">],</span><span class="w"> </span><span class="p">{}]</span><span class="w"></span>
-<span class="w">			</span><span class="k">var</span><span class="w"> </span><span class="n">msg_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">msg_arr</span><span class="p">)</span><span class="w"></span>
-<span class="w">			</span><span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">put_packet</span><span class="p">(</span><span class="n">msg_str</span><span class="o">.</span><span class="n">to_utf8</span><span class="p">())</span><span class="w"></span>
-<span class="w">		</span><span class="n">get_tree</span><span class="p">()</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span><span class="w"> </span><span class="c1"># default behavior</span><span class="w"></span>
+<span class="n">func</span> <span class="n">_on_button_send</span><span class="p">():</span>
+	<span class="c1"># This is called when we press the button in the scene</span>
+	<span class="c1"># with a connected signal, it sends the written message to Evennia.</span>
+	<span class="n">var</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">txtEdit</span><span class="o">.</span><span class="n">text</span>
+	<span class="n">var</span> <span class="n">msg_arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">msg</span><span class="p">],</span> <span class="p">{}]</span>
+	<span class="n">var</span> <span class="n">msg_str</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">msg_arr</span><span class="p">)</span>
+	<span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">put_packet</span><span class="p">(</span><span class="n">msg_str</span><span class="o">.</span><span class="n">to_utf8</span><span class="p">())</span>
+
+<span class="n">func</span> <span class="n">_notification</span><span class="p">(</span><span class="n">what</span><span class="p">):</span>
+	<span class="c1"># This is a special method that allows us to notify Evennia we are closing.</span>
+	<span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="n">MainLoop</span><span class="o">.</span><span class="n">NOTIFICATION_WM_QUIT_REQUEST</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">is_connected</span><span class="p">:</span>
+			<span class="n">var</span> <span class="n">msg_arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;quit&#39;</span><span class="p">],</span> <span class="p">{}]</span>
+			<span class="n">var</span> <span class="n">msg_str</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">msg_arr</span><span class="p">)</span>
+			<span class="n">_client</span><span class="o">.</span><span class="n">get_peer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">put_packet</span><span class="p">(</span><span class="n">msg_str</span><span class="o">.</span><span class="n">to_utf8</span><span class="p">())</span>
+		<span class="n">get_tree</span><span class="p">()</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span> <span class="c1"># default behavior</span>
+
 </pre></div>
 </div>
 </section>
@@ -306,65 +307,65 @@ The script can be attached to the root UI node.</p>
 Note that the version is not final so the code may break.
 It requires a WebSocketClientNode as a child of the root node.
 The script can be attached to the root UI node.</p>
-<div class="highlight-gdscript notranslate"><div class="highlight"><pre><span></span>extends Control
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">extends</span> <span class="n">Control</span>
 
-# The URL to connect to, should be your mud.
-var websocket_url = &quot;ws://127.0.0.1:4008&quot;
+<span class="c1"># The URL to connect to, should be your mud.</span>
+<span class="n">var</span> <span class="n">websocket_url</span> <span class="o">=</span> <span class="s2">&quot;ws://127.0.0.1:4008&quot;</span>
 
-# These are references to controls in the scene
-@onready
-var label: RichTextLabel = get_node(&quot;%ChatLog&quot;)
-@onready
-var txtEdit: TextEdit = get_node(&quot;%ChatInput&quot;)
-@onready
-var websocket = get_node(&quot;WebSocketClient&quot;)
+<span class="c1"># These are references to controls in the scene</span>
+<span class="nd">@onready</span>
+<span class="n">var</span> <span class="n">label</span><span class="p">:</span> <span class="n">RichTextLabel</span> <span class="o">=</span> <span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;%ChatLog&quot;</span><span class="p">)</span>
+<span class="nd">@onready</span>
+<span class="n">var</span> <span class="n">txtEdit</span><span class="p">:</span> <span class="n">TextEdit</span> <span class="o">=</span> <span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;%ChatInput&quot;</span><span class="p">)</span>
+<span class="nd">@onready</span>
+<span class="n">var</span> <span class="n">websocket</span> <span class="o">=</span> <span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;WebSocketClient&quot;</span><span class="p">)</span>
 
-func _ready():
-	# We connect the various signals
-	websocket.connect(&#39;connected_to_server&#39;, self._connected)
-	websocket.connect(&#39;connection_closed&#39;, self._closed)
-	websocket.connect(&#39;message_received&#39;, self._on_data)
-	
-	# We attempt to connect and print out the error if we have one.
-	var result = websocket.connect_to_url(websocket_url)
-	if result != OK:
-		print(&#39;Could not connect:&#39; + str(result))
+<span class="n">func</span> <span class="n">_ready</span><span class="p">():</span>
+	<span class="c1"># We connect the various signals</span>
+	<span class="n">websocket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;connected_to_server&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span><span class="p">)</span>
+	<span class="n">websocket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;connection_closed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span><span class="p">)</span>
+	<span class="n">websocket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;message_received&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_data</span><span class="p">)</span>
+
+	<span class="c1"># We attempt to connect and print out the error if we have one.</span>
+	<span class="n">var</span> <span class="n">result</span> <span class="o">=</span> <span class="n">websocket</span><span class="o">.</span><span class="n">connect_to_url</span><span class="p">(</span><span class="n">websocket_url</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="n">OK</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Could not connect:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
 
 
-func _closed():
-	# This emits if the connection was closed by the remote host or unexpectedly
-	print(&#39;Connection closed.&#39;)
-	set_process(false)
+<span class="n">func</span> <span class="n">_closed</span><span class="p">():</span>
+	<span class="c1"># This emits if the connection was closed by the remote host or unexpectedly</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Connection closed.&#39;</span><span class="p">)</span>
+	<span class="n">set_process</span><span class="p">(</span><span class="n">false</span><span class="p">)</span>
 
-func _connected():
-	# This emits when the connection succeeds.
-	print(&#39;Connected!&#39;)
+<span class="n">func</span> <span class="n">_connected</span><span class="p">():</span>
+	<span class="c1"># This emits when the connection succeeds.</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Connected!&#39;</span><span class="p">)</span>
 
-func _on_data(data):
-	# This is called when Godot receives data from evennia
-	var json_data = JSON.parse_string(data)
-	# Here we have the data from Evennia which is an array.
-	# The first element will be text if it is a message
-	# and would be the key of the OOB data you passed otherwise.
-	if json_data[0] == &#39;text&#39;:
-		# In this case, we simply append the data as bbcode to our label.
-		for msg in json_data[1]: 			# Here we include a newline at every message.
-			label.append_text(&quot;\n&quot; + msg)
-	elif json_data[0] == &#39;coordinates&#39;:
-		# Dummy signal emitted if we wanted to handle the new coordinates
-		# elsewhere in the project.
-		self.emit_signal(&#39;updated_coordinates&#39;, json_data[1])
+<span class="n">func</span> <span class="n">_on_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+	<span class="c1"># This is called when Godot receives data from evennia</span>
+	<span class="n">var</span> <span class="n">json_data</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+	<span class="c1"># Here we have the data from Evennia which is an array.</span>
+	<span class="c1"># The first element will be text if it is a message</span>
+	<span class="c1"># and would be the key of the OOB data you passed otherwise.</span>
+	<span class="k">if</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
+		<span class="c1"># In this case, we simply append the data as bbcode to our label.</span>
+		<span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> 			<span class="c1"># Here we include a newline at every message.</span>
+			<span class="n">label</span><span class="o">.</span><span class="n">append_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
+	<span class="k">elif</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span>
+		<span class="c1"># Dummy signal emitted if we wanted to handle the new coordinates</span>
+		<span class="c1"># elsewhere in the project.</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">emit_signal</span><span class="p">(</span><span class="s1">&#39;updated_coordinates&#39;</span><span class="p">,</span> <span class="n">json_data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-	# We only print this for easier debugging.
-	print(data)
+	<span class="c1"># We only print this for easier debugging.</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-func _on_button_pressed():
-	# This is called when we press the button in the scene
-	# with a connected signal, it sends the written message to Evennia.
-	var msg = txtEdit.text
-	var msg_arr = [&#39;text&#39;, [msg], {}]
-	var msg_str = JSON.stringify(msg_arr)
-	websocket.send(msg_str)
+<span class="n">func</span> <span class="n">_on_button_pressed</span><span class="p">():</span>
+	<span class="c1"># This is called when we press the button in the scene</span>
+	<span class="c1"># with a connected signal, it sends the written message to Evennia.</span>
+	<span class="n">var</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">txtEdit</span><span class="o">.</span><span class="n">text</span>
+	<span class="n">var</span> <span class="n">msg_arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">msg</span><span class="p">],</span> <span class="p">{}]</span>
+	<span class="n">var</span> <span class="n">msg_str</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">stringify</span><span class="p">(</span><span class="n">msg_arr</span><span class="p">)</span>
+	<span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg_str</span><span class="p">)</span>
 
 </pre></div>
 </div>
