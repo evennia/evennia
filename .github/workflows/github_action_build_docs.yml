@@ -4,12 +4,12 @@ name: documentation
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ main, develop ]
     paths:
       - 'docs/**'
       - 'evennia/contrib/**'
   pull_request:
-    branches: [ master, develop ]
+    branches: [ main, develop ]
     paths:
       - 'docs/**'
       - 'evennia/contrib/**'
@@ -48,8 +48,8 @@ jobs:
           cd gamedir
           evennia migrate
 
-      - name: Build and deploy docs (only from master/develop branch)
-        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
+      - name: Build and deploy docs (only from main/develop branch)
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'}}
         run: |
           git config --global user.email "docbuilder@evennia.com"
           git config --global user.name "Evennia docbuilder action"
