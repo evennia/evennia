@@ -13,12 +13,6 @@ If you are converting an existing game from a previous version, [see here](./Ins
 For the impatient. If you have trouble with a step, you should jump on to the
 more detailed instructions for your platform.
 
-```{warning}
-Currently, these instructions will install 'latest' (stable) Evennia, which is
-the 0.9.5 version. To install 1.0-dev, you need to add a step `git checkout develop` between steps
-3 and 4 below.
-```
-
 1. Install Python and GIT. Start a Console/Terminal.
 2. `cd` to some place you want to do your development (like a folder
    `/home/anna/muddev/` on Linux or a folder in your personal user directory on Windows).
