@@ -257,7 +257,7 @@ git ls    # log with pretty formatting
 </section>
 <section id="git-branch-checkout-and-merge">
 <h3><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span></code>, <code class="docutils literal notranslate"><span class="pre">checkout</span></code> and <code class="docutils literal notranslate"><span class="pre">merge</span></code><a class="headerlink" href="#git-branch-checkout-and-merge" title="Permalink to this headline">¶</a></h3>
-<p>Git allows you to work with <em>branches</em>. These are separate development paths your code may take, completely separate from each other. You can later <em>merge</em> the code from a branch back into another branch. Evennia’s <code class="docutils literal notranslate"><span class="pre">master</span></code> and <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches are examples of this.</p>
+<p>Git allows you to work with <em>branches</em>. These are separate development paths your code may take, completely separate from each other. You can later <em>merge</em> the code from a branch back into another branch. Evennia’s <code class="docutils literal notranslate"><span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches are examples of this.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git branch -b branchaname 
 </pre></div>
 </div>
@@ -351,10 +351,6 @@ lies madness and a good chance you’ll confuse yourself. Make one mistake or lo
 <h3>Pushing your code online<a class="headerlink" href="#pushing-your-code-online" title="Permalink to this headline">¶</a></h3>
 <p>So far your code is only located on your private machine. A good idea is to back it up online. The easiest way to do this is to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code> it to your own remote repository on GitHub. So for this you need a (free) Github account.</p>
 <p>If you don’t want your code to be publicly visible, Github also allows you set up a <em>private</em> repository, only visible to you.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Github’s defaults have changed to calling the primary branch ‘main’ rather than ‘master’. While Evennia still uses ‘master’ branch (and this is what we refer to below), you can use either name for your personal primary branch - they are equivalent.</p>
-</div>
 <p>Create a new, empty repository on Github. <a class="reference external" href="https://help.github.com/articles/create-a-repo/">Github explains how here</a> . <em>Don’t</em> allow it to add a README, license etc, that will just clash with what we upload later.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Origin</p>
@@ -397,7 +393,7 @@ git checkout develop
 </pre></div>
 </div>
 <p>Use</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout master
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout main
 git checkout develop
 </pre></div>
 </div>
@@ -413,16 +409,16 @@ git checkout develop
 <section id="fixing-an-evennia-bug-or-feature">
 <h3>Fixing an Evennia bug or feature<a class="headerlink" href="#fixing-an-evennia-bug-or-feature" title="Permalink to this headline">¶</a></h3>
 <p>This should be done in your fork of Evennia. You should <em>always</em> do this in a <em>separate git branch</em> based off the Evennia branch you want to improve.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout master (or develop)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout main (or develop)
 git branch - b myfixbranch
 </pre></div>
 </div>
 <p>Now fix whatever needs fixing. Abide by the <a class="reference internal" href="Evennia-Code-Style.html"><span class="doc std std-doc">Evennia code style</span></a>. You can <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code> commit your changes along the way as normal.</p>
 <p>Upstream Evennia is not standing still, so you want to make sure that your work is up-to-date with upstream changes. Make sure to first commit your <code class="docutils literal notranslate"><span class="pre">myfixbranch</span></code> changes, then</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout master (or develop)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout main (or develop)
 git pull upstream 
 git checkout myfixbranch
-git merge master (or develop)
+git merge main (or develop)
 </pre></div>
 </div>
 <p>Up to this point your <code class="docutils literal notranslate"><span class="pre">myfixbranch</span></code> branch only exists on your local computer. No

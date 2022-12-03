@@ -90,17 +90,17 @@
         <span class="n">parser</span> <span class="o">=</span> <span class="n">text2bbcode</span><span class="o">.</span><span class="n">BBCODE_PARSER</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">format_styles</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="s1">&#39;[color=#800000]red[/color]foo&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;[color=#800000]red[/color]foo&quot;</span><span class="p">,</span>
             <span class="n">parser</span><span class="o">.</span><span class="n">format_styles</span><span class="p">(</span>
                 <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_RED</span> <span class="o">+</span> <span class="s2">&quot;red&quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;foo&quot;</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="s1">&#39;[bgcolor=#800000]red[/bgcolor]foo&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;[bgcolor=#800000]red[/bgcolor]foo&quot;</span><span class="p">,</span>
             <span class="n">parser</span><span class="o">.</span><span class="n">format_styles</span><span class="p">(</span><span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_BACK_RED</span> <span class="o">+</span> <span class="s2">&quot;red&quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;foo&quot;</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="s1">&#39;[bgcolor=#800000][color=#008000]red[/color][/bgcolor]foo&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;[bgcolor=#800000][color=#008000]red[/color][/bgcolor]foo&quot;</span><span class="p">,</span>
             <span class="n">parser</span><span class="o">.</span><span class="n">format_styles</span><span class="p">(</span>
                 <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_BACK_RED</span>
                 <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_UNHILITE</span>
@@ -111,15 +111,15 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="s1">&#39;a [u]red[/u]foo&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;a [u]red[/u]foo&quot;</span><span class="p">,</span>
             <span class="n">parser</span><span class="o">.</span><span class="n">format_styles</span><span class="p">(</span><span class="s2">&quot;a &quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_UNDERLINE</span> <span class="o">+</span> <span class="s2">&quot;red&quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;foo&quot;</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="s1">&#39;a [blink]red[/blink]foo&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;a [blink]red[/blink]foo&quot;</span><span class="p">,</span>
             <span class="n">parser</span><span class="o">.</span><span class="n">format_styles</span><span class="p">(</span><span class="s2">&quot;a &quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_BLINK</span> <span class="o">+</span> <span class="s2">&quot;red&quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;foo&quot;</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="s1">&#39;a [bgcolor=#c0c0c0][color=#000000]red[/color][/bgcolor]foo&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;a [bgcolor=#c0c0c0][color=#000000]red[/color][/bgcolor]foo&quot;</span><span class="p">,</span>
             <span class="n">parser</span><span class="o">.</span><span class="n">format_styles</span><span class="p">(</span><span class="s2">&quot;a &quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_INVERSE</span> <span class="o">+</span> <span class="s2">&quot;red&quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;foo&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
@@ -127,7 +127,7 @@
         <span class="n">parser</span> <span class="o">=</span> <span class="n">text2bbcode</span><span class="o">.</span><span class="n">BBCODE_PARSER</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="s1">&#39;a [url=http://redfoo]http://redfoo[/url] runs&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;a [url=http://redfoo]http://redfoo[/url] runs&quot;</span><span class="p">,</span>
             <span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;a http://redfoo runs&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
@@ -146,20 +146,19 @@
         <span class="n">mocked_match</span><span class="o">.</span><span class="n">groupdict</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;lineend&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">sub_text</span><span class="p">(</span><span class="n">mocked_match</span><span class="p">))</span></div>
 
-
 <div class="viewcode-block" id="TestText2Bbcode.test_parse_bbcode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.test_text2bbcode.TestText2Bbcode.test_parse_bbcode">[docs]</a>    <span class="k">def</span> <span class="nf">test_parse_bbcode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">text2bbcode</span><span class="o">.</span><span class="n">parse_to_bbcode</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">text2bbcode</span><span class="o">.</span><span class="n">parse_to_bbcode</span><span class="p">(</span><span class="s2">&quot;|^|[CHello|n|u|rW|go|yr|bl|md|c!|[G!&quot;</span><span class="p">),</span>
-            <span class="s1">&#39;[blink][bgcolor=#008080]Hello[/bgcolor][/blink]&#39;</span>
-            <span class="s1">&#39;[u][color=#ff0000]W[/color][/u]&#39;</span>
-            <span class="s1">&#39;[u][color=#00ff00]o[/color][/u]&#39;</span>
-            <span class="s1">&#39;[u][color=#ffff00]r[/color][/u]&#39;</span>
-            <span class="s1">&#39;[u][color=#0000ff]l[/color][/u]&#39;</span>
-            <span class="s1">&#39;[u][color=#ff00ff]d[/color][/u]&#39;</span>
-            <span class="s1">&#39;[u][color=#00ffff]![/color][/u]&#39;</span>
-            <span class="s1">&#39;[u][bgcolor=#008000][color=#00ffff]![/color][/bgcolor][/u]&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;[blink][bgcolor=#008080]Hello[/bgcolor][/blink]&quot;</span>
+            <span class="s2">&quot;[u][color=#ff0000]W[/color][/u]&quot;</span>
+            <span class="s2">&quot;[u][color=#00ff00]o[/color][/u]&quot;</span>
+            <span class="s2">&quot;[u][color=#ffff00]r[/color][/u]&quot;</span>
+            <span class="s2">&quot;[u][color=#0000ff]l[/color][/u]&quot;</span>
+            <span class="s2">&quot;[u][color=#ff00ff]d[/color][/u]&quot;</span>
+            <span class="s2">&quot;[u][color=#00ffff]![/color][/u]&quot;</span>
+            <span class="s2">&quot;[u][bgcolor=#008000][color=#00ffff]![/color][/bgcolor][/u]&quot;</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 </pre></div>
 

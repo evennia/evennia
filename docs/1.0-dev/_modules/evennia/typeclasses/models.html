@@ -294,8 +294,10 @@
         <span class="s2">&quot;typeclass&quot;</span><span class="p">,</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;this defines what &#39;type&#39; of entity this is. This variable holds &quot;</span>
-        <span class="s2">&quot;a Python path to a module with a valid Evennia Typeclass.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;this defines what &#39;type&#39; of entity this is. This variable holds &quot;</span>
+            <span class="s2">&quot;a Python path to a module with a valid Evennia Typeclass.&quot;</span>
+        <span class="p">),</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># Creation date. This is not changed once the object is created.</span>
@@ -304,20 +306,26 @@
     <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
         <span class="s2">&quot;locks&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;locks limit access to an entity. A lock is defined as a &#39;lock string&#39; &quot;</span>
-        <span class="s2">&quot;on the form &#39;type:lockfunctions&#39;, defining what functionality is locked and &quot;</span>
-        <span class="s2">&quot;how to determine access. Not defining a lock means no access is granted.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;locks limit access to an entity. A lock is defined as a &#39;lock string&#39; &quot;</span>
+            <span class="s2">&quot;on the form &#39;type:lockfunctions&#39;, defining what functionality is locked and &quot;</span>
+            <span class="s2">&quot;how to determine access. Not defining a lock means no access is granted.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="c1"># many2many relationships</span>
     <span class="n">db_attributes</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Attribute</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;attributes on this object. An attribute can hold any pickle-able &quot;</span>
-        <span class="s2">&quot;python object (see docs for special cases).&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;attributes on this object. An attribute can hold any pickle-able &quot;</span>
+            <span class="s2">&quot;python object (see docs for special cases).&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">db_tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Tag</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this object. Tags are simple string markers to identify, &quot;</span>
-        <span class="s2">&quot;group and alias objects.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;tags on this object. Tags are simple string markers to identify, &quot;</span>
+            <span class="s2">&quot;group and alias objects.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="c1"># Database manager</span>
@@ -368,8 +376,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="s2">&quot;evennia.objects.models.ObjectDB&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span>
             <span class="n">log_trace</span><span class="p">(</span>
-                <span class="s2">&quot;Critical: Class </span><span class="si">%s</span><span class="s2"> of </span><span class="si">%s</span><span class="s2"> is not a valid typeclass!</span><span class="se">\n</span><span class="s2">Temporarily falling back to </span><span class="si">%s</span><span class="s2">.&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="n">err_class</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+                <span class="s2">&quot;Critical: Class </span><span class="si">%s</span><span class="s2"> of </span><span class="si">%s</span><span class="s2"> is not a valid typeclass!</span><span class="se">\n</span><span class="s2">Temporarily falling back&quot;</span>
+                <span class="s2">&quot; to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err_class</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TypedObject.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

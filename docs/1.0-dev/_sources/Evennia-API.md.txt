@@ -96,8 +96,7 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 
 ### Contributions
 
-- [evennia.contrib](https://github.com/evennia/evennia/blob/master/evennia/contrib/) -
-game-specific contributions and plugins ([docs](https://github.com/evennia/evennia/blob/master/evennia/contrib/README.md))
+- [evennia.contrib](Contribs/Contribs-Overview.md) game-specific contributions and plugins
 
 ```{toctree} 
 :hidden:
