@@ -429,19 +429,15 @@ This is a great warrior.
 </pre></div>
 </div>
 <p>We don’t actually have to modify the <code class="docutils literal notranslate"><span class="pre">look</span></code> command itself however. To understand why, take a look
-at how the default <code class="docutils literal notranslate"><span class="pre">look</span></code> is actually defined. It sits in <code class="docutils literal notranslate"><span class="pre">evennia/commands/default/general.py</span></code> (or
-browse it online
-<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/commands/default/general.py#L44">here</a>).
-You will find that the actual return text is done by the <code class="docutils literal notranslate"><span class="pre">look</span></code> command calling a <em>hook method</em>
+at how the default <code class="docutils literal notranslate"><span class="pre">look</span></code> is actually defined. It sits in <a class="reference internal" href="../api/evennia.commands.default.general.html#evennia-commands-default-general"><span class="std std-ref">evennia/commands/default/general.py</span></a>.</p>
+<p>You will find that the actual return text is done by the <code class="docutils literal notranslate"><span class="pre">look</span></code> command calling a <em>hook method</em>
 named <code class="docutils literal notranslate"><span class="pre">return_appearance</span></code> on the object looked at. All the <code class="docutils literal notranslate"><span class="pre">look</span></code> does is to echo whatever this hook
 returns.  So what we need to do is to edit our custom Character typeclass and overload its
 <code class="docutils literal notranslate"><span class="pre">return_appearance</span></code> to return what we want (this is where the advantage of having a custom typeclass
 comes into play for real).</p>
 <p>Go back to your custom Character typeclass in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. The default
-implementation of <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">appearance</span></code> is found in  <code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code> (or online
-<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1438">here</a>).  If you
-want to make bigger changes you could copy &amp; paste the whole default thing into our overloading
-method. In our case the change is small though:</p>
+implementation of <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">appearance</span></code> is found in  <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><span class="xref myst py py-class">evennia.DefaultCharacter</span></a>.</p>
+<p>If you  want to make bigger changes you could copy &amp; paste the whole default thing into our overloading method. In our case the change is small though:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     [...]</span>

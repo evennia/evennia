@@ -152,15 +152,8 @@ values for Health, a list of skills etc, store those things on the Character - d
 roll or change them.</p></li>
 <li><p>Next is to determine just how you want to store things on your Objects and Characters. You can
 choose to either store things as individual <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a>, like <code class="docutils literal notranslate"><span class="pre">character.db.STR=34</span></code> and
-<code class="docutils literal notranslate"><span class="pre">character.db.Hunting_skill=20</span></code>. But you could also use some custom storage method, like a
-dictionary <code class="docutils literal notranslate"><span class="pre">character.db.skills</span> <span class="pre">=</span> <span class="pre">{&quot;Hunting&quot;:34,</span> <span class="pre">&quot;Fishing&quot;:20,</span> <span class="pre">...}</span></code>. A much more fancy solution is
-to look at the Ainneve <a class="reference external" href="https://github.com/evennia/ainneve/blob/master/world/traits.py">Trait
-handler</a>. Finally you could even go
-with a <a class="reference internal" href="../Concepts/Models.html"><span class="doc std std-doc">custom django model</span></a>. Which is the better depends on your game and the
-complexity of your system.</p></li>
-<li><p>Make a clear <a class="reference external" href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a> into your
-rules. That is, make methods/functions that you feed with, say, your Character and which skill you
-want to check. That is, you want something similar to this:</p>
+<code class="docutils literal notranslate"><span class="pre">character.db.Hunting_skill=20</span></code>. But you could also use some custom storage method, like a dictionary <code class="docutils literal notranslate"><span class="pre">character.db.skills</span> <span class="pre">=</span> <span class="pre">{&quot;Hunting&quot;:34,</span> <span class="pre">&quot;Fishing&quot;:20,</span> <span class="pre">...}</span></code>. A much more fancy solution is to look at the <a class="reference internal" href="../Contribs/Contrib-Traits.html"><span class="doc std std-doc">Trait handler contrib</span></a>. Finally you could even go with a <a class="reference internal" href="../Concepts/Models.html"><span class="doc std std-doc">custom django model</span></a>. Which is the better depends on your game and the complexity of your system.</p></li>
+<li><p>Make a clear <a class="reference external" href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a> into your rules. That is, make methods/functions that you feed with, say, your Character and which skill you want to check. That is, you want something similar to this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">rules</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">roll_skill</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="s2">&quot;hunting&quot;</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">roll_challenge</span><span class="p">(</span><span class="n">character1</span><span class="p">,</span> <span class="n">character2</span><span class="p">,</span> <span class="s2">&quot;swords&quot;</span><span class="p">)</span>
@@ -172,8 +165,7 @@ want to check. That is, you want something similar to this:</p>
 </section>
 <section id="coded-systems">
 <h2>Coded systems<a class="headerlink" href="#coded-systems" title="Permalink to this headline">¶</a></h2>
-<p>Inspired by tabletop role playing games, most game systems mimic some sort of die mechanic. To this end Evennia offers a full <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py">dice roller</a> in its <code class="docutils literal notranslate"><span class="pre">contrib</span></code>
-folder. For custom implementations, Python offers many ways to randomize a result using its in-built <code class="docutils literal notranslate"><span class="pre">random</span></code> module. No matter how it’s implemented, we will in this text refer to the action of determining an outcome as a “roll”.</p>
+<p>Inspired by tabletop role playing games, most game systems mimic some sort of die mechanic. To this end Evennia offers a full <a class="reference internal" href="../Contribs/Contrib-Dice.html"><span class="doc std std-doc">dice roller contribution</span></a>. For custom implementations, Python offers many ways to randomize a result using its in-built <code class="docutils literal notranslate"><span class="pre">random</span></code> module. No matter how it’s implemented, we will in this text refer to the action of determining an outcome as a “roll”.</p>
 <p>In a freeform system, the result of the roll is just compared with values and people (or the game
 master) just agree on what it means. In a coded system the result now needs to be processed somehow. There are many things that may happen as a result of rule enforcement:</p>
 <ul class="simple">

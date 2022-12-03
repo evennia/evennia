@@ -73,7 +73,7 @@ When would one want to customize the Session object? Consider for example a char
 By default, the session object gets the `commands.default_cmdsets.UnloggedinCmdSet` when the user first connects. Once the session is authenticated it has *no* default sets. To add a "logged-in" cmdset to the Session, give the path to the cmdset class with `settings.CMDSET_SESSION`. This set
 will then henceforth always be present as soon as the account logs in.
 
-To customize further you can completely override the Session with your own subclass. To replace the default Session class, change `settings.SERVER_SESSION_CLASS` to point to your custom class. This is a dangerous practice and errors can easily make your game unplayable.  Make sure to take heed of the [original](https://github.com/evennia/evennia/blob/master/evennia/server/session.py) and make your changes carefully.
+To customize further you can completely override the Session with your own subclass. To replace the default Session class, change `settings.SERVER_SESSION_CLASS` to point to your custom class. This is a dangerous practice and errors can easily make your game unplayable.  Make sure to take heed of the [original](evennia.server.session) and make your changes carefully.
 
 ## Portal and Server Sessions
 
@@ -118,4 +118,4 @@ from evennia.server.sessionhandler import SESSION_HANDLER
 ```
 > Note: The `SESSION_HANDLER` singleton has an older alias `SESSIONS` that is commonly seen in various places as well.
 
-See the [sessionhandler.py](https://github.com/evennia/evennia/blob/master/evennia/server/sessionhandler.py) module for details on the capabilities of the `ServerSessionHandler`.
+See the [sessionhandler.py](evennia.server.sessionhandler) module for details on the capabilities of the `ServerSessionHandler`.

@@ -98,7 +98,7 @@ is not what you want in this case.
 - **clock mychannel = control:perm(Admin);listen:all();send:all()** -- Fine control of access to your channel using [lock definitions](../Components/Locks.md).
 
 Locking a specific command (like `page`) is accomplished like so: 
-1. Examine the source of the command. [The default `page` command class]( https://github.com/evennia/evennia/blob/master/evennia/commands/default/comms.py#L686) has the lock string **"cmd:not pperm(page_banned)"**. This means that unless the player has the 'permission' "page_banned" they can use this command. You can assign any lock string to allow finer customization in your commands. You might look for the value of an [Attribute](../Components/Attributes.md) or [Tag](../Components/Tags.md), your current location etc.
+1. Examine the source of the command. [The default `page` command class]( https://github.com/evennia/evennia/blob/main/evennia/commands/default/comms.py#L686) has the lock string **"cmd:not pperm(page_banned)"**. This means that unless the player has the 'permission' "page_banned" they can use this command. You can assign any lock string to allow finer customization in your commands. You might look for the value of an [Attribute](../Components/Attributes.md) or [Tag](../Components/Tags.md), your current location etc.
 2. **perm/account thomas = page_banned** -- Give the account the 'permission' which causes (in this case) the lock to fail.
 
 - **perm/del/account thomas = page_banned** -- Remove the given permission 
