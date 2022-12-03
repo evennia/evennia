@@ -216,8 +216,10 @@ class TypedObject(SharedMemoryModel):
         "typeclass",
         max_length=255,
         null=True,
-        help_text="this defines what 'type' of entity this is. This variable holds "
-        "a Python path to a module with a valid Evennia Typeclass.",
+        help_text=(
+            "this defines what 'type' of entity this is. This variable holds "
+            "a Python path to a module with a valid Evennia Typeclass."
+        ),
         db_index=True,
     )
     # Creation date. This is not changed once the object is created.
@@ -226,20 +228,26 @@ class TypedObject(SharedMemoryModel):
     db_lock_storage = models.TextField(
         "locks",
         blank=True,
-        help_text="locks limit access to an entity. A lock is defined as a 'lock string' "
-        "on the form 'type:lockfunctions', defining what functionality is locked and "
-        "how to determine access. Not defining a lock means no access is granted.",
+        help_text=(
+            "locks limit access to an entity. A lock is defined as a 'lock string' "
+            "on the form 'type:lockfunctions', defining what functionality is locked and "
+            "how to determine access. Not defining a lock means no access is granted."
+        ),
     )
     # many2many relationships
     db_attributes = models.ManyToManyField(
         Attribute,
-        help_text="attributes on this object. An attribute can hold any pickle-able "
-        "python object (see docs for special cases).",
+        help_text=(
+            "attributes on this object. An attribute can hold any pickle-able "
+            "python object (see docs for special cases)."
+        ),
     )
     db_tags = models.ManyToManyField(
         Tag,
-        help_text="tags on this object. Tags are simple string markers to identify, "
-        "group and alias objects.",
+        help_text=(
+            "tags on this object. Tags are simple string markers to identify, "
+            "group and alias objects."
+        ),
     )
 
     # Database manager
@@ -290,8 +298,8 @@ class TypedObject(SharedMemoryModel):
             self.__dbclass__ = class_from_module("evennia.objects.models.ObjectDB")
             self.db_typeclass_path = "evennia.objects.objects.DefaultObject"
             log_trace(
-                "Critical: Class %s of %s is not a valid typeclass!\nTemporarily falling back to %s."
-                % (err_class, self, self.__class__)
+                "Critical: Class %s of %s is not a valid typeclass!\nTemporarily falling back"
+                " to %s." % (err_class, self, self.__class__)
             )
 
     def __init__(self, *args, **kwargs):
