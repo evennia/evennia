@@ -63,7 +63,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="evennia_launcher.html">1.0 (develop branch)</a></li>
+  <li><a href="evennia_launcher.html">1.0 (main branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -615,8 +615,16 @@
 <span class="sd">    Compile the command line for starting a Twisted application using the &#39;twistd&#39; executable.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">portal_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">TWISTED_BINARY</span><span class="p">,</span> <span class="s2">&quot;--python=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">PORTAL_PY_FILE</span><span class="p">)]</span>
-    <span class="n">server_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">TWISTED_BINARY</span><span class="p">,</span> <span class="s2">&quot;--python=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SERVER_PY_FILE</span><span class="p">)]</span>
+    <span class="n">portal_cmd</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">TWISTED_BINARY</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;--python=</span><span class="si">{</span><span class="n">PORTAL_PY_FILE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--logger=evennia.utils.logger.GetPortalLogObserver&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">server_cmd</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">TWISTED_BINARY</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;--python=</span><span class="si">{</span><span class="n">SERVER_PY_FILE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--logger=evennia.utils.logger.GetServerLogObserver&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;nt&quot;</span><span class="p">:</span>
         <span class="c1"># PID files only for UNIX</span>

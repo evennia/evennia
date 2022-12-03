@@ -2,10 +2,10 @@
 
 ### Evennia 1.0
 
-2019-2022 develop branch
+2019-2022
 
-Changed to using `main` branch to follow github standard. Old `master` branch remains
-for now but will not be used anymore, so as to not break installs during transition.
+_Changed to using `main` branch to follow github standard. Old `master` branch remains
+for now but will not be used anymore, so as to not break installs during transition._
 
 Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.10, 3.11.  PostgreSQL 11+.
 
