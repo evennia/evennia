@@ -126,7 +126,7 @@ for these useful functions.
 
 ### `git branch`, `checkout` and `merge`
 
-Git allows you to work with _branches_. These are separate development paths your code may take, completely separate from each other. You can later _merge_ the code from a branch back into another branch. Evennia's `master` and `develop` branches are examples of this.
+Git allows you to work with _branches_. These are separate development paths your code may take, completely separate from each other. You can later _merge_ the code from a branch back into another branch. Evennia's `main` and `develop` branches are examples of this.
 
     git branch -b branchaname 
 
@@ -225,11 +225,6 @@ So far your code is only located on your private machine. A good idea is to back
 
 If you don't want your code to be publicly visible, Github also allows you set up a _private_ repository, only visible to you.
 
-
-```{note} 
-Github's defaults have changed to calling the primary branch 'main' rather than 'master'. While Evennia still uses 'master' branch (and this is what we refer to below), you can use either name for your personal primary branch - they are equivalent.
-```
-
 Create a new, empty repository on Github. [Github explains how here](https://help.github.com/articles/create-a-repo/) . _Don't_ allow it to add a README, license etc, that will just clash with what we upload later.
 
 ```{sidebar} Origin
@@ -282,7 +277,7 @@ If you also want to access Evennia's `develop` branch (the bleeding edge develop
 
 Use
 
-    git checkout master
+    git checkout main
     git checkout develop
 
 to switch between the branches. 
@@ -299,17 +294,17 @@ You can't do `git push upstream` unless you have write-access to the upstream Ev
 
 This should be done in your fork of Evennia. You should _always_ do this in a _separate git branch_ based off the Evennia branch you want to improve. 
 
-    git checkout master (or develop)
+    git checkout main (or develop)
     git branch - b myfixbranch
 
 Now fix whatever needs fixing. Abide by the [Evennia code style](./Evennia-Code-Style.md). You can `git commit` commit your changes along the way as normal.
 
 Upstream Evennia is not standing still, so you want to make sure that your work is up-to-date with upstream changes. Make sure to first commit your `myfixbranch` changes, then
 
-    git checkout master (or develop)
+    git checkout main (or develop)
     git pull upstream 
     git checkout myfixbranch
-    git merge master (or develop)
+    git merge main (or develop)
 
 Up to this point your `myfixbranch` branch only exists on your local computer. No
 one else can see it.  

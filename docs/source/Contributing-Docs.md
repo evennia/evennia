@@ -156,7 +156,7 @@ These are links to resources outside of the documentation. We also provide some 
 [evennia.com](https://evennia.com) - link to an external website.
 ```
 
-- By using `(github:evennia/objects/objects.py)` as link target, you can point to a place on the Evennia github page (master branch). 
+- By using `(github:evennia/objects/objects.py)` as link target, you can point to a place on the Evennia github page (main branch). 
 - Use `(github:develop/evennia/objects/objects.py` to target `develop` branch.
 - Use `(github:issue)` to point to the github issue-creation page.
 

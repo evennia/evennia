@@ -22,7 +22,7 @@ If the upstream changes are large, you may also need to go into your gamedoor
 
 This applies if you followed the [git-install instructions](./Installation-Git.md). Before Evennia 1.0, this was the only way to install Evennia. 
 
-At any time, development is either happening in the `master` branch (latest stable) or `develop` (experimental). Which one is active and 'latest' at a given time depends - after a release,  `master` will see most updates, close to a new release, `develop` will usually be the fastest changing.
+At any time, development is either happening in the `main` branch (latest stable) or `develop` (experimental). Which one is active and 'latest' at a given time depends - after a release,  `main` will see most updates, close to a new release, `develop` will usually be the fastest changing.
 
 1. Read the [changelog](../Coding/Changelog.md) to see what changed and if it means you need to make any changes to your game code.
 2. If you use a [virtualenv](#Installation-Git#virtualenv), make sure it's active. 
@@ -39,7 +39,7 @@ At any time, development is either happening in the `master` branch (latest stab
 
 If you followed the [docker installation instructions] you need to pull the latest docker image for the branch you want: 
 
-- `docker pull evennia/evennia`  (master branch)
+- `docker pull evennia/evennia`  (`main` branch)
 - `docker pull evennia/evennia:develop`  (experimental `develop` branch)
 
 Then restart your containers.
