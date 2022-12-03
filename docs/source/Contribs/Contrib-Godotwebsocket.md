@@ -53,7 +53,7 @@ You must also remove the protocol from the `connect_to_url` call made
 within the `_ready` function.
 
 ```
-func _ready(): 
+func _ready():
     # ...
     # Change the following line from this
     var err = _client.connect_to_url(websocket_url, ["lws-mirror-protocol"])
@@ -73,12 +73,12 @@ func _on_data():
 	var data = _client.get_peer(1).get_packet().get_string_from_utf8()
 	var json_data = JSON.parse(data).result
 	# The json_data is an array
-	
+
 	# The first element informs us this is simple text
 	# so we add it to the RichTextlabel
 	if json_data[0] == 'text':
 		for msg in json_data[1]: 			label.append_bbcode(msg)
-	
+
 	# Always useful to print the data and see what we got.
 	print(data)
 ```
@@ -101,17 +101,17 @@ caller.msg(coordinates=(9, 2))
 ```
 
 Godot
-```gdscript
+```
 func _on_data():
     ...
 	if json_data[0] == 'text':
 		for msg in json_data[1]: 			label.append_bbcode(msg)
-	
+
 	# Notice the first element is the name of the kwarg we used from evennia.
 	elif json_data[0] == 'coordinates':
 		var coords_data = json_data[2]
 		player.set_pos(coords_data)
-		
+
     ...
 ```
 
@@ -130,7 +130,7 @@ you receive, so you can manage the code better.
 This is an example of a Script to use in Godot 3.
 The script can be attached to the root UI node.
 
-```gdscript
+```
 extends Node
 
 # The URL to connect to, should be your mud.
@@ -187,7 +187,7 @@ func _on_data():
 		# elsewhere in the project.
 		self.emit_signal('updated_coordinates', json_data[1])
 
-	
+
 	# We only print this for easier debugging.
 	print(data)
 
@@ -221,7 +221,7 @@ Note that the version is not final so the code may break.
 It requires a WebSocketClientNode as a child of the root node.
 The script can be attached to the root UI node.
 
-```gdscript
+```
 extends Control
 
 # The URL to connect to, should be your mud.
@@ -240,7 +240,7 @@ func _ready():
 	websocket.connect('connected_to_server', self._connected)
 	websocket.connect('connection_closed', self._closed)
 	websocket.connect('message_received', self._on_data)
-	
+
 	# We attempt to connect and print out the error if we have one.
 	var result = websocket.connect_to_url(websocket_url)
 	if result != OK:
@@ -283,6 +283,7 @@ func _on_button_pressed():
 	websocket.send(msg_str)
 
 ```
+
 
 ----
 
