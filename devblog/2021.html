@@ -13,7 +13,8 @@
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="description" content="
-        Latest Evennia dev blog:  Project plans and Splitting a Setting in two: As those following Evennia development should be aware of for now, we are approaching the 1.0 release of Evennia, the MU*-building framework. ...
+        Latest Evennia dev blog:  Evennia 1.0 released!: <br>
+ ...
         ---
         Evennia is a modern Python library and server for creating text-based
         multi-player games and virtual worlds (also known as MUD, MUSH, MU,
@@ -49,10 +50,16 @@
                     <ul>
                         
                             <li>
-                                <a href="2022.html"> 2022 (3)
+                                <a href="2022.html"> 2022 (4)
                                     
                                         <ul class="devblog-calendar-closed">
                                     
+                                        
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2022.html#2022-12-03-evennia-1.0-released!">Dec  3
+                                                        <span class="devblog-calendar-tooltip-text"> Evennia 1.0 released!</span>
+                                                   </a>
+                                                </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
                                                     <a href="2022.html#2022-09-17-project-plans-and-splitting-a-setting-in-two">Sep 17
@@ -625,7 +632,7 @@
 <p>Every other text in Evennia (docs, comments etc) is written in <a href="https://en.wikipedia.org/wiki/Markdown">markdown</a> and I figured it would be nice to be able to use that also for my dev blog.</p>
 <p>So I put together my own little blog platform.</p>
 <h2>Making a little blog platform</h2>
-<p>I have rather small requirements - I don't publish a crazy amount of Evennia devblogs and I'm fine with making a git commit to do so.</p>
+<p>I have rather small requirements - I don&#x27;t publish a crazy amount of Evennia devblogs and I&#x27;m fine with making a git commit to do so.</p>
 <p>I already use github pages for the <a href="https://www.evennia.com">Evennia homepage</a> and <a href="https://www.evennia.com/docs">documentation</a>. These are simply html pages located in a <code>gh-pages</code> branch of the main <code>evennia</code> repo. So I decided I would just post my blog posts in a folder and then run a markdown parser to turn it into publisheable HTML pages.</p>
 <h3>The tools</h3>
 <p>Markdown was originally made to be converted to HTML and there is a plethora of markdown parsers for Python. I also wanted an easy way to insert my text into HTML template; this is also a well-solved problem. So these are the tools I used:</p>
@@ -634,7 +641,7 @@
 <p><a href="https://github.com/miyuchina/mistletoe">mistletoe</a> is a pure-Python markdown-&gt;HTML parser. I had never used it before but it was easy to use and very fast. It also supports the <code>CommonMark</code> Markdown spec (same as github). I could also easily have it use <a href="https://pygments.org/">pygments</a> to add code-highlighting to code snippets.</p>
 </li>
 <li>
-<p><a href="https://jinja.palletsprojects.com/en/3.0.x/">jinja2</a> is a way to embed special tags in HTML &quot;templates&quot; that can then be programmatically filled with content. It's very similar to the Django templating language.</p>
+<p><a href="https://jinja.palletsprojects.com/en/3.0.x/">jinja2</a> is a way to embed special tags in HTML &quot;templates&quot; that can then be programmatically filled with content. It&#x27;s very similar to the Django templating language.</p>
 </li>
 </ul>
 <h3>The posts</h3>
@@ -655,7 +662,7 @@ copyrights: Image: [©Griatch](https://deviantart.com/griatch-art)
 Here the blog starts...
 </pre></div>
 
-<p>The <code>title</code> is mainly to be able to add characters like <code>!</code> or <code>?</code> that I don't want to add to the file name. I've not used the <code>date</code> yet, but I guess one could use it to publish a text at a different date than the filename (not sure why one would want that ...). The <code>copyrights</code> is to properly credit any resources (mostly images) used.</p>
+<p>The <code>title</code> is mainly to be able to add characters like <code>!</code> or <code>?</code> that I don&#x27;t want to add to the file name. I&#x27;ve not used the <code>date</code> yet, but I guess one could use it to publish a text at a different date than the filename (not sure why one would want that ...). The <code>copyrights</code> is to properly credit any resources (mostly images) used.</p>
 <p>I wrote my own <code>build_devblog.py</code> program that simple reads all <code>.md</code> files from a directory. It figures out the date and title (from file name or meta-header) and runs <code>mistletoe</code> on it. I create a dataclass with all the post-relevant properties on it. So far so good. Now we need to inject this into an HTML structure.</p>
 <h3>The html</h3>
 <p>Next I prepared a little <code>post.html</code> Jinja template:</p>
@@ -690,29 +697,29 @@ Here the blog starts...
 </pre></div>
 
 <p>which seems quite clear.</p>
-<p>For the entire year of devblogs, I stole the template used by the main <code>evennia.com</code> page, and also used the same CSS file (it's all in the same repo after all). Jinja allows you to do simple <code>for</code> loops within the template so it's easy to add all posts into a page.</p>
+<p>For the entire year of devblogs, I stole the template used by the main <code>evennia.com</code> page, and also used the same CSS file (it&#x27;s all in the same repo after all). Jinja allows you to do simple <code>for</code> loops within the template so it&#x27;s easy to add all posts into a page.</p>
 <h3>The CSS</h3>
-<p>The final bit was to clean up the CSS and make a little 'calendar' in the sidebar to make it easy to navigate to older devblogs. In the wide-page view you can hover over the blog dates to see their names for easy lookup.</p>
+<p>The final bit was to clean up the CSS and make a little &#x27;calendar&#x27; in the sidebar to make it easy to navigate to older devblogs. In the wide-page view you can hover over the blog dates to see their names for easy lookup.</p>
 <h3>Converting the old blog</h3>
-<p>Google (which owns blogspot (formar Blogger) has an export feature but the result of this is a very dense XML file. It's mainly intended to be imported by Wordpress or some other existing blog platform. In the end I gave up on trying to parse it.</p>
+<p>Google (which owns blogspot (formar Blogger) has an export feature but the result of this is a very dense XML file. It&#x27;s mainly intended to be imported by Wordpress or some other existing blog platform. In the end I gave up on trying to parse it.</p>
 <p>Instead I went the dumb route and just copy&amp;pasted each of my old blogs from the old blog into Obsidian, which I use for markdown editing. Luckily this worked very well - all layout was retained and converted automatically to markdown syntax, including links to images etc. I only needed to add some nicer markup for code strings (since that was not a thing on blogspot).</p>
-<p>I don't know if I have Obsidian to thank for this or if blogspot uses some standardized format, but manually converti of all my devblogs since 2012 thus ended up being a lot less painful than I thought (for once).</p>
+<p>I don&#x27;t know if I have Obsidian to thank for this or if blogspot uses some standardized format, but manually converti of all my devblogs since 2012 thus ended up being a lot less painful than I thought (for once).</p>
 <h3>Things lost in move</h3>
 <p>There are a few things that were possible on blogspot that my simple little custom platform cannot do.</p>
 <ul>
 <li>
-<p>Online editing: I'm not posting things on the fly so I'm fine with making a commit. Writing in a proper text editor is more confortable anyway. And the posts are under version control too!</p>
+<p>Online editing: I&#x27;m not posting things on the fly so I&#x27;m fine with making a commit. Writing in a proper text editor is more confortable anyway. And the posts are under version control too!</p>
 </li>
 <li>
-<p>Comments: Few people every commented directly in the old blog though - and lately it has mostly been spam. To comment, people'll need to use our forums on github or the support channel.</p>
+<p>Comments: Few people every commented directly in the old blog though - and lately it has mostly been spam. To comment, people&#x27;ll need to use our forums on github or the support channel.</p>
 </li>
 <li>
-<p>Notifications: <del>I haven't added an RSS feed for this page and there is thus no automatic reporting of new posts in chat etc. I think the amount of posts I do is low enough that I can advertise them manually. I'll probably just make a dedicated announcement thread in Github discussions.</del></p>
+<p>Notifications: <del>I haven&#x27;t added an RSS feed for this page and there is thus no automatic reporting of new posts in chat etc. I think the amount of posts I do is low enough that I can advertise them manually. I&#x27;ll probably just make a dedicated announcement thread in Github discussions.</del></p>
 <p><strong>Update</strong>: I added an RSS feed now, see the little <img src="images/rss-icon.png" alt="rss-feed" /> icon on the top-right of this page.</p>
 </li>
 </ul>
 <h2>Onward</h2>
-<p>So, with this new blog platform in place (this post is the first one I write using the new system), I won't update the old one anymore. The old one's not going anywhere though, and I will point here from it.</p>
+<p>So, with this new blog platform in place (this post is the first one I write using the new system), I won&#x27;t update the old one anymore. The old one&#x27;s not going anywhere though, and I will point here from it.</p>
 <p>The new Evennia site ecosystem is getting a little more compact. These are services hosted on github/github pages:</p>
 <ul>
 <li>
@@ -763,7 +770,7 @@ Here the blog starts...
     <div class="devblog-title-date">- March 21, 2021</div>
 </h1>
 <blockquote>
-<p><em>This is a repost of an article I originally wrote for the Imaginary Realities e-zine, Volume 7, issue 3 back in 2015. It's not Evennia-specific but meant for a wider audience interested in making a text-based multiplayer game (MUD/MU*). Since IR is no longer active, I repost it here with only some minor cleanup.</em></p>
+<p><em>This is a repost of an article I originally wrote for the Imaginary Realities e-zine, Volume 7, issue 3 back in 2015. It&#x27;s not Evennia-specific but meant for a wider audience interested in making a text-based multiplayer game (MUD/MU*). Since IR is no longer active, I repost it here with only some minor cleanup.</em></p>
 </blockquote>
 <p>When a new user has everything installed and drops into Evennia’s IRC support chat or mailing list, there is one question that we regularly get in various variations:</p>
 <p><img src="images/yellow_world_by_griatch_art-d7a6e5n.jpg" alt="painted image of the beginning of a road in autumn" /></p>
@@ -911,7 +918,7 @@ Here the blog starts...
 <p>It’s okay to dream big, but your first goal now is to get something out. Something that players can actually connect to and give feedback on. Having players enjoying an early version of your game is a great motivational boost in itself, you should try to reach that stage quickly. You are aiming for a first version, not the ultimate version. All online mmo:s keep improving the game after release, that’s the name of the game.</p>
 <p>So keep your grand plans in mind but limit your scope for your first release. For a group of hobbyist developers (which is, frankly what almost all MU* development teams are) your motivational time is precious. You are likely not getting paid during development which means that it’s imperative that you set out to create something you are capable of finishing while still having fun. Adjust the scope to fit this time. If you run out of steam before this time you’ll know you went for too big a scope.</p>
 <h2>How to continue from here?</h2>
-<p>How to progress is depending on your preference. Some prefer to just jump straight into coding and figure out things as they go. It's not a bad idea to to sit down and plan a little first though - and remember that you want <em>a first version</em> of your game at this point, not the <em>final, ultimate</em> version.</p>
+<p>How to progress is depending on your preference. Some prefer to just jump straight into coding and figure out things as they go. It&#x27;s not a bad idea to to sit down and plan a little first though - and remember that you want <em>a first version</em> of your game at this point, not the <em>final, ultimate</em> version.</p>
 <p>This is beyond the first question asked in this article (which is long enough as it is) but I have written about this process in <a href="https://evennia.com/docs/latest/Game-Planning">Evennia’s game planning documentation</a>. This reiterates some aspects of this article while expanding on others.</p>
 <p>… But in the end, remember that what kills a hobby game project will usually be <em>your own lack of motivation</em>. So do whatever you can to keep that motivation burning strong! Even if it means deviating from what you read in articles like this one. Just get that game out there, whichever way works best for you.</p>
 
@@ -933,22 +940,22 @@ Here the blog starts...
 </h1>
 <p><a href="https://1.bp.blogspot.com/-QtfaDoIwzkA/X-8XYiPQ27I/AAAAAAAALm4/2-EHKh3IaYMNeoj6WykJvhPccJeJ1KD7QCLcBGAsYHQ/s2048/1a1-sydney_new_years_eve_2008.jpeg"><img src="https://1.bp.blogspot.com/-QtfaDoIwzkA/X-8XYiPQ27I/AAAAAAAALm4/2-EHKh3IaYMNeoj6WykJvhPccJeJ1KD7QCLcBGAsYHQ/s320/1a1-sydney_new_years_eve_2008.jpeg" alt="" /></a></p>
 <p>Another year passed with Evennia, the Python MU* creation system. The past year saw a lot of bug fixing and more gradual additions and in September we released version 0.9.5. This was an intermediary version on our way to 1.0. Time to look forward to next year.</p>
-<p>On my development horizon for 2021 are the main new features planned for v1.0. Some of these are rather big things I've wanted to get around to for a while. They are all happening in the <em>develop</em> branch of Evennia, which is currently <em>not</em> recommended for general use.</p>
+<p>On my development horizon for 2021 are the main new features planned for v1.0. Some of these are rather big things I&#x27;ve wanted to get around to for a while. They are all happening in the <em>develop</em> branch of Evennia, which is currently <em>not</em> recommended for general use.</p>
 <ul>
 <li>
 <p><strong>SessionDB:</strong> In the current Evennia, Sessions (the representation of a single client connection) is an in-memory entity. This is changing to be a database-backed entity instead. One will be able to typeclass Sessions like other entities for easier overriding. This change also means that there will be one single point of session-id (the django-session), alleviating some reported issues where the Portal- and Server-side sessions have drifted out of sync. It will also make it a lot easier to support auto-logins, also across server reboots. Db-backed Sessions will also simplify the Portal-Session interaction a lot.</p>
 </li>
 <li>
-<p><strong>Script refactor:</strong> The Scripts will see some refactoring, mainly because they are used more as general-storage entities compared to the timers they were originally meant to be. These days Evennia also offers a range of other timer-mechanisms (tickers, delays, Events etc), so it's less important to rely on Scripts for this functionality. The most important change will be that the timer will required to be explicitly started (instead of always starting on script-creation). It will also be possible to stop the timer without the script getting deleted (so separating the timer from the Script's life-cycle).</p>
+<p><strong>Script refactor:</strong> The Scripts will see some refactoring, mainly because they are used more as general-storage entities compared to the timers they were originally meant to be. These days Evennia also offers a range of other timer-mechanisms (tickers, delays, Events etc), so it&#x27;s less important to rely on Scripts for this functionality. The most important change will be that the timer will required to be explicitly started (instead of always starting on script-creation). It will also be possible to stop the timer without the script getting deleted (so separating the timer from the Script&#x27;s life-cycle).</p>
 </li>
 <li>
-<p><strong>Channel refactor:</strong> The Channels will also see changes; notably to make it considerably easier to override and customize them per-caller. Today the Channel typeclass has a maze of different hooks being called, but it's harder for devs wanting users to customize their channel output. So one of the changes will be new hooks on the account/object level for allowing to format the channel output per-user. There will also be a cleanup of the existing hooks to make things clearer.</p>
+<p><strong>Channel refactor:</strong> The Channels will also see changes; notably to make it considerably easier to override and customize them per-caller. Today the Channel typeclass has a maze of different hooks being called, but it&#x27;s harder for devs wanting users to customize their channel output. So one of the changes will be new hooks on the account/object level for allowing to format the channel output per-user. There will also be a cleanup of the existing hooks to make things clearer.</p>
 </li>
 <li>
-<p><strong>New starting tutorial:</strong> As part of the new documentation, I'm writing a new starting-tutorial. This will consolidate many of the existing beginner tutorials in a consistent sequence and if following it to the end, the reader will have created a small beginner game with everything in place. I plan to make a few new contribs to support this.</p>
+<p><strong>New starting tutorial:</strong> As part of the new documentation, I&#x27;m writing a new starting-tutorial. This will consolidate many of the existing beginner tutorials in a consistent sequence and if following it to the end, the reader will have created a small beginner game with everything in place. I plan to make a few new contribs to support this.</p>
 </li>
 <li>
-<p><strong>Contrib restructure:</strong> Our contrib/ folder is getting a little cluttered. I'm investigating organizing things a little differently by at least moving things into categorized folders. This will lead to people having to change their imports, but we'll see just how it goes.</p>
+<p><strong>Contrib restructure:</strong> Our contrib/ folder is getting a little cluttered. I&#x27;m investigating organizing things a little differently by at least moving things into categorized folders. This will lead to people having to change their imports, but we&#x27;ll see just how it goes.</p>
 </li>
 <li>
 <p><strong>Documentation cleanup:</strong> There are a lot of small changes, cleanup and restructuring needed in the docs overall - many of the existing pages are auto-translated from the old wiki and need rewriting both in style and content. The whole idea of moving to the new doc-system is to be able to update the docs alongside the code changes. So hopefully the changes to Sessions, Scripts and Channels etc will all be covered properly from the onset rather than after release (as was the case with the wiki).</p>
@@ -960,9 +967,9 @@ Here the blog starts...
 <p><strong>Evennia PYPI package:</strong> This will be one of the last things before the release of 1.0 - Evennia will be put onto PYPI  so you can install with <strong>pip install evennia</strong>. Once we do it will simplify the install instructions dramatically for those not interested in contributing to Evennia proper.</p>
 </li>
 </ul>
-<p>We also have some pull-requests in the making that will be interesting to have in the system, such as Volund's plugin system, making it easier to inject custom settings on the fly (good for contribs wanting to add their own database tables, for example).</p>
+<p>We also have some pull-requests in the making that will be interesting to have in the system, such as Volund&#x27;s plugin system, making it easier to inject custom settings on the fly (good for contribs wanting to add their own database tables, for example).</p>
 <p>A lot of work to do as usual!</p>
-<p><strong>Thanks</strong> for the past year, everyone - thanks to all of you that contributed to Evennia with code or by reporting issues or coming with feedback. Thanks particularly to those of you willing (and able) to chip in with some financial support for Evennia development - that's very encouraging!</p>
+<p><strong>Thanks</strong> for the past year, everyone - thanks to all of you that contributed to Evennia with code or by reporting issues or coming with feedback. Thanks particularly to those of you willing (and able) to chip in with some financial support for Evennia development - that&#x27;s very encouraging!</p>
 <p>And finally, a big thanks to all of you taking part in community discussions, both you asking questions and you helping to answer them tirelessly and with good cheer - you make the Evennia community the friendly, inviting place it is!</p>
 <p>May all our game development move forward and our hard drives stay healthy for another year.</p>
 <p>Cheers and a Happy new year,</p>

@@ -13,7 +13,8 @@
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="description" content="
-        Latest Evennia dev blog:  Project plans and Splitting a Setting in two: As those following Evennia development should be aware of for now, we are approaching the 1.0 release of Evennia, the MU*-building framework. ...
+        Latest Evennia dev blog:  Evennia 1.0 released!: <br>
+ ...
         ---
         Evennia is a modern Python library and server for creating text-based
         multi-player games and virtual worlds (also known as MUD, MUSH, MU,
@@ -49,10 +50,16 @@
                     <ul>
                         
                             <li>
-                                <a href="2022.html"> 2022 (3)
+                                <a href="2022.html"> 2022 (4)
                                     
                                         <ul class="devblog-calendar-open">
                                     
+                                        
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2022.html#2022-12-03-evennia-1.0-released!">Dec  3
+                                                        <span class="devblog-calendar-tooltip-text"> Evennia 1.0 released!</span>
+                                                   </a>
+                                                </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
                                                     <a href="2022.html#2022-09-17-project-plans-and-splitting-a-setting-in-two">Sep 17
@@ -615,6 +622,56 @@
                 
                     
                     <div class="blog_post">
+                    <h1 id=2022-12-03-evennia-1.0-released!>
+     Evennia 1.0 released!
+    <a class="devblog-headerlink" href="2022.html#2022-12-03-evennia-1.0-released!" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- December  3, 2022</div>
+</h1>
+<p><img src="https://user-images.githubusercontent.com/294267/205434941-14cc4f59-7109-49f7-9d71-0ad3371b007c.jpg" alt="screenshot" /></p>
+<br>
+<p>As of today, <a href="https://github.com/evennia/evennia/discussions/3017">Evennia 1.0 released</a>! This has been a long time coming. Not only were there a lot of fixes and features to add, we also moved to a completely new documentation system. With many moving parts and my wish to get as much as possible into this release, it took a while to get things aligned.</p>
+<p>This release is also the first one where we distribute Evennia on Pypi, so you can install with  <code>pip install evennia</code>. This also led to a lot of new work and documentation to write.</p>
+<p>That said, it would have taken even longer if I had been alone - and I was not. The Evennia community is growing ever more active, and we now have a  regular influx of PRs. I even get help fixing bugs at times! Not to mention a bunch of very  sweet new contribs and implemented features. It feels super-luxurious to wake up and find a bug  has been fixed for me!</p>
+<p>Thanks a lot, everyone!</p>
+<h2>Moving forward</h2>
+<p>The linked announcement above covers the new features of 1.0. Check it out - there&#x27;s a lot of  fun stuff. In this dev-blog, I  wanted to talk a little bit about the future instead.</p>
+<h3>Main is where it&#x27;s at</h3>
+<p>As usual when the <code>develop</code> branch merges, activity shifts. So moving forward, the <code>main</code> branch  (which is now what we use instead of <code>master</code>) will be the &#x27;active&#x27; branch.</p>
+<p>All new PRs and features should now be made against <code>main</code>. The <code>develop</code> branch will likely make its return as the bleeding-edge, but I hope that it will be mainly for testing individual complex features rather than for a huge new version like in the past.</p>
+<h3>Versioning</h3>
+<p>In the past we have made big version changes: <code>0.5-&gt;0.6-&gt;0.7-&gt;0.8-&gt;0.9</code>. Then we got sort of stuck  preparing for <code>1.0</code>, and there was an interim <code>0.9.5</code> release just to hold us over. In the end,  <code>1.0</code> took almost two years to complete.</p>
+<p>Having the <code>develop</code> branch open for this long is not good. Users of <code>0.9.5</code> were  stuck with the old docs (just a plain import from the github wiki) since I couldn&#x27;t maintain both. It meant  stagnation for people downloading <code>master</code> branch. And while people in the know eventually  switched to use <code>develop</code> branch (helping a lot of with testing!) it&#x27;s still not an ideal state  of affairs. I don&#x27;t want something similar to happen leading up to 2.0.</p>
+<p>So for that reason I plan to move Evennia to <a href="https://semver.org/">semantic versioning</a> going  forward. Semantic versioning means that we&#x27;ll use <code>Major.Minor.Patch</code> versioning. For you as a  developer of an Evennia game (using <code>pip install</code> - if you follow <code>main</code> on git, it&#x27;s less  relevant, you&#x27;ll have bleeding edge), this versioning means</p>
+<ul>
+<li>
+<p><code>1.0.x</code> - changes (<code>1.0.1</code>, <code>1.0.2</code> etc) are <em>patches</em>. Bug fixes. Security fixes. Should always be safe to upgrade to without anything breaking.</p>
+</li>
+<li>
+<p><code>1.x.0</code> - changes (<code>1.1.0</code>, <code>1.2.0</code> etc) are <em>minor version changes</em>. This can introduce new   functionality that is <em>backwards compatible</em>. So a new default command, a new contrib, stuff like that. Maybe bigger bug fixes and refactoring that don&#x27;t change existing functionality. So Minor versions are also usually worthwhile to  update to.</p>
+</li>
+<li>
+<p><code>x.0.0</code> - changes (<code>2.0.0</code>, <code>3.0.0</code> etc) are <em>major  version changes</em>. These versions include changes that are  <em>backwards-incompatible</em>. The change may still be small! The gist of it is that they are changes  that require you to take some action.</p>
+</li>
+</ul>
+<p>With semantic versioning, Evennia 2.0, 3.0 etc may happen sooner than you may think - even  changing how a setting should be written is technically a backwards-incompatible change. I think  this will help make those major versions be less daunting too - meaning we won&#x27;t get  stuck at 1.9.5 again.</p>
+<h3>Finishing the beginner tutorial</h3>
+<p>The new <a href="https://www.evennia.com/docs/latest/Howtos/Howtos-Overview.html#beginner-tutorial">Beginner Tutorial</a> is not ready yet.</p>
+<p>As mentioned in my previous devblog, I had to pause work on it or 1.0 wouldn&#x27;t get out this year.  That said, I think the first two parts that are finished are already useful to newcomers. In the  coming months I will continue with the tutorial-game and finish all the code. In the end  I aim to have the reader make a complete little MUD from scratch if they follow the  tutorial from beginning to end.</p>
+<h2>Onward!</h2>
+<p>After the 1.0 release we are now officially in the &#x27;bug fix and cleanup&#x27; phase. So report all the issues you find - especially with the new docs!</p>
+<p>So moving forward, I expect to mainly do patches and minor versions for a while. I don&#x27;t intend  to start any major work until after the beginner-tutorial is complete.</p>
+<p>For now though, let&#x27;s just be happy that 1.0 is out! :D</p>
+
+<footer class="devblog-footer">
+    <span class="devblog-copyrights">
+        
+    </span>
+    <a class="devblog-to-toplink" href="2022.html#2022-12-03-evennia-1.0-released!" title="Link to top of post">⇬(top)</a>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
                     <h1 id=2022-09-17-project-plans-and-splitting-a-setting-in-two>
      Project plans and Splitting a Setting in two
     <a class="devblog-headerlink" href="2022.html#2022-09-17-project-plans-and-splitting-a-setting-in-two" title="Permalink to this blog post">¶</a>
@@ -622,29 +679,29 @@
 </h1>
 <p><img src="images/pause_break_key.jpg" alt="Pause/Break button" /></p>
 <p>As those following Evennia development should be aware of for now, we are approaching the 1.0 release of Evennia, the MU*-building framework.</p>
-<p>Thing is, that release has been coming 'soon' for quite a while now. Since some time you can already test Evennia 1.0-dev by checking out the  Evennia <code>develop</code> branch (<a href="https://github.com/evennia/evennia/discussions/2640">here</a> for help on how). Evennia 1.0-dev is still changing, but it's already stable enough that It's gotten to the point that people in chat now recommend new users to start fresh with 1.0-dev rather than the 'stable' version 0.9.5, which is now 1.5 years old and is not seeing more updates.</p>
+<p>Thing is, that release has been coming &#x27;soon&#x27; for quite a while now. Since some time you can already test Evennia 1.0-dev by checking out the  Evennia <code>develop</code> branch (<a href="https://github.com/evennia/evennia/discussions/2640">here</a> for help on how). Evennia 1.0-dev is still changing, but it&#x27;s already stable enough that It&#x27;s gotten to the point that people in chat now recommend new users to start fresh with 1.0-dev rather than the &#x27;stable&#x27; version 0.9.5, which is now 1.5 years old and is not seeing more updates.</p>
 <h2>Changes to 1.0 release plans</h2>
 <h3>In short:</h3>
 <p>I plan to pause the work on the new beginner tutorial and release 1.0 with that piece of the documentation unfinished. It still has a large swathes of useful info, but the new from-scratch game will not be ready.</p>
 <h3>Longer:</h3>
-<p>One of the reasons for 1.0 not being released is that I have been working on a new beginner-tutorial to go with the new system. This involves making a full little MUD game from scratch, and I'm making a full system you can both follow lesson-per-lesson as well as implementing it for those that prefer to pull apart code.</p>
-<p>Writing good code as well as full tutorial lessons is however a big, full-time job (next to my actual real-life full-time job) and thus I expect it will take a good while longer before the new tutorial is done. Worse, in the meantime I can't spend much time resolving the 1.0-dev bugs that has been reported by community testers and also block release.</p>
+<p>One of the reasons for 1.0 not being released is that I have been working on a new beginner-tutorial to go with the new system. This involves making a full little MUD game from scratch, and I&#x27;m making a full system you can both follow lesson-per-lesson as well as implementing it for those that prefer to pull apart code.</p>
+<p>Writing good code as well as full tutorial lessons is however a big, full-time job (next to my actual real-life full-time job) and thus I expect it will take a good while longer before the new tutorial is done. Worse, in the meantime I can&#x27;t spend much time resolving the 1.0-dev bugs that has been reported by community testers and also block release.</p>
 <p>So I will map out the remaining pieces of the tutorial with informational &quot;Work in progress&quot; markers, merge what I have, and stop work on it for now.</p>
-<p>I'll continue finishing the tutorial in smaller sub-releases after the main 1.0 release.</p>
-<h3>What's left for 1.0-dev</h3>
-<p>So, with the main bulk of work (the beginner tutorial) on hold, what's left to do?</p>
+<p>I&#x27;ll continue finishing the tutorial in smaller sub-releases after the main 1.0 release.</p>
+<h3>What&#x27;s left for 1.0-dev</h3>
+<p>So, with the main bulk of work (the beginner tutorial) on hold, what&#x27;s left to do?</p>
 <ul>
 <li>
-<p>Cleanup the rest of the docs! There's still much to do there, including removing old tutorials that are now covered in the parts of the beginner-tutorial already finished. Also need to connect all pages and structure the docs better.</p>
+<p>Cleanup the rest of the docs! There&#x27;s still much to do there, including removing old tutorials that are now covered in the parts of the beginner-tutorial already finished. Also need to connect all pages and structure the docs better.</p>
 </li>
 <li>
-<p>Get into the bug backlog of Evennia 1.0-dev that people have reported. Also work to merge some outstanding PRs. I'll need to triage issues more, but hopefully I can get some help fixing simpler bugs during October's <a href="https://github.com/evennia/evennia/discussions/2858">Hacktoberfest</a>.</p>
+<p>Get into the bug backlog of Evennia 1.0-dev that people have reported. Also work to merge some outstanding PRs. I&#x27;ll need to triage issues more, but hopefully I can get some help fixing simpler bugs during October&#x27;s <a href="https://github.com/evennia/evennia/discussions/2858">Hacktoberfest</a>.</p>
 </li>
 </ul>
 <h2>MULTISESSION_MODE changes (this will affect your current game!)</h2>
 <p>That said, now to some recent changes in 1.0-dev. This one is important since it affects your existing game.</p>
 <h3>In short:</h3>
-<p>The functionality of  <code>MULTISESSION_MODE</code> has been broken into smaller sub-settings. This makes it a lot more flexible, but if you used the 'side-effects' of a higher <code>MULTISESSION_MODE</code> in your game, you now need to set a few other settings to get that back.</p>
+<p>The functionality of  <code>MULTISESSION_MODE</code> has been broken into smaller sub-settings. This makes it a lot more flexible, but if you used the &#x27;side-effects&#x27; of a higher <code>MULTISESSION_MODE</code> in your game, you now need to set a few other settings to get that back.</p>
 <h3>Longer:</h3>
 <p>The <code>MULTISESSION_MODE</code> is a long-standing Evennia setting. It controls how many sessions you can connect to the game at a time. In other words, how many game clients you can open against the same accoung login at the same time.</p>
 <ul>
@@ -670,11 +727,11 @@
 <p>Mode 0,1: You auto-connect to your last character whenever you log in.</p>
 </li>
 <li>
-<p>Mode 2,3: You don't get an auto-created character and end up in and OOC 'character' select screen when logging in.</p>
+<p>Mode 2,3: You don&#x27;t get an auto-created character and end up in and OOC &#x27;character&#x27; select screen when logging in.</p>
 </li>
 </ul>
-<p>These things don't really belong together. For example, if you want players to be able to choose between multiple characters (a character selection screen) but only play one at a time (<code>MULTISESSION_MODE</code> 0 or 1), you'd need to work around Evennia's default.</p>
-<p>As of today, I've merged a change to Evennia 1.0-dev (<code>develop</code> branch) which changes this.</p>
+<p>These things don&#x27;t really belong together. For example, if you want players to be able to choose between multiple characters (a character selection screen) but only play one at a time (<code>MULTISESSION_MODE</code> 0 or 1), you&#x27;d need to work around Evennia&#x27;s default.</p>
+<p>As of today, I&#x27;ve merged a change to Evennia 1.0-dev (<code>develop</code> branch) which changes this.</p>
 <ul>
 <li>
 <p><code>MULTISESSION_MODE</code> now <em>only</em> controls how sessions connect and how they can puppet characters.</p>
@@ -686,7 +743,7 @@
 <p><code>AUTO_CREATE_CHARACTERS_WITH_ACCOUNT</code> allows you to turn off the auto-creation of a character with the same name as the Account when you register. This used to be enforced as a part of <code>MULTISESSION_MODE</code> 0 or 1.</p>
 </li>
 <li>
-<p><code>AUTO_PUPPET_ON_LOGIN</code> controls if you will auto-connect to the last thing you puppet when you login, of if you'll end up OOC (by default at a character selection screen). Again, this used to be enforced by <code>MULTISESSION_MODE</code> 0 or 1.</p>
+<p><code>AUTO_PUPPET_ON_LOGIN</code> controls if you will auto-connect to the last thing you puppet when you login, of if you&#x27;ll end up OOC (by default at a character selection screen). Again, this used to be enforced by <code>MULTISESSION_MODE</code> 0 or 1.</p>
 </li>
 <li>
 <p><code>MAX_NR_CHARACTERS</code> existed before. It controls how many characters the default <code>charcreate</code> command will allow you to create.</p>
@@ -711,15 +768,15 @@
     <div class="devblog-title-date">- July  5, 2022</div>
 </h1>
 <p><img src="images/tutorial.jpg" alt="Tutorial sign" /></p>
-<p>It has been a while since I wrote anything for the dev blog of Evennia, the MU creation system - so it's about time!</p>
-<p>It's been a busy spring and early summer for me, with lots of real-life work going on away from Evennia land. But that hasn't meant activity on the Evennia code base has slowed!</p>
+<p>It has been a while since I wrote anything for the dev blog of Evennia, the MU creation system - so it&#x27;s about time!</p>
+<p>It&#x27;s been a busy spring and early summer for me, with lots of real-life work going on away from Evennia land. But that hasn&#x27;t meant activity on the Evennia code base has slowed!</p>
 <h2>Many eyes on Evennia 1.0-dev</h2>
 <p>Earlier this year I <a href="https://github.com/evennia/evennia/discussions/2640">invited people to try the Evennia develop branch</a> - what will become Evennia 1.0. A lot of bold beta-testers have since swapped to using the 1.0 branch. While there are plenty of issues being reported, most seem pretty happy about it so far. As mentioned in earlier dev blogs, Evennia 1.0 has a <a href="https://github.com/evennia/evennia/blob/master/CHANGELOG.md">lot of improvements and new features</a>!</p>
 <p>As part of this, the amount of PRs being made against develop branch has increased a lot, with awesome community members stepping up to fix bugs and even address long-standing annoyances. This includes everything from big improvements in ANSI parsing, fixes to the 1.0 FuncParser, RPSystem contrib optimizations and much more - <a href="https://github.com/evennia/evennia/pulls?page=2&amp;q=is%3Apr+is%3Aclosed">the list of closed PRs is long</a>.</p>
 <p>Another big part are everyone helping to answer questions in chat and suggesting improvements to the community in general. Thanks everyone!</p>
 <h2>The upcoming beginner tutorial</h2>
-<p>On my end, I'm working on the Beginner Tutorial for the new 1.0 documentation. This will be a multi-part tutorial where you get to make a little MUD game from scratch. It goes through the basics of Evennia all the way to releasing your little game and I hope it will help people get started. This will also lead to a new contrib - the <code>evadventure</code> package, which should (I plan) have everything the tutorial needs to run. This is useful for those that prefer picking apart existing code over reading about it.</p>
-<p>The tutorial game itself is based on <a href="https://www.gmbinder.com/share/-LZGcbbCQaqjIV0TmLx3">Knave</a>, an light Old-School-Renaissance (OSR) tabletop roleplaying ruleset inspired by early editions Dungeons &amp; Dragons. It's simple enough to fit in a tutorial but with enough wrinkles to showcase how to create some basic rpg systems in Evennia:</p>
+<p>On my end, I&#x27;m working on the Beginner Tutorial for the new 1.0 documentation. This will be a multi-part tutorial where you get to make a little MUD game from scratch. It goes through the basics of Evennia all the way to releasing your little game and I hope it will help people get started. This will also lead to a new contrib - the <code>evadventure</code> package, which should (I plan) have everything the tutorial needs to run. This is useful for those that prefer picking apart existing code over reading about it.</p>
+<p>The tutorial game itself is based on <a href="https://www.gmbinder.com/share/-LZGcbbCQaqjIV0TmLx3">Knave</a>, an light Old-School-Renaissance (OSR) tabletop roleplaying ruleset inspired by early editions Dungeons &amp; Dragons. It&#x27;s simple enough to fit in a tutorial but with enough wrinkles to showcase how to create some basic rpg systems in Evennia:</p>
 <ul>
 <li>
 <p>Using Attributes (STR, DEX etc)</p>
@@ -728,7 +785,7 @@
 <p>Rules (dice rolls, advantage, contested rolls etc)</p>
 </li>
 <li>
-<p>Character generation (Knave chargen is mostly random, but it still showcases Evennia's menu system EvMenu).</p>
+<p>Character generation (Knave chargen is mostly random, but it still showcases Evennia&#x27;s menu system EvMenu).</p>
 </li>
 <li>
 <p>Inventory management and equipment (including limited storage as well as items worn or wielded).</p>
@@ -769,11 +826,11 @@
 <p>A small example world (tech-demo)</p>
 </li>
 </ul>
-<p>I won't include how to make a Crafting system, since I've added a full <a href="https://www.evennia.com/docs/1.0-dev/Contribs/Contrib-Crafting.html">Crafting contrib</a> to Evennia 1.0 for devs to be inspired by or tear apart.</p>
+<p>I won&#x27;t include how to make a Crafting system, since I&#x27;ve added a full <a href="https://www.evennia.com/docs/1.0-dev/Contribs/Contrib-Crafting.html">Crafting contrib</a> to Evennia 1.0 for devs to be inspired by or tear apart.</p>
 <h2>Some nice new things about Attributes</h2>
 <p>In general news, Evennia 1.0 will see two big improvements when it comes to <a href="https://www.evennia.com/docs/1.0-dev/Components/Attributes.html">Attributes</a>.</p>
 <h3>AttributeProperty</h3>
-<p>This is a new way to write - and particularly initialize - Attributes. Traditionally in Evennia you need to initialize your object's Attributes something like this:</p>
+<p>This is a new way to write - and particularly initialize - Attributes. Traditionally in Evennia you need to initialize your object&#x27;s Attributes something like this:</p>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">evennia</span> <span style="color: #008000; font-weight: bold">import</span> DefaultCharacter
 
 
@@ -801,7 +858,7 @@
     mana <span style="color: #666666">=</span> AttributeProperty(<span style="color: #666666">10</span>)
 </pre></div>
 
-<p>This makes Attributes look more like Django fields, sitting directly on the class.  They can also have <code>category</code> and all other values you'd expect. You can still access those Attributes like normal:</p>
+<p>This makes Attributes look more like Django fields, sitting directly on the class.  They can also have <code>category</code> and all other values you&#x27;d expect. You can still access those Attributes like normal:</p>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>strength <span style="color: #666666">=</span> char<span style="color: #666666">.</span>db<span style="color: #666666">.</span>strength
 
 mana <span style="color: #666666">=</span> char<span style="color: #666666">.</span>attributes<span style="color: #666666">.</span>get(<span style="color: #BA2121">&quot;mana&quot;</span>)
@@ -813,7 +870,7 @@ mana <span style="color: #666666">=</span> char<span style="color: #666666">.</s
 mana <span style="color: #666666">=</span> char<span style="color: #666666">.</span>mana
 </pre></div>
 
-<p>directly (you'll need to be careful to not override any existing properties on objects this way of course).</p>
+<p>directly (you&#x27;ll need to be careful to not override any existing properties on objects this way of course).</p>
 <p>An interesting feature of using an <code>AttributeProperty</code> is that you can choose to <em>not</em> actually create the <code>Attribute</code> under the hood unless the default changed:</p>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Character</span>(DefaultCharacter):
 
@@ -822,7 +879,7 @@ mana <span style="color: #666666">=</span> char<span style="color: #666666">.</s
     mana <span style="color: #666666">=</span> AttributeProperty(<span style="color: #666666">10</span>, autocreate<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>)
 </pre></div>
 
-<p>When you now access <code>char.strength</code> you will get <code>10</code> back but you won't actually be hitting the database to load anything - it's just giving you the default. Not until you <em>change</em> the default will the actual <code>Attribute</code> be created. While this can be very powerful for optimization, note that you can of course not access such data via <code>char.db</code> or <code>char.attributes.get</code> either (because no <code>Attribute</code> yet exists). So this functionality can be confusing unless you know what you are doing. Hence <code>autocreate</code> defaults to <code>True</code>.</p>
+<p>When you now access <code>char.strength</code> you will get <code>10</code> back but you won&#x27;t actually be hitting the database to load anything - it&#x27;s just giving you the default. Not until you <em>change</em> the default will the actual <code>Attribute</code> be created. While this can be very powerful for optimization, note that you can of course not access such data via <code>char.db</code> or <code>char.attributes.get</code> either (because no <code>Attribute</code> yet exists). So this functionality can be confusing unless you know what you are doing. Hence <code>autocreate</code> defaults to <code>True</code>.</p>
 <h3>Saving Attributes with hidden database objects</h3>
 <p>This is one of those classical quirks of Evennia that many have encountered. While Evennia can save a lot of things in an <code>Attribute</code>, including database objects, it cannot do so if it doesnt <em>know</em> those database objects are there. This is fine if you are saving a list or a dict with objects in it - Evennia will go through it and make sure to serialize each db-object in turn.</p>
 <p>But if you &quot;hide away&quot; your db-object you will be in trouble:</p>
@@ -839,7 +896,7 @@ char <span style="color: #666666">=</span> Character<span style="color: #666666"
 obj<span style="color: #666666">.</span>db<span style="color: #666666">.</span>mystore <span style="color: #666666">=</span> MyStore(char)   <span style="color: #3D7B7B; font-style: italic"># leads to Traceback!</span>
 </pre></div>
 
-<p>This fails because we store <code>char</code> inside <code>MyStore</code> and there is no way for Evennia to know it's there and to handle it properly.</p>
+<p>This fails because we store <code>char</code> inside <code>MyStore</code> and there is no way for Evennia to know it&#x27;s there and to handle it properly.</p>
 <p>For the longest time, this was just a limitation you had to accept. But with Evennia 1.0-dev you can now help Evennia out:</p>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">evennia.utils.dbserialize</span> <span style="color: #008000; font-weight: bold">import</span> dbserialize, dbunserialize
 
@@ -869,7 +926,7 @@ obj<span style="color: #666666">.</span>db<span style="color: #666666">.</span>m
 <p>With the new <code>__serialize_dbobjs__</code> and <code>__deserialize_dbobjs__</code>, Evennia is told how to properly stow away the db-object (using the tools from <code>evennia.utils</code>) before trying to serialize the entire <code>MyStore</code>. And later, when loading it up, Evennia is helped to know how to restore the db-object back to normal again after the rest of <code>MyStore</code> was already loaded up.</p>
 <h2>Moving forward ...</h2>
 <p>For Evennia 1.0, the tutorial-writing is the single biggest project that remains - that and the general documentation cleanup of our entirely rewritten documentation.</p>
-<p>After that I will dive back in with the issues that has popped up during beta-testing of 1.0-dev and try to wrap up the most serious ones before release. Still some time away, but it's getting there ... slowly!</p>
+<p>After that I will dive back in with the issues that has popped up during beta-testing of 1.0-dev and try to wrap up the most serious ones before release. Still some time away, but it&#x27;s getting there ... slowly!</p>
 
 <footer class="devblog-footer">
     <span class="devblog-copyrights">
@@ -889,22 +946,22 @@ obj<span style="color: #666666">.</span>db<span style="color: #666666">.</span>m
 </h1>
 <p><img src="https://www.nafcu.org/sites/default/files/inline-images/2022-blog.png" alt="2022 getting started" /></p>
 <br>
-<p>I didn't write an end-of-the year summary for 2021, so this first devblog of 2022 will also look back a bit at the past year. It also helps me get used to using this new blog platform I wrote about in the previous post.</p>
+<p>I didn&#x27;t write an end-of-the year summary for 2021, so this first devblog of 2022 will also look back a bit at the past year. It also helps me get used to using this new blog platform I wrote about in the previous post.</p>
 <h2>On Evennia 1.0</h2>
-<p>Speaking of 2021, you may have noticed that there was no new versioned Evennia release last year. Last one was 0.9.5 back in 2020. This may make it seem like little is happening in Evennia-land ... but the fact is that while little has happened in <code>master</code> branch over the past year, all the more has been going on in Evennia's <code>develop</code> branch - the branch which will become Evennia 1.0.</p>
-<p>Now, it's not really so good to have a development branch run so long. This is because in the interim people report errors in <code>master</code> branch that has since been resolved in <code>develop</code>. It's becoming more and more cumbersome to backport which means that <code>master</code> is not getting updated all that much right now.</p>
-<p>Post 1.0, I'll likely switch to a faster release cycle, but at least for now, it has been hard to avoid, this is because I'm reworking the entire documentation site alongside the code, with new autodocs and tutorials. Releasing an intermediary version with some sort of mid-way documentation version is just not practical for me. So I hope you can be patient a bit further!</p>
-<p>Soonish™, I hope to have finished the code changes needed for 1.0 and then I'll invite adventurous folks to use the branch more extensively while the docs are still in flux.</p>
-<h3>So what's still to do for Evennia 1.0?</h3>
+<p>Speaking of 2021, you may have noticed that there was no new versioned Evennia release last year. Last one was 0.9.5 back in 2020. This may make it seem like little is happening in Evennia-land ... but the fact is that while little has happened in <code>master</code> branch over the past year, all the more has been going on in Evennia&#x27;s <code>develop</code> branch - the branch which will become Evennia 1.0.</p>
+<p>Now, it&#x27;s not really so good to have a development branch run so long. This is because in the interim people report errors in <code>master</code> branch that has since been resolved in <code>develop</code>. It&#x27;s becoming more and more cumbersome to backport which means that <code>master</code> is not getting updated all that much right now.</p>
+<p>Post 1.0, I&#x27;ll likely switch to a faster release cycle, but at least for now, it has been hard to avoid, this is because I&#x27;m reworking the entire documentation site alongside the code, with new autodocs and tutorials. Releasing an intermediary version with some sort of mid-way documentation version is just not practical for me. So I hope you can be patient a bit further!</p>
+<p>Soonish™, I hope to have finished the code changes needed for 1.0 and then I&#x27;ll invite adventurous folks to use the branch more extensively while the docs are still in flux.</p>
+<h3>So what&#x27;s still to do for Evennia 1.0?</h3>
 <p><a href="https://github.com/evennia/evennia/projects/9">This is the current TODO list</a>.</p>
-<p>The big one I'm currently doing is to refactor the <code>contrib/</code> folder to have more structure (it has grown organically until now). After this, there are a series of bugs and minor features to do. I will also go back and address the low-hanging <code>master</code> branch bugs that haven't already been resolved in <code>develop</code>.</p>
+<p>The big one I&#x27;m currently doing is to refactor the <code>contrib/</code> folder to have more structure (it has grown organically until now). After this, there are a series of bugs and minor features to do. I will also go back and address the low-hanging <code>master</code> branch bugs that haven&#x27;t already been resolved in <code>develop</code>.</p>
 <p>Most remaining points are then documentation fixes. Those will be handled in one go as the docs are finalized.</p>
 <h3>So ...</h3>
-<p>I won't/can't commit to a deadline for Evennia 1.0, but I'll keep chipping away at it as fast as I can. If you want things to move quicker you are more than welcome to join the other contributors that have chipped in with PRs over the past year. Check out the TODO list and consider investigating a bug or implementing a feature - some may be pretty straight forward.</p>
+<p>I won&#x27;t/can&#x27;t commit to a deadline for Evennia 1.0, but I&#x27;ll keep chipping away at it as fast as I can. If you want things to move quicker you are more than welcome to join the other contributors that have chipped in with PRs over the past year. Check out the TODO list and consider investigating a bug or implementing a feature - some may be pretty straight forward.</p>
 <h3>... some thanks!</h3>
-<p>A big thanks to those that dropped an encouraing buck in my hat (aka <a href="https://www.patreon.com/griatch">patreon</a> or with a one-time paypal donation) over the year. Everyone has different economical situations and I hope I've been very clear that noone should feel obligated to pay anything. But those of you that could and did - know that you have my thanks - it's very encouraging.</p>
+<p>A big thanks to those that dropped an encouraing buck in my hat (aka <a href="https://www.patreon.com/griatch">patreon</a> or with a one-time paypal donation) over the year. Everyone has different economical situations and I hope I&#x27;ve been very clear that noone should feel obligated to pay anything. But those of you that could and did - know that you have my thanks - it&#x27;s very encouraging.</p>
 <p>But - just as big thanks go out to <em>everyone</em> that contributed to Evennia in 2021! &quot;Contribution&quot; means so many things - we have the troopers that contributed code and made PRs (best Hacktoberfest yet!), but also those that dilligently reported bugs and pointed out problems as well as (and this is just as important) were active and helpful in the support chat and github discussion!</p>
-<p>You guys make the community, that's all there is to it. Thanks a lot.</p>
+<p>You guys make the community, that&#x27;s all there is to it. Thanks a lot.</p>
 <p>Now onward into this new, fresh year and towards that elusive Evennia 1.0 ...</p>
 
 <footer class="devblog-footer">

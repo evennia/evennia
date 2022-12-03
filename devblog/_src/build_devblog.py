@@ -20,22 +20,24 @@ Here starts the main text ...
 """
 
 import glob
-from dataclasses import dataclass
 from collections import defaultdict
-from dateutil import parser as dateparser
+from dataclasses import dataclass
 from datetime import datetime
-from os import symlink, remove, chdir
-from os.path import abspath, dirname, join as pathjoin, sep
+from os import chdir, remove, symlink
+from os.path import abspath, dirname
+from os.path import join as pathjoin
+from os.path import sep
+
 import jinja2
-import rfeed
-
 import mistletoe
-from mistletoe import HTMLRenderer, BaseRenderer
+import rfeed
+from dateutil import parser as dateparser
+from mistletoe import HTMLRenderer
 from pygments import highlight
-from pygments.styles import get_style_by_name as get_style
-from pygments.lexers import get_lexer_by_name as get_lexer, guess_lexer
 from pygments.formatters.html import HtmlFormatter
-
+from pygments.lexers import get_lexer_by_name as get_lexer
+from pygments.lexers import guess_lexer
+from pygments.styles import get_style_by_name as get_style
 
 CURRDIR = dirname(abspath(__file__))
 SOURCE_DIR = pathjoin(CURRDIR, "markdown")
@@ -66,6 +68,7 @@ class BlogPost:
     A single blog post.
 
     """
+
     title: str
     blurb: str
     permalink: str
@@ -86,6 +89,7 @@ class BlogPage:
     Represents one year/html page of blog posts.
 
     """
+
     year: int
     permalink: str
     posts: list
@@ -97,10 +101,11 @@ class PygmentsRenderer(HTMLRenderer):
     Custom syntax highlighter for misteltoe (based on
     https://github.com/miyuchina/mistletoe/blob/master/contrib/pygments_renderer.py)
     """
+
     formatter = HtmlFormatter()
     formatter.noclasses = True
 
-    def __init__(self, *extras, style='default'):
+    def __init__(self, *extras, style="default"):
         super().__init__(*extras)
         self.formatter.style = get_style(style)
 
@@ -183,7 +188,7 @@ def md2html():
             pass
         else:
             meta = lines[:meta_end]
-            lines = lines[meta_end + 1:]
+            lines = lines[meta_end + 1 :]
             for line in meta:
                 line = line.strip()
                 if line.startswith("title:"):
@@ -196,16 +201,15 @@ def md2html():
 
         # get first paragraph as blurb
         markdown_blurb = "\n".join(
-            [line for line in lines if line and not line.startswith("!")][:3])
+            [line for line in lines if line and not line.startswith("!")][:3]
+        )
         markdown_post = "\n".join(lines)
         # convert markdown to html
-        blurb = mistletoe.markdown(markdown_blurb, BaseRenderer)
+        blurb = mistletoe.markdown(markdown_blurb)
         html = mistletoe.markdown(markdown_post, PygmentsRenderer)
 
         # build the permalink
-        anchor = "{}".format(
-            date.strftime("%Y-%m-%d-" + "-".join(title.strip().lower().split()))
-        )
+        anchor = "{}".format(date.strftime("%Y-%m-%d-" + "-".join(title.strip().lower().split())))
         pagelink = OUTFILE_TEMPLATE.format(year=date.year)
         permalink = "{}#{}".format(pagelink, anchor)
 
@@ -219,12 +223,10 @@ def md2html():
             date_short=date.strftime("%b %e"),
             date_sort=date.toordinal(),
             image_copyrights=image_copyrights,
-            html=html
+            html=html,
         )
         # populate template with jinja and readd to blogpost
-        context = {
-            "blogpost": blogpost
-        }
+        context = {"blogpost": blogpost}
         blogpost.html = post_template.render(context)
 
         # store
@@ -241,7 +243,7 @@ def md2html():
                 year=year,
                 permalink=OUTFILE_TEMPLATE.format(year=year),
                 posts=blogposts,
-                calendar=calendar
+                calendar=calendar,
             )
         )
 
@@ -262,7 +264,7 @@ def md2html():
             "latest_blurb": latest_blurb,
             "pageyear": blogpage.year,
             "blogpage": blogpage,
-            "blogpages": blogpages
+            "blogpages": blogpages,
         }
 
         html_page = blog_template.render(context)
@@ -270,6 +272,7 @@ def md2html():
         html_pages[blogpage.year] = html_page
 
     return html_pages, rss_feed
+
 
 def build_pages(blog_pages):
     """
@@ -304,11 +307,11 @@ def build_pages(blog_pages):
         if year > latest_year:
             latest_year = year
             latest_page = filename.rsplit(sep, 1)[1] if sep in filename else filename
-        with open(filename, 'w') as fil:
+        with open(filename, "w") as fil:
             fil.write(html_page)
 
     # build rss file
-    with open(pathjoin(OUTDIR, RSS_FEED_FILE), 'w') as fil:
+    with open(pathjoin(OUTDIR, RSS_FEED_FILE), "w") as fil:
         fil.write(rss_feed)
 
     # link static resources and the start page
