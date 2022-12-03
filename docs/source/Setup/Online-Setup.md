@@ -328,7 +328,7 @@ Evennia users:
 | [Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's "fixed cost" offering.|
 | [Azure App Services][12] | Cloud | Free | Free tier with limited regions for hobbyists. |
 | [Huawei Cloud][13] | Cloud | on demand | Similar to Amazon. Free 12-month tier with limited regions. |
-| [Host1Plus][5] | VPS & Cloud | $4/month | $4-$8/month depending on length of sign-up period.
+| [Heficed][5] | VPS & Cloud | $6/month | $6/month for a 1GB ram server. |
 | [Scaleway][6] | Cloud | &euro;3/month / on-demand | EU based (Paris, Amsterdam). Smallest option provides 2GB RAM. |
 | [Prgmr][10] | VPS | $5/month | 1 month free with a year prepay. You likely want some experience with servers with this option as they don't have a lot of support.|
 | [Linode][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM|
@@ -340,7 +340,7 @@ Evennia users:
 [2]: https://www.digitalocean.com/pricing
 [3]: https://aws.amazon.com/pricing/
 [4]: https://www.genesismuds.com/
-[5]: https://www.host1plus.com/
+[5]: https://www.heficed.com/
 [6]: https://www.scaleway.com/
 [7]: https://lowendbox.com/
 [8]: https://www.lowendtalk.com
