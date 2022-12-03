@@ -1,5 +1,5 @@
 # Evennia MUD/MU\* Creation System ![][logo]
-[![Build Status][unittestciimg]][unittestcilink] [![Coverage Status][coverimg]][coverlink]
+[![Build Status][unittestciimg]][unittestcilink] [![Coverage Status][coverimg]][coverlink] [![Pypi Version][pypibadge]][pypilink]
 
 
 [Evennia][homepage] is a modern library for creating [online multiplayer text
@@ -50,6 +50,8 @@ Welcome!
 [unittestcilink]: https://github.com/evennia/evennia/actions?query=workflow%3Atest-suite
 [coverimg]: https://coveralls.io/repos/github/evennia/evennia/badge.svg?branch=master
 [coverlink]: https://coveralls.io/github/evennia/evennia?branch=master
+[pypibadge]: https://img.shields.io/pypi/v/evennia?color=blue
+[pypilink]: https://pypi.org/project/evennia/
 [introduction]: https://www.evennia.com/docs/latest/Evennia-Introduction.html
 [license]: https://www.evennia.com/docs/latest/Licensing.html
 [group]: https://github.com/evennia/evennia/discussions
