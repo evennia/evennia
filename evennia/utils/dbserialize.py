@@ -30,7 +30,6 @@ except ImportError:
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import SafeString
-
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
 
@@ -151,7 +150,7 @@ def _save(method):
     return update_wrapper(save_wrapper, method)
 
 
-class _SaverMutable(object):
+class _SaverMutable:
     """
     Parent class for properly handling  of nested mutables in
     an Attribute. If not used something like
@@ -359,6 +358,58 @@ class _SaverSet(_SaverMutable, MutableSet):
     @_save
     def discard(self, value):
         self._data.discard(value)
+
+    @_save
+    def update(self, *others):
+        self._data.update(*others)
+
+    @_save
+    def remove(self, value):
+        self._data.remove(value)
+
+    @_save
+    def pop(self):
+        self._data.pop()
+
+    @_save
+    def clear(self):
+        self._data.clear()
+
+    @_save
+    def intersection_update(self, *others):
+        self._data.intersection_update(*others)
+
+    @_save
+    def difference_update(self, *others):
+        self._data.difference_update(*others)
+
+    @_save
+    def symmetric_difference_update(self, *others):
+        self._data.symmetric_difference(*others)
+
+    def isdisjoint(self, other):
+        return self._data.isdisjoint(other)
+
+    def issubset(self, other):
+        return self._data.issubset(other)
+
+    def issuperset(self, other):
+        return self._data.issuperset(other)
+
+    def union(self, *others):
+        return self._data.union(*others)
+
+    def intersection(self, *others):
+        return self._data.intersection(*others)
+
+    def difference(self, *others):
+        return self._data.difference(*others)
+
+    def symmetric_difference(self, other):
+        return self._data.symmetric_difference(other)
+
+    def copy(self):
+        return self._data.copy()
 
 
 class _SaverOrderedDict(_SaverMutable, MutableMapping):
