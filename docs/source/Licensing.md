@@ -1,10 +1,7 @@
 # Licensing Q&A
 
 
-Evennia is licensed under the very friendly [BSD](https://en.wikipedia.org/wiki/BSD_license)
-(3-clause) license.  You can find the license as
-[LICENSE.txt](https://github.com/evennia/evennia/blob/master/LICENSE.txt) in the Evennia
-repository's root.
+Evennia is licensed under the very friendly [BSD](https://en.wikipedia.org/wiki/BSD_license) (3-clause) license.  You can find the license as [LICENSE.txt](https://github.com/evennia/evennia/blob/master/LICENSE.txt) in the Evennia repository's root.
 
 **Q: When creating a game using Evennia, what does the license permit me to do with it?**
 

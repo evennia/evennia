@@ -264,9 +264,7 @@ So about that function. Line 1:
 - `def` is short for "define" and defines a *function* (or a *method*, if sitting on an object).
 This is a [reserved Python keyword](https://docs.python.org/2.5/ref/keywords.html); try not to use
 these words anywhere else.
-- A function name can not have spaces but otherwise we could have called it almost anything. We call
-it `hello_world`. Evennia follows [Python's standard naming style](https://github.com/evennia/evennia/blob/master/CODING_STYLE.md#a-quick-list-of-code-style-points)
-with lowercase letters and underscores. We recommend you do the same.
+- A function name can not have spaces but otherwise we could have called it almost anything. We call it `hello_world`. Evennia follows [Python's standard naming style](iEvennia-Code-Style) with lowercase letters and underscores. We recommend you do the same.
 - The colon (`:`) at the end of line 1 indicates that the header of the function is complete.
 
 Line 2:

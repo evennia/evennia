@@ -5,12 +5,7 @@
 principle is simple - whenever a site is updated, a small text file is updated. An RSS reader can
 then regularly go online, check this file for updates and let the user know what's new.
 
-Evennia allows for connecting any number of RSS feeds to any number of in-game channels. Updates to
-the feed will be conveniently echoed to the channel. There are many potential uses for this: For
-example the MUD might use a separate website to host its forums. Through RSS, the players can then
-be notified when new posts are made. Another example is to let everyone know you updated your dev
-blog. Admins might also want to track the latest Evennia updates through our own RSS feed
-[here](https://code.google.com/feeds/p/evennia/updates/basic).
+Evennia allows for connecting any number of RSS feeds to any number of in-game channels. Updates to the feed will be conveniently echoed to the channel. There are many potential uses for this: For example the MUD might use a separate website to host its forums. Through RSS, the players can then be notified when new posts are made. Another example is to let everyone know you updated your dev blog. Admins might also want to track the latest Evennia updates through our own RSS feed [here](https://code.google.com/feeds/p/evennia/updates/basic).
 
 ## Configuring RSS
 
