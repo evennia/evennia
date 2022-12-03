@@ -27,7 +27,6 @@ from evennia.server.session import Session
 from evennia.utils import class_from_module, get_evennia_version, logger
 from evennia.utils.utils import delay
 
-
 _BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 DISCORD_API_VERSION = 10

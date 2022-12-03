@@ -22,6 +22,7 @@ class GodotWebSocketClient(webclient.WebSocketClient):
     It inherits from the basic Websocket implementation and changes only what is necessary.
 
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol_key = "godotclient/websocket"
