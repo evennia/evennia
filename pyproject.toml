@@ -9,7 +9,7 @@ maintainers = [
     { name="Griatch", email="griatch@gmail.com" },
 ]
 description = "A full-featured toolkit and server for text-based multiplayer games (MUDs, MU*)."
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 readme = { file="README.md", content-type="text/markdown" }
 license = { text="BSD" }
 keywords = [
@@ -19,7 +19,8 @@ keywords = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: JavaScript",
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: BSD License",
@@ -111,7 +112,7 @@ extra = [
 
 [tool.black]
 line-length = 100
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py310', 'py311']
 exclude = '''
 
   (
