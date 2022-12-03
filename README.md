@@ -43,7 +43,7 @@ Welcome!
 
 [homepage]: https://www.evennia.com
 [docs]: https://www.evennia.com/docs/latest
-[screenshot]: https://user-images.githubusercontent.com/294267/30773728-ea45afb6-a076-11e7-8820-49be2168a6b8.png
+[screenshot]: https://user-images.githubusercontent.com/294267/205434941-14cc4f59-7109-49f7-9d71-0ad3371b007c.jpg
 [logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
 [unittestciimg]: https://github.com/evennia/evennia/workflows/test-suite/badge.svg
 [unittestcilink]: https://github.com/evennia/evennia/actions?query=workflow%3Atest-suite

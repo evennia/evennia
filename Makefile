@@ -44,7 +44,7 @@ testp:
 	evennia migrate;\
 	evennia test --keepdb --parallel 4 $(TESTS);\
 
-publish:
+release:
 	rm -Rf dist/
 	git clean -xdf	
 	pip install --upgrade pip 
