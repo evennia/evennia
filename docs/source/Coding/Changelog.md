@@ -5,7 +5,7 @@
 > Not released yet
 > 2019-2022 develop branch (WIP)
 
-Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.9, 3.10, 3.11.  PostgreSQL 11+.
+Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.10, 3.11.  PostgreSQL 11+.
 
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
@@ -222,6 +222,7 @@ Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.9, 3.10, 3.11.  Post
 - Add `AT_EXIT_TRAVERSE` signal, firing when an exit is traversed.
 - Add integration between Evennia and Discord channels (PR by Inspector Cararacal)
 - Support for using a Godot-powered client with Evennia (PR by ChrisLR)
+- Added German translation (patch by Zhuraj)
 
 ## Evennia 0.9.5
 
