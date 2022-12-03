@@ -7,18 +7,18 @@ over things manually.
 
 ### Upgrading the Evennia library
 
-Prior to 1.0, all Evennia installs were [Git-installs](./Installation-Git.md). These instructions assume that you have a cloned `evennia` repo and use a virtualenv (best practices).
+Prior to 1.0, all Evennia installs were [Git-installs](./Installation-Git.md). These instructions assume that you already have a cloned `evennia` repo and use a virtualenv (best practices).
 
 - Make sure to stop Evennia 0.9.5 entirely with `evennia stop` from your game dir.
 - `deactivate` to leave your active virtualenv.
 - Install Python 3.11 (recommended). Follow the [Git-installation](./Installation-Git.md) for your OS if needed.
 - Delete the old virtualenv `evenv` folder, or rename it (in case you want to keep using 0.9.5 for a while).
-- Make _new_ `evenv` virtualenv (see the [virtualenv instructions](./Installation-Git.md#virtualenv) for help)
-- `cd` into your `evennia/` root folder (you want to see the `docs/` and  `bin/` directories as well as a nested `evennia/` folder)
+- Make a _new_ `evenv` virtualenv (see the [virtualenv instructions](./Installation-Git.md#virtualenv) for help) and make sure it's active
+- `cd` into your `evennia/` root folder (you want to be where you see the `docs/` and  `bin/` directories as well as a nested `evennia/` folder)
 - `git pull`
-- `git checkout develop`   TODO - only until 1.0 release.
-- `pip install -e .`
-- If you want the optional extra libs (needed by some contribs), do `pip install -e .[extra]`
+- `git checkout main` (the `master`)
+- `pip install -e --upgrade .`
+- If you want the optional extra libs (needed by some contribs), do `pip install -e --upgrade .[extra]`
 - Test that you can run the `evennia` command.
 
 ### Upgrading your game dir
@@ -29,9 +29,8 @@ If you don't have anything you want to keep in your existing game dir, you can j
 - `cd` to your existing 0.9.5-based game folder (like `mygame`).
 - If you have changed `mygame/web`, _rename_ the folder to `web_0.9.5`. If you didn't change anything (or don't have anything you want to keep), you can _delete_ it entirely.
 - Copy `evennia/evennia/game_template/web` to `mygame/` (e.g. using `cp -Rf` or a file manager). This new `web` folder _replaces the old one_ and has a very different structure.
-- It's possible you need to replace/comment out import and calls to the deprecated
-[`django.conf.urls`](https://docs.djangoproject.com/en/3.2/ref/urls/#url). The new way to call it is [available here](https://docs.djangoproject.com/en/4.0/ref/urls/#django.urls.re_path).
-- Run `evennia migrate`
+- It's possible you need to replace/comment out import and calls to the deprecated [`django.conf.urls`](https://docs.djangoproject.com/en/3.2/ref/urls/#url). The new way to call it is [available here](https://docs.djangoproject.com/en/4.0/ref/urls/#django.urls.re_path).
+- Run `evennia migrate`  - note that it's normal to see some warnings here, _don't_ run `makemigrations` even if the system asks you to.
 - Run `evennia start`
 
 If you made extensive work in your game dir, you may well find that you need to do some (hopefully minor) changes to your code before it will start with Evennia 1.0. Some important points:
