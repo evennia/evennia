@@ -5,11 +5,11 @@ name: test-suite
 
 on:
   push:
-    branches: [master, develop]
+    branches: [main, develop]
     paths-ignore:
       - "docs/**"
   pull_request:
-    branches: [master, develop]
+    branches: [main, develop]
 
 jobs:
   test:
@@ -95,7 +95,7 @@ jobs:
       # it's also not critical if pushing to either service fails (happens for PRs since env is not
       # available outside of the evennia org)
       - name: Send data to Coveralls
-        if: ${{ matrix.coverage-test && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') }}
+        if: ${{ matrix.coverage-test && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
         continue-on-error: true
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}

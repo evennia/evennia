@@ -1,13 +1,3 @@
-
-```{warning}
-
-  This is the **WIP** documentation of the development branch of Evennia (v1.0-dev).
-
-  Unless you are beta-testing the new version, you are likely best
-  off using v0.9.5 of the docs (switch to it in the bottom left)
-  or the original github wiki. You have been warned.
-```
-
 # Evennia Documentation
 
 This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles.
