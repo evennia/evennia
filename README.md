@@ -1,5 +1,5 @@
 # Evennia MUD/MU\* Creation System ![][logo]
-[![Coverage Status][coverimg]][coverlink] [![Pypi Version][pypibadge]][pypilink]
+[![unittestciimg]][unittestcilink] [![Coverage Status][coverimg]][coverlink] [![Pypi Version][pypibadge]][pypilink]
 
 
 [Evennia][homepage] is a modern library for creating [online multiplayer text
