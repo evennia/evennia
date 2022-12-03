@@ -538,8 +538,16 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
     Compile the command line for starting a Twisted application using the 'twistd' executable.
 
     """
-    portal_cmd = [TWISTED_BINARY, "--python={}".format(PORTAL_PY_FILE)]
-    server_cmd = [TWISTED_BINARY, "--python={}".format(SERVER_PY_FILE)]
+    portal_cmd = [
+        TWISTED_BINARY,
+        f"--python={PORTAL_PY_FILE}",
+        "--logger=evennia.utils.logger.GetPortalLogObserver",
+    ]
+    server_cmd = [
+        TWISTED_BINARY,
+        f"--python={SERVER_PY_FILE}",
+        "--logger=evennia.utils.logger.GetServerLogObserver",
+    ]
 
     if os.name != "nt":
         # PID files only for UNIX
