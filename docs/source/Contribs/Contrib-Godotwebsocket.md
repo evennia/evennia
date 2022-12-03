@@ -101,7 +101,7 @@ caller.msg(coordinates=(9, 2))
 ```
 
 Godot
-```
+```gdscript
 func _on_data():
     ...
 	if json_data[0] == 'text':
@@ -130,7 +130,7 @@ you receive, so you can manage the code better.
 This is an example of a Script to use in Godot 3.
 The script can be attached to the root UI node.
 
-```
+```gdscript
 extends Node
 
 # The URL to connect to, should be your mud.
@@ -221,7 +221,7 @@ Note that the version is not final so the code may break.
 It requires a WebSocketClientNode as a child of the root node.
 The script can be attached to the root UI node.
 
-```
+```gdscript
 extends Control
 
 # The URL to connect to, should be your mud.

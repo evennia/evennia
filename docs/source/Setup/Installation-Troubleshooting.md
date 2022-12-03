@@ -7,12 +7,12 @@ you can run `evennia -l`, or start/reload the server with `evennia start -l` or 
 
 ## Check your Requirements
 
-Any system that supports Python3.9+ should work.
+Any system that supports Python3.10+ should work.
 - Linux/Unix
 - Windows (Win7, Win8, Win10, Win11)
 - Mac OSX (>10.5 recommended)
 
-- [Python](https://www.python.org) (v3.9, 3.10  and 3.11 are tested. 3.11 is recommended)
+- [Python](https://www.python.org) (3.10  and 3.11 are tested. 3.11 is recommended)
 - [Twisted](https://twistedmatrix.com) (v22.3+)
     - [ZopeInterface](https://www.zope.org/Products/ZopeInterface) (v3.0+)  - usually included in Twisted packages
     - Linux/Mac users may need the `gcc` and `python-dev` packages or equivalent.

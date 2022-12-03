@@ -2,52 +2,46 @@
 [![Build Status][unittestciimg]][unittestcilink] [![Coverage Status][coverimg]][coverlink]
 
 
-*Evennia* is a modern library for creating [online multiplayer text
+[Evennia][homepage] is a modern library for creating [online multiplayer text
 games][wikimudpage] (MUD, MUSH, MUX, MUCK, MOO etc) in pure Python. It
 allows game creators to design and flesh out their ideas with great
 freedom.
 
 Evennia does not impose a particular style, genre or game mechanic. Instead it
-solves the boring networking and provides a framework for you to build the game
-you want. Coding in Evennia is done using normal Python modules imported into
-the server at runtime. All library code is heavily documented. Evennia has
-extensive manuals and tutorials as well as a very active support community!
+solves the boring networking and basic stuff all online games need. It provides
+a framework and tools for you to build the game you want. Coding in Evennia is
+done using normal Python modules imported into the server at runtime.
+
+Evennia has [extensive documentation][docs]. It also has a very active community
+with [discussion forums][group] and a [discord server][chat] to help and support you!
 
 ## Installation
 
     pip install evennia
+        (windows users once: py -m evennia)
     evennia --init mygame
     cd mygame
     evennia migrate
     evennia start / stop / reload
 
-Next, browse to http://localhost:4001 or telnet to localhost port 4000 to see your working (if empty) game!
+See [the full installation instructions][installation] for more help.
 
-- https://www.evennia.com is the main hub tracking all things Evennia.
-- [Here is a shortcut to the documentation and tutorials](https://www.evennia.com/docs/latest/)
+Next, browse to `http://localhost:4001` or use your third-party mud client to
+connect to to `localhost`, port `4000` to see your working (if empty) game!
 
 ![screenshot][screenshot]
 
-## Current Status
+## Where to go next
 
-The codebase is currently in **Beta**. While development continues,
-Evennia is already stable enough to be suitable for prototyping and
-development of your own games.
+If this piqued your interest, there is a [lengthier introduction][introduction] to read. You
+can also read our [Evennia in pictures][evenniapictures] overview.
 
-## Where to go from here
+After that, why not check out the [Evennia Beginner tutorial][beginnertutorial].
 
-If this piqued your interest, there is a [lengthier
-introduction][introduction] to read.
-
-To learn how to get your hands on the code base, the [Getting
-started][gettingstarted] page is the way to go. Otherwise you could
-browse the [Documentation][docs] or why not come join the [Evennia
-Community forum][group] or join us in our [development chat][chat].
 Welcome!
 
 
 [homepage]: https://www.evennia.com
-[gettingstarted]: https://www.evennia.com/docs/latest/Getting-Started.html
 [docs]: https://www.evennia.com/docs/latest
 [screenshot]: https://user-images.githubusercontent.com/294267/30773728-ea45afb6-a076-11e7-8820-49be2168a6b8.png
 [logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
@@ -60,3 +54,6 @@ Welcome!
 [group]: https://github.com/evennia/evennia/discussions
 [chat]: https://discord.gg/AJJpcRUhtF
 [wikimudpage]: http://en.wikipedia.org/wiki/MUD
+[evenniapictures]: https://www.evennia.com/docs/latest/Evennia-In-Pictures.html
+[beginnertutorial]: https://www.evennia.com/docs/latest/Howtos/Howtos-Overview.html#beginner-tutorial
+[installation]: https://www.evennia.com/docs/latest/Setup/Setup-Overview.html#installation-and-running
