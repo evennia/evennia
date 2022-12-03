@@ -20,7 +20,7 @@ author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
 # This will be used for multi-version selection options.
-release = "1.0-dev"
+release = "1.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -54,7 +54,7 @@ html_static_path = ["_static"]
 # which branches to include in multi-versioned docs
 # smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
 # smv_branch_whitelist = r"^develop$|^master$|^v1.0$"
-smv_branch_whitelist = r"^develop$"
+smv_branch_whitelist = r"^develop$|^main$"
 smv_outputdir_format = "{config.release}"
 # don't make docs for tags
 smv_tag_whitelist = r"^$"
@@ -62,7 +62,7 @@ smv_tag_whitelist = r"^$"
 # used to fill in versioning.html links for versions that are not actually built.
 # These are also read from the deploy.py script. These are also the names of
 # the folders built in the gh-pages evennia branch, under docs/.
-latest_version = "0.9.5"
+latest_version = "1.0"
 legacy_versions = ["0.9.5"]
 
 
