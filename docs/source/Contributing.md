@@ -43,7 +43,7 @@ Evennia is a free and open-source project. Any monetary donations you want to of
 [pullrequest]: https://github.com/evennia/evennia/pulls
 [issues]: https://github.com/evennia/evennia/issues
 [patch]: https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29
-[codestyle]: https://github.com/evennia/evennia/blob/master/CODING_STYLE.md
+[codestyle]:: Evennia-Code-Style
 
 [forum]:https://github.com/evennia/evennia/discussions
 [issues]:https://github.com/evennia/evennia/issues/choose
