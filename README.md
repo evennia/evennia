@@ -30,6 +30,7 @@ Next, browse to `http://localhost:4001` or use your third-party mud client to
 connect to to `localhost`, port `4000` to see your working (if empty) game!
 
 ![screenshot][screenshot]
+_A game website is created automatically. Connect to your Evennia game from your web browser as well as using traditional third-party clients_.
 
 ## Where to go next
 
