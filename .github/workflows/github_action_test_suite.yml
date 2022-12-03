@@ -107,7 +107,7 @@ jobs:
     name: Deploy Docker Image
     needs: test
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'evennia/evennia' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') }}
+    if: ${{ github.repository == 'evennia/evennia' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
     steps:
       - uses: actions/checkout@v3
 
@@ -123,9 +123,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push for master
-        if: ${{ github.ref == 'refs/heads/master' }}
-        id: docker_build_master
+      - name: Build and push for main
+        if: ${{ github.ref == 'refs/heads/main' }}
+        id: docker_build_main
         uses: docker/build-push-action@v3
         with:
           push: true
