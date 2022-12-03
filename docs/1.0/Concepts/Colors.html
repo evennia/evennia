@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Colors &#8212; Evennia 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Clickable links" href="Clickable-Links.html" />
+    <link rel="prev" title="In-text tags parsed by Evennia" href="Tags-Parsed-By-Evennia.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Clickable-Links.html" title="Clickable links"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Tags-Parsed-By-Evennia.html" title="In-text tags parsed by Evennia"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="Tags-Parsed-By-Evennia.html" accesskey="U">In-text tags parsed by Evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Colors</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Colors</a><ul>
+<li><a class="reference internal" href="#ansi-colours">ANSI colours</a><ul>
+<li><a class="reference internal" href="#caveats-of">Caveats of <code class="docutils literal notranslate"><span class="pre">|*</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#xterm256-colours">Xterm256 Colours</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Tags-Parsed-By-Evennia.html"
+                        title="previous chapter">In-text tags parsed by Evennia</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Clickable-Links.html"
+                        title="next chapter">Clickable links</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Concepts/Colors.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Colors.html">1.0 (develop branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="colors">
+<h1>Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p>Note that the Documentation does not display colour the way it would look on the screen.</p>
+</div></blockquote>
+<p>Color can be a very useful tool for your game. It can be used to increase readability and make your
+game more appealing visually.</p>
+<p>Remember however that, with the exception of the webclient, you generally don’t control the client
+used to connect to the game.  There is, for example, one special tag meaning “yellow”. But exactly
+<em>which</em> hue of yellow is actually displayed on the user’s screen depends on the settings of their
+particular mud client. They could even swap the colours around or turn them off altogether if so
+desired. Some clients don’t even support color - text games are also played with special reading
+equipment by people who are blind or have otherwise diminished eyesight.</p>
+<p>So a good rule of thumb is to use colour to enhance your game but don’t <em>rely</em> on it to display
+critical information. If you are coding the game, you can add functionality to let users disable
+colours as they please, as described <span class="xref myst">here</span>.</p>
+<p>Evennia supports two color standards:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ANSI</span></code> - 16 foreground colors + 8  background colors. Widely supported.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Xterm256</span></code> - 128 RGB colors, 32 greyscales. Not always supported in old clients.</p></li>
+</ul>
+<p>To see which colours your client support, use the default <code class="docutils literal notranslate"><span class="pre">color</span></code> command. This will list all
+available colours for ANSI and Xterm256 along with the codes you use for them. The
+central ansi/xterm256 parser is located in  <a class="reference internal" href="../api/evennia.utils.ansi.html#evennia-utils-ansi"><span class="std std-ref">evennia/utils/ansi.py</span></a>.</p>
+<section id="ansi-colours">
+<h2>ANSI colours<a class="headerlink" href="#ansi-colours" title="Permalink to this headline">¶</a></h2>
+<p>Evennia supports the <code class="docutils literal notranslate"><span class="pre">ANSI</span></code> standard for text. This is by far the most supported MUD-color standard, available in all but the most ancient mud clients.</p>
+<p>To colour your text you put special tags in it. Evennia will parse these and convert them to the
+correct markup for the client used. If the user’s client/console/display supports ANSI colour, they
+will see the text in the specified colour, otherwise the tags will be stripped (uncolored text).</p>
+<p>For the webclient, Evennia will translate the codes to CSS tags.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tag</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>|n</p></td>
+<td><p>end all color formatting, including background colors.</p></td>
+</tr>
+<tr class="row-odd"><td><p>|r</p></td>
+<td><p>bright red foreground color</p></td>
+</tr>
+<tr class="row-even"><td><p>|g</p></td>
+<td><p>bright green foreground color</p></td>
+</tr>
+<tr class="row-odd"><td><p>|y</p></td>
+<td><p>bright yellow foreground color</p></td>
+</tr>
+<tr class="row-even"><td><p>|b</p></td>
+<td><p>bright blue foreground color</p></td>
+</tr>
+<tr class="row-odd"><td><p>|m</p></td>
+<td><p>bright magentaforeground color</p></td>
+</tr>
+<tr class="row-even"><td><p>|c</p></td>
+<td><p>bright cyan foreground color</p></td>
+</tr>
+<tr class="row-odd"><td><p>|w</p></td>
+<td><p>bright white foreground color</p></td>
+</tr>
+<tr class="row-even"><td><p>|x</p></td>
+<td><p>bright black (dark grey) foreground color</p></td>
+</tr>
+<tr class="row-odd"><td><p>|R</p></td>
+<td><p>normal red foreground color</p></td>
+</tr>
+<tr class="row-even"><td><p>|G</p></td>
+<td><p>normal green foreground color</p></td>
+</tr>
+<tr class="row-odd"><td><p>|Y</p></td>
+<td><p>normal yellow foreground color</p></td>
+</tr>
+<tr class="row-even"><td><p>|B</p></td>
+<td><p>normal blue foreground color</p></td>
+</tr>
+<tr class="row-odd"><td><p>|M</p></td>
+<td><p>normal magentaforeground color</p></td>
+</tr>
+<tr class="row-even"><td><p>|C</p></td>
+<td><p>normal cyan foreground color</p></td>
+</tr>
+<tr class="row-odd"><td><p>|W</p></td>
+<td><p>normal white (light grey) foreground color</p></td>
+</tr>
+<tr class="row-even"><td><p>|X</p></td>
+<td><p>normal black foreground color</p></td>
+</tr>
+<tr class="row-odd"><td><p>|[#</p></td>
+<td><p>background colours, e.g. |[c for bright cyan background and |[C a normal cyan background.</p></td>
+</tr>
+<tr class="row-even"><td><p>|!#</p></td>
+<td><p>foreground color that inherits brightness from previous tags. Always uppcase, like |!R</p></td>
+</tr>
+<tr class="row-odd"><td><p>|h</p></td>
+<td><p>make any following foreground ANSI colors bright (no effect on Xterm colors). Use with |!#. Technically, |h|G == |g.</p></td>
+</tr>
+<tr class="row-even"><td><p>|H</p></td>
+<td><p>negates the effects of |h, return foreground to normal (no effect on Xterm colors)</p></td>
+</tr>
+<tr class="row-odd"><td><p>|/</p></td>
+<td><p>line break. Use instead of Python \n when adding strings from in-game.</p></td>
+</tr>
+<tr class="row-even"><td><p>|-</p></td>
+<td><p>tab character when adding strings in-game. Can vay per client, so usually better with spaces.</p></td>
+</tr>
+<tr class="row-odd"><td><p>|_</p></td>
+<td><p>a space. Only needed to avoid auto-cropping at the end of a in-game input</p></td>
+</tr>
+<tr class="row-even"><td><p>|*</p></td>
+<td><p>invert the current text/background colours, like a marker. See note below.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Here is an example of the tags in action:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> |rThis text is bright red.|n This is normal text.
+ |RThis is a dark red text.|n This is normal text.
+ |[rThis text has red background.|n This is normal text.
+ |b|[yThis is bright blue text on yellow background.|n This is normal text.
+</pre></div>
+</div>
+<p>Note: The ANSI standard does not actually support bright backgrounds like <code class="docutils literal notranslate"><span class="pre">|[r</span></code> - the standard
+only supports “normal” intensity backgrounds.  To get around this Evennia implements these as <a class="reference internal" href="#xterm256-colours"><span class="std std-doc">Xterm256 colours</span></a> behind the scenes. If the client does not support
+Xterm256 the ANSI colors will be used instead and there will be no visible difference between using upper- and lower-case background tags.</p>
+<p>If you want to display an ANSI marker as output text (without having any effect), you need to escape it by preceding its <code class="docutils literal notranslate"><span class="pre">|</span></code> with another <code class="docutils literal notranslate"><span class="pre">|</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">say</span> <span class="n">The</span> <span class="o">||</span><span class="n">r</span> <span class="n">ANSI</span> <span class="n">marker</span> <span class="n">changes</span> <span class="n">text</span> <span class="n">color</span> <span class="n">to</span> <span class="n">bright</span> <span class="n">red</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This will output the raw <code class="docutils literal notranslate"><span class="pre">|r</span></code> without any color change. This can also be necessary if you are doing
+ansi art that uses <code class="docutils literal notranslate"><span class="pre">|</span></code> with a letter directly following it.</p>
+<p>Use the command</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>color ansi
+</pre></div>
+</div>
+<p>to get a list of all supported ANSI colours and the tags used to produce them.</p>
+<p>A few additional ANSI codes are supported:</p>
+<section id="caveats-of">
+<h3>Caveats of <code class="docutils literal notranslate"><span class="pre">|*</span></code><a class="headerlink" href="#caveats-of" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">|*</span></code> tag (inverse video) is an old ANSI standard and should usually not be used for more than to
+mark short snippets of text. If combined with other tags it comes with a series of potentially
+confusing behaviors:</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">|*</span></code> tag will only work once in a row:, ie: after using it once it won’t have an effect again
+until you declare another tag. This is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Normal</span> <span class="n">text</span><span class="p">,</span> <span class="o">|*</span><span class="nb">reversed</span> <span class="n">text</span><span class="o">|*</span><span class="p">,</span> <span class="n">still</span> <span class="nb">reversed</span> <span class="n">text</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>that is, it will not reverse to normal at the second <code class="docutils literal notranslate"><span class="pre">|*</span></code>. You need to reset it manually:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Normal</span> <span class="n">text</span><span class="p">,</span> <span class="o">|*</span><span class="nb">reversed</span> <span class="n">text</span><span class="o">|</span><span class="n">n</span><span class="p">,</span> <span class="n">normal</span> <span class="n">again</span><span class="o">.</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">|*</span></code> tag does not take “bright” colors into account:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span><span class="n">RNormal</span> <span class="n">red</span><span class="p">,</span> <span class="o">|</span><span class="n">hnow</span> <span class="n">brightened</span><span class="o">.</span> <span class="o">|*</span><span class="n">BG</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">red</span><span class="o">.</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>So <code class="docutils literal notranslate"><span class="pre">|*</span></code> only considers the ‘true’ foreground color, ignoring any highlighting. Think of the bright
+state (<code class="docutils literal notranslate"><span class="pre">|h</span></code>) as something like like <code class="docutils literal notranslate"><span class="pre">&lt;strong&gt;</span></code> in HTML: it modifies the <em>appearance</em> of a normal
+foreground color to match its bright counterpart, without changing its normal color.</p>
+<ul>
+<li><p>Finally, after a <code class="docutils literal notranslate"><span class="pre">|*</span></code>, if the previous background was set to a dark color (via <code class="docutils literal notranslate"><span class="pre">|[</span></code>), <code class="docutils literal notranslate"><span class="pre">|!#</span></code>) will
+actually change the background color instead of the foreground:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>|*reversed text |!R now BG is red.
+</pre></div>
+</div>
+</li>
+</ul>
+<p>For a detailed explanation of these caveats, see the [Understanding Color Tags](Understanding-Color-
+Tags) tutorial. But most of the time you might be better off to simply avoid <code class="docutils literal notranslate"><span class="pre">|*</span></code> and mark your text
+manually instead.</p>
+</section>
+</section>
+<section id="xterm256-colours">
+<h2>Xterm256 Colours<a class="headerlink" href="#xterm256-colours" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>See the <a class="reference internal" href="../Howtos/Tutorial-Understanding-Color-Tags.html"><span class="doc std std-doc">Understanding Color Tags</span></a> tutorial, for more on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.</p>
+</aside>
+<p>The <em>Xterm256</em> standard is a colour scheme that supports 256 colours for text and/or background. It can be combined freely with ANSI colors (above), but some ANSI tags don’t affect Xterm256 tags.</p>
+<p>While this offers many more possibilities than traditional ANSI colours, be wary that too many text
+colors will be confusing to the eye. Also, not all clients support Xterm256 - these will instead see
+the closest equivalent ANSI color. You can mix Xterm256 tags with ANSI tags as you please.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tag</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>|###</p></td>
+<td><p>foreground RGB (red/green/blue), each from 0 to 5.</p></td>
+</tr>
+<tr class="row-odd"><td><p>|[###</p></td>
+<td><p>background RGB</p></td>
+</tr>
+<tr class="row-even"><td><p>|=#</p></td>
+<td><p>a-z foreground greyscale, where <code class="docutils literal notranslate"><span class="pre">a</span></code> is black and <code class="docutils literal notranslate"><span class="pre">z</span></code> is white.</p></td>
+</tr>
+<tr class="row-odd"><td><p>|[=#</p></td>
+<td><p>a-z background greyscale</p></td>
+</tr>
+</tbody>
+</table>
+<p>Some examples:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tag</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>|500</p></td>
+<td><p>bright red</p></td>
+</tr>
+<tr class="row-odd"><td><p>|050</p></td>
+<td><p>bright green</p></td>
+</tr>
+<tr class="row-even"><td><p>|005</p></td>
+<td><p>bright blue</p></td>
+</tr>
+<tr class="row-odd"><td><p>|520</p></td>
+<td><p>red + a little green = orange</p></td>
+</tr>
+<tr class="row-even"><td><p>|555</p></td>
+<td><p>pure white foreground</p></td>
+</tr>
+<tr class="row-odd"><td><p>|230</p></td>
+<td><p>olive green foreground</p></td>
+</tr>
+<tr class="row-even"><td><p>|[300</p></td>
+<td><p>text with a dark red background</p></td>
+</tr>
+<tr class="row-odd"><td><p>|005|[054</p></td>
+<td><p>dark blue text on a bright cyan background</p></td>
+</tr>
+<tr class="row-even"><td><p>|=a</p></td>
+<td><p>greyscale foreground, equal to black</p></td>
+</tr>
+<tr class="row-odd"><td><p>|=m</p></td>
+<td><p>greyscale foreground, midway between white and black.</p></td>
+</tr>
+<tr class="row-even"><td><p>|=z</p></td>
+<td><p>greyscale foreground, equal to white</p></td>
+</tr>
+<tr class="row-odd"><td><p>|[=m</p></td>
+<td><p>greyscale background</p></td>
+</tr>
+</tbody>
+</table>
+<p>Xterm256 don’t use bright/normal intensity like ANSI does; intensity is just varied by increasing/decreasing  all RGB values by the same amount.</p>
+<p>If you have a client that supports Xterm256, you can use</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>color xterm256
+</pre></div>
+</div>
+<p>to get a table of all the 256 colours and the codes that produce them. If the table looks broken up
+into a few blocks of colors, it means Xterm256 is not supported and ANSI are used as a replacement. You can use the <code class="docutils literal notranslate"><span class="pre">options</span></code> command to see if xterm256 is active for you. This depends on if your client told Evennia what it supports - if not, and you know what your client supports, you may have to activate some features manually.</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Clickable-Links.html" title="Clickable links"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Tags-Parsed-By-Evennia.html" title="In-text tags parsed by Evennia"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="Tags-Parsed-By-Evennia.html" >In-text tags parsed by Evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Colors</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
