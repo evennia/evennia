@@ -132,10 +132,7 @@ up anyway. Make sure you are quelling your superuser powers and try to get the b
     You can't get that.
 
 Think this default error message looks dull? The `get` command looks for an [Attribute](../../../Components/Attributes.md)
-named `get_err_msg` for returning a nicer error message (we just happen to know this, you would need
-to peek into the
-[code](https://github.com/evennia/evennia/blob/master/evennia/commands/default/general.py#L235) for
-the `get` command to find out.). You set attributes using the `set` command:
+named `get_err_msg` for returning a nicer error messageod (this can be seen from the default `get` command code). You set attributes using the `set` command:
 
     set box/get_err_msg = It's way too heavy for you to lift.
 

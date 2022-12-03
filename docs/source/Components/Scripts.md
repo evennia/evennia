@@ -307,8 +307,6 @@ class Weather(Script):
             # [...]
         except Exception:
             logger.log_trace()
-https://github.com/evennia/evennia/blob/master/evennia/contrib/tutorial_examples/example_batch_cmds.ev
-
 ```
 
 

@@ -232,14 +232,9 @@ another.
 - **Q:** can I have two characters answering to the same dialogue in exactly the same way?
 - **A:** It's possible but not so easy to do.  Usually, event grouping is set in code, and depends
 on different games.  However, if it is for some infrequent occurrences, it's easy to do using
-[chained
-events](https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md#chained-
-events).
+[chained events](./Contrib-Ingame-Python.md)).
 - **Q:** is it possible to deploy callbacks on all characters sharing the same prototype?
 - **A:** not out of the box.  This depends on individual settings in code.  One can imagine that all
-characters of some type would share some events, but this is game-specific.  Rooms of the same zone
-could share the same events as well.  It is possible to do but requires modification of the source
-code.
+characters of some type would share some events, but this is game-specific.  Rooms of the same zone could share the same events as well.  It is possible to do but requires modification of the source code.
 
-- Next tutorial: [adding a voice-operated elevator with events](A-voice-operated-elevator-using-
-events).
+- Next tutorial: [adding a voice-operated elevator with events](A-voice-operated-elevator-using- events).

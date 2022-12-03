@@ -334,9 +334,8 @@ this:
     This is a great warrior.
 
 We don't actually have to modify the `look` command itself however. To understand why, take a look
-at how the default `look` is actually defined. It sits in `evennia/commands/default/general.py` (or
-browse it online
-[here](https://github.com/evennia/evennia/blob/master/evennia/commands/default/general.py#L44)).
+at how the default `look` is actually defined. It sits in [evennia/commands/default/general.py](evennia.commands.default.general).
+
 You will find that the actual return text is done by the `look` command calling a *hook method*
 named `return_appearance` on the object looked at. All the `look` does is to echo whatever this hook
 returns.  So what we need to do is to edit our custom Character typeclass and overload its
@@ -344,10 +343,9 @@ returns.  So what we need to do is to edit our custom Character typeclass and ov
 comes into play for real).
 
 Go back to your custom Character typeclass in `mygame/typeclasses/characters.py`. The default
-implementation of `return appearance` is found in  `evennia.DefaultCharacter` (or online
-[here](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1438)).  If you
-want to make bigger changes you could copy & paste the whole default thing into our overloading
-method. In our case the change is small though:
+implementation of `return appearance` is found in  [evennia.DefaultCharacter](evennia.objects.objects.DefaultCharacter).
+
+If you  want to make bigger changes you could copy & paste the whole default thing into our overloading method. In our case the change is small though:
 
 ```python
 class Character(DefaultCharacter):

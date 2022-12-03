@@ -160,7 +160,7 @@ containers](https://docs.docker.com/engine/tutorials/dockervolumes/) page.
 
 ### What if I Don't Want "LATEST"?
 
-A new `evennia/evennia` image is built automatically whenever there is a new commit to the `master` branch of Evennia. It is possible to create your own custom evennia base docker image based on any arbitrary commit.
+A new `evennia/evennia` image is built automatically whenever there is a new commit to the `main` branch of Evennia. It is possible to create your own custom evennia base docker image based on any arbitrary commit.
 
 1. Use git tools to checkout the commit that you want to base your image upon. (In the example
 below, we're checking out commit a8oc3d5b.)

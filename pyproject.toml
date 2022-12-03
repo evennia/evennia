@@ -8,7 +8,7 @@ version = "1.0rc10"
 maintainers = [
     { name="Griatch", email="griatch@gmail.com" },
 ]
-description = "A full-featured toolkit and server for text-based multiplayer games (MUDs, MU*)."
+description = "A full-featured toolkit and server for text-based multiplayer games (MUDs, MU*, etc)."
 requires-python = ">=3.10"
 readme = { file="README.md", content-type="text/markdown" }
 license = { text="BSD" }
