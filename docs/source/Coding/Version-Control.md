@@ -295,7 +295,7 @@ You can't do `git push upstream` unless you have write-access to the upstream Ev
 This should be done in your fork of Evennia. You should _always_ do this in a _separate git branch_ based off the Evennia branch you want to improve. 
 
     git checkout main (or develop)
-    git branch - b myfixbranch
+    git branch -b myfixbranch
 
 Now fix whatever needs fixing. Abide by the [Evennia code style](./Evennia-Code-Style.md). You can `git commit` commit your changes along the way as normal.
 
