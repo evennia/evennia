@@ -17,7 +17,7 @@ Prior to 1.0, all Evennia installs were [Git-installs](./Installation-Git.md). T
 - `cd` into your `evennia/` root folder (you want to be where you see the `docs/` and  `bin/` directories as well as a nested `evennia/` folder)
 - `git pull`
 - `git checkout main` (instead of `master` which was used for `0.9.5`)
-- `pip install -e --upgrade .`
+- `pip install --upgrade -e .`
 - If you want the optional extra libs (needed by some contribs), do `pip install -e --upgrade .[extra]`
 - Test that you can run the `evennia` command.
 
