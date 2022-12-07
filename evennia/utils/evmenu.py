@@ -273,12 +273,22 @@ from django.conf import settings
 
 # i18n
 from django.utils.translation import gettext as _
+
 from evennia import CmdSet, Command
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.ansi import strip_ansi
 from evennia.utils.evtable import EvColumn, EvTable
-from evennia.utils.utils import crop, dedent, is_iter, m_len, make_iter, mod_import, pad, to_str
+from evennia.utils.utils import (
+    crop,
+    dedent,
+    is_iter,
+    m_len,
+    make_iter,
+    mod_import,
+    pad,
+    to_str,
+)
 
 # read from protocol NAWS later?
 _MAX_TEXT_WIDTH = settings.CLIENT_DEFAULT_WIDTH

@@ -7,12 +7,13 @@ import os
 import pickle
 
 from anything import Something
-from evennia.server import evennia_launcher
-from evennia.server.portal import amp
 from mock import MagicMock, create_autospec, patch
 from twisted.internet import reactor
 from twisted.internet.base import DelayedCall
 from twisted.trial.unittest import TestCase as TwistedTestCase
+
+from evennia.server import evennia_launcher
+from evennia.server.portal import amp
 
 DelayedCall.debug = True
 

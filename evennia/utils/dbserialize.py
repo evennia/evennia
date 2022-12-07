@@ -30,6 +30,7 @@ except ImportError:
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import SafeString
+
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
 
