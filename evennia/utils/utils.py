@@ -34,12 +34,11 @@ from django.core.validators import validate_email as django_validate_email
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
+from evennia.utils import logger
 from simpleeval import simple_eval
 from twisted.internet import reactor, threads
 from twisted.internet.defer import returnValue  # noqa - used as import target
 from twisted.internet.task import deferLater
-
-from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
@@ -288,8 +287,8 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         # absolute mode - just crop or fill to width
         abs_lines = []
         for line in text.split("\n"):
-            nlen = len(line)
-            if len(line) < width:
+            nlen = m_len(line)
+            if m_len(line) < width:
                 line += sp * (width - nlen)
             else:
                 line = crop(line, width=width, suffix="")
@@ -304,7 +303,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     for ip, paragraph in enumerate(paragraphs):
         if ip > 0:
             words.append(("\n", 0))
-        words.extend((word, len(word)) for word in paragraph.split())
+        words.extend((word, m_len(word)) for word in paragraph.split())
 
     if not words:
         # Just whitespace!

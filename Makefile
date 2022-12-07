@@ -13,7 +13,7 @@ default:
 	@echo "  make test - run evennia test suite with all default values."
 	@echo "  make tests=evennia.path test - run only specific test or tests."
 	@echo "  make testp - run test suite using multiple cores."
-	@echo "  make publish - publish evennia to pypi (requires pypi credentials)
+	@echo "  make release - publish evennia to pypi (requires pypi credentials)
 
 install:
 	pip install -e .
