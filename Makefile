@@ -44,10 +44,8 @@ testp:
 	evennia migrate;\
 	evennia test --keepdb --parallel 4 $(TESTS);\
 
+version:
+	echo $(VERSION)
+
 release:
-	rm -Rf dist/
-	git clean -xdf	
-	pip install --upgrade pip 
-	pip install build twine 
-	python -m build --sdist --wheel --outdir dist/ . 
-	python -m twine upload dist/*
+	./.release.sh
