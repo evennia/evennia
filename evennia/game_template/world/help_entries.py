@@ -31,7 +31,7 @@ HELP_ENTRY_DICTS = [
         "category": "General",
         "locks": "read:perm(Developer)",
         "text": """
-            Evennia is a MU-game server and frameworkdin Python. You can read more
+            Evennia is a MU-game server and framework written in Python. You can read more
             on https://www.evennia.com.
 
             # subtopics
@@ -60,7 +60,7 @@ HELP_ENTRY_DICTS = [
         "category": "building",
         "text": """
             Evennia comes with a bunch of default building commands. You can
-            find a beginner tutorial in the evennia documentation.
+            find a beginner tutorial in the Evennia documentation.
 
         """,
     },
