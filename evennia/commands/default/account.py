@@ -1024,7 +1024,7 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
       style <option> = <value>
 
     Configure stylings for in-game display elements like table borders, help
-    entriest etc. Use without arguments to see all available options.
+    entries etc. Use without arguments to see all available options.
 
     """
 
