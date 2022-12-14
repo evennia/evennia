@@ -99,7 +99,6 @@
 <span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">lookup</span> <span class="k">as</span> <span class="n">codecs_lookup</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
 
@@ -268,7 +267,8 @@
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
             <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a character.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Created new character </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. Use |wic </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n to enter the game as this character.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Created new character </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. Use |wic </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n to enter&quot;</span>
+            <span class="s2">&quot; the game as this character.&quot;</span>
         <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Character Created: </span><span class="si">{</span><span class="n">new_character</span><span class="si">}</span><span class="s2"> (Caller: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2">, IP: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -394,11 +394,13 @@
             <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
                 <span class="c1"># look at the playable_characters list first</span>
                 <span class="n">character_candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                    <span class="n">account</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
-                        <span class="n">candidates</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
-                        <span class="n">search_object</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span>
+                        <span class="n">account</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                            <span class="n">candidates</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+                            <span class="n">search_object</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 
@@ -447,12 +449,14 @@
             <span class="n">account</span><span class="o">.</span><span class="n">puppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">new_character</span><span class="p">)</span>
             <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="n">new_character</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Puppet Success: (Caller: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2">, Target: </span><span class="si">{</span><span class="n">new_character</span><span class="si">}</span><span class="s2">, IP: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Puppet Success: (Caller: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2">, Target: </span><span class="si">{</span><span class="n">new_character</span><span class="si">}</span><span class="s2">, IP:&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">).&quot;</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rYou cannot become |C</span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Puppet Failed: %s (Caller: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2">, Target: </span><span class="si">{</span><span class="n">new_character</span><span class="si">}</span><span class="s2">, IP: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Puppet Failed: %s (Caller: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2">, Target: </span><span class="si">{</span><span class="n">new_character</span><span class="si">}</span><span class="s2">, IP:&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">).&quot;</span>
             <span class="p">)</span></div></div>
 
 
@@ -747,7 +751,8 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">flags</span><span class="p">[</span><span class="n">new_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_val</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Option |w</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">|n was changed from &#39;|w</span><span class="si">{</span><span class="n">old_val</span><span class="si">}</span><span class="s2">|n&#39; to &#39;|w</span><span class="si">{</span><span class="n">new_val</span><span class="si">}</span><span class="s2">|n&#39;.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Option |w</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">|n was changed from &#39;|w</span><span class="si">{</span><span class="n">old_val</span><span class="si">}</span><span class="s2">|n&#39; to&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot; &#39;|w</span><span class="si">{</span><span class="n">new_val</span><span class="si">}</span><span class="s2">|n&#39;.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">return</span> <span class="p">{</span><span class="n">new_name</span><span class="p">:</span> <span class="n">new_val</span><span class="p">}</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -1101,7 +1106,7 @@
 <span class="sd">      style &lt;option&gt; = &lt;value&gt;</span>
 
 <span class="sd">    Configure stylings for in-game display elements like table borders, help</span>
-<span class="sd">    entriest etc. Use without arguments to see all available options.</span>
+<span class="sd">    entries etc. Use without arguments to see all available options.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
