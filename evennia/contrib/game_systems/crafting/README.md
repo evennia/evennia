@@ -42,7 +42,7 @@ is being combined instead):
 See the [sword example](evennia.contrib.game_systems.crafting.example_recipes) for an example
 of how to design a recipe tree for crafting a sword from base elements.
 
-## Intallation and Usage
+## Installation and Usage
 
 Import the `CmdCraft` command from evennia/contrib/crafting/crafting.py  and
 add it to your Character cmdset. Reload and the `craft` command will be
