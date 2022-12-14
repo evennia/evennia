@@ -195,6 +195,9 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         else:
             # we don't know where to reconnect to! we'll start from the beginning
             self.url = None
+        # reset the internal delay, since this is a deliberate disconnect
+        self.delay = self.initialDelay
+        # disconnect to allow the reconnection process to kick in
         self.bot.sendClose()
         self.sessionhandler.server_disconnect(self.bot)
 
