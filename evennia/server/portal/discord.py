@@ -87,6 +87,7 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
     A customized websocket client factory that navigates the Discord gateway process.
 
     """
+
     initialDelay = 1
     factor = 1.5
     maxDelay = 60
