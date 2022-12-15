@@ -84,7 +84,7 @@ def should_retry(status_code):
 
 class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.ReconnectingClientFactory):
     """
-    A variant of the websocket-factory that auto-reconnects.
+    A customized websocket client factory that navigates the Discord gateway process.
 
     """
 
@@ -94,7 +94,7 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
     noisy = False
     gateway = None
     resume_url = None
-    do_retry = True
+    is_connecting = False
 
     def __init__(self, sessionhandler, *args, **kwargs):
         self.uid = kwargs.get("uid")
@@ -122,8 +122,8 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
                 d = readBody(response)
                 d.addCallback(self.websocket_init, *args, **kwargs)
                 return d
-            elif should_retry(response.code):
-                delay(300, self.get_gateway_url, *args, **kwargs)
+            else:
+                logger.log_warn("Discord gateway request failed.")
 
         d.addCallback(cbResponse)
 
@@ -132,6 +132,7 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         callback for when the URL is gotten
         """
         data = json.loads(str(payload, "utf-8"))
+        self.is_connecting = False
         if url := data.get("url"):
             self.gateway = f"{url}/?v={DISCORD_API_VERSION}&encoding=json".encode("utf-8")
             useragent = kwargs.pop("useragent", DISCORD_USER_AGENT)
@@ -179,30 +180,7 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
             connector (Connector): Represents the connection.
 
         """
-        logger.log_info("Attempting connection to Discord...")
-
-    def clientConnectionFailed(self, connector, reason):
-        """
-        Called when Client failed to connect.
-
-        Args:
-            connector (Connection): Represents the connection.
-            reason (str): The reason for the failure.
-
-        """
-        protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
-
-    def clientConnectionLost(self, connector, reason):
-        """
-        Called when Client loses connection.
-
-        Args:
-            connector (Connection): Represents the connection.
-            reason (str): The reason for the failure.
-
-        """
-        if self.do_retry and self.bot:
-            self.retry(connector)
+        logger.log_info("Connecting to Discord...")
 
     def reconnect(self):
         """
@@ -210,33 +188,30 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         de-registering the session and then reattaching a new one.
 
         """
-        # set the retry flag to False so it doesn't attempt an automatic retry
-        # and duplicate the connection
-        self.do_retry = False
-        # disconnect everything
-        self.bot.transport.loseConnection()
-        self.sessionhandler.server_disconnect(self.bot)
         # set up the reconnection
         if self.resume_url:
             self.url = self.resume_url
         elif self.gateway:
             self.url = self.gateway
         else:
-            # we don't know where to reconnect to! start from the beginning
-            self.get_gateway_url()
-            return
-        self.start()
+            # we don't know where to reconnect to! we'll start from the beginning
+            self.url = None
+        # reset the internal delay, since this is a deliberate disconnect
+        self.delay = self.initialDelay
+        # disconnect to allow the reconnection process to kick in
+        self.bot.sendClose()
+        self.sessionhandler.server_disconnect(self.bot)
 
     def start(self):
         "Connect protocol to remote server"
 
         if not self.gateway:
-            # we can't actually start yet
+            # we don't know where to connect to
             # get the gateway URL from Discord
+            self.is_connecting = True
             self.get_gateway_url()
-        else:
-            # set the retry flag so we maintain this connection
-            self.do_retry = True
+        elif not self.is_connecting:
+            # everything is good, connect
             connectWS(self)
 
 
@@ -255,7 +230,6 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
     def __init__(self):
         WebSocketClientProtocol.__init__(self)
         _BASE_SESSION_CLASS.__init__(self)
-        self.restart_downtime = None
 
     def at_login(self):
         pass
@@ -265,8 +239,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         Called when connection is established.
 
         """
-        self.restart_downtime = None
-        self.restart_task = None
+        logger.log_msg("Discord connection established.")
         self.factory.bot = self
 
         self.init_session("discord", "discord.gg", self.factory.sessionhandler)
@@ -352,11 +325,11 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         """
         if self.nextHeartbeatCall:
             self.nextHeartbeatCall.cancel()
-        self.disconnect(reason)
-        if code >= 4000:
-            logger.log_err(f"Discord connection closed: {reason}")
+            self.nextHeartbeatCall = None
+        if wasClean:
+            logger.log_info(f"Discord connection closed ({code}) reason: {reason}")
         else:
-            logger.log_info(f"Discord disconnected: {reason}")
+            logger.log_info(f"Discord connection lost.")
 
     def _send_json(self, data):
         """

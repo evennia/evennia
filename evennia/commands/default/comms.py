@@ -1925,6 +1925,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
         /delete  - alias to remove
         /guild   - toggle the Discord server tag on/off
         /channel - toggle the Evennia/Discord channel tags on/off
+        /start   - tell the bot to start, in case it lost its connection
 
     Example:
         discord2chan mydiscord = 555555555555555
@@ -1943,6 +1944,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
         "guild",
         "list",
         "remove",
+        "start",
     )
     locks = "cmd:serversetting(DISCORD_ENABLED) and pperm(Developer)"
     help_category = "Comms"
@@ -1972,6 +1974,13 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             self.msg(
                 f"WARNING: The Discord bot's typeclass is '{discord_bot.typeclass_path}'. This does not match {settings.DISCORD_BOT_CLASS} in settings!"
             )
+
+        if "start" in self.switches:
+            if discord_bot.sessions.all():
+                self.msg("The Discord bot is already running.")
+            else:
+                discord_bot.start()
+            return
 
         if "guild" in self.switches:
             discord_bot.db.tag_guild = not discord_bot.db.tag_guild
