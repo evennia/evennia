@@ -426,8 +426,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
             caller.msg("This can't be picked up.")
         else:
             singular, _ = obj.get_numbered_name(1, caller)
-            caller.msg(f"You pick up {singular}.")
-            caller.location.msg_contents(f"{caller.name} picks up {singular}.", exclude=caller)
+            caller.location.msg_contents(f"$You() $conj(pick) up {singular}.", from_obj=caller)
             # calling at_get hook method
             obj.at_get(caller)
 
@@ -475,8 +474,7 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
             caller.msg("This couldn't be dropped.")
         else:
             singular, _ = obj.get_numbered_name(1, caller)
-            caller.msg(f"You drop {singular}.")
-            caller.location.msg_contents(f"{caller.name} drops {singular}.", exclude=caller)
+            caller.location.msg_contents(f"$You() $conj(drop) {singular}.", from_obj=caller)
             # Call the object script's at_drop() method.
             obj.at_drop(caller)
 
