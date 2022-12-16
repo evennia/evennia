@@ -113,7 +113,7 @@ class LivingMixin:
         healed = min(damage, hp) 
         self.hp += healed 
         
-        self.msg("You heal for {healed} HP.") 
+        self.msg(f"You heal for {healed} HP.") 
         
     def at_pay(self, amount):
         """When paying coins, make sure to never detract more than we have"""
