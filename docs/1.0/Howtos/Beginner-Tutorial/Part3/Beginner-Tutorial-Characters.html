@@ -220,7 +220,7 @@ since it can also get confusing to follow the code.</p>
         <span class="n">healed</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">damage</span><span class="p">,</span> <span class="n">hp</span><span class="p">)</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">+=</span> <span class="n">healed</span> 
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You heal for </span><span class="si">{healed}</span><span class="s2"> HP.&quot;</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You heal for </span><span class="si">{</span><span class="n">healed</span><span class="si">}</span><span class="s2"> HP.&quot;</span><span class="p">)</span> 
         
     <span class="k">def</span> <span class="nf">at_pay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;When paying coins, make sure to never detract more than we have&quot;&quot;&quot;</span>

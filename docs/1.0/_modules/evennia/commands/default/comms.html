@@ -2002,6 +2002,7 @@
 <span class="sd">        /delete  - alias to remove</span>
 <span class="sd">        /guild   - toggle the Discord server tag on/off</span>
 <span class="sd">        /channel - toggle the Evennia/Discord channel tags on/off</span>
+<span class="sd">        /start   - tell the bot to start, in case it lost its connection</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        discord2chan mydiscord = 555555555555555</span>
@@ -2020,6 +2021,7 @@
         <span class="s2">&quot;guild&quot;</span><span class="p">,</span>
         <span class="s2">&quot;list&quot;</span><span class="p">,</span>
         <span class="s2">&quot;remove&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;start&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:serversetting(DISCORD_ENABLED) and pperm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
@@ -2049,6 +2051,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;WARNING: The Discord bot&#39;s typeclass is &#39;</span><span class="si">{</span><span class="n">discord_bot</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">&#39;. This does not match </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_CLASS</span><span class="si">}</span><span class="s2"> in settings!&quot;</span>
             <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;start&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The Discord bot is already running.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">discord_bot</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="k">return</span>
 
         <span class="k">if</span> <span class="s2">&quot;guild&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span>

@@ -144,7 +144,7 @@ added to <strong>server/conf/secret_settings.py</strong> as your  DISCORD_BOT_TO
 <dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.discord.</code><code class="sig-name descname">DiscordWebsocketServerFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sessionhandler</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">autobahn.twisted.websocket.WebSocketClientFactory</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.ReconnectingClientFactory</span></code></p>
-<p>A variant of the websocket-factory that auto-reconnects.</p>
+<p>A customized websocket client factory that navigates the Discord gateway process.</p>
 <dl class="py attribute">
 <dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.initialDelay">
 <code class="sig-name descname">initialDelay</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.initialDelay" title="Permalink to this definition">¶</a></dt>
@@ -176,8 +176,8 @@ added to <strong>server/conf/secret_settings.py</strong> as your  DISCORD_BOT_TO
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.do_retry">
-<code class="sig-name descname">do_retry</code><em class="property"> = True</em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.do_retry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.is_connecting">
+<code class="sig-name descname">is_connecting</code><em class="property"> = False</em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.is_connecting" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -218,34 +218,6 @@ Twisted reactor to be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>connector</strong> (<em>Connector</em>) – Represents the connection.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.clientConnectionFailed">
-<code class="sig-name descname">clientConnectionFailed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">connector</span></em>, <em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.clientConnectionFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.clientConnectionFailed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when Client failed to connect.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>connector</strong> (<em>Connection</em>) – Represents the connection.</p></li>
-<li><p><strong>reason</strong> (<em>str</em>) – The reason for the failure.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.discord.DiscordWebsocketServerFactory.clientConnectionLost">
-<code class="sig-name descname">clientConnectionLost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">connector</span></em>, <em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.clientConnectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.clientConnectionLost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when Client loses connection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>connector</strong> (<em>Connection</em>) – Represents the connection.</p></li>
-<li><p><strong>reason</strong> (<em>str</em>) – The reason for the failure.</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>
