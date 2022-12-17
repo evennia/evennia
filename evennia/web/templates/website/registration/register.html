@@ -27,26 +27,29 @@ Register
           {% endif %}
   
           {% if not user.is_authenticated %}
-          <form method="post" action="?">
-            {% csrf_token %}
-  
-            {% for field in form %}
-            <div class="form-field my-3">
-                {{ field.label_tag }}
-                {{ field | addclass:"form-control" }}
-                {% if field.help_text %}
-                <small class="form-text text-muted">{{ field.help_text|safe }}</small>
-                {% endif %}
-            </div>
-            {% endfor %}
-            
-            <hr />
-            <div class="form-group">
-              <input class="form-control btn btn-outline-secondary" type="submit" value="Register" />
-              <input type="hidden" name="next" value="{{ next }}" />
-            </div>
-          </form>
-          
+            {% if register_enabled %}
+              <form method="post" action="?">
+                {% csrf_token %}
+      
+                {% for field in form %}
+                <div class="form-field my-3">
+                    {{ field.label_tag }}
+                    {{ field | addclass:"form-control" }}
+                    {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <hr />
+                <div class="form-group">
+                  <input class="form-control btn btn-outline-secondary" type="submit" value="Register" />
+                  <input type="hidden" name="next" value="{{ next }}" />
+                </div>
+              </form>
+            {% else %}
+              <p>Registration is currently disabled.</p>
+            {% endif %}
           {% endif %}
         </div>
       </div>

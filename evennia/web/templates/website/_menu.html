@@ -78,9 +78,11 @@ folder and edit it to add/remove links to the menu.
             <li>
                 <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Log In</a>
             </li>
-            <li>
-                <a class="nav-link" href="{% url 'register' %}">Register</a>
-            </li>
+              {% if register_enabled %}
+                  <li>
+                      <a class="nav-link" href="{% url 'register' %}">Register</a>
+                  </li>
+              {% endif %}
             {% endif %}
             {% endblock %}
         </ul>

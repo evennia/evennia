@@ -34,6 +34,8 @@ SERVER_HOSTNAME = "localhost"
 # Lockdown mode will cut off the game from any external connections
 # and only allow connections from localhost. Requires a cold reboot.
 LOCKDOWN_MODE = False
+# Enables new account registration
+REGISTER_ENABLED = True
 # Activate telnet service
 TELNET_ENABLED = True
 # A list of ports the Evennia telnet server listens on Can be one or many.
