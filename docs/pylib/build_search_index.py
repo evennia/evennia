@@ -5,11 +5,14 @@
 Builds a lunr static search index for optimized search
 
 """
-import os
-import json
 import glob
+import json
+import os
 from argparse import ArgumentParser
-from os.path import sep, abspath, dirname, join as joinpath
+from os.path import abspath, dirname
+from os.path import join as joinpath
+from os.path import sep
+
 from lunr import lunr
 
 _DOCS_PATH = dirname(dirname(abspath(__file__)))

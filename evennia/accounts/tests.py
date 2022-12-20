@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import sys
-from mock import Mock, MagicMock, patch
 from random import randint
 from unittest import TestCase
 
 from django.test import override_settings
-from evennia.accounts.accounts import AccountSessionHandler
-from evennia.accounts.accounts import DefaultAccount, DefaultGuest
-from evennia.utils.test_resources import EvenniaTest
-from evennia.utils import create
-from evennia.utils.utils import uses_database
+from mock import MagicMock, Mock, patch
 
-from django.conf import settings
+from evennia.accounts.accounts import (
+    AccountSessionHandler,
+    DefaultAccount,
+    DefaultGuest,
+)
+from evennia.utils import create
+from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.utils.utils import uses_database
 
 
 class TestAccountSessionHandler(TestCase):
@@ -67,7 +68,7 @@ class TestAccountSessionHandler(TestCase):
 
 
 @override_settings(GUEST_ENABLED=True, GUEST_LIST=["bruce_wayne"])
-class TestDefaultGuest(EvenniaTest):
+class TestDefaultGuest(BaseEvenniaTest):
     "Check DefaultGuest class"
 
     ip = "212.216.134.22"
@@ -117,9 +118,9 @@ class TestDefaultGuest(EvenniaTest):
         self.char1.delete.assert_called()
 
 
-class TestDefaultAccountAuth(EvenniaTest):
+class TestDefaultAccountAuth(BaseEvenniaTest):
     def setUp(self):
-        super(TestDefaultAccountAuth, self).setUp()
+        super().setUp()
 
         self.password = "testpassword"
         self.account.delete()
@@ -361,7 +362,7 @@ class TestDefaultAccount(TestCase):
         self.assertIsNone(obj.at_post_puppet.call_args)
 
 
-class TestAccountPuppetDeletion(EvenniaTest):
+class TestAccountPuppetDeletion(BaseEvenniaTest):
     @override_settings(MULTISESSION_MODE=2)
     def test_puppet_deletion(self):
         # Check for existing chars
@@ -382,7 +383,7 @@ class TestAccountPuppetDeletion(EvenniaTest):
         )
 
 
-class TestDefaultAccountEv(EvenniaTest):
+class TestDefaultAccountEv(BaseEvenniaTest):
     """
     Testing using the EvenniaTest parent
 

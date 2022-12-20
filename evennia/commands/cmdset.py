@@ -27,7 +27,9 @@ Set theory.
 
 """
 from weakref import WeakKeyDictionary
+
 from django.utils.translation import gettext as _
+
 from evennia.utils.utils import inherits_from, is_iter
 
 __all__ = ("CmdSet",)
@@ -177,7 +179,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
     # merge-stack, every cmdset in the stack must have `duplicates` set explicitly.
     duplicates = None
 
-    permanent = False
+    persistent = False
     key_mergetypes = {}
     errmessage = ""
     # pre-store properties to duplicate straight off
@@ -187,7 +189,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         "no_exits",
         "no_objs",
         "no_channels",
-        "permanent",
+        "persistent",
         "mergetype",
         "priority",
         "duplicates",
@@ -357,7 +359,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             commands (str): Representation of commands in Cmdset.
 
         """
-        perm = "perm" if self.permanent else "non-perm"
+        perm = "perm" if self.persistent else "non-perm"
         options = ", ".join(
             [
                 "{}:{}".format(opt, "T" if getattr(self, opt) else "F")
@@ -481,7 +483,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # This is used for diagnosis.
         cmdset_c.actual_mergetype = mergetype
 
-        # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)
+        # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority,
+        # cmdset_a.key, cmdset_a.priority)
 
         # return the system commands to the cmdset
         cmdset_c.add(sys_commands, allow_duplicates=True)
@@ -513,7 +516,6 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             existing ones to make a unique set.
 
         """
-
         if inherits_from(cmd, "evennia.commands.cmdset.CmdSet"):
             # cmd is a command set so merge all commands in that set
             # to this one. We raise a visible error if we created
@@ -522,39 +524,44 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             try:
                 cmdset = self._instantiate(cmdset)
             except RuntimeError:
-                err = ("Adding cmdset {cmdset} to {cls} lead to an "
-                       "infinite loop. When adding a cmdset to another, "
-                       "make sure they are not themself cyclically added to "
-                       "the new cmdset somewhere in the chain.")
+                err = (
+                    "Adding cmdset {cmdset} to {cls} lead to an "
+                    "infinite loop. When adding a cmdset to another, "
+                    "make sure they are not themself cyclically added to "
+                    "the new cmdset somewhere in the chain."
+                )
                 raise RuntimeError(_(err.format(cmdset=cmdset, cls=self.__class__)))
             cmds = cmdset.commands
         elif is_iter(cmd):
             cmds = [self._instantiate(c) for c in cmd]
         else:
             cmds = [self._instantiate(cmd)]
+
         commands = self.commands
         system_commands = self.system_commands
+
         for cmd in cmds:
             # add all commands
             if not hasattr(cmd, "obj") or cmd.obj is None:
                 cmd.obj = self.cmdsetobj
-            try:
-                ic = commands.index(cmd)
-                commands[ic] = cmd  # replace
-            except ValueError:
-                commands.append(cmd)
-            self.commands = commands
-            if not allow_duplicates:
-                # extra run to make sure to avoid doublets
-                self.commands = list(set(self.commands))
+
+            # remove duplicates and add new
+            for _dum in range(commands.count(cmd)):
+                commands.remove(cmd)
+            commands.append(cmd)
+
             # add system_command to separate list as well,
-            # for quick look-up
+            # for quick look-up. These have no
             if cmd.key.startswith("__"):
-                try:
-                    ic = system_commands.index(cmd)
-                    system_commands[ic] = cmd  # replace
-                except ValueError:
-                    system_commands.append(cmd)
+                # remove same-matches and add new
+                for _dum in range(system_commands.count(cmd)):
+                    system_commands.remove(cmd)
+                system_commands.append(cmd)
+
+        if not allow_duplicates:
+            # extra run to make sure to avoid doublets
+            commands = list(set(commands))
+        self.commands = commands
 
     def remove(self, cmd):
         """
@@ -565,6 +572,15 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 or the key of such a command.
 
         """
+        if isinstance(cmd, str):
+            _cmd = next((_cmd for _cmd in self.commands if _cmd.key == cmd), None)
+            if _cmd is None:
+                if not cmd.startswith("__"):
+                    # if a syscommand, keep the original string and instantiate on it
+                    return None
+            else:
+                cmd = _cmd
+
         cmd = self._instantiate(cmd)
         if cmd.key.startswith("__"):
             try:
@@ -588,6 +604,15 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             cmd (Command): The first matching Command in the set.
 
         """
+        if isinstance(cmd, str):
+            _cmd = next((_cmd for _cmd in self.commands if _cmd.key == cmd), None)
+            if _cmd is None:
+                if not cmd.startswith("__"):
+                    # if a syscommand, keep the original string and instantiate on it
+                    return None
+            else:
+                cmd = _cmd
+
         cmd = self._instantiate(cmd)
         for thiscmd in self.commands:
             if thiscmd == cmd:
@@ -674,5 +699,6 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         Hook method - this should be overloaded in the inheriting
         class, and should take care of populating the cmdset by use of
         self.add().
+
         """
         pass

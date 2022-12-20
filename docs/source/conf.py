@@ -5,21 +5,22 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import os
-import sys
 import re
+import sys
+from collections import namedtuple
+
 # from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
-
 
 # -- Project information -----------------------------------------------------
 
 project = "Evennia"
-copyright = "2020, The Evennia developer community"
+copyright = "2022, The Evennia developer community"
 author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
 # This will be used for multi-version selection options.
-release = "0.9.5"
+release = "1.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,7 +32,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
-    "myst_parser"
+    "myst_parser",
 ]
 
 source_suffix = [".md", ".rst"]
@@ -51,11 +52,27 @@ html_static_path = ["_static"]
 # -- Sphinx-multiversion config ----------------------------------------------
 
 # which branches to include in multi-versioned docs
-# - master, develop and vX.X branches
-smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
+# smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
+# smv_branch_whitelist = r"^develop$|^master$|^v1.0$"
+smv_branch_whitelist = r"^develop$|^main$"
 smv_outputdir_format = "{config.release}"
 # don't make docs for tags
 smv_tag_whitelist = r"^$"
+
+# used to fill in versioning.html links for versions that are not actually built.
+# These are also read from the deploy.py script. These are also the names of
+# the folders built in the gh-pages evennia branch, under docs/.
+latest_version = "1.0"
+legacy_versions = ["0.9.5"]
+
+
+def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
+    # this is read by versioning.html template (sidebar)
+    LVersion = namedtuple("legacy_version", ["release", "name", "url"])
+    context["legacy_versions"] = [
+        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../{vers}/index.html")
+        for vers in legacy_versions
+    ]
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -79,7 +96,7 @@ html_logo = "_static/images/evennia_logo.png"
 html_short_title = "Evennia"
 
 # HTML syntax highlighting style
-pygments_style = "sphinx"
+pygments_style = "friendly"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -131,6 +148,7 @@ myst_substitution = {
 # add anchors to h1, h2, ... level headings
 myst_heading_anchors = 4
 
+suppress_warnings = ["myst.ref"]
 
 # reroute to github links or to the api
 
@@ -144,9 +162,11 @@ _github_code_root = "https://github.com/evennia/evennia/blob/"
 _github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
 _github_issue_choose = "https://github.com/evennia/evennia/issues/new/choose"
 _ref_regex = re.compile(  # normal reference-links [txt](url)
-    r"\[(?P<txt>[\w -\[\]\`\n]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M)
+    r"\[(?P<txt>[\w -\[\]\`\n]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M
+)
 _ref_doc_regex = re.compile(  # in-document bottom references [txt]: url
-    r"\[(?P<txt>[\w -\`]+?)\\n]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U + re.M)
+    r"\[(?P<txt>[\w -\`]+?)\\n]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U + re.M
+)
 
 
 def url_resolver(app, docname, source):
@@ -164,10 +184,11 @@ def url_resolver(app, docname, source):
 
 
     """
+
     def _url_remap(url):
 
         # determine depth in tree of current document
-        docdepth = docname.count('/') + 1
+        docdepth = docname.count("/") + 1
         relative_path = "../".join("" for _ in range(docdepth))
 
         if url.endswith(_choose_issue):
@@ -175,14 +196,14 @@ def url_resolver(app, docname, source):
             return _github_issue_choose
         elif _githubstart in url:
             # github:develop/... shortcut
-            urlpath = url[url.index(_githubstart) + len(_githubstart):]
+            urlpath = url[url.index(_githubstart) + len(_githubstart) :]
             if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
                 urlpath = "master/" + urlpath
             return _github_code_root + urlpath
         elif _sourcestart in url:
             ind = url.index(_sourcestart)
 
-            modpath, *inmodule = url[ind + len(_sourcestart):].rsplit("#", 1)
+            modpath, *inmodule = url[ind + len(_sourcestart) :].rsplit("#", 1)
             modpath = "/".join(modpath.split("."))
             inmodule = "#" + inmodule[0] if inmodule else ""
             modpath = modpath + ".html" + inmodule
@@ -193,13 +214,13 @@ def url_resolver(app, docname, source):
         return url
 
     def _re_ref_sub(match):
-        txt = match.group('txt')
-        url = _url_remap(match.group('url'))
+        txt = match.group("txt")
+        url = _url_remap(match.group("url"))
         return f"[{txt}]({url})"
 
     def _re_docref_sub(match):
-        txt = match.group('txt')
-        url = _url_remap(match.group('url'))
+        txt = match.group("txt")
+        url = _url_remap(match.group("url"))
         return f"[{txt}]: {url}"
 
     src = source[0]
@@ -247,7 +268,7 @@ autodoc_default_options = {
     "show-inheritance": True,
     "special-members": "__init__",
     "enable_eval_rst": True,
-    "inherited_members": True
+    "inherited_members": True,
 }
 
 autodoc_member_order = "bysource"
@@ -341,15 +362,22 @@ def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.connect("autodoc-process-docstring", autodoc_post_process_docstring)
     app.connect("source-read", url_resolver)
+    app.connect("html-page-context", add_legacy_versions_to_html_page_context)
 
     # build toctree file
     sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from docs.pylib import auto_link_remapper, update_default_cmd_index
+    from docs.pylib import (
+        auto_link_remapper,
+        contrib_readmes2docs,
+        update_default_cmd_index,
+        update_dynamic_pages,
+    )
 
     _no_autodoc = os.environ.get("NOAUTODOC")
     update_default_cmd_index.run_update(no_autodoc=_no_autodoc)
+    contrib_readmes2docs.readmes2docs()
+    update_dynamic_pages.update_dynamic_pages()
     auto_link_remapper.auto_link_remapper(no_autodoc=_no_autodoc)
-    print("Updated source/toc.md file")
 
     # custom lunr-based search
     # from docs import search

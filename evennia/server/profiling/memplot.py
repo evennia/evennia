@@ -56,8 +56,8 @@ if __name__ == "__main__":
 
     # plot output from the file
 
-    from matplotlib import pyplot as pp
     import numpy
+    from matplotlib import pyplot as pp
 
     data = numpy.genfromtxt("../../../game/" + LOGFILE, delimiter=",")
     secs = data[:, 0]

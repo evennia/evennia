@@ -1,47 +1,75 @@
-```{important}
-This is the v0.9.5 documentation of Evennia, originally converted from the old
-[evennia wiki](https://github.com/evennia/evennia/wiki) at 2020-10-11 18:06:03.062022.
-While we will fix outright mistakes, minor typos and visual conversion issues will **not** be 
-addressed in this version.
-A new and refactored version of the docs is being prepared for version 1.0 of Evennia.
-```
-
 # Evennia Documentation
 
-This is the manual of [Evennia](http://www.evennia.com), the open source Python `MU*` creation
-system.
-You can Search the documentation on the left. If you have trouble with unclear documentation, please 
-let us know on our [mailing list][group], over [IRC][chat] or by making a new [documentation issue](github:issue).
+This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles.
 
-There is [a lengthier introduction](./Evennia-Introduction.md) to read. You might also want to read about
-[how to get and give help](./How-To-Get-And-Give-Help.md).
+- [Introduction](./Evennia-Introduction.md) - what is this Evennia thing? 
+- [Evennia in Pictures](./Evennia-In-Pictures.md) - a visual overview of Evennia
+- [Contributing and Getting help](./Contributing.md) - when you get stuck or want to chip in
 
-- The [Getting Started](./Getting-Started.md) page helps installing and starting Evennia for the first
-time.
-- The [Admin Docs](./Administrative-Docs.md) covers running and maintaining an Evennia server.
-- The [Builder Docs](./Builder-Docs.md) helps for starting to build a game world using Evennia.
-- The [Developer Central](./Developer-Central.md) describes how Evennia works and is used by coders.
-- The [Tutorials & Examples](./Tutorials.md) contains help pages on a step-by-step or tutorial format.
-- The [Documentation-Contributing](./Contributing-Docs.md) page helps with how to write and contribute to these docs.
-- The [API](./Evennia-API.md) documentation is created from the latest source code.
-- The [TOC](./toc.md) lists all regular documentation pages.
+## Setup
 
-[group]: https://groups.google.com/forum/#%21forum/evennia
-[chat]: http://tinyurl.com/p22oofg
-[icon_new]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/bright4.png
-[icon_admin]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/speedometer26.png
-[icon_builder]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/toolbox3.png
-[icon_devel]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/technical.png
-[icon_tutorial]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/living1.png
-[icon_API]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/python3.png
+- [Installation](Setup/Setup-Overview.md#installation-and-running) - getting started
+- [Running the Game](Setup/Running-Evennia.md)  - how to start, stop and reload Evennia
+- [Updating the Server](Setup/Updating-Evennia.md) - how to update Evennia 
+- [Configuration](Setup/Setup-Overview.md#configuration) - how to set up Evennia the way you like it
+- [Going Online](Setup/Setup-Overview.md#going-online) - bringing your game online
+
+## Tutorials and Howtos
+
+- [The Beginner Tutorial](Howtos/Howtos-Overview.md#beginner-tutorial) - learn the basics and build a small game (in progress)
+- [Tutorials and Howto's](Howtos/Howtos-Overview.md#howtos) - mixed tutorials and help articles to learn Evennia
+- [Coding with Evennia](Coding/Coding-Overview.md) - resources and hints for coding and development
+
+## The Evennia Library
+
+- [Core components](Components/Components-Overview.md) - the core building blocks of Evennia
+- [Core Concepts](Concepts/Concepts-Overview.md) - larger-scale concepts and features
+- [API](./Evennia-API.md) - the full API-reference, generated from source
+
+## Contributions and Info
+
+- [Contribs](Contribs/Contribs-Overview.md) - game-specific code and snippets to use for your game
+- [Documentation - how to contribute](./Contributing-Docs.md) - if you want to help out with this manual
+- [License](./Licensing.md) - Evennia licensing FAQ
+- [Links](./Links.md) - useful links if you need extra reading
+
+----
+
+## All Sections
+
+<details>
+<summary>
+    Click here to expand the full Documentation index.
+</summary>
+
+```{toctree}
+:maxdepth: 3
+
+Evennia-Introduction
+Evennia-In-Pictures
+Setup/Running-Evennia
+Setup/Updating-Evennia
+Setup/Setup-Overview
+
+Howtos/Howtos-Overview
+Components/Components-Overview
+Concepts/Concepts-Overview
+Coding/Coding-Overview
+Contribs/Contribs-Overview
+Contributing
+Contributing-Docs
+Licensing
+Links
+
+```
+</details>
 
 
 ```{toctree}
 :hidden:
 
-Getting-Started.md
-Administrative-Docs.md
-Developer-Central.md
-Tutorials.md
-Contributing-Docs.md
+Evennia-API
+Licensing
+Unimplemented
+
 ```

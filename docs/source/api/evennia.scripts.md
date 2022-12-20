@@ -12,7 +12,6 @@ evennia.scripts
 .. toctree::
    :maxdepth: 6
 
-   evennia.scripts.admin
    evennia.scripts.manager
    evennia.scripts.models
    evennia.scripts.monitorhandler

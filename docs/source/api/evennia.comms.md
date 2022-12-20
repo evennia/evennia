@@ -12,8 +12,6 @@ evennia.comms
 .. toctree::
    :maxdepth: 6
 
-   evennia.comms.admin
-   evennia.comms.channelhandler
    evennia.comms.comms
    evennia.comms.managers
    evennia.comms.models

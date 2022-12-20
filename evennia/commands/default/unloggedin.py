@@ -1,15 +1,17 @@
 """
 Commands that are available from the connect screen.
+
 """
-import re
 import datetime
+import re
 from codecs import lookup as codecs_lookup
+
 from django.conf import settings
+
+from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.comms.models import ChannelDB
 from evennia.server.sessionhandler import SESSIONS
-
-from evennia.utils import class_from_module, create, logger, utils, gametime
-from evennia.commands.cmdhandler import CMD_LOGINSTART
+from evennia.utils import class_from_module, create, gametime, logger, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -22,10 +24,9 @@ __all__ = (
     "CmdUnconnectedHelp",
     "CmdUnconnectedEncoding",
     "CmdUnconnectedInfo",
-    "CmdUnconnectedScreenreader"
+    "CmdUnconnectedScreenreader",
 )
 
-MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
 
@@ -197,7 +198,25 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
         username, password = parts
 
-        # everything's ok. Create the new account account.
+        # pre-normalize username so the user know what they get
+        non_normalized_username = username
+        username = Account.normalize_username(username)
+        if non_normalized_username != username:
+            session.msg(
+                "Note: your username was normalized to strip spaces and remove characters "
+                "that could be visually confusing."
+            )
+
+        # have the user verify their new account was what they intended
+        answer = yield (
+            f"You want to create an account '{username}' with password '{password}'."
+            "\nIs this what you intended? [Y]/N?"
+        )
+        if answer.lower() in ("n", "no"):
+            session.msg("Aborted. If your user name contains spaces, surround it by quotes.")
+            return
+
+        # everything's ok. Create the new player account.
         account, errors = Account.create(
             username=username, password=password, ip=address, session=session
         )
@@ -297,6 +316,7 @@ You are not yet logged into the game. Commands available at this point:
   |wquit|n - abort the connection
 
 First create an account e.g. with |wcreate Anna c67jHL8p|n
+(If you have spaces in your name, use double quotes: |wcreate "Anna the Barbarian" c67jHL8p|n
 Next you can connect to the game: |wconnect Anna c67jHL8p|n
 
 You can use the |wlook|n command if you want to see the connect screen again.
@@ -329,7 +349,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
 
     If you don't submit an encoding, the current encoding will be displayed
     instead.
-  """
+    """
 
     key = "encoding"
     aliases = "encode"
@@ -428,7 +448,8 @@ class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         self.caller.msg(
-            "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO"
+            "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END"
+            " INFO"
             % (
                 settings.SERVERNAME,
                 datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
@@ -449,8 +470,8 @@ def _create_account(session, accountname, password, permissions, typeclass=None,
 
     except Exception as e:
         session.msg(
-            "There was an error creating the Account:\n%s\n If this problem persists, contact an admin."
-            % e
+            "There was an error creating the Account:\n%s\n If this problem persists, contact an"
+            " admin." % e
         )
         logger.log_trace()
         return False
@@ -471,7 +492,7 @@ def _create_account(session, accountname, password, permissions, typeclass=None,
 def _create_character(session, new_account, typeclass, home, permissions):
     """
     Helper function, creates a character based on an account's name.
-    This is meant for Guest and MULTISESSION_MODE < 2 situations.
+    This is meant for Guest and AUTO_CREATRE_CHARACTER_WITH_ACCOUNT=True situations.
     """
     try:
         new_character = create.create_object(
@@ -493,7 +514,7 @@ def _create_character(session, new_account, typeclass, home, permissions):
         new_account.db._last_puppet = new_character
     except Exception as e:
         session.msg(
-            "There was an error creating the Character:\n%s\n If this problem persists, contact an admin."
-            % e
+            "There was an error creating the Character:\n%s\n If this problem persists, contact an"
+            " admin." % e
         )
         logger.log_trace()

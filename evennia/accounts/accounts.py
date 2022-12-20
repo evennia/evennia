@@ -1,5 +1,5 @@
 """
-Typeclass for Account objects
+Typeclass for Account objects.
 
 Note that this object is primarily intended to
 store OOC information, not game info! This
@@ -12,32 +12,39 @@ instead for most things).
 """
 import re
 import time
+from random import getrandbits
+
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
-from evennia.typeclasses.models import TypeclassBase
+from django.utils.translation import gettext as _
+
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
-from evennia.objects.models import ObjectDB
+from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.comms.models import ChannelDB
+from evennia.objects.models import ObjectDB
+from evennia.scripts.scripthandler import ScriptHandler
 from evennia.server.models import ServerConfig
-from evennia.server.throttle import Throttle
-from evennia.utils import class_from_module, create, logger
-from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter, variable_from_module
 from evennia.server.signals import (
     SIGNAL_ACCOUNT_POST_CREATE,
     SIGNAL_OBJECT_POST_PUPPET,
     SIGNAL_OBJECT_POST_UNPUPPET,
 )
-from evennia.typeclasses.attributes import NickHandler
-from evennia.scripts.scripthandler import ScriptHandler
-from evennia.commands.cmdsethandler import CmdSetHandler
+from evennia.server.throttle import Throttle
+from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
+from evennia.typeclasses.models import TypeclassBase
+from evennia.utils import class_from_module, create, logger
 from evennia.utils.optionhandler import OptionHandler
-
-from django.utils.translation import gettext as _
-from random import getrandbits
+from evennia.utils.utils import (
+    is_iter,
+    lazy_property,
+    make_iter,
+    to_str,
+    variable_from_module,
+)
 
 __all__ = ("DefaultAccount", "DefaultGuest")
 
@@ -45,17 +52,24 @@ _SESSIONS = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
+_AUTO_CREATE_CHARACTER_WITH_ACCOUNT = settings.AUTO_CREATE_CHARACTER_WITH_ACCOUNT
+_AUTO_PUPPET_ON_LOGIN = settings.AUTO_PUPPET_ON_LOGIN
+_MAX_NR_SIMULTANEOUS_PUPPETS = settings.MAX_NR_SIMULTANEOUS_PUPPETS
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _MUDINFO_CHANNEL = None
+_CONNECT_CHANNEL = None
 _CMDHANDLER = None
+
 
 # Create throttles for too many account-creations and login attempts
 CREATION_THROTTLE = Throttle(
-    limit=settings.CREATION_THROTTLE_LIMIT, timeout=settings.CREATION_THROTTLE_TIMEOUT
+    name="creation",
+    limit=settings.CREATION_THROTTLE_LIMIT,
+    timeout=settings.CREATION_THROTTLE_TIMEOUT,
 )
 LOGIN_THROTTLE = Throttle(
-    limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
+    name="login", limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
 )
 
 
@@ -199,7 +213,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     @lazy_property
     def nicks(self):
-        return NickHandler(self)
+        return NickHandler(self, ModelAttributeBackend)
 
     @lazy_property
     def sessions(self):
@@ -232,6 +246,37 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             logger.log_err(e)
 
         return objs
+
+    def uses_screenreader(self, session=None):
+        """
+        Shortcut to determine if a session uses a screenreader. If no session given,
+        will return true if any of the sessions use a screenreader.
+
+        Args:
+            session (Session, optional): The session to check for screen reader.
+
+        """
+        if session:
+            return bool(session.protocol_flags.get("SCREENREADER", False))
+        else:
+            return any(
+                session.protocol_flags.get("SCREENREADER") for session in self.sessions.all()
+            )
+
+    def get_display_name(self, looker, **kwargs):
+        """
+        This is used by channels and other OOC communications methods to give a
+        custom display of this account's input.
+
+        Args:
+            looker (Account): The one that will see this name.
+            **kwargs: Unused by default, can be used to pass game-specific data.
+
+        Returns:
+            str: The name, possibly modified.
+
+        """
+        return f"|c{self.key}|n"
 
     # session-related methods
 
@@ -275,11 +320,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             raise RuntimeError("Session not found")
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg(_("You are already puppeting this object."))
+            self.msg("You are already puppeting this object.")
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(_("You don't have permission to puppet '{key}'.").format(key=obj.key))
+            self.msg(f"You don't have permission to puppet '{obj.key}'.")
             return
         if obj.account:
             # object already puppeted
@@ -295,15 +340,14 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     else:
                         txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
                         txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
-                        self.msg(_(txt1), session=session)
-                        self.msg(_(txt2), session=obj.sessions.all())
+                        self.msg(txt1, session=session)
+                        self.msg(txt2, session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
             elif obj.account.is_connected:
                 # controlled by another account
                 self.msg(_("|c{key}|R is already puppeted by another Account.").format(key=obj.key))
                 return
 
-        # do the puppeting
         if session.puppet:
             # cleanly unpuppet eventual previous object puppeted by this session
             self.unpuppet_object(session)
@@ -311,15 +355,30 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         # was left with a lingering account/session reference from an unclean
         # server kill or similar
 
+        # check so we are not puppeting too much already
+        if _MAX_NR_SIMULTANEOUS_PUPPETS is not None:
+            already_puppeted = self.get_all_puppets()
+            if (
+                not self.is_superuser
+                and not self.check_permstring("Developer")
+                and obj not in already_puppeted
+                and len(self.get_all_puppets()) >= _MAX_NR_SIMULTANEOUS_PUPPETS
+            ):
+                self.msg(
+                    _(f"You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})")
+                )
+                return
+
+        # do the puppeting
         obj.at_pre_puppet(self, session=session)
+        # used to track in case of crash so we can clean up later
+        obj.tags.add("puppeted", category="account")
 
         # do the connection
         obj.sessions.add(session)
         obj.account = self
         session.puid = obj.id
         session.puppet = obj
-        # validate/start persistent scripts on object
-        obj.scripts.validate()
 
         # re-cache locks to make sure superuser bypass is updated
         obj.locks.cache_lock_bypass(obj)
@@ -348,6 +407,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 if not obj.sessions.count():
                     del obj.account
                 obj.at_post_unpuppet(self, session=session)
+                obj.tags.remove("puppeted", category="account")
                 SIGNAL_OBJECT_POST_UNPUPPET.send(sender=obj, session=session, account=self)
             # Just to be sure we're always clear.
             session.puppet = None
@@ -419,7 +479,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
 
-        ip = kwargs.get("ip", "").strip()
+        ip = kwargs.get("ip", "")
+        if isinstance(ip, (tuple, list)):
+            ip = ip[0]
+        ip = ip.strip()
         username = kwargs.get("username", "").lower().strip()
 
         # Check IP and/or name bans
@@ -528,7 +591,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
             # Update throttle
             if ip:
-                LOGIN_THROTTLE.update(ip, "Too many authentication failures.")
+                LOGIN_THROTTLE.update(ip, _("Too many authentication failures."))
 
             # Try to call post-failure hook
             session = kwargs.get("session", None)
@@ -643,11 +706,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             password (str): Password to set.
 
         Notes:
-            This is called by Django also when logging in; it should not be mixed up with validation, since that
-            would mean old passwords in the database (pre validation checks) could get invalidated.
+            This is called by Django also when logging in; it should not be mixed up with
+            validation, since that would mean old passwords in the database (pre validation checks)
+            could get invalidated.
 
         """
-        super(DefaultAccount, self).set_password(password)
+        super().set_password(password)
         logger.log_sec(f"Password successfully changed for {self}.")
         self.at_password_change()
 
@@ -738,6 +802,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         typeclass = kwargs.get("typeclass", cls)
 
         ip = kwargs.get("ip", "")
+        if isinstance(ip, (tuple, list)):
+            ip = ip[0]
+
         if ip and CREATION_THROTTLE.check(ip):
             errors.append(
                 _("You are creating too many accounts. Please log into an existing account.")
@@ -783,10 +850,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 )
                 logger.log_sec(f"Account Created: {account} (IP: {ip}).")
 
-            except Exception as e:
+            except Exception:
                 errors.append(
                     _(
-                        "There was an error creating the Account. If this problem persists, contact an admin."
+                        "There was an error creating the Account. "
+                        "If this problem persists, contact an admin."
                     )
                 )
                 logger.log_trace()
@@ -804,11 +872,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             # join the new account to the public channel
             pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
             if not pchannel or not pchannel.connect(account):
-                string = f"New account '{account.key}' could not connect to public channel!"
+                string = "New account '{account.key}' could not connect to public channel!"
                 errors.append(string)
                 logger.log_err(string)
 
-            if account and settings.MULTISESSION_MODE < 2:
+            if account and _AUTO_CREATE_CHARACTER_WITH_ACCOUNT:
                 # Auto-create a character to go with this account
 
                 character, errs = account.create_character(
@@ -832,11 +900,17 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     def delete(self, *args, **kwargs):
         """
-        Deletes the account permanently.
+        Deletes the account persistently.
 
         Notes:
             `*args` and `**kwargs` are passed on to the base delete
              mechanism (these are usually not used).
+
+        Return:
+            bool: If deletion was successful. Only time it fails would be
+                if the Account was already deleted. Note that even on a failure,
+                connected resources (nicks/aliases etc) will still have been
+                deleted.
 
         """
         for session in self.sessions.all():
@@ -853,7 +927,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
+        if not self.pk:
+            return False
         super().delete(*args, **kwargs)
+        return True
 
     # methods inherited from database model
 
@@ -943,9 +1020,93 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             sessions = self.sessions.get()
             session = sessions[0] if sessions else None
 
-        return _CMDHANDLER(
-            self, raw_string, callertype="account", session=session, **kwargs
+        return _CMDHANDLER(self, raw_string, callertype="account", session=session, **kwargs)
+
+    # channel receive hooks
+
+    def at_pre_channel_msg(self, message, channel, senders=None, **kwargs):
+        """
+        Called by the Channel just before passing a message into `channel_msg`.
+        This allows for tweak messages per-user and also to abort the
+        receive on the receiver-level.
+
+        Args:
+            message (str): The message sent to the channel.
+            channel (Channel): The sending channel.
+            senders (list, optional): Accounts or Objects acting as senders.
+                For most normal messages, there is only a single sender. If
+                there are no senders, this may be a broadcasting message.
+            **kwargs: These are additional keywords passed into `channel_msg`.
+                If `no_prefix=True` or `emit=True` are passed, the channel
+                prefix will not be added (`[channelname]: ` by default)
+
+        Returns:
+            str or None: Allows for customizing the message for this recipient.
+                If returning `None` (or `False`) message-receiving is aborted.
+                The returning string will be passed into `self.channel_msg`.
+
+        Notes:
+            This support posing/emotes by starting channel-send with : or ;.
+
+        """
+        if senders:
+            sender_string = ", ".join(sender.get_display_name(self) for sender in senders)
+            message_lstrip = message.lstrip()
+            if message_lstrip.startswith((":", ";")):
+                # this is a pose, should show as e.g. "User1 smiles to channel"
+                spacing = "" if message_lstrip[1:].startswith((":", "'", ",")) else " "
+                message = f"{sender_string}{spacing}{message_lstrip[1:]}"
+            else:
+                # normal message
+                message = f"{sender_string}: {message}"
+
+        if not kwargs.get("no_prefix") and not kwargs.get("emit"):
+            message = channel.channel_prefix() + message
+
+        return message
+
+    def channel_msg(self, message, channel, senders=None, **kwargs):
+        """
+        This performs the actions of receiving a message to an un-muted
+        channel.
+
+        Args:
+            message (str): The message sent to the channel.
+            channel (Channel): The sending channel.
+            senders (list, optional): Accounts or Objects acting as senders.
+                For most normal messages, there is only a single sender. If
+                there are no senders, this may be a broadcasting message or
+                similar.
+            **kwargs: These are additional keywords originally passed into
+                `Channel.msg`.
+
+        Notes:
+            Before this, `Channel.at_pre_channel_msg` will fire, which offers a way
+            to customize the message for the receiver on the channel-level.
+
+        """
+        self.msg(
+            text=(message, {"from_channel": channel.id}),
+            from_obj=senders,
+            options={"from_channel": channel.id},
         )
+
+    def at_post_channel_msg(self, message, channel, senders=None, **kwargs):
+        """
+        Called by `self.channel_msg` after message was received.
+
+        Args:
+            message (str): The message sent to the channel.
+            channel (Channel): The sending channel.
+            senders (list, optional): Accounts or Objects acting as senders.
+                For most normal messages, there is only a single sender. If
+                there are no senders, this may be a broadcasting message.
+            **kwargs: These are additional keywords passed into `channel_msg`.
+
+        """
+        pass
+
+    # search method
 
     def search(
         self,
@@ -1098,7 +1259,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         self.locks.add(lockstring)
 
         # The ooc account cmdset
-        self.cmdset.add_default(_CMDSET_ACCOUNT, permanent=True)
+        self.cmdset.add_default(_CMDSET_ACCOUNT, persistent=True)
 
     def at_account_creation(self):
         """
@@ -1109,7 +1270,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         # set an (empty) attribute holding the characters this account has
-        lockstring = "attrread:perm(Admins);attredit:perm(Admins);" "attrcreate:perm(Admins);"
+        lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins);"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
         self.attributes.add("_saved_protocol_flags", {}, lockstring=lockstring)
 
@@ -1141,6 +1302,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         self.basetype_setup()
         self.at_account_creation()
+        # initialize Attribute/TagProperties
+        self.init_evennia_properties()
 
         permissions = [settings.PERMISSION_ACCOUNT_DEFAULT]
         if hasattr(self, "_createdict"):
@@ -1254,30 +1417,42 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     def _send_to_connect_channel(self, message):
         """
-        Helper method for loading and sending to the comm channel
-        dedicated to connection messages.
+        Helper method for loading and sending to the comm channel dedicated to
+        connection messages. This will also be sent to the mudinfo channel.
 
         Args:
             message (str): A message to send to the connect channel.
 
         """
-        global _MUDINFO_CHANNEL
-        if not _MUDINFO_CHANNEL:
-            try:
-                _MUDINFO_CHANNEL = ChannelDB.objects.filter(db_key=settings.CHANNEL_MUDINFO["key"])[
-                    0
-                ]
-            except Exception:
-                logger.log_trace()
+        global _MUDINFO_CHANNEL, _CONNECT_CHANNEL
+        if _MUDINFO_CHANNEL is None:
+            if settings.CHANNEL_MUDINFO:
+                try:
+                    _MUDINFO_CHANNEL = ChannelDB.objects.get(db_key=settings.CHANNEL_MUDINFO["key"])
+                except ChannelDB.DoesNotExist:
+                    logger.log_trace()
+            else:
+                _MUDINFO = False
+        if _CONNECT_CHANNEL is None:
+            if settings.CHANNEL_CONNECTINFO:
+                try:
+                    _CONNECT_CHANNEL = ChannelDB.objects.get(
+                        db_key=settings.CHANNEL_CONNECTINFO["key"]
+                    )
+                except ChannelDB.DoesNotExist:
+                    logger.log_trace()
+            else:
+                _CONNECT_CHANNEL = False
+
         if settings.USE_TZ:
             now = timezone.localtime()
         else:
             now = timezone.now()
         now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
         if _MUDINFO_CHANNEL:
-            _MUDINFO_CHANNEL.tempmsg(f"[{_MUDINFO_CHANNEL.key}, {now}]: {message}")
-        else:
-            logger.log_info(f"[{now}]: {message}")
+            _MUDINFO_CHANNEL.msg(f"[{now}]: {message}")
+        if _CONNECT_CHANNEL:
+            _CONNECT_CHANNEL.msg(f"[{now}]: {message}")
 
     def at_post_login(self, session=None, **kwargs):
         """
@@ -1292,7 +1467,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         Notes:
             This is called *before* an eventual Character's
             `at_post_login` hook. By default it is used to set up
-            auto-puppeting based on `MULTISESSION_MODE`.
+            auto-puppeting based on `MULTISESSION_MODE`
 
         """
         # if we have saved protocol flags on ourselves, load them here.
@@ -1305,23 +1480,15 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             session.msg(logged_in={})
 
         self._send_to_connect_channel(_("|G{key} connected|n").format(key=self.key))
-        if _MULTISESSION_MODE == 0:
-            # in this mode we should have only one character available. We
-            # try to auto-connect to our last connected object, if any
+        if _AUTO_PUPPET_ON_LOGIN:
+            # in this mode we try to auto-connect to our last connected object, if any
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
                 self.msg(_("The Character does not exist."))
                 return
-        elif _MULTISESSION_MODE == 1:
-            # in this mode all sessions connect to the same puppet.
-            try:
-                self.puppet_object(session, self.db._last_puppet)
-            except RuntimeError:
-                self.msg(_("The Character does not exist."))
-                return
-        elif _MULTISESSION_MODE in (2, 3):
-            # In this mode we by default end up at a character selection
+        else:
+            # In this mode we don't auto-connect but by default end up at a character selection
             # screen. We execute look on the account.
             # we make sure to clean up the _playable_characters list in case
             # any was deleted in the interim.
@@ -1441,6 +1608,24 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         pass
 
+    ooc_appearance_template = """
+--------------------------------------------------------------------
+{header}
+
+{sessions}
+
+  |whelp|n - more commands
+  |wpublic <text>|n - talk on public channel
+  |wcharcreate <name> [=description]|n - create new character
+  |wchardelete <name>|n - delete a character
+  |wic <name>|n - enter the game as character (|wooc|n to get back here)
+  |wic|n - enter the game as latest character controlled.
+
+{characters}
+{footer}
+--------------------------------------------------------------------
+""".strip()
+
     def at_look(self, target=None, session=None, **kwargs):
         """
         Called when this object executes a look. It allows to customize
@@ -1448,7 +1633,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         Args:
             target (Object or list, optional): An object or a list
-                objects to inspect.
+                objects to inspect. This is normally a list of characters.
             session (Session, optional): The session doing this look.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
@@ -1464,100 +1649,83 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if hasattr(target, "return_appearance"):
                 return target.return_appearance(self)
             else:
-                return _("{target} has no in-game appearance.").format(target=target)
-        else:
-            # list of targets - make list to disconnect from db
-            characters = list(tar for tar in target if tar) if target else []
-            sessions = self.sessions.all()
-            if not sessions:
-                # no sessions, nothing to report
-                return ""
-            is_su = self.is_superuser
+                return f"{target} has no in-game appearance."
 
-            # text shown when looking in the ooc area
-            result = [f"Account |g{self.key}|n (you are Out-of-Character)"]
+        # multiple targets - this is a list of characters
+        characters = list(tar for tar in target if tar) if target else []
+        ncars = len(characters)
+        sessions = self.sessions.all()
+        nsess = len(sessions)
 
-            nsess = len(sessions)
-            result.append(
-                nsess == 1
-                and "\n\n|wConnected session:|n"
-                or f"\n\n|wConnected sessions ({nsess}):|n"
+        if not nsess:
+            # no sessions, nothing to report
+            return ""
+
+        # header text
+        txt_header = f"Account |g{self.name}|n (you are Out-of-Character)"
+
+        # sessions
+        sess_strings = []
+        for isess, sess in enumerate(sessions):
+            ip_addr = sess.address[0] if isinstance(sess.address, tuple) else sess.address
+            addr = f"{sess.protocol_key} ({ip_addr})"
+            sess_str = (
+                f"|w* {isess + 1}|n"
+                if session and session.sessid == sess.sessid
+                else f"  {isess + 1}"
             )
-            for isess, sess in enumerate(sessions):
-                csessid = sess.sessid
-                addr = "%s (%s)" % (
-                    sess.protocol_key,
-                    isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address),
-                )
-                result.append(
-                    "\n %s %s"
-                    % (
-                        session
-                        and session.sessid == csessid
-                        and "|w* %s|n" % (isess + 1)
-                        or "  %s" % (isess + 1),
-                        addr,
-                    )
-                )
-            result.append("\n\n |whelp|n - more commands")
-            result.append("\n |wpublic <Text>|n - talk on public channel")
 
-            charmax = _MAX_NR_CHARACTERS
+            sess_strings.append(f"{sess_str} {addr}")
 
-            if is_su or len(characters) < charmax:
-                if not characters:
-                    result.append(
-                        _(
-                            "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
-                        )
-                    )
+        txt_sessions = "|wConnected session(s):|n\n" + "\n".join(sess_strings)
+
+        if not characters:
+            txt_characters = "You don't have a character yet. Use |wcharcreate|n."
+        else:
+            max_chars = (
+                "unlimited"
+                if self.is_superuser or _MAX_NR_CHARACTERS is None
+                else _MAX_NR_CHARACTERS
+            )
+
+            char_strings = []
+            for char in characters:
+                csessions = char.sessions.all()
+                if csessions:
+                    for sess in csessions:
+                        # character is already puppeted
+                        sid = sess in sessions and sessions.index(sess) + 1
+                        if sess and sid:
+                            char_strings.append(
+                                f" - |G{char.name}|n [{', '.join(char.permissions.all())}] "
+                                f"(played by you in session {sid})"
+                            )
+                        else:
+                            char_strings.append(
+                                f" - |R{char.name}|n [{', '.join(char.permissions.all())}] "
+                                "(played by someone else)"
+                            )
                 else:
-                    result.append("\n |w@charcreate <name> [=description]|n - create new character")
-                    result.append(
-                        "\n |w@chardelete <name>|n - delete a character (cannot be undone!)"
-                    )
+                    # character is "free to puppet"
+                    char_strings.append(f" - {char.name} [{', '.join(char.permissions.all())}]")
 
-            if characters:
-                string_s_ending = len(characters) > 1 and "s" or ""
-                result.append("\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)")
-                if is_su:
-                    result.append(
-                        f"\n\nAvailable character{string_s_ending} ({len(characters)}/unlimited):"
-                    )
-                else:
-                    result.append(
-                        "\n\nAvailable character%s%s:"
-                        % (
-                            string_s_ending,
-                            charmax > 1 and " (%i/%i)" % (len(characters), charmax) or "",
-                        )
-                    )
-
-                for char in characters:
-                    csessions = char.sessions.all()
-                    if csessions:
-                        for sess in csessions:
-                            # character is already puppeted
-                            sid = sess in sessions and sessions.index(sess) + 1
-                            if sess and sid:
-                                result.append(
-                                    f"\n - |G{char.key}|n [{', '.join(char.permissions.all())}] (played by you in session {sid})"
-                                )
-                            else:
-                                result.append(
-                                    f"\n - |R{char.key}|n [{', '.join(char.permissions.all())}] (played by someone else)"
-                                )
-                    else:
-                        # character is "free to puppet"
-                        result.append(f"\n - {char.key} [{', '.join(char.permissions.all())}]")
-            look_string = ("-" * 68) + "\n" + "".join(result) + "\n" + ("-" * 68)
-            return look_string
+            txt_characters = (
+                f"Available character(s) ({ncars}/{max_chars}, |wic <name>|n to play):|n\n"
+                + "\n".join(char_strings)
+            )
+        return self.ooc_appearance_template.format(
+            header=txt_header,
+            sessions=txt_sessions,
+            characters=txt_characters,
+            footer="",
+        )
 
 
 class DefaultGuest(DefaultAccount):
     """
     This class is used for guest logins. Unlike Accounts, Guests and
     their characters are deleted after disconnection.
+
     """
 
     @classmethod
@@ -1565,6 +1733,7 @@ class DefaultGuest(DefaultAccount):
         """
         Forwards request to cls.authenticate(); returns a DefaultGuest object
         if one is available for use.
+
         """
         return cls.authenticate(**kwargs)
 
@@ -1632,7 +1801,7 @@ class DefaultGuest(DefaultAccount):
 
                 return account, errors
 
-        except Exception as e:
+        except Exception:
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
@@ -1644,8 +1813,9 @@ class DefaultGuest(DefaultAccount):
 
     def at_post_login(self, session=None, **kwargs):
         """
-        In theory, guests only have one character regardless of which
-        MULTISESSION_MODE we're in. They don't get a choice.
+        By default, Guests only have one character regardless of which
+        MAX_NR_CHARACTERS we use. They also always auto-puppet a matching
+        character and don't get a choice.
 
         Args:
             session (Session, optional): Session connecting.
@@ -1663,9 +1833,10 @@ class DefaultGuest(DefaultAccount):
         """
         super().at_server_shutdown()
         characters = self.db._playable_characters
-        for character in characters:
-            if character:
-                character.delete()
+        if characters:
+            for character in characters:
+                if character:
+                    character.delete()
 
     def at_post_disconnect(self, **kwargs):
         """

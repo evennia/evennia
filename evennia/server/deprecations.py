@@ -4,6 +4,7 @@ checks for.
 
 These all print to the terminal.
 """
+import os
 
 
 def check_errors(settings):
@@ -29,7 +30,7 @@ def check_errors(settings):
         raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_ACCOUNT"))
     if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
         raise DeprecationWarning(
-            "settings.WEBSERVER_PORTS must be on the form " "[(proxyport, serverport), ...]"
+            "settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]"
         )
     if hasattr(settings, "BASE_COMM_TYPECLASS"):
         raise DeprecationWarning(deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
@@ -42,7 +43,7 @@ def check_errors(settings):
             "(see evennia/settings_default.py)."
         )
     deprstring = (
-        "settings.%s is now merged into settings.TYPECLASS_PATHS. " "Update your settings file."
+        "settings.%s is now merged into settings.TYPECLASS_PATHS. Update your settings file."
     )
     if hasattr(settings, "OBJECT_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "OBJECT_TYPECLASS_PATHS")
@@ -58,6 +59,28 @@ def check_errors(settings):
             "SEARCH_MULTIMATCH_REGEX and SEARCH_MULTIMATCH_TEMPLATE. "
             "Update your settings file (see evennia/settings_default.py "
             "for more info)."
+        )
+    depstring = (
+        "settings.{} was renamed to {}. Update your settings file (the FuncParser "
+        "replaces and generalizes that which inlinefuncs used to do)."
+    )
+    if hasattr(settings, "INLINEFUNC_ENABLED"):
+        raise DeprecationWarning(
+            depstring.format(
+                "settings.INLINEFUNC_ENABLED", "FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED"
+            )
+        )
+    if hasattr(settings, "INLINEFUNC_STACK_MAXSIZE"):
+        raise DeprecationWarning(
+            depstring.format("settings.INLINEFUNC_STACK_MAXSIZE", "FUNCPARSER_MAX_NESTING")
+        )
+    if hasattr(settings, "INLINEFUNC_MODULES"):
+        raise DeprecationWarning(
+            depstring.format("settings.INLINEFUNC_MODULES", "FUNCPARSER_OUTGOING_MESSAGES_MODULES")
+        )
+    if hasattr(settings, "PROTFUNC_MODULES"):
+        raise DeprecationWarning(
+            depstring.format("settings.PROTFUNC_MODULES", "FUNCPARSER_PROTOTYPE_VALUE_MODULES")
         )
 
     gametime_deprecation = (
@@ -102,6 +125,34 @@ def check_errors(settings):
             "Use PORTAL/SERVER_LOG_DAY_ROTATION and PORTAL/SERVER_LOG_MAX_SIZE "
             "to control log cycling."
         )
+    if hasattr(settings, "CHANNEL_COMMAND_CLASS") or hasattr(settings, "CHANNEL_HANDLER_CLASS"):
+        raise DeprecationWarning(
+            "settings.CHANNEL_HANDLER_CLASS and CHANNEL COMMAND_CLASS are "
+            "unused and should be removed. The ChannelHandler is no more; "
+            "channels are now handled by aliasing the default 'channel' command."
+        )
+
+    template_overrides_dir = os.path.join(settings.GAME_DIR, "web", "template_overrides")
+    static_overrides_dir = os.path.join(settings.GAME_DIR, "web", "static_overrides")
+    if os.path.exists(template_overrides_dir):
+        raise DeprecationWarning(
+            f"The template_overrides directory ({template_overrides_dir}) has changed name.\n"
+            " - Rename your existing `template_overrides` folder to `templates` instead."
+        )
+    if os.path.exists(static_overrides_dir):
+        raise DeprecationWarning(
+            f"The static_overrides directory ({static_overrides_dir}) has changed name.\n"
+            " 1. Delete any existing `web/static` folder and all its contents (this "
+            "was auto-generated)\n"
+            " 2. Rename your existing `static_overrides` folder to `static` instead."
+        )
+
+    if settings.MULTISESSION_MODE < 2 and settings.MAX_NR_SIMULTANEOUS_PUPPETS > 1:
+        raise DeprecationWarning(
+            f"settings.MULTISESSION_MODE={settings.MULTISESSION_MODE} is not compatible with "
+            f"settings.MAX_NR_SIMULTANEOUS_PUPPETS={settings.MAX_NR_SIMULTANEOUS_PUPPETS}. "
+            "To allow multiple simultaneous puppets, the multi-session mode must be higher than 1."
+        )
 
 
 def check_warnings(settings):
@@ -115,6 +166,12 @@ def check_warnings(settings):
         print(" [Devel: settings.IN_GAME_ERRORS is True. Turn off in production.]")
     if settings.ALLOWED_HOSTS == ["*"]:
         print(" [Devel: settings.ALLOWED_HOSTS set to '*' (all). Limit in production.]")
+    if settings.SERVER_HOSTNAME == "localhost":
+        print(
+            " [Devel: settings.SERVER_HOSTNAME is set to 'localhost'. "
+            "Update to the actual hostname in production.]"
+        )
+
     for dbentry in settings.DATABASES.values():
         if "psycopg" in dbentry.get("ENGINE", ""):
             print(

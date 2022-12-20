@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
 from django.conf import settings
+from django.db import migrations, models
+
 import evennia.utils.picklefield
 
 

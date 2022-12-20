@@ -1,53 +1,55 @@
 """
-This module implements the main Evennia server process, the core of
-the game engine.
+This module implements the main Evennia server process, the core of the game
+engine.
 
-This module should be started with the 'twistd' executable since it
-sets up all the networking features.  (this is done automatically
-by evennia/server/server_runner.py).
+This module should be started with the 'twistd' executable since it sets up all
+the networking features.  (this is done automatically by
+evennia/server/server_runner.py).
 
 """
-import time
-import sys
 import os
-
-from twisted.web import static
-from twisted.application import internet, service
-from twisted.internet import reactor, defer
-from twisted.internet.task import LoopingCall
-from twisted.python.log import ILogObserver
+import sys
+import time
+import traceback
 
 import django
+from twisted.application import internet, service
+from twisted.internet import defer, reactor
+from twisted.internet.task import LoopingCall
+from twisted.logger import globalLogPublisher
+from twisted.web import static
 
 django.setup()
+
+import importlib
 
 import evennia
 
 evennia._init()
 
+from django.conf import settings
 from django.db import connection
 from django.db.utils import OperationalError
-from django.conf import settings
+from django.utils.translation import gettext as _
 
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
 from evennia.server.models import ServerConfig
-from evennia.server import initial_setup
-
-from evennia.utils.utils import get_evennia_version, mod_import, make_iter
-from evennia.utils import logger
-from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
-
-from django.utils.translation import gettext as _
+from evennia.utils import logger
+from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 
 _SA = object.__setattr__
 
 # a file with a flag telling the server to restart after shutdown or not.
 SERVER_RESTART = os.path.join(settings.GAME_DIR, "server", "server.restart")
 
-# module containing hook methods called during start_stop
-SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
+# modules containing hook methods called during start_stop
+SERVER_STARTSTOP_MODULES = [
+    mod_import(mod)
+    for mod in make_iter(settings.AT_SERVER_STARTSTOP_MODULE)
+    if isinstance(mod, str)
+]
 
 # modules containing plugin services
 SERVER_SERVICES_PLUGIN_MODULES = make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)
@@ -97,16 +99,16 @@ except ImportError:
         "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
     )
 
-
 # Maintenance function - this is called repeatedly by the server
+
+_IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
+_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_LAST_SERVER_TIME_SNAPSHOT = 0
 
 _MAINTENANCE_COUNT = 0
 _FLUSH_CACHE = None
-_IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
-
-_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
-_LAST_SERVER_TIME_SNAPSHOT = 0
+_OBJECTDB = None
 
 
 def _server_maintenance():
@@ -116,11 +118,14 @@ def _server_maintenance():
     """
     global EVENNIA, _MAINTENANCE_COUNT, _FLUSH_CACHE, _GAMETIME_MODULE
     global _LAST_SERVER_TIME_SNAPSHOT
+    global _OBJECTDB
 
-    if not _FLUSH_CACHE:
-        from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
+    if not _OBJECTDB:
+        from evennia.objects.models import ObjectDB as _OBJECTDB
     if not _GAMETIME_MODULE:
         from evennia.utils import gametime as _GAMETIME_MODULE
+    if not _FLUSH_CACHE:
+        from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
 
     _MAINTENANCE_COUNT += 1
 
@@ -143,12 +148,6 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % 5 == 0:
         # check cache size every 5 minutes
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAXSIZE)
-    if _MAINTENANCE_COUNT % 60 == 0:
-        # validate scripts every hour
-        evennia.ScriptDB.objects.validate()
-    if _MAINTENANCE_COUNT % 61 == 0:
-        # validate channels off-sync with scripts
-        evennia.CHANNEL_HANDLER.update()
     if _MAINTENANCE_COUNT % (60 * 7) == 0:
         # drop database connection every 7 hrs to avoid default timeouts on MySQL
         # (see https://github.com/evennia/evennia/issues/1376)
@@ -169,18 +168,33 @@ def _server_maintenance():
         for session in to_disconnect:
             SESSIONS.disconnect(session, reason=reason)
 
+    # run unpuppet hooks for objects that are marked as being puppeted,
+    # but which lacks an account (indicates a broken unpuppet operation
+    # such as a server crash)
+    if _MAINTENANCE_COUNT > 1:
+        unpuppet_count = 0
+        for obj in _OBJECTDB.objects.get_by_tag(key="puppeted", category="account"):
+            if not obj.has_account:
+                obj.at_pre_unpuppet()
+                obj.at_post_unpuppet(None, reason=_(" (connection lost)"))
+                obj.tags.remove("puppeted", category="account")
+                unpuppet_count += 1
+        if unpuppet_count:
+            logger.log_msg(f"Ran unpuppet-hooks for {unpuppet_count} link-dead puppets.")
+
 
 # ------------------------------------------------------------
 # Evennia Main Server object
 # ------------------------------------------------------------
 
 
-class Evennia(object):
+class Evennia:
 
     """
     The main Evennia server handler. This object sets up the database and
     tracks and interlinks all the twisted network services that make up
     evennia.
+
     """
 
     def __init__(self, application):
@@ -204,12 +218,6 @@ class Evennia(object):
         self.sqlite3_prep()
 
         self.start_time = time.time()
-
-        # initialize channelhandler
-        try:
-            channelhandler.CHANNELHANDLER.update()
-        except OperationalError:
-            print("channelhandler couldn't update - db not set up")
 
         # wrap the SIGINT handler to make sure we empty the threadpool
         # even when we reload and we have long-running requests in queue.
@@ -256,6 +264,7 @@ class Evennia(object):
         This allows for changing default cmdset locations and default
         typeclasses in the settings file and have them auto-update all
         already existing objects.
+
         """
         global INFO_DICT
 
@@ -286,17 +295,20 @@ class Evennia(object):
         ):  # can't use any() since mismatches may be [0] which reads as False for any()
             # we have a changed default. Import relevant objects and
             # run the update
-            from evennia.objects.models import ObjectDB
             from evennia.comms.models import ChannelDB
+            from evennia.objects.models import ObjectDB
 
             # from evennia.accounts.models import AccountDB
             for i, prev, curr in (
                 (i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches
             ):
                 # update the database
-                INFO_DICT["info"] = (
-                    " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..."
-                    % (settings_names[i], prev, curr)
+                INFO_DICT[
+                    "info"
+                ] = " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (
+                    settings_names[i],
+                    prev,
+                    curr,
                 )
                 if i == 0:
                     ObjectDB.objects.filter(db_cmdset_storage__exact=prev).update(
@@ -342,24 +354,60 @@ class Evennia(object):
         to the portal has been established.
         This attempts to run the initial_setup script of the server.
         It returns if this is not the first time the server starts.
-        Once finished the last_initial_setup_step is set to -1.
+        Once finished the last_initial_setup_step is set to 'done'
+
         """
         global INFO_DICT
+        initial_setup = importlib.import_module(settings.INITIAL_SETUP_MODULE)
         last_initial_setup_step = ServerConfig.objects.conf("last_initial_setup_step")
-        if not last_initial_setup_step:
-            # None is only returned if the config does not exist,
-            # i.e. this is an empty DB that needs populating.
-            INFO_DICT["info"] = " Server started for the first time. Setting defaults."
-            initial_setup.handle_setup(0)
-        elif int(last_initial_setup_step) >= 0:
-            # a positive value means the setup crashed on one of its
-            # modules and setup will resume from this step, retrying
-            # the last failed module. When all are finished, the step
-            # is set to -1 to show it does not need to be run again.
-            INFO_DICT["info"] = " Resuming initial setup from step {last}.".format(
-                last=last_initial_setup_step
-            )
-            initial_setup.handle_setup(int(last_initial_setup_step))
+        try:
+            if not last_initial_setup_step:
+                # None is only returned if the config does not exist,
+                # i.e. this is an empty DB that needs populating.
+                INFO_DICT["info"] = " Server started for the first time. Setting defaults."
+                initial_setup.handle_setup()
+            elif last_initial_setup_step not in ("done", -1):
+                # last step crashed, so we weill resume from this step.
+                # modules and setup will resume from this step, retrying
+                # the last failed module. When all are finished, the step
+                # is set to 'done' to show it does not need to be run again.
+                INFO_DICT["info"] = " Resuming initial setup from step '{last}'.".format(
+                    last=last_initial_setup_step
+                )
+                initial_setup.handle_setup(last_initial_setup_step)
+        except Exception:
+            # stop server if this happens.
+            print(traceback.format_exc())
+            print("Error in initial setup. Stopping Server + Portal.")
+            self.sessions.portal_shutdown()
+
+    def create_default_channels(self):
+        """
+        check so default channels exist on every restart, create if not.
+
+        """
+
+        from evennia.accounts.models import AccountDB
+        from evennia.comms.models import ChannelDB
+        from evennia.utils.create import create_channel
+
+        superuser = AccountDB.objects.get(id=1)
+        # mudinfo
+        mudinfo_chan = settings.CHANNEL_MUDINFO
+        if mudinfo_chan:
+            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
+                channel = create_channel(**mudinfo_chan)
+                channel.connect(superuser)
+        # connectinfo
+        connectinfo_chan = settings.CHANNEL_MUDINFO
+        if connectinfo_chan:
+            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
+                channel = create_channel(**connectinfo_chan)
+        # default channels
+        for chan_info in settings.DEFAULT_CHANNELS:
+            if not ChannelDB.objects.filter(db_key=chan_info["key"]):
+                channel = create_channel(**chan_info)
+                channel.connect(superuser)
 
     def run_init_hooks(self, mode):
         """
@@ -369,7 +417,7 @@ class Evennia(object):
             mode (str): One of shutdown, reload or reset
 
         """
-        from evennia.objects.models import ObjectDB
+        from evennia.typeclasses.models import TypedObject
 
         # start server time and maintenance task
         self.maintenance_task = LoopingCall(_server_maintenance)
@@ -378,8 +426,13 @@ class Evennia(object):
         # update eventual changed defaults
         self.update_defaults()
 
-        [o.at_init() for o in ObjectDB.get_all_cached_instances()]
-        [p.at_init() for p in AccountDB.get_all_cached_instances()]
+        # run at_init() on all cached entities on reconnect
+        [
+            [entity.at_init() for entity in typeclass_db.get_all_cached_instances()]
+            for typeclass_db in TypedObject.__subclasses__()
+        ]
+
+        self.at_server_init()
 
         # call correct server hook based on start file value
         if mode == "reload":
@@ -390,6 +443,8 @@ class Evennia(object):
             self.at_server_cold_start()
             logger.log_msg("Evennia Server successfully restarted in 'reset' mode.")
         elif mode == "shutdown":
+            from evennia.objects.models import ObjectDB
+
             self.at_server_cold_start()
             # clear eventual lingering session storages
             ObjectDB.objects.clear_all_sessids()
@@ -403,18 +458,17 @@ class Evennia(object):
         """
         Shuts down the server from inside it.
 
-        Keyword Args:
-            mode (str): Sets the server restart mode:
-            - 'reload': server restarts, no "persistent" scripts
-              are stopped, at_reload hooks called.
-            - 'reset' - server restarts, non-persistent scripts stopped,
-              at_shutdown hooks called but sessions will not
-              be disconnected.
-            -'shutdown' - like reset, but server will not auto-restart.
-            _reactor_stopping: This is set if server is stopped by a kill
-                command OR this method was already called
-                once - in both cases the reactor is dead/stopping already.
-
+        mode - sets the server restart mode.
+           - 'reload' - server restarts, no "persistent" scripts
+             are stopped, at_reload hooks called.
+           - 'reset' - server restarts, non-persistent scripts stopped,
+             at_shutdown hooks called but sessions will not
+             be disconnected.
+           - 'shutdown' - like reset, but server will not auto-restart.
+        _reactor_stopping - this is set if server is stopped by a kill
+           command OR this method was already called
+           once - in both cases the reactor is
+           dead/stopping already.
         """
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # this means we have already passed through this method
@@ -431,9 +485,9 @@ class Evennia(object):
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
             yield [p.at_server_reload() for p in AccountDB.get_all_cached_instances()]
             yield [
-                (s.pause(manual_pause=False), s.at_server_reload())
+                (s._pause_task(auto_pause=True), s.at_server_reload())
                 for s in ScriptDB.get_all_cached_instances()
-                if s.id and (s.is_active or s.attributes.has("_manual_pause"))
+                if s.id and s.is_active
             ]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
@@ -457,11 +511,9 @@ class Evennia(object):
                 ]
                 yield ObjectDB.objects.clear_all_sessids()
             yield [
-                (
-                    s.pause(manual_pause=s.attributes.get("_manual_pause", False)),
-                    s.at_server_shutdown(),
-                )
+                (s._pause_task(auto_pause=True), s.at_server_shutdown())
                 for s in ScriptDB.get_all_cached_instances()
+                if s.id and s.is_active
             ]
             ServerConfig.objects.conf("server_restart_mode", "reset")
             self.at_server_cold_stop()
@@ -486,33 +538,50 @@ class Evennia(object):
         ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.runtime())
 
     def get_info_dict(self):
-        "Return the server info, for display."
+        """
+        Return the server info, for display.
+
+        """
         return INFO_DICT
 
     # server start/stop hooks
+
+    def at_server_init(self):
+        """
+        This is called first when the server is starting, before any other hooks, regardless of how it's starting.
+        """
+        for mod in SERVER_STARTSTOP_MODULES:
+            if hasattr(mod, "at_server_init"):
+                mod.at_server_init()
 
     def at_server_start(self):
         """
         This is called every time the server starts up, regardless of
         how it was shut down.
+
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_start()
+        for mod in SERVER_STARTSTOP_MODULES:
+            if hasattr(mod, "at_server_start"):
+                mod.at_server_start()
 
     def at_server_stop(self):
         """
         This is called just before a server is shut down, regardless
         of it is fore a reload, reset or shutdown.
+
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_stop()
+        for mod in SERVER_STARTSTOP_MODULES:
+            if hasattr(mod, "at_server_stop"):
+                mod.at_server_stop()
 
     def at_server_reload_start(self):
         """
         This is called only when server starts back up after a reload.
+
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_reload_start()
+        for mod in SERVER_STARTSTOP_MODULES:
+            if hasattr(mod, "at_server_reload_start"):
+                mod.at_server_reload_start()
 
     def at_post_portal_sync(self, mode):
         """
@@ -520,7 +589,7 @@ class Evennia(object):
         after reconnecting.
 
         Args:
-            mode (str): One of reload, reset or shutdown.
+            mode (str): One of 'reload', 'reset' or 'shutdown'.
 
         """
 
@@ -532,9 +601,8 @@ class Evennia(object):
 
         TICKER_HANDLER.restore(mode == "reload")
 
-        # after sync is complete we force-validate all scripts
-        # (this also starts any that didn't yet start)
-        ScriptDB.objects.validate(init_mode=mode)
+        # Un-pause all scripts, stop non-persistent timers
+        ScriptDB.objects.update_scripts_after_server_start()
 
         # start the task handler
         from evennia.scripts.taskhandler import TASK_HANDLER
@@ -542,29 +610,8 @@ class Evennia(object):
         TASK_HANDLER.load()
         TASK_HANDLER.create_delays()
 
-        # check so default channels exist
-        from evennia.comms.models import ChannelDB
-        from evennia.accounts.models import AccountDB
-        from evennia.utils.create import create_channel
-
-        god_account = AccountDB.objects.get(id=1)
-        # mudinfo
-        mudinfo_chan = settings.CHANNEL_MUDINFO
-        if not mudinfo_chan:
-            raise RuntimeError("settings.CHANNEL_MUDINFO must be defined.")
-        if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
-            channel = create_channel(**mudinfo_chan)
-            channel.connect(god_account)
-        # connectinfo
-        connectinfo_chan = settings.CHANNEL_MUDINFO
-        if connectinfo_chan:
-            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
-                channel = create_channel(**connectinfo_chan)
-        # default channels
-        for chan_info in settings.DEFAULT_CHANNELS:
-            if not ChannelDB.objects.filter(db_key=chan_info["key"]):
-                channel = create_channel(**chan_info)
-                channel.connect(god_account)
+        # create/update channels
+        self.create_default_channels()
 
         # delete the temporary setting
         ServerConfig.objects.conf("server_restart_mode", delete=True)
@@ -572,14 +619,17 @@ class Evennia(object):
     def at_server_reload_stop(self):
         """
         This is called only time the server stops before a reload.
+
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_reload_stop()
+        for mod in SERVER_STARTSTOP_MODULES:
+            if hasattr(mod, "at_server_reload_stop"):
+                mod.at_server_reload_stop()
 
     def at_server_cold_start(self):
         """
         This is called only when the server starts "cold", i.e. after a
         shutdown or a reset.
+
         """
         # We need to do this just in case the server was killed in a way where
         # the normal cleanup operations did not have time to run.
@@ -591,7 +641,7 @@ class Evennia(object):
         from evennia.scripts.models import ScriptDB
 
         for script in ScriptDB.objects.filter(db_persistent=False):
-            script.stop()
+            script._stop_task()
 
         if GUEST_ENABLED:
             for guest in AccountDB.objects.all().filter(
@@ -601,15 +651,18 @@ class Evennia(object):
                     if character:
                         character.delete()
                 guest.delete()
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_cold_start()
+        for mod in SERVER_STARTSTOP_MODULES:
+            if hasattr(mod, "at_server_cold_start"):
+                mod.at_server_cold_start()
 
     def at_server_cold_stop(self):
         """
         This is called only when the server goes down due to a shutdown or reset.
+
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_cold_stop()
+        for mod in SERVER_STARTSTOP_MODULES:
+            if hasattr(mod, "at_server_cold_stop"):
+                mod.at_server_cold_stop()
 
 
 # ------------------------------------------------------------
@@ -630,15 +683,17 @@ except OperationalError:
 # what to execute from.
 application = service.Application("Evennia")
 
-if "--nodaemon" not in sys.argv:
-    # custom logging, but only if we are not running in interactive mode
+
+if "--nodaemon" not in sys.argv and "test" not in sys.argv:
+    # activate logging for interactive/testing mode
     logfile = logger.WeeklyLogFile(
         os.path.basename(settings.SERVER_LOG_FILE),
         os.path.dirname(settings.SERVER_LOG_FILE),
         day_rotation=settings.SERVER_LOG_DAY_ROTATION,
         max_size=settings.SERVER_LOG_MAX_SIZE,
     )
-    application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
+    globalLogPublisher.addObserver(logger.GetServerLogObserver()(logfile))
+
 
 # The main evennia server program. This sets up the database
 # and is where we store all the other services.
@@ -669,10 +724,10 @@ if WEBSERVER_ENABLED:
 
     from evennia.server.webserver import (
         DjangoWebRoot,
-        WSGIWebServer,
-        Website,
         LockableThreadPool,
         PrivateStaticRoot,
+        Website,
+        WSGIWebServer,
     )
 
     # start a thread pool and define the root url (/) as a wsgi resource

@@ -1,19 +1,23 @@
 """
-This is an advanced ASCII table creator. It was inspired by
-[prettytable](https://code.google.com/p/prettytable/) but shares no code.
+This is an advanced ASCII table creator. It was inspired by Prettytable
+(https://code.google.com/p/prettytable/) but shares no code and is considerably
+more advanced, supporting auto-balancing of incomplete tables and ANSI colors among
+other things.
 
 Example usage:
-::
 
-    from evennia.utils import evtable
+```python
+  from evennia.utils import evtable
 
-    table = evtable.EvTable("Heading1", "Heading2",
+  table = evtable.EvTable("Heading1", "Heading2",
                   table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
-    table.add_column("This is long data", "This is even longer data")
-    table.add_row("This is a single row")
-    print table
+  table.add_column("This is long data", "This is even longer data")
+  table.add_row("This is a single row")
+  print table
+```
 
 Result:
+
 ::
 
     +----------------------+----------+---+--------------------------+
@@ -30,13 +34,15 @@ Result:
 
 As seen, the table will automatically expand with empty cells to make
 the table symmetric. Tables can be restricted to a given width:
-::
 
-    table.reformat(width=50, align="l")
+```python
+  table.reformat(width=50, align="l")
+```
 
 (We could just have added these keywords to the table creation call)
 
 This yields the following result:
+
 ::
 
     +-----------+------------+-----------+-----------+
@@ -57,16 +63,21 @@ This yields the following result:
     | row       |            |           |           |
     +-----------+------------+-----------+-----------+
 
+
 Table-columns can be individually formatted. Note that if an
 individual column is set with a specific width, table auto-balancing
 will not affect this column (this may lead to the full table being too
 wide, so be careful mixing fixed-width columns with auto- balancing).
 Here we change the width and alignment of the column at index 3
 (Python starts from 0):
-::
 
-    table.reformat_column(3, width=30, align="r")
-    print table
+```python
+
+table.reformat_column(3, width=30, align="r")
+print table
+```
+
+::
 
     +-----------+-------+-----+-----------------------------+---------+
     | Heading1  | Headi |     |                             |         |
@@ -90,25 +101,27 @@ If the height is restricted, cells will be restricted from expanding
 vertically. This will lead to text contents being cropped. Each cell
 can only shrink to a minimum width and height of 1.
 
-`EvTable` is intended to be used with [ANSIString](evennia.utils.ansi#ansistring)
-for supporting ANSI-coloured string types.
+`EvTable` is intended to be used with `ANSIString` for supporting ANSI-coloured
+string types.
 
-When a cell is auto-wrapped across multiple lines, ANSI-reset
-sequences will be put at the end of each wrapped line. This means that
-the colour of a wrapped cell will not "bleed", but it also means that
-eventual colour outside the table will not transfer "across" a table,
-you need to re-set the color to have it appear on both sides of the
-table string.
+When a cell is auto-wrapped across multiple lines, ANSI-reset sequences will be
+put at the end of each wrapped line. This means that the colour of a wrapped
+cell will not "bleed", but it also means that eventual colour outside the table
+will not transfer "across" a table, you need to re-set the color to have it
+appear on both sides of the table string.
 
 ----
 
 """
 
-from django.conf import settings
+from copy import copy, deepcopy
 from textwrap import TextWrapper
-from copy import deepcopy, copy
-from evennia.utils.utils import is_iter, display_len as d_len
+
+from django.conf import settings
+
 from evennia.utils.ansi import ANSIString
+from evennia.utils.utils import display_len as d_len
+from evennia.utils.utils import is_iter, justify
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
@@ -229,12 +242,12 @@ class ANSITextWrapper(TextWrapper):
                 del chunks[-1]
 
             while chunks:
-                l = d_len(chunks[-1])
+                ln = d_len(chunks[-1])
 
                 # Can at least squeeze this chunk onto the current line.
-                if cur_len + l <= width:
+                if cur_len + ln <= width:
                     cur_line.append(chunks.pop())
-                    cur_len += l
+                    cur_len += ln
 
                 # Nope, this line is full.
                 else:
@@ -252,10 +265,10 @@ class ANSITextWrapper(TextWrapper):
             # Convert current line back to a string and store it in list
             # of all lines (return value).
             if cur_line:
-                l = ""
+                ln = ""
                 for w in cur_line:  # ANSI fix
-                    l += w  #
-                lines.append(indent + l)
+                    ln += w  #
+                lines.append(indent + ln)
         return lines
 
 
@@ -342,8 +355,9 @@ class EvCell:
                 desired size). This can be overruled by individual settings below.
             hfill_char (str): Character used for horizontal fill (default `" "`).
             vfill_char (str): Character used for vertical fill (default `" "`).
-            align (str): Should be one of "l", "r" or  "c" for left-, right- or center
-                horizontal alignment respectively. Default is left-aligned.
+            align (str): Should be one of "l", "r", "c", "f" or "a" for left-, right-, center-,
+                full-justified (with space between words) or absolute (keep as much original
+                whitespace as possible). Default is left-aligned.
             valign (str): Should be one of "t", "b" or "c" for top-, bottom and center
                 vertical alignment respectively. Default is centered.
             border_width (int): General border width. This is overruled
@@ -376,7 +390,6 @@ class EvCell:
                 small.
 
         """
-
         self.formatted = None
         padwidth = kwargs.get("pad_width", None)
         padwidth = int(padwidth) if padwidth is not None else None
@@ -459,23 +472,6 @@ class EvCell:
         else:
             self.height = self.raw_height
 
-        # prepare data
-        # self.formatted = self._reformat()
-
-    def _crop(self, text, width):
-        """
-        Apply cropping of text.
-
-        Args:
-            text (str): The text to crop.
-            width (int): The width to crop `text` to.
-
-        """
-        if d_len(text) > width:
-            crop_string = self.crop_string
-            return text[: width - d_len(crop_string)] + crop_string
-        return text
-
     def _reformat(self):
         """
         Apply all EvCells' formatting operations.
@@ -532,46 +528,19 @@ class EvCell:
                 # too many lines. Crop and mark last line with crop_string
                 crop_string = self.crop_string
                 adjusted_data = adjusted_data[:-excess]
+                adjusted_data_length = len(adjusted_data[-1])
                 crop_string_length = len(crop_string)
-                if len(adjusted_data[-1]) > crop_string_length:
+                if adjusted_data_length >= crop_string_length:
+                    # replace with data[...]
+                    # (note that if adjusted data is shorter than the crop-string,
+                    # we skip the crop-string and just pass the cropped data.)
                     adjusted_data[-1] = adjusted_data[-1][:-crop_string_length] + crop_string
-                else:
-                    adjusted_data[-1] += crop_string
+
             elif excess < 0:
                 # too few lines. Fill to height.
                 adjusted_data.extend(["" for _ in range(excess)])
 
         return adjusted_data
-
-    def _center(self, text, width, pad_char):
-        """
-        Horizontally center text on line of certain width, using padding.
-
-        Args:
-            text (str): The text to center.
-            width (int): How wide the area is (in characters) where `text`
-                should be centered.
-            pad_char (str): Which padding character to use.
-
-        Returns:
-            text (str): Centered text.
-
-        """
-        excess = width - d_len(text)
-        if excess <= 0:
-            return text
-        if excess % 2:
-            # uneven padding
-            narrowside = (excess // 2) * pad_char
-            widerside = narrowside + pad_char
-            if width % 2:
-                return narrowside + text + widerside
-            else:
-                return widerside + text + narrowside
-        else:
-            # even padding - same on both sides
-            side = (excess // 2) * pad_char
-            return side + text + side
 
     def _align(self, data):
         """
@@ -589,29 +558,7 @@ class EvCell:
         align = self.align
         hfill_char = self.hfill_char
         width = self.width
-        if align == "l":
-            lines = [
-                (
-                    line.lstrip(" ") + " "
-                    if line.startswith(" ") and not line.startswith("  ")
-                    else line
-                )
-                + hfill_char * (width - d_len(line))
-                for line in data
-            ]
-            return lines
-        elif align == "r":
-            return [
-                hfill_char * (width - d_len(line))
-                + (
-                    " " + line.rstrip(" ")
-                    if line.endswith(" ") and not line.endswith("  ")
-                    else line
-                )
-                for line in data
-            ]
-        else:  # center, 'c'
-            return [self._center(line, self.width, self.hfill_char) for line in data]
+        return [justify(line, width, align=align, fillchar=hfill_char) for line in data]
 
     def _valign(self, data):
         """
@@ -893,23 +840,26 @@ class EvCell:
         Get data, padded and aligned in the form of a list of lines.
 
         """
-        self.formatted = self._reformat()
+        if not self.formatted:
+            self.formatted = self._reformat()
         return self.formatted
 
     def __repr__(self):
-        self.formatted = self._reformat()
+        if not self.formatted:
+            self.formatted = self._reformat()
         return str(ANSIString("<EvCel %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
-        self.formatted = self._reformat()
+        if not self.formatted:
+            self.formatted = self._reformat()
         return str(ANSIString("\n").join(self.formatted))
 
 
 # EvColumn class
 
 
-class EvColumn(object):
+class EvColumn:
     """
     This class holds a list of Cells to represent a column of a table.
     It holds operations and settings that affect *all* cells in the
@@ -1018,7 +968,7 @@ class EvColumn(object):
         self.column[index].reformat(**kwargs)
 
     def __repr__(self):
-        return "<EvColumn\n  %s>" % ("\n  ".join([repr(cell) for cell in self.column]))
+        return "<EvColumn\n  %s>" % "\n  ".join([repr(cell) for cell in self.column])
 
     def __len__(self):
         return len(self.column)
@@ -1039,7 +989,7 @@ class EvColumn(object):
 # Main Evtable class
 
 
-class EvTable(object):
+class EvTable:
     """
     The table class holds a list of EvColumns, each consisting of EvCells so
     that the result is a 2D matrix.
@@ -1093,8 +1043,9 @@ class EvTable(object):
             height (int, optional): Fixed height of table. Defaults to being unset. Width is
                 still given precedence. If given, table cells will crop text rather
                 than expand vertically.
-            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as even width as
-                     possible. This often looks best also for mixed-length tables. Default is `False`.
+            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as
+                even width as possible. This often looks best also for mixed-length tables. Default
+                is `False`.
             maxwidth (int, optional):  This will set a maximum width
                 of the table while allowing it to be smaller. Only if it grows wider than this
                 size will it be resized by expanding horizontally (or crop `height` is given).
@@ -1185,7 +1136,19 @@ class EvTable(object):
         self.options = kwargs
 
         # use the temporary table to generate the table on the fly, as a list of EvColumns
-        self.table = [EvColumn(*col, **kwargs) for col in table]
+        self.table = []
+        for col in table:
+            if isinstance(col, EvColumn):
+                self.add_column(col, **kwargs)
+            elif isinstance(col, (list, tuple)):
+                self.table.append(EvColumn(*col, **kwargs))
+            else:
+                raise RuntimeError(
+                    "EvTable 'table' kwarg must be a list of EvColumns or a list-of-lists of"
+                    f" strings. Found {type(col)}."
+                )
+
+        # self.table = [EvColumn(*col, **kwargs) for col in table]
 
         # this is the actual working table
         self.worktable = None
@@ -1341,7 +1304,8 @@ class EvTable(object):
         self.ncols = ncols
         self.nrows = nrowmax
 
-        # add borders - these add to the width/height, so we must do this before calculating width/height
+        # add borders - these add to the width/height, so we must do this before calculating
+        # width/height
         self._borders()
 
         # equalize widths within each column
@@ -1428,7 +1392,8 @@ class EvTable(object):
             except Exception:
                 raise
 
-        # equalize heights for each row (we must do this here, since it may have changed to fit new widths)
+        # equalize heights for each row (we must do this here, since it may have changed to fit new
+        # widths)
         cheights = [
             max(cell.get_height() for cell in (col[iy] for col in self.worktable))
             for iy in range(nrowmax)
@@ -1465,31 +1430,13 @@ class EvTable(object):
                         % (self.height, chmin + locked_height)
                     )
 
-                # now we add all the extra height up to the desired table-height.
-                # We do this so that the tallest cells gets expanded first (and
-                # thus avoid getting cropped)
-
-                even = self.height % 2 == 0
-                correction = 0
-                while correction < excess:
-                    # expand the cells with the most rows first
-                    if 0 <= correction < nrowmax and nrowmax > 1:
-                        # avoid adding to header first round (looks bad on very small tables)
-                        ci = cheights[1:].index(max(cheights[1:])) + 1
-                    else:
-                        ci = cheights.index(max(cheights))
-                    if ci in locked_cols:
-                        # locked row, make sure it's not picked again
-                        cheights[ci] -= 9999
-                        cheights_min[ci] = locked_cols[ci]
-                    else:
-                        cheights_min[ci] += 1
-                        # change balance
-                        if ci == 0 and self.header:
-                            # it doesn't look very good if header expands too fast
-                            cheights[ci] -= 2 if even else 3
-                        cheights[ci] -= 2 if even else 1
-                        correction += 1
+                # Add all the excess at the end of the table
+                # Note: Older solutions tried to balance individual
+                # rows' vsize. This could lead to empty rows that
+                # looked like a bug. This solution instead
+                # adds empty rows at the end which is less sophisticated
+                # but much more visually consistent.
+                cheights_min[-1] += excess
                 cheights = cheights_min
 
                 # we must tell cells to crop instead of expanding
@@ -1563,7 +1510,12 @@ class EvTable(object):
         options = dict(list(self.options.items()) + list(kwargs.items()))
 
         xpos = kwargs.get("xpos", None)
-        column = EvColumn(*args, **options)
+
+        if args and isinstance(args[0], EvColumn):
+            column = args[0]
+            column.reformat(**kwargs)
+        else:
+            column = EvColumn(*args, **options)
         wtable = self.ncols
         htable = self.nrows
 
@@ -1601,7 +1553,6 @@ class EvTable(object):
             xpos = min(wtable - 1, max(0, int(xpos)))
             self.table.insert(xpos, column)
         self.ncols += 1
-        # self._balance()
 
     def add_row(self, *args, **kwargs):
         """
@@ -1636,11 +1587,10 @@ class EvTable(object):
             # we need to add new empty columns to table
             empty_rows = ["" for _ in range(htable)]
             self.table.extend([EvColumn(*empty_rows, **options) for _ in range(excess)])
-            self.ncols += excess
         elif excess < 0:
             # we need to add more cells to row
             row.extend(["" for _ in range(abs(excess))])
-            self.ncols -= excess
+        self.ncols = len(self.table)
 
         if ypos is None or ypos > htable - 1:
             # add new row to the end
@@ -1722,33 +1672,3 @@ class EvTable(object):
         """print table (this also balances it)"""
         # h = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
         return str(str(ANSIString("\n").join([line for line in self._generate_lines()])))
-
-
-def _test():
-    """Test"""
-    table = EvTable(
-        "|yHeading1|n",
-        "|gHeading2|n",
-        table=[[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-        border="cells",
-        align="l",
-    )
-    table.add_column("|rThis is long data|n", "|bThis is even longer data|n")
-    table.add_row("This is a single row")
-    print(str(table))
-    table.reformat(width=50)
-    print(str(table))
-    table.reformat_column(3, width=30, align="r")
-    print(str(table))
-    return table
-
-
-def _test2():
-    table = EvTable("|yHeading1|n", "|B|[GHeading2|n", "Heading3")
-    for i in range(100):
-        table.add_row(
-            "This is col 0, row %i" % i,
-            "|gThis is col 1, row |w%i|n|g.|n" % i,
-            "This is col 2, row %i" % i,
-        )
-    return table

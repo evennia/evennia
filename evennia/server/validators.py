@@ -1,8 +1,10 @@
+import re
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+
 from evennia.accounts.models import AccountDB
-import re
 
 
 class EvenniaUsernameAvailabilityValidator:
@@ -85,6 +87,6 @@ class EvenniaPasswordValidator:
 
         """
         return _(
-            "%s From a terminal client, you can also use a phrase of multiple words if "
-            "you enclose the password in double quotes." % self.policy
+            "{policy} From a terminal client, you can also use a phrase of multiple words if "
+            "you enclose the password in double quotes.".format(policy=self.policy)
         )

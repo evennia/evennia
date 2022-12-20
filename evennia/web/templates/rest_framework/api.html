@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+
+<!--
+  Extend and customize the Django REST Framework api look.
+
+-->
+{% extends "rest_framework/base.html" %}
+{% load static sekizai_tags %}
+
+{% block title %}
+  Evennia API
+{% endblock %}
+
+<!-- Plug in custom Evennia CSS -->
+{% block style %}
+  {{ block.super }}
+  <link rel="icon" type="image/x-icon" href="{% static "website/images/evennia_logo.png" %}" />
+  <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/api.css" %}">
+{% endblock %}
+
+<!-- Header -->
+{% block branding %}
+<h3>Evennia REST API</h3>
+  Access game database from external services (requires login and proper access)
+{% endblock %}
+
+<!-- Sidebar links -->
+{% block userlinks %}
+  {{ block.super }}
+  <li><a href="/api">Root</a></li>
+  <li><a href="{% url 'api:openapi' %}">Schema</a></li>
+  <li><a href="{% url 'api:redoc' %}">Autodoc</a></li>
+  <li><a href="/">Home</a></li>
+{% endblock %}
+

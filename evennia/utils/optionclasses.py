@@ -1,15 +1,10 @@
-"""
-Option classes store user- or server Options in a generic way
-while also providing validation.
-
-"""
-
 import datetime
+
 from evennia import logger
-from evennia.utils.ansi import strip_ansi
-from evennia.utils.validatorfuncs import _TZ_DICT
-from evennia.utils.utils import crop
 from evennia.utils import validatorfuncs
+from evennia.utils.ansi import strip_ansi
+from evennia.utils.utils import crop
+from evennia.utils.validatorfuncs import _TZ_DICT
 
 
 class BaseOption:
@@ -116,8 +111,8 @@ class BaseOption:
     def save(self, **kwargs):
         """
         Stores the current value using `.handler.save_handler(self.key, value, **kwargs)`
-        where kwargs are a combination of those passed into this function and the
-        ones specified by the OptionHandler.
+        where `kwargs` are a combination of those passed into this function and
+        the ones specified by the `OptionHandler`.
 
         Keyword Args:
             any (any): Not used by default. These are passed in from self.set

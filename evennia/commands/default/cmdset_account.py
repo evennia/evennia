@@ -10,8 +10,15 @@ command method rather than caller.msg().
 """
 
 from evennia.commands.cmdset import CmdSet
-from evennia.commands.default import help, comms, admin, system
-from evennia.commands.default import building, account, general
+from evennia.commands.default import (
+    account,
+    admin,
+    building,
+    comms,
+    general,
+    help,
+    system,
+)
 
 
 class AccountCmdSet(CmdSet):
@@ -59,19 +66,20 @@ class AccountCmdSet(CmdSet):
         self.add(admin.CmdNewPassword())
 
         # Comm commands
-        self.add(comms.CmdAddCom())
-        self.add(comms.CmdDelCom())
-        self.add(comms.CmdAllCom())
-        self.add(comms.CmdChannels())
-        self.add(comms.CmdCdestroy())
-        self.add(comms.CmdChannelCreate())
-        self.add(comms.CmdClock())
-        self.add(comms.CmdCBoot())
-        self.add(comms.CmdCemit())
-        self.add(comms.CmdCWho())
-        self.add(comms.CmdCdesc())
+        self.add(comms.CmdChannel())
         self.add(comms.CmdPage())
         self.add(comms.CmdIRC2Chan())
         self.add(comms.CmdIRCStatus())
         self.add(comms.CmdRSS2Chan())
         self.add(comms.CmdGrapevine2Chan())
+        self.add(comms.CmdDiscord2Chan())
+        # self.add(comms.CmdChannels())
+        # self.add(comms.CmdAddCom())
+        # self.add(comms.CmdDelCom())
+        # self.add(comms.CmdAllCom())
+        # self.add(comms.CmdCdestroy())
+        # self.add(comms.CmdChannelCreate())
+        # self.add(comms.CmdClock())
+        # self.add(comms.CmdCBoot())
+        # self.add(comms.CmdCWho())
+        # self.add(comms.CmdCdesc())

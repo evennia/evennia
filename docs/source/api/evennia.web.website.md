@@ -15,12 +15,11 @@ evennia.web.website
    evennia.web.website.forms
    evennia.web.website.tests
    evennia.web.website.urls
-   evennia.web.website.views
 
 
 .. toctree::
    :maxdepth: 6
 
-   evennia.web.website.templatetags
+   evennia.web.website.views
 
 ```

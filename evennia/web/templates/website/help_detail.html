@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block titleblock %}
+{{ view.page_title }} ({{ object|title }})
+{% endblock %}
+
+{% block content %}
+
+{% load addclass %}
+<div class="row">
+  <div class="col">
+
+    <!-- main content -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <h1 class="card-title">{{ view.page_title }} ({{ object|title }})</h1>
+        <hr />
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'help' %}">Help Index</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'help' %}#{{ object.web_help_category }}">{{ object.help_category|title }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ object.web_help_key|title }}</li>
+        </ol>
+        <hr />
+
+        <div class="row">
+          <!-- left column -->
+          <div class="col-lg-9 col-sm-12">
+            <pre>{{ entry_text }}</pre>
+
+            {% if topic_previous or topic_next %}
+            <hr />
+            <!-- navigation -->
+            <nav aria-label="Topic Navigation">
+              <ul class="pagination justify-content-center">
+                {% if topic_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="{{ topic_previous.web_get_detail_url }}">Previous ({{ topic_previous|title }})</a>
+                </li>
+                {% endif %}
+
+                {% if topic_next %}
+                <li class="page-item">
+                  <a class="page-link" href="{{ topic_next.web_get_detail_url }}">Next ({{ topic_next|title }})</a>
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
+            <!-- end navigation -->
+            {% endif %}
+
+          </div>
+          <!-- end left column -->
+
+          <!-- right column (sidebar) -->
+          <div class="col-lg-3 col-sm-12">
+
+            {% if request.user.is_staff %}
+            <!-- admin button -->
+            <a class="btn btn-info btn-block mb-3" href="{{ object.web_get_admin_url }}">Admin</a>
+            <!-- end admin button -->
+            <hr />
+            {% endif %}
+
+            <div class="card mb-3">
+              <div class="card-header">{{ object.web_help_category|title }}</div>
+
+              <ul class="list-group list-group-flush">
+                {% for topic in topic_list %}
+                <a href="{{ topic.web_get_detail_url }}" class="list-group-item {% if topic == object %}active disabled{% endif %}">{{ topic|title }}</a>
+                {% endfor %}
+              </ul>
+
+            </div>
+          </div>
+          <!-- end right column -->
+
+        </div>
+        <hr />
+
+      </div>
+    </div>
+    <!-- end main content -->
+
+  </div>
+</div>
+{% endblock %}
