@@ -2,11 +2,12 @@
 Service for integrating the Evennia Game Index client into Evennia.
 
 """
+from twisted.application.service import Service
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
-from twisted.application.service import Service
 
 from evennia.utils import logger
+
 from .client import EvenniaGameIndexClient
 
 # How many seconds to wait before triggering the first EGI check-in.

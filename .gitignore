@@ -50,3 +50,19 @@ twistd.bat
 
 # never commit docs/build
 docs/build
+
+# For users of Atom
+.remote-sync.json
+
+# Visual Studio Code (VS-Code)
+.vscode/
+
+# Obsidian 
+.obsidian
+
+# Virtual environments 
+.venv/
+.env/
+
+# Testing folder 
+.test_game_dir

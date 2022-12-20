@@ -8,35 +8,38 @@ try:
 except ImportError:
     import unittest
 
-import sys
-import string
-import mock
-import pickle
 import json
+import pickle
+import string
+import sys
 
-from mock import Mock, MagicMock
-from evennia.server.portal import irc
-from evennia.utils.test_resources import EvenniaTest
-
-from twisted.conch.telnet import IAC, WILL, DONT, SB, SE, NAWS, DO
+import mock
+from autobahn.twisted.websocket import WebSocketServerFactory
+from mock import MagicMock, Mock
+from twisted.conch.telnet import DO, DONT, IAC, NAWS, SB, SE, WILL
+from twisted.internet.base import DelayedCall
 from twisted.test import proto_helpers
 from twisted.trial.unittest import TestCase as TwistedTestCase
-from twisted.internet.base import DelayedCall
 
-from .telnet import TelnetServerFactory, TelnetProtocol
-from .portal import PORTAL_SESSIONS
-from .suppress_ga import SUPPRESS_GA
-from .naws import DEFAULT_HEIGHT, DEFAULT_WIDTH
-from .ttype import TTYPE, IS
+from evennia.server.portal import irc
+from evennia.utils.test_resources import BaseEvenniaTest
+
+from .amp import (
+    AMP_MAXLEN,
+    AMPMultiConnectionProtocol,
+    MsgPortal2Server,
+    MsgServer2Portal,
+)
+from .amp_server import AMPServerFactory
 from .mccp import MCCP
 from .mssp import MSSP
 from .mxp import MXP
+from .naws import DEFAULT_HEIGHT, DEFAULT_WIDTH
+from .portal import PORTAL_SESSIONS
+from .suppress_ga import SUPPRESS_GA
+from .telnet import TelnetProtocol, TelnetServerFactory
 from .telnet_oob import MSDP, MSDP_VAL, MSDP_VAR
-
-from .amp import AMPMultiConnectionProtocol, MsgServer2Portal, MsgPortal2Server, AMP_MAXLEN
-from .amp_server import AMPServerFactory
-
-from autobahn.twisted.websocket import WebSocketServerFactory
+from .ttype import IS, TTYPE
 from .webclient import WebSocketClient
 
 
@@ -46,7 +49,7 @@ class TestAMPServer(TwistedTestCase):
     """
 
     def setUp(self):
-        super(TestAMPServer, self).setUp()
+        super().setUp()
         portal = Mock()
         factory = AMPServerFactory(portal)
         self.proto = factory.buildProtocol(("localhost", 0))
@@ -217,7 +220,7 @@ class TestIRC(TestCase):
 
 class TestTelnet(TwistedTestCase):
     def setUp(self):
-        super(TestTelnet, self).setUp()
+        super().setUp()
         factory = TelnetServerFactory()
         factory.protocol = TelnetProtocol
         factory.sessionhandler = PORTAL_SESSIONS
@@ -281,7 +284,7 @@ class TestTelnet(TwistedTestCase):
         return d
 
 
-class TestWebSocket(EvenniaTest):
+class TestWebSocket(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.proto = WebSocketClient()

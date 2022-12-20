@@ -20,14 +20,15 @@ method. Otherwise all text will be returned to all connected sessions.
 """
 import time
 from codecs import lookup as codecs_lookup
+
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
-from evennia.utils import utils, create, logger, search
+from evennia.utils import create, logger, search, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
-_MULTISESSION_MODE = settings.MULTISESSION_MODE
+_AUTO_PUPPET_ON_LOGIN = settings.AUTO_PUPPET_ON_LOGIN
 
 # limit symbol import for API
 __all__ = (
@@ -58,11 +59,6 @@ class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
         """Custom parsing"""
 
         super().parse()
-
-        if _MULTISESSION_MODE < 2:
-            # only one character allowed - not used in this mode
-            self.playable = None
-            return
 
         playable = self.account.db._playable_characters
         if playable is not None:
@@ -111,8 +107,14 @@ class CmdOOCLook(MuxAccountLookCommand):
     def func(self):
         """implement the ooc look command"""
 
-        if _MULTISESSION_MODE < 2:
-            # only one character allowed
+        if self.session.puppet:
+            # if we are puppeting, this is only reached in the case the that puppet
+            # has no look command on its own.
+            self.msg("You currently have no ability to look around.")
+            return
+
+        if _AUTO_PUPPET_ON_LOGIN and _MAX_NR_CHARACTERS == 1 and self.playable:
+            # only one exists and is allowed - simplify
             self.msg("You are out-of-character (OOC).\nUse |wic|n to get back into the game.")
             return
 
@@ -149,14 +151,16 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         key = self.lhs
         desc = self.rhs
 
-        charmax = _MAX_NR_CHARACTERS
-
-        if not account.is_superuser and (
-            account.db._playable_characters and len(account.db._playable_characters) >= charmax
-        ):
-            plural = "" if charmax == 1 else "s"
-            self.msg(f"You may only create a maximum of {charmax} character{plural}.")
-            return
+        if _MAX_NR_CHARACTERS is not None:
+            if (
+                not account.is_superuser
+                and not account.check_permstring("Developer")
+                and account.db._playable_characters
+                and len(account.db._playable_characters) >= _MAX_NR_CHARACTERS
+            ):
+                plural = "" if _MAX_NR_CHARACTERS == 1 else "s"
+                self.msg(f"You may only have a maximum of {_MAX_NR_CHARACTERS} character{plural}.")
+                return
         from evennia.objects.models import ObjectDB
 
         typeclass = settings.BASE_CHARACTER_TYPECLASS
@@ -165,7 +169,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
             # check if this Character already exists. Note that we are only
             # searching the base character typeclass here, not any child
             # classes.
-            self.msg("|rA character named '|w%s|r' already exists.|n" % key)
+            self.msg(f"|rA character named '|w{key}|r' already exists.|n")
             return
 
         # create the character
@@ -177,8 +181,8 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         )
         # only allow creator (and developers) to puppet this char
         new_character.locks.add(
-            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or perm(Admin)"
-            % (new_character.id, account.id, account.id)
+            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"
+            " perm(Admin)" % (new_character.id, account.id, account.id)
         )
         account.db._playable_characters.append(new_character)
         if desc:
@@ -186,12 +190,11 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         elif not new_character.db.desc:
             new_character.db.desc = "This is a character."
         self.msg(
-            "Created new character %s. Use |wic %s|n to enter the game as this character."
-            % (new_character.key, new_character.key)
+            f"Created new character {new_character.key}. Use |wic {new_character.key}|n to enter"
+            " the game as this character."
         )
         logger.log_sec(
-            "Character Created: %s (Caller: %s, IP: %s)."
-            % (new_character, account, self.session.address)
+            f"Character Created: {new_character} (Caller: {account}, IP: {self.session.address})."
         )
 
 
@@ -228,7 +231,8 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
             return
         elif len(match) > 1:
             self.msg(
-                "Aborting - there are two characters with the same name. Ask an admin to delete the right one."
+                "Aborting - there are two characters with the same name. Ask an admin to delete the"
+                " right one."
             )
             return
         else:  # one match
@@ -243,10 +247,9 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                         pc for pc in caller.db._playable_characters if pc != delobj
                     ]
                     delobj.delete()
-                    self.msg("Character '%s' was permanently deleted." % key)
+                    self.msg(f"Character '{key}' was permanently deleted.")
                     logger.log_sec(
-                        "Character Deleted: %s (Caller: %s, IP: %s)."
-                        % (key, account, self.session.address)
+                        f"Character Deleted: {key} (Caller: {account}, IP: {self.session.address})."
                     )
                 else:
                     self.msg("Deletion was aborted.")
@@ -314,11 +317,13 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
             if account.db._playable_characters:
                 # look at the playable_characters list first
                 character_candidates.extend(
-                    account.search(
-                        self.args,
-                        candidates=account.db._playable_characters,
-                        search_object=True,
-                        quiet=True,
+                    utils.make_iter(
+                        account.search(
+                            self.args,
+                            candidates=account.db._playable_characters,
+                            search_object=True,
+                            quiet=True,
+                        )
                     )
                 )
 
@@ -367,14 +372,14 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
             account.puppet_object(session, new_character)
             account.db._last_puppet = new_character
             logger.log_sec(
-                "Puppet Success: (Caller: %s, Target: %s, IP: %s)."
-                % (account, new_character, self.session.address)
+                f"Puppet Success: (Caller: {account}, Target: {new_character}, IP:"
+                f" {self.session.address})."
             )
         except RuntimeError as exc:
-            self.msg("|rYou cannot become |C%s|n: %s" % (new_character.name, exc))
+            self.msg(f"|rYou cannot become |C{new_character.name}|n: {exc}")
             logger.log_sec(
-                "Puppet Failed: %s (Caller: %s, Target: %s, IP: %s)."
-                % (exc, account, new_character, self.session.address)
+                f"Puppet Failed: %s (Caller: {account}, Target: {new_character}, IP:"
+                f" {self.session.address})."
             )
 
 
@@ -419,15 +424,15 @@ class CmdOOC(MuxAccountLookCommand):
             account.unpuppet_object(session)
             self.msg("\n|GYou go OOC.|n\n")
 
-            if _MULTISESSION_MODE < 2:
-                # only one character allowed
+            if _AUTO_PUPPET_ON_LOGIN and _MAX_NR_CHARACTERS == 1 and self.playable:
+                # only one character exists and is allowed - simplify
                 self.msg("You are out-of-character (OOC).\nUse |wic|n to get back into the game.")
                 return
 
             self.msg(account.at_look(target=self.playable, session=session))
 
         except RuntimeError as exc:
-            self.msg("|rCould not unpuppet from |c%s|n: %s" % (old_char, exc))
+            self.msg(f"|rCould not unpuppet from |c{old_char}|n: {exc}")
 
 
 class CmdSessions(COMMAND_DEFAULT_CLASS):
@@ -464,7 +469,7 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
                 char and str(char) or "None",
                 char and str(char.location) or "N/A",
             )
-            self.msg("|wYour current session(s):|n\n%s" % table)
+            self.msg(f"|wYour current session(s):|n\n{table}")
 
 
 class CmdWho(COMMAND_DEFAULT_CLASS):
@@ -635,7 +640,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     )
                     row.append("%s%s" % (saved, changed))
                 table.add_row(*row)
-            self.msg("|wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
+            self.msg(f"|wClient settings ({self.session.protocol_key}):|n\n{table}|n")
 
             return
 
@@ -650,7 +655,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             try:
                 codecs_lookup(new_encoding)
             except LookupError:
-                raise RuntimeError("The encoding '|w%s|n' is invalid. " % new_encoding)
+                raise RuntimeError(f"The encoding '|w{new_encoding}|n' is invalid. ")
             return val
 
         def validate_size(new_size):
@@ -665,16 +670,16 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 old_val = flags.get(new_name, False)
                 new_val = validator(new_val)
                 if old_val == new_val:
-                    self.msg("Option |w%s|n was kept as '|w%s|n'." % (new_name, old_val))
+                    self.msg(f"Option |w{new_name}|n was kept as '|w{old_val}|n'.")
                 else:
                     flags[new_name] = new_val
                     self.msg(
-                        "Option |w%s|n was changed from '|w%s|n' to '|w%s|n'."
-                        % (new_name, old_val, new_val)
+                        f"Option |w{new_name}|n was changed from '|w{old_val}|n' to"
+                        f" '|w{new_val}|n'."
                     )
                 return {new_name: new_val}
             except Exception as err:
-                self.msg("|rCould not set option |w%s|r:|n %s" % (new_name, err))
+                self.msg(f"|rCould not set option |w{new_name}|r:|n {err}")
                 return False
 
         validators = {
@@ -696,6 +701,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "XTERM256": validate_bool,
             "INPUTDEBUG": validate_bool,
             "FORCEDENDLINE": validate_bool,
+            "LOCALECHO": validate_bool,
         }
 
         name = self.lhs.upper()
@@ -713,12 +719,12 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 saved_options.update(optiondict)
                 self.account.attributes.add("_saved_protocol_flags", saved_options)
                 for key in optiondict:
-                    self.msg("|gSaved option %s.|n" % key)
+                    self.msg(f"|gSaved option {key}.|n")
             if "clear" in self.switches:
                 # clear this save
                 for key in optiondict:
                     self.account.attributes.get("_saved_protocol_flags", {}).pop(key, None)
-                    self.msg("|gCleared saved %s." % key)
+                    self.msg(f"|gCleared saved {key}.")
             self.session.update_flags(**optiondict)
 
 
@@ -762,8 +768,7 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
             account.save()
             self.msg("Password changed.")
             logger.log_sec(
-                "Password Changed: %s (Caller: %s, IP: %s)."
-                % (account, account, self.session.address)
+                f"Password Changed: {account} (Caller: {account}, IP: {self.session.address})."
             )
 
 
@@ -820,7 +825,7 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     testing which colors your client support
 
     Usage:
-      color ansi||xterm256
+      color ansi | xterm256
 
     Prints a color map along with in-mud color codes to use to produce
     them.  It also tests what is supported in your client. Choices are
@@ -916,7 +921,10 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                             % (5 - ir, 5 - ig, 5 - ib, ir, ig, ib, "||[%i%i%i" % (ir, ig, ib))
                         )
             table = self.table_format(table)
-            string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
+            string = (
+                "Xterm256 colors (if not all hues show, your client might not report that it can"
+                " handle xterm256):"
+            )
             string += "\n" + "\n".join("".join(row) for row in table)
             table = [[], [], [], [], [], [], [], [], [], [], [], []]
             for ibatch in range(4):
@@ -984,33 +992,31 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
         """Perform the command"""
         account = self.account
         permstr = (
-            account.is_superuser
-            and " (superuser)"
-            or "(%s)" % (", ".join(account.permissions.all()))
+            account.is_superuser and "(superuser)" or "(%s)" % ", ".join(account.permissions.all())
         )
         if self.cmdstring in ("unquell", "unquell"):
             if not account.attributes.get("_quell"):
-                self.msg("Already using normal Account permissions %s." % permstr)
+                self.msg(f"Already using normal Account permissions {permstr}.")
             else:
                 account.attributes.remove("_quell")
-                self.msg("Account permissions %s restored." % permstr)
+                self.msg(f"Account permissions {permstr} restored.")
         else:
             if account.attributes.get("_quell"):
-                self.msg("Already quelling Account %s permissions." % permstr)
+                self.msg(f"Already quelling Account {permstr} permissions.")
                 return
             account.attributes.add("_quell", True)
             puppet = self.session.puppet if self.session else None
             if puppet:
                 cpermstr = "(%s)" % ", ".join(puppet.permissions.all())
-                cpermstr = "Quelling to current puppet's permissions %s." % cpermstr
+                cpermstr = f"Quelling to current puppet's permissions {cpermstr}."
                 cpermstr += (
-                    "\n(Note: If this is higher than Account permissions %s,"
-                    " the lowest of the two will be used.)" % permstr
+                    f"\n(Note: If this is higher than Account permissions {permstr},"
+                    " the lowest of the two will be used.)"
                 )
                 cpermstr += "\nUse unquell to return to normal permission usage."
                 self.msg(cpermstr)
             else:
-                self.msg("Quelling Account permissions%s. Use unquell to get them back." % permstr)
+                self.msg(f"Quelling Account permissions {permstr}. Use unquell to get them back.")
         self._recache_locks(account)
 
 
@@ -1023,7 +1029,7 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
       style <option> = <value>
 
     Configure stylings for in-game display elements like table borders, help
-    entriest etc. Use without arguments to see all available options.
+    entries etc. Use without arguments to see all available options.
 
     """
 
@@ -1051,4 +1057,4 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
         except ValueError as e:
             self.msg(str(e))
             return
-        self.msg("Style %s set to %s" % (self.lhs, result))
+        self.msg(f"Style {self.lhs} set to {result}")

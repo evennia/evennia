@@ -1,9 +1,9 @@
 from evennia import DefaultChannel
 from evennia.utils.create import create_message
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
 
-class ObjectCreationTest(EvenniaTest):
+class ObjectCreationTest(BaseEvenniaTest):
     def test_channel_create(self):
         description = "A place to talk about coffee."
 
@@ -18,7 +18,7 @@ class ObjectCreationTest(EvenniaTest):
         self.assertEqual(str(msg), "peewee herman->: heh-heh!")
 
 
-class ChannelWholistTests(EvenniaTest):
+class ChannelWholistTests(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.default_channel, _ = DefaultChannel.create(

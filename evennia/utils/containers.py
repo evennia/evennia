@@ -11,15 +11,18 @@ evennia.OPTION_CLASSES
 """
 
 
-from django.conf import settings
-from evennia.utils.utils import class_from_module, callables_from_module
-from evennia.utils import logger
+from pickle import dumps
 
+from django.conf import settings
+from django.db.utils import OperationalError, ProgrammingError
+
+from evennia.utils import logger
+from evennia.utils.utils import callables_from_module, class_from_module
 
 SCRIPTDB = None
 
 
-class Container(object):
+class Container:
     """
     Base container class. A container is simply a storage object whose
     properties can be acquired as a property on it. This is generally
@@ -132,38 +135,42 @@ class GlobalScriptContainer(Container):
         self.load_data()
 
         typeclass = self.typeclass_storage[key]
-        found = typeclass.objects.filter(db_key=key).first()
-        interval = self.loaded_data[key].get("interval", None)
-        start_delay = self.loaded_data[key].get("start_delay", None)
-        repeats = self.loaded_data[key].get("repeats", 0)
-        desc = self.loaded_data[key].get("desc", "")
+        script = typeclass.objects.filter(
+            db_key=key, db_account__isnull=True, db_obj__isnull=True
+        ).first()
 
-        if not found:
+        kwargs = {**self.loaded_data[key]}
+        kwargs["key"] = key
+        kwargs["persistent"] = kwargs.get("persistent", True)
+
+        compare_hash = str(dumps(kwargs, protocol=4))
+
+        if script:
+            script_hash = script.attributes.get("global_script_settings", category="settings_hash")
+            if script_hash is None:
+                # legacy - store the hash anew and assume no change
+                script.attributes.add(
+                    "global_script_settings", compare_hash, category="settings_hash"
+                )
+            elif script_hash != compare_hash:
+                # wipe the old version and create anew
+                logger.log_info(f"GLOBAL_SCRIPTS: Settings changed for {key} ({typeclass}).")
+                script.stop()
+                script.delete()
+                script = None
+
+        if not script:
             logger.log_info(f"GLOBAL_SCRIPTS: (Re)creating {key} ({typeclass}).")
-            new_script, errors = typeclass.create(
-                key=key,
-                persistent=True,
-                interval=interval,
-                start_delay=start_delay,
-                repeats=repeats,
-                desc=desc,
-            )
+
+            script, errors = typeclass.create(**kwargs)
             if errors:
                 logger.log_err("\n".join(errors))
                 return None
 
-            new_script.start()
-            return new_script
+            # store a hash representation of the setup
+            script.attributes.add("_global_script_settings", compare_hash, category="settings_hash")
 
-        if (
-            (found.interval != interval)
-            or (found.start_delay != start_delay)
-            or (found.repeats != repeats)
-        ):
-            found.restart(interval=interval, start_delay=start_delay, repeats=repeats)
-        if found.desc != desc:
-            found.desc = desc
-        return found
+        return script
 
     def start(self):
         """
@@ -177,9 +184,16 @@ class GlobalScriptContainer(Container):
         # populate self.typeclass_storage
         self.load_data()
 
-        # start registered scripts
+        # make sure settings-defined scripts are loaded
         for key in self.loaded_data:
             self._load_script(key)
+        # start all global scripts
+        try:
+            for script in self._get_scripts():
+                script.start()
+        except (OperationalError, ProgrammingError):
+            # this can happen if db is not loaded yet (such as when building docs)
+            pass
 
     def load_data(self):
         """
@@ -189,14 +203,11 @@ class GlobalScriptContainer(Container):
         """
         if self.typeclass_storage is None:
             self.typeclass_storage = {}
-            for key, data in self.loaded_data.items():
-                try:
-                    typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
-                    self.typeclass_storage[key] = class_from_module(typeclass)
-                except ImportError as err:
-                    logger.log_err(
-                        f"GlobalScriptContainer could not start global script {key}: {err}"
-                    )
+            for key, data in list(self.loaded_data.items()):
+                typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
+                self.typeclass_storage[key] = class_from_module(
+                    typeclass, fallback=settings.BASE_SCRIPT_TYPECLASS
+                )
 
     def get(self, key, default=None):
         """
@@ -215,6 +226,13 @@ class GlobalScriptContainer(Container):
         res = self._get_scripts(key)
         if not res:
             if key in self.loaded_data:
+                if key not in self.typeclass_storage:
+                    # this means we are trying to load in a loop
+                    raise RuntimeError(
+                        f"Trying to access `GLOBAL_SCRIPTS.{key}` before scripts have finished "
+                        "initializing. This can happen if accessing GLOBAL_SCRIPTS from the same "
+                        "module the script is defined in."
+                    )
                 # recreate if we have the info
                 return self._load_script(key) or default
             return default

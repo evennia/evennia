@@ -6,16 +6,17 @@ TODO: Not nearly all utilities are covered yet.
 """
 
 import os.path
-import mock
+import random
 from datetime import datetime, timedelta
 
+import mock
 from django.test import TestCase
-from datetime import datetime
+from parameterized import parameterized
 from twisted.internet import task
 
-from evennia.utils.ansi import ANSIString
 from evennia.utils import utils
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.ansi import ANSIString
+from evennia.utils.test_resources import BaseEvenniaTest
 
 
 class TestIsIter(TestCase):
@@ -56,24 +57,42 @@ class TestDedent(TestCase):
 class TestListToString(TestCase):
     """
     Default function header from utils.py:
-    list_to_string(inlist, endsep="and", addquote=False)
+    list_to_string(inlist, sep=",", endsep=", and", addquote=False)
 
     Examples:
-     no endsep:
+     with defaults:
+        [1,2,3] -> '1, 2, and 3'
+     with endsep==',':
         [1,2,3] -> '1, 2, 3'
+     with sep==';' and endsep==';':
+        [1,2,3] -> '1; 2; 3'
+     with sep=='or':
+        [1,2,3] -> '1 or 2, and 3'
      with endsep=='and':
         [1,2,3] -> '1, 2 and 3'
-     with addquote and endsep
+     with endsep=='; and':
+        [1,2,3] -> '1, 2; and 3'
+     with endsep=='':
+        [1,2,3] -> '1, 2 3'
+     with addquote and endsep="and"
         [1,2,3] -> '"1", "2" and "3"'
     """
 
     def test_list_to_string(self):
-        self.assertEqual("1, 2, 3", utils.list_to_string([1, 2, 3], endsep=""))
-        self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep="", addquote=True))
-        self.assertEqual("1, 2 and 3", utils.list_to_string([1, 2, 3]))
+        self.assertEqual("1, 2, and 3", utils.list_to_string([1, 2, 3]))
+        self.assertEqual("1, 2, 3", utils.list_to_string([1, 2, 3], endsep=","))
+        self.assertEqual("1, 2 and 3", utils.list_to_string([1, 2, 3], endsep="and"))
+        self.assertEqual("1, 2 3", utils.list_to_string([1, 2, 3], endsep=""))
+        self.assertEqual("1; 2; 3", utils.list_to_string([1, 2, 3], sep=";", endsep=";"))
+        self.assertEqual("1 or 2, and 3", utils.list_to_string([1, 2, 3], sep="or"))
+        self.assertEqual("1, 2; and 3", utils.list_to_string([1, 2, 3], endsep="; and"))
+        self.assertEqual(
+            '"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep=",", addquote=True)
+        )
         self.assertEqual(
             '"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
         )
+        self.assertEqual("1 and 2", utils.list_to_string([1, 2]))
 
 
 class TestMLen(TestCase):
@@ -257,7 +276,7 @@ class TestDateTimeFormat(TestCase):
 
 
 class TestImportFunctions(TestCase):
-    def _t_dir_file(self, filename):
+    def _path_to_file(self, filename):
         testdir = os.path.dirname(os.path.abspath(__file__))
         return os.path.join(testdir, filename)
 
@@ -270,12 +289,12 @@ class TestImportFunctions(TestCase):
         self.assertIsNone(loaded_mod)
 
     def test_mod_import_from_path(self):
-        test_path = self._t_dir_file("test_eveditor.py")
+        test_path = self._path_to_file("test_eveditor.py")
         loaded_mod = utils.mod_import_from_path(test_path)
         self.assertIsNotNone(loaded_mod)
 
     def test_mod_import_from_path_invalid(self):
-        test_path = self._t_dir_file("invalid_filename.py")
+        test_path = self._path_to_file("invalid_filename.py")
         loaded_mod = utils.mod_import_from_path(test_path)
         self.assertIsNone(loaded_mod)
 
@@ -297,6 +316,147 @@ class LatinifyTest(TestCase):
         self.assertEqual(result, self.expected_output)
 
 
+class TestFormatGrid(TestCase):
+
+    maxDiff = None
+
+    def setUp(self):
+        # make the random only semi-random with a fixed seed
+        random.seed(1)
+
+    def tearDown(self):
+        # restore normal randomness
+        random.seed(None)
+
+    def _generate_elements(self, basewidth, variation, amount):
+        return [
+            "X" * max(1, basewidth + int(random.randint(-variation, variation)))
+            for _ in range(amount)
+        ]
+
+    def test_even_grid(self):
+        """Grid with small variations"""
+        elements = self._generate_elements(3, 1, 30)
+        rows = utils.format_grid(elements, width=78)
+        self.assertEqual(len(rows), 4)
+        self.assertTrue(all(len(row) == 78 for row in rows))
+
+    def test_disparate_grid(self):
+        """Grid with big variations"""
+        elements = self._generate_elements(3, 15, 30)
+        rows = utils.format_grid(elements, width=82, sep="  ")
+        self.assertEqual(len(rows), 8)
+        self.assertTrue(all(len(row) == 82 for row in rows))
+
+    def test_huge_grid(self):
+        """Grid with very long strings"""
+        elements = self._generate_elements(70, 20, 30)
+        rows = utils.format_grid(elements, width=78)
+        self.assertEqual(len(rows), 30)
+        self.assertTrue(all(len(row) == 78 for row in rows))
+
+    def test_overlap(self):
+        """Grid with elements overlapping into the next slot"""
+        elements = (
+            "alias",
+            "batchcode",
+            "batchcommands",
+            "cmdsets",
+            "copy",
+            "cpattr",
+            "desc",
+            "destroy",
+            "dig",
+            "examine",
+            "find",
+            "force",
+            "lock",
+        )
+        rows = utils.format_grid(elements, width=78)
+        self.assertEqual(len(rows), 3)
+        for element in elements:
+            self.assertTrue(element in "\n".join(rows), f"element {element} is missing.")
+
+    def test_breakline(self):
+        """Grid with line-long elements in middle"""
+        elements = self._generate_elements(6, 4, 30)
+        elements[10] = elements[20] = "-" * 78
+        rows = utils.format_grid(elements, width=78)
+        self.assertEqual(len(rows), 8)
+        for element in elements:
+            self.assertTrue(element in "\n".join(rows), f"element {element} is missing.")
+
+
+class TestPercent(TestCase):
+    """
+    Test the utils.percentage function.
+    """
+
+    def test_ok_input(self):
+        result = utils.percent(3, 0, 10)
+        self.assertEqual(result, "30.0%")
+        result = utils.percent(2.5, 0, 5, formatting=None)
+        self.assertEqual(result, 50.0)
+
+    def test_bad_input(self):
+        """Gracefully handle weird input."""
+        self.assertEqual(utils.percent(3, 10, 1), "0.0%")
+        self.assertEqual(utils.percent(3, None, 1), "100.0%")
+        self.assertEqual(utils.percent(1, 1, 1), "100.0%")
+        self.assertEqual(utils.percent(3, 1, 1), "0.0%")
+        self.assertEqual(utils.percent(3, 0, 1), "100.0%")
+        self.assertEqual(utils.percent(-3, 0, 1), "0.0%")
+
+
+class TestSafeConvert(TestCase):
+    """
+    Test evennia.utils.utils.safe_convert_to_types
+
+    """
+
+    @parameterized.expand(
+        [
+            (
+                ("1", "2", 3, 4, "5"),
+                {"a": 1, "b": "2", "c": 3},
+                ((int, float, str, int), {"a": int, "b": float}),  # "
+                (1, 2.0, "3", 4, "5"),
+                {"a": 1, "b": 2.0, "c": 3},
+            ),
+            (
+                ("1 + 2", "[1, 2, 3]", [3, 4, 5]),
+                {"a": "3 + 4", "b": 5},
+                (("py", "py", "py"), {"a": "py", "b": "py"}),
+                (3, [1, 2, 3], [3, 4, 5]),
+                {"a": 7, "b": 5},
+            ),
+        ]
+    )
+    def test_conversion(self, args, kwargs, converters, expected_args, expected_kwargs):
+        """
+        Test the converter with different inputs
+
+        """
+        result_args, result_kwargs = utils.safe_convert_to_types(
+            converters, *args, raise_errors=True, **kwargs
+        )
+        self.assertEqual(expected_args, result_args)
+        self.assertEqual(expected_kwargs, result_kwargs)
+
+    def test_conversion__fail(self):
+        """
+        Test failing conversion
+
+        """
+        from evennia.utils.funcparser import ParsingError
+
+        with self.assertRaises(ValueError):
+            utils.safe_convert_to_types((int,), *("foo",), raise_errors=True)
+
+        with self.assertRaises(ParsingError) as err:
+            utils.safe_convert_to_types(("py", {}), *("foo",), raise_errors=True)
+
+
 _TASK_HANDLER = None
 
 
@@ -311,14 +471,15 @@ def dummy_func(obj):
     """
     # get a reference of object
     from evennia.objects.models import ObjectDB
+
     obj = ObjectDB.objects.object_search(obj)
     obj = obj[0]
     # make changes to object
-    obj.ndb.dummy_var = 'dummy_func ran'
+    obj.ndb.dummy_var = "dummy_func ran"
     return True
 
 
-class TestDelay(EvenniaTest):
+class TestDelay(BaseEvenniaTest):
     """
     Test utils.delay.
     """
@@ -343,7 +504,7 @@ class TestDelay(EvenniaTest):
             t = utils.delay(self.timedelay, dummy_func, self.char1.dbref, persistent=pers)
             result = t.call()
             self.assertTrue(result)
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.assertTrue(t.exists())
             self.assertTrue(t.active())
             self.char1.ndb.dummy_var = False
@@ -355,7 +516,7 @@ class TestDelay(EvenniaTest):
             # call the task early to test Task.call and TaskHandler.call_task
             result = t.do_task()
             self.assertTrue(result)
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.assertFalse(t.exists())
             self.char1.ndb.dummy_var = False
 
@@ -366,18 +527,18 @@ class TestDelay(EvenniaTest):
             t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
             self.assertTrue(t.active())
             _TASK_HANDLER.clock.advance(timedelay)  # make time pass
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.assertFalse(t.exists())
             self.char1.ndb.dummy_var = False
 
     def test_short_deferred_call(self):
         # wait for deferred to call with a very short time
-        timedelay = .1
+        timedelay = 0.1
         for pers in (False, True):
             t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
             self.assertTrue(t.active())
             _TASK_HANDLER.clock.advance(timedelay)  # make time pass
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.assertFalse(t.exists())
             self.char1.ndb.dummy_var = False
 
@@ -452,7 +613,7 @@ class TestDelay(EvenniaTest):
             _TASK_HANDLER.clock.advance(timedelay)  # make time pass
             self.assertEqual(self.char1.ndb.dummy_var, False)
             t.unpause()
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.char1.ndb.dummy_var = False
 
     def test_auto_stale_task_removal(self):
@@ -467,7 +628,9 @@ class TestDelay(EvenniaTest):
                 self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
             self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
             # Make task handler's now time, after the stale timeout
-            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            _TASK_HANDLER._now = datetime.now() + timedelta(
+                seconds=_TASK_HANDLER.stale_timeout + timedelay + 1
+            )
             # add a task to test automatic removal
             t2 = utils.delay(timedelay, dummy_func, self.char1.dbref)
             if pers:
@@ -488,7 +651,9 @@ class TestDelay(EvenniaTest):
                 self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
             self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
             # Make task handler's now time, after the stale timeout
-            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            _TASK_HANDLER._now = datetime.now() + timedelta(
+                seconds=_TASK_HANDLER.stale_timeout + timedelay + 1
+            )
             _TASK_HANDLER.clean_stale_tasks()  # cleanup of stale tasks in in the save method
             if pers:
                 self.assertFalse(t.get_id() in _TASK_HANDLER.to_save)
@@ -509,7 +674,9 @@ class TestDelay(EvenniaTest):
                 self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
             self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
             # Make task handler's now time, after the stale timeout
-            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            _TASK_HANDLER._now = datetime.now() + timedelta(
+                seconds=_TASK_HANDLER.stale_timeout + timedelay + 1
+            )
             t2 = utils.delay(timedelay, dummy_func, self.char1.dbref)
             if pers:
                 self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
@@ -531,5 +698,78 @@ class TestDelay(EvenniaTest):
         self.assertEqual(self.char1.ndb.dummy_var, False)  # task has not run
         _TASK_HANDLER.load()  # load persistent tasks from database.
         _TASK_HANDLER.create_delays()  # create new deffered instances from persistent tasks
-        _TASK_HANDLER.clock.advance(timedelay)  # Clock must advance to trigger, even if past timedelay
-        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+        _TASK_HANDLER.clock.advance(
+            timedelay
+        )  # Clock must advance to trigger, even if past timedelay
+        self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
+
+
+class TestIntConversions(TestCase):
+    def test_int2str(self):
+        self.assertEqual("three", utils.int2str(3))
+        # special adjective conversion
+        self.assertEqual("3rd", utils.int2str(3, adjective=True))
+        # generic adjective conversion
+        self.assertEqual("5th", utils.int2str(5, adjective=True))
+        # No mapping return int as str
+        self.assertEqual("15", utils.int2str(15))
+
+    def test_str2int(self):
+        # simple conversions
+        self.assertEqual(5, utils.str2int("5"))
+
+        # basic mapped numbers
+        self.assertEqual(3, utils.str2int("three"))
+        self.assertEqual(20, utils.str2int("twenty"))
+
+        # multi-place numbers
+        self.assertEqual(2345, utils.str2int("two thousand, three hundred and forty-five"))
+
+        # ordinal numbers
+        self.assertEqual(1, utils.str2int("1st"))
+        self.assertEqual(1, utils.str2int("first"))
+        self.assertEqual(4, utils.str2int("fourth"))
+        # ordinal sound-change conversions
+        self.assertEqual(5, utils.str2int("fifth"))
+        self.assertEqual(20, utils.str2int("twentieth"))
+
+        with self.assertRaises(ValueError):
+            utils.str2int("not a number")
+
+
+class TestJustify(TestCase):
+    def test_justify_whitespace(self):
+        result = utils.justify(" ", 1, align="l")
+        self.assertEqual(" ", result)
+
+        result = utils.justify("", 1, align="l")
+        self.assertEqual(" ", result)
+
+    @parameterized.expand(
+        [
+            (5, "Task \n ID  "),
+            (6, " Task \n  ID  "),
+            (7, "Task ID"),
+            (8, "Task ID "),
+            (9, " Task ID "),
+            (10, " Task ID  "),
+            (11, "  Task ID  "),
+        ]
+    )
+    def test_center_justify_small(self, width, expected):
+        result = utils.justify("Task ID", width, align="c", indent=0, fillchar=" ")
+        self.assertEqual(expected, result)
+
+    def test_justify_ansi(self):
+        """
+        Justify ansistring
+
+        """
+
+        from evennia.utils.ansi import ANSI_RED
+
+        line = ANSIString("This is a |rred|n word")
+
+        result = utils.justify(line, align="c", width=30)
+
+        self.assertIn(ANSI_RED, str(result))

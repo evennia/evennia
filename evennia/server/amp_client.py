@@ -5,9 +5,13 @@ Portal. This module sets up the Client-side communication.
 """
 
 import os
-from evennia.server.portal import amp
+
+from django.conf import settings
 from twisted.internet import protocol
+
+from evennia.server.portal import amp
 from evennia.utils import logger
+from evennia.utils.utils import class_from_module
 
 
 class AMPClientFactory(protocol.ReconnectingClientFactory):
@@ -33,7 +37,7 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
 
         """
         self.server = server
-        self.protocol = AMPServerClientProtocol
+        self.protocol = class_from_module(settings.AMP_CLIENT_PROTOCOL_CLASS)
         self.maxDelay = 10
         # not really used unless connecting to multiple servers, but
         # avoids having to check for its existence on the protocol
@@ -106,7 +110,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         """
         # print("AMPClient new connection {}".format(self))
         info_dict = self.factory.server.get_info_dict()
-        super(AMPServerClientProtocol, self).connectionMade()
+        super().connectionMade()
         # first thing we do is to request the Portal to sync all sessions
         # back with the Server side. We also need the startup mode (reload, reset, shutdown)
         self.send_AdminServer2Portal(

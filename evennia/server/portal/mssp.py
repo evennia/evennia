@@ -11,6 +11,7 @@ active players and so on.
 
 """
 from django.conf import settings
+
 from evennia.utils import utils
 
 MSSP = bytes([70])  # b"\x46"
@@ -21,7 +22,7 @@ MSSP_VAL = bytes([2])  # b"\x02"
 MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={})
 
 
-class Mssp(object):
+class Mssp:
     """
     Implements the MSSP protocol. Add this to a variable on the telnet
     protocol to set it up.

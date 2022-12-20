@@ -11,23 +11,23 @@ Run the script with the -h flag to see usage information.
 
 """
 
-import os
-import sys
-import re
-import signal
-import shutil
-import importlib
-import pickle
-from distutils.version import LooseVersion
-from argparse import ArgumentParser
 import argparse
-from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
+import importlib
+import os
+import pickle
+import re
+import shutil
+import signal
+import sys
+from argparse import ArgumentParser
+from distutils.version import LooseVersion
+from subprocess import STDOUT, CalledProcessError, Popen, call, check_output
 
-from twisted.protocols import amp
-from twisted.internet import reactor, endpoints
 import django
 from django.core.management import execute_from_command_line
 from django.db.utils import ProgrammingError
+from twisted.internet import endpoints, reactor
+from twisted.protocols import amp
 
 # Signal processing
 SIG = signal.SIGINT
@@ -38,7 +38,7 @@ EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 
 import evennia  # noqa
 
-EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
+EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
 EVENNIA_SERVER = os.path.join(EVENNIA_LIB, "server")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_LIB, "game_template")
 EVENNIA_PROFILING = os.path.join(EVENNIA_SERVER, "profiling")
@@ -90,11 +90,28 @@ SSHUTD = chr(17)  # server-only shutdown
 PSTATUS = chr(18)  # ping server or portal status
 SRESET = chr(19)  # shutdown server in reset mode
 
-# requirements
-PYTHON_MIN = "3.7"
-TWISTED_MIN = "18.0.0"
-DJANGO_MIN = "3.2"
-DJANGO_LT = "3.3"
+# live version requirement checks (from VERSION_REQS.txt file)
+PYTHON_MIN = None
+PYTHON_MAX_TESTED = None
+TWISTED_MIN = None
+DJANGO_MIN = None
+DJANGO_MAX_TESTED = None
+
+with open(os.path.join(EVENNIA_LIB, "VERSION_REQS.txt")) as fil:
+    for line in fil.readlines():
+        if line.startswith("#") or "=" not in line:
+            continue
+        key, *value = (part.strip() for part in line.split("=", 1))
+        if key == "PYTHON_MIN":
+            PYTHON_MIN = value[0] if value else "0"
+        elif key == "PYTHON_MAX_TESTED":
+            PYTHON_MAX_TESTED = value[0] if value else "100"
+        elif key == "TWISTED_MIN":
+            TWISTED_MIN = value[0] if value else "0"
+        elif key == "DJANGO_MIN":
+            DJANGO_MIN = value[0] if value else "0"
+        elif key == "DJANGO_MAX_TESTED":
+            DJANGO_MAX_TESTED = value[0] if value else "100"
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -204,7 +221,7 @@ ERROR_SETTINGS = """
 )
 
 ERROR_INITSETTINGS = """
-    ERROR: 'evennia --initsettings' must be called from the root of
+u   ERROR: 'evennia --initsettings' must be called from the root of
     your game directory, since it tries to (re)create the new
     settings.py file in a subfolder server/conf/.
     """
@@ -243,16 +260,10 @@ ERROR_DATABASE = """
 
 ERROR_WINDOWS_WIN32API = """
     ERROR: Unable to import win32api, which Twisted requires to run.
-    You may download it from:
+    You may download it with pip in your Python environment:
 
-    http://sourceforge.net/projects/pywin32/files/pywin32/
+    pip install --upgrade pywin32
 
-    If you are running in a virtual environment, browse to the
-    location of the latest win32api exe file for your computer and
-    Python version and copy the url to it; then paste it into a call
-    to easy_install:
-
-        easy_install http://<url to win32api exe>
     """
 
 INFO_WINDOWS_BATFILE = """
@@ -287,7 +298,7 @@ ABOUT_INFO = """
 
     Licence: BSD 3-Clause Licence
     Web: http://www.evennia.com
-    Irc: #evennia on FreeNode
+    Chat: https://discord.gg/AJJpcRUhtF
     Forum: http://www.evennia.com/discussions
     Maintainer (2006-10): Greg Taylor
     Maintainer (2010-):   Griatch (griatch AT gmail DOT com)
@@ -360,12 +371,18 @@ ERROR_LOGDIR_MISSING = """
     """
 
 ERROR_PYTHON_VERSION = """
-    ERROR: Python {pversion} used. Evennia requires version
+    ERROR: Python {python_version} used. Evennia requires version
     {python_min} or higher.
     """
 
+WARNING_PYTHON_MAX_TESTED_VERSION = """
+    WARNING: Python {python_version} used. Evennia is only tested with Python
+    versions {python_min} to {python_max_tested}. If you see unexpected errors, try
+    reinstalling with a tested Python version instead.
+    """
+
 ERROR_TWISTED_VERSION = """
-    ERROR: Twisted {tversion} found. Evennia requires
+    ERROR: Twisted {twisted_version} found. Evennia requires
     version {twisted_min} or higher.
     """
 
@@ -374,8 +391,8 @@ ERROR_NOTWISTED = """
     """
 
 ERROR_DJANGO_MIN = """
-    ERROR: Django {dversion} found. Evennia requires at least version {django_min} (but
-    no higher than {django_lt}).
+    ERROR: Django {django_version} found. Evennia supports Django
+    {django_min} - {django_max_tested}. Using an older version is not supported.
 
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not
@@ -387,8 +404,8 @@ ERROR_DJANGO_MIN = """
     """
 
 NOTE_DJANGO_NEW = """
-    NOTE: Django {dversion} found. This is newer than Evennia's
-    recommended version ({django_rec}). It might work, but is new
+    NOTE: Django {django_version} found. This is newer than Evennia's
+    recommended version ({django_max_tested}). It might work, but is new
     enough to not be fully tested yet. Report any issues.
     """
 
@@ -498,11 +515,11 @@ def _print_info(portal_info_dict, server_info_dict):
     pstr, sstr = "", ""
     if portal_info_dict:
         pdict = _prepare_dict(portal_info_dict)
-        pstr = _strip_empty_lines(PORTAL_INFO.format(**pdict))
+        pstr = _strip_empty_lines(PORTAL_INFO.format_map(pdict))
 
     if server_info_dict:
         sdict = _prepare_dict(server_info_dict)
-        sstr = _strip_empty_lines(SERVER_INFO.format(**sdict))
+        sstr = _strip_empty_lines(SERVER_INFO.format_map(sdict))
 
     info = pstr + ("\n\n" + sstr if sstr else "")
     maxwidth = max(len(line) for line in info.split("\n"))
@@ -521,8 +538,16 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
     Compile the command line for starting a Twisted application using the 'twistd' executable.
 
     """
-    portal_cmd = [TWISTED_BINARY, "--python={}".format(PORTAL_PY_FILE)]
-    server_cmd = [TWISTED_BINARY, "--python={}".format(SERVER_PY_FILE)]
+    portal_cmd = [
+        TWISTED_BINARY,
+        f"--python={PORTAL_PY_FILE}",
+        "--logger=evennia.utils.logger.GetPortalLogObserver",
+    ]
+    server_cmd = [
+        TWISTED_BINARY,
+        f"--python={SERVER_PY_FILE}",
+        "--logger=evennia.utils.logger.GetServerLogObserver",
+    ]
 
     if os.name != "nt":
         # PID files only for UNIX
@@ -889,7 +914,7 @@ def reload_evennia(sprofiler=False, reset=False):
             send_instruction(SSTART, server_cmd)
 
     def _portal_not_running(fail):
-        print("Evennia not running. Starting up ...")
+        print("Evennia not running. Beginner-Tutorial up ...")
         start_evennia()
 
     collectstatic()
@@ -962,7 +987,7 @@ def reboot_evennia(pprofiler=False, sprofiler=False):
             wait_for_status(False, None, _portal_stopped)
 
     def _portal_not_running(fail):
-        print("Evennia not running. Starting up ...")
+        print("Evennia not running. Beginner-Tutorial up ...")
         start_evennia()
 
     collectstatic()
@@ -988,7 +1013,7 @@ def start_server_interactive():
     def _iserver():
         _, server_twistd_cmd = _get_twistd_cmdline(False, False)
         server_twistd_cmd.append("--nodaemon")
-        print("Starting Server in interactive mode (stop with Ctrl-C)...")
+        print("Beginner-Tutorial Server in interactive mode (stop with Ctrl-C)...")
         try:
             Popen(server_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
         except KeyboardInterrupt:
@@ -1026,7 +1051,7 @@ def start_portal_interactive():
         else:
             Popen(server_twistd_cmd, env=getenv(), bufsize=-1)
 
-        print("Starting Portal in interactive mode (stop with Ctrl-C)...")
+        print("Beginner-Tutorial Portal in interactive mode (stop with Ctrl-C)...")
         try:
             Popen(portal_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
         except KeyboardInterrupt:
@@ -1147,8 +1172,9 @@ def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=
         if new_linecount < old_linecount:
             # this happens if the file was cycled or manually deleted/edited.
             print(
-                " ** Log file {filename} has cycled or been edited. "
-                "Restarting log. ".format(filename=filehandle.name)
+                " ** Log file {filename} has cycled or been edited. Restarting log. ".format(
+                    filename=filehandle.name
+                )
             )
             new_linecount = 0
             old_linecount = 0
@@ -1226,9 +1252,11 @@ def evennia_version():
     version = "Unknown"
     try:
         version = evennia.__version__
-    except ImportError:
+    except (ImportError, AttributeError):
         # even if evennia is not found, we should not crash here.
         pass
+    else:
+        return version
     try:
         rev = (
             check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT)
@@ -1254,46 +1282,83 @@ def check_main_evennia_dependencies():
         not_error (bool): True if no dependency error was found.
 
     """
-    error = False
 
-    # Python
-    pversion = ".".join(str(num) for num in sys.version_info if isinstance(num, int))
-    if LooseVersion(pversion) < LooseVersion(PYTHON_MIN):
-        print(ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN))
-        error = True
-    # Twisted
-    try:
-        import twisted
+    def _test_python_version():
+        """Test Python version"""
+        python_version = ".".join(str(num) for num in sys.version_info if isinstance(num, int))
+        python_curr = LooseVersion(python_version)
+        python_min = LooseVersion(PYTHON_MIN)
+        python_max = LooseVersion(PYTHON_MAX_TESTED)
 
-        tversion = twisted.version.short()
-        if LooseVersion(tversion) < LooseVersion(TWISTED_MIN):
-            print(ERROR_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN))
-            error = True
-    except ImportError:
-        print(ERROR_NOTWISTED)
-        error = True
-    # Django
-    try:
-        dversion = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
-        # only the main version (1.5, not 1.5.4.0)
-        dversion_main = ".".join(dversion.split(".")[:2])
-        if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
+        if python_curr < python_min:
+            print(ERROR_PYTHON_VERSION.format(python_version=python_version, python_min=PYTHON_MIN))
+            return False
+        elif python_curr > python_max:
             print(
-                ERROR_DJANGO_MIN.format(
-                    dversion=dversion_main, django_min=DJANGO_MIN, django_lt=DJANGO_LT
+                WARNING_PYTHON_MAX_TESTED_VERSION.format(
+                    python_version=python_version,
+                    python_min=PYTHON_MIN,
+                    python_max_tested=PYTHON_MAX_TESTED,
                 )
             )
-            error = True
-        elif LooseVersion(DJANGO_LT) <= LooseVersion(dversion_main):
-            print(NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_LT))
-    except ImportError:
-        print(ERROR_NODJANGO)
-        error = True
-    if error:
-        sys.exit()
+        return True
+
+    def _test_twisted_version():
+        """Test Twisted version"""
+        try:
+            import twisted
+        except ImportError:
+            print(ERROR_NOTWISTED)
+            return False
+        else:
+            twisted_version = twisted.version.short()
+            twisted_curr = LooseVersion(twisted_version)
+            twisted_min = LooseVersion(TWISTED_MIN)
+
+            if twisted_curr < twisted_min:
+                print(
+                    ERROR_TWISTED_VERSION.format(
+                        twisted_version=twisted_version, twisted_min=TWISTED_MIN
+                    )
+                )
+                return False
+            else:
+                return True
+
+    def _test_django_version():
+        """Test Django version"""
+        try:
+            import django
+        except ImportError:
+            print(ERROR_NODJANGO)
+            return False
+        else:
+            django_version = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
+            # only the main version (1.5, not 1.5.4.0)
+            django_version = ".".join(django_version.split(".")[:2])
+            django_curr = LooseVersion(django_version)
+            django_min = LooseVersion(DJANGO_MIN)
+            django_max = LooseVersion(DJANGO_MAX_TESTED)
+
+            if django_curr < django_min:
+                print(
+                    ERROR_DJANGO_MIN.format(
+                        django_version=django_version,
+                        django_min=DJANGO_MIN,
+                        django_max_tested=DJANGO_MAX_TESTED,
+                    )
+                )
+                return False
+            elif django_curr > django_max:
+                print(
+                    NOTE_DJANGO_NEW.format(
+                        django_version=django_version, django_max_tested=DJANGO_MAX_TESTED
+                    )
+                )
+            return True
 
     # return True/False if error was reported or not
-    return not error
+    return all((_test_python_version(), _test_twisted_version(), _test_django_version()))
 
 
 def set_gamedir(path):
@@ -1383,7 +1448,7 @@ def create_settings_file(init=True, secret_settings=False):
     with open(settings_path, "r") as f:
         settings_string = f.read()
 
-    settings_string = settings_string.format(**setting_dict)
+    settings_string = settings_string.format_map(setting_dict)
 
     with open(settings_path, "w") as f:
         f.write(settings_string)
@@ -1423,7 +1488,19 @@ def create_superuser():
         "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
         "account of the server. Email is optional and can be empty.\n"
     )
-    django.core.management.call_command("createsuperuser", interactive=True)
+    from os import environ
+
+    username = environ.get("EVENNIA_SUPERUSER_USERNAME")
+    email = environ.get("EVENNIA_SUPERUSER_EMAIL")
+    password = environ.get("EVENNIA_SUPERUSER_PASSWORD")
+
+    if (username is not None) and (password is not None) and len(password) > 0:
+        from evennia.accounts.models import AccountDB
+
+        superuser = AccountDB.objects.create_superuser(username, email, password)
+        superuser.save()
+    else:
+        django.core.management.call_command("createsuperuser", interactive=True)
 
 
 def check_database(always_return=False):
@@ -1602,8 +1679,9 @@ def kill(pidfile, component="Server", callback=None, errback=None, killsignal=SI
             errback()
         else:
             print(
-                "Could not send kill signal - {component} does "
-                "not appear to be running.".format(component=component)
+                "Could not send kill signal - {component} does not appear to be running.".format(
+                    component=component
+                )
             )
 
 
@@ -1619,6 +1697,7 @@ def show_version_info(about=False):
 
     """
     import sys
+
     import twisted
 
     return VERSION_INFO.format(
@@ -1882,6 +1961,7 @@ def list_settings(keys):
 
     """
     from importlib import import_module
+
     from evennia.utils import evtable
 
     evsettings = import_module(SETTINGS_DOTPATH)
@@ -1900,6 +1980,52 @@ def list_settings(keys):
         for key, val in confs.items():
             table.add_row(key, str(val))
     print(table)
+
+
+def run_custom_commands(option, *args):
+    """
+    Inject a custom option into the evennia launcher command chain.
+
+    Args:
+        option (str): Incoming option - the first argument after `evennia` on
+            the command line.
+        *args: All args will passed to a found callable.__dict__
+
+    Returns:
+        bool: If a custom command was found and handled the option.
+
+    Notes:
+        Provide new commands in settings with
+
+            CUSTOM_EVENNIA_LAUNCHER_COMMANDS = {"mycmd": "path.to.callable", ...}
+
+        The callable will be passed any `*args` given on the command line and is expected to
+        handle/validate the input correctly. Use like any other evennia command option on
+        in the terminal/console, for example:
+
+            evennia mycmd foo bar
+
+    """
+    import importlib
+
+    from django.conf import settings
+
+    try:
+        # a dict of {option: callable(*args), ...}
+        custom_commands = settings.EXTRA_LAUNCHER_COMMANDS
+    except AttributeError:
+        return False
+    cmdpath = custom_commands.get(option)
+    if cmdpath:
+        modpath, *cmdname = cmdpath.rsplit(".", 1)
+        if cmdname:
+            cmdname = cmdname[0]
+            mod = importlib.import_module(modpath)
+            command = mod.__dict__.get(cmdname)
+            if command:
+                command(*args)
+                return True
+    return False
 
 
 def run_menu():
@@ -2021,7 +2147,7 @@ def main():
         action="store",
         dest="listsetting",
         metavar="all|<key>",
-        help=("list settings, use 'all' to list all available keys"),
+        help="list settings, use 'all' to list all available keys",
     )
     parser.add_argument(
         "--settings",
@@ -2047,7 +2173,9 @@ def main():
         action="store_true",
         dest="initmissing",
         default=False,
-        help="checks for missing secret_settings or server logs\n directory, and adds them if needed",
+        help=(
+            "checks for missing secret_settings or server logs\n directory, and adds them if needed"
+        ),
     )
     parser.add_argument(
         "--profiler",
@@ -2259,7 +2387,14 @@ def main():
         if option in ("makemessages", "compilemessages"):
             # some commands don't require the presence of a game directory to work
             need_gamedir = False
-        if option in ("shell", "check", "makemigrations", "createsuperuser"):
+            if CURRENT_DIR != EVENNIA_LIB:
+                print(
+                    "You must stand in the evennia/evennia/ folder (where the 'locale/' "
+                    "folder is located) to run this command."
+                )
+                sys.exit()
+
+        if option in ("shell", "check", "makemigrations", "createsuperuser", "shell_plus"):
             # some django commands requires the database to exist,
             # or evennia._init to have run before they work right.
             check_db = True
@@ -2267,6 +2402,7 @@ def main():
             global TEST_MODE
             TEST_MODE = True
 
+        # init the db/game dir, if needed
         init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
         if option == "migrate":
@@ -2275,11 +2411,23 @@ def main():
                 django.core.management.call_command(*([option] + unknown_args))
                 sys.exit(0)
 
-        # pass on to the core django manager - re-parse the entire input line
-        # but keep 'evennia' as the name instead of django-admin. This is
-        # an exit condition.
-        sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
-        sys.exit(execute_from_command_line(sys.argv))
+        if option in ("createsuperuser",):
+            print(
+                "Note: Don't create an additional superuser this way. It will not be set up "
+                "correctly.\n Instead, use the web admin or the in-game `py` command to "
+                "set `is_superuser=True` on a existing Account."
+            )
+            sys.exit()
+
+        if run_custom_commands(option, *unknown_args):
+            # run any custom commands
+            sys.exit()
+        else:
+            # pass on to the core django manager - re-parse the entire input line
+            # but keep 'evennia' as the name instead of django-admin. This is
+            # an exit condition.
+            sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
+            sys.exit(execute_from_command_line(sys.argv))
 
     elif not args.tail_log:
         # no input; print evennia info (don't pring if we're tailing log)

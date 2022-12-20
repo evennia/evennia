@@ -2,9 +2,11 @@
 General Character commands usually available to all characters
 """
 import re
+
 from django.conf import settings
-from evennia.utils import utils, evtable
+
 from evennia.typeclasses.attributes import NickTemplateInvalid
+from evennia.utils import utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -49,7 +51,7 @@ class CmdHome(COMMAND_DEFAULT_CLASS):
             caller.msg("You are already home!")
         else:
             caller.msg("There's no place like home ...")
-            caller.move_to(home)
+            caller.move_to(home, move_type="teleport")
 
 
 class CmdLook(COMMAND_DEFAULT_CLASS):
@@ -83,7 +85,10 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
             target = caller.search(self.args)
             if not target:
                 return
-        self.msg((caller.at_look(target), {"type": "look"}), options=None)
+        desc = caller.at_look(target)
+        # add the type=look to the outputfunc to make it
+        # easy to separate this output in client.
+        self.msg(text=(desc, {"type": "look"}), options=None)
 
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
@@ -138,7 +143,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         """
         Support escaping of = with \=
         """
-        super(CmdNick, self).parse()
+        super().parse()
         args = (self.lhs or "") + (" = %s" % self.rhs if self.rhs else "")
         parts = re.split(r"(?<!\\)=", args, 1)
         self.rhs = None
@@ -217,8 +222,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     _, _, old_nickstring, old_replstring = oldnick.value
                     caller.nicks.remove(old_nickstring, category=nicktype)
                     caller.msg(
-                        "%s removed: '|w%s|n' -> |w%s|n."
-                        % (nicktypestr, old_nickstring, old_replstring)
+                        f"{nicktypestr} removed: '|w{old_nickstring}|n' -> |w{old_replstring}|n."
                     )
             else:
                 caller.msg("No matching nicks to remove.")
@@ -240,13 +244,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(
-                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
-                        )
+                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg("No nicks found matching '{}'".format(self.lhs))
+                caller.msg(f"No nicks found matching '{self.lhs}'")
             return
 
         if not self.rhs and self.lhs:
@@ -263,13 +265,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(
-                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
-                        )
+                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg("No nicks found matching '{}'".format(self.lhs))
+                caller.msg(f"No nicks found matching '{self.lhs}'")
             return
 
         if not self.rhs and self.lhs:
@@ -286,13 +286,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(
-                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
-                        )
+                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg("No nicks found matching '{}'".format(self.lhs))
+                caller.msg(f"No nicks found matching '{self.lhs}'")
             return
 
         if not self.args or not self.lhs:
@@ -312,7 +310,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         errstring = ""
         string = ""
         for nicktype in nicktypes:
-            nicktypestr = "%s-nick" % nicktype.capitalize()
+            nicktypestr = f"{nicktype.capitalize()}-nick"
             old_nickstring = None
             old_replstring = None
 
@@ -324,19 +322,14 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 errstring = ""
                 if oldnick:
                     if replstring == old_replstring:
-                        string += "\nIdentical %s already set." % nicktypestr.lower()
+                        string += f"\nIdentical {nicktypestr.lower()} already set."
                     else:
-                        string += "\n%s '|w%s|n' updated to map to '|w%s|n'." % (
-                            nicktypestr,
-                            old_nickstring,
-                            replstring,
+                        string += (
+                            f"\n{nicktypestr} '|w{old_nickstring}|n' updated to map to"
+                            f" '|w{replstring}|n'."
                         )
                 else:
-                    string += "\n%s '|w%s|n' mapped to '|w%s|n'." % (
-                        nicktypestr,
-                        nickstring,
-                        replstring,
-                    )
+                    string += f"\n{nicktypestr} '|w{nickstring}|n' mapped to '|w{replstring}|n'."
                 try:
                     caller.nicks.add(nickstring, replstring, category=nicktype)
                 except NickTemplateInvalid:
@@ -346,11 +339,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     return
             elif old_nickstring and old_replstring:
                 # just looking at the nick
-                string += "\n%s '|w%s|n' maps to '|w%s|n'." % (
-                    nicktypestr,
-                    old_nickstring,
-                    old_replstring,
-                )
+                string += f"\n{nicktypestr} '|w{old_nickstring}|n' maps to '|w{old_replstring}|n'."
                 errstring = ""
         string = errstring if errstring else string
         caller.msg(_cy(string))
@@ -382,12 +371,13 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
 
             table = self.styled_table(border="header")
             for item in items:
+                singular, _ = item.get_numbered_name(1, self.caller)
                 table.add_row(
-                    f"|C{item.name}|n",
-                    "{}|n".format(utils.crop(raw_ansi(item.db.desc), width=50) or ""),
+                    f"|C{singular}|n",
+                    "{}|n".format(utils.crop(raw_ansi(item.db.desc or ""), width=50) or ""),
                 )
             string = f"|wYou are carrying:\n{table}"
-        self.caller.msg(string)
+        self.caller.msg(text=(string, {"type": "inventory"}))
 
 
 class CmdGet(COMMAND_DEFAULT_CLASS):
@@ -403,7 +393,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
 
     key = "get"
     aliases = "grab"
-    locks = "cmd:all()"
+    locks = "cmd:all();view:perm(Developer);read:perm(Developer)"
     arg_regex = r"\s|$"
 
     def func(self):
@@ -427,18 +417,16 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
                 caller.msg("You can't get that.")
             return
 
-        # calling at_before_get hook method
-        if not obj.at_before_get(caller):
+        # calling at_pre_get hook method
+        if not obj.at_pre_get(caller):
             return
 
-        success = obj.move_to(caller, quiet=True)
+        success = obj.move_to(caller, quiet=True, move_type="get")
         if not success:
             caller.msg("This can't be picked up.")
         else:
-            caller.msg("You pick up %s." % obj.name)
-            caller.location.msg_contents(
-                "%s picks up %s." % (caller.name, obj.name), exclude=caller
-            )
+            singular, _ = obj.get_numbered_name(1, caller)
+            caller.location.msg_contents(f"$You() $conj(pick) up {singular}.", from_obj=caller)
             # calling at_get hook method
             obj.at_get(caller)
 
@@ -471,22 +459,22 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
         obj = caller.search(
             self.args,
             location=caller,
-            nofound_string="You aren't carrying %s." % self.args,
-            multimatch_string="You carry more than one %s:" % self.args,
+            nofound_string=f"You aren't carrying {self.args}.",
+            multimatch_string=f"You carry more than one {self.args}:",
         )
         if not obj:
             return
 
-        # Call the object script's at_before_drop() method.
-        if not obj.at_before_drop(caller):
+        # Call the object script's at_pre_drop() method.
+        if not obj.at_pre_drop(caller):
             return
 
-        success = obj.move_to(caller.location, quiet=True)
+        success = obj.move_to(caller.location, quiet=True, move_type="drop")
         if not success:
             caller.msg("This couldn't be dropped.")
         else:
-            caller.msg("You drop %s." % (obj.name,))
-            caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
+            singular, _ = obj.get_numbered_name(1, caller)
+            caller.location.msg_contents(f"$You() $conj(drop) {singular}.", from_obj=caller)
             # Call the object script's at_drop() method.
             obj.at_drop(caller)
 
@@ -498,7 +486,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     Usage:
       give <inventory obj> <to||=> <target>
 
-    Gives an items from your inventory to another character,
+    Gives an item from your inventory to another person,
     placing it in their inventory.
     """
 
@@ -517,30 +505,32 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         to_give = caller.search(
             self.lhs,
             location=caller,
-            nofound_string="You aren't carrying %s." % self.lhs,
-            multimatch_string="You carry more than one %s:" % self.lhs,
+            nofound_string=f"You aren't carrying {self.lhs}.",
+            multimatch_string=f"You carry more than one {self.lhs}:",
         )
         target = caller.search(self.rhs)
         if not (to_give and target):
             return
+
+        singular, _ = to_give.get_numbered_name(1, caller)
         if target == caller:
-            caller.msg("You keep %s to yourself." % to_give.key)
+            caller.msg(f"You keep {singular} to yourself.")
             return
         if not to_give.location == caller:
-            caller.msg("You are not holding %s." % to_give.key)
+            caller.msg(f"You are not holding {singular}.")
             return
 
-        # calling at_before_give hook method
-        if not to_give.at_before_give(caller, target):
+        # calling at_pre_give hook method
+        if not to_give.at_pre_give(caller, target):
             return
 
         # give object
-        success = to_give.move_to(target, quiet=True)
+        success = to_give.move_to(target, quiet=True, move_type="give")
         if not success:
-            caller.msg("This could not be given.")
+            caller.msg(f"You could not give {singular} to {target.key}.")
         else:
-            caller.msg("You give %s to %s." % (to_give.key, target.key))
-            target.msg("%s gives you %s." % (caller.key, to_give.key))
+            caller.msg(f"You give {singular} to {target.key}.")
+            target.msg(f"{caller.key} gives you {singular}.")
             # Call the object script's at_give() method.
             to_give.at_give(caller, target)
 
@@ -586,6 +576,9 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
     aliases = ['"', "'"]
     locks = "cmd:all()"
 
+    # don't require a space after `say/'/"`
+    arg_regex = None
+
     def func(self):
         """Run the say command"""
 
@@ -597,14 +590,14 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         speech = self.args
 
-        # Calling the at_before_say hook on the character
-        speech = caller.at_before_say(speech)
+        # Calling the at_pre_say hook on the character
+        speech = caller.at_pre_say(speech)
 
         # If speech is empty, stop here
         if not speech:
             return
 
-        # Call the at_after_say hook on the character
+        # Call the at_post_say hook on the character
         caller.at_say(speech, msg_self=True)
 
 
@@ -643,7 +636,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
             return
 
         # Call a hook to change the speech before whispering
-        speech = caller.at_before_say(speech, whisper=True, receivers=receivers)
+        speech = caller.at_pre_say(speech, whisper=True, receivers=receivers)
 
         # no need for self-message if we are whispering to ourselves (for some reason)
         msg_self = None if caller in receivers else True
@@ -670,6 +663,11 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
     key = "pose"
     aliases = [":", "emote"]
     locks = "cmd:all()"
+    arg_regex = ""
+
+    # we want to be able to pose without whitespace between
+    # the command/alias and the pose (e.g. :pose)
+    arg_regex = None
 
     def parse(self):
         """
@@ -690,7 +688,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             msg = "What do you want to do?"
             self.caller.msg(msg)
         else:
-            msg = "%s%s" % (self.caller.name, self.args)
+            msg = f"{self.caller.name}{self.args}"
             self.caller.location.msg_contents(text=(msg, {"type": "pose"}), from_obj=self.caller)
 
 
@@ -725,7 +723,7 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
             pperms = ", ".join(caller.account.permissions.all())
 
         string += "\n|wYour access|n:"
-        string += "\nCharacter |c%s|n: %s" % (caller.key, cperms)
+        string += f"\nCharacter |c{caller.key}|n: {cperms}"
         if hasattr(caller, "account"):
-            string += "\nAccount |c%s|n: %s" % (caller.account.key, pperms)
+            string += f"\nAccount |c{caller.account.key}|n: {pperms}"
         caller.msg(string)

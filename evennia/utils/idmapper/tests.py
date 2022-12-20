@@ -1,7 +1,7 @@
+from django.db import models
 from django.test import TestCase
 
 from .models import SharedMemoryModel
-from django.db import models
 
 
 class Category(SharedMemoryModel):

@@ -5,9 +5,14 @@ communication-commands are instead put on the account level, in the
 Account cmdset. Account commands remain available also to Characters.
 """
 from evennia.commands.cmdset import CmdSet
-from evennia.commands.default import general, help, admin, system
-from evennia.commands.default import building
-from evennia.commands.default import batchprocess
+from evennia.commands.default import (
+    admin,
+    batchprocess,
+    building,
+    general,
+    help,
+    system,
+)
 
 
 class CharacterCmdSet(CmdSet):
@@ -41,8 +46,6 @@ class CharacterCmdSet(CmdSet):
 
         # System commands
         self.add(system.CmdPy())
-        self.add(system.CmdScripts())
-        self.add(system.CmdObjects())
         self.add(system.CmdAccounts())
         self.add(system.CmdService())
         self.add(system.CmdAbout())
@@ -50,6 +53,7 @@ class CharacterCmdSet(CmdSet):
         self.add(system.CmdServerLoad())
         # self.add(system.CmdPs())
         self.add(system.CmdTickers())
+        self.add(system.CmdTasks())
 
         # Admin commands
         self.add(admin.CmdBoot())
@@ -82,10 +86,11 @@ class CharacterCmdSet(CmdSet):
         self.add(building.CmdExamine())
         self.add(building.CmdTypeclass())
         self.add(building.CmdLock())
-        self.add(building.CmdScript())
         self.add(building.CmdSetHome())
         self.add(building.CmdTag())
         self.add(building.CmdSpawn())
+        self.add(building.CmdScripts())
+        self.add(building.CmdObjects())
 
         # Batchprocessor commands
         self.add(batchprocess.CmdBatchCommands())

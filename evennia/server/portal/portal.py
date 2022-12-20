@@ -7,17 +7,16 @@ sets up all the networking features.  (this is done automatically
 by game/evennia.py).
 
 """
-import sys
 import os
+import sys
 import time
-
-from os.path import dirname, abspath
-from twisted.application import internet, service
-from twisted.internet.task import LoopingCall
-from twisted.internet import protocol, reactor
-from twisted.python.log import ILogObserver
+from os.path import abspath, dirname
 
 import django
+from twisted.application import internet, service
+from twisted.internet import protocol, reactor
+from twisted.internet.task import LoopingCall
+from twisted.logger import globalLogPublisher
 
 django.setup()
 from django.conf import settings
@@ -27,11 +26,15 @@ import evennia
 
 evennia._init()
 
-from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
-from evennia.utils import logger
 from evennia.server.webserver import EvenniaReverseProxyResource
-
+from evennia.utils import logger
+from evennia.utils.utils import (
+    class_from_module,
+    get_evennia_version,
+    make_iter,
+    mod_import,
+)
 
 # we don't need a connection to the database so close it right away
 try:
@@ -183,6 +186,7 @@ class Portal(object):
 
         Returns:
             server_twistd_cmd (list): An instruction for starting the server, to pass to Popen.
+
         """
         server_twistd_cmd = [
             "twistd",
@@ -196,7 +200,10 @@ class Portal(object):
         return server_twistd_cmd
 
     def get_info_dict(self):
-        "Return the Portal info, for display."
+        """
+        Return the Portal info, for display.
+
+        """
         return INFO_DICT
 
     def shutdown(self, _reactor_stopping=False, _stop_server=False):
@@ -241,16 +248,16 @@ class Portal(object):
 # what to execute from.
 application = service.Application("Portal")
 
-# custom logging
 
-if "--nodaemon" not in sys.argv:
+if "--nodaemon" not in sys.argv and "test" not in sys.argv:
+    # activate logging for interactive/testing mode
     logfile = logger.WeeklyLogFile(
         os.path.basename(settings.PORTAL_LOG_FILE),
         os.path.dirname(settings.PORTAL_LOG_FILE),
         day_rotation=settings.PORTAL_LOG_DAY_ROTATION,
         max_size=settings.PORTAL_LOG_MAX_SIZE,
     )
-    application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
+    globalLogPublisher.addObserver(logger.GetPortalLogObserver()(logfile))
 
 # The main Portal server program. This sets up the database
 # and is where we store all the other services.
@@ -285,6 +292,8 @@ if TELNET_ENABLED:
 
     from evennia.server.portal import telnet
 
+    _telnet_protocol = class_from_module(settings.TELNET_PROTOCOL_CLASS)
+
     for interface in TELNET_INTERFACES:
         ifacestr = ""
         if interface not in ("0.0.0.0", "::") or len(TELNET_INTERFACES) > 1:
@@ -293,7 +302,7 @@ if TELNET_ENABLED:
             pstring = "%s:%s" % (ifacestr, port)
             factory = telnet.TelnetServerFactory()
             factory.noisy = False
-            factory.protocol = telnet.TelnetProtocol
+            factory.protocol = _telnet_protocol
             factory.sessionhandler = PORTAL_SESSIONS
             telnet_service = internet.TCPServer(port, factory, interface=interface)
             telnet_service.setName("EvenniaTelnet%s" % pstring)
@@ -308,6 +317,8 @@ if SSL_ENABLED:
 
     from evennia.server.portal import telnet_ssl
 
+    _ssl_protocol = class_from_module(settings.SSL_PROTOCOL_CLASS)
+
     for interface in SSL_INTERFACES:
         ifacestr = ""
         if interface not in ("0.0.0.0", "::") or len(SSL_INTERFACES) > 1:
@@ -317,7 +328,7 @@ if SSL_ENABLED:
             factory = protocol.ServerFactory()
             factory.noisy = False
             factory.sessionhandler = PORTAL_SESSIONS
-            factory.protocol = telnet_ssl.SSLProtocol
+            factory.protocol = _ssl_protocol
 
             ssl_context = telnet_ssl.getSSLContext()
             if ssl_context:
@@ -341,6 +352,8 @@ if SSH_ENABLED:
 
     from evennia.server.portal import ssh
 
+    _ssh_protocol = class_from_module(settings.SSH_PROTOCOL_CLASS)
+
     for interface in SSH_INTERFACES:
         ifacestr = ""
         if interface not in ("0.0.0.0", "::") or len(SSH_INTERFACES) > 1:
@@ -348,11 +361,7 @@ if SSH_ENABLED:
         for port in SSH_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
             factory = ssh.makeFactory(
-                {
-                    "protocolFactory": ssh.SshProtocol,
-                    "protocolArgs": (),
-                    "sessions": PORTAL_SESSIONS,
-                }
+                {"protocolFactory": _ssh_protocol, "protocolArgs": (), "sessions": PORTAL_SESSIONS}
             )
             factory.noisy = False
             ssh_service = internet.TCPServer(port, factory, interface=interface)
@@ -368,6 +377,7 @@ if WEBSERVER_ENABLED:
     # Start a reverse proxy to relay data to the Server-side webserver
 
     websocket_started = False
+    _websocket_protocol = class_from_module(settings.WEBSOCKET_PROTOCOL_CLASS)
     for interface in WEBSERVER_INTERFACES:
         ifacestr = ""
         if interface not in ("0.0.0.0", "::") or len(WEBSERVER_INTERFACES) > 1:
@@ -387,8 +397,9 @@ if WEBSERVER_ENABLED:
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
                     # we only support one websocket client
-                    from evennia.server.portal import webclient
                     from autobahn.twisted.websocket import WebSocketServerFactory
+
+                    from evennia.server.portal import webclient  # noqa
 
                     w_interface = WEBSOCKET_CLIENT_INTERFACE
                     w_ifacestr = ""
@@ -402,7 +413,7 @@ if WEBSERVER_ENABLED:
 
                     factory = Websocket()
                     factory.noisy = False
-                    factory.protocol = webclient.WebSocketClient
+                    factory.protocol = _websocket_protocol
                     factory.sessionhandler = PORTAL_SESSIONS
                     websocket_service = internet.TCPServer(port, factory, interface=w_interface)
                     websocket_service.setName("EvenniaWebSocket%s:%s" % (w_ifacestr, port))
@@ -414,10 +425,13 @@ if WEBSERVER_ENABLED:
             if WEB_PLUGINS_MODULE:
                 try:
                     web_root = WEB_PLUGINS_MODULE.at_webproxy_root_creation(web_root)
-                except Exception as e:  # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
+                except Exception:
+                    # Legacy user has not added an at_webproxy_root_creation function in existing
+                    # web plugins file
                     INFO_DICT["errors"] = (
-                        "WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() not found - "
-                        "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
+                        "WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() "
+                        "not found copy 'evennia/game_template/server/conf/web_plugins.py to "
+                        "mygame/server/conf."
                     )
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             web_root.is_portal = True
@@ -432,4 +446,3 @@ for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
     if plugin_module:
         plugin_module.start_plugin_services(PORTAL)
-

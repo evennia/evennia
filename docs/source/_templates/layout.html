@@ -45,6 +45,9 @@
         <li class="nav-item nav-item-this"><a href="{{ link|e }}">{{ title }}</a></li>
         {%- block relbaritems %} {% endblock %}
       </ul>
+      {%- if release == '1.0-dev' %}
+        <div class="develop">develop branch</div>
+      {%- endif %}
     </div>
 {%- endmacro %}
 
@@ -176,13 +179,14 @@
 
     <div class="document">
   {%- block document %}
+
       <div class="documentwrapper">
       {%- if render_sidebar %}
+        {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
         <div class="bodywrapper">
       {%- endif %}
           <div class="body" role="main">
             {% block body %} {% endblock %}
-            <div class="clearer"></div>
           </div>
       {%- if render_sidebar %}
         </div>
@@ -190,8 +194,6 @@
       </div>
   {%- endblock %}
 
-  {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
-      <div class="clearer"></div>
     </div>
 {%- endblock %}
 

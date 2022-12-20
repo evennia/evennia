@@ -2,7 +2,7 @@
 # Base docker image for running Evennia-based games in a container.
 #
 # Install:
-#   install `docker` (http://docker.com)
+#   install `docker` (https://docker.com)
 #
 # Usage:
 #    cd to a folder where you want your game data to be (or where it already is).
@@ -26,25 +26,27 @@
 #
 # The evennia/evennia base image is found on DockerHub and can also be used
 # as a base for creating your own custom containerized Evennia game. For more
-# info, see https://github.com/evennia/evennia/wiki/Running%20Evennia%20in%20Docker .
+# info, see https://evennia.com/docs/latest/Setup/Installation-Docker
 #
-FROM python:3.7-alpine
+FROM python:3.11-alpine
 
-LABEL maintainer="www.evennia.com"
+LABEL maintainer="https://www.evennia.com"
 
 # install compilation environment
 RUN apk update && apk add bash gcc jpeg-dev musl-dev procps \
-libffi-dev openssl-dev zlib-dev gettext
+libffi-dev openssl-dev zlib-dev gettext \
+g++ gfortran python3-dev cmake openblas-dev
 
 # add the files required for pip installation
+COPY ./pyproject.toml /usr/src/evennia/
 COPY ./setup.py /usr/src/evennia/
-COPY ./requirements.txt /usr/src/evennia/
-COPY ./evennia/VERSION.txt /usr/src/evennia/evennia/
 COPY ./bin /usr/src/evennia/bin/
 
 # install dependencies
-RUN pip install --upgrade pip && pip install -e /usr/src/evennia --trusted-host pypi.python.org
-RUN pip install cryptography pyasn1 service_identity
+RUN pip install --upgrade pip && \
+    pip install cryptography pyasn1 service_identity && \
+    pip install -e /usr/src/evennia --trusted-host pypi.python.org && \
+    pip install evennia[extra]
 
 # add the project source; this should always be done after all
 # expensive operations have completed to avoid prematurely
@@ -53,7 +55,7 @@ COPY . /usr/src/evennia
 
 # add the game source when rebuilding a new docker image from inside
 # a game dir
-ONBUILD COPY . /usr/src/game
+ONBUILD COPY --chown=evennia . /usr/src/game
 
 # make the game source hierarchy persistent with a named volume.
 # mount on-disk game location here when using the container
@@ -63,15 +65,16 @@ VOLUME /usr/src/game
 # set the working directory
 WORKDIR /usr/src/game
 
-# set bash prompt
-ENV PS1 "evennia|docker \w $ "
+# set bash prompt and pythonpath to evennia lib
+ENV PS1 "evennia|docker \w $ " 
+ENV PYTHONPATH /usr/src/evennia
 
 # create and switch to a non-root user for runtime security
 # -D - do not set a password
 # -H - do not create a home directory
 # -s /bin/false - set login shell to /bin/false
-RUN adduser -D -H -s /bin/false evennia
-USER evennia
+# RUN adduser -D -H -s /bin/false evennia
+# USER evennia
 
 # startup a shell when we start the container
 ENTRYPOINT ["/usr/src/evennia/bin/unix/evennia-docker-start.sh"]

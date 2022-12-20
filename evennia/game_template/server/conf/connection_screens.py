@@ -21,6 +21,7 @@ of the screen is done by the unlogged-in "look" command.
 """
 
 from django.conf import settings
+
 from evennia import utils
 
 CONNECTION_SCREEN = """
@@ -32,6 +33,7 @@ CONNECTION_SCREEN = """
  If you need to create an account, type (without the <>'s):
       |wcreate <username> <password>|n
 
+ If you have spaces in your username, enclose it in quotes.
  Enter |whelp|n for more info. |wlook|n will re-show this screen.
 |b==============================================================|n""".format(
     settings.SERVERNAME, utils.get_evennia_version("short")

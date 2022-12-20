@@ -48,9 +48,7 @@ div.sphinxsidebarwrapper {
 }
 
 div.sphinxsidebar {
-    float: left;
-    width: 230px;
-    margin-left: -100%;
+    width: 21%;
     font-size: 90%;
     word-wrap: break-word;
     overflow-wrap : break-word;
@@ -72,7 +70,7 @@ div.sphinxsidebar ul ul {
 }
 
 div.sphinxsidebar form {
-    margin-top: 10px;
+    margin: 10px 0;
 }
 
 div.sphinxsidebar input {
@@ -104,6 +102,12 @@ div.sphinxsidebar #searchbox input[type="submit"] {
 img {
     border: 0;
     max-width: 100%;
+}
+
+/* images in the body */ 
+p > img {
+    float: right;
+    padding:0.5em 1em 0.5em 1em;
 }
 
 /* -- search page ----------------------------------------------------------- */
@@ -313,7 +317,7 @@ img.align-default, .figure.align-default {
 
 /* -- sidebars -------------------------------------------------------------- */
 
-div.sidebar {
+.sidebar {
     margin: 0 0 0.5em 1em;
     border: 1px solid #787878;
     padding: 5px 7px 7px 15px;
@@ -668,11 +672,12 @@ span.pre {
 }
 
 td.linenos pre {
-    padding: 5px 0px;
+    padding 5px, 0px;
     border: 0;
     background-color: transparent;
     color: #aaa;
     -webkit-box-shadow: 0px 0px 0px #fff;
+    font-size: 1.4em;
 }
 
 table.highlighttable {
@@ -695,6 +700,18 @@ div.code-block-caption code {
 div.code-block-caption + div > div.highlight > pre {
     margin-top: 0;
 }
+
+div.highlight > pre {
+    font-family: "Courier Prime", monospace;
+    line-height: 1.4em;
+    font-size: smaller;
+}
+
+/* default ({code-block}, no arg) - used for in-game code */
+div.highlight-shell.notranslate > div.highlight > pre {
+  background-color: #505050;
+  color: white;
+} 
 
 div.doctest > div.highlight span.gp {  /* gp: Generic.Prompt */
     user-select: none;
@@ -747,6 +764,7 @@ h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
 div.viewcode-block:target {
     margin: -1px -10px;
     padding: 0 10px;
+    font-family: "Courier Prime", monospace;
 }
 
 /* -- math display ---------------------------------------------------------- */

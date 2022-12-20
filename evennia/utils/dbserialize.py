@@ -18,19 +18,21 @@ in-situ, e.g `obj.db.mynestedlist[3][5] = 3` would never be saved and
 be out of sync with the database.
 
 """
+from collections import OrderedDict, defaultdict, deque
+from collections.abc import MutableMapping, MutableSequence, MutableSet
 from functools import update_wrapper
-from collections import deque, OrderedDict, defaultdict
-from collections.abc import  MutableSequence, MutableSet, MutableMapping
 
 try:
-    from pickle import dumps, loads
+    from pickle import UnpicklingError, dumps, loads
 except ImportError:
     from pickle import dumps, loads
-from django.core.exceptions import ObjectDoesNotExist
+
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import SafeString
-from evennia.utils.utils import uses_database, is_iter, to_str, to_bytes
+
 from evennia.utils import logger
+from evennia.utils.utils import is_iter, to_bytes, uses_database
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
@@ -149,7 +151,7 @@ def _save(method):
     return update_wrapper(save_wrapper, method)
 
 
-class _SaverMutable(object):
+class _SaverMutable:
     """
     Parent class for properly handling  of nested mutables in
     an Attribute. If not used something like
@@ -203,6 +205,10 @@ class _SaverMutable(object):
                 dat = _SaverDict(_parent=parent)
                 dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
                 return dat
+            elif dtype == defaultdict:
+                dat = _SaverDefaultDict(item.default_factory, _parent=parent)
+                dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
+                return dat
             elif dtype == set:
                 dat = _SaverSet(_parent=parent)
                 dat._data.update(process_tree(val, dat) for val in item)
@@ -235,6 +241,12 @@ class _SaverMutable(object):
     def __gt__(self, other):
         return self._data > other
 
+    def __or__(self, other):
+        return self._data | other
+
+    def __ror__(self, other):
+        return self._data | other
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
@@ -242,6 +254,10 @@ class _SaverMutable(object):
     @_save
     def __delitem__(self, key):
         self._data.__delitem__(key)
+
+    def deserialize(self):
+        """Deserializes this mutable into its corresponding non-Saver type."""
+        return deserialize(self)
 
 
 class _SaverList(_SaverMutable, MutableSequence):
@@ -251,7 +267,7 @@ class _SaverList(_SaverMutable, MutableSequence):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._data = list()
+        self._data = kwargs.pop("_class", list)()
 
     @_save
     def __iadd__(self, otherlist):
@@ -295,7 +311,7 @@ class _SaverDict(_SaverMutable, MutableMapping):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._data = dict()
+        self._data = kwargs.pop("_class", dict)()
 
     def has_key(self, key):
         return key in self._data
@@ -303,6 +319,25 @@ class _SaverDict(_SaverMutable, MutableMapping):
     @_save
     def update(self, *args, **kwargs):
         self._data.update(*args, **kwargs)
+
+
+class _SaverDefaultDict(_SaverDict):
+    """
+    A defaultdict that stores changes to an attribute when updated
+    """
+
+    def __init__(self, factory, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._data = defaultdict(factory)
+        self.default_factory = factory
+
+    def __getitem__(self, key):
+        if key not in self._data.keys():
+            # detect the case of db.foo['a'] with no immediate assignment
+            # (important: using `key in self._data` would be always True!)
+            default_value = self._data[key]
+            self.__setitem__(key, default_value)
+        return self._data[key]
 
 
 class _SaverSet(_SaverMutable, MutableSet):
@@ -324,6 +359,58 @@ class _SaverSet(_SaverMutable, MutableSet):
     @_save
     def discard(self, value):
         self._data.discard(value)
+
+    @_save
+    def update(self, *others):
+        self._data.update(*others)
+
+    @_save
+    def remove(self, value):
+        self._data.remove(value)
+
+    @_save
+    def pop(self):
+        self._data.pop()
+
+    @_save
+    def clear(self):
+        self._data.clear()
+
+    @_save
+    def intersection_update(self, *others):
+        self._data.intersection_update(*others)
+
+    @_save
+    def difference_update(self, *others):
+        self._data.difference_update(*others)
+
+    @_save
+    def symmetric_difference_update(self, *others):
+        self._data.symmetric_difference(*others)
+
+    def isdisjoint(self, other):
+        return self._data.isdisjoint(other)
+
+    def issubset(self, other):
+        return self._data.issubset(other)
+
+    def issuperset(self, other):
+        return self._data.issuperset(other)
+
+    def union(self, *others):
+        return self._data.union(*others)
+
+    def intersection(self, *others):
+        return self._data.intersection(*others)
+
+    def difference(self, *others):
+        return self._data.difference(*others)
+
+    def symmetric_difference(self, other):
+        return self._data.symmetric_difference(other)
+
+    def copy(self):
+        return self._data.copy()
 
 
 class _SaverOrderedDict(_SaverMutable, MutableMapping):
@@ -403,6 +490,7 @@ _DESERIALIZE_MAPPING = {
     _SaverSet.__name__: set,
     _SaverOrderedDict.__name__: OrderedDict,
     _SaverDeque.__name__: deque,
+    _SaverDefaultDict.__name__: defaultdict,
 }
 
 
@@ -414,10 +502,17 @@ def deserialize(obj):
     """
 
     def _iter(obj):
+        # breakpoint()
         typ = type(obj)
         tname = typ.__name__
         if tname in ("_SaverDict", "dict"):
             return {_iter(key): _iter(val) for key, val in obj.items()}
+        elif tname in ("_SaverOrderedDict", "OrderedDict"):
+            return OrderedDict([(_iter(key), _iter(val)) for key, val in obj.items()])
+        elif tname in ("_SaverDefaultDict", "defaultdict"):
+            return defaultdict(
+                obj.default_factory, {_iter(key): _iter(val) for key, val in obj.items()}
+            )
         elif tname in _DESERIALIZE_MAPPING:
             return _DESERIALIZE_MAPPING[tname](_iter(val) for val in obj)
         elif is_iter(obj):
@@ -569,7 +664,9 @@ def to_pickle(data):
 
     def process_item(item):
         """Recursive processor and identification of data"""
+
         dtype = type(item)
+
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
         elif dtype == tuple:
@@ -578,6 +675,11 @@ def to_pickle(data):
             return [process_item(val) for val in item]
         elif dtype in (dict, _SaverDict):
             return dict((process_item(key), process_item(val)) for key, val in item.items())
+        elif dtype in (defaultdict, _SaverDefaultDict):
+            return defaultdict(
+                item.default_factory,
+                ((process_item(key), process_item(val)) for key, val in item.items()),
+            )
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
         elif dtype in (OrderedDict, _SaverOrderedDict):
@@ -585,12 +687,34 @@ def to_pickle(data):
         elif dtype in (deque, _SaverDeque):
             return deque(process_item(val) for val in item)
 
-        elif hasattr(item, "__iter__"):
-            # we try to conserve the iterable class, if not convert to list
+        # not one of the base types
+        if hasattr(item, "__serialize_dbobjs__"):
+            # Allows custom serialization of any dbobjects embedded in
+            # the item that Evennia will otherwise not find (these would
+            # otherwise lead to an error). Use the dbserialize helper from
+            # this method.
             try:
-                return item.__class__([process_item(val) for val in item])
-            except (AttributeError, TypeError):
-                return [process_item(val) for val in item]
+                item.__serialize_dbobjs__()
+            except TypeError as err:
+                # we catch typerrors so we can handle both classes (requiring
+                # classmethods) and instances
+                pass
+
+        if hasattr(item, "__iter__"):
+            try:
+                # we try to conserve the iterable class, if not convert to dict
+                try:
+                    return item.__class__(
+                        (process_item(key), process_item(val)) for key, val in item.items()
+                    )
+                except (AttributeError, TypeError):
+                    return {process_item(key): process_item(val) for key, val in item.items()}
+            except Exception:
+                # we try to conserve the iterable class, if not convert to list
+                try:
+                    return item.__class__([process_item(val) for val in item])
+                except (AttributeError, TypeError):
+                    return [process_item(val) for val in item]
         elif hasattr(item, "sessid") and hasattr(item, "conn_time"):
             return pack_session(item)
         try:
@@ -620,7 +744,7 @@ def from_pickle(data, db_obj=None):
             that saves assigned data to the database. Skip if not
             serializing onto a given object.  If db_obj is given, this
             function will convert lists, dicts and sets to their
-            `_SaverList`, `_SaverDict` and `_SaverSet` counterparts.
+            _SaverList, _SaverDict and _SaverSet counterparts.
 
     Returns:
         data (any): Unpickled data.
@@ -629,6 +753,7 @@ def from_pickle(data, db_obj=None):
 
     def process_item(item):
         """Recursive processor and identification of data"""
+        # breakpoint()
         dtype = type(item)
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
@@ -641,6 +766,11 @@ def from_pickle(data, db_obj=None):
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
             return dict((process_item(key), process_item(val)) for key, val in item.items())
+        elif dtype == defaultdict:
+            return defaultdict(
+                item.default_factory,
+                ((process_item(key), process_item(val)) for key, val in item.items()),
+            )
         elif dtype == set:
             return set(process_item(val) for val in item)
         elif dtype == OrderedDict:
@@ -649,15 +779,41 @@ def from_pickle(data, db_obj=None):
             return deque(process_item(val) for val in item)
         elif hasattr(item, "__iter__"):
             try:
-                # we try to conserve the iterable class if
-                # it accepts an iterator
-                return item.__class__(process_item(val) for val in item)
-            except (AttributeError, TypeError):
-                return [process_item(val) for val in item]
+                # we try to conserve the iterable class, if not convert to dict
+                try:
+                    return item.__class__(
+                        (process_item(key), process_item(val)) for key, val in item.items()
+                    )
+                except (AttributeError, TypeError):
+                    return {process_item(key): process_item(val) for key, val in item.items()}
+            except Exception:
+                try:
+                    # we try to conserve the iterable class if
+                    # it accepts an iterator
+                    return item.__class__(process_item(val) for val in item)
+                except (AttributeError, TypeError):
+                    return [process_item(val) for val in item]
+
+        if hasattr(item, "__deserialize_dbobjs__"):
+            # this allows the object to custom-deserialize any embedded dbobjs
+            # that we previously serialized with __serialize_dbobjs__.
+            # use the dbunserialize helper in this module.
+            try:
+                item.__deserialize_dbobjs__()
+            except (TypeError, UnpicklingError):
+                # handle recoveries both of classes (requiring classmethods
+                # or instances. Unpickling errors can happen when re-loading the
+                # data from cache (because the hidden entity was already
+                # deserialized and stored back on the object, unpickling it
+                # again fails). TODO: Maybe one could avoid this retry in a
+                # more graceful way?
+                pass
+
         return item
 
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
+        # breakpoint()
         dtype = type(item)
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
@@ -672,6 +828,12 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == dict:
             dat = _SaverDict(_parent=parent)
+            dat._data.update(
+                (process_item(key), process_tree(val, dat)) for key, val in item.items()
+            )
+            return dat
+        elif dtype == defaultdict:
+            dat = _SaverDefaultDict(item.default_factory, _parent=parent)
             dat._data.update(
                 (process_item(key), process_tree(val, dat)) for key, val in item.items()
             )
@@ -692,25 +854,57 @@ def from_pickle(data, db_obj=None):
             return dat
         elif hasattr(item, "__iter__"):
             try:
-                # we try to conserve the iterable class if it
-                # accepts an iterator
-                return item.__class__(process_tree(val, parent) for val in item)
-            except (AttributeError, TypeError):
-                dat = _SaverList(_parent=parent)
-                dat._data.extend(process_tree(val, dat) for val in item)
-                return dat
+                # we try to conserve the iterable class, if not convert to dict
+                try:
+                    dat = _SaverDict(_parent=parent, _class=item.__class__)
+                    dat._data.update(
+                        (process_item(key), process_tree(val, dat)) for key, val in item.items()
+                    )
+                    return dat
+                except (AttributeError, TypeError):
+                    dat = _SaverDict(_parent=parent)
+                    dat._data.update(
+                        (process_item(key), process_tree(val, dat)) for key, val in item.items()
+                    )
+                    return dat
+            except Exception:
+                try:
+                    # we try to conserve the iterable class if it
+                    # accepts an iterator
+                    dat = _SaverList(_parent=parent, _class=item.__class__)
+                    dat._data.extend(process_tree(val, dat) for val in item)
+                    return dat
+                except (AttributeError, TypeError):
+                    dat = _SaverList(_parent=parent)
+                    dat._data.extend(process_tree(val, dat) for val in item)
+                    return dat
+
+        if hasattr(item, "__deserialize_dbobjs__"):
+            try:
+                item.__deserialize_dbobjs__()
+            except (TypeError, UnpicklingError):
+                pass
+
         return item
 
     if db_obj:
         # convert lists, dicts and sets to their Saved* counterparts. It
         # is only relevant if the "root" is an iterable of the right type.
         dtype = type(data)
-        if dtype == list:
+        if dtype in (str, int, float, bool, bytes, SafeString, tuple):
+            return process_item(data)
+        elif dtype == list:
             dat = _SaverList(_db_obj=db_obj)
             dat._data.extend(process_tree(val, dat) for val in data)
             return dat
         elif dtype == dict:
             dat = _SaverDict(_db_obj=db_obj)
+            dat._data.update(
+                (process_item(key), process_tree(val, dat)) for key, val in data.items()
+            )
+            return dat
+        elif dtype == defaultdict:
+            dat = _SaverDefaultDict(data.default_factory, _db_obj=db_obj)
             dat._data.update(
                 (process_item(key), process_tree(val, dat)) for key, val in data.items()
             )
@@ -729,6 +923,34 @@ def from_pickle(data, db_obj=None):
             dat = _SaverDeque(_db_obj=db_obj)
             dat._data.extend(process_item(val) for val in data)
             return dat
+        elif hasattr(data, "__iter__"):
+            try:
+                # we try to conserve the iterable class, if not convert to dict
+                try:
+                    dat = _SaverDict(_db_obj=db_obj, _class=data.__class__)
+                    dat._data.update(
+                        (process_item(key), process_tree(val, dat)) for key, val in data.items()
+                    )
+                    return dat
+                except (AttributeError, TypeError):
+                    dat = _SaverDict(_db_obj=db_obj)
+                    dat._data.update(
+                        (process_item(key), process_tree(val, dat)) for key, val in data.items()
+                    )
+                    return dat
+            except Exception:
+                try:
+                    # we try to conserve the iterable class if it
+                    # accepts an iterator
+                    dat = _SaverList(_db_obj=db_obj, _class=data.__class__)
+                    dat._data.extend(process_tree(val, dat) for val in data)
+                    return dat
+
+                except (AttributeError, TypeError):
+                    dat = _SaverList(_db_obj=db_obj)
+                    dat._data.extend(process_tree(val, dat) for val in data)
+                    return dat
+
     return process_item(data)
 
 

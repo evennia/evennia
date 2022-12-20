@@ -5,12 +5,13 @@ more Evennia channels.
 """
 
 import re
-from twisted.application import internet
-from twisted.words.protocols import irc
-from twisted.internet import protocol, reactor
-from evennia.server.session import Session
-from evennia.utils import logger, utils, ansi
 
+from twisted.application import internet
+from twisted.internet import protocol, reactor
+from twisted.words.protocols import irc
+
+from evennia.server.session import Session
+from evennia.utils import ansi, logger, utils
 
 # IRC colors
 
@@ -244,7 +245,7 @@ class IRCBot(irc.IRCClient, Session):
             self.sendLine("NAMES %s" % self.channel)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
-        """"Handles IRC NAME request returns (nicklist)"""
+        """ "Handles IRC NAME request returns (nicklist)"""
         channel = params[2].lower()
         if channel != self.channel.lower():
             return

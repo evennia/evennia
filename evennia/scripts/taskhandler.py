@@ -3,14 +3,15 @@ Module containing the task handler for Evennia deferred tasks, persistent or not
 """
 
 from datetime import datetime, timedelta
+from pickle import PickleError
 
 from twisted.internet import reactor
-from pickle import PickleError
-from twisted.internet.task import deferLater
 from twisted.internet.defer import CancelledError as DefCancelledError
+from twisted.internet.task import deferLater
+
 from evennia.server.models import ServerConfig
-from evennia.utils.logger import log_err
 from evennia.utils.dbserialize import dbserialize, dbunserialize
+from evennia.utils.logger import log_err
 
 TASK_HANDLER = None
 
@@ -62,22 +63,28 @@ class TaskHandlerTask:
         return TASK_HANDLER.get_deferred(self.task_id)
 
     def pause(self):
-        """Pause the callback of a task.
-        To resume use TaskHandlerTask.unpause
+        """
+        Pause the callback of a task.
+        To resume use `TaskHandlerTask.unpause`.
+
         """
         d = self.deferred
         if d:
             d.pause()
 
     def unpause(self):
-        """Unpause a task, run the task if it has passed delay time."""
+        """
+        Unpause a task, run the task if it has passed delay time.
+
+        """
         d = self.deferred
         if d:
             d.unpause()
 
     @property
     def paused(self):
-        """A task attribute to check if the deferred instance of a task has been paused.
+        """
+        A task attribute to check if the deferred instance of a task has been paused.
 
         This exists to mock usage of a twisted deferred object.
 
@@ -93,7 +100,8 @@ class TaskHandlerTask:
             return None
 
     def do_task(self):
-        """Execute the task (call its callback).
+        """
+        Execute the task (call its callback).
         If calling before timedelay, cancel the deferred instance affliated to this task.
         Remove the task from the dictionary of current tasks on a successful
         callback.
@@ -106,7 +114,8 @@ class TaskHandlerTask:
         return TASK_HANDLER.do_task(self.task_id)
 
     def call(self):
-        """Call the callback of a task.
+        """
+        Call the callback of a task.
         Leave the task unaffected otherwise.
         This does not use the task's deferred instance.
         The only requirement is that the task exist in task handler.
@@ -173,7 +182,8 @@ class TaskHandlerTask:
             return None
 
     def exists(self):
-        """Check if a task exists.
+        """
+        Check if a task exists.
         Most task handler methods check for existence for you.
 
         Returns:
@@ -183,7 +193,8 @@ class TaskHandlerTask:
         return TASK_HANDLER.exists(self.task_id)
 
     def get_id(self):
-        """ Returns the global id for this task. For use with
+        """
+        Returns the global id for this task. For use with
         `evennia.scripts.taskhandler.TASK_HANDLER`.
 
         Returns:
@@ -215,7 +226,7 @@ class TaskHandler(object):
         self.clock = reactor
         # number of seconds before an uncalled canceled task is removed from TaskHandler
         self.stale_timeout = 60
-        self._now = False # used in unit testing to manually set now time
+        self._now = False  # used in unit testing to manually set now time
 
     def load(self):
         """Load from the ServerConfig.
@@ -271,7 +282,10 @@ class TaskHandler(object):
         return True
 
     def save(self):
-        """Save the tasks in ServerConfig."""
+        """
+        Save the tasks in ServerConfig.
+
+        """
 
         for task_id, (date, callback, args, kwargs, persistent, _) in self.tasks.items():
             if task_id in self.to_save:
@@ -297,10 +311,12 @@ class TaskHandler(object):
                 )
 
             self.to_save[task_id] = dbserialize((date, safe_callback, args, kwargs))
+
         ServerConfig.objects.conf("delayed_tasks", self.to_save)
 
     def add(self, timedelay, callback, *args, **kwargs):
-        """Add a new task.
+        """
+        Add a new task.
 
         If the persistent kwarg is truthy:
         The callback, args and values for kwarg will be serialized. Type
@@ -322,7 +338,7 @@ class TaskHandler(object):
 
         Returns:
             TaskHandlerTask: An object to represent a task.
-                Reference evennia.scripts.taskhandler.TaskHandlerTask for complete details.
+                Reference `evennia.scripts.taskhandler.TaskHandlerTask` for complete details.
 
         """
         # set the completion time
@@ -395,7 +411,8 @@ class TaskHandler(object):
         return TaskHandlerTask(task_id)
 
     def exists(self, task_id):
-        """Check if a task exists.
+        """
+        Check if a task exists.
         Most task handler methods check for existence for you.
 
         Args:
@@ -411,7 +428,8 @@ class TaskHandler(object):
             return False
 
     def active(self, task_id):
-        """Check if a task is active (has not been called yet).
+        """
+        Check if a task is active (has not been called yet).
 
         Args:
             task_id (int): an existing task ID.
@@ -429,7 +447,8 @@ class TaskHandler(object):
             return False
 
     def cancel(self, task_id):
-        """Stop a task from automatically executing.
+        """
+        Stop a task from automatically executing.
         This will not remove the task.
 
         Args:
@@ -455,7 +474,8 @@ class TaskHandler(object):
             return False
 
     def remove(self, task_id):
-        """Remove a task without executing it.
+        """
+        Remove a task without executing it.
         Deletes the instance of the task's deferred.
 
         Args:
@@ -481,8 +501,8 @@ class TaskHandler(object):
         return True
 
     def clear(self, save=True, cancel=True):
-        """clear all tasks.
-        By default tasks are canceled and removed from the database also.
+        """
+        Clear all tasks. By default tasks are canceled and removed from the database as well.
 
         Args:
             save=True (bool): Should changes to persistent tasks be saved to database.
@@ -504,7 +524,8 @@ class TaskHandler(object):
         return True
 
     def call_task(self, task_id):
-        """Call the callback of a task.
+        """
+        Call the callback of a task.
         Leave the task unaffected otherwise.
         This does not use the task's deferred instance.
         The only requirement is that the task exist in task handler.
@@ -524,7 +545,8 @@ class TaskHandler(object):
         return callback(*args, **kwargs)
 
     def do_task(self, task_id):
-        """Execute the task (call its callback).
+        """
+        Execute the task (call its callback).
         If calling before timedelay cancel the deferred instance affliated to this task.
         Remove the task from the dictionary of current tasks on a successful
         callback.
@@ -569,7 +591,8 @@ class TaskHandler(object):
             return None
 
     def create_delays(self):
-        """Create the delayed tasks for the persistent tasks.
+        """
+        Create the delayed tasks for the persistent tasks.
         This method should be automatically called when Evennia starts.
 
         """

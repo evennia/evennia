@@ -14,6 +14,7 @@ evennia.server.portal
 
    evennia.server.portal.amp
    evennia.server.portal.amp_server
+   evennia.server.portal.discord
    evennia.server.portal.grapevine
    evennia.server.portal.irc
    evennia.server.portal.mccp

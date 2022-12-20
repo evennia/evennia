@@ -4,13 +4,15 @@ name: documentation
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ main, develop ]
     paths:
       - 'docs/**'
+      - 'evennia/contrib/**'
   pull_request:
-    branches: [ master, develop ]
+    branches: [ main, develop ]
     paths:
       - 'docs/**'
+      - 'evennia/contrib/**'
 
 jobs:
   build:
@@ -18,15 +20,17 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: ['3.10']
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout ${{ github.ref }} branch 
+        uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
 
       - name: Install doc-building dependencies
         run: |
@@ -34,26 +38,21 @@ jobs:
           cd docs/
           make install
 
-      # fail early here, run quickstrict with aborts also on warnings
-      - name: Quick-test docs (no autodocs)
-        run: |
-          cd docs/
-          make quickstrict
-
       # full game dir needed for mv-local
-      # - name: Set up evennia game dir
-      #   run: |
-      #     pip install -e .
-      #     cd ..
-      #     evennia --init gamedir
-      #     cd gamedir
-      #     evennia migrate
+      - name: Set up evennia game dir
+        run: |
+          pip install .
+          pip install .[extra]
+          cd ..
+          evennia --init gamedir
+          cd gamedir
+          evennia migrate
 
-      - name: Deploy docs (only from master/develop branch)
-        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
+      - name: Build and deploy docs (only from main/develop branch)
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'}}
         run: |
           git config --global user.email "docbuilder@evennia.com"
-          git config --global user.name "Doc builder mechanism"
+          git config --global user.name "Evennia docbuilder action"
+          git branch
           cd docs
-          make mv-local
-          echo "Would deploy here!"
+          make release

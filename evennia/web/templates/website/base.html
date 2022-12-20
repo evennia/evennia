@@ -1,0 +1,73 @@
+{% load static sekizai_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="author" content="Evennia Contributors" />
+    <meta name="generator" content="Evennia" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="icon" type="image/x-icon" href="{% static "website/images/evennia_logo.png" %}" />
+
+    <!-- Bootstrap CSS -->
+    <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+
+    <!-- Base CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/website.css" %}">
+
+    {% comment %}
+    Allows for loading custom styles without overriding the base site styles
+    {% endcomment %}
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/custom.css" %}">
+
+    {% block header_ext %}
+    {% endblock %}
+
+    <title>{{game_name}} - {% if flatpage %}{{flatpage.title}}{% else %}{% block titleblock %}{{page_title}}{% endblock %}{% endif %}</title>
+  </head>
+  <body>
+    {% block body %}
+
+    <div id="top"><a href="#main-content" class="sr-only sr-only-focusable">Skip to main content.</a></div>
+    {% include "website/_menu.html" %}
+    <div class="container main-content mt-4" id="main-copy">
+      <div class="row">
+        {% if sidebar %}
+        <div class="col-4">
+          {% block sidebar %}
+          {% endblock %}
+        </div>
+        {% endif %}
+        <div class="{% if sidebar %}col-8{% else %}col{% endif %}">
+          {% include 'website/messages.html' %}
+
+          {% block content %}
+          {% endblock %}
+
+          {% include 'website/pagination.html' %}
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+    {% block footer %}
+        <div class="container">
+          <div class="row justify-content-center">
+            <span class="text-white">Powered by <a class="text-white font-weight-bold" href="https://evennia.com">Evennia.</a></span>
+          </div>
+        </div>
+    {% endblock %}
+    </footer>
+
+    {% endblock %}
+
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

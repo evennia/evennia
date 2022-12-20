@@ -8,10 +8,10 @@ Griatch 2017, released under the BSD license.
 """
 
 
+import fnmatch
+import os
 import re
 import sys
-import os
-import fnmatch
 
 ANSI_HILITE = "\033[1m"
 ANSI_RED = "\033[31m"

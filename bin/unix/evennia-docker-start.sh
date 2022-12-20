@@ -9,7 +9,7 @@ PS1="evennia|docker \w $ "
 
 cmd="$@"
 output="Docker starting with argument '$cmd' ..."
-if test -z $cmd; then
+if test -z "$cmd"; then
     cmd="bash"
     output="No argument given, starting shell ..."
 fi

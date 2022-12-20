@@ -4,16 +4,27 @@ The base Command class.
 All commands in Evennia inherit from the 'Command' class in this module.
 
 """
-import re
-import math
 import inspect
+import math
+import re
 
 from django.conf import settings
+from django.urls import reverse
+from django.utils.text import slugify
 
 from evennia.locks.lockhandler import LockHandler
-from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
-from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString
+from evennia.utils.evtable import EvTable
+from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
+
+CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
+
+
+class InterruptCommand(Exception):
+
+    """Cleanly interrupt a command."""
+
+    pass
 
 
 def _init_command(cls, **kwargs):
@@ -75,6 +86,9 @@ def _init_command(cls, **kwargs):
         cls.is_exit = False
     if not hasattr(cls, "help_category"):
         cls.help_category = "general"
+    if not hasattr(cls, "retain_instance"):
+        cls.retain_instance = False
+
     # make sure to pick up the parent's docstring if the child class is
     # missing one (important for auto-help)
     if cls.__doc__ is None:
@@ -83,6 +97,21 @@ def _init_command(cls, **kwargs):
                 cls.__doc__ = parent_class.__doc__
                 break
     cls.help_category = cls.help_category.lower()
+
+    # pre-prepare a help index entry for quicker lookup
+    # strip the @- etc to allow help to be agnostic
+    stripped_key = cls.key[1:] if cls.key and cls.key[0] in CMD_IGNORE_PREFIXES else ""
+    stripped_aliases = " ".join(
+        al[1:] if al and al[0] in CMD_IGNORE_PREFIXES else al for al in cls.aliases
+    )
+    cls.search_index_entry = {
+        "key": cls.key,
+        "aliases": " ".join(cls.aliases),
+        "no_prefix": f"{stripped_key} {stripped_aliases}",
+        "category": cls.help_category,
+        "text": cls.__doc__,
+        "tags": "",
+    }
 
 
 class CommandMeta(type):
@@ -103,9 +132,11 @@ class CommandMeta(type):
 #    parsing errors.
 
 
-class Command(object, metaclass=CommandMeta):
+class Command(metaclass=CommandMeta):
     """
-    Base command
+    ## Base command
+
+    (you may see this if a child command had no help text defined)
 
     Usage:
       command [args]
@@ -115,17 +146,19 @@ class Command(object, metaclass=CommandMeta):
 
     The cmdhandler makes the following variables available to the
     command methods (so you can always assume them to be there):
+
     self.caller - the game object calling the command
     self.cmdstring - the command name used to trigger this command (allows
                      you to know which alias was used, for example)
-    cmd.args - everything supplied to the command following the cmdstring
+    self.args - everything supplied to the command following the cmdstring
                (this is usually what is parsed in self.parse())
-    cmd.cmdset - the cmdset from which this command was matched (useful only
-                seldomly, notably for help-type commands, to create dynamic
-                help entries and lists)
-    cmd.obj - the object on which this command is defined. If a default command,
-                 this is usually the same as caller.
-    cmd.rawstring - the full raw string input, including any args and no parsing.
+    self.cmdset - the cmdset from which this command was matched (useful only
+                  seldomly, notably for help-type commands, to create dynamic
+                  help entries and lists)
+    self.obj - the object on which this command is defined. If a default command,
+               this is usually the same as caller.
+    self.raw_string - the full raw string input, including the command name,
+                      any args and no parsing.
 
     The following class properties can/should be defined on your child class:
 
@@ -169,6 +202,11 @@ class Command(object, metaclass=CommandMeta):
     # whether self.msg sends to all sessions of a related account/object (default
     # is to only send to the session sending the command).
     msg_all_sessions = settings.COMMAND_DEFAULT_MSG_ALL_SESSIONS
+    # whether the exact command instance should be retained between command calls.
+    # By default it's False; this allows for retaining state and saves some CPU, but
+    # can cause cross-talk between users if multiple users access the same command
+    # (especially if the command is using yield)
+    retain_instance = False
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
@@ -184,6 +222,7 @@ class Command(object, metaclass=CommandMeta):
         """
         if kwargs:
             _init_command(self, **kwargs)
+        self._optimize()
 
     @lazy_property
     def lockhandler(self):
@@ -226,7 +265,7 @@ class Command(object, metaclass=CommandMeta):
         str, too.
 
         """
-        return hash("\n".join(self._matchset))
+        return hash("command")
 
     def __ne__(self, cmd):
         """
@@ -260,9 +299,14 @@ class Command(object, metaclass=CommandMeta):
         Optimize the key and aliases for lookups.
         """
         # optimization - a set is much faster to match against than a list
-        self._matchset = set([self.key] + self.aliases)
+        matches = [self.key.lower()]
+        matches.extend(x.lower() for x in self.aliases)
+
+        self._matchset = set(matches)
         # optimization for looping over keys+aliases
         self._keyaliases = tuple(self._matchset)
+
+        self._noprefix_aliases = {x.lstrip(CMD_IGNORE_PREFIXES): x for x in matches}
 
     def set_key(self, new_key):
         """
@@ -299,7 +343,7 @@ class Command(object, metaclass=CommandMeta):
         self.aliases = list(set(alias for alias in aliases if alias != self.key))
         self._optimize()
 
-    def match(self, cmdname):
+    def match(self, cmdname, include_prefixes=True):
         """
         This is called by the system when searching the available commands,
         in order to determine if this is the one we wanted. cmdname was
@@ -308,11 +352,27 @@ class Command(object, metaclass=CommandMeta):
         Args:
             cmdname (str): Always lowercase when reaching this point.
 
+        Kwargs:
+            include_prefixes (bool): If false, will compare against the _noprefix
+                variants of commandnames.
+
         Returns:
             result (bool): Match result.
 
         """
-        return cmdname in self._matchset
+        if include_prefixes:
+            for cmd_key in self._keyaliases:
+                if cmdname.startswith(cmd_key) and (
+                    not self.arg_regex or self.arg_regex.match(cmdname[len(cmd_key) :])
+                ):
+                    return cmd_key, cmd_key
+        else:
+            for k, v in self._noprefix_aliases.items():
+                if cmdname.startswith(k) and (
+                    not self.arg_regex or self.arg_regex.match(cmdname[len(k) :])
+                ):
+                    return k, v
+        return None, None
 
     def access(self, srcobj, access_type="cmd", default=False):
         """
@@ -496,6 +556,53 @@ Command {self} has no defined `func()` - showing on-command variables:
         """
         return self.__doc__
 
+    def web_get_detail_url(self):
+        """
+        Returns the URI path for a View that allows users to view details for
+        this object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-detail' would be referenced by this method.
+
+        ex.
+        ::
+            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
+                CharDetailView.as_view(), name='character-detail')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can view this object is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object detail page, if defined.
+
+        """
+        try:
+            return reverse(
+                "help-entry-detail",
+                kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
+            )
+        except Exception as e:
+            return "#"
+
+    def web_get_admin_url(self):
+        """
+        Returns the URI path for the Django Admin page for this object.
+
+        ex. Account#1 = '/admin/accounts/accountdb/1/change/'
+
+        Returns:
+            path (str): URI path to Django Admin page for object.
+
+        """
+        return False
+
     def client_width(self):
         """
         Get the client screenwidth for the session using this command.
@@ -509,20 +616,6 @@ Command {self} has no defined `func()` - showing on-command variables:
                 "SCREENWIDTH", {0: settings.CLIENT_DEFAULT_WIDTH}
             )[0]
         return settings.CLIENT_DEFAULT_WIDTH
-
-    def client_height(self):
-        """
-        Get the client screenheight for the session using this command.
-
-        Returns:
-            client height (int): The height (in characters) of the client window.
-
-        """
-        if self.session:
-            return self.session.protocol_flags.get(
-                "SCREENHEIGHT", {0: settings.CLIENT_DEFAULT_HEIGHT}
-            )[0]
-        return settings.CLIENT_DEFAULT_HEIGHT
 
     def styled_table(self, *args, **kwargs):
         """
@@ -568,6 +661,7 @@ Command {self} has no defined `func()` - showing on-command variables:
             border_left_char=border_left_char,
             border_right_char=border_right_char,
             border_top_char=border_top_char,
+            border_bottom_char=border_bottom_char,
             **kwargs,
         )
         return table
@@ -671,10 +765,3 @@ Command {self} has no defined `func()` - showing on-command variables:
         if "mode" not in kwargs:
             kwargs["mode"] = "footer"
         return self._render_decoration(*args, **kwargs)
-
-
-class InterruptCommand(Exception):
-
-    """Cleanly interrupt a command."""
-
-    pass
