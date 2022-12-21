@@ -7,7 +7,7 @@ object with its own functionality and state tracking.
 
 Create the button with
 
-    create/drop button:tutorials.red_button.RedButton
+    create/drop button:contrib.tutorials.red_button.RedButton
 
 Note that you must drop the button before you can see its messages! It's
 imperative that you press the red button. You know you want to.
