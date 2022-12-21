@@ -16,11 +16,12 @@ In more detail, in `mygame/commands/default_cmdsets.py`:
 
 ```python
 ...
-from evennia.contrib import extended_room   # <---
+from evennia.contrib.grid import extended_room   # <---
 
-class CharacterCmdset(default_cmds.Character_CmdSet):
+class CharacterCmdset(default_cmds.CharacterCmdSet):
     ...
     def at_cmdset_creation(self):
+        super().at_cmdset_creation()
         ...
         self.add(extended_room.ExtendedRoomCmdSet)  # <---
 
@@ -28,7 +29,10 @@ class CharacterCmdset(default_cmds.Character_CmdSet):
 
 Then reload to make the new commands available. Note that they only work
 on rooms with the typeclass `ExtendedRoom`. Create new rooms with the right
-typeclass or use the `typeclass` command to swap existing rooms.
+typeclass or use the `typeclass` command to swap existing rooms. Note that since
+this contrib overrides the `look` command, you will need to add the
+`extended_room.ExtendedRoomCmdSet` to the default character cmdset *after*
+super().at_cmdset_creation(), or it will be overridden by the default look.
 
 ## Features
 
