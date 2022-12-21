@@ -153,7 +153,7 @@ To run the tests with your own settings file you must use the <code class="docut
 normally used to swap settings files for testing and development. In combination with <code class="docutils literal notranslate"><span class="pre">test</span></code>, it
 forces Evennia to use this settings file over the default one.</p>
 <p>You can also test specific things by giving their path</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .world.tests.YourTest
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py world.tests.YourTest
 </pre></div>
 </div>
 </section>
@@ -210,15 +210,15 @@ and want to test a function in <code class="docutils literal notranslate"><span 
 </pre></div>
 </div>
 <p>to run the entire test module</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings setings.py .world.tests
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings setings.py world.tests
 </pre></div>
 </div>
 <p>or a specific class:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .world.tests.TestObj 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py world.tests.TestObj 
 </pre></div>
 </div>
 <p>You can also run a specific test:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .world.tests.TestObj.test_alternative_call
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py world.tests.TestObj.test_alternative_call
 </pre></div>
 </div>
 <p>You might also want to read the <a class="reference external" href="https://docs.python.org/library/unittest.html">Python documentation for the unittest module</a>.</p>
