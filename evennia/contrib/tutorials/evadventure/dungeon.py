@@ -128,7 +128,6 @@ class EvAdventureDungeonRoom(EvAdventureRoom):
 class EvAdventureDungeonExit(DefaultExit):
     """
     Dungeon exit. This will not create the target room until it's traversed.
-    It must be created referencing the dungeon_orchestrator it belongs to.
 
     """
 
@@ -142,7 +141,8 @@ class EvAdventureDungeonExit(DefaultExit):
     def at_traverse(self, traversing_object, target_location, **kwargs):
         """
         Called when traversing. `target_location` will be None if the
-        target was not yet created.
+        target was not yet created. It checks the current location to get the
+        dungeon-orchestrator in use.
 
         """
         if target_location == self.location:
