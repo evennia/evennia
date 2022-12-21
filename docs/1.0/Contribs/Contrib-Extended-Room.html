@@ -123,11 +123,12 @@ supported by new <code class="docutils literal notranslate"><span class="pre">lo
 new commands for use.</p>
 <p>In more detail, in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">extended_room</span>   <span class="c1"># &lt;---</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.grid</span> <span class="kn">import</span> <span class="n">extended_room</span>   <span class="c1"># &lt;---</span>
 
-<span class="k">class</span> <span class="nc">CharacterCmdset</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">Character_CmdSet</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">CharacterCmdset</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
         <span class="o">...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">ExtendedRoomCmdSet</span><span class="p">)</span>  <span class="c1"># &lt;---</span>
 
@@ -135,7 +136,10 @@ new commands for use.</p>
 </div>
 <p>Then reload to make the new commands available. Note that they only work
 on rooms with the typeclass <code class="docutils literal notranslate"><span class="pre">ExtendedRoom</span></code>. Create new rooms with the right
-typeclass or use the <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> command to swap existing rooms.</p>
+typeclass or use the <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> command to swap existing rooms. Note that since
+this contrib overrides the <code class="docutils literal notranslate"><span class="pre">look</span></code> command, you will need to add the
+<code class="docutils literal notranslate"><span class="pre">extended_room.ExtendedRoomCmdSet</span></code> to the default character cmdset <em>after</em>
+super().at_cmdset_creation(), or it will be overridden by the default look.</p>
 </section>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
