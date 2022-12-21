@@ -166,7 +166,7 @@ This module adds no new commands; embed it in your say/emote/whisper commands.
 ### Usage:
 
 ```python
-from evennia.contrib import rplanguage
+from evennia.contrib.rpg.rpsystem import rplanguage
 
 # need to be done once, here we create the "default" lang
 rplanguage.add_language()
