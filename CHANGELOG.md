@@ -1,6 +1,17 @@
 # Changelog
 
-### Evennia 1.0
+### Evennia 1.0.2
+Dec 21, 2022
+
+Bug fix release. Fix more issues with discord bot reconnecting. Some doc
+updates.
+
+### Evennia 1.0.1
+Dec 7, 2022
+
+Bug fix release. Main issue was reconnect bug for discord bot.
+
+## Evennia 1.0
 
 2019-2022
 
