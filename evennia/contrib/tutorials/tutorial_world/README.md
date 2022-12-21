@@ -17,7 +17,7 @@ Evmenu.
 
 Log in as superuser (#1), then run
 
-    batchcommand tutorials.tutorial_world.build
+    batchcommand contrib.tutorials.tutorial_world.build
 
 Wait a little while for building to complete and don't run the command
 again even if it's slow. This builds the world and connect it to Limbo
