@@ -205,7 +205,6 @@
 <div class="viewcode-block" id="EvAdventureDungeonExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dungeon exit. This will not create the target room until it&#39;s traversed.</span>
-<span class="sd">    It must be created referencing the dungeon_orchestrator it belongs to.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -219,7 +218,8 @@
 <div class="viewcode-block" id="EvAdventureDungeonExit.at_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when traversing. `target_location` will be None if the</span>
-<span class="sd">        target was not yet created.</span>
+<span class="sd">        target was not yet created. It checks the current location to get the</span>
+<span class="sd">        dungeon-orchestrator in use.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">target_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>

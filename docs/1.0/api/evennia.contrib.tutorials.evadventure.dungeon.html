@@ -231,8 +231,7 @@ easier (for example we may want an empty room which auto-clears).</p>
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.dungeon.</code><code class="sig-name descname">EvAdventureDungeonExit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
-<p>Dungeon exit. This will not create the target room until it’s traversed.
-It must be created referencing the dungeon_orchestrator it belongs to.</p>
+<p>Dungeon exit. This will not create the target room until it’s traversed.</p>
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_object_creation">
 <code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonExit.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_object_creation" title="Permalink to this definition">¶</a></dt>
@@ -243,7 +242,8 @@ It must be created referencing the dungeon_orchestrator it belongs to.</p>
 <dt id="evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_traverse">
 <code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">target_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/dungeon.html#EvAdventureDungeonExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when traversing. <strong>target_location</strong> will be None if the
-target was not yet created.</p>
+target was not yet created. It checks the current location to get the
+dungeon-orchestrator in use.</p>
 </dd></dl>
 
 <dl class="py method">
