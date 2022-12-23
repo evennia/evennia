@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-29 18:53+0000\n"
-"PO-Revision-Date: 2022-03-20 19:55+0100\n"
+"PO-Revision-Date: 2022-12-16 15:09+0100\n"
 "Last-Translator: Christophe Petry <toktoktheeo@outlook.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: accounts/accounts.py:341
 #, python-brace-format
@@ -28,6 +28,8 @@ msgstr "|c{key}|R est déjà contrôlé par un autre compte."
 msgid ""
 "You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})"
 msgstr ""
+"Vous ne pouvez contrôler plus de poupées (Maximum : "
+"{_MAX_NR_SIMULTANEOUS_PUPPETS})"
 
 #: accounts/accounts.py:555
 msgid "Too many login failures; please try again in a few minutes."
@@ -73,9 +75,8 @@ msgstr ""
 "problème persiste."
 
 #: accounts/accounts.py:918
-#, fuzzy
 msgid "Account being deleted."
-msgstr "Suppression du compte."
+msgstr "Le compte a été supprimé."
 
 #: accounts/accounts.py:1475 accounts/accounts.py:1819
 #, python-brace-format
@@ -382,12 +383,12 @@ msgstr "Vous avez maintenant {name} en votre possession."
 #: objects/objects.py:1863
 #, python-brace-format
 msgid "{object} arrives to {destination} from {origin}."
-msgstr ""
+msgstr "{object} arrive à {destination} depuis {origin}."
 
 #: objects/objects.py:1865
 #, python-brace-format
 msgid "{object} arrives to {destination}."
-msgstr ""
+msgstr "{object} arrive à {destination}."
 
 #: objects/objects.py:2530
 msgid "Invalid character name."
@@ -421,10 +422,9 @@ msgid "{name} has entered the game."
 msgstr "{name} est entré(e) dans le jeu."
 
 #: objects/objects.py:2716
-#, fuzzy, python-brace-format
-#| msgid "{name} has left the game."
+#, python-brace-format
 msgid "{name} has left the game{reason}."
-msgstr "{name} est sorti(e) du jeu."
+msgstr "{name} est sorti(e) du jeu ({reason})."
 
 #: objects/objects.py:2838
 msgid "This is a room."
@@ -552,6 +552,8 @@ msgid ""
 "Diff contains non-dicts that are not on the form (old, new, action_to_take): "
 "{diffpart}"
 msgstr ""
+"\"diff\" contient des non-dicts qui ne sont pas formatés (ancien, nouveau, "
+"action à prendre): {diffpart}"
 
 #: scripts/scripthandler.py:51
 #, fuzzy, python-brace-format
@@ -613,7 +615,7 @@ msgstr "délai d'inactivité dépassé"
 
 #: server/server.py:177
 msgid " (connection lost)"
-msgstr ""
+msgstr " (connexion perdue)"
 
 #: server/sessionhandler.py:41
 msgid "Your client sent an incorrect UTF-8 sequence."
@@ -738,6 +740,8 @@ msgstr ""
 #: utils/eveditor.py:143
 msgid "|rNo save function defined. Buffer cannot be saved.|n"
 msgstr ""
+"|rAucune fonction d'enregistrement définie. La pile ne peut être "
+"sauvegardée.|n"
 
 #: utils/eveditor.py:145
 msgid "No changes need saving"
@@ -745,7 +749,7 @@ msgstr "Aucune modification ne doit être sauvegardée"
 
 #: utils/eveditor.py:146
 msgid "Exited editor."
-msgstr "Sortie de l'éditeur:"
+msgstr "Sortie de l'éditeur."
 
 #: utils/eveditor.py:149
 #, python-brace-format
@@ -755,6 +759,10 @@ msgid ""
 "\n"
 "|rQuit function gave an error. Skipping.|n\n"
 msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|rLa fonction quitter à retourner une erreur. On passe.|n\n"
 
 #: utils/eveditor.py:157
 #, python-brace-format
@@ -766,6 +774,13 @@ msgid ""
 "to non-persistent mode (which means the editor session won't survive\n"
 "an eventual server reload - so save often!)|n\n"
 msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"L'éditeur n'a pas pu sauvergarder en mode persistent. Changement pour le "
+"mode non-persistant. \n"
+"Cela signifie que l'éditeur ne survivra pas à un rechargement du serveur, \n"
+"alors sauvegardez souvent !\n"
 
 #: utils/eveditor.py:167
 msgid ""
@@ -773,26 +788,29 @@ msgid ""
 "EvEditor callbacks could not be pickled, for example because it's a class "
 "method or is defined inside another function."
 msgstr ""
+"EvEditeur erreur du mode persistant. Usuellement, c'est lorsque un ou "
+"plusieurs appel n'ont pu aboutir dans l'éditeur. Par exemple, c'est "
+"parcequ'une méthode de class et définie à l'intérieur d'une autre fonction."
 
 #: utils/eveditor.py:173
 msgid "Nothing to undo."
-msgstr ""
+msgstr "Rien pour revenir en arrière."
 
 #: utils/eveditor.py:174
 msgid "Nothing to redo."
-msgstr ""
+msgstr "Rien à rétablir."
 
 #: utils/eveditor.py:175
 msgid "Undid one step."
-msgstr ""
+msgstr "Un pas supprimé."
 
 #: utils/eveditor.py:176
 msgid "Redid one step."
-msgstr ""
+msgstr "Un pas ajouté."
 
 #: utils/eveditor.py:494
 msgid "Single ':' added to buffer."
-msgstr ""
+msgstr "Un seul ':' ajouté à la pile."
 
 #: utils/eveditor.py:509
 msgid "Save before quitting?"
@@ -806,7 +824,7 @@ msgstr ""
 #: utils/eveditor.py:529
 #, python-brace-format
 msgid "Deleted {string}."
-msgstr ""
+msgstr "{string} supprimé."
 
 #: utils/eveditor.py:534
 msgid "You must give a search word to delete."
@@ -815,17 +833,17 @@ msgstr "Vous devez donner un mot de recherche à supprimer."
 #: utils/eveditor.py:540
 #, python-brace-format
 msgid "Removed {arg1} for lines {l1}-{l2}."
-msgstr ""
+msgstr "{arg1} retiré des lignes {l1}-{l2}."
 
 #: utils/eveditor.py:546
 #, python-brace-format
 msgid "Removed {arg1} for {line}."
-msgstr ""
+msgstr "{arg1} retiré de la ligne {line}"
 
 #: utils/eveditor.py:562
 #, python-brace-format
 msgid "Cleared {nlines} lines from buffer."
-msgstr ""
+msgstr "{nlines} lignes nettoyées depuis la pile."
 
 #: utils/eveditor.py:567
 #, python-brace-format
@@ -835,7 +853,7 @@ msgstr ""
 #: utils/eveditor.py:574
 #, python-brace-format
 msgid "{line}, {cbuf} cut."
-msgstr ""
+msgstr "{line}, {cbuf} coupée."
 
 #: utils/eveditor.py:578
 msgid "Copy buffer is empty."
@@ -844,7 +862,7 @@ msgstr "Le tampon de copie est vide."
 #: utils/eveditor.py:583
 #, python-brace-format
 msgid "Pasted buffer {cbuf} to {line}."
-msgstr ""
+msgstr "La Pile (buffer) copié de {cbuf} à {line}"
 
 #: utils/eveditor.py:591
 msgid "You need to enter a new line and where to insert it."
@@ -853,7 +871,7 @@ msgstr "Vous devez saisir une nouvelle ligne et indiquer où l'insérer."
 #: utils/eveditor.py:596
 #, python-brace-format
 msgid "Inserted {num} new line(s) at {line}."
-msgstr ""
+msgstr "{num} ligne(s) insérée(s) depuis la ligne : {line}."
 
 #: utils/eveditor.py:604
 msgid "You need to enter a replacement string."
@@ -862,7 +880,7 @@ msgstr "Vous devez saisir une chaîne de remplacement."
 #: utils/eveditor.py:609
 #, python-brace-format
 msgid "Replaced {num} line(s) at {line}."
-msgstr ""
+msgstr "{num} lignes remplacées à partir de la ligne {line}."
 
 #: utils/eveditor.py:616
 msgid "You need to enter text to insert."
@@ -871,16 +889,16 @@ msgstr "Vous devez saisir le texte à insérer."
 #: utils/eveditor.py:624
 #, python-brace-format
 msgid "Inserted text at beginning of {line}."
-msgstr ""
+msgstr "Texte ajouté au début de la ligne {line}."
 
 #: utils/eveditor.py:628
 msgid "You need to enter text to append."
-msgstr ""
+msgstr "Vous avez besoin d'insérer du texte à ajouter."
 
 #: utils/eveditor.py:636
 #, python-brace-format
 msgid "Appended text to end of {line}."
-msgstr ""
+msgstr "Text ajouté à la fin de la ligne {line}."
 
 #: utils/eveditor.py:641
 msgid "You must give a search word and something to replace it with."
@@ -890,36 +908,36 @@ msgstr ""
 #: utils/eveditor.py:647
 #, python-brace-format
 msgid "Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}."
-msgstr ""
+msgstr "Rechercher-remplacer {arg1} -> {arg2} pour les lignes {l1}-{l2}."
 
 #: utils/eveditor.py:653
 #, python-brace-format
 msgid "Search-replaced {arg1} -> {arg2} for {line}."
-msgstr ""
+msgstr "Recherche-remplacer {arg1} -> {arg2} pour la ligne {line}."
 
 #: utils/eveditor.py:677
 #, python-brace-format
 msgid "Flood filled lines {l1}-{l2}."
-msgstr ""
+msgstr "Lignes remplies (inondées ?) {l1}-{l2}."
 
 #: utils/eveditor.py:679
 #, python-brace-format
 msgid "Flood filled {line}."
-msgstr ""
+msgstr "\"flood\" rempli {line}."
 
 #: utils/eveditor.py:701
 msgid "Valid justifications are"
-msgstr ""
+msgstr "Les justification validées sont"
 
 #: utils/eveditor.py:710
 #, python-brace-format
 msgid "{align}-justified lines {l1}-{l2}."
-msgstr ""
+msgstr "{align}-lignes justifiées{l1}-{l2}."
 
 #: utils/eveditor.py:716
 #, python-brace-format
 msgid "{align}-justified {line}."
-msgstr ""
+msgstr "{align}-justified {line}."
 
 #: utils/eveditor.py:728
 #, python-brace-format
@@ -976,11 +994,11 @@ msgstr "Auto-indentation désactivée."
 #: utils/eveditor.py:1093
 #, python-brace-format
 msgid "Line Editor [{name}]"
-msgstr ""
+msgstr "Édition ligne [{name}]"
 
 #: utils/eveditor.py:1101
 msgid "(:h for help)"
-msgstr ""
+msgstr "(:h pour l'aide)"
 
 #: utils/evmenu.py:302
 #, python-brace-format
@@ -1026,15 +1044,15 @@ msgstr "|rChoix invalide.|n"
 
 #: utils/evmenu.py:1439
 msgid "|Wcurrent|n"
-msgstr ""
+msgstr "|WActuel|n"
 
 #: utils/evmenu.py:1447
 msgid "|wp|Wrevious page|n"
-msgstr ""
+msgstr "|wp|Wage précédente|n"
 
 #: utils/evmenu.py:1454
 msgid "|wn|Wext page|n"
-msgstr ""
+msgstr "|wp|Wpage suivante|n"
 
 #: utils/evmenu.py:1689
 msgid "Aborted."
