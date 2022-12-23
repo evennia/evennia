@@ -463,7 +463,10 @@ class XYZRoom(DefaultRoom):
             )
 
             sessions = looker.sessions.get()
-            client_width, _ = sessions[0].get_client_size() if sessions else CLIENT_DEFAULT_WIDTH
+            if sessions:
+                client_width, _ = sessions[0].get_client_size()
+            else:
+                client_width = CLIENT_DEFAULT_WIDTH
 
             map_width = xymap.max_x
 
