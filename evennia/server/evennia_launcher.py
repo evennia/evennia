@@ -1371,8 +1371,8 @@ def set_gamedir(path):
     global GAMEDIR
 
     Ndepth = 10
-    settings_path = os.path.join("server", "conf", "settings.py")
-    os.chdir(GAMEDIR)
+    settings_path = SETTINGS_DOTPATH.replace(".", os.sep) + ".py"
+    os.chdir(path)
     for i in range(Ndepth):
         gpath = os.getcwd()
         if "server" in os.listdir(gpath):
