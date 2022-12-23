@@ -220,7 +220,7 @@ there:</p>
 <section id="adding-new-recipes">
 <h2>Adding new recipes<a class="headerlink" href="#adding-new-recipes" title="Permalink to this headline">¶</a></h2>
 <p>A <em>recipe</em> is a class inheriting from
-<code class="docutils literal notranslate"><span class="pre">evennia.contrib.crafting.crafting.CraftingRecipe</span></code>. This class implements the
+<code class="docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.CraftingRecipe</span></code>. This class implements the
 most common form of crafting - that using in-game objects. Each recipe is a
 separate class which gets initialized with the consumables/tools you provide.</p>
 <p>For the <code class="docutils literal notranslate"><span class="pre">craft</span></code> command to find your custom recipes, you need to tell Evennia
@@ -236,7 +236,7 @@ as viable recipes.</p>
 example setting:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/myrecipes.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
 <span class="k">class</span> <span class="nc">WoodenPuppetRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A puppet&quot;&quot;&quot;</span><span class="s2">&quot;</span>
@@ -287,7 +287,7 @@ in-game command:</p>
 </pre></div>
 </div>
 <p>In code we would do</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">craft</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">craft</span>
 <span class="n">puppet</span> <span class="o">=</span> <span class="n">craft</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="s2">&quot;wooden puppet&quot;</span><span class="p">,</span> <span class="n">knife</span><span class="p">,</span> <span class="n">wood</span><span class="p">)</span>
 
 </pre></div>
@@ -340,7 +340,7 @@ notion of being able to fail the craft if you are not skilled enough. Just how
 skills work is game-dependent, so to add this you need to make your own recipe
 parent class and have your recipes inherit from this.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
 <span class="k">class</span> <span class="nc">SkillRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
    <span class="sd">&quot;&quot;&quot;A recipe that considers skill&quot;&quot;&quot;</span>
