@@ -359,7 +359,10 @@ class CmdExtendedRoomLook(default_cmds.CmdLook):
                 ):
                     detail = location.return_detail(args)
                     if detail:
-                        # we found a detail instead. Show that.
+                        # we found a detail
+                        # tell all the objects in the room we're looking closely at something
+                        caller.location.msg_contents("$You() $conj(look) closely at the $obj(target).\n", from_obj=caller, mapping={"target": args})
+                        # show the detail to the player
                         caller.msg(detail)
                         return
                 # no detail found. Trigger delayed error messages
