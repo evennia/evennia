@@ -315,4 +315,4 @@ The answer is simply **no**.
 
 For example, the max dbref value for the default sqlite3 database is `2**64`. If you *created 10 000 new objects every second of every minute of every day of the year it would take about **60 million years** for you to run out of dbref numbers*. That's a database of 140 TeraBytes, just to store the dbrefs, no other data. 
 
-If you are still using Evennia at that point and has this concern, get back to us and we can discuss adding dbref reuse then.
+If you are still using Evennia at that point and have this concern, get back to us and we can discuss adding dbref reuse then.
