@@ -10,6 +10,7 @@ class TestGeneralContext(TestCase):
 
     @patch("evennia.web.utils.general_context.GAME_NAME", "test_name")
     @patch("evennia.web.utils.general_context.GAME_SLOGAN", "test_game_slogan")
+    @patch("evennia.web.utils.general_context.REGISTER_ENABLED", "register_enabled_testvalue")
     @patch(
         "evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED",
         "websocket_client_enabled_testvalue",
@@ -37,6 +38,7 @@ class TestGeneralContext(TestCase):
                 "evennia_setupapps": ["Permissions", "Config"],
                 "evennia_connectapps": ["Irc"],
                 "evennia_websiteapps": ["Flatpages", "News", "Sites"],
+                "register_enabled": "register_enabled_testvalue",
                 "webclient_enabled": "webclient_enabled_testvalue",
                 "websocket_enabled": "websocket_client_enabled_testvalue",
                 "websocket_port": "websocket_client_port_testvalue",
