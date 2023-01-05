@@ -26,6 +26,12 @@ jobs:
             TESTING_DB: "sqlite3"
             coverage-test: true
 
+    timeout-minutes: 35
+
+    env:
+      UNIT_TEST_SETTINGS: "--settings=settings --keepdb --parallel 4 --timing"
+      COVERAGE_TEST_SETTINGS: "--settings=settings --timing"
+
     steps:
       - uses: actions/checkout@v3
 
@@ -67,12 +73,7 @@ jobs:
         if: ${{ ! matrix.coverage-test }}
         working-directory: testing_mygame
         run: |
-          evennia test \
-            --settings=settings \
-            --keepdb \
-            --parallel 4 \
-            --timing \
-            evennia
+          evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia
 
       # OBS - it's important to not run the coverage tests with --parallel, it messes up the coverage
       # calculation!
@@ -80,13 +81,8 @@ jobs:
         if: ${{ matrix.coverage-test }}
         working-directory: testing_mygame
         run: |
-          coverage run \
-            --source=evennia \
-            --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
-            ../bin/unix/evennia test \
-              --settings=settings \
-              --timing \
-              evennia
+          coverage run --rcfile=../pyproject.toml ../bin/unix/evennia test ${{ env.COVERAGE_TEST_SETTINGS }} evennia
+          coverage combine
           coverage xml
           coverage --version
           coverage report | grep TOTAL
@@ -107,7 +103,7 @@ jobs:
     name: Deploy Docker Image
     needs: test
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'evennia/evennia' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') }}
+    if: ${{ github.repository == 'evennia/evennia' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
     steps:
       - uses: actions/checkout@v3
 
@@ -123,9 +119,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push for master
-        if: ${{ github.ref == 'refs/heads/master' }}
-        id: docker_build_master
+      - name: Build and push for main
+        if: ${{ github.ref == 'refs/heads/main' }}
+        id: docker_build_main
         uses: docker/build-push-action@v3
         with:
           push: true

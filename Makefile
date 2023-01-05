@@ -13,7 +13,7 @@ default:
 	@echo "  make test - run evennia test suite with all default values."
 	@echo "  make tests=evennia.path test - run only specific test or tests."
 	@echo "  make testp - run test suite using multiple cores."
-	@echo "  make publish - publish evennia to pypi (requires pypi credentials)
+	@echo "  make release - publish evennia to pypi (requires pypi credentials)
 
 install:
 	pip install -e .
@@ -44,10 +44,8 @@ testp:
 	evennia migrate;\
 	evennia test --keepdb --parallel 4 $(TESTS);\
 
+version:
+	echo $(VERSION)
+
 release:
-	rm -Rf dist/
-	git clean -xdf	
-	pip install --upgrade pip 
-	pip install build twine 
-	python -m build --sdist --wheel --outdir dist/ . 
-	python -m twine upload dist/*
+	./.release.sh

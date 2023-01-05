@@ -1,11 +1,22 @@
 # Changelog
 
-### Evennia 1.0
+### Evennia 1.0.2
+Dec 21, 2022
 
-2019-2022 develop branch
+Bug fix release. Fix more issues with discord bot reconnecting. Some doc
+updates.
 
-Changed to using `main` branch to follow github standard. Old `master` branch remains
-for now but will not be used anymore, so as to not break installs during transition.
+### Evennia 1.0.1
+Dec 7, 2022
+
+Bug fix release. Main issue was reconnect bug for discord bot.
+
+## Evennia 1.0
+
+2019-2022
+
+_Changed to using `main` branch to follow github standard. Old `master` branch remains
+for now but will not be used anymore, so as to not break installs during transition._
 
 Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.10, 3.11.  PostgreSQL 11+.
 

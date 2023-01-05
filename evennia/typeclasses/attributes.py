@@ -1737,7 +1737,7 @@ class NickHandler(AttributeHandler):
                 regex = re.compile(nick_regex, re.I + re.DOTALL + re.U)
                 self._regex_cache[nick_regex] = regex
 
-            is_match, raw_string = parse_nick_template(raw_string.strip(), regex, template)
+            is_match, raw_string = parse_nick_template(raw_string, regex, template)
             if is_match:
                 break
         return raw_string
