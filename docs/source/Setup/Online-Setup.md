@@ -1,6 +1,6 @@
 # Online Setup
 
-Evennia development can be made without any Internet connection beyond fetching updates. However, at some point, you are likely to want to make your game visible online, either as part of pening it to the public or to allow other developers or beta testers access to it.
+Evennia development can be made without any Internet connection beyond fetching updates. However, at some point, you are likely to want to make your game visible online, either as part of opening it to the public or to allow other developers or beta testers access to it.
 
 ## Connecting to Evennia over the Internet
 
