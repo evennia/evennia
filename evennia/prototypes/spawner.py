@@ -713,7 +713,7 @@ def batch_update_objects_with_prototype(
                     def _init(val, typ):
                         return init_spawn_value(
                             val,
-                            str,
+                            typ,
                             caller=caller,
                             prototype=new_prototype,
                             protfunc_raise_errors=protfunc_raise_errors,
