@@ -371,8 +371,9 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
 
             table = self.styled_table(border="header")
             for item in items:
+                singular, _ = item.get_numbered_name(1, self.caller)
                 table.add_row(
-                    f"|C{item.name}|n",
+                    f"|C{singular}|n",
                     "{}|n".format(utils.crop(raw_ansi(item.db.desc or ""), width=50) or ""),
                 )
             string = f"|wYou are carrying:\n{table}"
@@ -424,8 +425,8 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
         if not success:
             caller.msg("This can't be picked up.")
         else:
-            caller.msg(f"You pick up {obj.name}.")
-            caller.location.msg_contents(f"{caller.name} picks up {obj.name}.", exclude=caller)
+            singular, _ = obj.get_numbered_name(1, caller)
+            caller.location.msg_contents(f"$You() $conj(pick) up {singular}.", from_obj=caller)
             # calling at_get hook method
             obj.at_get(caller)
 
@@ -472,8 +473,8 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
         if not success:
             caller.msg("This couldn't be dropped.")
         else:
-            caller.msg("You drop %s." % (obj.name,))
-            caller.location.msg_contents(f"{caller.name} drops {obj.name}.", exclude=caller)
+            singular, _ = obj.get_numbered_name(1, caller)
+            caller.location.msg_contents(f"$You() $conj(drop) {singular}.", from_obj=caller)
             # Call the object script's at_drop() method.
             obj.at_drop(caller)
 
@@ -510,11 +511,13 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         target = caller.search(self.rhs)
         if not (to_give and target):
             return
+
+        singular, _ = to_give.get_numbered_name(1, caller)
         if target == caller:
-            caller.msg(f"You keep {to_give.key} to yourself.")
+            caller.msg(f"You keep {singular} to yourself.")
             return
         if not to_give.location == caller:
-            caller.msg(f"You are not holding {to_give.key}.")
+            caller.msg(f"You are not holding {singular}.")
             return
 
         # calling at_pre_give hook method
@@ -524,10 +527,10 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         # give object
         success = to_give.move_to(target, quiet=True, move_type="give")
         if not success:
-            caller.msg(f"You could not give {to_give.key}.")
+            caller.msg(f"You could not give {singular} to {target.key}.")
         else:
-            caller.msg(f"You give {to_give.key} to {target.key}.")
-            target.msg(f"{caller.key} gives you {to_give.key}.")
+            caller.msg(f"You give {singular} to {target.key}.")
+            target.msg(f"{caller.key} gives you {singular}.")
             # Call the object script's at_give() method.
             to_give.at_give(caller, target)
 

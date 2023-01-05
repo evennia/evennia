@@ -42,7 +42,7 @@ is being combined instead):
 See the [sword example](evennia.contrib.game_systems.crafting.example_recipes) for an example
 of how to design a recipe tree for crafting a sword from base elements.
 
-## Intallation and Usage
+## Installation and Usage
 
 Import the `CmdCraft` command from evennia/contrib/crafting/crafting.py  and
 add it to your Character cmdset. Reload and the `craft` command will be
@@ -115,7 +115,7 @@ class RecipeBread(CraftingRecipe):
 ## Adding new recipes
 
 A *recipe* is a class inheriting from
-`evennia.contrib.crafting.crafting.CraftingRecipe`. This class implements the
+`evennia.contrib.game_systems.crafting.CraftingRecipe`. This class implements the
 most common form of crafting - that using in-game objects. Each recipe is a
 separate class which gets initialized with the consumables/tools you provide.
 
@@ -137,7 +137,7 @@ example setting:
 ```python
 # in mygame/world/myrecipes.py
 
-from evennia.contrib.crafting.crafting import CraftingRecipe
+from evennia.contrib.game_systems.crafting import CraftingRecipe
 
 class WoodenPuppetRecipe(CraftingRecipe):
     """A puppet""""
@@ -200,7 +200,7 @@ in-game command:
 In code we would do
 
 ```python
-from evennia.contrib.crafting.crafting import craft
+from evennia.contrib.game_systems.crafting import craft
 puppet = craft(crafter, "wooden puppet", knife, wood)
 
 ```
@@ -259,7 +259,7 @@ parent class and have your recipes inherit from this.
 
 ```python
 from random import randint
-from evennia.contrib.crafting.crafting import CraftingRecipe
+from evennia.contrib.game_systems.crafting import CraftingRecipe
 
 class SkillRecipe(CraftingRecipe):
    """A recipe that considers skill"""

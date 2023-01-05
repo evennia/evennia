@@ -30,7 +30,7 @@ class Character(ComponentHolderMixin, DefaultCharacter):
 
 Components need to inherit the Component class directly and require a name.
 ```python
-from evennia.contrib.components import Component
+from evennia.contrib.base_systems.components import Component
 
 class Health(Component):
     name = "health"

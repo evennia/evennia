@@ -64,6 +64,7 @@ Start small. Evennia's [Beginner tutorial](Howtos/Beginner-Tutorial/Beginner-Tut
 ```{sidebar}
 See also our [link page](./Links.md) for some reading suggestions.
 ```
+
 While Python is considered a very easy programming language to get into, you do have a learning curve to climb if you are new to programming. The beginner-tutorial has a [basic introduction to Python](Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Python-basic-introduction.md), but if you are completely new, you should probably also sit down  with a full Python beginner's tutorial at some point. There are plenty of them on the web if you look around. 
 
 To code your dream game in Evennia you don't need to be a Python guru, but you do need to be able to read example code containing at least these basic Python features:

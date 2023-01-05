@@ -43,7 +43,7 @@ forces Evennia to use this settings file over the default one.
 
 You can also test specific things by giving their path
 
-    evennia test --settings settings.py .world.tests.YourTest
+    evennia test --settings settings.py world.tests.YourTest
 
 
 ## Writing new unit tests
@@ -106,15 +106,15 @@ To test this, run
 
 to run the entire test module
 
-    evennia test --settings setings.py .world.tests
+    evennia test --settings setings.py world.tests
 
 or a specific class:
 
-    evennia test --settings settings.py .world.tests.TestObj 
+    evennia test --settings settings.py world.tests.TestObj 
 
 You can also run a specific test: 
 
-    evennia test --settings settings.py .world.tests.TestObj.test_alternative_call
+    evennia test --settings settings.py world.tests.TestObj.test_alternative_call
 
 You might also want to read the [Python documentation for the unittest module](https://docs.python.org/library/unittest.html).
 

@@ -288,8 +288,8 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         # absolute mode - just crop or fill to width
         abs_lines = []
         for line in text.split("\n"):
-            nlen = len(line)
-            if len(line) < width:
+            nlen = m_len(line)
+            if m_len(line) < width:
                 line += sp * (width - nlen)
             else:
                 line = crop(line, width=width, suffix="")
@@ -304,7 +304,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     for ip, paragraph in enumerate(paragraphs):
         if ip > 0:
             words.append(("\n", 0))
-        words.extend((word, len(word)) for word in paragraph.split())
+        words.extend((word, m_len(word)) for word in paragraph.split())
 
     if not words:
         # Just whitespace!

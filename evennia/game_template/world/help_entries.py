@@ -31,25 +31,27 @@ HELP_ENTRY_DICTS = [
         "category": "General",
         "locks": "read:perm(Developer)",
         "text": """
-            Evennia is a MUD game server in Python.
+            Evennia is a MU-game server and framework written in Python. You can read more
+            on https://www.evennia.com.
 
             # subtopics
 
             ## Installation
 
-            You'll find installation instructions on https:evennia.com
+            You'll find installation instructions on https://www.evennia.com.
 
             ## Community
 
             There are many ways to get help and communicate with other devs!
 
-            ### IRC
+            ### Discussions
 
-            The irc channel is #evennia on irc.freenode.net
+            The Discussions forum is found at https://github.com/evennia/evennia/discussions.
 
             ### Discord
 
-            There is also a discord channel you can find from the sidebard on evennia.com.
+            There is also a discord channel for chatting - connect using the
+            following link: https://discord.gg/AJJpcRUhtF
 
         """,
     },
@@ -58,7 +60,7 @@ HELP_ENTRY_DICTS = [
         "category": "building",
         "text": """
             Evennia comes with a bunch of default building commands. You can
-            find a building tutorial in the evennia documentation.
+            find a beginner tutorial in the Evennia documentation.
 
         """,
     },

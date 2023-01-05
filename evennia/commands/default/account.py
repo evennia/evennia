@@ -22,7 +22,6 @@ import time
 from codecs import lookup as codecs_lookup
 
 from django.conf import settings
-
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import create, logger, search, utils
 
@@ -191,7 +190,8 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         elif not new_character.db.desc:
             new_character.db.desc = "This is a character."
         self.msg(
-            f"Created new character {new_character.key}. Use |wic {new_character.key}|n to enter the game as this character."
+            f"Created new character {new_character.key}. Use |wic {new_character.key}|n to enter"
+            " the game as this character."
         )
         logger.log_sec(
             f"Character Created: {new_character} (Caller: {account}, IP: {self.session.address})."
@@ -317,11 +317,13 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
             if account.db._playable_characters:
                 # look at the playable_characters list first
                 character_candidates.extend(
-                    account.search(
-                        self.args,
-                        candidates=account.db._playable_characters,
-                        search_object=True,
-                        quiet=True,
+                    utils.make_iter(
+                        account.search(
+                            self.args,
+                            candidates=account.db._playable_characters,
+                            search_object=True,
+                            quiet=True,
+                        )
                     )
                 )
 
@@ -370,12 +372,14 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
             account.puppet_object(session, new_character)
             account.db._last_puppet = new_character
             logger.log_sec(
-                f"Puppet Success: (Caller: {account}, Target: {new_character}, IP: {self.session.address})."
+                f"Puppet Success: (Caller: {account}, Target: {new_character}, IP:"
+                f" {self.session.address})."
             )
         except RuntimeError as exc:
             self.msg(f"|rYou cannot become |C{new_character.name}|n: {exc}")
             logger.log_sec(
-                f"Puppet Failed: %s (Caller: {account}, Target: {new_character}, IP: {self.session.address})."
+                f"Puppet Failed: %s (Caller: {account}, Target: {new_character}, IP:"
+                f" {self.session.address})."
             )
 
 
@@ -670,7 +674,8 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 else:
                     flags[new_name] = new_val
                     self.msg(
-                        f"Option |w{new_name}|n was changed from '|w{old_val}|n' to '|w{new_val}|n'."
+                        f"Option |w{new_name}|n was changed from '|w{old_val}|n' to"
+                        f" '|w{new_val}|n'."
                     )
                 return {new_name: new_val}
             except Exception as err:
@@ -1024,7 +1029,7 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
       style <option> = <value>
 
     Configure stylings for in-game display elements like table borders, help
-    entriest etc. Use without arguments to see all available options.
+    entries etc. Use without arguments to see all available options.
 
     """
 

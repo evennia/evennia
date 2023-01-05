@@ -627,7 +627,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                     )
                     if suggestions:
                         help_text += (
-                            "\n... But matches where found within the help "
+                            "\n... But matches were found within the help "
                             "texts of the suggestions below."
                         )
                         suggestions = [

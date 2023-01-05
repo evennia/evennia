@@ -2,6 +2,8 @@
 
 This summarizes the changes. See the [Changelog](./Changelog.md) for the full list.
 
+- Main development now on `main` branch. `master` branch remains, but will not be updated anymore.
+
 ## Minimum requirements
 
 - Python 3.10 is now required minimum. Ubuntu LTS now installs with 3.10. Evennia 1.0 is also tested with Python 3.11 - this is the recommended version for Linux/Mac. Windows users may want to stay on Python 3.10 unless they are okay with installing a C++ compiler. 
