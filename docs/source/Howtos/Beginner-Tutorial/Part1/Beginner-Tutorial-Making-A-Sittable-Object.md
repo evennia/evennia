@@ -11,7 +11,7 @@ the current chair in an attribute `is_sitting`. Other systems could check this t
 - A character should be able to stand up and move away from the chair.
 - When you sit down you should not be able to walk to another room without first standing up.
 
-## Make us not able to move while resting
+## Make us not able to move while sitting
 
 When you are sitting in a chair you can't just walk off without first standing up.
 This requires a change to our Character typeclass. Open `mygame/typeclasses/characters.py`:
@@ -24,12 +24,12 @@ This requires a change to our Character typeclass. Open `mygame/typeclasses/char
 class Character(DefaultCharacter):
     # ...
 
-    def at_pre_move(self, destination):
+    def at_pre_move(self, destination, **kwargs):
        """
        Called by self.move_to when trying to move somewhere. If this returns
        False, the move is immediately cancelled.
        """
-       if self.db.is_resting:
+       if self.db.is_sitting:
            self.msg("You need to stand up first.")
            return False
        return True
@@ -71,7 +71,7 @@ class Sittable(Object):
                 sitter.msg(f"You can't sit on {self.key} "
                         f"- {current.key} is already sitting there!")
             return
-        self.db.sitting = sitter
+        self.db.sitter = sitter
         sitter.db.is_sitting = self.obj
         sitter.msg(f"You sit on {self.key}")
 ```
@@ -164,8 +164,8 @@ class Sittable(DefaultObject):
                     f"You can't sit {adjective} {self.key} "
                     f"- {current.key} is already sitting there!")
             return
-        self.db.sitting = sitter
-        sitter.db.is_sitting = self.obj
+        self.db.sitter = sitter
+        sitter.db.is_sitting = self
         sitter.msg(f"You sit {adjective} {self.key}")
 
     def do_stand(self, stander):
@@ -313,7 +313,7 @@ class Sittable(DefaultObject):
     (docstring)
     """
     def at_object_creation(self):
-        self.cmdset.add_default(CmdSetSit)A
+        self.cmdset.add_default(CmdSetSit)
     # ... 
 ```
 
