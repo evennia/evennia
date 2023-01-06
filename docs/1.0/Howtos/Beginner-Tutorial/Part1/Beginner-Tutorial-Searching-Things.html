@@ -192,8 +192,8 @@ What is returned from the main search functions is actually a `queryset`. They c
 <p>Remember, <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> is the one calling the command. This is usually a Character, which
 inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>!</p>
 <p>This simple little Command takes its arguments and searches for a match. If it can’t find it, <code class="docutils literal notranslate"><span class="pre">result</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code>. The error has already been reported to <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> so we just abort with <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p>
-<p>You can use <code class="docutils literal notranslate"><span class="pre">.search</span></code> to find anything, not just stuff in the same room:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>volcano = self.caller.search(&quot;Vesuvio&quot;, global=True)
+<p>With the <code class="docutils literal notranslate"><span class="pre">global_search</span></code> flag, you can use <code class="docutils literal notranslate"><span class="pre">.search</span></code> to find anything, not just stuff in the same room:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>volcano = self.caller.search(&quot;Vesuvio&quot;, global_search=True)
 </pre></div>
 </div>
 <p>You can limit your matches to particular typeclasses:</p>
