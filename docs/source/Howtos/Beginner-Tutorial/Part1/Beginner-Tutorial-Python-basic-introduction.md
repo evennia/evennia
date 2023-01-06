@@ -425,7 +425,7 @@ the room it is in.
 
 On the game command-line, let's create a mirror:
 
-    > create/drop mirror:contrib.tutorial_examples.mirror.TutorialMirror
+    > create/drop mirror:contrib.tutorials.mirror.TutorialMirror
 
 ```{sidebar} Creating objects
 
