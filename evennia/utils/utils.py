@@ -448,7 +448,7 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
         iterable = tuple(str(val) for val in iterable)
 
     if endsep:
-        if endsep.startswith(sep):
+        if endsep.startswith(sep) and endsep != sep:
             # oxford comma alternative
             endsep = endsep[1:] if len_iter < 3 else endsep
         elif endsep[0] not in punctuation:
