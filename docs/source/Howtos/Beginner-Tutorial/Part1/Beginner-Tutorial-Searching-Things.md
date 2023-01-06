@@ -81,9 +81,9 @@ inherits from `DefaultObject`!
 
 This simple little Command takes its arguments and searches for a match. If it can't find it, `result` will be `None`. The error has already been reported to `self.caller` so we just abort with `return`.
 
-You can use `.search` to find anything, not just stuff in the same room:
+With the `global_search` flag, you can use `.search` to find anything, not just stuff in the same room:
 
-    volcano = self.caller.search("Vesuvio", global=True)
+    volcano = self.caller.search("Vesuvio", global_search=True)
 
 You can limit your matches to particular typeclasses: 
 
