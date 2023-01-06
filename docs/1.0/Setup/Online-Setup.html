@@ -131,20 +131,20 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="online-setup">
 <h1>Online Setup<a class="headerlink" href="#online-setup" title="Permalink to this headline">¶</a></h1>
-<p>Evennia development can be made without any Internet connection beyond fetching updates. At some point however, you are likely to want to make your game visible online, either as part opening it to the public or to allow other developers or beta testers access to it.</p>
+<p>Evennia development can be made without any Internet connection beyond fetching updates. However, at some point, you are likely to want to make your game visible online, either as part of opening it to the public or to allow other developers or beta testers access to it.</p>
 <section id="connecting-to-evennia-over-the-internet">
 <h2>Connecting to Evennia over the Internet<a class="headerlink" href="#connecting-to-evennia-over-the-internet" title="Permalink to this headline">¶</a></h2>
-<p>Accessing your Evennia server from the outside is not hard on its own. Any issues are usually due to the various security measures your computer, network or hosting service has. These will generally (and correctly) block outside access to servers on your machine unless you tell them otherwise.</p>
+<p>Accessing your Evennia server from the outside is not hard on its own. Any issues are usually due to the various security measures of your computer, network, or hosting service. These will generally (and correctly) block outside access to servers on your machine unless you tell them otherwise.</p>
 <p>We will start by showing how to host your server on your own local computer. Even if you plan to
 host your “real” game on a remote host later, setting it up locally is useful practice. We cover
 remote hosting later in this document.</p>
 <p>Out of the box, Evennia uses three ports for outward communication. If your computer has a firewall, these should be open for in/out communication (and only these, other ports used by Evennia are internal to your computer only).</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">4000</span></code>, telnet, for traditional mud clients</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">4001</span></code>, HTTP for the website)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">4001</span></code>, HTTP, for the website</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">4002</span></code>, websocket, for the web client</p></li>
 </ul>
-<p>Evennia will by default accept incoming connections on all interfaces (<code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code>) so in principle anyone knowing the ports to use and has the IP address to your machine should be able to connect to your game.</p>
+<p>Evennia will by default accept incoming connections on all interfaces (<code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code>), so in principle anyone knowing the ports to use and has the IP address to your machine should be able to connect to your game.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Closing the log view</p>
 <p>If you need to close the log-view, use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>. Use just <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--log</span></code> on its own to start tailing the logs again.</p>
@@ -163,7 +163,7 @@ remote hosting later in this document.</p>
 </div>
 <section id="settings-example">
 <h3>Settings example<a class="headerlink" href="#settings-example" title="Permalink to this headline">¶</a></h3>
-<p>You can connect Evennia to the Internet without any changes to your settings. The default settings are easy to use but are not necessarily the safest. You can customize your online presence in your <a class="reference internal" href="Settings.html#settings-file"><span class="std std-doc">settings file</span></a>. To have Evennia recognize changed port settings you have to do a full <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code> to also restart the Portal and not just the Server component.</p>
+<p>You can connect Evennia to the Internet without any changes to your settings. The default settings are easy to use but are not necessarily the safest. You can customize your online presence in your <a class="reference internal" href="Settings.html#settings-file"><span class="std std-doc">settings file</span></a>. To have Evennia recognize changed port settings, you have to do a full <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code> to also restart the Portal and not just the Server component.</p>
 <p>Below is an example of a simple set of settings, mostly using the defaults. Evennia will require access to five computer ports, of which three (only) should be open to the outside world. Below we
 continue to assume that our server address is <code class="docutils literal notranslate"><span class="pre">203.0.113.0</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
