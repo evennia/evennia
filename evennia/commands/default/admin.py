@@ -464,7 +464,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 caller.msg("You are not allowed to examine this object.")
                 return
 
-            string = f"Permissions on |{obj.key}|n: "
+            string = f"Permissions on |w{obj.key}|n: "
             if not obj.permissions.all():
                 string += "<None>"
             else:
