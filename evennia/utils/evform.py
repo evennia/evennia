@@ -61,8 +61,8 @@ Usage
 ```python
 from evennia import EvForm, EvTable
 
-# create a new form from the template
-form = EvForm("path/to/testform.py")
+# create a new form from the template - using the python path
+form = EvForm("path.to.testform")
 
 # alteratively, you can supply the template as a dict:
 
