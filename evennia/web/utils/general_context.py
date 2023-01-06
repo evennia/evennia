@@ -22,6 +22,8 @@ GAME_SLOGAN = None
 SERVER_VERSION = None
 SERVER_HOSTNAME = None
 
+REGISTER_ENABLED = None
+
 TELNET_ENABLED = None
 TELNET_PORTS = None
 TELNET_SSL_ENABLED = None
@@ -50,6 +52,7 @@ def load_game_settings():
 
     """
     global GAME_NAME, GAME_SLOGAN, SERVER_VERSION, SERVER_HOSTNAME
+    global REGISTER_ENABLED
     global TELNET_ENABLED, TELNET_PORTS
     global TELNET_SSL_ENABLED, TELNET_SSL_PORTS
     global SSH_ENABLED, SSH_PORTS
@@ -67,6 +70,8 @@ def load_game_settings():
         GAME_SLOGAN = SERVER_VERSION
     SERVER_HOSTNAME = settings.SERVER_HOSTNAME
 
+    REGISTER_ENABLED = settings.NEW_ACCOUNT_REGISTRATION_ENABLED
+    
     TELNET_ENABLED = settings.TELNET_ENABLED
     TELNET_PORTS = settings.TELNET_PORTS
     TELNET_SSL_ENABLED = settings.SSL_ENABLED
@@ -119,6 +124,7 @@ def general_context(request):
         "evennia_setupapps": GAME_SETUP,
         "evennia_connectapps": CONNECTIONS,
         "evennia_websiteapps": WEBSITE,
+        "register_enabled": REGISTER_ENABLED,
         "telnet_enabled": TELNET_ENABLED,
         "telnet_ports": TELNET_PORTS,
         "telnet_ssl_enabled": TELNET_SSL_ENABLED,
