@@ -116,7 +116,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">class</span> <span class="nc">DjangoTestAdapter</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">adapters</span><span class="o">.</span><span class="n">HTTPAdapter</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A transport adapter for `requests`, that makes requests via the</span>
 <span class="sd">        Django WSGI app, rather than making actual HTTP requests over the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -125,7 +125,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">DjangoRequestFactory</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">get_environ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Given a `requests.PreparedRequest` instance, return a WSGI environ dict.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">method</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span>
@@ -151,7 +151,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">generic</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">environ</span>
 
         <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Make an outgoing request to the Django WSGI application.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">raw_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -224,7 +224,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">defaults</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_encode_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Encode the data returning a two tuple of (bytes, content_type)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -317,7 +317,7 @@
 
 
 <span class="k">class</span> <span class="nc">ForceAuthClientHandler</span><span class="p">(</span><span class="n">ClientHandler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A patched version of ClientHandler that can enforce authentication</span>
 <span class="sd">    on the outgoing requests.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -341,13 +341,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">credentials</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets headers that will be used on every outgoing request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_credentials</span> <span class="o">=</span> <span class="n">kwargs</span>
 
     <span class="k">def</span> <span class="nf">force_authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Forcibly authenticates outgoing requests with the given</span>
 <span class="sd">        user and/or token.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -442,7 +442,7 @@
 
 
 <span class="k">class</span> <span class="nc">URLPatternsTestCase</span><span class="p">(</span><span class="n">testcases</span><span class="o">.</span><span class="n">SimpleTestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Isolate URL patterns on a per-TestCase basis. For example,</span>
 
 <span class="sd">    class ATestCase(URLPatternsTestCase):</span>

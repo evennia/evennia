@@ -222,7 +222,7 @@ convenience The below example code should be in <a class="reference external" hr
 <span class="s1">&#39;&#39;&#39;</span>
 
 <span class="k">def</span> <span class="nf">example1_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;A basic example of build instructions. Make sure to include **kwargs</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;A basic example of build instructions. Make sure to include **kwargs</span>
 <span class="sd">    in the arguments and return an instance of the room for exit generation.&#39;&#39;&#39;</span>
 
     <span class="c1"># Create a room and provide a basic description.</span>
@@ -237,7 +237,7 @@ convenience The below example code should be in <a class="reference external" hr
 
 
 <span class="k">def</span> <span class="nf">example1_build_mountains</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;A room that is a little more advanced&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;A room that is a little more advanced&#39;&#39;&#39;</span>
 
     <span class="c1"># Create the room.</span>
     <span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;mountains&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
@@ -263,7 +263,7 @@ convenience The below example code should be in <a class="reference external" hr
 
 
 <span class="k">def</span> <span class="nf">example1_build_temple</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;A unique room that does not need to be as general&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;A unique room that does not need to be as general&#39;&#39;&#39;</span>
 
     <span class="c1"># Create the room.</span>
     <span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;temple&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
@@ -325,7 +325,7 @@ convenience The below example code should be in <a class="reference external" hr
 <span class="s1">&#39;&#39;&#39;</span>
 
 <span class="k">def</span> <span class="nf">example2_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;A basic room&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;A basic room&#39;&#39;&#39;</span>
     <span class="c1"># If on anything other than the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -338,7 +338,7 @@ convenience The below example code should be in <a class="reference external" hr
     <span class="k">return</span> <span class="n">room</span>
 
 <span class="k">def</span> <span class="nf">example2_build_verticle_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Creates two exits to and from the two rooms north and south.&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Creates two exits to and from the two rooms north and south.&#39;&#39;&#39;</span>
     <span class="c1"># If on the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span>
@@ -359,7 +359,7 @@ convenience The below example code should be in <a class="reference external" hr
 
 
 <span class="k">def</span> <span class="nf">example2_build_horizontal_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Creates two exits to and from the two rooms east and west.&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Creates two exits to and from the two rooms east and west.&#39;&#39;&#39;</span>
     <span class="c1"># If on the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span>

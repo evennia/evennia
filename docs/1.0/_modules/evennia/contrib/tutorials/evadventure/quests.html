@@ -97,7 +97,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureQuest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureQuest</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This represents a single questing unit of quest.</span>
 
 <span class="sd">    Properties:</span>
@@ -174,7 +174,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="EvAdventureQuest.abandon"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.abandon">[docs]</a>    <span class="k">def</span> <span class="nf">abandon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call when quest is abandoned.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -182,7 +182,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.complete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.complete">[docs]</a>    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call this to end the quest.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -190,7 +190,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.progress"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.progress">[docs]</a>    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called whenever the environment expects a quest may need stepping. This will</span>
 <span class="sd">        determine which quest-step we are on and run `step_&lt;stepname&gt;`, which in turn will figure</span>
 <span class="sd">        out if the step is complete or not.</span>
@@ -203,7 +203,7 @@
             <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;step_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.help"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.help">[docs]</a>    <span class="k">def</span> <span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is used to get help (or a reminder) of what needs to be done to complete the current</span>
 <span class="sd">        quest-step.</span>
 
@@ -230,14 +230,14 @@
     <span class="c1"># step methods and hooks</span>
 
 <div class="viewcode-block" id="EvAdventureQuest.step_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.step_start">[docs]</a>    <span class="k">def</span> <span class="nf">step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Example step that completes immediately.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuest.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuest.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called both when completing the quest, or when it is abandoned prematurely.</span>
 <span class="sd">        Make sure to cleanup any quest-related data stored when following the quest.</span>
 
@@ -246,7 +246,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureQuestHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureQuestHandler</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This sits on the Character, as `.quests`.</span>
 
 <span class="sd">    It&#39;s initiated using a lazy property on the Character:</span>
@@ -284,7 +284,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.has"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a given quest is registered with the Character.</span>
 
 <span class="sd">        Args:</span>
@@ -298,7 +298,7 @@
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the quest stored on character, if any.</span>
 
 <span class="sd">        Args:</span>
@@ -312,7 +312,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quest_key</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new quest</span>
 
 <span class="sd">        Args:</span>
@@ -323,7 +323,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a quest. If not complete, it will be abandoned.</span>
 
 <span class="sd">        Args:</span>
@@ -337,7 +337,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.get_help"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get help text for a quest or for all quests. The help text is</span>
 <span class="sd">        a combination of the description of the quest and the help-text</span>
 <span class="sd">        of the current step.</span>
@@ -361,7 +361,7 @@
         <span class="k">return</span> <span class="n">help_texts</span></div>
 
 <div class="viewcode-block" id="EvAdventureQuestHandler.progress"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.quests.html#evennia.contrib.tutorials.evadventure.quests.EvAdventureQuestHandler.progress">[docs]</a>    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quest_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check progress of a given quest or all quests.</span>
 
 <span class="sd">        Args:</span>

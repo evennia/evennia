@@ -164,30 +164,30 @@
 <span class="c1"># Output strings</span>
 
 <span class="n">_ERROR_CMDSET_IMPORT</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;{traceback}</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;{traceback}</span>
 <span class="sd">Error loading cmdset &#39;{path}&#39;</span>
 <span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_CMDSET_KEYERROR</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;Error loading cmdset: No cmdset class &#39;{classname}&#39; in &#39;{path}&#39;.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error loading cmdset: No cmdset class &#39;{classname}&#39; in &#39;{path}&#39;.</span>
 <span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_CMDSET_SYNTAXERROR</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;{traceback}</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;{traceback}</span>
 <span class="sd">SyntaxError encountered when loading cmdset &#39;{path}&#39;.</span>
 <span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_CMDSET_EXCEPTION</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;{traceback}</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;{traceback}</span>
 <span class="sd">Compile/Run error when loading cmdset &#39;{path}&#39;.</span>
 <span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_CMDSET_FALLBACK</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Error encountered for cmdset at path &#39;{path}&#39;.</span>
 <span class="sd">Replacing with fallback &#39;{fallback_path}&#39;.</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -197,7 +197,7 @@
 
 
 <span class="k">class</span> <span class="nc">_ErrorCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a special cmdset used to report errors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -206,7 +206,7 @@
 
 
 <span class="k">class</span> <span class="nc">_EmptyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This cmdset represents an empty cmdset</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -216,7 +216,7 @@
 
 
 <div class="viewcode-block" id="import_cmdset"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.import_cmdset">[docs]</a><span class="k">def</span> <span class="nf">import_cmdset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cmdsetobj</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_logging</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function is used by the cmdsethandler to load a cmdset</span>
 <span class="sd">    instance from a python module, given a python_path. It&#39;s usually accessed</span>
 <span class="sd">    through the cmdsethandler&#39;s add() and add_default() methods.</span>
@@ -346,7 +346,7 @@
 
 
 <div class="viewcode-block" id="CmdSetHandler"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The CmdSetHandler is always stored on an object, this object is supplied</span>
 <span class="sd">    as an argument.</span>
 
@@ -358,7 +358,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CmdSetHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">init_true</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is called whenever an object is recreated.</span>
 
 <span class="sd">        Args:</span>
@@ -389,7 +389,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">init_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># is then called from the object __init__.</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display current commands</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -400,7 +400,7 @@
             <span class="c1"># We have more than one cmdset in stack; list them all</span>
             <span class="k">for</span> <span class="n">snum</span><span class="p">,</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">):</span>
                 <span class="n">mergelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">snum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">snum</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">cmdset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">snum</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">cmdset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Display the currently active cmdset, limited by self.obj&#39;s permissions</span>
         <span class="n">mergetype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -419,7 +419,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_import_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_path</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method wrapper for import_cmdset; Loads a cmdset from a</span>
 <span class="sd">        module.</span>
 
@@ -436,7 +436,7 @@
         <span class="k">return</span> <span class="n">import_cmdset</span><span class="p">(</span><span class="n">cmdset_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CmdSetHandler.update"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-adds all sets in the handler to have an updated current</span>
 
 <span class="sd">        Args:</span>
@@ -502,7 +502,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">new_current</span></div>
 
 <div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a cmdset to the handler, on top of the old ones, unless it</span>
 <span class="sd">        is set as the default one (it will then end up at the bottom of the stack)</span>
 
@@ -557,7 +557,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CmdSetHandler.add_default"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add_default">[docs]</a>    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut for adding a default cmdset.</span>
 
 <span class="sd">        Args:</span>
@@ -574,7 +574,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="n">emit_to_obj</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdSetHandler.remove"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a cmdset from the  handler.</span>
 
 <span class="sd">        Args:</span>
@@ -653,7 +653,7 @@
     <span class="n">delete</span> <span class="o">=</span> <span class="n">remove</span>
 
 <div class="viewcode-block" id="CmdSetHandler.remove_default"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.remove_default">[docs]</a>    <span class="k">def</span> <span class="nf">remove_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This explicitly deletes only the default cmdset.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -663,7 +663,7 @@
     <span class="n">delete_default</span> <span class="o">=</span> <span class="n">remove_default</span>
 
 <div class="viewcode-block" id="CmdSetHandler.get"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all cmdsets.</span>
 
 <span class="sd">        Returns:</span>
@@ -676,7 +676,7 @@
     <span class="nb">all</span> <span class="o">=</span> <span class="n">get</span>
 
 <div class="viewcode-block" id="CmdSetHandler.clear"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes all Command Sets from the handler except the default one</span>
 <span class="sd">        (use `self.remove_default` to remove that).</span>
 
@@ -689,7 +689,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CmdSetHandler.has"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">must_be_default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks so the cmdsethandler contains a given cmdset</span>
 
 <span class="sd">        Args:</span>
@@ -727,7 +727,7 @@
     <span class="n">has_cmdset</span> <span class="o">=</span> <span class="n">has</span>
 
 <div class="viewcode-block" id="CmdSetHandler.reset"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force reload of all cmdsets in handler. This should be called</span>
 <span class="sd">        after _CACHED_CMDSETS have been cleared (normally this is</span>
 <span class="sd">        handled automatically by @reload).</span>

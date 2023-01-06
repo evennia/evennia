@@ -148,7 +148,7 @@
 
 
 <span class="k">def</span> <span class="nf">call_at_first_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Receives a signal just after the object is saved.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -157,7 +157,7 @@
 
 
 <span class="k">def</span> <span class="nf">remove_attributes_on_delete</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wipe object&#39;s Attributes when it&#39;s deleted</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -177,7 +177,7 @@
 
 
 <span class="k">class</span> <span class="nc">TypeclassBase</span><span class="p">(</span><span class="n">SharedMemoryModelBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Metaclass which should be set for the root of model proxies</span>
 <span class="sd">    that don&#39;t define any new fields, like Object, Script etc. This</span>
 <span class="sd">    is the basis for the typeclassing system.</span>
@@ -185,7 +185,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We must define our Typeclasses as proxies. We also store the</span>
 <span class="sd">        path directly on the class, this is required by managers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -195,7 +195,7 @@
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;__module__&quot;</span><span class="p">],</span> <span class="n">name</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_get_dbmodel</span><span class="p">(</span><span class="n">bases</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Recursively get the dbmodel&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Recursively get the dbmodel&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
                 <span class="n">bases</span> <span class="o">=</span> <span class="p">[</span><span class="n">bases</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
@@ -256,7 +256,7 @@
 
 
 <div class="viewcode-block" id="TypedObject"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject">[docs]</a><span class="k">class</span> <span class="nc">TypedObject</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract Django model.</span>
 
 <span class="sd">    This is the basis for a typed object. It also contains all the</span>
@@ -380,7 +380,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TypedObject.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The `__init__` method of typeclasses is the core operational</span>
 <span class="sd">        code of the typeclass system, where it dynamically re-applies</span>
 <span class="sd">        a class based on the db_typeclass_path database field rather</span>
@@ -415,7 +415,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_class_from_typeclass</span><span class="p">(</span><span class="n">typeclass_path</span><span class="o">=</span><span class="n">typeclass_path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TypedObject.init_evennia_properties"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.init_evennia_properties">[docs]</a>    <span class="k">def</span> <span class="nf">init_evennia_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by creation methods; makes sure to initialize Attribute/TagProperties</span>
 <span class="sd">        by fetching them once.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -452,7 +452,7 @@
         <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">InMemoryAttributeBackend</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TypedObject.Meta"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django setup info.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -518,7 +518,7 @@
 
     <span class="c1"># @property</span>
     <span class="k">def</span> <span class="nf">__dbid_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Caches and returns the unique id of the object.</span>
 <span class="sd">        Use this instead of self.id, which is not cached.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -534,7 +534,7 @@
 
     <span class="c1"># @property</span>
     <span class="k">def</span> <span class="nf">__dbref_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the object&#39;s dbref on the form #NN.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;#</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
@@ -548,7 +548,7 @@
     <span class="n">dbref</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__dbref_get</span><span class="p">,</span> <span class="n">__dbref_set</span><span class="p">,</span> <span class="n">__dbref_del</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TypedObject.at_idmapper_flush"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.at_idmapper_flush">[docs]</a>    <span class="k">def</span> <span class="nf">at_idmapper_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called when the idmapper cache is flushed and</span>
 <span class="sd">        allows customized actions when this happens.</span>
 
@@ -587,7 +587,7 @@
     <span class="c1">#</span>
 
 <div class="viewcode-block" id="TypedObject.at_init"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this object is loaded into cache. This is  more reliable</span>
 <span class="sd">        than to override `__init__`.</span>
 
@@ -596,7 +596,7 @@
 
 <div class="viewcode-block" id="TypedObject.search"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.search">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overridden by class children. This implements a common API.</span>
 
 <span class="sd">        Args:</span>
@@ -612,7 +612,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__lower</span><span class="o">=</span><span class="n">query</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TypedObject.is_typeclass"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.is_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">is_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns true if this object has this type OR has a typeclass</span>
 <span class="sd">        which is an subclass of the given typeclass. This operates on</span>
 <span class="sd">        the actually loaded typeclass (this is important since a</span>
@@ -656,7 +656,7 @@
         <span class="n">no_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">clean_cmdsets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs an in-situ swap of the typeclass. This means</span>
 <span class="sd">        that in-game, this object will suddenly be something else.</span>
 <span class="sd">        Account will not be affected. To &#39;move&#39; an account to a different</span>
@@ -740,7 +740,7 @@
 <div class="viewcode-block" id="TypedObject.access"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if another object has permission to access this one.</span>
 
 <span class="sd">        Args:</span>
@@ -765,7 +765,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TypedObject.check_permstring"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.check_permstring">[docs]</a>    <span class="k">def</span> <span class="nf">check_permstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permstring</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This explicitly checks if we hold particular permission</span>
 <span class="sd">        without involving any locks.</span>
 
@@ -813,13 +813,13 @@
     <span class="c1">#</span>
 
     <span class="k">def</span> <span class="nf">_deleted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Scrambling method for already deleted objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="n">ObjectDoesNotExist</span><span class="p">(</span><span class="s2">&quot;This object was already deleted!&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TypedObject.delete"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cleaning up handlers on the typeclass level</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -839,7 +839,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attribute handler wrapper. Allows for the syntax</span>
 
 <span class="sd">        ```python</span>
@@ -879,7 +879,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ndb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A non-attr_obj store (ndb: NonDataBase). Everything stored</span>
 <span class="sd">        to this is guaranteed to be cleared when a server is shutdown.</span>
 <span class="sd">        Syntax is same as for the _get_db_holder() method and</span>
@@ -904,7 +904,7 @@
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot delete the ndb object!&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TypedObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
 
 <span class="sd">        Args:</span>
@@ -930,7 +930,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 
 <div class="viewcode-block" id="TypedObject.get_extra_info"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.get_extra_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Used when an object is in a list of ambiguous objects as an</span>
 <span class="sd">        additional information tag.</span>
 
@@ -954,7 +954,7 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.at_rename"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.at_rename">[docs]</a>    <span class="k">def</span> <span class="nf">at_rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldname</span><span class="p">,</span> <span class="n">newname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This Hook is called by @name on a successful rename.</span>
 
 <span class="sd">        Args:</span>
@@ -969,7 +969,7 @@
     <span class="c1">#</span>
 
 <div class="viewcode-block" id="TypedObject.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
 
 <span class="sd">        ex. Account#1 = &#39;/admin/accounts/accountdb/1/change/&#39;</span>
@@ -985,7 +985,7 @@
 
 <div class="viewcode-block" id="TypedObject.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">web_get_create_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to create new</span>
 <span class="sd">        instances of this object.</span>
 
@@ -1015,7 +1015,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to view details for</span>
 <span class="sd">        this object.</span>
 
@@ -1055,7 +1055,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_puppet_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_puppet_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_puppet_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to puppet a specific</span>
 <span class="sd">        object.</span>
 
@@ -1093,7 +1093,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to update this</span>
 <span class="sd">        object.</span>
 
@@ -1132,7 +1132,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="TypedObject.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to delete this object.</span>
 
 <span class="sd">        Returns:</span>

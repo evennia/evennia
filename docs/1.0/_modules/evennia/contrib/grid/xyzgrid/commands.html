@@ -103,7 +103,7 @@
 
 
 <div class="viewcode-block" id="CmdXYZTeleport"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport">[docs]</a><span class="k">class</span> <span class="nc">CmdXYZTeleport</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    teleport object to another location</span>
 
 <span class="sd">    Usage:</span>
@@ -188,7 +188,7 @@
 
 
 <div class="viewcode-block" id="CmdXYZOpen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen">[docs]</a><span class="k">class</span> <span class="nc">CmdXYZOpen</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdOpen</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    open a new exit from the current room</span>
 
 <span class="sd">    Usage:</span>
@@ -252,7 +252,7 @@
 
 
 <div class="viewcode-block" id="CmdGoto"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto">[docs]</a><span class="k">class</span> <span class="nc">CmdGoto</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Go to a named location in this area via the shortest path.</span>
 
 <span class="sd">    Usage:</span>
@@ -439,7 +439,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="CmdGoto.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implement command</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -506,7 +506,7 @@
 
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;There are </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">directions</span><span class="p">)</span><span class="si">}</span><span class="s2"> steps to </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">: &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">list_to_string</span><span class="p">(</span><span class="n">directions</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;|n, and finally|w&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">|n&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">list_to_string</span><span class="p">(</span><span class="n">directions</span><span class="p">,</span><span class="w"> </span><span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;|n, and finally|w&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">|n&quot;</span>
         <span class="p">)</span>
 
         <span class="c1"># create data for display and start stepping if we used goto</span>
@@ -522,7 +522,7 @@
 
 
 <div class="viewcode-block" id="CmdMap"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap">[docs]</a><span class="k">class</span> <span class="nc">CmdMap</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Show a map of an area</span>
 
 <span class="sd">    Usage:</span>
@@ -537,7 +537,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Builders)&quot;</span>
 
 <div class="viewcode-block" id="CmdMap.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
 
         <span class="n">xyzgrid</span> <span class="o">=</span> <span class="n">get_xyzgrid</span><span class="p">()</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="kc">None</span>
@@ -572,7 +572,7 @@
 
 
 <div class="viewcode-block" id="XYZGridCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet">[docs]</a><span class="k">class</span> <span class="nc">XYZGridCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cmdset for easily adding the above cmds to the character cmdset.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

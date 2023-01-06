@@ -214,7 +214,7 @@
 
 
 <span class="k">def</span> <span class="nf">_load_recipes</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delayed loading of recipe classes. This parses</span>
 <span class="sd">    `settings.CRAFT_RECIPE_MODULES`.</span>
 
@@ -233,21 +233,21 @@
 
 
 <div class="viewcode-block" id="CraftingError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingError">[docs]</a><span class="k">class</span> <span class="nc">CraftingError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Crafting error.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="CraftingValidationError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingValidationError">[docs]</a><span class="k">class</span> <span class="nc">CraftingValidationError</span><span class="p">(</span><span class="n">CraftingError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Error if crafting validation failed.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="CraftingRecipeBase"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase">[docs]</a><span class="k">class</span> <span class="nc">CraftingRecipeBase</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The recipe handles all aspects of performing a &#39;craft&#39; operation. This is</span>
 <span class="sd">    the base of the crafting system, intended to be replace if you want to</span>
 <span class="sd">    adapt it for very different functionality - see the `CraftingRecipe` child</span>
@@ -287,7 +287,7 @@
     <span class="n">allow_reuse</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="CraftingRecipeBase.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crafter</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the recipe.</span>
 
 <span class="sd">        Args:</span>
@@ -304,7 +304,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">validated_inputs</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="CraftingRecipeBase.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send message to crafter. This is a central point to override if wanting</span>
 <span class="sd">        to change crafting return style in some way.</span>
 
@@ -316,7 +316,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;crafting&quot;</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="CraftingRecipeBase.pre_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.pre_craft">[docs]</a>    <span class="k">def</span> <span class="nf">pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override.</span>
 
 <span class="sd">        This is called just before crafting operation and is normally</span>
@@ -337,7 +337,7 @@
             <span class="k">raise</span> <span class="n">CraftingValidationError</span></div>
 
 <div class="viewcode-block" id="CraftingRecipeBase.do_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.do_craft">[docs]</a>    <span class="k">def</span> <span class="nf">do_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override.</span>
 
 <span class="sd">        This performs the actual crafting. At this point the inputs are</span>
@@ -354,7 +354,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="CraftingRecipeBase.post_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.post_craft">[docs]</a>    <span class="k">def</span> <span class="nf">post_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crafting_result</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override.</span>
 
 <span class="sd">        This is called just after crafting has finished. A common use of this</span>
@@ -371,7 +371,7 @@
         <span class="k">return</span> <span class="n">crafting_result</span></div>
 
 <div class="viewcode-block" id="CraftingRecipeBase.craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.craft">[docs]</a>    <span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main crafting call method. Call this to produce a result and make</span>
 <span class="sd">        sure all hooks run correctly.</span>
 
@@ -425,7 +425,7 @@
 
 
 <div class="viewcode-block" id="NonExistentRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe">[docs]</a><span class="k">class</span> <span class="nc">NonExistentRecipe</span><span class="p">(</span><span class="n">CraftingRecipeBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A recipe that does not exist and never produces anything.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A recipe that does not exist and never produces anything.&quot;&quot;&quot;</span>
 
     <span class="n">allow_craft</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">allow_reuse</span> <span class="o">=</span> <span class="kc">True</span>
@@ -441,7 +441,7 @@
 
 
 <div class="viewcode-block" id="CraftingRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe">[docs]</a><span class="k">class</span> <span class="nc">CraftingRecipe</span><span class="p">(</span><span class="n">CraftingRecipeBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The CraftRecipe implements the most common form of crafting: Combining (and</span>
 <span class="sd">    consuming) inputs to produce a new result. This type of recipe only works</span>
 <span class="sd">    with typeclassed entities as inputs and outputs, since it&#39;s based on Tags</span>
@@ -640,7 +640,7 @@
     <span class="n">success_message</span> <span class="o">=</span> <span class="s2">&quot;You successfully craft </span><span class="si">{outputs}</span><span class="s2">!&quot;</span>
 
 <div class="viewcode-block" id="CraftingRecipe.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crafter</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            crafter (Object): The one doing the crafting.</span>
 <span class="sd">            *inputs (Object): The ingredients (+tools) of the recipe to use. The</span>
@@ -729,7 +729,7 @@
 
 <div class="viewcode-block" id="CraftingRecipe.seed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.seed">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tool_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">consumable_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a helper class-method for easy testing and application of this</span>
 <span class="sd">        recipe. When called, it will create simple dummy ingredients with names</span>
 <span class="sd">        and tags needed by this recipe.</span>
@@ -798,7 +798,7 @@
         <span class="k">return</span> <span class="n">tools</span><span class="p">,</span> <span class="n">consumables</span></div>
 
 <div class="viewcode-block" id="CraftingRecipe.pre_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.pre_craft">[docs]</a>    <span class="k">def</span> <span class="nf">pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do pre-craft checks, including input validation.</span>
 
 <span class="sd">        Check so the given inputs are what is needed. This operates on</span>
@@ -826,7 +826,7 @@
             <span class="n">error_order_message</span><span class="p">,</span>
             <span class="n">error_excess_message</span><span class="p">,</span>
         <span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Compare tagmap (inputs) to taglist (required)&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Compare tagmap (inputs) to taglist (required)&quot;&quot;&quot;</span>
             <span class="n">valids</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">itag</span><span class="p">,</span> <span class="n">tagkey</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">taglist</span><span class="p">):</span>
                 <span class="n">found_obj</span> <span class="o">=</span> <span class="kc">None</span>
@@ -927,7 +927,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">validated_consumables</span> <span class="o">=</span> <span class="n">consumables</span></div>
 
 <div class="viewcode-block" id="CraftingRecipe.do_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.do_craft">[docs]</a>    <span class="k">def</span> <span class="nf">do_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override. This will not be called if validation in `pre_craft`</span>
 <span class="sd">        fails.</span>
 
@@ -948,7 +948,7 @@
         <span class="k">return</span> <span class="n">spawn</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">output_prototypes</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CraftingRecipe.post_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.post_craft">[docs]</a>    <span class="k">def</span> <span class="nf">post_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">craft_result</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override.</span>
 <span class="sd">        This is called just after crafting has finished. A common use of</span>
 <span class="sd">        this method is to delete the inputs.</span>
@@ -982,7 +982,7 @@
 
 
 <div class="viewcode-block" id="craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.craft">[docs]</a><span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Access function. Craft a given recipe from a source recipe module. A</span>
 <span class="sd">    recipe module is a Python module containing recipe classes. Note that this</span>
 <span class="sd">    requires `settings.CRAFT_RECIPE_MODULES` to be added to a list of one or</span>
@@ -1041,7 +1041,7 @@
 
 
 <div class="viewcode-block" id="CraftingCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingCmdSet">[docs]</a><span class="k">class</span> <span class="nc">CraftingCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Store crafting command.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1052,7 +1052,7 @@
 
 
 <div class="viewcode-block" id="CmdCraft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft">[docs]</a><span class="k">class</span> <span class="nc">CmdCraft</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Craft an item using ingredients and tools</span>
 
 <span class="sd">    Usage:</span>
@@ -1076,7 +1076,7 @@
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
 
 <div class="viewcode-block" id="CmdCraft.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle parsing of:</span>
 <span class="sd">        ::</span>
 
@@ -1107,7 +1107,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="CmdCraft.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform crafting.</span>
 
 <span class="sd">        Will check the `craft` locktype. If a consumable/ingredient does not pass</span>

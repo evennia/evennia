@@ -127,7 +127,7 @@
 
 
 <div class="viewcode-block" id="SimpleDoor"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor">[docs]</a><span class="k">class</span> <span class="nc">SimpleDoor</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A two-way exit &quot;door&quot; with some methods for affecting both &quot;sides&quot;</span>
 <span class="sd">    of the door at the same time. For example, set a lock on either of the two</span>
 <span class="sd">    sides using `exitname.setlock(&quot;traverse:false())`</span>
@@ -135,14 +135,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SimpleDoor.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called the very first time the door is created.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SimpleDoor.setlock"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.setlock">[docs]</a>    <span class="k">def</span> <span class="nf">setlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets identical locks on both sides of the door.</span>
 
 <span class="sd">        Args:</span>
@@ -153,7 +153,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimpleDoor.setdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.setdesc">[docs]</a>    <span class="k">def</span> <span class="nf">setdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets identical descs on both sides of the door.</span>
 
 <span class="sd">        Args:</span>
@@ -164,7 +164,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span></div>
 
 <div class="viewcode-block" id="SimpleDoor.delete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deletes both sides of the door.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -175,7 +175,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SimpleDoor.at_failed_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.at_failed_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when door traverse: lock fails.</span>
 
 <span class="sd">        Args:</span>
@@ -191,7 +191,7 @@
     <span class="c1"># overloading parts of the default CmdOpen command to support doors.</span>
 
 <div class="viewcode-block" id="CmdOpen.create_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpen.create_exit">[docs]</a>    <span class="k">def</span> <span class="nf">create_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">exit_aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simple wrapper for the default CmdOpen.create_exit</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># create a new exit as normal</span>
@@ -224,7 +224,7 @@
 
 
 <div class="viewcode-block" id="CmdOpenCloseDoor"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor">[docs]</a><span class="k">class</span> <span class="nc">CmdOpenCloseDoor</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Open and close a door</span>
 
 <span class="sd">    Usage:</span>

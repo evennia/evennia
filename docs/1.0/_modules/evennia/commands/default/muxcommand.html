@@ -88,7 +88,7 @@
 
 
 <div class="viewcode-block" id="MuxCommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand">[docs]</a><span class="k">class</span> <span class="nc">MuxCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This sets up the basis for a MUX command. The idea</span>
 <span class="sd">    is that most other Mux-related commands should just</span>
 <span class="sd">    inherit from this and don&#39;t have to implement much</span>
@@ -101,7 +101,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MuxCommand.has_perm"><a class="viewcode-back" href="../../../../api/evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand.has_perm">[docs]</a>    <span class="k">def</span> <span class="nf">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcobj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called by the cmdhandler to determine</span>
 <span class="sd">        if srcobj is allowed to execute this command.</span>
 <span class="sd">        We just show it here for completeness - we</span>
@@ -110,20 +110,20 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">srcobj</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MuxCommand.at_pre_cmd"><a class="viewcode-back" href="../../../../api/evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand.at_pre_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called before self.parse() on all commands</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="MuxCommand.at_post_cmd"><a class="viewcode-back" href="../../../../api/evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand.at_post_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called after the command has finished executing</span>
 <span class="sd">        (after self.func()).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="MuxCommand.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is called by the cmdhandler once the command name</span>
 <span class="sd">        has been identified. It creates a new set of member variables</span>
 <span class="sd">        that can be later accessed from self.func() (see below)</span>
@@ -280,7 +280,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="MuxCommand.get_command_info"><a class="viewcode-back" href="../../../../api/evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand.get_command_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_command_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update of parent class&#39;s get_command_info() for MuxCommand.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">variables</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -288,7 +288,7 @@
         <span class="p">)</span>
         <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Command </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no defined `func()` - showing on-command variables: No child func() defined for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> - available variables:</span>
-<span class="si">{</span><span class="n">variables</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="n">variables</span><span class="si">}</span>
 <span class="s2">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="c1"># a simple test command to show the available properties</span>
@@ -321,7 +321,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MuxCommand.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the hook function that actually does all the work. It is called</span>
 <span class="sd">         by the cmdhandler right after self.parser() finishes, and so has access</span>
 <span class="sd">         to all the variables defined therein.</span>
@@ -330,7 +330,7 @@
 
 
 <div class="viewcode-block" id="MuxAccountCommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxAccountCommand">[docs]</a><span class="k">class</span> <span class="nc">MuxAccountCommand</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an on-Account version of the MuxCommand. Since these commands sit</span>
 <span class="sd">    on Accounts rather than on Characters/Objects, we need to check</span>
 <span class="sd">    this in the parser.</span>

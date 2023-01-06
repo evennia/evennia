@@ -104,7 +104,7 @@
 
 
 <span class="n">LIMBO_DESC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need</span>
 <span class="sd">help, want to contribute, report issues or just join the community.</span>
 
@@ -125,7 +125,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_superuser_account</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the superuser (created at the command line) and don&#39;t take no for an answer.</span>
 
 <span class="sd">    Returns:</span>
@@ -143,7 +143,7 @@
 
 
 <div class="viewcode-block" id="create_objects"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.create_objects">[docs]</a><span class="k">def</span> <span class="nf">create_objects</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates the #1 account and Limbo room.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -218,7 +218,7 @@
 
 
 <div class="viewcode-block" id="at_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.at_initial_setup">[docs]</a><span class="k">def</span> <span class="nf">at_initial_setup</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom hook for users to overload some or all parts of the initial</span>
 <span class="sd">    setup. Called very last in the sequence. It tries to import and</span>
 <span class="sd">    srun a module settings.AT_INITIAL_SETUP_HOOK_MODULE and will fail</span>
@@ -238,7 +238,7 @@
 
 
 <div class="viewcode-block" id="collectstatic"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.collectstatic">[docs]</a><span class="k">def</span> <span class="nf">collectstatic</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run collectstatic to make sure all web assets are loaded.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -249,7 +249,7 @@
 
 
 <div class="viewcode-block" id="reset_server"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.reset_server">[docs]</a><span class="k">def</span> <span class="nf">reset_server</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    We end the initialization by resetting the server. This makes sure</span>
 <span class="sd">    the first login is the same as all the following ones,</span>
 <span class="sd">    particularly it cleans all caches for the special objects.  It</span>
@@ -264,7 +264,7 @@
 
 
 <div class="viewcode-block" id="handle_setup"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.handle_setup">[docs]</a><span class="k">def</span> <span class="nf">handle_setup</span><span class="p">(</span><span class="n">last_step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main logic for the module. It allows for restarting the</span>
 <span class="sd">    initialization at any point if one of the modules should crash.</span>
 

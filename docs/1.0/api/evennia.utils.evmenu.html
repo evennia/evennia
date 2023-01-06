@@ -219,7 +219,7 @@ its number 1..N.</p>
 <span class="s1">        This is node 2. It only allows you to go back</span>
 <span class="s1">        to the original node1. This extra indent will</span>
 <span class="s1">        be stripped. We don&#39;t include a help text but</span>
-<span class="s1">        here are the variables passed to us: </span><span class="si">{}</span><span class="s1"></span>
+<span class="s1">        here are the variables passed to us: </span><span class="si">{}</span>
 <span class="s1">        &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node1&quot;</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
@@ -746,7 +746,7 @@ given, the decorated node must itself provide a way to continue from the node!</
 </dl>
 <p class="rubric">Example</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">available_choices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This will be called by all auto-generated options except any &#39;extra_options&#39;</span>
 <span class="sd">    you return from the node (those you need to handle normally).</span>
 
@@ -930,7 +930,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['yes', 'y', 'no', 'n', 'a', 'abort', '__nomatch_command']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['abort', '__nomatch_command', 'no', 'a', 'y', 'yes', 'n']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -956,7 +956,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'yes y no n a abort __nomatch_command', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' yes y no n a abort __nomatch_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'abort __nomatch_command no a y yes n', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' abort __nomatch_command no a y yes n', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -117,7 +117,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">HelpCategory</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mock &#39;help entry&#39; to search categories with the same code.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -140,7 +140,7 @@
 
 
 <div class="viewcode-block" id="CmdHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdHelp</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get help.</span>
 
 <span class="sd">    Usage:</span>
@@ -186,7 +186,7 @@
     <span class="n">clickable_topics</span> <span class="o">=</span> <span class="n">HELP_CLICKABLE_TOPICS</span>
 
 <div class="viewcode-block" id="CmdHelp.msg_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.msg_help">[docs]</a>    <span class="k">def</span> <span class="nf">msg_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        messages text to the caller, adding an extra oob argument to indicate</span>
 <span class="sd">        that this is a help command result and could be rendered in a separate</span>
 <span class="sd">        help window</span>
@@ -220,7 +220,7 @@
         <span class="n">subtopics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">click_topics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This visually formats the help entry.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This visually formats the help entry.</span>
 <span class="sd">        This method can be overridden to customize the way a help</span>
 <span class="sd">        entry is displayed.</span>
 
@@ -291,7 +291,7 @@
 <div class="viewcode-block" id="CmdHelp.format_help_index"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.format_help_index">[docs]</a>    <span class="k">def</span> <span class="nf">format_help_index</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cmd_help_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_help_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title_lone_category</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">click_topics</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Output a category-ordered g for displaying the main help, grouped by</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Output a category-ordered g for displaying the main help, grouped by</span>
 <span class="sd">        category.</span>
 
 <span class="sd">        Args:</span>
@@ -406,7 +406,7 @@
         <span class="k">return</span> <span class="n">help_index</span></div>
 
 <div class="viewcode-block" id="CmdHelp.can_read_topic"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.can_read_topic">[docs]</a>    <span class="k">def</span> <span class="nf">can_read_topic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_or_topic</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method. If this return True, the given help topic</span>
 <span class="sd">        be viewable in the help listing. Note that even if this returns False,</span>
 <span class="sd">        the entry will still be visible in the help index unless `should_list_topic`</span>
@@ -430,7 +430,7 @@
             <span class="k">return</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdHelp.can_list_topic"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.can_list_topic">[docs]</a>    <span class="k">def</span> <span class="nf">can_list_topic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_or_topic</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Should the specified command appear in the help table?</span>
 
 <span class="sd">        This method only checks whether a specified command should appear in the table of</span>
@@ -470,7 +470,7 @@
             <span class="k">return</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdHelp.collect_topics"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.collect_topics">[docs]</a>    <span class="k">def</span> <span class="nf">collect_topics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collect help topics from all sources (cmd/db/file).</span>
 
 <span class="sd">        Args:</span>
@@ -535,7 +535,7 @@
         <span class="k">return</span> <span class="n">cmd_help_topics</span><span class="p">,</span> <span class="n">db_help_topics</span><span class="p">,</span> <span class="n">file_help_topics</span></div>
 
 <div class="viewcode-block" id="CmdHelp.do_search"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.do_search">[docs]</a>    <span class="k">def</span> <span class="nf">do_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">search_fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a help-query search, default using Lunr search engine.</span>
 
 <span class="sd">        Args:</span>
@@ -571,7 +571,7 @@
         <span class="k">return</span> <span class="n">match</span><span class="p">,</span> <span class="n">suggestions</span></div>
 
 <div class="viewcode-block" id="CmdHelp.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        input is a string containing the command or topic to match.</span>
 
 <span class="sd">        The allowed syntax is</span>
@@ -596,7 +596,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">subtopics</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="CmdHelp.strip_cmd_prefix"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.strip_cmd_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">strip_cmd_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">all_keys</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Conditional strip of a command prefix, such as @ in @desc. By default</span>
 <span class="sd">        this will be hidden unless there is a duplicate without the prefix</span>
 <span class="sd">        in the full command set (such as @open and open).</span>
@@ -616,7 +616,7 @@
         <span class="k">return</span> <span class="n">key</span></div>
 
 <div class="viewcode-block" id="CmdHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the dynamic help entry creator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -849,7 +849,7 @@
 
 
 <div class="viewcode-block" id="CmdSetHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdSetHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHelp</span><span class="p">(</span><span class="n">CmdHelp</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Edit the help database.</span>
 
 <span class="sd">    Usage:</span>
@@ -919,11 +919,11 @@
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="CmdSetHelp.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdSetHelp.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;We want to use the default parser rather than the CmdHelp.parse&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;We want to use the default parser rather than the CmdHelp.parse&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">COMMAND_DEFAULT_CLASS</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdSetHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdSetHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement the function&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement the function&quot;&quot;&quot;</span>
 
         <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
         <span class="n">lhslist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhslist</span>

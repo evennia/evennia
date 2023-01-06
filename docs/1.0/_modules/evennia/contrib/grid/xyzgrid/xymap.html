@@ -211,7 +211,7 @@
 
 
 <div class="viewcode-block" id="XYMap"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap">[docs]</a><span class="k">class</span> <span class="nc">XYMap</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This represents a single map of interconnected nodes/rooms, parsed from a ASCII map</span>
 <span class="sd">    representation.</span>
 
@@ -257,7 +257,7 @@
     <span class="n">legend_key_exceptions</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
 
 <div class="viewcode-block" id="XYMap.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_module_or_dict</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="n">xyzgrid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the map parser by feeding it the map.</span>
 
 <span class="sd">        Args:</span>
@@ -332,7 +332,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the string representation of the map.</span>
 <span class="sd">        Since the y-axes origo is at the bottom, we must flip the</span>
 <span class="sd">        y-axis before printing (since printing is always top-to-bottom).</span>
@@ -344,7 +344,7 @@
         <span class="n">nnodes</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="p">:</span>
             <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;XYMap(Z=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_X</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_Y</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> nodes&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;XYMap(Z=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_X</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_Y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> nodes&gt;&quot;</span>
 
 <div class="viewcode-block" id="XYMap.log"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyzgrid</span><span class="p">:</span>
@@ -353,7 +353,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="XYMap.reload"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_module_or_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        (Re)Load a map.</span>
 
 <span class="sd">        Args:</span>
@@ -450,7 +450,7 @@
             <span class="n">node_or_link_class</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">proto</span></div>
 
 <div class="viewcode-block" id="XYMap.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parses the numerical grid from the string. The first pass means parsing out</span>
 <span class="sd">        all nodes. The linking-together of nodes is not happening until the second pass</span>
 <span class="sd">        (the reason for this is that maps can also link to other maps, so all maps need</span>
@@ -534,7 +534,7 @@
                 <span class="n">mapnode_or_link_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">mapnode_or_link_class</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Symbol &#39;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">&#39; on XY=(</span><span class="si">{</span><span class="n">ix</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">iy</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">) &quot;</span> <span class="s2">&quot;is not found in LEGEND.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Symbol &#39;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">&#39; on XY=(</span><span class="si">{</span><span class="n">ix</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">iy</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">) &quot;</span> <span class="s2">&quot;is not found in LEGEND.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mapnode_or_link_class</span><span class="p">,</span> <span class="s2">&quot;node_index&quot;</span><span class="p">):</span>
                     <span class="c1"># A mapnode. Mapnodes can only be placed on even grid positions, where</span>
@@ -542,7 +542,7 @@
 
                     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">even_iy</span> <span class="ow">and</span> <span class="n">ix</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
                         <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Symbol &#39;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">&#39; on XY=(</span><span class="si">{</span><span class="n">ix</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">iy</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">) marks a &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;Symbol &#39;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">&#39; on XY=(</span><span class="si">{</span><span class="n">ix</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">iy</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">) marks a &quot;</span>
                             <span class="s2">&quot;MapNode but is located between integer (X,Y) positions (only &quot;</span>
                             <span class="s2">&quot;Links can be placed between coordinates)!&quot;</span>
                         <span class="p">)</span>
@@ -618,7 +618,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">display_map</span> <span class="o">=</span> <span class="n">display_map</span></div>
 
     <span class="k">def</span> <span class="nf">_get_topology_around_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all links and nodes up to a certain distance from an XY coordinate.</span>
 
 <span class="sd">        Args:</span>
@@ -674,7 +674,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">points</span><span class="p">)),</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span>
 
 <div class="viewcode-block" id="XYMap.calculate_path_matrix"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.calculate_path_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_path_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solve the pathfinding problem using Dijkstra&#39;s algorithm. This will try to</span>
 <span class="sd">        load the solution from disk if possible.</span>
 
@@ -727,7 +727,7 @@
                 <span class="p">)</span></div>
 
 <div class="viewcode-block" id="XYMap.spawn_nodes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the nodes of this XYMap into actual in-world rooms by spawning their</span>
 <span class="sd">        related prototypes in the correct coordinate positions. This must be done *first*</span>
 <span class="sd">        before spawning links (with `spawn_links` because exits require the target destination</span>
@@ -771,7 +771,7 @@
         <span class="k">return</span> <span class="n">spawned</span></div>
 
 <div class="viewcode-block" id="XYMap.spawn_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_links">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert links of this XYMap into actual in-game exits by spawning their related</span>
 <span class="sd">        prototypes. It&#39;s possible to only spawn a specic exit by specifying the node and</span>
 
@@ -799,7 +799,7 @@
                 <span class="n">node</span><span class="o">.</span><span class="n">spawn_links</span><span class="p">(</span><span class="n">directions</span><span class="o">=</span><span class="n">directions</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="XYMap.get_node_from_coord"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_node_from_coord">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_from_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a MapNode from a coordinate.</span>
 
 <span class="sd">        Args:</span>
@@ -829,7 +829,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="XYMap.get_components_with_symbol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_components_with_symbol">[docs]</a>    <span class="k">def</span> <span class="nf">get_components_with_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find all map components (nodes, links) with a given symbol in this map.</span>
 
 <span class="sd">        Args:</span>
@@ -842,7 +842,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="p">[])</span></div>
 
 <div class="viewcode-block" id="XYMap.get_shortest_path"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_shortest_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_shortest_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_xy</span><span class="p">,</span> <span class="n">end_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the shortest route between two points on the grid.</span>
 
 <span class="sd">        Args:</span>
@@ -911,7 +911,7 @@
         <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">return_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a part of the grid centered on a specific point and extended a certain number</span>
 <span class="sd">        of nodes or grid points in every direction.</span>
 

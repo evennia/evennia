@@ -106,7 +106,7 @@
 
 
 <div class="viewcode-block" id="XYZManager"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager">[docs]</a><span class="k">class</span> <span class="nc">XYZManager</span><span class="p">(</span><span class="n">ObjectManager</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is accessed as `.objects` on the coordinate-aware typeclasses (`XYZRoom`, `XYZExit`). It</span>
 <span class="sd">    has all the normal Object/Room manager methods (filter/get etc) but also special helpers for</span>
 <span class="sd">    efficiently querying the room in the database based on XY coordinates.</span>
@@ -114,7 +114,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="XYZManager.filter_xyz"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager.filter_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">filter_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter queryset based on XYZ position on the grid. The Z-position is the name of the XYMap</span>
 <span class="sd">        Set a coordinate to `&#39;*&#39;` to act as a wildcard (setting all coords to `*` will thus find</span>
 <span class="sd">        *all* XYZ rooms). This will also find children of XYZRooms on the given coordinates.</span>
@@ -153,7 +153,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="XYZManager.get_xyz"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager.get_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">get_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Always return a single matched entity directly. This accepts no `*`-wildcards.</span>
 <span class="sd">        This will also find children of XYZRooms on the given coordinates.</span>
 
@@ -190,14 +190,14 @@
 
 
 <div class="viewcode-block" id="XYZExitManager"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager">[docs]</a><span class="k">class</span> <span class="nc">XYZExitManager</span><span class="p">(</span><span class="n">XYZManager</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by Exits.</span>
 <span class="sd">    Manager that also allows searching for destinations based on XY coordinates.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="XYZExitManager.filter_xyz_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager.filter_xyz_exit">[docs]</a>    <span class="k">def</span> <span class="nf">filter_xyz_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Used by exits (objects with a source and -destination property).</span>
 <span class="sd">        Find all exits out of a source or to a particular destination. This will also find</span>
 <span class="sd">        children of XYZExit on the given coords..</span>
@@ -262,7 +262,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="XYZExitManager.get_xyz_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager.get_xyz_exit">[docs]</a>    <span class="k">def</span> <span class="nf">get_xyz_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Used by exits (objects with a source and -destination property). Get a single</span>
 <span class="sd">        exit. All source/destination coordinates (as well as the map&#39;s name) are required.</span>
 <span class="sd">        This will also find children of XYZExits on the given coords.</span>
@@ -315,7 +315,7 @@
 
 
 <div class="viewcode-block" id="XYZRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom">[docs]</a><span class="k">class</span> <span class="nc">XYZRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A game location aware of its XYZ-position.</span>
 
 <span class="sd">    Special properties:</span>
@@ -392,7 +392,7 @@
 
 <div class="viewcode-block" id="XYZRoom.create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creation method aware of XYZ coordinates.</span>
 
 <span class="sd">        Args:</span>
@@ -439,7 +439,7 @@
         <span class="k">return</span> <span class="n">DefaultRoom</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="n">account</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="XYZRoom.get_display_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shows both the #dbref and the xyz coord to staff.</span>
 
 <span class="sd">        Args:</span>
@@ -458,7 +458,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 
 <div class="viewcode-block" id="XYZRoom.return_appearance"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the map in addition to the room description</span>
 
 <span class="sd">        Args:</span>
@@ -540,7 +540,10 @@
             <span class="p">)</span>
 
             <span class="n">sessions</span> <span class="o">=</span> <span class="n">looker</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-            <span class="n">client_width</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_client_size</span><span class="p">()</span> <span class="k">if</span> <span class="n">sessions</span> <span class="k">else</span> <span class="n">CLIENT_DEFAULT_WIDTH</span>
+            <span class="k">if</span> <span class="n">sessions</span><span class="p">:</span>
+                <span class="n">client_width</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_client_size</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">client_width</span> <span class="o">=</span> <span class="n">CLIENT_DEFAULT_WIDTH</span>
 
             <span class="n">map_width</span> <span class="o">=</span> <span class="n">xymap</span><span class="o">.</span><span class="n">max_x</span>
 
@@ -582,7 +585,7 @@
 
 
 <div class="viewcode-block" id="XYZExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit">[docs]</a><span class="k">class</span> <span class="nc">XYZExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An exit that is aware of the XYZ coordinate system.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -641,7 +644,7 @@
         <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creation method aware of coordinates.</span>
 
 <span class="sd">        Args:</span>

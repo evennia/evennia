@@ -128,7 +128,7 @@
 
 
 <div class="viewcode-block" id="AuditedServerSession"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.server.html#evennia.contrib.utils.auditing.server.AuditedServerSession">[docs]</a><span class="k">class</span> <span class="nc">AuditedServerSession</span><span class="p">(</span><span class="n">ServerSession</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This particular implementation parses all server inputs and/or outputs and</span>
 <span class="sd">    passes a dict containing the parsed metadata to a callback method of your</span>
 <span class="sd">    creation. This is useful for recording player activity where necessary for</span>
@@ -144,7 +144,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AuditedServerSession.audit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.server.html#evennia.contrib.utils.auditing.server.AuditedServerSession.audit">[docs]</a>    <span class="k">def</span> <span class="nf">audit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extracts messages and system data from a Session object upon message</span>
 <span class="sd">        send or receive.</span>
 
@@ -246,7 +246,7 @@
         <span class="k">return</span> <span class="n">log</span></div>
 
 <div class="viewcode-block" id="AuditedServerSession.mask"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.server.html#evennia.contrib.utils.auditing.server.AuditedServerSession.mask">[docs]</a>    <span class="k">def</span> <span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Masks potentially sensitive user information within messages before</span>
 <span class="sd">        writing to log. Recording cleartext password attempts is bad policy.</span>
 
@@ -291,7 +291,7 @@
         <span class="k">return</span> <span class="n">_msg</span></div>
 
 <div class="viewcode-block" id="AuditedServerSession.data_out"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.server.html#evennia.contrib.utils.auditing.server.AuditedServerSession.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic hook for sending data out through the protocol.</span>
 
 <span class="sd">        Keyword Args:</span>
@@ -309,7 +309,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AuditedServerSession.data_in"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.server.html#evennia.contrib.utils.auditing.server.AuditedServerSession.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for protocols to send incoming data to the engine.</span>
 
 <span class="sd">        Keyword Args:</span>

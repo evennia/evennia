@@ -85,7 +85,7 @@
 
 
 <div class="viewcode-block" id="Throttle"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle">[docs]</a><span class="k">class</span> <span class="nc">Throttle</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Keeps a running count of failed actions per IP address.</span>
 
 <span class="sd">    Available methods indicate whether or not the number of failures exceeds a</span>
@@ -100,7 +100,7 @@
     <span class="n">error_msg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Too many failed attempts; you must wait a few minutes before trying again.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Throttle.__init__"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows setting of throttle parameters.</span>
 
 <span class="sd">        Keyword Args:</span>
@@ -125,7 +125,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;timeout&quot;</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Throttle.get_cache_key"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.get_cache_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_cache_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a &#39;prefixed&#39; key containing arbitrary terms to prevent key</span>
 <span class="sd">        collisions in the same namespace.</span>
 
@@ -133,7 +133,7 @@
         <span class="k">return</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Throttle.touch"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.touch">[docs]</a>    <span class="k">def</span> <span class="nf">touch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Refreshes the timeout on a given key and ensures it is recorded in the</span>
 <span class="sd">        key register.</span>
 
@@ -146,7 +146,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">record_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Throttle.get"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function that returns the storage table, or part of.</span>
 
 <span class="sd">        Args:</span>
@@ -175,7 +175,7 @@
             <span class="k">return</span> <span class="n">data</span></div>
 
 <div class="viewcode-block" id="Throttle.update"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">failmsg</span><span class="o">=</span><span class="s2">&quot;Exceeded threshold.&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store the time of the latest failure.</span>
 
 <span class="sd">        Args:</span>
@@ -212,7 +212,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">record_ip</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Throttle.remove"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clears data stored for an IP from the throttle.</span>
 
 <span class="sd">        Args:</span>
@@ -231,7 +231,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Throttle.record_ip"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.record_ip">[docs]</a>    <span class="k">def</span> <span class="nf">record_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tracks keys as they are added to the cache (since there is no way to</span>
 <span class="sd">        get a list of keys after-the-fact).</span>
 
@@ -247,7 +247,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Throttle.unrecord_ip"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.unrecord_ip">[docs]</a>    <span class="k">def</span> <span class="nf">unrecord_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Forces removal of a key from the key registry.</span>
 
 <span class="sd">        Args:</span>
@@ -264,7 +264,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Throttle.check"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will check the session&#39;s address against the</span>
 <span class="sd">        storage dictionary to check they haven&#39;t spammed too many</span>
 <span class="sd">        fails recently.</span>

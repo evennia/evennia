@@ -160,7 +160,7 @@
 
 
 <span class="k">class</span> <span class="nc">ForwardManyToOneDescriptor</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accessor to the related object on the forward side of a many-to-one or</span>
 <span class="sd">    one-to-one (via ForwardOneToOneDescriptor subclass) relation.</span>
 
@@ -246,7 +246,7 @@
         <span class="k">return</span> <span class="n">qs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">get_reverse_related_filter</span><span class="p">(</span><span class="n">instance</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the related instance through the forward relation.</span>
 
 <span class="sd">        With the example above, when getting ``child.parent``:</span>
@@ -297,7 +297,7 @@
             <span class="k">return</span> <span class="n">rel_obj</span>
 
     <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the related instance through the forward relation.</span>
 
 <span class="sd">        With the example above, when setting ``child.parent = parent``:</span>
@@ -373,7 +373,7 @@
             <span class="n">remote_field</span><span class="o">.</span><span class="n">set_cached_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pickling should return the instance attached by self.field on the</span>
 <span class="sd">        model, not a new copy of that descriptor. Use getattr() to retrieve</span>
 <span class="sd">        the instance directly from the model.</span>
@@ -382,7 +382,7 @@
 
 
 <span class="k">class</span> <span class="nc">ForwardOneToOneDescriptor</span><span class="p">(</span><span class="n">ForwardManyToOneDescriptor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accessor to the related object on the forward side of a one-to-one relation.</span>
 
 <span class="sd">    In the example::</span>
@@ -433,7 +433,7 @@
 
 
 <span class="k">class</span> <span class="nc">ReverseOneToOneDescriptor</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accessor to the related object on the reverse side of a one-to-one</span>
 <span class="sd">    relation.</span>
 
@@ -499,7 +499,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the related instance through the reverse relation.</span>
 
 <span class="sd">        With the example above, when getting ``place.restaurant``:</span>
@@ -544,7 +544,7 @@
             <span class="k">return</span> <span class="n">rel_obj</span>
 
     <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the related instance through the reverse relation.</span>
 
 <span class="sd">        With the example above, when setting ``place.restaurant = restaurant``:</span>
@@ -620,7 +620,7 @@
 
 
 <span class="k">class</span> <span class="nc">ReverseManyToOneDescriptor</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accessor to the related objects manager on the reverse side of a</span>
 <span class="sd">    many-to-one relation.</span>
 
@@ -649,7 +649,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the related objects through the reverse relation.</span>
 
 <span class="sd">        With the example above, when getting ``parent.children``:</span>
@@ -677,7 +677,7 @@
 
 
 <span class="k">def</span> <span class="nf">create_reverse_many_to_one_manager</span><span class="p">(</span><span class="n">superclass</span><span class="p">,</span> <span class="n">rel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a manager for the reverse side of a many-to-one relation.</span>
 
 <span class="sd">    This manager subclasses another manager, generally the default manager of</span>
@@ -710,7 +710,7 @@
                     <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_apply_rel_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Filter the queryset for the instance this manager is bound to.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="ow">or</span> <span class="n">router</span><span class="o">.</span><span class="n">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
@@ -957,7 +957,7 @@
 
 
 <span class="k">class</span> <span class="nc">ManyToManyDescriptor</span><span class="p">(</span><span class="n">ReverseManyToOneDescriptor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accessor to the related objects manager on the forward and reverse sides of</span>
 <span class="sd">    a many-to-many relation.</span>
 
@@ -1004,7 +1004,7 @@
 
 
 <span class="k">def</span> <span class="nf">create_forward_many_to_many_manager</span><span class="p">(</span><span class="n">superclass</span><span class="p">,</span> <span class="n">rel</span><span class="p">,</span> <span class="n">reverse</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a manager for the either side of a many-to-many relation.</span>
 
 <span class="sd">    This manager subclasses another manager, generally the default manager of</span>
@@ -1090,7 +1090,7 @@
             <span class="k">return</span> <span class="n">filters</span>
 
         <span class="k">def</span> <span class="nf">_apply_rel_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Filter the queryset for the instance this manager is bound to.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">queryset</span><span class="o">.</span><span class="n">_add_hints</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
@@ -1302,7 +1302,7 @@
         <span class="n">aupdate_or_create</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span> <span class="nf">_get_target_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_field_name</span><span class="p">,</span> <span class="n">objs</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the set of ids of `objs` that the target field references.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Model</span>
@@ -1336,7 +1336,7 @@
         <span class="k">def</span> <span class="nf">_get_missing_target_ids</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">source_field_name</span><span class="p">,</span> <span class="n">target_field_name</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">target_ids</span>
         <span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subset of ids of `objs` that aren&#39;t already assigned to</span>
 <span class="sd">            this relationship.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -1353,7 +1353,7 @@
             <span class="k">return</span> <span class="n">target_ids</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_get_add_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">source_field_name</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a boolean triple of the way the add should be performed.</span>
 
 <span class="sd">            The first element is whether or not bulk_create(ignore_conflicts)</span>

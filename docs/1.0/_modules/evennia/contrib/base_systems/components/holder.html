@@ -87,7 +87,7 @@
 
 
 <div class="viewcode-block" id="ComponentProperty"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentProperty">[docs]</a><span class="k">class</span> <span class="nc">ComponentProperty</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This allows you to register a component on a typeclass.</span>
 <span class="sd">    Components registered with this property are automatically added</span>
 <span class="sd">    to any instance of this typeclass.</span>
@@ -96,7 +96,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ComponentProperty.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the descriptor</span>
 
 <span class="sd">        Args:</span>
@@ -123,7 +123,7 @@
 
 
 <div class="viewcode-block" id="ComponentHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHandler">[docs]</a><span class="k">class</span> <span class="nc">ComponentHandler</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the handler that will be added to any typeclass that inherits from ComponentHolder.</span>
 <span class="sd">    It lets you add or remove components and will load components as needed.</span>
 <span class="sd">    It stores the list of registered components on the host .db with component_names as key.</span>
@@ -134,7 +134,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_components</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="ComponentHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to add a Component to a host.</span>
 <span class="sd">        It caches the loaded component and appends its name to the host&#39;s component name list.</span>
 <span class="sd">        It will also call the component&#39;s &#39;at_added&#39; method, passing its host.</span>
@@ -150,7 +150,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">add_object_listeners_and_responders</span><span class="p">(</span><span class="n">component</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ComponentHandler.add_default"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHandler.add_default">[docs]</a>    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to add a Component initialized to default values on a host.</span>
 <span class="sd">        It will retrieve the proper component and instanciate it with &#39;default_create&#39;.</span>
 <span class="sd">        It will cache this new component and add it to its list.</span>
@@ -172,7 +172,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">add_object_listeners_and_responders</span><span class="p">(</span><span class="n">new_component</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_add_component_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private method that adds the Tags set on a Component via TagFields</span>
 <span class="sd">        It will also add the name of the component so objects can be filtered</span>
 <span class="sd">        by the components the implement.</span>
@@ -187,7 +187,7 @@
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">tag_field_name</span><span class="p">,</span> <span class="n">default_tag</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ComponentHandler.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to remove a component instance from a host.</span>
 <span class="sd">        It removes the component from the cache and listing.</span>
 <span class="sd">        It will call the component&#39;s &#39;at_removed&#39; method.</span>
@@ -210,7 +210,7 @@
             <span class="k">raise</span> <span class="n">ComponentIsNotRegistered</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ComponentHandler.remove_by_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHandler.remove_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">remove_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to remove a component instance from a host.</span>
 <span class="sd">        It removes the component from the cache and listing.</span>
 <span class="sd">        It will call the component&#39;s &#39;at_removed&#39; method.</span>
@@ -232,7 +232,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_remove_component_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private method that will remove the Tags set on a Component via TagFields</span>
 <span class="sd">        It will also remove the component name tag.</span>
 
@@ -244,7 +244,7 @@
             <span class="nb">delattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">tag_field_name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ComponentHandler.get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to retrieve a cached Component instance by its name.</span>
 
 <span class="sd">        Args:</span>
@@ -254,7 +254,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ComponentHandler.has"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to check if a component is registered and ready.</span>
 
 <span class="sd">        Args:</span>
@@ -264,7 +264,7 @@
         <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_components</span></div>
 
 <div class="viewcode-block" id="ComponentHandler.initialize"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHandler.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method that loads and caches each component currently registered on the host.</span>
 <span class="sd">        It retrieves the names from the registered listing and calls &#39;load&#39; on each</span>
 <span class="sd">        prototype class that can be found from this listing.</span>
@@ -291,7 +291,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">db_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property shortcut to retrieve the registered component names</span>
 
 <span class="sd">        Returns:</span>
@@ -305,7 +305,7 @@
 
 
 <div class="viewcode-block" id="ComponentHolderMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHolderMixin">[docs]</a><span class="k">class</span> <span class="nc">ComponentHolderMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin to add component support to a typeclass</span>
 
 <span class="sd">    Components are set on objects using the component.name as an object attribute.</span>
@@ -314,7 +314,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ComponentHolderMixin.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHolderMixin.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method that initializes the ComponentHandler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span>
@@ -332,7 +332,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;at_post_unpuppet&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ComponentHolderMixin.basetype_setup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHolderMixin.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method that initializes the ComponentHandler, creates and registers all</span>
 <span class="sd">        components that were set on the typeclass using ComponentProperty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -352,7 +352,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;at_basetype_setup&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ComponentHolderMixin.basetype_posthook_setup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHolderMixin.basetype_posthook_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_posthook_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method that add component related tags that were set using ComponentProperty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">basetype_posthook_setup</span><span class="p">()</span>
@@ -361,7 +361,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentHandler</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property getter to retrieve the component_handler.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            ComponentHandler: This Host&#39;s ComponentHandler</span>
@@ -370,7 +370,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentHandler</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut Property getter to retrieve the component_handler.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            ComponentHandler: This Host&#39;s ComponentHandler</span>

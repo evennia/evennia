@@ -99,13 +99,13 @@
 
 <div class="viewcode-block" id="InterruptCommand"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.InterruptCommand">[docs]</a><span class="k">class</span> <span class="nc">InterruptCommand</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;Cleanly interrupt a command.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cleanly interrupt a command.&quot;&quot;&quot;</span>
 
     <span class="k">pass</span></div>
 
 
 <span class="k">def</span> <span class="nf">_init_command</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper command.</span>
 <span class="sd">    Makes sure all data are stored as lowercase and</span>
 <span class="sd">    do checking on all properties that should be in list form.</span>
@@ -192,7 +192,7 @@
 
 
 <div class="viewcode-block" id="CommandMeta"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.CommandMeta">[docs]</a><span class="k">class</span> <span class="nc">CommandMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The metaclass cleans up all properties on the class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -210,7 +210,7 @@
 
 
 <div class="viewcode-block" id="Command"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">CommandMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ## Base command</span>
 
 <span class="sd">    (you may see this if a child command had no help text defined)</span>
@@ -291,7 +291,7 @@
     <span class="c1">#             if triggered by an account.</span>
 
 <div class="viewcode-block" id="Command.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The lockhandler works the same as for objects.</span>
 <span class="sd">        optional kwargs will be set as properties on the Command at runtime,</span>
 <span class="sd">        overloading evential same-named class properties.</span>
@@ -306,13 +306,13 @@
         <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the command key</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compare two command instances to each other by matching their</span>
 <span class="sd">        key and aliases.</span>
 
@@ -332,7 +332,7 @@
             <span class="k">return</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Python 3 requires that any class which implements __eq__ must also</span>
 <span class="sd">        implement __hash__ and that the corresponding hashes for equivalent</span>
 <span class="sd">        instances are themselves equivalent.</span>
@@ -345,7 +345,7 @@
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="s2">&quot;command&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The logical negation of __eq__. Since this is one of the most</span>
 <span class="sd">        called methods in Evennia (along with __eq__) we do some</span>
 <span class="sd">        code-duplication here rather than issuing a method-lookup to</span>
@@ -357,7 +357,7 @@
             <span class="k">return</span> <span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span>
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This implements searches like &#39;if query in cmd&#39;. It&#39;s a fuzzy</span>
 <span class="sd">        matching used by the help system, returning True if query can</span>
 <span class="sd">        be found as a substring of the commands key or its aliases.</span>
@@ -372,7 +372,7 @@
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">query</span> <span class="ow">in</span> <span class="n">keyalias</span> <span class="k">for</span> <span class="n">keyalias</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keyaliases</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Optimize the key and aliases for lookups.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># optimization - a set is much faster to match against than a list</span>
@@ -386,7 +386,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_noprefix_aliases</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">CMD_IGNORE_PREFIXES</span><span class="p">):</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">}</span>
 
 <div class="viewcode-block" id="Command.set_key"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.set_key">[docs]</a>    <span class="k">def</span> <span class="nf">set_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update key.</span>
 
 <span class="sd">        Args:</span>
@@ -401,7 +401,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimize</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Command.set_aliases"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.set_aliases">[docs]</a>    <span class="k">def</span> <span class="nf">set_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_aliases</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace aliases with new ones.</span>
 
 <span class="sd">        Args:</span>
@@ -421,7 +421,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimize</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Command.match"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called by the system when searching the available commands,</span>
 <span class="sd">        in order to determine if this is the one we wanted. cmdname was</span>
 <span class="sd">        previously extracted from the raw string by the system.</span>
@@ -452,7 +452,7 @@
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Command.access"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcobj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;cmd&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called by the cmdhandler to determine if srcobj</span>
 <span class="sd">        is allowed to execute this command. It should return a boolean</span>
 <span class="sd">        value and is not normally something that need to be changed since</span>
@@ -468,7 +468,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lockhandler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">srcobj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Command.msg"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a shortcut instead of calling msg() directly on an</span>
 <span class="sd">        object - it will detect if caller is an Object or an Account and</span>
 <span class="sd">        also appends self.session automatically if self.msg_all_sessions is False.</span>
@@ -496,7 +496,7 @@
         <span class="n">to_obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Command.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A shortcut of execute_cmd on the caller. It appends the</span>
 <span class="sd">        session automatically.</span>
 
@@ -520,7 +520,7 @@
     <span class="c1"># Common Command hooks</span>
 
 <div class="viewcode-block" id="Command.at_pre_cmd"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.at_pre_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called before self.parse() on all commands.  If</span>
 <span class="sd">        this hook returns anything but False/None, the command</span>
 <span class="sd">        sequence is aborted.</span>
@@ -529,7 +529,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Command.at_post_cmd"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.at_post_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called after the command has finished executing</span>
 <span class="sd">        (after self.func()).</span>
 
@@ -537,7 +537,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Command.parse"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Once the cmdhandler has identified this as the command we</span>
 <span class="sd">        want, this function is run. If many of your commands have a</span>
 <span class="sd">        similar syntax (for example &#39;cmd arg1 = arg2&#39;) you should</span>
@@ -550,7 +550,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Command.get_command_info"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.get_command_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_command_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the default output of func() if no func() overload is done.</span>
 <span class="sd">        Provided here as a separate method so that it can be called for debugging</span>
 <span class="sd">        purposes when making commands.</span>
@@ -561,7 +561,7 @@
         <span class="p">)</span>
         <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Command </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no defined `func()` - showing on-command variables:</span>
-<span class="si">{</span><span class="n">variables</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="n">variables</span><span class="si">}</span>
 <span class="s2">        &quot;&quot;&quot;</span>
         <span class="c1"># a simple test command to show the available properties</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span>
@@ -583,7 +583,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Command.func"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the actual executing part of the command.  It is</span>
 <span class="sd">        called directly after self.parse(). See the docstring of this</span>
 <span class="sd">        module for which object properties are available (beyond those</span>
@@ -593,7 +593,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">get_command_info</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Command.get_extra_info"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.get_extra_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display some extra information that may help distinguish this</span>
 <span class="sd">        command from others, for instance, in a disambiguity prompt.</span>
 
@@ -615,7 +615,7 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="Command.get_help"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the help message for this command and this caller.</span>
 
 <span class="sd">        By default, return self.__doc__ (the docstring just under</span>
@@ -634,7 +634,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span></div>
 
 <div class="viewcode-block" id="Command.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to view details for</span>
 <span class="sd">        this object.</span>
 
@@ -669,7 +669,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="Command.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
 
 <span class="sd">        ex. Account#1 = &#39;/admin/accounts/accountdb/1/change/&#39;</span>
@@ -681,7 +681,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Command.client_width"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.client_width">[docs]</a>    <span class="k">def</span> <span class="nf">client_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the client screenwidth for the session using this command.</span>
 
 <span class="sd">        Returns:</span>
@@ -695,7 +695,7 @@
         <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span></div>
 
 <div class="viewcode-block" id="Command.styled_table"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_table">[docs]</a>    <span class="k">def</span> <span class="nf">styled_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an EvTable styled by on user preferences.</span>
 
 <span class="sd">        Args:</span>
@@ -752,7 +752,7 @@
         <span class="n">color_header</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper for formatting a string into a pretty display, for a header, separator or footer.</span>
 
 <span class="sd">        Keyword Args:</span>
@@ -817,7 +817,7 @@
         <span class="k">return</span> <span class="n">final_send</span>
 
 <div class="viewcode-block" id="Command.styled_header"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_header">[docs]</a>    <span class="k">def</span> <span class="nf">styled_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a pretty header.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -826,7 +826,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_decoration</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Command.styled_separator"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_separator">[docs]</a>    <span class="k">def</span> <span class="nf">styled_separator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a separator.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -835,7 +835,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_decoration</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Command.styled_footer"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_footer">[docs]</a>    <span class="k">def</span> <span class="nf">styled_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a pretty footer.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>

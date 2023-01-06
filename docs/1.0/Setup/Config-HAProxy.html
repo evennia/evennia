@@ -256,31 +256,31 @@ the outgoing wss port, so this should be open in firewall).</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># base stuff to set up haproxy</span>
 global
-    log /dev/log local0
-    chroot /var/lib/haproxy
-    maxconn  <span class="m">4000</span>
-    user  haproxy
-    tune.ssl.default-dh-param <span class="m">2048</span>
-    <span class="c1">## uncomment this when everything works</span>
-    <span class="c1"># daemon</span>
+<span class="w">    </span>log<span class="w"> </span>/dev/log<span class="w"> </span>local0
+<span class="w">    </span>chroot<span class="w"> </span>/var/lib/haproxy
+<span class="w">    </span>maxconn<span class="w">  </span><span class="m">4000</span>
+<span class="w">    </span>user<span class="w">  </span>haproxy
+<span class="w">    </span>tune.ssl.default-dh-param<span class="w"> </span><span class="m">2048</span>
+<span class="w">    </span><span class="c1">## uncomment this when everything works</span>
+<span class="w">    </span><span class="c1"># daemon</span>
 defaults
-    mode http
-    option forwardfor
+<span class="w">    </span>mode<span class="w"> </span>http
+<span class="w">    </span>option<span class="w"> </span>forwardfor
 
 <span class="c1"># Evennia Specifics</span>
-listen evennia-https-website
-    <span class="nb">bind</span> my.awesomegame.com:443 ssl no-sslv3 no-tlsv10 crt /etc/letsencrypt/live/my.awesomegame.com&gt;/my.awesomegame.com.pem
-    server localhost <span class="m">127</span>.0.0.1:4001
-    timeout client 10m
-    timeout server 10m
-    timeout connect 5m
+listen<span class="w"> </span>evennia-https-website
+<span class="w">    </span><span class="nb">bind</span><span class="w"> </span>my.awesomegame.com:443<span class="w"> </span>ssl<span class="w"> </span>no-sslv3<span class="w"> </span>no-tlsv10<span class="w"> </span>crt<span class="w"> </span>/etc/letsencrypt/live/my.awesomegame.com&gt;/my.awesomegame.com.pem
+<span class="w">    </span>server<span class="w"> </span>localhost<span class="w"> </span><span class="m">127</span>.0.0.1:4001
+<span class="w">    </span>timeout<span class="w"> </span>client<span class="w"> </span>10m
+<span class="w">    </span>timeout<span class="w"> </span>server<span class="w"> </span>10m
+<span class="w">    </span>timeout<span class="w"> </span>connect<span class="w"> </span>5m
 
-listen evennia-secure-websocket
-    <span class="nb">bind</span> my.awesomegame.com:4002 ssl no-sslv3 no-tlsv10 crt /etc/letsencrypt/live/my.awesomegame.com/my.awesomegame.com.pem
-    server localhost <span class="m">127</span>.0.0.1:4002
-    timeout client 10m
-    timeout server 10m
-    timeout connect 5m
+listen<span class="w"> </span>evennia-secure-websocket
+<span class="w">    </span><span class="nb">bind</span><span class="w"> </span>my.awesomegame.com:4002<span class="w"> </span>ssl<span class="w"> </span>no-sslv3<span class="w"> </span>no-tlsv10<span class="w"> </span>crt<span class="w"> </span>/etc/letsencrypt/live/my.awesomegame.com/my.awesomegame.com.pem
+<span class="w">    </span>server<span class="w"> </span>localhost<span class="w"> </span><span class="m">127</span>.0.0.1:4002
+<span class="w">    </span>timeout<span class="w"> </span>client<span class="w"> </span>10m
+<span class="w">    </span>timeout<span class="w"> </span>server<span class="w"> </span>10m
+<span class="w">    </span>timeout<span class="w"> </span>connect<span class="w"> </span>5m
 </pre></div>
 </div>
 </section>

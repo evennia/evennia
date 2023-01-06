@@ -95,13 +95,13 @@
 
 
 <div class="viewcode-block" id="EvscapeRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom">[docs]</a><span class="k">class</span> <span class="nc">EvscapeRoom</span><span class="p">(</span><span class="n">EvscaperoomObject</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The room to escape from.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="EvscapeRoom.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once, when the room is first created.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -139,7 +139,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">statehandler</span><span class="o">.</span><span class="n">current_state</span>
 
 <div class="viewcode-block" id="EvscapeRoom.log"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Log to a file specificially for this room.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[caller.key]: &quot;</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -149,7 +149,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.score"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.score">[docs]</a>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_score</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We don&#39;t score individually but for everyone in room together.</span>
 <span class="sd">        You can only be scored for a given reason once.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">reason</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]:</span>
@@ -162,7 +162,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;progress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_progress</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.achievement"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.achievement">[docs]</a>    <span class="k">def</span> <span class="nf">achievement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">achievement</span><span class="p">,</span> <span class="n">subtext</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Give the caller a personal achievment. You will only</span>
 <span class="sd">        ever get one of the same type</span>
 
@@ -181,7 +181,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;achievements&quot;</span><span class="p">,</span> <span class="n">achievements</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.get_all_characters"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.get_all_characters">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_characters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the player characters in the room.</span>
 
 <span class="sd">        Returns:</span>
@@ -204,7 +204,7 @@
         <span class="k">return</span> <span class="n">check_lockstring</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dummy:perm(</span><span class="si">{</span><span class="n">permission</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.tag_character"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.tag_character">[docs]</a>    <span class="k">def</span> <span class="nf">tag_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tag a given character in this room.</span>
 
 <span class="sd">        Args:</span>
@@ -218,7 +218,7 @@
         <span class="n">character</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.tag_all_characters"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.tag_all_characters">[docs]</a>    <span class="k">def</span> <span class="nf">tag_all_characters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a given tag on all players in the room.</span>
 
 <span class="sd">        Args:</span>
@@ -233,7 +233,7 @@
             <span class="n">char</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.character_cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.character_cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">character_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clean all custom tags/attrs on a character.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -242,7 +242,7 @@
             <span class="n">char</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.character_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.character_exit">[docs]</a>    <span class="k">def</span> <span class="nf">character_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Have a character exit the room - return them to the room menu.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -262,7 +262,7 @@
     <span class="c1"># Evennia hooks</span>
 
 <div class="viewcode-block" id="EvscapeRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when an object arrives in the room. This can be used to</span>
 <span class="sd">        sum up the situation, set tags etc.</span>
 
@@ -272,7 +272,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">character_enters</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvscapeRoom.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when an object leaves the room; if this is a Character we need</span>
 <span class="sd">        to clean them up and move them to the menu state.</span>
 
@@ -285,7 +285,7 @@
             <span class="c1"># logger.log_info(&quot;DEBUG: Don&#39;t delete room when last player leaving&quot;)</span>
 
 <div class="viewcode-block" id="EvscapeRoom.delete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.room.html#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete this room and all items related to it. Only move the players.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>

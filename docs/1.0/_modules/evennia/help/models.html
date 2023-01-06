@@ -108,7 +108,7 @@
 
 
 <div class="viewcode-block" id="HelpEntry"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry">[docs]</a><span class="k">class</span> <span class="nc">HelpEntry</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generic help entry.</span>
 
 <span class="sd">    An HelpEntry object has the following properties defined:</span>
@@ -193,7 +193,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;HelpEntry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
 <div class="viewcode-block" id="HelpEntry.access"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if another object has permission to access this help entry.</span>
 
 <span class="sd">        Accesses used by default:</span>
@@ -210,7 +210,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">search_index_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property for easily retaining a search index entry for this object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -227,7 +227,7 @@
     <span class="c1">#</span>
 
 <div class="viewcode-block" id="HelpEntry.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
 
 <span class="sd">        ex. Account#1 = &#39;/admin/accounts/accountdb/1/change/&#39;</span>
@@ -243,7 +243,7 @@
 
 <div class="viewcode-block" id="HelpEntry.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">web_get_create_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to create new</span>
 <span class="sd">        instances of this object.</span>
 
@@ -275,7 +275,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="HelpEntry.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to view details for</span>
 <span class="sd">        this object.</span>
 
@@ -311,7 +311,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="HelpEntry.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to update this</span>
 <span class="sd">        object.</span>
 
@@ -347,7 +347,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="HelpEntry.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.models.HelpEntry.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to delete this object.</span>
 
 <span class="sd">        ex. Oscar (Character) = &#39;/characters/oscar/1/delete/&#39;</span>

@@ -225,7 +225,7 @@ Evennia-specific inputs.</p>
      <span class="c1"># the Evennia internals.  </span>
      
      <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
-         <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">         </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Called when connection closes. </span>
 <span class="sd">         This can also be called directly by Evennia when manually closing the connection.</span>
 <span class="sd">         Do any cleanups here.</span>
@@ -233,12 +233,12 @@ Evennia-specific inputs.</p>
          <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
      <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-         <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">         </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Called when this session authenticates by the server (if applicable)</span>
 <span class="sd">         &quot;&quot;&quot;</span>    
 
      <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-         <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">         </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Data going into the server should go through this method. It </span>
 <span class="sd">         should pass data into `sessionhandler.data_in`. THis will be called</span>
 <span class="sd">         by the sessionhandler with the data it gets from the approrpriate </span>
@@ -247,7 +247,7 @@ Evennia-specific inputs.</p>
          <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
 
      <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-         <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">         </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Data going out from the server should go through this method. It should</span>
 <span class="sd">         hand off to the protocol&#39;s send method, whatever it&#39;s called.</span>
 <span class="sd">         &quot;&quot;&quot;</span>
@@ -258,14 +258,14 @@ Evennia-specific inputs.</p>
      <span class="c1"># with `msg(outfunc_name=&lt;data&gt;)`. </span>
 
      <span class="k">def</span> <span class="nf">send_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
-         <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">         </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Send text, used with e.g. `session.msg(text=&quot;foo&quot;)`</span>
 <span class="sd">         &quot;&quot;&quot;</span>
          <span class="c1"># we make use of the </span>
          <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">txt</span><span class="p">)</span>
 
      <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
-         <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">         </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Handles all outputfuncs without an explicit `send_*` method to handle them.</span>
 <span class="sd">         &quot;&quot;&quot;</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">cmdname</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">)})</span>

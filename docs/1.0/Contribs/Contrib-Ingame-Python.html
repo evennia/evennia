@@ -340,7 +340,7 @@ this:</p>
 <span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.commands</span> <span class="kn">import</span> <span class="n">CmdCallback</span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
 <span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
 <span class="sd">    the `PlayerCmdSet` when a Player puppets a Character.</span>
@@ -348,7 +348,7 @@ this:</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
@@ -830,7 +830,7 @@ write something like:</p>
 
 <span class="nd">@register_events</span>
 <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">EventObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class representing objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -881,7 +881,7 @@ of an object.  If this object is valid, it will call its “push” event.</p>
 
 <span class="k">class</span> <span class="nc">CmdPush</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Push something.</span>
 
 <span class="sd">    Usage:</span>
@@ -894,7 +894,7 @@ of an object.  If this object is valid, it will call its “push” event.</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;push&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Called when pushing something.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when pushing something.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: push &lt;something&gt;&quot;</span><span class="p">)</span>
             <span class="k">return</span>

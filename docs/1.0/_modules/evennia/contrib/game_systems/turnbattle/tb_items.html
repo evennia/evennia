@@ -184,7 +184,7 @@
 
 <div class="viewcode-block" id="ItemCombatRules"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules">[docs]</a><span class="k">class</span> <span class="nc">ItemCombatRules</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">BasicCombatRules</span><span class="p">):</span>
 <div class="viewcode-block" id="ItemCombatRules.get_attack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.get_attack">[docs]</a>    <span class="k">def</span> <span class="nf">get_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a value for an attack roll.</span>
 
 <span class="sd">        Args:</span>
@@ -211,7 +211,7 @@
         <span class="k">return</span> <span class="n">attack_value</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.get_defense"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.get_defense">[docs]</a>    <span class="k">def</span> <span class="nf">get_defense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a value for defense, which an attack roll must equal or exceed in order</span>
 <span class="sd">        for an attack to hit.</span>
 
@@ -237,7 +237,7 @@
         <span class="k">return</span> <span class="n">defense_value</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.get_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.get_damage">[docs]</a>    <span class="k">def</span> <span class="nf">get_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a value for damage to be deducted from the defender&#39;s HP after abilities</span>
 <span class="sd">        successful hit.</span>
 
@@ -273,7 +273,7 @@
         <span class="n">damage_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">inflict_condition</span><span class="o">=</span><span class="p">[],</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resolves an attack and outputs the result.</span>
 
 <span class="sd">        Args:</span>
@@ -316,7 +316,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">at_defeat</span><span class="p">(</span><span class="n">defender</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.spend_item_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.spend_item_use">[docs]</a>    <span class="k">def</span> <span class="nf">spend_item_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Spends one use on an item with limited uses.</span>
 
 <span class="sd">        Args:</span>
@@ -355,7 +355,7 @@
                     <span class="n">item</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>  <span class="c1"># Delete the spent item</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.use_item"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.use_item">[docs]</a>    <span class="k">def</span> <span class="nf">use_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs the action of using an item.</span>
 
 <span class="sd">        Args:</span>
@@ -400,7 +400,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">spend_action</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;item&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.condition_tickdown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.condition_tickdown">[docs]</a>    <span class="k">def</span> <span class="nf">condition_tickdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">turnchar</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ticks down the duration of conditions on a character at the start of a given character&#39;s</span>
 <span class="sd">        turn.</span>
 
@@ -434,7 +434,7 @@
                     <span class="k">del</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">conditions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.add_condition"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.add_condition">[docs]</a>    <span class="k">def</span> <span class="nf">add_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">turnchar</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a condition to a fighter.</span>
 
 <span class="sd">        Args:</span>
@@ -470,7 +470,7 @@
     <span class="c1"># take and the effect they have on the result.</span>
 
 <div class="viewcode-block" id="ItemCombatRules.itemfunc_heal"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.itemfunc_heal">[docs]</a>    <span class="k">def</span> <span class="nf">itemfunc_heal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Item function that heals HP.</span>
 
 <span class="sd">        kwargs:</span>
@@ -504,7 +504,7 @@
         <span class="n">user</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> uses </span><span class="si">%s</span><span class="s2">! </span><span class="si">%s</span><span class="s2"> regains </span><span class="si">%i</span><span class="s2"> HP!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">to_heal</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.itemfunc_add_condition"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.itemfunc_add_condition">[docs]</a>    <span class="k">def</span> <span class="nf">itemfunc_add_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Item function that gives the target one or more conditions.</span>
 
 <span class="sd">        kwargs:</span>
@@ -535,7 +535,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_condition</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">condition</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">condition</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.itemfunc_cure_condition"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.itemfunc_cure_condition">[docs]</a>    <span class="k">def</span> <span class="nf">itemfunc_cure_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Item function that&#39;ll remove given conditions from a target.</span>
 
 <span class="sd">        kwargs:</span>
@@ -565,7 +565,7 @@
         <span class="n">user</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">item_msg</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ItemCombatRules.itemfunc_attack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.itemfunc_attack">[docs]</a>    <span class="k">def</span> <span class="nf">itemfunc_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Item function that attacks a target.</span>
 
 <span class="sd">        kwargs:</span>
@@ -792,7 +792,7 @@
 
 
 <div class="viewcode-block" id="TBItemsCharacter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter">[docs]</a><span class="k">class</span> <span class="nc">TBItemsCharacter</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">TBBasicCharacter</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A character able to participate in turn-based combat. Has attributes for current</span>
 <span class="sd">    and maximum HP, and access to combat commands.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -800,7 +800,7 @@
     <span class="n">rules</span> <span class="o">=</span> <span class="n">ItemCombatRules</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TBItemsCharacter.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once, when this object is first created. This is the</span>
 <span class="sd">        normal hook to overload for most object types.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -809,7 +809,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">conditions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Set empty dict for conditions</span>
         <span class="c1"># Subscribe character to the ticker handler</span>
         <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">NONCOMBAT_TURN_TIME</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_update</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds attributes for a character&#39;s current and maximum HP.</span>
 <span class="sd">        We&#39;re just going to set this value at &#39;100&#39; by default.</span>
 
@@ -824,7 +824,7 @@
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="TBItemsCharacter.at_turn_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.at_turn_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_turn_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook called at the beginning of this character&#39;s turn in combat.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Prompt the character for their turn and give some information.</span>
@@ -834,7 +834,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">apply_turn_conditions</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TBItemsCharacter.apply_turn_conditions"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.apply_turn_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">apply_turn_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies the effect of conditions that occur at the start of each</span>
 <span class="sd">        turn in combat, or every 30 seconds out of combat.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -867,7 +867,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="o">.</span><span class="n">turn_end_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TBItemsCharacter.at_update"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.at_update">[docs]</a>    <span class="k">def</span> <span class="nf">at_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fires every 30 seconds.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Not in combat</span>
@@ -881,7 +881,7 @@
 
 
 <div class="viewcode-block" id="TBItemsCharacterTest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacterTest">[docs]</a><span class="k">class</span> <span class="nc">TBItemsCharacterTest</span><span class="p">(</span><span class="n">TBItemsCharacter</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Just like the TBItemsCharacter, but doesn&#39;t subscribe to the TickerHandler.</span>
 <span class="sd">    This makes it easier to run unit tests on.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -900,7 +900,7 @@
 
 
 <div class="viewcode-block" id="TBItemsTurnHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler">[docs]</a><span class="k">class</span> <span class="nc">TBItemsTurnHandler</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">TBBasicTurnHandler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the script that handles the progression of combat through turns.</span>
 <span class="sd">    On creation (when a fight is started) it adds all combat-ready characters</span>
 <span class="sd">    to its roster and then sorts them into a turn order. There can only be one</span>
@@ -914,7 +914,7 @@
     <span class="n">rules</span> <span class="o">=</span> <span class="n">COMBAT_RULES</span>
 
 <div class="viewcode-block" id="TBItemsTurnHandler.next_turn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler.next_turn">[docs]</a>    <span class="k">def</span> <span class="nf">next_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Advances to the next character in the turn order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">next_turn</span><span class="p">()</span>
@@ -933,7 +933,7 @@
 
 
 <div class="viewcode-block" id="CmdFight"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight">[docs]</a><span class="k">class</span> <span class="nc">CmdFight</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">CmdFight</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Starts a fight with everyone in the same room as you.</span>
 
 <span class="sd">    Usage:</span>
@@ -952,7 +952,7 @@
 
 
 <div class="viewcode-block" id="CmdAttack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdAttack">[docs]</a><span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">CmdAttack</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attacks another character.</span>
 
 <span class="sd">    Usage:</span>
@@ -968,7 +968,7 @@
 
 
 <div class="viewcode-block" id="CmdPass"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdPass">[docs]</a><span class="k">class</span> <span class="nc">CmdPass</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">CmdPass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Passes on your turn.</span>
 
 <span class="sd">    Usage:</span>
@@ -985,7 +985,7 @@
 
 
 <div class="viewcode-block" id="CmdDisengage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdDisengage">[docs]</a><span class="k">class</span> <span class="nc">CmdDisengage</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">CmdDisengage</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Passes your turn and attempts to end combat.</span>
 
 <span class="sd">    Usage:</span>
@@ -1004,7 +1004,7 @@
 
 
 <div class="viewcode-block" id="CmdRest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdRest">[docs]</a><span class="k">class</span> <span class="nc">CmdRest</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">CmdRest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recovers damage.</span>
 
 <span class="sd">    Usage:</span>
@@ -1021,7 +1021,7 @@
 
 
 <div class="viewcode-block" id="CmdCombatHelp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdCombatHelp</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">CmdCombatHelp</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    View help or a list of topics</span>
 
 <span class="sd">    Usage:</span>
@@ -1044,7 +1044,7 @@
 
 
 <div class="viewcode-block" id="CmdUse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse">[docs]</a><span class="k">class</span> <span class="nc">CmdUse</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use an item.</span>
 
 <span class="sd">    Usage:</span>
@@ -1061,7 +1061,7 @@
     <span class="n">rules</span> <span class="o">=</span> <span class="n">COMBAT_RULES</span>
 
 <div class="viewcode-block" id="CmdUse.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Search for item</span>
@@ -1096,14 +1096,14 @@
 
 
 <div class="viewcode-block" id="BattleCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.BattleCmdSet">[docs]</a><span class="k">class</span> <span class="nc">BattleCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This command set includes all the commmands used in the battle system.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
 <div class="viewcode-block" id="BattleCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.BattleCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdFight</span><span class="p">())</span>

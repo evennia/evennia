@@ -148,7 +148,7 @@ specifics and use the base <code class="docutils literal notranslate"><span clas
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
     <span class="k">class</span> <span class="nc">MyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-       <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">       </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">       This is the help-text for the command</span>
 <span class="sd">       &quot;&quot;&quot;</span>
        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;mycommand&quot;</span>
@@ -270,7 +270,7 @@ truthfully report this value - that case the <code class="docutils literal notra
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="k">class</span> <span class="nc">CmdSmile</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A smile command</span>
 
 <span class="sd">    Usage:</span>
@@ -371,7 +371,7 @@ the current execution of your command and wait for more before processing.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="k">class</span> <span class="nc">CmdWait</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dummy command to show how to wait</span>
 
 <span class="sd">    Usage:</span>
@@ -384,7 +384,7 @@ the current execution of your command and wait for more before processing.</p>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Command execution.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Command execution.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Beginner-Tutorial to wait ...&quot;</span><span class="p">)</span>
         <span class="k">yield</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... This shows after 5 seconds. Waiting ...&quot;</span><span class="p">)</span>
@@ -408,7 +408,7 @@ the current execution of your command and wait for more before processing.</p>
 <p>Here’s a very simple example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdConfirm</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dummy command to show confirmation.</span>
 
 <span class="sd">    Usage:</span>

@@ -104,7 +104,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureObject"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base in-game entity.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -129,7 +129,7 @@
         <span class="k">return</span> <span class="n">get_obj_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">looker</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureObject.has_obj_type"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.has_obj_type">[docs]</a>    <span class="k">def</span> <span class="nf">has_obj_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objtype</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if object is of a particular type.</span>
 
 <span class="sd">        typeobj_enum (enum.ObjType): A type to check, like enums.TypeObj.TREASURE.</span>
@@ -138,7 +138,7 @@
         <span class="k">return</span> <span class="n">objtype</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureObject.get_help"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get help text for the item.</span>
 
 <span class="sd">        Returns:</span>
@@ -149,7 +149,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureObjectFiller"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureObjectFiller</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    In _Knave_, the inventory slots act as an extra measure of how you are affected by</span>
 <span class="sd">    various averse effects. For example, mud or water could fill up some of your inventory</span>
 <span class="sd">    slots and make the equipment there unusable until you cleaned it. Inventory is also</span>
@@ -166,7 +166,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureQuestObject"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureQuestObject</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A quest object. These cannot be sold and only be used for quest resolution.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -176,7 +176,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureTreasure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureTreasure</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A &#39;treasure&#39; is mainly useful to sell for coin.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -186,7 +186,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureConsumable"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureConsumable</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Item that can be &#39;used up&#39;, like a potion or food. Weapons, armor etc does not</span>
 <span class="sd">    have a limited usage in this way.</span>
 
@@ -197,7 +197,7 @@
     <span class="n">uses</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EvAdventureConsumable.at_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Consume a &#39;use&#39; of this item. Once it reaches 0 uses, it should normally</span>
 <span class="sd">        not be usable anymore and probably be deleted.</span>
 
@@ -209,7 +209,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EvAdventureConsumable.at_post_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_post_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after this item was used.</span>
 
 <span class="sd">        Args:</span>
@@ -224,7 +224,7 @@
 
 
 <div class="viewcode-block" id="WeaponEmptyHand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand">[docs]</a><span class="k">class</span> <span class="nc">WeaponEmptyHand</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a dummy-class loaded when you wield no weapons. We won&#39;t create any db-object for it.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -242,7 +242,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureWeapon"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureWeapon</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base weapon class for all EvAdventure weapons.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -259,7 +259,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureRunestone"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureRunestone</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">EvAdventureConsumable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for magic runestones. In _Knave_, every spell is represented by a rune stone</span>
 <span class="sd">    that takes up an inventory slot. It is wielded as a weapon in order to create the specific</span>
 <span class="sd">    magical effect provided by the stone. Normally each stone can only be used once per day but</span>
@@ -276,7 +276,7 @@
     <span class="n">damage_roll</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="s2">&quot;1d8&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EvAdventureRunestone.at_post_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.at_post_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Called after the spell was cast&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after the spell was cast&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">-=</span> <span class="mi">1</span></div>
         <span class="c1"># the rune stone is not deleted after use, but</span>
         <span class="c1"># it needs to be refreshed after resting.</span>
@@ -286,7 +286,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureArmor"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureArmor</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for all wearable Armors.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -299,7 +299,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureShield"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureShield">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureShield</span><span class="p">(</span><span class="n">EvAdventureArmor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for all Shields.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -309,7 +309,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureHelmet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureHelmet</span><span class="p">(</span><span class="n">EvAdventureArmor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for all Helmets.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

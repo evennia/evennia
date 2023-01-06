@@ -111,7 +111,7 @@
 
 <span class="c1"># handle the custom User editor</span>
 <div class="viewcode-block" id="AccountChangeForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm">[docs]</a><span class="k">class</span> <span class="nc">AccountChangeForm</span><span class="p">(</span><span class="n">UserChangeForm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Modify the accountdb class.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -166,7 +166,7 @@
     <span class="p">)</span>
 
 <div class="viewcode-block" id="AccountChangeForm.clean_username"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.clean_username">[docs]</a>    <span class="k">def</span> <span class="nf">clean_username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clean the username and check its existence.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -178,7 +178,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="AccountChangeForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tweak some fields dynamically.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -194,7 +194,7 @@
 
 
 <div class="viewcode-block" id="AccountCreationForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountCreationForm">[docs]</a><span class="k">class</span> <span class="nc">AccountCreationForm</span><span class="p">(</span><span class="n">UserCreationForm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new AccountDB instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -215,7 +215,7 @@
     <span class="p">)</span>
 
 <div class="viewcode-block" id="AccountCreationForm.clean_username"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountCreationForm.clean_username">[docs]</a>    <span class="k">def</span> <span class="nf">clean_username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cleanup username.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>
@@ -225,7 +225,7 @@
 
 
 <div class="viewcode-block" id="AccountTagInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountTagInline">[docs]</a><span class="k">class</span> <span class="nc">AccountTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline Account Tags.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -235,7 +235,7 @@
 
 
 <div class="viewcode-block" id="AccountAttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAttributeInline">[docs]</a><span class="k">class</span> <span class="nc">AccountAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline Account Attributes.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -245,7 +245,7 @@
 
 
 <div class="viewcode-block" id="ObjectPuppetInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline">[docs]</a><span class="k">class</span> <span class="nc">ObjectPuppetInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">StackedInline</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline creation of puppet-Object in Account.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -296,7 +296,7 @@
 
 <div class="viewcode-block" id="AccountAdmin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">AccountDB</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AccountAdmin</span><span class="p">(</span><span class="n">BaseUserAdmin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the main creation screen for Users/accounts</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -365,7 +365,7 @@
     <span class="p">)</span>
 
 <div class="viewcode-block" id="AccountAdmin.serialized_string"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.serialized_string">[docs]</a>    <span class="k">def</span> <span class="nf">serialized_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the serialized version of the object.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -378,7 +378,7 @@
     <span class="p">)</span>
 
 <div class="viewcode-block" id="AccountAdmin.puppeted_objects"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.puppeted_objects">[docs]</a>    <span class="k">def</span> <span class="nf">puppeted_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get any currently puppeted objects (read only list)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -399,7 +399,7 @@
     <span class="p">)</span>
 
 <div class="viewcode-block" id="AccountAdmin.get_form"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.get_form">[docs]</a>    <span class="k">def</span> <span class="nf">get_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overrides help texts.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -483,7 +483,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="AccountAdmin.save_model"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountAdmin.save_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Custom save actions.</span>
 
 <span class="sd">        Args:</span>

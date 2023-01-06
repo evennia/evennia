@@ -191,7 +191,7 @@
 
 
 <span class="k">def</span> <span class="nf">_portal_maintenance</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Repeated maintenance tasks for the portal.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -212,7 +212,7 @@
 
 <div class="viewcode-block" id="Portal"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portal.html#evennia.server.portal.portal.Portal">[docs]</a><span class="k">class</span> <span class="nc">Portal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The main Portal server handler. This object sets up the database</span>
 <span class="sd">    and tracks and interlinks all the twisted network services that</span>
 <span class="sd">    make up Portal.</span>
@@ -220,7 +220,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Portal.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portal.html#evennia.server.portal.portal.Portal.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup the server.</span>
 
 <span class="sd">        Args:</span>
@@ -257,7 +257,7 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_backup_server_twistd_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For interactive Portal mode there is no way to get the server cmdline from the launcher, so</span>
 <span class="sd">        we need to guess it here (it&#39;s very likely to not change)</span>
 
@@ -277,14 +277,14 @@
         <span class="k">return</span> <span class="n">server_twistd_cmd</span>
 
 <div class="viewcode-block" id="Portal.get_info_dict"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portal.html#evennia.server.portal.portal.Portal.get_info_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the Portal info, for display.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">INFO_DICT</span></div>
 
 <div class="viewcode-block" id="Portal.shutdown"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portal.html#evennia.server.portal.portal.Portal.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_stop_server</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shuts down the server from inside it.</span>
 
 <span class="sd">        Args:</span>

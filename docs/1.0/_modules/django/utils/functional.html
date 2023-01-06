@@ -82,7 +82,7 @@
 
 
 <span class="k">class</span> <span class="nc">cached_property</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator that converts a method with a single self argument into a</span>
 <span class="sd">    property cached on the instance.</span>
 
@@ -123,7 +123,7 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the function and put the return value in instance.__dict__ so that</span>
 <span class="sd">        subsequent attribute access on the instance returns the cached value</span>
 <span class="sd">        instead of calling cached_property.__get__().</span>
@@ -135,7 +135,7 @@
 
 
 <span class="k">class</span> <span class="nc">classproperty</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator that converts a method with a single cls argument into a property</span>
 <span class="sd">    that can be accessed directly from the class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -152,7 +152,7 @@
 
 
 <span class="k">class</span> <span class="nc">Promise</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for the proxy class created in the closure of the lazy function.</span>
 <span class="sd">    It&#39;s used to recognize promises in code.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -161,7 +161,7 @@
 
 
 <span class="k">def</span> <span class="nf">lazy</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">resultclasses</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turn any callable into a lazy evaluated callable. result classes or types</span>
 <span class="sd">    is required -- at least one is needed so that the automatic forcing of</span>
 <span class="sd">    the lazy evaluation code is triggered. Results are not memoized; the</span>
@@ -170,7 +170,7 @@
 
     <span class="nd">@total_ordering</span>
     <span class="k">class</span> <span class="nc">__proxy__</span><span class="p">(</span><span class="n">Promise</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Encapsulate a function call and act as a proxy for methods that are</span>
 <span class="sd">        called on the result of that function. The function is not evaluated</span>
 <span class="sd">        until one of the methods on the result is called.</span>
@@ -293,14 +293,14 @@
 
 
 <span class="k">def</span> <span class="nf">lazystr</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shortcut for the common case of a lazy callable that returns str.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">lazy</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)(</span><span class="n">text</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">keep_lazy</span><span class="p">(</span><span class="o">*</span><span class="n">resultclasses</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A decorator that allows a function to be called with one or more lazy</span>
 <span class="sd">    arguments. If none of the args are lazy, the function is evaluated</span>
 <span class="sd">    immediately, otherwise a __proxy__ is returned that will evaluate the</span>
@@ -327,7 +327,7 @@
 
 
 <span class="k">def</span> <span class="nf">keep_lazy_text</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A decorator for functions that accept lazy arguments and return text.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">keep_lazy</span><span class="p">(</span><span class="nb">str</span><span class="p">)(</span><span class="n">func</span><span class="p">)</span>
@@ -348,7 +348,7 @@
 
 
 <span class="k">class</span> <span class="nc">LazyObject</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A wrapper for another class that can be used to delay instantiation of the</span>
 <span class="sd">    wrapped class.</span>
 
@@ -394,7 +394,7 @@
         <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Must be implemented by subclasses to initialize the wrapped object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -464,7 +464,7 @@
 
 
 <span class="k">def</span> <span class="nf">unpickle_lazyobject</span><span class="p">(</span><span class="n">wrapped</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to unpickle lazy objects. Just return its argument, which will be the</span>
 <span class="sd">    wrapped object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -472,7 +472,7 @@
 
 
 <span class="k">class</span> <span class="nc">SimpleLazyObject</span><span class="p">(</span><span class="n">LazyObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A lazy object initialized from any function.</span>
 
 <span class="sd">    Designed for compound objects of unknown type. For builtins or objects of</span>
@@ -480,7 +480,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pass in a callable that returns the object to be wrapped.</span>
 
 <span class="sd">        If copies are made of the resulting SimpleLazyObject, which can happen</span>
@@ -529,7 +529,7 @@
 
 
 <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="n">predicate</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split the values into two sets, based on the return value of the function</span>
 <span class="sd">    (True/False). e.g.:</span>
 

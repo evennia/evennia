@@ -102,14 +102,14 @@
 
 
 <div class="viewcode-block" id="EvenniaGameIndexClient"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.EvenniaGameIndexClient">[docs]</a><span class="k">class</span> <span class="nc">EvenniaGameIndexClient</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This client class is used for gathering and sending game details to the</span>
 <span class="sd">    Evennia Game Index. Since EGI is in the early goings, this isn&#39;t</span>
 <span class="sd">    incredibly configurable as far as to what is being sent.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="EvenniaGameIndexClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.EvenniaGameIndexClient.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_bad_request</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param on_bad_request: Optional callable to trigger when a bad request</span>
 <span class="sd">            was sent. This is almost always going to be due to bad config.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -125,7 +125,7 @@
 
 <div class="viewcode-block" id="EvenniaGameIndexClient.send_game_details"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.EvenniaGameIndexClient.send_game_details">[docs]</a>    <span class="nd">@inlineCallbacks</span>
     <span class="k">def</span> <span class="nf">send_game_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is where the magic happens. Send details about the game to the</span>
 <span class="sd">        Evennia Game Index.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -149,7 +149,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_on_bad_request</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_form_and_send_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build the request to send to the index.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -210,7 +210,7 @@
 
 
 <div class="viewcode-block" id="SimpleResponseReceiver"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.SimpleResponseReceiver">[docs]</a><span class="k">class</span> <span class="nc">SimpleResponseReceiver</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used for pulling the response body out of an HTTP response.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -228,7 +228,7 @@
 
 <div class="viewcode-block" id="StringProducer"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.StringProducer">[docs]</a><span class="nd">@implementer</span><span class="p">(</span><span class="n">IBodyProducer</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">StringProducer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used for feeding a request body to the tx HTTP client.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -248,7 +248,7 @@
 
 
 <div class="viewcode-block" id="QuietHTTP11ClientFactory"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.QuietHTTP11ClientFactory">[docs]</a><span class="k">class</span> <span class="nc">QuietHTTP11ClientFactory</span><span class="p">(</span><span class="n">_HTTP11ClientFactory</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Silences the obnoxious factory start/stop messages in the default client.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

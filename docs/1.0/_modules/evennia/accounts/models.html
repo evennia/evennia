@@ -119,7 +119,7 @@
 
 
 <div class="viewcode-block" id="AccountDB"><a class="viewcode-back" href="../../../api/evennia.accounts.models.html#evennia.accounts.models.AccountDB">[docs]</a><span class="k">class</span> <span class="nc">AccountDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">,</span> <span class="n">AbstractUser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a special model using Django&#39;s &#39;profile&#39; functionality</span>
 <span class="sd">    and extends the default Django User model. It is defined as such</span>
 <span class="sd">    by use of the variable AUTH_PROFILE_MODULE in the settings.</span>
@@ -191,7 +191,7 @@
     <span class="c1"># This seems very sensitive to caching, so leaving it be for now /Griatch</span>
     <span class="c1"># @property</span>
     <span class="k">def</span> <span class="nf">__cmdset_storage_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter. Allows for value = self.name. Returns a list of cmdset_storage.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_cmdset_storage</span>
@@ -200,7 +200,7 @@
 
     <span class="c1"># @cmdset_storage.setter</span>
     <span class="k">def</span> <span class="nf">__cmdset_storage_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setter. Allows for self.name = value. Stores as a comma-separated</span>
 <span class="sd">        string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

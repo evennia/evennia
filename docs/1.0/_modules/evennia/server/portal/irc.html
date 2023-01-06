@@ -178,7 +178,7 @@
 
 
 <div class="viewcode-block" id="parse_ansi_to_irc"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.parse_ansi_to_irc">[docs]</a><span class="k">def</span> <span class="nf">parse_ansi_to_irc</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse |-type syntax and replace with IRC color markers</span>
 
 <span class="sd">    Args:</span>
@@ -204,7 +204,7 @@
 
 
 <div class="viewcode-block" id="parse_irc_to_ansi"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.parse_irc_to_ansi">[docs]</a><span class="k">def</span> <span class="nf">parse_irc_to_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse IRC mIRC color syntax and replace with Evennia ANSI color markers</span>
 
 <span class="sd">    Args:</span>
@@ -227,7 +227,7 @@
 
 
 <div class="viewcode-block" id="IRCBot"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot">[docs]</a><span class="k">class</span> <span class="nc">IRCBot</span><span class="p">(</span><span class="n">irc</span><span class="o">.</span><span class="n">IRCClient</span><span class="p">,</span> <span class="n">Session</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An IRC bot that tracks activity in a channel as well</span>
 <span class="sd">    as sends text to it when prompted</span>
 
@@ -244,7 +244,7 @@
     <span class="n">sourceURL</span> <span class="o">=</span> <span class="s2">&quot;http://code.evennia.com&quot;</span>
 
 <div class="viewcode-block" id="IRCBot.signedOn"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.signedOn">[docs]</a>    <span class="k">def</span> <span class="nf">signedOn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called when we successfully connect to the network. We</span>
 <span class="sd">        make sure to now register with the game as a full session.</span>
 
@@ -264,7 +264,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by sessionhandler to disconnect this protocol.</span>
 
 <span class="sd">        Args:</span>
@@ -279,7 +279,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="IRCBot.privmsg"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.privmsg">[docs]</a>    <span class="k">def</span> <span class="nf">privmsg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the connected channel receives a message.</span>
 
 <span class="sd">        Args:</span>
@@ -299,7 +299,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;msg&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.action"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when an action is detected in channel.</span>
 
 <span class="sd">        Args:</span>
@@ -313,7 +313,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.get_nicklist"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.get_nicklist">[docs]</a>    <span class="k">def</span> <span class="nf">get_nicklist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve name list from the channel. The return</span>
 <span class="sd">        is handled by the catch methods below.</span>
 
@@ -322,14 +322,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="s2">&quot;NAMES </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.irc_RPL_NAMREPLY"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.irc_RPL_NAMREPLY">[docs]</a>    <span class="k">def</span> <span class="nf">irc_RPL_NAMREPLY</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; &quot;Handles IRC NAME request returns (nicklist)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;Handles IRC NAME request returns (nicklist)&quot;&quot;&quot;</span>
         <span class="n">channel</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">channel</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nicklist</span> <span class="o">+=</span> <span class="n">params</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.irc_RPL_ENDOFNAMES"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.irc_RPL_ENDOFNAMES">[docs]</a>    <span class="k">def</span> <span class="nf">irc_RPL_ENDOFNAMES</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Called when the nicklist has finished being returned.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when the nicklist has finished being returned.&quot;&quot;&quot;</span>
         <span class="n">channel</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">channel</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
             <span class="k">return</span>
@@ -339,7 +339,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nicklist</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="IRCBot.pong"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.pong">[docs]</a>    <span class="k">def</span> <span class="nf">pong</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called with the return timing from a PING.</span>
 
 <span class="sd">        Args:</span>
@@ -350,7 +350,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;ping&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="n">timing</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Data IRC -&gt; Server.</span>
 
 <span class="sd">        Keyword Args:</span>
@@ -361,7 +361,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot_data_in</span><span class="o">=</span><span class="p">[</span><span class="n">parse_irc_to_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">kwargs</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="IRCBot.send_channel"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.send_channel">[docs]</a>    <span class="k">def</span> <span class="nf">send_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send channel text to IRC channel (visible to all). Note that</span>
 <span class="sd">        we don&#39;t handle the &quot;text&quot; send (it&#39;s rerouted to send_default</span>
 <span class="sd">        which does nothing) - this is because the IRC bot is a normal</span>
@@ -378,7 +378,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.send_privmsg"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.send_privmsg">[docs]</a>    <span class="k">def</span> <span class="nf">send_privmsg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send message only to specific user.</span>
 
 <span class="sd">        Args:</span>
@@ -396,7 +396,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.send_request_nicklist"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.send_request_nicklist">[docs]</a>    <span class="k">def</span> <span class="nf">send_request_nicklist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a request for the channel nicklist. The return (handled</span>
 <span class="sd">        by `self.irc_RPL_ENDOFNAMES`) will be sent back as a message</span>
 <span class="sd">        with type `nicklist&#39;.</span>
@@ -404,21 +404,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">get_nicklist</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IRCBot.send_ping"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.send_ping">[docs]</a>    <span class="k">def</span> <span class="nf">send_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a ping. The return (handled by `self.pong`) will be sent</span>
 <span class="sd">        back as a message of type &#39;ping&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nickname</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.send_reconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.send_reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">send_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The server instructs us to rebuild the connection by force,</span>
 <span class="sd">        probably because the client silently lost connection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">reconnect</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IRCBot.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ignore other types of sends.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -426,7 +426,7 @@
 
 
 <div class="viewcode-block" id="IRCBotFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBotFactory">[docs]</a><span class="k">class</span> <span class="nc">IRCBotFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates instances of IRCBot, connecting with a staggered</span>
 <span class="sd">    increase in delay</span>
 
@@ -447,7 +447,7 @@
         <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">ssl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Storing some important protocol properties.</span>
 
 <span class="sd">        Args:</span>
@@ -473,7 +473,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nicklists</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="IRCBotFactory.buildProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBotFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build the protocol and assign it some properties.</span>
 
 <span class="sd">        Args:</span>
@@ -491,7 +491,7 @@
         <span class="k">return</span> <span class="n">protocol</span></div>
 
 <div class="viewcode-block" id="IRCBotFactory.startedConnecting"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBotFactory.startedConnecting">[docs]</a>    <span class="k">def</span> <span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tracks reconnections for debugging.</span>
 
 <span class="sd">        Args:</span>
@@ -501,7 +501,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;(re)connecting to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBotFactory.clientConnectionFailed"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBotFactory.clientConnectionFailed">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when Client failed to connect.</span>
 
 <span class="sd">        Args:</span>
@@ -512,7 +512,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBotFactory.clientConnectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBotFactory.clientConnectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when Client loses connection.</span>
 
 <span class="sd">        Args:</span>
@@ -524,7 +524,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBotFactory.reconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBotFactory.reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force a reconnection of the bot protocol. This requires</span>
 <span class="sd">        de-registering the session and then reattaching a new one,</span>
 <span class="sd">        otherwise you end up with an ever growing number of bot</span>
@@ -537,7 +537,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IRCBotFactory.start"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBotFactory.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Connect session to sessionhandler.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>

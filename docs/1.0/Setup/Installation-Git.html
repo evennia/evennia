@@ -146,8 +146,8 @@ not recognize <code class="docutils literal notranslate"><span class="pre">local
 <p class="sidebar-title">Using py on Windows</p>
 <p>If you have older versions of Python installed on Windows, you should instead use <code class="docutils literal notranslate"><span class="pre">py</span></code> here instead of <code class="docutils literal notranslate"><span class="pre">python</span></code>. The <code class="docutils literal notranslate"><span class="pre">py</span></code> launcher automatically selects the latest python version among those you installed.</p>
 </aside>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.11 -m venv evenv   <span class="o">(</span>linux/mac<span class="o">)</span>
-python -m venv evenv       <span class="o">(</span>Windows<span class="o">)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.11<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>evenv<span class="w">   </span><span class="o">(</span>linux/mac<span class="o">)</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>evenv<span class="w">       </span><span class="o">(</span>Windows<span class="o">)</span>
 </pre></div>
 </div>
 <p>This will create a new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> in your current directory.
@@ -173,15 +173,15 @@ start a new terminal/console (or restart your computer). Until you do, the <code
 <h2>Linux Install<a class="headerlink" href="#linux-install" title="Permalink to this headline">¶</a></h2>
 <p>For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
 install the requirements:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get update
-sudo apt-get install python3.11 python3.11-venv python3.11-dev gcc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3.11<span class="w"> </span>python3.11-venv<span class="w"> </span>python3.11-dev<span class="w"> </span>gcc
 </pre></div>
 </div>
 <p>You should make sure to <em>not</em> be <code class="docutils literal notranslate"><span class="pre">root</span></code> after this step, running as <code class="docutils literal notranslate"><span class="pre">root</span></code> is a
 security risk. Now create a folder where you want to do all your Evennia
 development:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir muddev
-<span class="nb">cd</span> muddev
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>muddev
+<span class="nb">cd</span><span class="w"> </span>muddev
 </pre></div>
 </div>
 <p>Next we fetch Evennia itself:</p>

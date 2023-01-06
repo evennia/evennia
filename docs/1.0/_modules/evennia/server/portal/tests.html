@@ -121,7 +121,7 @@
 
 
 <div class="viewcode-block" id="TestAMPServer"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestAMPServer">[docs]</a><span class="k">class</span> <span class="nc">TestAMPServer</span><span class="p">(</span><span class="n">TwistedTestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test AMP communication</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -182,7 +182,7 @@
             <span class="n">mocked_amprecv</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">byte_out</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestAMPServer.test_large_msg"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestAMPServer.test_large_msg">[docs]</a>    <span class="k">def</span> <span class="nf">test_large_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send message larger than AMP_MAXLEN - should be split into several</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">makeConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">)</span>
@@ -233,7 +233,7 @@
 
 <div class="viewcode-block" id="TestIRC"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestIRC">[docs]</a><span class="k">class</span> <span class="nc">TestIRC</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="TestIRC.test_plain_ansi"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestIRC.test_plain_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">test_plain_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that printable characters do not get mangled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">irc_ansi</span> <span class="o">=</span> <span class="n">irc</span><span class="o">.</span><span class="n">parse_ansi_to_irc</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">printable</span><span class="p">)</span>
@@ -285,7 +285,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">irc</span><span class="o">.</span><span class="n">parse_ansi_to_irc</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
 
 <div class="viewcode-block" id="TestIRC.test_identity"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestIRC.test_identity">[docs]</a>    <span class="k">def</span> <span class="nf">test_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that the composition of the function and</span>
 <span class="sd">        its inverse gives the correct string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

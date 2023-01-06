@@ -91,7 +91,7 @@
 
 
 <div class="viewcode-block" id="DefaultChannel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel">[docs]</a><span class="k">class</span> <span class="nc">DefaultChannel</span><span class="p">(</span><span class="n">ChannelDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base class for all Channel Comms. Inherit from this to</span>
 <span class="sd">    create different types of communication channels.</span>
 
@@ -145,7 +145,7 @@
     <span class="n">channel_msg_nick_replacement</span> <span class="o">=</span> <span class="s2">&quot;channel </span><span class="si">{channelname}</span><span class="s2"> = $1&quot;</span>
 
 <div class="viewcode-block" id="DefaultChannel.at_first_save"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_first_save">[docs]</a>    <span class="k">def</span> <span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the typeclass system the very first time the channel</span>
 <span class="sd">        is saved to the database. Generally, don&#39;t overload this but</span>
 <span class="sd">        the hooks called by this method.</span>
@@ -184,7 +184,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">rotate_log_file</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.at_channel_creation"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_channel_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_channel_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once, when the channel is first created.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -195,7 +195,7 @@
     <span class="n">_log_file</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DefaultChannel.get_log_filename"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.get_log_filename">[docs]</a>    <span class="k">def</span> <span class="nf">get_log_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        File name to use for channel log.</span>
 
 <span class="sd">        Returns:</span>
@@ -210,7 +210,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_file</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.set_log_filename"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.set_log_filename">[docs]</a>    <span class="k">def</span> <span class="nf">set_log_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a custom log filename.</span>
 
 <span class="sd">        Args:</span>
@@ -221,7 +221,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.has_connection"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.has_connection">[docs]</a>    <span class="k">def</span> <span class="nf">has_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks so this account is actually listening</span>
 <span class="sd">        to this channel.</span>
 
@@ -270,7 +270,7 @@
         <span class="k">return</span> <span class="n">string</span>
 
 <div class="viewcode-block" id="DefaultChannel.mute"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.mute">[docs]</a>    <span class="k">def</span> <span class="nf">mute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds an entity to the list of muted subscribers.</span>
 <span class="sd">        A muted subscriber will no longer see channel messages,</span>
 <span class="sd">        but may use channel commands.</span>
@@ -293,7 +293,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.unmute"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.unmute">[docs]</a>    <span class="k">def</span> <span class="nf">unmute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes an entity from the list of muted subscribers.  A muted subscriber</span>
 <span class="sd">        will no longer see channel messages, but may use channel commands.</span>
 
@@ -314,7 +314,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.ban"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.ban">[docs]</a>    <span class="k">def</span> <span class="nf">ban</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ban a given user from connecting to the channel. This will not stop</span>
 <span class="sd">        users already connected, so the user must be booted for this to take</span>
 <span class="sd">        effect.</span>
@@ -337,7 +337,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.unban"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.unban">[docs]</a>    <span class="k">def</span> <span class="nf">unban</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Un-Ban a given user. This will not reconnect them - they will still</span>
 <span class="sd">        have to reconnect and set up aliases anew.</span>
 
@@ -359,7 +359,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.connect"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Connect the user to this channel. This checks access.</span>
 
 <span class="sd">        Args:</span>
@@ -389,7 +389,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.disconnect"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disconnect entity from this channel.</span>
 
 <span class="sd">        Args:</span>
@@ -423,7 +423,7 @@
         <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if another object has permission to access.</span>
 
 <span class="sd">        Args:</span>
@@ -448,7 +448,7 @@
 
 <div class="viewcode-block" id="DefaultChannel.create"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic Channel with default parameters, unless otherwise</span>
 <span class="sd">        specified or extended.</span>
 
@@ -495,7 +495,7 @@
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.delete"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deletes channel.</span>
 
 <span class="sd">        Returns:</span>
@@ -514,7 +514,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.channel_prefix"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.channel_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">channel_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook method. How the channel should prefix itself for users.</span>
 
 <span class="sd">        Returns:</span>
@@ -524,7 +524,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_prefix_string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channelname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.add_user_channel_alias"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.add_user_channel_alias">[docs]</a>    <span class="k">def</span> <span class="nf">add_user_channel_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a personal user-alias for this channel to a given subscriber.</span>
 
 <span class="sd">        Args:</span>
@@ -568,7 +568,7 @@
 
 <div class="viewcode-block" id="DefaultChannel.remove_user_channel_alias"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.remove_user_channel_alias">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">remove_user_channel_alias</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a personal channel alias from a user.</span>
 
 <span class="sd">        Args:</span>
@@ -595,7 +595,7 @@
         <span class="n">user</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">msg_nick_pattern</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.at_pre_msg"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_pre_msg">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before the starting of sending the message to a receiver. This</span>
 <span class="sd">        is called before any hooks on the receiver itself. If this returns</span>
 <span class="sd">        None/False, the sending will be aborted.</span>
@@ -613,7 +613,7 @@
         <span class="k">return</span> <span class="n">message</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.msg"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bypass_mute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send message to channel, causing it to be distributed to all non-muted</span>
 <span class="sd">        subscribed users of that channel.</span>
 
@@ -676,7 +676,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">at_post_msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.at_post_msg"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_post_msg">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called after sending to *all* valid recipients. It is normally</span>
 <span class="sd">        used for logging/channel history.</span>
 
@@ -694,7 +694,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_file</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">log_file</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.pre_join_channel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pre_join_channel">[docs]</a>    <span class="k">def</span> <span class="nf">pre_join_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">joiner</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook method. Runs right before a channel is joined. If this</span>
 <span class="sd">        returns a false value, channel joining is aborted.</span>
 
@@ -710,7 +710,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.post_join_channel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.post_join_channel">[docs]</a>    <span class="k">def</span> <span class="nf">post_join_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">joiner</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook method. Runs right after an object or account joins a channel.</span>
 
 <span class="sd">        Args:</span>
@@ -727,7 +727,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_user_channel_alias</span><span class="p">(</span><span class="n">joiner</span><span class="p">,</span> <span class="n">key_or_alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.pre_leave_channel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pre_leave_channel">[docs]</a>    <span class="k">def</span> <span class="nf">pre_leave_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaver</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook method. Runs right before a user leaves a channel. If this returns a false</span>
 <span class="sd">        value, leaving the channel will be aborted.</span>
 
@@ -743,7 +743,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.post_leave_channel"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.post_leave_channel">[docs]</a>    <span class="k">def</span> <span class="nf">post_leave_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaver</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook method. Runs right after an object or account leaves a channel.</span>
 
 <span class="sd">        Args:</span>
@@ -760,7 +760,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_user_channel_alias</span><span class="p">(</span><span class="n">leaver</span><span class="p">,</span> <span class="n">key_or_alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.at_init"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook method. This is always called whenever this channel is</span>
 <span class="sd">        initiated -- that is, whenever it its typeclass is cached from</span>
 <span class="sd">        memory. This happens on-demand first time the channel is used</span>
@@ -775,7 +775,7 @@
     <span class="c1">#</span>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
 
 <span class="sd">        ex. Account#1 = &#39;/admin/accounts/accountdb/1/change/&#39;</span>
@@ -791,7 +791,7 @@
 
 <div class="viewcode-block" id="DefaultChannel.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">web_get_create_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to create new</span>
 <span class="sd">        instances of this object.</span>
 
@@ -821,7 +821,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to view details for</span>
 <span class="sd">        this object.</span>
 
@@ -857,7 +857,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to update this</span>
 <span class="sd">        object.</span>
 
@@ -893,7 +893,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to delete this object.</span>
 
 <span class="sd">        ex. Oscar (Character) = &#39;/characters/oscar/1/delete/&#39;</span>

@@ -111,7 +111,7 @@
 
 
 <div class="viewcode-block" id="SystemNoInput"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoInput">[docs]</a><span class="k">class</span> <span class="nc">SystemNoInput</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is called when there is no input given</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -128,7 +128,7 @@
 <span class="c1"># command name</span>
 <span class="c1">#</span>
 <div class="viewcode-block" id="SystemNoMatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoMatch">[docs]</a><span class="k">class</span> <span class="nc">SystemNoMatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    No command was found matching the given input.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -136,7 +136,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
 <div class="viewcode-block" id="SystemNoMatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoMatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is given the failed raw string as input.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Huh?&quot;</span><span class="p">)</span></div></div>
@@ -146,7 +146,7 @@
 <span class="c1"># Command called when there were multiple matches to the command.</span>
 <span class="c1">#</span>
 <div class="viewcode-block" id="SystemMultimatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemMultimatch">[docs]</a><span class="k">class</span> <span class="nc">SystemMultimatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Multiple command matches.</span>
 
 <span class="sd">    The cmdhandler adds a special attribute &#39;matches&#39; to this</span>
@@ -166,7 +166,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
 <div class="viewcode-block" id="SystemMultimatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemMultimatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle multiple-matches by using the at_search_result default handler.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>

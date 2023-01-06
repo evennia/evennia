@@ -113,7 +113,7 @@
 
 
 <div class="viewcode-block" id="ServerSession"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession">[docs]</a><span class="k">class</span> <span class="nc">ServerSession</span><span class="p">(</span><span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents an account&#39;s session and is a template for</span>
 <span class="sd">    individual protocols to communicate with Evennia.</span>
 
@@ -124,7 +124,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ServerSession.__init__"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initiate to avoid AttributeErrors down the line</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -146,7 +146,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessid</span>
 
 <div class="viewcode-block" id="ServerSession.at_sync"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.at_sync">[docs]</a>    <span class="k">def</span> <span class="nf">at_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called whenever a session has been resynced with the</span>
 <span class="sd">        portal.  At this point all relevant attributes have already</span>
 <span class="sd">        been set and self.account been assigned (if applicable).</span>
@@ -180,7 +180,7 @@
             <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">cache_lock_bypass</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.at_login"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook called by sessionhandler when the session becomes authenticated.</span>
 
 <span class="sd">        Args:</span>
@@ -204,7 +204,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span> <span class="o">=</span> <span class="n">CmdSetHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.at_disconnect"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.at_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">at_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook called by sessionhandler when disconnecting this session.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -228,7 +228,7 @@
             <span class="n">MONITOR_HANDLER</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;_saved_webclient_options&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessid</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.get_account"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.get_account">[docs]</a>    <span class="k">def</span> <span class="nf">get_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the account associated with this session</span>
 
 <span class="sd">        Returns:</span>
@@ -238,7 +238,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span></div>
 
 <div class="viewcode-block" id="ServerSession.get_puppet"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.get_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">get_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the in-game character associated with this session.</span>
 
 <span class="sd">        Returns:</span>
@@ -250,7 +250,7 @@
     <span class="n">get_character</span> <span class="o">=</span> <span class="n">get_puppet</span>
 
 <div class="viewcode-block" id="ServerSession.get_puppet_or_account"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.get_puppet_or_account">[docs]</a>    <span class="k">def</span> <span class="nf">get_puppet_or_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get puppet or account.</span>
 
 <span class="sd">        Returns:</span>
@@ -263,7 +263,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ServerSession.log"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Emits session info to the appropriate outputs and info channels.</span>
 
 <span class="sd">        Args:</span>
@@ -282,7 +282,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.get_client_size"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.get_client_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return eventual eventual width and height reported by the</span>
 <span class="sd">        client. Note that this currently only deals with a single</span>
 <span class="sd">        client window (windowID==0) as in a traditional telnet session.</span>
@@ -295,7 +295,7 @@
         <span class="k">return</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span></div>
 
 <div class="viewcode-block" id="ServerSession.update_session_counters"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.update_session_counters">[docs]</a>    <span class="k">def</span> <span class="nf">update_session_counters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hit this when the user enters a command in order to update</span>
 <span class="sd">        idle timers and command counters.</span>
 
@@ -311,7 +311,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cmd_last_visible</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmd_last</span></div>
 
 <div class="viewcode-block" id="ServerSession.update_flags"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.update_flags">[docs]</a>    <span class="k">def</span> <span class="nf">update_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the protocol_flags and sync them with Portal.</span>
 
 <span class="sd">        Keyword Args:</span>
@@ -329,7 +329,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">session_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.data_out"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sending data from Evennia-&gt;Client</span>
 
 <span class="sd">        Keyword Args:</span>
@@ -342,7 +342,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.data_in"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Receiving data from the client, sending it off to</span>
 <span class="sd">        the respective inputfuncs.</span>
 
@@ -358,7 +358,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">call_inputfuncs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.msg"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wrapper to mimic msg() functionality of Objects and Accounts.</span>
 
 <span class="sd">        Args:</span>
@@ -380,7 +380,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ServerSession.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do something as this object. This method is normally never</span>
 <span class="sd">        called directly, instead incoming command instructions are</span>
 <span class="sd">        sent to the appropriate inputfunc already at the sessionhandler</span>
@@ -404,7 +404,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">session</span> <span class="ow">or</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle session comparisons</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -414,7 +414,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Python 3 requires that any class which implements __eq__ must also</span>
 <span class="sd">        implement __hash__ and that the corresponding hashes for equivalent</span>
 <span class="sd">        instances are themselves equivalent.</span>
@@ -429,7 +429,7 @@
             <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        String representation of the user session class. We use</span>
 <span class="sd">        this a lot in the server logs.</span>
 
@@ -452,7 +452,7 @@
     <span class="c1"># Dummy API hooks for use during non-loggedin operation</span>
 
 <div class="viewcode-block" id="ServerSession.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A dummy hook all objects with cmdsets need to have</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -473,7 +473,7 @@
 
     <span class="c1"># @property</span>
 <div class="viewcode-block" id="ServerSession.ndb_get"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.ndb_get">[docs]</a>    <span class="k">def</span> <span class="nf">ndb_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A non-persistent store (ndb: NonDataBase). Everything stored</span>
 <span class="sd">        to this is guaranteed to be cleared when a server is shutdown.</span>
 <span class="sd">        Syntax is same as for the _get_db_holder() method and</span>
@@ -488,7 +488,7 @@
 
     <span class="c1"># @ndb.setter</span>
 <div class="viewcode-block" id="ServerSession.ndb_set"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.ndb_set">[docs]</a>    <span class="k">def</span> <span class="nf">ndb_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop accidentally replacing the db object</span>
 
 <span class="sd">        Args:</span>
@@ -501,7 +501,7 @@
 
     <span class="c1"># @ndb.deleter</span>
 <div class="viewcode-block" id="ServerSession.ndb_del"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.ndb_del">[docs]</a>    <span class="k">def</span> <span class="nf">ndb_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop accidental deletion.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -513,7 +513,7 @@
     <span class="c1"># Mock access method for the session (there is no lock info</span>
     <span class="c1"># at this stage, so we just present a uniform API)</span>
 <div class="viewcode-block" id="ServerSession.access"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dummy method to mimic the logged-in API.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>

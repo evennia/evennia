@@ -118,35 +118,35 @@
 <div class="viewcode-block" id="S3Boto3StorageTests"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests">[docs]</a><span class="nd">@skipIf</span><span class="p">(</span><span class="n">_SKIP</span><span class="p">,</span> <span class="s2">&quot;botocore not installed&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">S3Boto3StorageTests</span><span class="p">(</span><span class="n">S3Boto3TestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="S3Boto3StorageTests.test_clean_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_clean_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_clean_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the base case of _clean_name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="s2">&quot;path/to/somewhere&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;path/to/somewhere&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_clean_name_normalize"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_clean_name_normalize">[docs]</a>    <span class="k">def</span> <span class="nf">test_clean_name_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the normalization of _clean_name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="s2">&quot;path/to/../somewhere&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;path/somewhere&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_clean_name_trailing_slash"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_clean_name_trailing_slash">[docs]</a>    <span class="k">def</span> <span class="nf">test_clean_name_trailing_slash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the _clean_name when the path has a trailing slash</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="s2">&quot;path/to/somewhere/&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;path/to/somewhere/&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_clean_name_windows"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_clean_name_windows">[docs]</a>    <span class="k">def</span> <span class="nf">test_clean_name_windows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the _clean_name when the path has a trailing slash</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="s2">&quot;path</span><span class="se">\\</span><span class="s2">to</span><span class="se">\\</span><span class="s2">somewhere&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;path/to/somewhere&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_pickle_with_bucket"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_pickle_with_bucket">[docs]</a>    <span class="k">def</span> <span class="nf">test_pickle_with_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that the storage can be pickled with a bucket attached</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Ensure the bucket has been used</span>
@@ -166,7 +166,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">new_storage</span><span class="o">.</span><span class="n">_bucket</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_pickle_without_bucket"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_pickle_without_bucket">[docs]</a>    <span class="k">def</span> <span class="nf">test_pickle_without_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that the storage can be pickled, without a bucket instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -177,7 +177,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">new_storage</span><span class="o">.</span><span class="n">_connections</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_url_slashes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_url_slashes">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_url_slashes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test URL generation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">custom_domain</span> <span class="o">=</span> <span class="s2">&quot;example.com&quot;</span>
@@ -191,7 +191,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="s2">&quot;path/1/&quot;</span><span class="p">),</span> <span class="s2">&quot;https://example.com/path/1/&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_save"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_save">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test saving a file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;test_storage_save.txt&quot;</span>
@@ -209,7 +209,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_save_with_acl"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_save_with_acl">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_save_with_acl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test saving a file with user defined ACL.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;test_storage_save.txt&quot;</span>
@@ -228,7 +228,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_content_type"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_content_type">[docs]</a>    <span class="k">def</span> <span class="nf">test_content_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test saving a file with a None content type.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;test_image.jpg&quot;</span>
@@ -247,7 +247,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_save_gzipped"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzipped">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_save_gzipped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test saving a gzipped file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;test_storage_save.gz&quot;</span>
@@ -264,7 +264,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_save_gzip"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzip">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_save_gzip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test saving a file with gzip enabled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">gzip</span> <span class="o">=</span> <span class="kc">True</span>
@@ -286,7 +286,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">zfile</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="sa">b</span><span class="s2">&quot;I should be gzip&#39;d&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_save_gzip_twice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzip_twice">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_save_gzip_twice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test saving the same file content twice with gzip enabled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Given</span>
@@ -314,7 +314,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">zfile</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="sa">b</span><span class="s2">&quot;I should be gzip&#39;d&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_compress_content_len"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_compress_content_len">[docs]</a>    <span class="k">def</span> <span class="nf">test_compress_content_len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that file returned by _compress_content() is readable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">gzip</span> <span class="o">=</span> <span class="kc">True</span>
@@ -323,7 +323,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">read</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_open_write"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_open_write">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_open_write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test opening a file in write mode</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;test_open_for_writïng.txt&quot;</span>
@@ -360,7 +360,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_open_no_write"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_open_no_write">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_open_no_write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test opening file in write mode and closing without writing.</span>
 
 <span class="sd">        A file should be created as by obj.put(...).</span>
@@ -395,7 +395,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_open_no_overwrite_existing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_open_no_overwrite_existing">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_open_no_overwrite_existing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test opening an existing file in write mode and closing without writing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;test_open_no_overwrite_existing.txt&quot;</span>
@@ -419,7 +419,7 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">put</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_write_beyond_buffer_size"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_write_beyond_buffer_size">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_write_beyond_buffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test writing content that exceeds the buffer size</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;test_open_for_writïng_beyond_buffer_size.txt&quot;</span>

@@ -85,14 +85,14 @@
 
 
 <div class="viewcode-block" id="DBField"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.DBField">[docs]</a><span class="k">class</span> <span class="nc">DBField</span><span class="p">(</span><span class="n">AttributeProperty</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Component Attribute Descriptor.</span>
 <span class="sd">    Allows you to set attributes related to a component on the class.</span>
 <span class="sd">    It uses AttributeProperty under the hood but prefixes the key with the component name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when descriptor is first assigned to the class.</span>
 
 <span class="sd">        Args:</span>
@@ -109,14 +109,14 @@
 
 
 <div class="viewcode-block" id="NDBField"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.NDBField">[docs]</a><span class="k">class</span> <span class="nc">NDBField</span><span class="p">(</span><span class="n">NAttributeProperty</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Component In-Memory Attribute Descriptor.</span>
 <span class="sd">    Allows you to set in-memory attributes related to a component on the class.</span>
 <span class="sd">    It uses NAttributeProperty under the hood but prefixes the key with the component name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when descriptor is first assigned to the class.</span>
 
 <span class="sd">        Args:</span>
@@ -133,7 +133,7 @@
 
 
 <div class="viewcode-block" id="TagField"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.dbfield.html#evennia.contrib.base_systems.components.dbfield.TagField">[docs]</a><span class="k">class</span> <span class="nc">TagField</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Component Tags Descriptor.</span>
 <span class="sd">    Allows you to set Tags related to a component on the class.</span>
 <span class="sd">    The tags are set with a prefixed category, so it can support</span>
@@ -149,7 +149,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_single</span> <span class="o">=</span> <span class="n">enforce_single</span></div>
 
     <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when TagField is first assigned to the class.</span>
 <span class="sd">        It is called with the component class and the name of the field.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -161,7 +161,7 @@
         <span class="n">tag_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when retrieving the value of the TagField.</span>
 <span class="sd">        It is called with the component instance and the class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -172,7 +172,7 @@
         <span class="k">return</span> <span class="n">tag_value</span>
 
     <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when setting a value on the TagField.</span>
 <span class="sd">        It is called with the component instance and the value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -187,7 +187,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Used when &#39;del&#39; is called on the TagField.</span>
 <span class="sd">        It is called with the component instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

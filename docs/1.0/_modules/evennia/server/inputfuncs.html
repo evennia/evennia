@@ -141,7 +141,7 @@
 
 
 <div class="viewcode-block" id="text"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.text">[docs]</a><span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main text input from the client. This will execute a command</span>
 <span class="sd">    string on the server.</span>
 
@@ -184,7 +184,7 @@
 
 
 <div class="viewcode-block" id="bot_data_in"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.bot_data_in">[docs]</a><span class="k">def</span> <span class="nf">bot_data_in</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Text input from the IRC and RSS bots.</span>
 <span class="sd">    This will trigger the execute_cmd method on the bots in-game counterpart.</span>
 
@@ -215,7 +215,7 @@
 
 
 <div class="viewcode-block" id="echo"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.echo">[docs]</a><span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Echo test function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">_STRIP_INCOMING_MXP</span><span class="p">:</span>
@@ -225,7 +225,7 @@
 
 
 <div class="viewcode-block" id="default"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.default">[docs]</a><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Default catch-function. This is like all other input functions except</span>
 <span class="sd">    it will get `cmdname` as the first argument.</span>
 
@@ -261,7 +261,7 @@
 
 
 <div class="viewcode-block" id="client_options"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.client_options">[docs]</a><span class="k">def</span> <span class="nf">client_options</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This allows the client an OOB way to inform us about its name and capabilities.</span>
 <span class="sd">    This will be integrated into the session settings</span>
 
@@ -363,14 +363,14 @@
 
 
 <div class="viewcode-block" id="get_client_options"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.get_client_options">[docs]</a><span class="k">def</span> <span class="nf">get_client_options</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Alias wrapper for getting options.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">client_options</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">get</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_inputfuncs"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.get_inputfuncs">[docs]</a><span class="k">def</span> <span class="nf">get_inputfuncs</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the keys of all available inputfuncs. Note that we don&#39;t get</span>
 <span class="sd">    it from this module alone since multiple modules could be added.</span>
 <span class="sd">    So we get it from the sessionhandler.</span>
@@ -382,7 +382,7 @@
 
 
 <div class="viewcode-block" id="login"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.login">[docs]</a><span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Peform a login. This only works if session is currently not logged</span>
 <span class="sd">    in. This will also automatically throttle too quick attempts.</span>
 
@@ -408,7 +408,7 @@
 
 
 <div class="viewcode-block" id="get_value"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.get_value">[docs]</a><span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the value of a given attribute or db_property on the</span>
 <span class="sd">    session&#39;s current account or character.</span>
 
@@ -425,7 +425,7 @@
 
 
 <span class="k">def</span> <span class="nf">_testrepeat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a test function for using with the repeat</span>
 <span class="sd">    inputfunc.</span>
 
@@ -441,7 +441,7 @@
 
 
 <div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.repeat">[docs]</a><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Call a named function repeatedly. Note that</span>
 <span class="sd">    this is meant as an example of limiting the number of</span>
 <span class="sd">    possible call functions.</span>
@@ -504,7 +504,7 @@
 
 
 <div class="viewcode-block" id="monitor"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.monitor">[docs]</a><span class="k">def</span> <span class="nf">monitor</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds monitoring to a given property or Attribute.</span>
 
 <span class="sd">    Keyword Args:</span>
@@ -542,7 +542,7 @@
 
 
 <div class="viewcode-block" id="unmonitor"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.unmonitor">[docs]</a><span class="k">def</span> <span class="nf">unmonitor</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for turning off monitoring</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;stop&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -550,7 +550,7 @@
 
 
 <div class="viewcode-block" id="monitored"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.monitored">[docs]</a><span class="k">def</span> <span class="nf">monitored</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Report on what is being monitored</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -562,7 +562,7 @@
 
 
 <span class="k">def</span> <span class="nf">_on_webclient_options_change</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Called when the webclient options stored on the account changes.</span>
 <span class="sd">    Inform the interested clients of this change.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -578,7 +578,7 @@
 
 
 <div class="viewcode-block" id="webclient_options"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.webclient_options">[docs]</a><span class="k">def</span> <span class="nf">webclient_options</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles retrieving and changing of options related to the webclient.</span>
 
 <span class="sd">    If kwargs is empty (or contains just a &quot;cmdid&quot;), the saved options will be</span>
@@ -642,7 +642,7 @@
 
 
 <div class="viewcode-block" id="msdp_list"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.msdp_list">[docs]</a><span class="k">def</span> <span class="nf">msdp_list</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MSDP LIST command</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -683,7 +683,7 @@
 
 
 <div class="viewcode-block" id="msdp_report"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.msdp_report">[docs]</a><span class="k">def</span> <span class="nf">msdp_report</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MSDP REPORT command</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -692,7 +692,7 @@
 
 
 <div class="viewcode-block" id="msdp_unreport"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.msdp_unreport">[docs]</a><span class="k">def</span> <span class="nf">msdp_unreport</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MSDP UNREPORT command</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -700,7 +700,7 @@
 
 
 <div class="viewcode-block" id="msdp_send"><a class="viewcode-back" href="../../../api/evennia.server.inputfuncs.html#evennia.server.inputfuncs.msdp_send">[docs]</a><span class="k">def</span> <span class="nf">msdp_send</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MSDP SEND command</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
@@ -714,7 +714,7 @@
 
 
 <span class="k">def</span> <span class="nf">_not_implemented</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dummy used to swallow missing-inputfunc errors for</span>
 <span class="sd">    common clients.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

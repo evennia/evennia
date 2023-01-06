@@ -114,7 +114,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return currently active menu prototype.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return currently active menu prototype.&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">,</span> <span class="s2">&quot;olc_prototype&quot;</span><span class="p">):</span>
         <span class="n">prototype</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_prototype</span>
@@ -125,7 +125,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_flat_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">refresh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return prototype where parent values are included&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return prototype where parent values are included&quot;&quot;&quot;</span>
     <span class="n">flat_prototype</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">refresh</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">,</span> <span class="s2">&quot;olc_flat_prototype&quot;</span><span class="p">):</span>
         <span class="n">flat_prototype</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_flat_prototype</span>
@@ -138,7 +138,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_unchanged_inherited</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">protname</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return prototype values inherited from parent(s), which are not replaced in child&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return prototype values inherited from parent(s), which are not replaced in child&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">protname</span> <span class="ow">in</span> <span class="n">prototype</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">protname</span><span class="p">[</span><span class="n">protname</span><span class="p">],</span> <span class="kc">False</span>
@@ -150,19 +150,19 @@
 
 
 <span class="k">def</span> <span class="nf">_set_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Set the prototype with existing one&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the prototype with existing one&quot;&quot;&quot;</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_prototype</span> <span class="o">=</span> <span class="n">prototype</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_new</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="n">prototype</span>
 
 
 <span class="k">def</span> <span class="nf">_is_new_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check if prototype is marked as new or was loaded from a saved one.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if prototype is marked as new or was loaded from a saved one.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">,</span> <span class="s2">&quot;olc_new&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_format_option_value</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cropper</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format wizard option values.</span>
 
 <span class="sd">    Args:</span>
@@ -193,7 +193,7 @@
 
 
 <span class="k">def</span> <span class="nf">_set_prototype_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">parse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Set prototype&#39;s field in a safe way.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set prototype&#39;s field in a safe way.&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">prototype</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_prototype</span> <span class="o">=</span> <span class="n">prototype</span>
@@ -201,7 +201,7 @@
 
 
 <span class="k">def</span> <span class="nf">_set_property</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add or update a property. To be called by the &#39;goto&#39; option variable.</span>
 
 <span class="sd">    Args:</span>
@@ -269,7 +269,7 @@
 
 
 <span class="k">def</span> <span class="nf">_wizard_options</span><span class="p">(</span><span class="n">curr_node</span><span class="p">,</span> <span class="n">prev_node</span><span class="p">,</span> <span class="n">next_node</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;|W&quot;</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates default navigation options available in the wizard.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates default navigation options available in the wizard.&quot;&quot;&quot;</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">prev_node</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -318,7 +318,7 @@
 
 
 <span class="k">def</span> <span class="nf">_validate_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Run validation on prototype&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run validation on prototype&quot;&quot;&quot;</span>
 
     <span class="n">txt</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">prototype_to_str</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
     <span class="n">errors</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|g No validation errors found.|n (but errors could still happen at spawn-time)&quot;</span>
@@ -369,7 +369,7 @@
 
 
 <span class="k">def</span> <span class="nf">_format_list_actions</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create footer text for nodes with extra list actions</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create footer text for nodes with extra list actions</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        actions (str): Available actions. The first letter of the action name will be assumed</span>
@@ -388,7 +388,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">keyname</span><span class="p">,</span> <span class="n">comparer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">only_inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return current value, marking if value comes from parent or set in this prototype.</span>
 
 <span class="sd">    Args:</span>
@@ -447,7 +447,7 @@
 
 
 <span class="k">def</span> <span class="nf">_default_parse</span><span class="p">(</span><span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper to parse default input to a node decorated with the node_list decorator on</span>
 <span class="sd">    the form l1, l 2, look 1, etc. Spaces are ignored, as is case.</span>
 
@@ -480,7 +480,7 @@
 
 
 <div class="viewcode-block" id="node_validate_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_validate_prototype">[docs]</a><span class="k">def</span> <span class="nf">node_validate_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;General node to view and validate a protototype&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;General node to view and validate a protototype&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_flat_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">prev_node</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;back&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">)</span>
 
@@ -504,7 +504,7 @@
 
 
 <div class="viewcode-block" id="node_examine_entity"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_examine_entity">[docs]</a><span class="k">def</span> <span class="nf">node_examine_entity</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    General node to view a text and then return to previous node.  Kwargs should contain &quot;text&quot; for</span>
 <span class="sd">    the text to show and &#39;back&quot; pointing to the node to return to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -622,7 +622,7 @@
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_search_object</span><span class="p">,</span> <span class="n">_object_search_select</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">node_search_object</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Node for searching for an existing object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
@@ -672,7 +672,7 @@
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">       |c --- Prototype wizard --- |n</span>
-<span class="s2">       </span><span class="si">%s</span><span class="s2"></span>
+<span class="s2">       </span><span class="si">%s</span>
 
 <span class="s2">       A |cprototype|n is a &#39;template&#39; for |wspawning|n an in-game entity. A field of the prototype</span>
 <span class="s2">       can either be hard-coded, left empty or scripted using |w$protfuncs|n - for example to</span>
@@ -707,7 +707,7 @@
 <span class="s2">       entered as a string $funcname(arg, arg, ...) and are evaluated |wat the time of spawning|n</span>
 <span class="s2">       only.  They can also be nested for combined effects.</span>
 
-<span class="s2">       </span><span class="si">{pfuncs}</span><span class="s2"></span>
+<span class="s2">       </span><span class="si">{pfuncs}</span>
 <span class="s2">       &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">pfuncs</span><span class="o">=</span><span class="n">_format_protfuncs</span><span class="p">()</span>
     <span class="p">)</span>
@@ -844,7 +844,7 @@
 
 
 <span class="k">def</span> <span class="nf">_all_prototype_parents</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return prototype_key of all available prototypes for listing in menu&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return prototype_key of all available prototypes for listing in menu&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">()</span>
@@ -853,7 +853,7 @@
 
 
 <span class="k">def</span> <span class="nf">_prototype_parent_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse the default Convert prototype to a string representation for closer inspection&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the default Convert prototype to a string representation for closer inspection&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">prototype_parent</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
         <span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
@@ -956,7 +956,7 @@
 <span class="s2">        Note that somewhere in the prototype&#39;s parentage, a |ctypeclass|n must be specified. If no</span>
 <span class="s2">        parent is given, this prototype must define the typeclass (next menu node).</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">        &quot;&quot;&quot;</span>
     <span class="n">helptext</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Prototypes can inherit from one another. Changes in the child replace any values set in a</span>
@@ -997,7 +997,7 @@
 
 
 <span class="k">def</span> <span class="nf">_all_typeclasses</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get name of available typeclasses.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get name of available typeclasses.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
         <span class="n">name</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_all_typeclasses</span><span class="p">(</span><span class="s2">&quot;evennia.objects.models.ObjectDB&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -1006,7 +1006,7 @@
 
 
 <span class="k">def</span> <span class="nf">_typeclass_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse actions for typeclass listing&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse actions for typeclass listing&quot;&quot;&quot;</span>
 
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">typeclass_path</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
@@ -1045,7 +1045,7 @@
 
 
 <span class="k">def</span> <span class="nf">_typeclass_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Select typeclass from list and add it to prototype. Return next node to go to.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select typeclass from list and add it to prototype. Return next node to go to.&quot;&quot;&quot;</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">_set_property</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="n">processor</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Selected typeclass |c</span><span class="si">{}</span><span class="s2">|n.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typeclass</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">ret</span>
@@ -1059,7 +1059,7 @@
 <span class="s2">        All spawned objects must have a typeclass. If not given here, the typeclass must be set in</span>
 <span class="s2">        one of the prototype&#39;s |cparents|n.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;typeclass&quot;</span><span class="p">),</span>
         <span class="n">actions</span><span class="o">=</span><span class="s2">&quot;|WSelect with |w&lt;num&gt;|W. Other actions: &quot;</span>
@@ -1088,7 +1088,7 @@
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        The |cKey|n is the given name of the object to spawn. This will retain the given case.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">)</span>
     <span class="p">)</span>
@@ -1099,7 +1099,7 @@
 <span class="s2">        names every time an object of this prototype is spawned.</span>
 
 <span class="s2">        |c$protfuncs|n</span>
-<span class="s2">        </span><span class="si">{pfuncs}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{pfuncs}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">pfuncs</span><span class="o">=</span><span class="n">_format_protfuncs</span><span class="p">()</span>
     <span class="p">)</span>
@@ -1141,7 +1141,7 @@
 
 
 <span class="k">def</span> <span class="nf">_aliases_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse actions for aliases listing&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse actions for aliases listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">alias</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span><span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
 
@@ -1172,7 +1172,7 @@
 <span class="s2">        |cAliases|n are alternative ways to address an object, next to its |cKey|n.  Aliases are not</span>
 <span class="s2">        case sensitive.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span>
             <span class="n">caller</span><span class="p">,</span>
@@ -1191,7 +1191,7 @@
 
 <span class="s2">        |c$protfuncs|n</span>
 
-<span class="s2">        </span><span class="si">{pfuncs}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{pfuncs}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">pfuncs</span><span class="o">=</span><span class="n">_format_protfuncs</span><span class="p">()</span>
     <span class="p">)</span>
@@ -1226,7 +1226,7 @@
 
 
 <span class="k">def</span> <span class="nf">_display_attribute</span><span class="p">(</span><span class="n">attr_tuple</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pretty-print attribute tuple&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretty-print attribute tuple&quot;&quot;&quot;</span>
     <span class="n">attrkey</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">locks</span> <span class="o">=</span> <span class="n">attr_tuple</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -1242,7 +1242,7 @@
 
 
 <span class="k">def</span> <span class="nf">_add_attr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">attr_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add new attribute, parsing input.</span>
 
 <span class="sd">    Args:</span>
@@ -1319,7 +1319,7 @@
 
 
 <span class="k">def</span> <span class="nf">_attrs_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse actions for attribute listing&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse actions for attribute listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">attrstr</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
         <span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
@@ -1368,7 +1368,7 @@
 <span class="s2">        To give an attribute without a category but with a lockstring, leave that spot empty</span>
 <span class="s2">        (attrname;;lockstring=value). Attribute values can have embedded $protfuncs.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span>
             <span class="n">caller</span><span class="p">,</span>
@@ -1388,7 +1388,7 @@
 
 <span class="s2">        |c$protfuncs</span>
 
-<span class="s2">        </span><span class="si">{pfuncs}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{pfuncs}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">pfuncs</span><span class="o">=</span><span class="n">_format_protfuncs</span><span class="p">()</span>
     <span class="p">)</span>
@@ -1420,7 +1420,7 @@
 
 
 <span class="k">def</span> <span class="nf">_display_tag</span><span class="p">(</span><span class="n">tag_tuple</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pretty-print tag tuple&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretty-print tag tuple&quot;&quot;&quot;</span>
     <span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">tag_tuple</span>
     <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;Tag: &#39;</span><span class="si">{tagkey}</span><span class="s2">&#39; (category: </span><span class="si">{category}{dat}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">tagkey</span><span class="o">=</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">dat</span><span class="o">=</span><span class="s2">&quot;, data: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="n">data</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -1429,7 +1429,7 @@
 
 
 <span class="k">def</span> <span class="nf">_add_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add tags to the system, parsing input</span>
 
 <span class="sd">    Args:</span>
@@ -1503,7 +1503,7 @@
 
 
 <span class="k">def</span> <span class="nf">_tags_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse actions for tags listing&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse actions for tags listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">tagname</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
         <span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
@@ -1544,7 +1544,7 @@
 <span class="s2">            tagname;category</span>
 <span class="s2">            tagname;category;data</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span>
             <span class="n">caller</span><span class="p">,</span>
@@ -1654,7 +1654,7 @@
 <span class="s2">            locktype:[NOT] lockfunc(args)</span>
 <span class="s2">            locktype: [NOT] lockfunc(args) [AND|OR|NOT] lockfunc(args) [AND|OR|NOT] ...</span>
 
-<span class="s2">        </span><span class="si">{current}{action}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}{action}</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span>
             <span class="n">caller</span><span class="p">,</span>
@@ -1681,7 +1681,7 @@
 
 <span class="s2">        |cAvailable lockfuncs:|n</span>
 
-<span class="s2">        </span><span class="si">{lfuncs}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{lfuncs}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">lfuncs</span><span class="o">=</span><span class="n">_format_lockfuncs</span><span class="p">()</span>
     <span class="p">)</span>
@@ -1751,7 +1751,7 @@
 
 
 <span class="k">def</span> <span class="nf">_permissions_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse actions for permission listing&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse actions for permission listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">perm</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
         <span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
@@ -1784,7 +1784,7 @@
 <span class="s2">        permissions belong in the |cpermission hierarchy|n together with the |Wperm()|n lock</span>
 <span class="s2">        function.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span>
             <span class="n">caller</span><span class="p">,</span>
@@ -1827,7 +1827,7 @@
 <span class="s2">        The |cLocation|n of this object in the world. If not given, the object will spawn in the</span>
 <span class="s2">        inventory of |c</span><span class="si">{caller}</span><span class="s2">|n by default.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">)</span>
     <span class="p">)</span>
@@ -1838,7 +1838,7 @@
 <span class="s2">        location. One could also consider randomizing the location using a $protfunc.</span>
 
 <span class="s2">        |c$protfuncs|n</span>
-<span class="s2">        </span><span class="si">{pfuncs}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{pfuncs}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">pfuncs</span><span class="o">=</span><span class="n">_format_protfuncs</span><span class="p">()</span>
     <span class="p">)</span>
@@ -1867,7 +1867,7 @@
 
 <span class="s2">        If unset, the global home default (|w</span><span class="si">{default}</span><span class="s2">|n) will be used.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span> <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
     <span class="p">)</span>
@@ -1879,7 +1879,7 @@
 <span class="s2">        enough.</span>
 
 <span class="s2">        |c$protfuncs|n</span>
-<span class="s2">        </span><span class="si">{pfuncs}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{pfuncs}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">pfuncs</span><span class="o">=</span><span class="n">_format_protfuncs</span><span class="p">()</span>
     <span class="p">)</span>
@@ -1905,7 +1905,7 @@
 <span class="s2">        The object&#39;s |cDestination|n is generally only used by Exit-like objects to designate where</span>
 <span class="s2">        the exit &#39;leads to&#39;. It&#39;s usually unset for all other types of objects.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">)</span>
     <span class="p">)</span>
@@ -1915,7 +1915,7 @@
 <span class="s2">        &#39;$obj(name)&#39;. Use |wSEearch to find objects in the database.</span>
 
 <span class="s2">        |c$protfuncs|n</span>
-<span class="s2">        </span><span class="si">{pfuncs}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{pfuncs}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">pfuncs</span><span class="o">=</span><span class="n">_format_protfuncs</span><span class="p">()</span>
     <span class="p">)</span>
@@ -1940,7 +1940,7 @@
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        The |cPrototype-Description|n briefly describes the prototype when it&#39;s viewed in listings.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;prototype_desc&quot;</span><span class="p">)</span>
     <span class="p">)</span>
@@ -1980,7 +1980,7 @@
 
 
 <span class="k">def</span> <span class="nf">_add_prototype_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add prototype_tags to the system. We only support straight tags, no</span>
 <span class="sd">    categories (category is assigned automatically).</span>
 
@@ -2028,7 +2028,7 @@
 
 
 <span class="k">def</span> <span class="nf">_prototype_tags_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse actions for tags listing&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse actions for tags listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">tagname</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span><span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
 
@@ -2049,7 +2049,7 @@
 <span class="s2">        |cPrototype-Tags|n can be used to classify and find prototypes in listings Tag names are not</span>
 <span class="s2">        case-sensitive and can have not have a custom category.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span>
             <span class="n">caller</span><span class="p">,</span>
@@ -2156,7 +2156,7 @@
 
 <span class="s2">        If unsure, keep the open defaults.</span>
 
-<span class="s2">        </span><span class="si">{current}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{current}</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">current</span><span class="o">=</span><span class="n">_get_current_value</span><span class="p">(</span>
             <span class="n">caller</span><span class="p">,</span>
@@ -2187,7 +2187,7 @@
 
 
 <span class="k">def</span> <span class="nf">_apply_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;update existing objects&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;update existing objects&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;prototype&quot;</span><span class="p">]</span>
     <span class="n">objects</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;objects&quot;</span><span class="p">]</span>
     <span class="n">back_node</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;back_node&quot;</span><span class="p">]</span>
@@ -2200,7 +2200,7 @@
 
 
 <span class="k">def</span> <span class="nf">_keep_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Change to KEEP setting for a given section of a diff&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Change to KEEP setting for a given section of a diff&quot;&quot;&quot;</span>
     <span class="c1"># from evennia import set_trace;set_trace(term_size=(182, 50))</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
     <span class="n">diff</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;diff&quot;</span><span class="p">]</span>
@@ -2211,7 +2211,7 @@
 
 
 <span class="k">def</span> <span class="nf">_format_diff_text_and_options</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reformat the diff in a way suitable for the olc menu.</span>
 
 <span class="sd">    Args:</span>
@@ -2321,10 +2321,10 @@
 
 
 <div class="viewcode-block" id="node_apply_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_apply_diff">[docs]</a><span class="k">def</span> <span class="nf">node_apply_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Offer options for updating objects&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Offer options for updating objects&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_keep_option</span><span class="p">(</span><span class="n">keyname</span><span class="p">,</span> <span class="n">prototype</span><span class="p">,</span> <span class="n">base_obj</span><span class="p">,</span> <span class="n">obj_prototype</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">objects</span><span class="p">,</span> <span class="n">back_node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;helper returning an option dict&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;helper returning an option dict&quot;&quot;&quot;</span>
         <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Keep </span><span class="si">{}</span><span class="s2"> as-is&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keyname</span><span class="p">),</span>
             <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
@@ -2434,7 +2434,7 @@
 
 
 <div class="viewcode-block" id="node_prototype_save"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_prototype_save">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save prototype to disk&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save prototype to disk&quot;&quot;&quot;</span>
     <span class="c1"># these are only set if we selected &#39;yes&#39; to save on a previous pass</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="c1"># set to True/False if answered, None if first pass</span>
@@ -2554,7 +2554,7 @@
 
 
 <span class="k">def</span> <span class="nf">_spawn</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Spawn prototype&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spawn prototype&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;prototype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">new_location</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">new_location</span><span class="p">:</span>
@@ -2574,7 +2574,7 @@
 
 
 <div class="viewcode-block" id="node_prototype_spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_prototype_spawn">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_spawn</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Submenu for spawning the prototype&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Submenu for spawning the prototype&quot;&quot;&quot;</span>
 
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
 
@@ -2678,7 +2678,7 @@
 
 
 <span class="k">def</span> <span class="nf">_prototype_load_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse the default Convert prototype to a string representation for closer inspection&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the default Convert prototype to a string representation for closer inspection&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">prototype</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
         <span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;del&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
@@ -2707,7 +2707,7 @@
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_all_prototype_parents</span><span class="p">,</span> <span class="n">_prototype_load_select</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">node_prototype_load</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Load prototype&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load prototype&quot;&quot;&quot;</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Select a prototype to load. This will replace any prototype currently being edited!</span>
@@ -2731,20 +2731,20 @@
 
 
 <div class="viewcode-block" id="OLCMenu"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu">[docs]</a><span class="k">class</span> <span class="nc">OLCMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A custom EvMenu with a different formatting for the options.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="OLCMenu.nodetext_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu.nodetext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">nodetext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format the node text itself.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">nodetext_formatter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="OLCMenu.options_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu.options_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Split the options into two blocks - olc options and normal options</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2783,7 +2783,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">olc_options</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">other_options</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="OLCMenu.helptext_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu.helptext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">helptext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">helptext</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show help text</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;|c --- Help ---|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">helptext</span><span class="p">)</span></div>
@@ -2793,7 +2793,7 @@
 
 
 <div class="viewcode-block" id="start_olc"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.start_olc">[docs]</a><span class="k">def</span> <span class="nf">start_olc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start menu-driven olc system for prototypes.</span>
 
 <span class="sd">    Args:</span>

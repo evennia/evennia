@@ -88,7 +88,7 @@
     <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">ssl</span> <span class="k">as</span> <span class="n">twisted_ssl</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
     <span class="n">errstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    </span><span class="si">{err}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{err}</span>
 <span class="s2">    SSL requires the PyOpenSSL library:</span>
 <span class="s2">        pip install pyopenssl</span>
 <span class="s2">    &quot;&quot;&quot;</span>
@@ -104,28 +104,28 @@
 
 <span class="n">NO_AUTOGEN</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="si">{err}</span><span class="s2"></span>
+<span class="si">{err}</span>
 <span class="s2">Evennia could not auto-generate the SSL private key. If this error</span>
 <span class="s2">persists, create </span><span class="si">{keyfile}</span><span class="s2"> yourself using third-party tools.</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">NO_AUTOCERT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="si">{err}</span><span class="s2"></span>
+<span class="si">{err}</span>
 <span class="s2">Evennia&#39;s SSL context factory could not automatically, create an SSL</span>
 <span class="s2">certificate </span><span class="si">{certfile}</span><span class="s2">.</span>
 
-<span class="s2">A private key </span><span class="si">{keyfile}</span><span class="s2"> was already created. Please create </span><span class="si">{certfile}</span><span class="s2"></span>
+<span class="s2">A private key </span><span class="si">{keyfile}</span><span class="s2"> was already created. Please create </span><span class="si">{certfile}</span>
 <span class="s2">manually using the commands valid  for your operating system, for</span>
 <span class="s2">example (linux, using the openssl program):</span>
-<span class="s2">    </span><span class="si">{exestring}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{exestring}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">_TELNET_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TELNET_PROTOCOL_CLASS</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SSLProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.SSLProtocol">[docs]</a><span class="k">class</span> <span class="nc">SSLProtocol</span><span class="p">(</span><span class="n">_TELNET_PROTOCOL_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Communication is the same as telnet, except data transfer</span>
 <span class="sd">    is done with encryption.</span>
 
@@ -137,7 +137,7 @@
 
 
 <div class="viewcode-block" id="verify_SSL_key_and_cert"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.verify_SSL_key_and_cert">[docs]</a><span class="k">def</span> <span class="nf">verify_SSL_key_and_cert</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="n">certfile</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function looks for RSA key and certificate in the current</span>
 <span class="sd">    directory. If files ssl.key and ssl.cert does not exist, they</span>
 <span class="sd">    are created.</span>
@@ -183,7 +183,7 @@
 
 
 <div class="viewcode-block" id="getSSLContext"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssl.html#evennia.server.portal.ssl.getSSLContext">[docs]</a><span class="k">def</span> <span class="nf">getSSLContext</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is called by the portal when creating the SSL context</span>
 <span class="sd">    server-side.</span>
 

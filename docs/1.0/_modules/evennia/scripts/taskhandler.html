@@ -94,7 +94,7 @@
 
 
 <div class="viewcode-block" id="handle_error"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.handle_error">[docs]</a><span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Handle errors within deferred objects.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle errors within deferred objects.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
         <span class="c1"># suppress cancel errors</span>
         <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">DefCancelledError</span><span class="p">:</span>
@@ -103,7 +103,7 @@
 
 
 <div class="viewcode-block" id="TaskHandlerTask"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask">[docs]</a><span class="k">class</span> <span class="nc">TaskHandlerTask</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;An object to represent a single TaskHandler task.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An object to represent a single TaskHandler task.</span>
 
 <span class="sd">    Instance Attributes:</span>
 <span class="sd">        task_id (int): the global id for this task</span>
@@ -130,7 +130,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span> <span class="o">=</span> <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">get_deferred</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandlerTask.get_deferred"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.get_deferred">[docs]</a>    <span class="k">def</span> <span class="nf">get_deferred</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the instance of the deferred the task id is using.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the instance of the deferred the task id is using.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool or deferred: An instance of a deferred or False if there is no task with the id.</span>
@@ -140,7 +140,7 @@
         <span class="k">return</span> <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">get_deferred</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandlerTask.pause"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pause the callback of a task.</span>
 <span class="sd">        To resume use `TaskHandlerTask.unpause`.</span>
 
@@ -150,7 +150,7 @@
             <span class="n">d</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TaskHandlerTask.unpause"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unpause a task, run the task if it has passed delay time.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -160,7 +160,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">paused</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A task attribute to check if the deferred instance of a task has been paused.</span>
 
 <span class="sd">        This exists to mock usage of a twisted deferred object.</span>
@@ -177,7 +177,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="TaskHandlerTask.do_task"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.do_task">[docs]</a>    <span class="k">def</span> <span class="nf">do_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the task (call its callback).</span>
 <span class="sd">        If calling before timedelay, cancel the deferred instance affliated to this task.</span>
 <span class="sd">        Remove the task from the dictionary of current tasks on a successful</span>
@@ -191,7 +191,7 @@
         <span class="k">return</span> <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">do_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandlerTask.call"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the callback of a task.</span>
 <span class="sd">        Leave the task unaffected otherwise.</span>
 <span class="sd">        This does not use the task&#39;s deferred instance.</span>
@@ -205,7 +205,7 @@
         <span class="k">return</span> <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">call_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandlerTask.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove a task without executing it.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a task without executing it.</span>
 <span class="sd">        Deletes the instance of the task&#39;s deferred.</span>
 
 <span class="sd">        Args:</span>
@@ -218,7 +218,7 @@
         <span class="k">return</span> <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandlerTask.cancel"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stop a task from automatically executing.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop a task from automatically executing.</span>
 <span class="sd">        This will not remove the task.</span>
 
 <span class="sd">        Returns:</span>
@@ -229,7 +229,7 @@
         <span class="k">return</span> <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandlerTask.active"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.active">[docs]</a>    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Check if a task is active (has not been called yet).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a task is active (has not been called yet).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if a task is active (has not been called yet). False if</span>
@@ -240,7 +240,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">called</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A task attribute to check if the deferred instance of a task has been called.</span>
 
 <span class="sd">        This exists to mock usage of a twisted deferred object.</span>
@@ -259,7 +259,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="TaskHandlerTask.exists"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a task exists.</span>
 <span class="sd">        Most task handler methods check for existence for you.</span>
 
@@ -270,7 +270,7 @@
         <span class="k">return</span> <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandlerTask.get_id"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandlerTask.get_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the global id for this task. For use with</span>
 <span class="sd">        `evennia.scripts.taskhandler.TASK_HANDLER`.</span>
 
@@ -283,7 +283,7 @@
 
 <div class="viewcode-block" id="TaskHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler">[docs]</a><span class="k">class</span> <span class="nc">TaskHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;A light singleton wrapper allowing to access permanent tasks.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A light singleton wrapper allowing to access permanent tasks.</span>
 
 <span class="sd">    When `utils.delay` is called, the task handler is used to create</span>
 <span class="sd">    the task.</span>
@@ -306,7 +306,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_now</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># used in unit testing to manually set now time</span></div>
 
 <div class="viewcode-block" id="TaskHandler.load"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Load from the ServerConfig.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load from the ServerConfig.</span>
 
 <span class="sd">        This should be automatically called when Evennia starts.</span>
 <span class="sd">        It populates `self.tasks` according to the ServerConfig.</span>
@@ -338,7 +338,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TaskHandler.clean_stale_tasks"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.clean_stale_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">clean_stale_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;remove uncalled but canceled from task handler.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;remove uncalled but canceled from task handler.</span>
 
 <span class="sd">        By default this will not occur until a canceled task</span>
 <span class="sd">        has been uncalled for 60 second after the time it should have been called.</span>
@@ -359,7 +359,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="TaskHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the tasks in ServerConfig.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -392,7 +392,7 @@
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;delayed_tasks&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new task.</span>
 
 <span class="sd">        If the persistent kwarg is truthy:</span>
@@ -488,7 +488,7 @@
         <span class="k">return</span> <span class="n">TaskHandlerTask</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandler.exists"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a task exists.</span>
 <span class="sd">        Most task handler methods check for existence for you.</span>
 
@@ -505,7 +505,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="TaskHandler.active"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.active">[docs]</a>    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a task is active (has not been called yet).</span>
 
 <span class="sd">        Args:</span>
@@ -524,7 +524,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="TaskHandler.cancel"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop a task from automatically executing.</span>
 <span class="sd">        This will not remove the task.</span>
 
@@ -551,7 +551,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="TaskHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a task without executing it.</span>
 <span class="sd">        Deletes the instance of the task&#39;s deferred.</span>
 
@@ -578,7 +578,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="TaskHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear all tasks. By default tasks are canceled and removed from the database as well.</span>
 
 <span class="sd">        Args:</span>
@@ -601,7 +601,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="TaskHandler.call_task"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.call_task">[docs]</a>    <span class="k">def</span> <span class="nf">call_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the callback of a task.</span>
 <span class="sd">        Leave the task unaffected otherwise.</span>
 <span class="sd">        This does not use the task&#39;s deferred instance.</span>
@@ -622,7 +622,7 @@
         <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskHandler.do_task"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.do_task">[docs]</a>    <span class="k">def</span> <span class="nf">do_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the task (call its callback).</span>
 <span class="sd">        If calling before timedelay cancel the deferred instance affliated to this task.</span>
 <span class="sd">        Remove the task from the dictionary of current tasks on a successful</span>
@@ -651,7 +651,7 @@
         <span class="k">return</span> <span class="n">callback_return</span></div>
 
 <div class="viewcode-block" id="TaskHandler.get_deferred"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.get_deferred">[docs]</a>    <span class="k">def</span> <span class="nf">get_deferred</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the instance of the deferred the task id is using.</span>
 
 <span class="sd">        Args:</span>
@@ -668,7 +668,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="TaskHandler.create_delays"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.create_delays">[docs]</a>    <span class="k">def</span> <span class="nf">create_delays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create the delayed tasks for the persistent tasks.</span>
 <span class="sd">        This method should be automatically called when Evennia starts.</span>
 

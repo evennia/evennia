@@ -109,7 +109,7 @@
 
 
 <div class="viewcode-block" id="IAttribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttribute">[docs]</a><span class="k">class</span> <span class="nc">IAttribute</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attributes are things that are specific to different types of objects. For</span>
 <span class="sd">    example, a drink container needs to store its fill level, whereas an exit</span>
 <span class="sd">    needs to store its open/closed/locked/unlocked state. These are done via</span>
@@ -156,7 +156,7 @@
     <span class="n">lock_storage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__lock_storage_get</span><span class="p">,</span> <span class="n">__lock_storage_set</span><span class="p">,</span> <span class="n">__lock_storage_del</span><span class="p">)</span>
 
 <div class="viewcode-block" id="IAttribute.access"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttribute.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if another object has permission to access.</span>
 
 <span class="sd">        Args:</span>
@@ -190,7 +190,7 @@
 
 
 <div class="viewcode-block" id="InMemoryAttribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttribute">[docs]</a><span class="k">class</span> <span class="nc">InMemoryAttribute</span><span class="p">(</span><span class="n">IAttribute</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This Attribute is used purely for NAttributes/NAttributeHandler. It has no database backend.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -198,7 +198,7 @@
     <span class="c1"># Primary Key has no meaning for an InMemoryAttribute. This merely serves to satisfy other code.</span>
 
 <div class="viewcode-block" id="InMemoryAttribute.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttribute.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an Attribute that exists only in Memory.</span>
 
 <span class="sd">        Args:</span>
@@ -236,7 +236,7 @@
 
 
 <div class="viewcode-block" id="AttributeProperty"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty">[docs]</a><span class="k">class</span> <span class="nc">AttributeProperty</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attribute property descriptor. Allows for specifying Attributes as Django-like &#39;fields&#39;</span>
 <span class="sd">    on the class level. Note that while one can set a lock on the Attribute,</span>
 <span class="sd">    there is no way to *check* said lock when accessing via the property - use</span>
@@ -253,7 +253,7 @@
     <span class="n">attrhandler_name</span> <span class="o">=</span> <span class="s2">&quot;attributes&quot;</span>
 
 <div class="viewcode-block" id="AttributeProperty.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strattr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lockstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an Attribute as a property descriptor.</span>
 
 <span class="sd">        Keyword Args:</span>
@@ -281,7 +281,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tries returning a new instance of default if callable.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -295,7 +295,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__default</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when descriptor is first assigned to the class. It is called with</span>
 <span class="sd">        the name of the field.</span>
 
@@ -303,7 +303,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="n">name</span>
 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the attrkey is retrieved from the instance.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -328,7 +328,7 @@
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when assigning to the property (and when auto-creating an Attribute).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -343,7 +343,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when running `del` on the property. Will remove/clear the Attribute. Note that</span>
 <span class="sd">        the Attribute will be recreated next retrieval unless the AttributeProperty is also</span>
 <span class="sd">        removed in code!</span>
@@ -352,7 +352,7 @@
         <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrhandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AttributeProperty.at_set"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.at_set">[docs]</a>    <span class="k">def</span> <span class="nf">at_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The value to set is passed through the method. It can be used to customize/validate</span>
 <span class="sd">        the input in a custom child class.</span>
 
@@ -370,7 +370,7 @@
         <span class="k">return</span> <span class="n">value</span></div>
 
 <div class="viewcode-block" id="AttributeProperty.at_get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The value returned from the Attribute is passed through this method. It can be used</span>
 <span class="sd">        to react to the retrieval or modify the result in some way.</span>
 
@@ -386,7 +386,7 @@
 
 
 <div class="viewcode-block" id="NAttributeProperty"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NAttributeProperty">[docs]</a><span class="k">class</span> <span class="nc">NAttributeProperty</span><span class="p">(</span><span class="n">AttributeProperty</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    NAttribute property descriptor. Allows for specifying NAttributes as Django-like &#39;fields&#39;</span>
 <span class="sd">    on the class level.</span>
 
@@ -402,7 +402,7 @@
 
 
 <div class="viewcode-block" id="Attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.Attribute">[docs]</a><span class="k">class</span> <span class="nc">Attribute</span><span class="p">(</span><span class="n">IAttribute</span><span class="p">,</span> <span class="n">SharedMemoryModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This attribute is stored via Django. Most Attributes will be using this class.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -490,7 +490,7 @@
     <span class="c1"># value property (wraps db_value)</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter. Allows for `value = self.value`.</span>
 <span class="sd">        We cannot cache here since it makes certain cases (such</span>
 <span class="sd">        as storing a dbobj which is then deleted elsewhere) out-of-sync.</span>
@@ -500,7 +500,7 @@
 
     <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setter. Allows for self.value = value. We cannot cache here,</span>
 <span class="sd">        see self.__value_get.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -509,7 +509,7 @@
 
     <span class="nd">@value</span><span class="o">.</span><span class="n">deleter</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Deleter. Allows for del attr.value. This removes the entire attribute.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deleter. Allows for del attr.value. This removes the entire attribute.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
 
@@ -519,7 +519,7 @@
 
 
 <div class="viewcode-block" id="IAttributeBackend"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend">[docs]</a><span class="k">class</span> <span class="nc">IAttributeBackend</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract interface for the backends used by the Attribute Handler.</span>
 
 <span class="sd">    All Backends must implement this base class.</span>
@@ -542,7 +542,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.query_all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.query_all">[docs]</a>    <span class="k">def</span> <span class="nf">query_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch all Attributes from this object.</span>
 
 <span class="sd">        Returns:</span>
@@ -551,7 +551,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.query_key"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.query_key">[docs]</a>    <span class="k">def</span> <span class="nf">query_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            key (str): The key of the Attribute being searched for.</span>
@@ -563,7 +563,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.query_category"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.query_category">[docs]</a>    <span class="k">def</span> <span class="nf">query_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns every matching Attribute as a list, given a category.</span>
 
 <span class="sd">        This method calls up whatever storage the backend uses.</span>
@@ -577,18 +577,18 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_full_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Cache all attributes of this object&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cache all attributes of this object&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_all</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">to_str</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span> <span class="k">else</span> <span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">attr</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">to_str</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">attr</span>
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">_get_cache_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch cache key.</span>
 
 <span class="sd">        Args:</span>
@@ -632,7 +632,7 @@
                 <span class="k">return</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">_get_cache_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves Attribute list (by category) from cache.</span>
 
 <span class="sd">        Args:</span>
@@ -657,7 +657,7 @@
             <span class="k">return</span> <span class="n">attrs</span>
 
     <span class="k">def</span> <span class="nf">_get_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve from cache or database (always caches)</span>
 
 <span class="sd">        Args:</span>
@@ -686,7 +686,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cache_category</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
 
 <div class="viewcode-block" id="IAttributeBackend.get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Frontend for .get_cache. Retrieves Attribute(s).</span>
 
 <span class="sd">        Args:</span>
@@ -700,7 +700,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cache</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_set_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">attr_obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update cache.</span>
 
 <span class="sd">        Args:</span>
@@ -721,7 +721,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_delete_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove attribute from cache</span>
 
 <span class="sd">        Args:</span>
@@ -744,7 +744,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="IAttributeBackend.reset_cache"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.reset_cache">[docs]</a>    <span class="k">def</span> <span class="nf">reset_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reset cache from the outside.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
@@ -752,7 +752,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.do_create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Does the hard work of actually creating Attributes, whatever is needed.</span>
 
 <span class="sd">        Args:</span>
@@ -769,7 +769,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates Attribute (using the class specified for the backend), (optionally) caches it, and</span>
 <span class="sd">        returns it.</span>
 
@@ -794,7 +794,7 @@
         <span class="k">return</span> <span class="n">attr</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.do_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simply sets a new Value to an Attribute.</span>
 
 <span class="sd">        Args:</span>
@@ -806,7 +806,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.do_batch_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_batch_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_obj</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lock_storage</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called opnly by batch add. For the database backend, this is a method</span>
 <span class="sd">        of updating that can alter category and lock-storage.</span>
 
@@ -821,7 +821,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.do_batch_finish"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_batch_finish">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_objs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after batch_add completed. Used for handling database operations</span>
 <span class="sd">        and/or caching complications.</span>
 
@@ -832,7 +832,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.batch_add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.batch_add">[docs]</a>    <span class="k">def</span> <span class="nf">batch_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Batch-version of `.add()`. This is more efficient than repeat-calling</span>
 <span class="sd">        `.add` when having many Attributes to add.</span>
 
@@ -882,7 +882,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_finish</span><span class="p">(</span><span class="n">new_attrobjs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.do_delete_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Does the hard work of actually deleting things.</span>
 
 <span class="sd">        Args:</span>
@@ -891,7 +891,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.delete_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given an Attribute, deletes it. Also remove it from cache.</span>
 
 <span class="sd">        Args:</span>
@@ -903,7 +903,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">do_delete_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strattr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simply updates an Attribute.</span>
 
 <span class="sd">        Args:</span>
@@ -914,7 +914,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">do_update_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strattr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.do_batch_delete"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_batch_delete">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_list</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a list of attributes, deletes them all.</span>
 <span class="sd">        The default implementation is fine, but this is overridable since some databases may allow</span>
 <span class="sd">        for a better method.</span>
@@ -926,7 +926,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">delete_attribute</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.clear_attributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.clear_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">clear_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">default_access</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all Attributes on this object.</span>
 
 <span class="sd">        Args:</span>
@@ -964,7 +964,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend.get_all_attributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.get_all_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simply returns all Attributes of this object, sorted by their IDs.</span>
 
 <span class="sd">        Returns:</span>
@@ -979,7 +979,7 @@
 
 
 <div class="viewcode-block" id="InMemoryAttributeBackend"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend">[docs]</a><span class="k">class</span> <span class="nc">InMemoryAttributeBackend</span><span class="p">(</span><span class="n">IAttributeBackend</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and</span>
 <span class="sd">    normally lost on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes</span>
 <span class="sd">    it manages, but these are of little importance beyond sorting and satisfying the caching logic</span>
@@ -996,7 +996,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_id_counter</span> <span class="o">=</span> <span class="mi">0</span></div>
 
     <span class="k">def</span> <span class="nf">_next_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Increments the internal ID counter and returns the new value.</span>
 
 <span class="sd">        Returns:</span>
@@ -1020,7 +1020,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_category_storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[])</span></div>
 
 <div class="viewcode-block" id="InMemoryAttributeBackend.do_create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See parent class.</span>
 
 <span class="sd">        strvalue has no meaning for InMemory attributes.</span>
@@ -1037,7 +1037,7 @@
         <span class="n">attr</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span></div>
 
 <div class="viewcode-block" id="InMemoryAttributeBackend.do_batch_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_batch_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_obj</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lock_storage</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        No need to bother saving anything. Just set some values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">attr_obj</span><span class="o">.</span><span class="n">db_category</span> <span class="o">=</span> <span class="n">category</span>
@@ -1045,7 +1045,7 @@
         <span class="n">attr_obj</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">new_value</span></div>
 
 <div class="viewcode-block" id="InMemoryAttributeBackend.do_batch_finish"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_batch_finish">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_objs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Nothing to do here for In-Memory.</span>
 
 <span class="sd">        Args:</span>
@@ -1054,7 +1054,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="InMemoryAttributeBackend.do_delete_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes the Attribute from local storage. Once it&#39;s out of the cache, garbage collection</span>
 <span class="sd">        will handle the rest.</span>
 
@@ -1066,7 +1066,7 @@
 
 
 <div class="viewcode-block" id="ModelAttributeBackend"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend">[docs]</a><span class="k">class</span> <span class="nc">ModelAttributeBackend</span><span class="p">(</span><span class="n">IAttributeBackend</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses Django models for storing Attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1167,7 +1167,7 @@
 
 
 <div class="viewcode-block" id="AttributeHandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler">[docs]</a><span class="k">class</span> <span class="nc">AttributeHandler</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handler for adding Attributes to the object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1177,7 +1177,7 @@
     <span class="n">_attrtype</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="AttributeHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">backend_class</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup the AttributeHandler.</span>
 
 <span class="sd">        Args:</span>
@@ -1189,7 +1189,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AttributeHandler.has"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the given Attribute (or list of Attributes) exists on</span>
 <span class="sd">        the object.</span>
 
@@ -1224,7 +1224,7 @@
         <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Attribute.</span>
 
 <span class="sd">        Args:</span>
@@ -1302,7 +1302,7 @@
         <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add attribute to object, with optional `lockstring`.</span>
 
 <span class="sd">        Args:</span>
@@ -1345,7 +1345,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">create_attribute</span><span class="p">(</span><span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strattr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AttributeHandler.batch_add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.batch_add">[docs]</a>    <span class="k">def</span> <span class="nf">batch_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Batch-version of `add()`. This is more efficient than</span>
 <span class="sd">        repeat-calling add when having many Attributes to add.</span>
 
@@ -1387,7 +1387,7 @@
         <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove attribute or a list of attributes from object.</span>
 
 <span class="sd">        Args:</span>
@@ -1437,7 +1437,7 @@
                 <span class="k">raise</span> <span class="ne">AttributeError</span></div>
 
 <div class="viewcode-block" id="AttributeHandler.clear"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all Attributes on this object.</span>
 
 <span class="sd">        Args:</span>
@@ -1453,7 +1453,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">clear_attributes</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">default_access</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AttributeHandler.all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all Attribute objects on this object, regardless of category.</span>
 
 <span class="sd">        Args:</span>
@@ -1559,7 +1559,7 @@
 
 
 <div class="viewcode-block" id="initialize_nick_templates"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.initialize_nick_templates">[docs]</a><span class="k">def</span> <span class="nf">initialize_nick_templates</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">pattern_is_regex</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize the nick templates for matching and remapping a string.</span>
 
 <span class="sd">    Args:</span>
@@ -1627,7 +1627,7 @@
 
 
 <div class="viewcode-block" id="parse_nick_template"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.parse_nick_template">[docs]</a><span class="k">def</span> <span class="nf">parse_nick_template</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">template_regex</span><span class="p">,</span> <span class="n">outtemplate</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a text using a template and map it to another template</span>
 
 <span class="sd">    Args:</span>
@@ -1651,7 +1651,7 @@
 
 
 <div class="viewcode-block" id="NickHandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler">[docs]</a><span class="k">class</span> <span class="nc">NickHandler</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles the addition and removal of Nicks. Nicks are special</span>
 <span class="sd">    versions of Attributes with an `_attrtype` hardcoded to `nick`.</span>
 <span class="sd">    They also always use the `strvalue` fields for their data.</span>
@@ -1665,7 +1665,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_regex_cache</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="NickHandler.has"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key (str or iterable): The Nick key or keys to check for.</span>
 <span class="sd">            category (str): Limit the check to Nicks with this</span>
@@ -1680,7 +1680,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NickHandler.get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the replacement value matching the given key and category</span>
 
 <span class="sd">        Args:</span>
@@ -1712,7 +1712,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="NickHandler.add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="n">pattern_is_regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new nick, a mapping pattern -&gt; replacement.</span>
 
 <span class="sd">        Args:</span>
@@ -1755,7 +1755,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="NickHandler.remove"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove Nick with matching category.</span>
 
 <span class="sd">        Args:</span>
@@ -1769,7 +1769,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NickHandler.nickreplace"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.nickreplace">[docs]</a>    <span class="k">def</span> <span class="nf">nickreplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply nick replacement of entries in raw_string with nick replacement.</span>
 
 <span class="sd">        Args:</span>
@@ -1814,7 +1814,7 @@
                 <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">nick_regex</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_regex_cache</span><span class="p">[</span><span class="n">nick_regex</span><span class="p">]</span> <span class="o">=</span> <span class="n">regex</span>
 
-            <span class="n">is_match</span><span class="p">,</span> <span class="n">raw_string</span> <span class="o">=</span> <span class="n">parse_nick_template</span><span class="p">(</span><span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">regex</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
+            <span class="n">is_match</span><span class="p">,</span> <span class="n">raw_string</span> <span class="o">=</span> <span class="n">parse_nick_template</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">is_match</span><span class="p">:</span>
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">raw_string</span></div></div>

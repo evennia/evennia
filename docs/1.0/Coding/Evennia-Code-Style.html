@@ -189,7 +189,7 @@ important methods, this tends to be hard to keep updated as the API
 develops. Don’t use section markers (<code class="docutils literal notranslate"><span class="pre">#</span></code>, <code class="docutils literal notranslate"><span class="pre">##</span></code> etc).</p>
 <p>Example of class docstring:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class describes the creation of `Objects`. It is useful</span>
 <span class="sd">    in many situations, such as ...</span>
 
@@ -202,7 +202,7 @@ develops. Don’t use section markers (<code class="docutils literal notranslate
 <p>Example of function or method docstring:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">def</span> <span class="nf">funcname</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a brief introduction to the function/class/method</span>
 
 <span class="sd">    Args:</span>
@@ -237,7 +237,7 @@ an indent. When you need to break a line you should start the next line
 with another indent. For consistency with the code we recommend all
 indents to be 4 spaces wide (no tabs!).</p>
 <p>Here are all the supported block headers:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args</span>
 <span class="sd">        argname (freeform type): Description endind with period.</span>
 <span class="sd">    Keyword Args:</span>
@@ -290,7 +290,7 @@ docstrings to represent the in-game help entry for that command.</p>
 formatted on a similar form. For contribs, this is loosened, but if there is
 no particular reason to use a different form, one should aim to use the same
 style for contrib-command docstrings as well.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>      <span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="w">      </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">      Short header</span>
 
 <span class="sd">      Usage:</span>
@@ -317,7 +317,7 @@ will come out as a single <code class="docutils literal notranslate"><span class
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Switches</span></code> and <code class="docutils literal notranslate"><span class="pre">Examples</span></code> blocks are optional and based on the Command.</p></li>
 </ul>
 <p>Here is the <code class="docutils literal notranslate"><span class="pre">nick</span></code> command as an example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>      <span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="w">      </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">      Define a personal alias/nick</span>
 
 <span class="sd">      Usage:</span>

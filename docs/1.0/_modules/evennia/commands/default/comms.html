@@ -120,7 +120,7 @@
 
 
 <div class="viewcode-block" id="CmdChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel">[docs]</a><span class="k">class</span> <span class="nc">CmdChannel</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use and manage in-game channels.</span>
 
 <span class="sd">    Usage:</span>
@@ -317,7 +317,7 @@
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="CmdChannel.search_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.search_channel">[docs]</a>    <span class="k">def</span> <span class="nf">search_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelname</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">handle_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function for searching for a single channel with some error</span>
 <span class="sd">        handling.</span>
 
@@ -377,7 +377,7 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span></div>
 
 <div class="viewcode-block" id="CmdChannel.msg_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.msg_channel">[docs]</a>    <span class="k">def</span> <span class="nf">msg_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a message to a given channel. This will check the &#39;send&#39;</span>
 <span class="sd">        permission on the channel.</span>
 
@@ -398,7 +398,7 @@
         <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdChannel.get_channel_history"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.get_channel_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_channel_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">start_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        View a channel&#39;s history.</span>
 
 <span class="sd">        Args:</span>
@@ -420,7 +420,7 @@
         <span class="n">tail_log_file</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">start_index</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">send_msg</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdChannel.sub_to_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.sub_to_channel">[docs]</a>    <span class="k">def</span> <span class="nf">sub_to_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Subscribe to a channel. Note that all permissions should</span>
 <span class="sd">        be checked before this step.</span>
 
@@ -443,7 +443,7 @@
         <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Were not allowed to subscribe to channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.unsub_from_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.unsub_from_channel">[docs]</a>    <span class="k">def</span> <span class="nf">unsub_from_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Un-Subscribe to a channel. Note that all permissions should</span>
 <span class="sd">        be checked before this step.</span>
 
@@ -467,7 +467,7 @@
         <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Could not unsubscribe from channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.add_alias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.add_alias">[docs]</a>    <span class="k">def</span> <span class="nf">add_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new alias (nick) for the user to use with this channel.</span>
 
 <span class="sd">        Args:</span>
@@ -492,7 +492,7 @@
         <span class="n">channel</span><span class="o">.</span><span class="n">add_user_channel_alias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdChannel.remove_alias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.remove_alias">[docs]</a>    <span class="k">def</span> <span class="nf">remove_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove an alias from a channel.</span>
 
 <span class="sd">        Args:</span>
@@ -516,7 +516,7 @@
         <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;No such alias was defined.&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.get_channel_aliases"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.get_channel_aliases">[docs]</a>    <span class="k">def</span> <span class="nf">get_channel_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a user&#39;s aliases for a given channel. The user is retrieved</span>
 <span class="sd">        through self.caller.</span>
 
@@ -534,7 +534,7 @@
         <span class="k">return</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="CmdChannel.mute_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.mute_channel">[docs]</a>    <span class="k">def</span> <span class="nf">mute_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Temporarily mute a channel.</span>
 
 <span class="sd">        Args:</span>
@@ -549,7 +549,7 @@
         <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> was already muted.&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.unmute_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.unmute_channel">[docs]</a>    <span class="k">def</span> <span class="nf">unmute_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unmute a channel.</span>
 
 <span class="sd">        Args:</span>
@@ -565,7 +565,7 @@
         <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> was already unmuted.&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.create_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.create_channel">[docs]</a>    <span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new channel. Its name must not previously exist</span>
 <span class="sd">        (users can alias as needed). Will also connect to the</span>
 <span class="sd">        new channel.</span>
@@ -601,7 +601,7 @@
         <span class="k">return</span> <span class="n">new_chan</span><span class="p">,</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.destroy_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.destroy_channel">[docs]</a>    <span class="k">def</span> <span class="nf">destroy_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Destroy an existing channel. Access should be checked before</span>
 <span class="sd">        calling this function.</span>
 
@@ -629,7 +629,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel_key</span><span class="si">}</span><span class="s2"> was deleted by </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdChannel.set_lock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.set_lock">[docs]</a>    <span class="k">def</span> <span class="nf">set_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a lockstring on a channel. Permissions must have been</span>
 <span class="sd">        checked before this call.</span>
 
@@ -649,7 +649,7 @@
         <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.unset_lock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.unset_lock">[docs]</a>    <span class="k">def</span> <span class="nf">unset_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove locks in a lockstring on a channel. Permissions must have been</span>
 <span class="sd">        checked before this call.</span>
 
@@ -669,7 +669,7 @@
         <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.set_desc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.set_desc">[docs]</a>    <span class="k">def</span> <span class="nf">set_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a channel description. This is shown in listings etc.</span>
 
 <span class="sd">        Args:</span>
@@ -685,7 +685,7 @@
         <span class="n">channel</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span></div>
 
 <div class="viewcode-block" id="CmdChannel.boot_user"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.boot_user">[docs]</a>    <span class="k">def</span> <span class="nf">boot_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Boot a user from a channel, with optional reason. This will</span>
 <span class="sd">        also remove all their aliases for this channel.</span>
 
@@ -722,7 +722,7 @@
         <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.ban_user"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.ban_user">[docs]</a>    <span class="k">def</span> <span class="nf">ban_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ban a user from a channel, by locking them out. This will also</span>
 <span class="sd">        boot them, if they are currently connected.</span>
 
@@ -743,7 +743,7 @@
         <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> is already banned from this channel.&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.unban_user"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.unban_user">[docs]</a>    <span class="k">def</span> <span class="nf">unban_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Un-Ban a user from a channel. This will not reconnect them</span>
 <span class="sd">        to the channel, just allow them to connect again (assuming</span>
 <span class="sd">        they have the suitable &#39;listen&#39; lock like everyone else).</span>
@@ -762,7 +762,7 @@
         <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> was not previously banned from this channel.&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.channel_list_bans"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.channel_list_bans">[docs]</a>    <span class="k">def</span> <span class="nf">channel_list_bans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a channel&#39;s bans.</span>
 
 <span class="sd">        Args:</span>
@@ -775,7 +775,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">banned</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">banned</span> <span class="ow">in</span> <span class="n">channel</span><span class="o">.</span><span class="n">banlist</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="CmdChannel.channel_list_who"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.channel_list_who">[docs]</a>    <span class="k">def</span> <span class="nf">channel_list_who</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a list of online people is subscribing to a channel. This will check</span>
 <span class="sd">        the &#39;control&#39; permission of `caller` to determine if only online users</span>
 <span class="sd">        should be returned or everyone.</span>
@@ -812,7 +812,7 @@
         <span class="k">return</span> <span class="n">who_list</span></div>
 
 <div class="viewcode-block" id="CmdChannel.list_channels"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.list_channels">[docs]</a>    <span class="k">def</span> <span class="nf">list_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelcls</span><span class="o">=</span><span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a available channels.</span>
 
 <span class="sd">        Args:</span>
@@ -835,7 +835,7 @@
         <span class="k">return</span> <span class="n">subscribed_channels</span><span class="p">,</span> <span class="n">unsubscribed_available_channels</span></div>
 
 <div class="viewcode-block" id="CmdChannel.display_subbed_channels"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.display_subbed_channels">[docs]</a>    <span class="k">def</span> <span class="nf">display_subbed_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscribed</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display channels subscribed to.</span>
 
 <span class="sd">        Args:</span>
@@ -878,7 +878,7 @@
         <span class="k">return</span> <span class="n">comtable</span></div>
 
 <div class="viewcode-block" id="CmdChannel.display_all_channels"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.display_all_channels">[docs]</a>    <span class="k">def</span> <span class="nf">display_all_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscribed</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display all available channels</span>
 
 <span class="sd">        Args:</span>
@@ -921,7 +921,7 @@
         <span class="k">return</span> <span class="n">comtable</span></div>
 
 <div class="viewcode-block" id="CmdChannel.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main functionality of command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># from evennia import set_trace;set_trace()</span>
@@ -1381,7 +1381,7 @@
 
 
 <div class="viewcode-block" id="CmdPage"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdPage">[docs]</a><span class="k">class</span> <span class="nc">CmdPage</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    send a private message to another account</span>
 
 <span class="sd">    Usage:</span>
@@ -1410,7 +1410,7 @@
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="CmdPage.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdPage.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement function using the Msg methods&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement function using the Msg methods&quot;&quot;&quot;</span>
 
         <span class="c1"># Since account_caller is set above, this will be an Account.</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -1555,7 +1555,7 @@
 
 
 <span class="k">def</span> <span class="nf">_list_bots</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to produce a list of all IRC bots.</span>
 
 <span class="sd">    Args:</span>
@@ -1595,7 +1595,7 @@
 
 
 <div class="viewcode-block" id="CmdIRC2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRC2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdIRC2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Link an evennia channel to an external IRC channel</span>
 
 <span class="sd">    Usage:</span>
@@ -1631,7 +1631,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
 
 <div class="viewcode-block" id="CmdIRC2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRC2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setup the irc-channel mapping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the irc-channel mapping&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">IRC_ENABLED</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;IRC is not enabled. You need to activate it in game/settings.py.&quot;&quot;&quot;</span>
@@ -1711,7 +1711,7 @@
 
 
 <div class="viewcode-block" id="CmdIRCStatus"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRCStatus">[docs]</a><span class="k">class</span> <span class="nc">CmdIRCStatus</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check and reboot IRC bot.</span>
 
 <span class="sd">    Usage:</span>
@@ -1734,7 +1734,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
 
 <div class="viewcode-block" id="CmdIRCStatus.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRCStatus.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Handles the functioning of the command.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handles the functioning of the command.&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_list_bots</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
@@ -1782,7 +1782,7 @@
 
 <span class="c1"># RSS connection</span>
 <div class="viewcode-block" id="CmdRSS2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdRSS2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdRSS2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    link an evennia channel to an external RSS feed</span>
 
 <span class="sd">    Usage:</span>
@@ -1812,7 +1812,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
 
 <div class="viewcode-block" id="CmdRSS2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdRSS2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setup the rss-channel mapping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the rss-channel mapping&quot;&quot;&quot;</span>
 
         <span class="c1"># checking we have all we need</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">RSS_ENABLED</span><span class="p">:</span>
@@ -1891,7 +1891,7 @@
 
 
 <div class="viewcode-block" id="CmdGrapevine2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdGrapevine2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdGrapevine2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Link an Evennia channel to an external Grapevine channel</span>
 
 <span class="sd">    Usage:</span>
@@ -1919,7 +1919,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
 
 <div class="viewcode-block" id="CmdGrapevine2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdGrapevine2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setup the Grapevine channel mapping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the Grapevine channel mapping&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">GRAPEVINE_ENABLED</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Set GRAPEVINE_ENABLED=True in settings to enable.&quot;</span><span class="p">)</span>
@@ -1989,7 +1989,7 @@
 
 
 <div class="viewcode-block" id="CmdDiscord2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdDiscord2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdDiscord2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Link an Evennia channel to an external Discord channel</span>
 
 <span class="sd">    Usage:</span>
@@ -2027,7 +2027,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
 
 <div class="viewcode-block" id="CmdDiscord2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdDiscord2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Manage the Evennia&lt;-&gt;Discord channel links&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manage the Evennia&lt;-&gt;Discord channel links&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_TOKEN</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -2062,13 +2062,13 @@
         <span class="k">if</span> <span class="s2">&quot;guild&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Messages to Evennia |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span> <span class="k">else</span> <span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude the Discord server.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Messages to Evennia |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude the Discord server.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="s2">&quot;channel&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Relayed messages |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span> <span class="k">else</span> <span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude the originating channel.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Relayed messages |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude the originating channel.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
 

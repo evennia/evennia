@@ -321,19 +321,19 @@ Abilities <em>once</em>. We will use this to know if it has been done or not.</p
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
 
 <span class="n">_TEMP_SHEET</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="si">{name}</span><span class="s2"></span>
+<span class="si">{name}</span>
 
-<span class="s2">STR +</span><span class="si">{strength}</span><span class="s2"></span>
-<span class="s2">DEX +</span><span class="si">{dexterity}</span><span class="s2"></span>
-<span class="s2">CON +</span><span class="si">{constitution}</span><span class="s2"></span>
-<span class="s2">INT +</span><span class="si">{intelligence}</span><span class="s2"></span>
-<span class="s2">WIS +</span><span class="si">{wisdom}</span><span class="s2"></span>
-<span class="s2">CHA +</span><span class="si">{charisma}</span><span class="s2"></span>
+<span class="s2">STR +</span><span class="si">{strength}</span>
+<span class="s2">DEX +</span><span class="si">{dexterity}</span>
+<span class="s2">CON +</span><span class="si">{constitution}</span>
+<span class="s2">INT +</span><span class="si">{intelligence}</span>
+<span class="s2">WIS +</span><span class="si">{wisdom}</span>
+<span class="s2">CHA +</span><span class="si">{charisma}</span>
 
-<span class="si">{description}</span><span class="s2"></span>
+<span class="si">{description}</span>
 <span class="s2">    </span>
 <span class="s2">Your belongings:</span>
-<span class="si">{equipment}</span><span class="s2"></span>
+<span class="si">{equipment}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span> 
@@ -451,7 +451,7 @@ created in the <a class="reference internal" href="Beginner-Tutorial-Equipment.h
 <span class="c1"># this goes to the bottom of the module</span>
 
 <span class="k">def</span> <span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a start point for spinning up the chargen from a command later.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -558,7 +558,7 @@ know this, we check the <code class="docutils literal notranslate"><span class="
 <span class="c1"># after previous node </span>
 
 <span class="k">def</span> <span class="nf">_update_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by node_change_name below to check what user </span>
 <span class="sd">    entered and update the name if appropriate.</span>
 
@@ -571,7 +571,7 @@ know this, we check the <code class="docutils literal notranslate"><span class="
 
 
 <span class="k">def</span> <span class="nf">node_change_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change the random name of the character.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -632,7 +632,7 @@ were at.</p>
 
 
 <span class="k">def</span> <span class="nf">_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by node_swap_abilities to parse the user&#39;s input and swap ability</span>
 <span class="sd">    values.</span>
 
@@ -664,7 +664,7 @@ were at.</p>
 
             
 <span class="k">def</span> <span class="nf">node_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    One is allowed to swap the values of two abilities around, once.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -673,12 +673,12 @@ were at.</p>
     <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Your current abilities:</span>
 
-<span class="s2">STR +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">strength</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">DEX +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">dexterity</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">CON +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">constitution</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">INT +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">intelligence</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">WIS +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">wisdom</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">CHA +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">charisma</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">STR +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">strength</span><span class="si">}</span>
+<span class="s2">DEX +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">dexterity</span><span class="si">}</span>
+<span class="s2">CON +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">constitution</span><span class="si">}</span>
+<span class="s2">INT +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">intelligence</span><span class="si">}</span>
+<span class="s2">WIS +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">wisdom</span><span class="si">}</span>
+<span class="s2">CHA +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">charisma</span><span class="si">}</span>
 
 <span class="s2">You can swap the values of two abilities around.</span>
 <span class="s2">You can only do this once, so choose carefully!</span>
@@ -710,7 +710,7 @@ node.</p>
 <h2><span class="section-number">6.8. </span>Node: Creating the Character<a class="headerlink" href="#node-creating-the-character" title="Permalink to this headline">¶</a></h2>
 <p>We get here from the main node by opting to finish chargen.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_apply_character</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;                              </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;                              </span>
 <span class="sd">    End chargen and create the character. We will also puppet it.</span>
 <span class="sd">                                     </span>
 <span class="sd">    &quot;&quot;&quot;</span>                              

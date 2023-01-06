@@ -202,13 +202,13 @@ time updated correctly… and going (by default) twice as fast as the real time.
 <span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
 
 <span class="k">def</span> <span class="nf">at_sunrise</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;When the sun rises, display a message in every room.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;When the sun rises, display a message in every room.&quot;&quot;&quot;</span>
     <span class="c1"># Browse all rooms</span>
     <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">Room</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The sun rises from the eastern horizon.&quot;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">start_sunrise_event</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Schedule an sunrise event to happen every day at 6 AM.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Schedule an sunrise event to happen every day at 6 AM.&quot;&quot;&quot;</span>
     <span class="n">script</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">at_sunrise</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">script</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;at sunrise&quot;</span>
 </pre></div>
@@ -292,7 +292,7 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
 
 <span class="k">class</span> <span class="nc">CmdTime</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display the time.</span>
 
 <span class="sd">    Syntax:</span>
@@ -304,7 +304,7 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Execute the time command.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the time command.&quot;&quot;&quot;</span>
         <span class="c1"># Get the absolute game time</span>
         <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">mins</span><span class="p">,</span> <span class="n">secs</span> <span class="o">=</span> <span class="n">custom_gametime</span><span class="o">.</span><span class="n">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">time_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;We are in year </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">, day </span><span class="si">{</span><span class="n">day</span><span class="si">}</span><span class="s2">, month </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -320,7 +320,7 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
 <span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
 <span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
 <span class="sd">    the `AccountCmdSet` when an Account puppets a Character.</span>
@@ -328,7 +328,7 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>

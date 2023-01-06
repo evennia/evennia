@@ -118,7 +118,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.EvAdventureCommand">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base EvAdventure command. This is on the form</span>
 
 <span class="sd">        command &lt;args&gt;</span>
@@ -132,7 +132,7 @@
 
 
 <div class="viewcode-block" id="CmdAttackTurnBased"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased">[docs]</a><span class="k">class</span> <span class="nc">CmdAttackTurnBased</span><span class="p">(</span><span class="n">EvAdventureCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attack a target or join an existing combat.</span>
 
 <span class="sd">    Usage:</span>
@@ -177,7 +177,7 @@
 
 
 <div class="viewcode-block" id="CmdInventory"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdInventory">[docs]</a><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">EvAdventureCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    View your inventory</span>
 
 <span class="sd">    Usage:</span>
@@ -197,7 +197,7 @@
 
 
 <div class="viewcode-block" id="CmdWieldOrWear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdWieldOrWear">[docs]</a><span class="k">class</span> <span class="nc">CmdWieldOrWear</span><span class="p">(</span><span class="n">EvAdventureCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wield a weapon/shield, or wear a piece of armor or a helmet.</span>
 
 <span class="sd">    Usage:</span>
@@ -249,7 +249,7 @@
 
 
 <div class="viewcode-block" id="CmdRemove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdRemove">[docs]</a><span class="k">class</span> <span class="nc">CmdRemove</span><span class="p">(</span><span class="n">EvAdventureCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove a remove a weapon/shield, armor or helmet.</span>
 
 <span class="sd">    Usage:</span>
@@ -293,7 +293,7 @@
 
 
 <span class="k">def</span> <span class="nf">_rescind_gift</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Called when giver rescinds their gift in `node_give` below.</span>
 <span class="sd">    It means they entered &#39;cancel&#39; on the gift screen.</span>
 
@@ -306,7 +306,7 @@
 
 
 <div class="viewcode-block" id="node_give"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.node_give">[docs]</a><span class="k">def</span> <span class="nf">node_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will show to the giver until receiver accepts/declines. It allows them</span>
 <span class="sd">    to rescind their offer.</span>
 
@@ -330,7 +330,7 @@
 
 
 <span class="k">def</span> <span class="nf">_accept_or_reject_gift</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Called when receiver enters yes/no in `node_receive` below. We first need to</span>
 <span class="sd">    figure out which.</span>
 
@@ -362,7 +362,7 @@
 
 
 <div class="viewcode-block" id="node_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.node_receive">[docs]</a><span class="k">def</span> <span class="nf">node_receive</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Will show to the receiver and allow them to accept/decline the offer for</span>
 <span class="sd">    as long as the giver didn&#39;t rescind it.</span>
 
@@ -375,7 +375,7 @@
     <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="si">{</span><span class="n">giver</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">()</span><span class="si">}</span><span class="s2"> is offering you </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">:</span>
 
-<span class="si">{</span><span class="n">get_obj_stats</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="n">get_obj_stats</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="si">}</span>
 
 <span class="s2">[Your inventory usage: </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">display_slot_usage</span><span class="p">()</span><span class="si">}</span><span class="s2">]</span>
 <span class="s2">|wDo you want to accept the given item? Y/[N]</span>
@@ -389,7 +389,7 @@
 
 
 <div class="viewcode-block" id="CmdGive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdGive">[docs]</a><span class="k">class</span> <span class="nc">CmdGive</span><span class="p">(</span><span class="n">EvAdventureCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Give item or money to another person. Items need to be accepted before</span>
 <span class="sd">    they change hands. Money changes hands immediately with no wait.</span>
 
@@ -410,7 +410,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;give&quot;</span>
 
 <div class="viewcode-block" id="CmdGive.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdGive.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parsing is a little more complex for this command.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -500,7 +500,7 @@
 
 
 <div class="viewcode-block" id="CmdTalk"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdTalk">[docs]</a><span class="k">class</span> <span class="nc">CmdTalk</span><span class="p">(</span><span class="n">EvAdventureCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start a conversations with shop keepers and other NPCs in the world.</span>
 
 <span class="sd">    Args:</span>
@@ -524,7 +524,7 @@
 
 
 <div class="viewcode-block" id="EvAdventureCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.EvAdventureCmdSet">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Groups all commands in one cmdset which can be added in one go to the DefaultCharacter cmdset.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

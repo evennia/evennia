@@ -159,7 +159,7 @@ available to whomever is either inside it or in the same room as the train.</p>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
 
 <span class="k">class</span> <span class="nc">CmdEnterTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    entering the train</span>
 <span class="sd">    </span>
 <span class="sd">    Usage:</span>
@@ -178,7 +178,7 @@ available to whomever is either inside it or in the same room as the train.</p>
 
 
 <span class="k">class</span> <span class="nc">CmdLeaveTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    leaving the train </span>
 <span class="sd"> </span>
 <span class="sd">    Usage:</span>
@@ -244,7 +244,7 @@ already, but none that we can use for locking a command in this particular case.
 <span class="c1"># file mygame/server/conf/lockfuncs.py</span>
 
 <span class="k">def</span> <span class="nf">cmdinside</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: cmdinside() </span>
 <span class="sd">    Used to lock commands and only allows access if the command</span>
 <span class="sd">    is defined on an object which accessing_obj is inside of.     </span>

@@ -184,21 +184,21 @@ and want to test a function in <code class="docutils literal notranslate"><span 
        <span class="s2">&quot;This tests a function myfunc.&quot;</span>
 
        <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-           <span class="sd">&quot;&quot;&quot;done before every of the test_ * methods below&quot;&quot;&quot;</span>
+<span class="w">           </span><span class="sd">&quot;&quot;&quot;done before every of the test_ * methods below&quot;&quot;&quot;</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;mytestobject&quot;</span><span class="p">)</span>
            
        <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-           <span class="sd">&quot;&quot;&quot;done after every test_* method below &quot;&quot;&quot;</span>
+<span class="w">           </span><span class="sd">&quot;&quot;&quot;done after every test_* method below &quot;&quot;&quot;</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
        
        <span class="k">def</span> <span class="nf">test_return_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-           <span class="sd">&quot;&quot;&quot;test method. Makes sure return value is as expected.&quot;&quot;&quot;</span>
+<span class="w">           </span><span class="sd">&quot;&quot;&quot;test method. Makes sure return value is as expected.&quot;&quot;&quot;</span>
            <span class="n">actual_return</span> <span class="o">=</span> <span class="n">myfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
            <span class="n">expected_return</span> <span class="o">=</span> <span class="s2">&quot;This is the good object &#39;mytestobject&#39;.&quot;</span>
            <span class="c1"># test</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_return</span><span class="p">,</span> <span class="n">actual_return</span><span class="p">)</span>
        <span class="k">def</span> <span class="nf">test_alternative_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-           <span class="sd">&quot;&quot;&quot;test method. Calls with a keyword argument.&quot;&quot;&quot;</span>
+<span class="w">           </span><span class="sd">&quot;&quot;&quot;test method. Calls with a keyword argument.&quot;&quot;&quot;</span>
            <span class="n">actual_return</span> <span class="o">=</span> <span class="n">myfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">bad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
            <span class="n">expected_return</span> <span class="o">=</span> <span class="s2">&quot;This is the baaad object &#39;mytestobject&#39;.&quot;</span>
            <span class="c1"># test</span>
@@ -265,13 +265,13 @@ just there for naming symmetry with <code class="docutils literal notranslate"><
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
 
 <span class="k">class</span> <span class="nc">TestObject</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remember that the testing class creates char1 and char2 inside room1 ...&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remember that the testing class creates char1 and char2 inside room1 ...&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">test_object_search_character</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Check that char1 can search for char2 by name&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that char1 can search for char2 by name&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="nf">test_location_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Check so that char1 can find the current location by name&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check so that char1 can find the current location by name&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
         <span class="c1"># ...</span>
 </pre></div>

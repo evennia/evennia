@@ -185,7 +185,7 @@ there:</p>
 
 
 <span class="k">class</span> <span class="nc">RecipeBread</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
-  <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Bread is good for making sandwitches!</span>
 
 <span class="sd">  &quot;&quot;&quot;</span>
@@ -239,7 +239,7 @@ example setting:</p>
 <span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
 <span class="k">class</span> <span class="nc">WoodenPuppetRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A puppet&quot;&quot;&quot;</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A puppet&quot;&quot;&quot;</span><span class="s2">&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;wooden puppet&quot;</span>  <span class="c1"># name to refer to this recipe as</span>
     <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;knife&quot;</span><span class="p">]</span>
     <span class="n">consumable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;wood&quot;</span><span class="p">]</span>
@@ -283,7 +283,7 @@ know ingredients.</p>
 recipe’s requirements. This is great for testing.</p>
 <p>Assuming these objects were put in our inventory, we could now craft using the
 in-game command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt; craft wooden puppet from wood using hobby knife
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>craft<span class="w"> </span>wooden<span class="w"> </span>puppet<span class="w"> </span>from<span class="w"> </span>wood<span class="w"> </span>using<span class="w"> </span>hobby<span class="w"> </span>knife
 </pre></div>
 </div>
 <p>In code we would do</p>
@@ -343,12 +343,12 @@ parent class and have your recipes inherit from this.</p>
 <span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
 <span class="k">class</span> <span class="nc">SkillRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
-   <span class="sd">&quot;&quot;&quot;A recipe that considers skill&quot;&quot;&quot;</span>
+<span class="w">   </span><span class="sd">&quot;&quot;&quot;A recipe that considers skill&quot;&quot;&quot;</span>
 
     <span class="n">difficulty</span> <span class="o">=</span> <span class="mi">20</span>
 
     <span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The input is ok. Determine if crafting succeeds&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The input is ok. Determine if crafting succeeds&quot;&quot;&quot;</span>
 
         <span class="c1"># this is set at initialization</span>
         <span class="n">crafter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crafte</span>

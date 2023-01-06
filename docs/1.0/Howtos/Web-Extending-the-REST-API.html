@@ -140,7 +140,7 @@
 
 <span class="c1"># our own custom view</span>
 <span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized Character view that adds an inventory detail</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span>
@@ -261,7 +261,7 @@
 
 <span class="c1"># our own custom view</span>
 <span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized Character view that adds an inventory detail</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span>
@@ -295,7 +295,7 @@
 </div>
 <p>Next, we’ll be defining our own serializer class. Since it’s for retrieving inventory data, we’ll name it appropriately.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">InventorySerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializing an inventory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -318,14 +318,14 @@
 <p>Which is why our next step is to add those methods! We defined the properties <code class="docutils literal notranslate"><span class="pre">worn</span></code> and <code class="docutils literal notranslate"><span class="pre">carried</span></code>, so the methods we’ll add are <code class="docutils literal notranslate"><span class="pre">get_worn</span></code> and <code class="docutils literal notranslate"><span class="pre">get_carried</span></code>. They’ll be static methods - that is, they don’t include <code class="docutils literal notranslate"><span class="pre">self</span></code> - since they don’t need to reference the serializer class itself.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># these methods filter the character&#39;s contents based on the `worn` attribute</span>
     <span class="k">def</span> <span class="nf">get_worn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes only worn objects in the target&#39;s inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">worn</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">SimpleObjectDBSerializer</span><span class="p">(</span><span class="n">worn</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
     
     <span class="k">def</span> <span class="nf">get_carried</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes only non-worn objects in the target&#39;s inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">carried</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">]</span>
@@ -350,7 +350,7 @@
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 
 <span class="k">class</span> <span class="nc">InventorySerializer</span><span class="p">(</span><span class="n">TypeclassSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializing an inventory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -370,14 +370,14 @@
 
     <span class="c1"># these methods filter the character&#39;s contents based on the `worn` attribute</span>
     <span class="k">def</span> <span class="nf">get_worn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes only worn objects in the target&#39;s inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">worn</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">SimpleObjectDBSerializer</span><span class="p">(</span><span class="n">worn</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
     
     <span class="k">def</span> <span class="nf">get_carried</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes only non-worn objects in the target&#39;s inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">carried</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">]</span>
@@ -419,7 +419,7 @@
 
 <span class="c1"># our own custom view</span>
 <span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized Character view that adds an inventory detail</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span>
@@ -444,7 +444,7 @@
 <span class="k">class</span> <span class="nc">CharacterPermission</span><span class="p">(</span><span class="n">EvenniaPermission</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">has_object_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks object-level permissions after has_permission</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># our new permission check</span>
@@ -478,7 +478,7 @@
 
 <span class="c1"># our own custom view</span>
 <span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customized Character view that adds an inventory detail</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">permission_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">CharacterPermission</span><span class="p">]</span> <span class="c1"># &lt;--- NEW</span>

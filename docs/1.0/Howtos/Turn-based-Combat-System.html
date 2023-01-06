@@ -161,7 +161,7 @@ need to disengage from the first combat before they could join another).</p>
 <span class="kn">from</span> <span class="nn">world.rules</span> <span class="kn">import</span> <span class="n">resolve_combat</span>
 
 <span class="k">class</span> <span class="nc">CombatHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This implements the combat handler.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -170,7 +170,7 @@ need to disengage from the first combat before they could join another).</p>
     <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called when script is first created&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;combat_handler_</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;combat_handler_</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;handles combat&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># two minute timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
@@ -184,7 +184,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">_init_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This initializes handler back-reference </span>
 <span class="sd">        and combat cmdset on a character</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -192,7 +192,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="n">character</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.combat.CombatCmdSet&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_cleanup_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove character from handler and clean </span>
 <span class="sd">        it of the back-reference and cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -204,7 +204,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="n">character</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;commands.combat.CombatCmdSet&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called on first start but also when the script is restarted</span>
 <span class="sd">        after a server reboot. We need to re-assign this combat handler to </span>
 <span class="sd">        all characters as well as re-assign the cmdset.</span>
@@ -219,7 +219,7 @@ need to disengage from the first combat before they could join another).</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called every self.interval seconds (turn timeout) or </span>
 <span class="sd">        when force_repeat is called (because everyone has entered their </span>
 <span class="sd">        commands). We know this by checking the existence of the</span>
@@ -262,7 +262,7 @@ need to disengage from the first combat before they could join another).</p>
             <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by combat commands to register an action with the handler.</span>
 
 <span class="sd">         action - string identifying the action, like &quot;hit&quot; or &quot;parry&quot;</span>
@@ -284,7 +284,7 @@ need to disengage from the first combat before they could join another).</p>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">check_end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the command to eventually trigger </span>
 <span class="sd">        the resolution of the turn. We check if everyone</span>
 <span class="sd">        has added all their actions; if so we call force the</span>
@@ -296,7 +296,7 @@ need to disengage from the first combat before they could join another).</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span> 
 
     <span class="k">def</span> <span class="nf">end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This resolves all actions by calling the rules module. </span>
 <span class="sd">        It then resets everything and starts the next turn. It</span>
 <span class="sd">        is called by at_repeat().</span>
@@ -334,7 +334,7 @@ their actions once they have been added (but before the last one has added their
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    hit an enemy</span>
 
 <span class="sd">    Usage:</span>
@@ -414,7 +414,7 @@ subsequent attack and so on …</em></p>
 <span class="c1"># messages </span>
 
 <span class="k">def</span> <span class="nf">resolve_combat</span><span class="p">(</span><span class="n">combat_handler</span><span class="p">,</span> <span class="n">actiondict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is called by the combat handler</span>
 <span class="sd">    actiondict is a dictionary with a list of two actions</span>
 <span class="sd">    for each character:</span>
@@ -496,7 +496,7 @@ subsequent attack and so on …</em></p>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
 
 <span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    initiates combat</span>
 
 <span class="sd">    Usage:</span>

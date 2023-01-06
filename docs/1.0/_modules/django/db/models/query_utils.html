@@ -110,7 +110,7 @@
 
 
 <span class="k">class</span> <span class="nc">Q</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Encapsulate filters as objects that can then be combined logically (using</span>
 <span class="sd">    `&amp;` and `|`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -176,7 +176,7 @@
         <span class="k">return</span> <span class="n">clause</span>
 
     <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Recursively yield this Q object and all subexpressions, in depth-first</span>
 <span class="sd">        order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -191,7 +191,7 @@
                 <span class="k">yield</span> <span class="n">child</span>
 
     <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">against</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="n">DEFAULT_DB_ALIAS</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do a database query to check if the expressions of the Q instance</span>
 <span class="sd">        matches against the expressions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -233,7 +233,7 @@
 
 
 <span class="k">class</span> <span class="nc">DeferredAttribute</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A wrapper for a deferred-loading field. When the value is read from this</span>
 <span class="sd">    object the first time, the query is executed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -242,7 +242,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="n">field</span>
 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve and caches the value from the datastore on the first lookup.</span>
 <span class="sd">        Return the cached value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -261,7 +261,7 @@
         <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_check_parent_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the field value can be fetched from a parent field already</span>
 <span class="sd">        loaded in the instance. This can be done if the to-be fetched</span>
 <span class="sd">        field is a primary key field.</span>
@@ -308,7 +308,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge_dicts</span><span class="p">(</span><span class="n">dicts</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge dicts in reverse to preference the order of the original list. e.g.,</span>
 <span class="sd">        merge_dicts([a, b]) will preference the keys in &#39;a&#39; over those in &#39;b&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -334,7 +334,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_unregister_lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lookup</span><span class="p">,</span> <span class="n">lookup_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove given lookup from cls lookups. For use in tests only as it&#39;s</span>
 <span class="sd">        not thread-safe.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -345,7 +345,7 @@
 
 
 <span class="k">def</span> <span class="nf">select_related_descend</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">restricted</span><span class="p">,</span> <span class="n">requested</span><span class="p">,</span> <span class="n">load_fields</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True if this field should be used to descend deeper for</span>
 <span class="sd">    select_related() purposes. Used by both the query construction code</span>
 <span class="sd">    (compiler.get_related_selections()) and the model instance creation code</span>
@@ -382,7 +382,7 @@
 
 
 <span class="k">def</span> <span class="nf">refs_expression</span><span class="p">(</span><span class="n">lookup_parts</span><span class="p">,</span> <span class="n">annotations</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the lookup_parts contains references to the given annotations set.</span>
 <span class="sd">    Because the LOOKUP_SEP is contained in the default annotation names, check</span>
 <span class="sd">    each prefix of the lookup_parts for a match.</span>
@@ -395,7 +395,7 @@
 
 
 <span class="k">def</span> <span class="nf">check_rel_lookup_compatibility</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">target_opts</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check that self.model is compatible with target_opts. Compatibility</span>
 <span class="sd">    is OK if:</span>
 <span class="sd">      1) model and opts match (where proxy inheritance is removed)</span>
@@ -424,7 +424,7 @@
 
 
 <span class="k">class</span> <span class="nc">FilteredRelation</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Specify custom filtering in the ON clause of SQL joins.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specify custom filtering in the ON clause of SQL joins.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relation_name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="n">Q</span><span class="p">()):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">relation_name</span><span class="p">:</span>
@@ -452,7 +452,7 @@
         <span class="k">return</span> <span class="n">clone</span>
 
     <span class="k">def</span> <span class="nf">resolve_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        QuerySet.annotate() only accepts expression-like arguments</span>
 <span class="sd">        (with a resolve_expression() method).</span>
 <span class="sd">        &quot;&quot;&quot;</span>

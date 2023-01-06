@@ -145,16 +145,16 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="evmenu">
 <h1>EvMenu<a class="headerlink" href="#evmenu" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Is your answer yes or no?
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Is<span class="w"> </span>your<span class="w"> </span>answer<span class="w"> </span>yes<span class="w"> </span>or<span class="w"> </span>no?
 _________________________________________
-<span class="o">[</span>Y<span class="o">]</span>es! - Answer yes.
-<span class="o">[</span>N<span class="o">]</span>o! - Answer no.
-<span class="o">[</span>A<span class="o">]</span>bort - Answer neither, and abort.
+<span class="o">[</span>Y<span class="o">]</span>es!<span class="w"> </span>-<span class="w"> </span>Answer<span class="w"> </span>yes.
+<span class="o">[</span>N<span class="o">]</span>o!<span class="w"> </span>-<span class="w"> </span>Answer<span class="w"> </span>no.
+<span class="o">[</span>A<span class="o">]</span>bort<span class="w"> </span>-<span class="w"> </span>Answer<span class="w"> </span>neither,<span class="w"> </span>and<span class="w"> </span>abort.
 
-&gt; Y
-You chose yes!
+&gt;<span class="w"> </span>Y
+You<span class="w"> </span>chose<span class="w"> </span>yes!
 
-Thanks <span class="k">for</span> your answer. Goodbye!
+Thanks<span class="w"> </span><span class="k">for</span><span class="w"> </span>your<span class="w"> </span>answer.<span class="w"> </span>Goodbye!
 </pre></div>
 </div>
 <p><em>EvMenu</em> is used for generate branching multi-choice menus. Each menu ‘node’ can
@@ -575,7 +575,7 @@ needed. Here is an example:</p>
 <span class="k">class</span> <span class="nc">MyEvMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">nodetext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format the node text itself.</span>
 
 <span class="sd">        Args:</span>
@@ -587,7 +587,7 @@ needed. Here is an example:</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">helptext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">helptext</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format the node&#39;s help text</span>
 
 <span class="sd">        Args:</span>
@@ -599,7 +599,7 @@ needed. Here is an example:</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats the option block.</span>
 
 <span class="sd">        Args:</span>
@@ -613,7 +613,7 @@ needed. Here is an example:</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats the entirety of the node.</span>
 
 <span class="sd">        Args:</span>
@@ -835,7 +835,7 @@ enter will be sent into the callback for whatever processing you want.</p>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">get_input</span>
 
 <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">user_input</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a callback you define yourself.</span>
 
 <span class="sd">    Args:</span>
@@ -965,7 +965,7 @@ helper function accessed as <code class="docutils literal notranslate"><span cla
 
 <span class="k">def</span> <span class="nf">define_character</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> \
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    What aspect of your character do you want</span>
 <span class="sd">    to change next?</span>
 <span class="sd">    &quot;&quot;&quot;</span>

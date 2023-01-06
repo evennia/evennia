@@ -165,7 +165,7 @@
 <span class="n">_QUIT_WARNING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">|rDo you really want to quit?|n</span>
 
-<span class="si">{warning}</span><span class="s2"></span>
+<span class="si">{warning}</span>
 
 <span class="s2">Enter |w&#39;quit&#39;|n again to truly give up.</span>
 <span class="s2">&quot;&quot;&quot;</span>
@@ -183,7 +183,7 @@
 
 
 <div class="viewcode-block" id="CmdEvscapeRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEvscapeRoom">[docs]</a><span class="k">class</span> <span class="nc">CmdEvscapeRoom</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base command parent for all Evscaperoom commands.</span>
 
 <span class="sd">    This operates on the premise of &#39;focus&#39; - the &#39;focus&#39;</span>
@@ -210,7 +210,7 @@
     <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">required</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This implements the various search modes</span>
 
 <span class="sd">        Args:</span>
@@ -248,7 +248,7 @@
             <span class="k">return</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="CmdEvscapeRoom.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEvscapeRoom.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse incoming arguments for use in all child classes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -287,7 +287,7 @@
 
 
 <div class="viewcode-block" id="CmdGiveUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp">[docs]</a><span class="k">class</span> <span class="nc">CmdGiveUp</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Give up</span>
 
 <span class="sd">    Usage:</span>
@@ -332,7 +332,7 @@
 
 
 <div class="viewcode-block" id="CmdLook"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdLook">[docs]</a><span class="k">class</span> <span class="nc">CmdLook</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Look at the room, an object or the currently focused object</span>
 
 <span class="sd">    Usage:</span>
@@ -355,7 +355,7 @@
 
 
 <div class="viewcode-block" id="CmdWho"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdWho">[docs]</a><span class="k">class</span> <span class="nc">CmdWho</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">,</span> <span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdWho</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List other players in the game.</span>
 
 <span class="sd">    Usage:</span>
@@ -406,7 +406,7 @@
 
 
 <div class="viewcode-block" id="CmdSpeak"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak">[docs]</a><span class="k">class</span> <span class="nc">CmdSpeak</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform an communication action.</span>
 
 <span class="sd">    Usage:</span>
@@ -446,7 +446,7 @@
 
 
 <div class="viewcode-block" id="CmdEmote"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote">[docs]</a><span class="k">class</span> <span class="nc">CmdEmote</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform a free-form emote. Use /me to</span>
 <span class="sd">    include yourself in the emote and /name</span>
 <span class="sd">    to include other objects or characters.</span>
@@ -525,7 +525,7 @@
 
 
 <div class="viewcode-block" id="CmdFocus"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus">[docs]</a><span class="k">class</span> <span class="nc">CmdFocus</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Focus your attention on a target.</span>
 
 <span class="sd">    Usage:</span>
@@ -566,7 +566,7 @@
 
 
 <div class="viewcode-block" id="CmdOptions"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdOptions">[docs]</a><span class="k">class</span> <span class="nc">CmdOptions</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start option menu</span>
 
 <span class="sd">    Usage:</span>
@@ -584,7 +584,7 @@
 
 
 <div class="viewcode-block" id="CmdGet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdGet">[docs]</a><span class="k">class</span> <span class="nc">CmdGet</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use focus / examine instead.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -597,7 +597,7 @@
 
 
 <div class="viewcode-block" id="CmdRerouter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter">[docs]</a><span class="k">class</span> <span class="nc">CmdRerouter</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interact with an object in focus.</span>
 
 <span class="sd">    Usage:</span>
@@ -623,7 +623,7 @@
 
 
 <div class="viewcode-block" id="CmdFocusInteraction"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdFocusInteraction">[docs]</a><span class="k">class</span> <span class="nc">CmdFocusInteraction</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interact with an object in focus.</span>
 
 <span class="sd">    Usage:</span>
@@ -645,7 +645,7 @@
     <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="CmdFocusInteraction.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdFocusInteraction.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We assume this type of command is always on the form `command [arg]`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -673,7 +673,7 @@
 
 
 <div class="viewcode-block" id="CmdStand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdStand">[docs]</a><span class="k">class</span> <span class="nc">CmdStand</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stand up from whatever position you had.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -696,7 +696,7 @@
 
 
 <div class="viewcode-block" id="CmdHelp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdHelp</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">,</span> <span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get help.</span>
 
 <span class="sd">    Usage:</span>
@@ -731,7 +731,7 @@
 
 
 <div class="viewcode-block" id="CmdCreateObj"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdCreateObj">[docs]</a><span class="k">class</span> <span class="nc">CmdCreateObj</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create command, only for Admins during debugging.</span>
 
 <span class="sd">    Usage:</span>
@@ -771,7 +771,7 @@
 
 
 <div class="viewcode-block" id="CmdSetFlag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdSetFlag">[docs]</a><span class="k">class</span> <span class="nc">CmdSetFlag</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Assign a flag to an object. Admin use only</span>
 
 <span class="sd">    Usage:</span>
@@ -804,7 +804,7 @@
 
 
 <div class="viewcode-block" id="CmdJumpState"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdJumpState">[docs]</a><span class="k">class</span> <span class="nc">CmdJumpState</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Jump to a given state.</span>
 
 <span class="sd">    Args:</span>
@@ -827,7 +827,7 @@
 
 
 <div class="viewcode-block" id="CmdEvscapeRoomStart"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEvscapeRoomStart">[docs]</a><span class="k">class</span> <span class="nc">CmdEvscapeRoomStart</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Go to the Evscaperoom start menu</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -109,7 +109,7 @@
 
 
 <div class="viewcode-block" id="LockableThreadPool"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.LockableThreadPool">[docs]</a><span class="k">class</span> <span class="nc">LockableThreadPool</span><span class="p">(</span><span class="n">threadpool</span><span class="o">.</span><span class="n">ThreadPool</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Threadpool that can be locked from accepting new requests.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -121,7 +121,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_accept_new</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="LockableThreadPool.callInThread"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.LockableThreadPool.callInThread">[docs]</a>    <span class="k">def</span> <span class="nf">callInThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        called in the main reactor thread. Makes sure the pool</span>
 <span class="sd">        is not locked before continuing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -135,13 +135,13 @@
 
 
 <div class="viewcode-block" id="HTTPChannelWithXForwardedFor"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.HTTPChannelWithXForwardedFor">[docs]</a><span class="k">class</span> <span class="nc">HTTPChannelWithXForwardedFor</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">HTTPChannel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    HTTP xforward class</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HTTPChannelWithXForwardedFor.allHeadersReceived"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.HTTPChannelWithXForwardedFor.allHeadersReceived">[docs]</a>    <span class="k">def</span> <span class="nf">allHeadersReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check to see if this is a reverse proxied connection.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -163,7 +163,7 @@
 
 <div class="viewcode-block" id="EvenniaReverseProxyResource"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.EvenniaReverseProxyResource">[docs]</a><span class="k">class</span> <span class="nc">EvenniaReverseProxyResource</span><span class="p">(</span><span class="n">ReverseProxyResource</span><span class="p">):</span>
 <div class="viewcode-block" id="EvenniaReverseProxyResource.getChild"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.EvenniaReverseProxyResource.getChild">[docs]</a>    <span class="k">def</span> <span class="nf">getChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create and return a proxy resource with the same proxy configuration</span>
 <span class="sd">        as this one, except that its path also contains the segment given by</span>
 <span class="sd">        path at the end.</span>
@@ -185,7 +185,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvenniaReverseProxyResource.render"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.EvenniaReverseProxyResource.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Render a request by forwarding it to the proxied server.</span>
 
 <span class="sd">        Args:</span>
@@ -227,14 +227,14 @@
 
 
 <div class="viewcode-block" id="DjangoWebRoot"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.DjangoWebRoot">[docs]</a><span class="k">class</span> <span class="nc">DjangoWebRoot</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">Resource</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This creates a web root (/) that Django</span>
 <span class="sd">    understands by tweaking the way</span>
 <span class="sd">    child instances are recognized.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DjangoWebRoot.__init__"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.DjangoWebRoot.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup the django+twisted resource.</span>
 
 <span class="sd">        Args:</span>
@@ -248,7 +248,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_resource</span> <span class="o">=</span> <span class="n">WSGIResource</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">get_wsgi_application</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="DjangoWebRoot.empty_threadpool"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.DjangoWebRoot.empty_threadpool">[docs]</a>    <span class="k">def</span> <span class="nf">empty_threadpool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts our _pending_requests list of deferreds into a DeferredList</span>
 
 <span class="sd">        Returns:</span>
@@ -266,7 +266,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deferred&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DjangoWebRoot.getChild"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.DjangoWebRoot.getChild">[docs]</a>    <span class="k">def</span> <span class="nf">getChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        To make things work we nudge the url tree to make this the</span>
 <span class="sd">        root.</span>
 
@@ -301,7 +301,7 @@
 
 
 <div class="viewcode-block" id="Website"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.Website">[docs]</a><span class="k">class</span> <span class="nc">Website</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">Site</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class will only log http requests if settings.DEBUG is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -314,7 +314,7 @@
         <span class="k">return</span> <span class="s2">&quot;Webserver&quot;</span></div>
 
 <div class="viewcode-block" id="Website.log"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.Website.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Conditional logging&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Conditional logging&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">_DEBUG</span><span class="p">:</span>
             <span class="n">server</span><span class="o">.</span><span class="n">Site</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span></div></div>
 
@@ -325,7 +325,7 @@
 
 
 <div class="viewcode-block" id="WSGIWebServer"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIWebServer">[docs]</a><span class="k">class</span> <span class="nc">WSGIWebServer</span><span class="p">(</span><span class="n">internet</span><span class="o">.</span><span class="n">TCPServer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a WSGI webserver. It makes sure to start</span>
 <span class="sd">    the threadpool after the service itself started,</span>
 <span class="sd">    so as to register correctly with the twisted daemon.</span>
@@ -335,7 +335,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="WSGIWebServer.__init__"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIWebServer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This just stores the threadpool.</span>
 
 <span class="sd">        Args:</span>
@@ -347,7 +347,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WSGIWebServer.startService"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIWebServer.startService">[docs]</a>    <span class="k">def</span> <span class="nf">startService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the pool after the service starts.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -359,7 +359,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WSGIWebServer.stopService"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIWebServer.stopService">[docs]</a>    <span class="k">def</span> <span class="nf">stopService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Safely stop the pool after the service stops.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -373,7 +373,7 @@
 
 
 <div class="viewcode-block" id="PrivateStaticRoot"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.PrivateStaticRoot">[docs]</a><span class="k">class</span> <span class="nc">PrivateStaticRoot</span><span class="p">(</span><span class="n">static</span><span class="o">.</span><span class="n">File</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This overrides the default static file resource so as to not make the</span>
 <span class="sd">    directory listings public (that is, if you go to /media or /static you</span>
 <span class="sd">    won&#39;t see an index of all static/media files on the server).</span>

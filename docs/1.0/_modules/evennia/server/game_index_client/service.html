@@ -94,7 +94,7 @@
 
 
 <div class="viewcode-block" id="EvenniaGameIndexService"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.service.html#evennia.server.game_index_client.service.EvenniaGameIndexService">[docs]</a><span class="k">class</span> <span class="nc">EvenniaGameIndexService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Twisted Service that contains a LoopingCall for regularly sending game details</span>
 <span class="sd">    to the Evennia Game Index.</span>
 
@@ -125,7 +125,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_die_on_bad_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If it becomes apparent that our configuration is generating improperly</span>
 <span class="sd">        formed messages to EGI, we don&#39;t want to keep sending bad messages.</span>
 <span class="sd">        Stop the service so we&#39;re not wasting resources.</span>

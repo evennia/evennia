@@ -100,14 +100,14 @@
 
 
 <div class="viewcode-block" id="Mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp">[docs]</a><span class="k">class</span> <span class="nc">Mssp</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the MSSP protocol. Add this to a variable on the telnet</span>
 <span class="sd">    protocol to set it up.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Mssp.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize MSSP by storing protocol on ourselves and calling</span>
 <span class="sd">        the client to see if it supports MSSP.</span>
 
@@ -119,7 +119,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">MSSP</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_mssp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_mssp</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Mssp.get_player_count"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.get_player_count">[docs]</a>    <span class="k">def</span> <span class="nf">get_player_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get number of logged-in players.</span>
 
 <span class="sd">        Returns:</span>
@@ -129,7 +129,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">count_loggedin</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Mssp.get_uptime"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.get_uptime">[docs]</a>    <span class="k">def</span> <span class="nf">get_uptime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get how long the portal has been online (reloads are not counted).</span>
 
 <span class="sd">        Returns:</span>
@@ -139,7 +139,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">uptime</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Mssp.no_mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.no_mssp">[docs]</a>    <span class="k">def</span> <span class="nf">no_mssp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when mssp is not requested. This is the normal</span>
 <span class="sd">        operation.</span>
 
@@ -150,7 +150,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Mssp.do_mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.do_mssp">[docs]</a>    <span class="k">def</span> <span class="nf">do_mssp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Negotiate all the information.</span>
 
 <span class="sd">        Args:</span>

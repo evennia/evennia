@@ -117,7 +117,7 @@
 
 
 <span class="k">class</span> <span class="nc">SettingsReference</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    String subclass which references a current settings value. It&#39;s treated as</span>
 <span class="sd">    the value in memory but serializes to a settings.NAME attribute reference.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -130,14 +130,14 @@
 
 
 <span class="k">class</span> <span class="nc">LazySettings</span><span class="p">(</span><span class="n">LazyObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A lazy proxy for either global Django settings or a custom settings object.</span>
 <span class="sd">    The user can manually configure settings prior to using them. Otherwise,</span>
 <span class="sd">    Django uses the settings module pointed to by DJANGO_SETTINGS_MODULE.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the settings module pointed to by the environment variable. This</span>
 <span class="sd">        is used the first time settings are needed, if the user hasn&#39;t</span>
 <span class="sd">        configured settings manually.</span>
@@ -163,7 +163,7 @@
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the value of a setting and cache it in self.__dict__.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value of a setting and cache it in self.__dict__.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">_wrapped</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">)</span> <span class="ow">is</span> <span class="n">empty</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="n">_wrapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span>
@@ -180,7 +180,7 @@
         <span class="k">return</span> <span class="n">val</span>
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the value of setting. Clear all cached values if _wrapped changes</span>
 <span class="sd">        (@override_settings does this) or clear single values when set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -191,12 +191,12 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Delete a setting and clear it from cache if needed.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a setting and clear it from cache if needed.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delattr__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_settings</span><span class="o">=</span><span class="n">global_settings</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called to manually configure the settings. The &#39;default_settings&#39;</span>
 <span class="sd">        parameter sets where to retrieve any unspecified values from (its</span>
 <span class="sd">        argument must support attribute access (__getattr__)).</span>
@@ -212,7 +212,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_add_script_prefix</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add SCRIPT_NAME prefix to relative paths.</span>
 
 <span class="sd">        Useful when the app is being served at a subpath and manually prefixing</span>
@@ -227,7 +227,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">configured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return True if the settings have already been configured.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if the settings have already been configured.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">empty</span>
 
     <span class="nd">@property</span>
@@ -326,14 +326,14 @@
 
 
 <span class="k">class</span> <span class="nc">UserSettingsHolder</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Holder for user configured settings.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Holder for user configured settings.&quot;&quot;&quot;</span>
 
     <span class="c1"># SETTINGS_MODULE doesn&#39;t make much sense in the manually configured</span>
     <span class="c1"># (standalone) case.</span>
     <span class="n">SETTINGS_MODULE</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_settings</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Requests for configuration variables not in this class are satisfied</span>
 <span class="sd">        from the module specified in default_settings (if possible).</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -100,24 +100,24 @@
 <span class="p">}</span>
 
 <span class="n">_TEMP_SHEET</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="si">{name}</span><span class="s2"></span>
+<span class="si">{name}</span>
 
-<span class="s2">STR +</span><span class="si">{strength}</span><span class="s2"></span>
-<span class="s2">DEX +</span><span class="si">{dexterity}</span><span class="s2"></span>
-<span class="s2">CON +</span><span class="si">{constitution}</span><span class="s2"></span>
-<span class="s2">INT +</span><span class="si">{intelligence}</span><span class="s2"></span>
-<span class="s2">WIS +</span><span class="si">{wisdom}</span><span class="s2"></span>
-<span class="s2">CHA +</span><span class="si">{charisma}</span><span class="s2"></span>
+<span class="s2">STR +</span><span class="si">{strength}</span>
+<span class="s2">DEX +</span><span class="si">{dexterity}</span>
+<span class="s2">CON +</span><span class="si">{constitution}</span>
+<span class="s2">INT +</span><span class="si">{intelligence}</span>
+<span class="s2">WIS +</span><span class="si">{wisdom}</span>
+<span class="s2">CHA +</span><span class="si">{charisma}</span>
 
-<span class="si">{description}</span><span class="s2"></span>
+<span class="si">{description}</span>
 
 <span class="s2">Your belongings:</span>
-<span class="si">{equipment}</span><span class="s2"></span>
+<span class="si">{equipment}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="TemporaryCharacterSheet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet">[docs]</a><span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This collects all the rules for generating a new character. An instance of this class is used</span>
 <span class="sd">    to pass around the current character state during character generation and also applied to</span>
 <span class="sd">    the character at the end. This class instance can also be saved on the menu to make sure a user</span>
@@ -194,7 +194,7 @@
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="TemporaryCharacterSheet.show_sheet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.show_sheet">[docs]</a>    <span class="k">def</span> <span class="nf">show_sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a temp character sheet, a compressed version of the real thing.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -217,7 +217,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TemporaryCharacterSheet.apply"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.TemporaryCharacterSheet.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Once the chargen is complete, call this create and set up the character.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -274,7 +274,7 @@
 
 
 <div class="viewcode-block" id="node_chargen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_chargen">[docs]</a><span class="k">def</span> <span class="nf">node_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This node is the central point of chargen. We return here to see our current</span>
 <span class="sd">    sheet and break off to edit different parts of it.</span>
 
@@ -300,7 +300,7 @@
 
 
 <span class="k">def</span> <span class="nf">_update_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by node_change_name below to check what user entered and update the name if appropriate.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -312,7 +312,7 @@
 
 
 <div class="viewcode-block" id="node_change_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_change_name">[docs]</a><span class="k">def</span> <span class="nf">node_change_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change the random name of the character.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -328,7 +328,7 @@
 
 
 <span class="k">def</span> <span class="nf">_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used by node_swap_abilities to parse the user&#39;s input and swap ability</span>
 <span class="sd">    values.</span>
 
@@ -360,7 +360,7 @@
 
 
 <div class="viewcode-block" id="node_swap_abilities"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_swap_abilities">[docs]</a><span class="k">def</span> <span class="nf">node_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    One is allowed to swap the values of two abilities around, once.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -369,12 +369,12 @@
     <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Your current abilities:</span>
 
-<span class="s2">STR +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">strength</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">DEX +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">dexterity</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">CON +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">constitution</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">INT +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">intelligence</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">WIS +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">wisdom</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">CHA +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">charisma</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">STR +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">strength</span><span class="si">}</span>
+<span class="s2">DEX +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">dexterity</span><span class="si">}</span>
+<span class="s2">CON +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">constitution</span><span class="si">}</span>
+<span class="s2">INT +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">intelligence</span><span class="si">}</span>
+<span class="s2">WIS +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">wisdom</span><span class="si">}</span>
+<span class="s2">CHA +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">charisma</span><span class="si">}</span>
 
 <span class="s2">You can swap the values of two abilities around.</span>
 <span class="s2">You can only do this once, so choose carefully!</span>
@@ -388,7 +388,7 @@
 
 
 <div class="viewcode-block" id="node_apply_character"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.node_apply_character">[docs]</a><span class="k">def</span> <span class="nf">node_apply_character</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    End chargen and create the character. We will also puppet it.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -402,7 +402,7 @@
 
 
 <div class="viewcode-block" id="start_chargen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia.contrib.tutorials.evadventure.chargen.start_chargen">[docs]</a><span class="k">def</span> <span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a start point for spinning up the chargen from a command later.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

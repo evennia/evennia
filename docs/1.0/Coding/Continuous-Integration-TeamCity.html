@@ -151,34 +151,34 @@ environment unique from your development environment.</p></li>
 <span class="nv">CONFIG</span><span class="o">=</span><span class="s2">&quot;%system.teamcity.build.checkoutDir%/server/conf/settings.py&quot;</span>
 <span class="nv">MYCONF</span><span class="o">=</span><span class="s2">&quot;%system.teamcity.build.checkoutDir%/server/conf/my.cnf&quot;</span>
 
-sed -e <span class="s1">&#39;s/TELNET_PORTS = [4000]/TELNET_PORTS = [%game.ports%]/g&#39;</span> <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span> &gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="o">&amp;&amp;</span> mv
-<span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-sed -e <span class="s1">&#39;s/WEBSERVER_PORTS = [(4001, 4002)]/WEBSERVER_PORTS = [%game.webports%]/g&#39;</span> <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span> &gt;
-<span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="o">&amp;&amp;</span> mv <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/TELNET_PORTS = [4000]/TELNET_PORTS = [%game.ports%]/g&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mv
+<span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/WEBSERVER_PORTS = [(4001, 4002)]/WEBSERVER_PORTS = [%game.webports%]/g&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span><span class="w"> </span>&gt;
+<span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mv<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># settings.py MySQL DB configuration</span>
-<span class="nb">echo</span> Configuring Game Database...
-<span class="nb">echo</span> <span class="s2">&quot;&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;######################################################################&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;# MySQL Database Configuration&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;######################################################################&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span>Configuring<span class="w"> </span>Game<span class="w"> </span>Database...
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;######################################################################&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;# MySQL Database Configuration&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;######################################################################&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
 
-<span class="nb">echo</span> <span class="s2">&quot;DATABASES = {&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;   &#39;default&#39;: {&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;       &#39;ENGINE&#39;: &#39;django.db.backends.mysql&#39;,&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;       &#39;OPTIONS&#39;: {&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;           &#39;read_default_file&#39;: &#39;server/conf/my.cnf&#39;,&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;       },&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;   }&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;}&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;DATABASES = {&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;   &#39;default&#39;: {&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;       &#39;ENGINE&#39;: &#39;django.db.backends.mysql&#39;,&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;       &#39;OPTIONS&#39;: {&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;           &#39;read_default_file&#39;: &#39;server/conf/my.cnf&#39;,&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;       },&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;   }&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;}&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
 
 <span class="c1"># Create the My.CNF file.</span>
-<span class="nb">echo</span> <span class="s2">&quot;[client]&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;database = %mysql.db%&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;user = %mysql.user%&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;password = %mysql.pass%&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;default-character-set = utf8&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;[client]&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;database = %mysql.db%&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;user = %mysql.user%&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;password = %mysql.pass%&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;default-character-set = utf8&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 <p>If you look at the parameters side of the page after saving this script, you’ll notice that some new
@@ -193,15 +193,15 @@ step to your game dir.</p>
 
 <span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
 
-. %evenv.dir%/bin/activate
+.<span class="w"> </span>%evenv.dir%/bin/activate
 
 <span class="c1"># Check that the logs directory exists.</span>
-<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
-  mkdir <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
+<span class="w">  </span>mkdir<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
 <span class="k">fi</span>
 
-evennia makemigrations
+evennia<span class="w"> </span>makemigrations
 </pre></div>
 </div>
 <p>Create yet another build step, this time named: “Execute Database Migration”:
@@ -209,18 +209,18 @@ If you’re using Sqlite3 for your game (default database), it’s prudent to ch
 step to your game dir.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># Apply the database migration.</span>
-    
+<span class="w">    </span>
 <span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
-    
-. %evenv.dir%/bin/activate
-    
+<span class="w">    </span>
+.<span class="w"> </span>%evenv.dir%/bin/activate
+<span class="w">    </span>
 <span class="c1"># Check that the logs directory exists.</span>
-<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
-  mkdir <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
+<span class="w">  </span>mkdir<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
 <span class="k">fi</span>
-    
-evennia migrate
+<span class="w">    </span>
+evennia<span class="w"> </span>migrate
 </pre></div>
 </div>
 <p>Our next build step is where we actually publish our build. Up until now, all work on game has been
@@ -230,18 +230,18 @@ to where our game actually exists on the local server.</p>
 the Database Migration steps. The build order will matter!</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># Publishes the build to the proper build directory.</span>
-    
+<span class="w">    </span>
 <span class="nv">DIRECTORY</span><span class="o">=</span><span class="s2">&quot;&lt;game_dir&gt;&quot;</span>
-    
-<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="c1"># Control will enter here if $DIRECTORY doesn&#39;t exist.</span>
-  mkdir <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
+<span class="w">    </span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="c1"># Control will enter here if $DIRECTORY doesn&#39;t exist.</span>
+<span class="w">  </span>mkdir<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
 <span class="k">fi</span>
-    
+<span class="w">    </span>
 <span class="c1"># Copy all the files.</span>
-cp -ruv %teamcity.build.checkoutDir%/* <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
-chmod -R <span class="m">775</span> <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
- 
+cp<span class="w"> </span>-ruv<span class="w"> </span>%teamcity.build.checkoutDir%/*<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
+chmod<span class="w"> </span>-R<span class="w"> </span><span class="m">775</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
+<span class="w"> </span>
 </pre></div>
 </div>
 <p>Finally the last script will reload our game for us.</p>
@@ -253,18 +253,18 @@ The working directory on this build step will be: <code class="docutils literal 
 <span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
 <span class="nv">PIDDIR</span><span class="o">=</span><span class="s2">&quot;server/server.pid&quot;</span>
 
-. %evenv.dir%/bin/activate
+.<span class="w"> </span>%evenv.dir%/bin/activate
 
 <span class="c1"># Check that the logs directory exists.</span>
-<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
-  mkdir <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
+<span class="w">  </span>mkdir<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
 <span class="k">fi</span>
 
 <span class="c1"># Check that the server is running.</span>
-<span class="k">if</span> <span class="o">[</span> -d <span class="s2">&quot;</span><span class="nv">$PIDDIR</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="c1"># Control will enter here if the game is running.</span>
-  evennia reload
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PIDDIR</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="c1"># Control will enter here if the game is running.</span>
+<span class="w">  </span>evennia<span class="w"> </span>reload
 <span class="k">fi</span>
 </pre></div>
 </div>

@@ -96,14 +96,14 @@
 
 
 <div class="viewcode-block" id="do_nothing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.do_nothing">[docs]</a><span class="k">def</span> <span class="nf">do_nothing</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Re-runs the current node</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="send_testing_tagged"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.send_testing_tagged">[docs]</a><span class="k">def</span> <span class="nf">send_testing_tagged</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test to send a message to a pane tagged with &#39;testing&#39; in the webclient.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -122,7 +122,7 @@
 
 
 <div class="viewcode-block" id="DemoCommandSetHelp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetHelp">[docs]</a><span class="k">class</span> <span class="nc">DemoCommandSetHelp</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Demo the help command</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -149,7 +149,7 @@
 
 
 <div class="viewcode-block" id="DemoCommandSetComms"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetComms">[docs]</a><span class="k">class</span> <span class="nc">DemoCommandSetComms</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Demo communications</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -169,7 +169,7 @@
 
 
 <div class="viewcode-block" id="goto_command_demo_comms"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.goto_command_demo_comms">[docs]</a><span class="k">def</span> <span class="nf">goto_command_demo_comms</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup and go to the color demo node.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">DemoCommandSetHelp</span><span class="p">)</span>
@@ -264,7 +264,7 @@
 
 
 <span class="k">def</span> <span class="nf">_maintain_demo_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handle the creation/cleanup of demo assets. We store them</span>
 <span class="sd">    on the character and clean them when leaving the menu later.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -338,7 +338,7 @@
 
 
 <div class="viewcode-block" id="DemoCommandSetRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetRoom">[docs]</a><span class="k">class</span> <span class="nc">DemoCommandSetRoom</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Demo some general in-game commands command.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -360,7 +360,7 @@
 
 
 <div class="viewcode-block" id="goto_command_demo_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.goto_command_demo_room">[docs]</a><span class="k">def</span> <span class="nf">goto_command_demo_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup and go to the demo-room node. Generates a little 2-room environment</span>
 <span class="sd">    for testing out some commands.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -372,7 +372,7 @@
 
 
 <div class="viewcode-block" id="goto_cleanup_cmdsets"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.goto_cleanup_cmdsets">[docs]</a><span class="k">def</span> <span class="nf">goto_cleanup_cmdsets</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_strings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleanup all cmdsets.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">DemoCommandSetHelp</span><span class="p">)</span>
@@ -809,12 +809,12 @@
 
 
 <div class="viewcode-block" id="TutorialEvMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.TutorialEvMenu">[docs]</a><span class="k">class</span> <span class="nc">TutorialEvMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom EvMenu for displaying the intro-menu</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TutorialEvMenu.close_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.TutorialEvMenu.close_menu">[docs]</a>    <span class="k">def</span> <span class="nf">close_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Custom cleanup actions when closing menu&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom cleanup actions when closing menu&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">DemoCommandSetHelp</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">DemoCommandSetRoom</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">DemoCommandSetComms</span><span class="p">)</span>
@@ -846,7 +846,7 @@
 
 
 <div class="viewcode-block" id="init_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.init_menu">[docs]</a><span class="k">def</span> <span class="nf">init_menu</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Call to initialize the menu.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -104,7 +104,7 @@
 
 
 <div class="viewcode-block" id="ContentsHandler"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler">[docs]</a><span class="k">class</span> <span class="nc">ContentsHandler</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles and caches the contents of an object to avoid excessive</span>
 <span class="sd">    lookups (this is done very often due to cmdhandler needing to look</span>
 <span class="sd">    for object-cmdsets). It is stored on the &#39;contents_cache&#39; property</span>
@@ -112,7 +112,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ContentsHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up the contents handler.</span>
 
 <span class="sd">        Args:</span>
@@ -131,7 +131,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.load"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves all objects from database. Used for initializing.</span>
 
 <span class="sd">        Returns:</span>
@@ -140,7 +140,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">locations_set</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.init"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-initialize the content cache</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -151,7 +151,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">][</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.get"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the contents of the cache.</span>
 
 <span class="sd">        Args:</span>
@@ -182,7 +182,7 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.add"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new object to this location</span>
 
 <span class="sd">        Args:</span>
@@ -194,7 +194,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">][</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.remove"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove object from this location</span>
 
 <span class="sd">        Args:</span>
@@ -207,7 +207,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.clear"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear the contents cache and re-initialize</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -224,7 +224,7 @@
 
 
 <div class="viewcode-block" id="ObjectDB"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ObjectDB">[docs]</a><span class="k">class</span> <span class="nc">ObjectDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    All objects in the game use the ObjectDB model to store</span>
 <span class="sd">    data in the database. This is handled transparently through</span>
 <span class="sd">    the typeclass system.</span>
@@ -348,17 +348,17 @@
 
     <span class="c1"># cmdset_storage property handling</span>
     <span class="k">def</span> <span class="nf">__cmdset_storage_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;getter&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;getter&quot;&quot;&quot;</span>
         <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_cmdset_storage</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">storage</span> <span class="k">else</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">__cmdset_storage_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;setter&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;setter&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_cmdset_storage</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">__cmdset_storage_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;deleter&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;deleter&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_cmdset_storage</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">])</span>
 
@@ -366,11 +366,11 @@
 
     <span class="c1"># location getsetter</span>
     <span class="k">def</span> <span class="nf">__location_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get location&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get location&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_location</span>
 
     <span class="k">def</span> <span class="nf">__location_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set location, checking for loops and allowing dbref&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set location, checking for loops and allowing dbref&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="c1"># allow setting of #dbref</span>
             <span class="n">dbid</span> <span class="o">=</span> <span class="n">dbref</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -383,7 +383,7 @@
         <span class="k">try</span><span class="p">:</span>
 
             <span class="k">def</span> <span class="nf">is_loc_loop</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;Recursively traverse target location, trying to catch a loop.&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Recursively traverse target location, trying to catch a loop.&quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">None</span>
                 <span class="k">elif</span> <span class="n">loc</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
@@ -430,14 +430,14 @@
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">__location_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Cleanly delete the location reference&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cleanly delete the location reference&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_location</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_location&quot;</span><span class="p">])</span>
 
     <span class="n">location</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__location_get</span><span class="p">,</span> <span class="n">__location_set</span><span class="p">,</span> <span class="n">__location_del</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ObjectDB.at_db_location_postsave"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ObjectDB.at_db_location_postsave">[docs]</a>    <span class="k">def</span> <span class="nf">at_db_location_postsave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called automatically after the location field was</span>
 <span class="sd">        saved, no matter how. It checks for a variable</span>
 <span class="sd">        _safe_contents_update to know if the save was triggered via</span>
@@ -463,7 +463,7 @@
                 <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">contents_cache</span><span class="o">.</span><span class="n">init</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span></div>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Define Django meta options&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define Django meta options&quot;&quot;&quot;</span>
 
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Object&quot;</span>
         <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Objects&quot;</span></div>

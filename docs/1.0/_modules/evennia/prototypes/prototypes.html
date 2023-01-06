@@ -146,7 +146,7 @@
 
 
 <div class="viewcode-block" id="ValidationError"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError">[docs]</a><span class="k">class</span> <span class="nc">ValidationError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised on prototype validation errors</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -154,7 +154,7 @@
 
 
 <div class="viewcode-block" id="homogenize_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.homogenize_prototype">[docs]</a><span class="k">def</span> <span class="nf">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">custom_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Homogenize the more free-form prototype supported pre Evennia 0.7 into the stricter form.</span>
 
 <span class="sd">    Args:</span>
@@ -271,7 +271,7 @@
 
 
 <div class="viewcode-block" id="load_module_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.load_module_prototypes">[docs]</a><span class="k">def</span> <span class="nf">load_module_prototypes</span><span class="p">(</span><span class="o">*</span><span class="n">mod_or_prototypes</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load module prototypes. Also prototype-dicts passed directly to this function are considered</span>
 <span class="sd">    &#39;module&#39; prototypes (they are impossible to change) but will have a module of None.</span>
 
@@ -293,7 +293,7 @@
     <span class="k">global</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="p">,</span> <span class="n">_MODULE_PROTOTYPES</span>
 
     <span class="k">def</span> <span class="nf">_prototypes_from_module</span><span class="p">(</span><span class="n">mod</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load prototypes from a module, first by looking for a global list PROTOTYPE_LIST (a list of</span>
 <span class="sd">        dict-prototypes), and if not found, assuming all global-level dicts in the module are</span>
 <span class="sd">        prototypes.</span>
@@ -335,7 +335,7 @@
         <span class="k">return</span> <span class="n">prots</span>
 
     <span class="k">def</span> <span class="nf">_cleanup_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">prototype</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We need to handle externally determined prototype-keys and to make sure</span>
 <span class="sd">        the prototype contains all needed meta information.</span>
 
@@ -409,7 +409,7 @@
 
 
 <div class="viewcode-block" id="DBPrototypeCache"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.DBPrototypeCache">[docs]</a><span class="k">class</span> <span class="nc">DBPrototypeCache</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cache DB-stored prototypes; it can still be slow to initially load 1000s of</span>
 <span class="sd">    prototypes, due to having to deserialize all prototype-dicts, but after the</span>
 <span class="sd">    first time the cache will be populated and things will be fast.</span>
@@ -439,7 +439,7 @@
 
 
 <div class="viewcode-block" id="DbPrototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.DbPrototype">[docs]</a><span class="k">class</span> <span class="nc">DbPrototype</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This stores a single prototype, in an Attribute `prototype`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -463,7 +463,7 @@
 
 
 <div class="viewcode-block" id="save_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.save_prototype">[docs]</a><span class="k">def</span> <span class="nf">save_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create/Store a prototype persistently.</span>
 
 <span class="sd">    Args:</span>
@@ -555,7 +555,7 @@
 
 
 <div class="viewcode-block" id="delete_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.delete_prototype">[docs]</a><span class="k">def</span> <span class="nf">delete_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete a stored prototype</span>
 
 <span class="sd">    Args:</span>
@@ -604,7 +604,7 @@
     <span class="n">return_iterators</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">no_db</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find prototypes based on key and/or tags, or all prototypes.</span>
 
 <span class="sd">    Keyword Args:</span>
@@ -641,7 +641,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_search_module_based_prototypes</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function to load module-based prots.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -686,7 +686,7 @@
         <span class="k">return</span> <span class="n">module_prototypes</span><span class="p">,</span> <span class="n">fuzzy_match_db</span>
 
     <span class="k">def</span> <span class="nf">_search_db_based_prototypes</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">fuzzy_matching</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function for loading db-based prots.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -753,7 +753,7 @@
 
 
 <div class="viewcode-block" id="search_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.search_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_objects_with_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve all object instances created by a given prototype.</span>
 
 <span class="sd">    Args:</span>
@@ -767,7 +767,7 @@
 
 
 <div class="viewcode-block" id="PrototypeEvMore"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore">[docs]</a><span class="k">class</span> <span class="nc">PrototypeEvMore</span><span class="p">(</span><span class="n">EvMore</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Listing 1000+ prototypes can be very slow. So we customize EvMore to</span>
 <span class="sd">    display an EvTable per paginated page rather than to try creating an</span>
 <span class="sd">    EvTable for the entire dataset and then paginate it.</span>
@@ -775,7 +775,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PrototypeEvMore.__init__"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store some extra properties on the EvMore class</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -784,7 +784,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PrototypeEvMore.init_pages"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.init_pages">[docs]</a>    <span class="k">def</span> <span class="nf">init_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will be initialized with a tuple (mod_prototype_list, paginated_db_query)</span>
 <span class="sd">        and we must handle these separately since they cannot be paginated in the same</span>
 <span class="sd">        way. We will build the prototypes so that the db-prototypes come first (they</span>
@@ -808,7 +808,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_paginator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototype_paginator</span></div>
 
 <div class="viewcode-block" id="PrototypeEvMore.prototype_paginator"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.prototype_paginator">[docs]</a>    <span class="k">def</span> <span class="nf">prototype_paginator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pageno</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The listing is separated in db/mod prototypes, so we need to figure out which</span>
 <span class="sd">        one to pick based on the page number. Also, pageno starts from 0.</span>
 
@@ -823,7 +823,7 @@
             <span class="k">return</span> <span class="n">modprot_list</span><span class="p">[</span><span class="n">pageno</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="p">:</span> <span class="n">pageno</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="PrototypeEvMore.page_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.page_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">page_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Input is a queryset page from django.Paginator</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -877,7 +877,7 @@
 <div class="viewcode-block" id="list_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.list_prototypes">[docs]</a><span class="k">def</span> <span class="nf">list_prototypes</span><span class="p">(</span>
     <span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_non_use</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_non_edit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collate a list of found prototypes based on search criteria and access.</span>
 
 <span class="sd">    Args:</span>
@@ -914,7 +914,7 @@
 <div class="viewcode-block" id="validate_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.validate_prototype">[docs]</a><span class="k">def</span> <span class="nf">validate_prototype</span><span class="p">(</span>
     <span class="n">prototype</span><span class="p">,</span> <span class="n">protkey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_flags</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run validation on a prototype, checking for inifinite regress.</span>
 
 <span class="sd">    Args:</span>
@@ -1076,7 +1076,7 @@
     <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a prototype value string for a protfunc and process it.</span>
 
 <span class="sd">    Available protfuncs are specified as callables in one of the modules of</span>
@@ -1117,7 +1117,7 @@
 
 
 <div class="viewcode-block" id="format_available_protfuncs"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.format_available_protfuncs">[docs]</a><span class="k">def</span> <span class="nf">format_available_protfuncs</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all protfuncs in a pretty-formatted form.</span>
 
 <span class="sd">    Args:</span>
@@ -1134,7 +1134,7 @@
 
 
 <div class="viewcode-block" id="prototype_to_str"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.prototype_to_str">[docs]</a><span class="k">def</span> <span class="nf">prototype_to_str</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format a prototype to a nice string representation.</span>
 
 <span class="sd">    Args:</span>
@@ -1145,8 +1145,8 @@
 
     <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">|cprototype-key:|n </span><span class="si">{prototype_key}</span><span class="s2">, |c-tags:|n </span><span class="si">{prototype_tags}</span><span class="s2">, |c-locks:|n </span><span class="si">{prototype_locks}</span><span class="s2">|n</span>
-<span class="s2">|c-desc|n: </span><span class="si">{prototype_desc}</span><span class="s2"></span>
-<span class="s2">|cprototype-parent:|n </span><span class="si">{prototype_parent}</span><span class="s2"></span>
+<span class="s2">|c-desc|n: </span><span class="si">{prototype_desc}</span>
+<span class="s2">|cprototype-parent:|n </span><span class="si">{prototype_parent}</span>
 <span class="s2">    </span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">prototype_key</span><span class="o">=</span><span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="s2">&quot;|r[UNSET](required)|n&quot;</span><span class="p">),</span>
         <span class="n">prototype_tags</span><span class="o">=</span><span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="s2">&quot;|wNone|n&quot;</span><span class="p">),</span>
@@ -1217,7 +1217,7 @@
 
 
 <div class="viewcode-block" id="check_permission"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.check_permission">[docs]</a><span class="k">def</span> <span class="nf">check_permission</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to check access to actions on given prototype.</span>
 
 <span class="sd">    Args:</span>
@@ -1256,7 +1256,7 @@
 <div class="viewcode-block" id="init_spawn_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.init_spawn_value">[docs]</a><span class="k">def</span> <span class="nf">init_spawn_value</span><span class="p">(</span>
     <span class="n">value</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">protfunc_raise_errors</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyze the prototype value and produce a value useful at the point of spawning.</span>
 
 <span class="sd">    Args:</span>

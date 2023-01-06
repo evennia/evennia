@@ -173,7 +173,7 @@ access the command arguments in <code class="docutils literal notranslate"><span
 <p>To begin with, look at this example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test command.</span>
 
 <span class="sd">    Syntax:</span>
@@ -212,7 +212,7 @@ in <code class="docutils literal notranslate"><span class="pre">self.args</span>
 force Python to display the command arguments as a debug string using a little shortcut.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test command.</span>
 
 <span class="sd">    Syntax:</span>
@@ -280,7 +280,7 @@ string.</p></li>
 separator, we call <code class="docutils literal notranslate"><span class="pre">lstrip</span></code> on the command arguments:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test command.</span>
 
 <span class="sd">    Syntax:</span>
@@ -293,7 +293,7 @@ separator, we call <code class="docutils literal notranslate"><span class="pre">
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parse arguments, just strip them.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse arguments, just strip them.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -350,7 +350,7 @@ won’t work as is, I warn you:</p>
 
 <span class="k">class</span> <span class="nc">CmdRoll</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Play random, enter a number and try your luck.</span>
 
 <span class="sd">    Usage:</span>
@@ -367,7 +367,7 @@ won’t work as is, I warn you:</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;roll&quot;</span>
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert the argument to a number.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the argument to a number.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -399,7 +399,7 @@ converting:</p>
 
 <span class="k">class</span> <span class="nc">CmdRoll</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Play random, enter a number and try your luck.</span>
 
 <span class="sd">    Usage:</span>
@@ -416,7 +416,7 @@ converting:</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;roll&quot;</span>
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert the argument to number if possible.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the argument to number if possible.&quot;&quot;&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
         <span class="c1"># Convert to int if possible</span>
@@ -459,7 +459,7 @@ by grouping:</p>
 
 <span class="k">class</span> <span class="nc">CmdRoll</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Play random, enter a number and try your luck.</span>
 
 <span class="sd">    Usage:</span>
@@ -476,7 +476,7 @@ by grouping:</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;roll&quot;</span>
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert the argument to number if possible.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the argument to number if possible.&quot;&quot;&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
         <span class="c1"># Convert to int if possible</span>
@@ -586,7 +586,7 @@ the number of dice to roll.</p>
 
 <span class="k">class</span> <span class="nc">CmdRoll</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Play random, enter a number and try your luck.</span>
 
 <span class="sd">    Specify two numbers separated by a space.  The first number is the</span>
@@ -606,7 +606,7 @@ the number of dice to roll.</p>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;roll&quot;</span>
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Split the arguments and convert them.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split the arguments and convert them.&quot;&quot;&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
         <span class="c1"># Split: we expect two arguments separated by a space</span>

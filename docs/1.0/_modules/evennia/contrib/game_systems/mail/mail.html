@@ -130,7 +130,7 @@
 
 
 <div class="viewcode-block" id="CmdMail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.mail.mail.html#evennia.contrib.game_systems.mail.mail.CmdMail">[docs]</a><span class="k">class</span> <span class="nc">CmdMail</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxAccountCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Communicate with others by sending mail.</span>
 
 <span class="sd">    Usage:</span>
@@ -164,7 +164,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
 <div class="viewcode-block" id="CmdMail.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.mail.mail.html#evennia.contrib.game_systems.mail.mail.CmdMail.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add convenience check to know if caller is an Account or not since this cmd</span>
 <span class="sd">        will be able to add to either Object- or Account level.</span>
 
@@ -175,7 +175,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdMail.search_targets"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.mail.mail.html#evennia.contrib.game_systems.mail.mail.CmdMail.search_targets">[docs]</a>    <span class="k">def</span> <span class="nf">search_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namelist</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search a list of targets of the same type as caller.</span>
 
 <span class="sd">        Args:</span>
@@ -194,7 +194,7 @@
         <span class="k">return</span> <span class="n">matches</span></div>
 
 <div class="viewcode-block" id="CmdMail.get_all_mail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.mail.mail.html#evennia.contrib.game_systems.mail.mail.CmdMail.get_all_mail">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_mail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of all the messages where the caller is a recipient. These</span>
 <span class="sd">            are all messages tagged with tags of the `mail` category.</span>
 
@@ -208,7 +208,7 @@
             <span class="k">return</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;mail&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_objects</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdMail.send_mail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.mail.mail.html#evennia.contrib.game_systems.mail.mail.CmdMail.send_mail">[docs]</a>    <span class="k">def</span> <span class="nf">send_mail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipients</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function for sending new mail.  Also useful for sending notifications</span>
 <span class="sd">        from objects or systems.</span>
 
@@ -235,7 +235,7 @@
             <span class="k">return</span></div>
 
 <div class="viewcode-block" id="CmdMail.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.mail.mail.html#evennia.contrib.game_systems.mail.mail.CmdMail.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do the main command functionality</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 

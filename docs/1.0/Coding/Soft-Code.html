@@ -117,19 +117,19 @@ or more which is obviously not very readable nor (easily) maintainable over time
 <section id="examples-of-softcode">
 <h2>Examples of Softcode<a class="headerlink" href="#examples-of-softcode" title="Permalink to this headline">¶</a></h2>
 <p>Here is a simple ‘Hello World!’ command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    @set <span class="nv">me</span><span class="o">=</span>HELLO_WORLD.C:<span class="nv">$hello</span>:@pemit %#<span class="o">=</span>Hello World!
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>@set<span class="w"> </span><span class="nv">me</span><span class="o">=</span>HELLO_WORLD.C:<span class="nv">$hello</span>:@pemit<span class="w"> </span>%#<span class="o">=</span>Hello<span class="w"> </span>World!
 </pre></div>
 </div>
 <p>Pasting this into a MUX/MUSH and typing ‘hello’ will theoretically yield ‘Hello World!’, assuming
 certain flags are not set on your account object.</p>
 <p>Setting attributes is done via <code class="docutils literal notranslate"><span class="pre">&#64;set</span></code>. Softcode also allows the use of the ampersand (<code class="docutils literal notranslate"><span class="pre">&amp;</span></code>) symbol.
 This shorter version looks like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="p">&amp;</span>HELLO_WORLD.C <span class="nv">me</span><span class="o">=</span><span class="nv">$hello</span>:@pemit %#<span class="o">=</span>Hello World!
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="p">&amp;</span>HELLO_WORLD.C<span class="w"> </span><span class="nv">me</span><span class="o">=</span><span class="nv">$hello</span>:@pemit<span class="w"> </span>%#<span class="o">=</span>Hello<span class="w"> </span>World!
 </pre></div>
 </div>
 <p>Perhaps I want to break the Hello World into an attribute which is retrieved when emitting:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="p">&amp;</span>HELLO_VALUE.D <span class="nv">me</span><span class="o">=</span>Hello World
-    <span class="p">&amp;</span>HELLO_WORLD.C <span class="nv">me</span><span class="o">=</span><span class="nv">$hello</span>:@pemit %#<span class="o">=[</span>v<span class="o">(</span>HELLO_VALUE.D<span class="o">)]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="p">&amp;</span>HELLO_VALUE.D<span class="w"> </span><span class="nv">me</span><span class="o">=</span>Hello<span class="w"> </span>World
+<span class="w">    </span><span class="p">&amp;</span>HELLO_WORLD.C<span class="w"> </span><span class="nv">me</span><span class="o">=</span><span class="nv">$hello</span>:@pemit<span class="w"> </span>%#<span class="o">=[</span>v<span class="o">(</span>HELLO_VALUE.D<span class="o">)]</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">v()</span></code> function returns the <code class="docutils literal notranslate"><span class="pre">HELLO_VALUE.D</span></code> attribute on the object that the command resides

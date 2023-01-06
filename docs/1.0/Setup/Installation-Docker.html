@@ -130,12 +130,12 @@
 </div>
 <p>gets the image based off Evennia’s unstable <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch.</p>
 <p>Next, <code class="docutils literal notranslate"><span class="pre">cd</span></code> to a place where your game dir is, or where you want to create it. Then run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it --rm -p <span class="m">4000</span>:4000 -p <span class="m">4001</span>:4001 -p <span class="m">4002</span>:4002 --rm -v <span class="nv">$PWD</span>:/usr/src/game --user <span class="nv">$UID</span>:<span class="nv">$GID</span> evennia/evennia
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">4000</span>:4000<span class="w"> </span>-p<span class="w"> </span><span class="m">4001</span>:4001<span class="w"> </span>-p<span class="w"> </span><span class="m">4002</span>:4002<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>:/usr/src/game<span class="w"> </span>--user<span class="w"> </span><span class="nv">$UID</span>:<span class="nv">$GID</span><span class="w"> </span>evennia/evennia
 </pre></div>
 </div>
 <p>Having run this (see next section for a description of what’s what), you will be at a prompt inside
 the docker container:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>evennia<span class="p">|</span>docker /usr/src/game $
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>evennia<span class="p">|</span>docker<span class="w"> </span>/usr/src/game<span class="w"> </span>$
 </pre></div>
 </div>
 <p>This is a normal shell prompt. We are in the <code class="docutils literal notranslate"><span class="pre">/usr/src/game</span></code> location inside the docker container. If you had anything in the folder you started from, you should see it here (with <code class="docutils literal notranslate"><span class="pre">ls</span></code>) since we mounted the current directory to <code class="docutils literal notranslate"><span class="pre">usr/src/game</span></code> (with <code class="docutils literal notranslate"><span class="pre">-v</span></code> above). You have the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command available and can now proceed to create a new game as per the normal <a class="reference internal" href="Installation.html"><span class="doc std std-doc">game setup</span></a> instructions (no virtualenv needed).</p>
@@ -185,7 +185,7 @@ and the container go down.</p>
 <code class="docutils literal notranslate"><span class="pre">evennia/evennia</span></code> image, but also makes sure to start evennia when it runs (so we don’t need to
 enter it and run commands).</p>
 <p>To build the image:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    docker build -t mydhaccount/mygame .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>mydhaccount/mygame<span class="w"> </span>.
 </pre></div>
 </div>
 <p>(don’t forget the period at the end, it will use the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> from the current location). Here <code class="docutils literal notranslate"><span class="pre">mydhaccount</span></code> is the name of your <code class="docutils literal notranslate"><span class="pre">dockerhub</span></code> account. If you don’t have a dockerhub account you can build the image locally only (name the container whatever you like in that case, like just <code class="docutils literal notranslate"><span class="pre">mygame</span></code>).</p>
@@ -212,10 +212,10 @@ option and just give the following command:</p>
 <p>Your game will be downloaded from your docker-hub account and a new container will be built using the image and started on the server! If your server environment forces you to use different ports, you can just map the normal ports differently in the command above.</p>
 <p>Above we added the <code class="docutils literal notranslate"><span class="pre">-d</span></code> option, which starts the container in <em>daemon</em> mode - you won’t see any
 return in the console. You can see it running with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">ps</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ docker ps
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span>ps
 
-CONTAINER ID     IMAGE       COMMAND                  CREATED              ...
-f6d4ca9b2b22     mygame      <span class="s2">&quot;/bin/sh -c &#39;evenn...&quot;</span>   About a minute ago   ...
+CONTAINER<span class="w"> </span>ID<span class="w">     </span>IMAGE<span class="w">       </span>COMMAND<span class="w">                  </span>CREATED<span class="w">              </span>...
+f6d4ca9b2b22<span class="w">     </span>mygame<span class="w">      </span><span class="s2">&quot;/bin/sh -c &#39;evenn...&quot;</span><span class="w">   </span>About<span class="w"> </span>a<span class="w"> </span>minute<span class="w"> </span>ago<span class="w">   </span>...
 </pre></div>
 </div>
 <p>Note the container ID, this is how you manage the container as it runs.</p>

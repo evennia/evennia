@@ -212,7 +212,7 @@ since it can also get confusing to follow the code.</p>
     <span class="n">is_pc</span> <span class="o">=</span> <span class="kc">False</span>  
 
     <span class="k">def</span> <span class="nf">heal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hp</span><span class="p">):</span> 
-        <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Heal hp amount of health, not allowing to exceed our max hp</span>
 <span class="sd">         </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
@@ -223,30 +223,30 @@ since it can also get confusing to follow the code.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You heal for </span><span class="si">{</span><span class="n">healed</span><span class="si">}</span><span class="s2"> HP.&quot;</span><span class="p">)</span> 
         
     <span class="k">def</span> <span class="nf">at_pay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;When paying coins, make sure to never detract more than we have&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;When paying coins, make sure to never detract more than we have&quot;&quot;&quot;</span>
         <span class="n">amount</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coins</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coins</span> <span class="o">-=</span> <span class="n">amount</span>
         <span class="k">return</span> <span class="n">amount</span>
         
     <span class="k">def</span> <span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Called when attacked and taking damage.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when attacked and taking damage.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">-=</span> <span class="n">damage</span>  
         
     <span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-        <span class="sd">&quot;&quot;&quot;Called when defeated. By default this means death.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when defeated. By default this means death.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_death</span><span class="p">()</span>
         
     <span class="k">def</span> <span class="nf">at_death</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Called when this thing dies.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when this thing dies.&quot;&quot;&quot;</span>
         <span class="c1"># this will mean different things for different living things</span>
         <span class="k">pass</span> 
         
     <span class="k">def</span> <span class="nf">at_do_loot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looted</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Called when looting another entity&quot;&quot;&quot;</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when looting another entity&quot;&quot;&quot;</span> 
         <span class="n">looted</span><span class="o">.</span><span class="n">at_looted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="nf">at_looted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looter</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Called when looted by another entity&quot;&quot;&quot;</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when looted by another entity&quot;&quot;&quot;</span> 
         
         <span class="c1"># default to stealing some coins </span>
         <span class="n">max_steal</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d10&quot;</span><span class="p">)</span> 
@@ -271,7 +271,7 @@ in the mixin means we can expect these methods to be available for all living th
 
 
 <span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    A character to use for EvAdventure. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">is_pc</span> <span class="o">=</span> <span class="kc">True</span> 
@@ -291,7 +291,7 @@ in the mixin means we can expect these methods to be available for all living th
     <span class="n">coins</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Characters roll on the death table&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Characters roll on the death table&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">allow_death</span><span class="p">:</span>
             <span class="c1"># this allow rooms to have non-lethal battles</span>
             <span class="n">dice</span><span class="o">.</span><span class="n">roll_death</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -302,7 +302,7 @@ in the mixin means we can expect these methods to be available for all living th
             <span class="bp">self</span><span class="o">.</span><span class="n">heal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span><span class="p">)</span>
             
     <span class="k">def</span> <span class="nf">at_death</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;We rolled &#39;dead&#39; on the death table.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;We rolled &#39;dead&#39; on the death table.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
             <span class="s2">&quot;$You() collapse in a heap, embraced by death.&quot;</span><span class="p">,</span>
             <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span> 

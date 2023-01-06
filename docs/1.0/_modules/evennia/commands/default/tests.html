@@ -348,13 +348,13 @@
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_subtopic_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">helparg</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check retrieval of subtopics.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">TestCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Main help text</span>
 
 <span class="sd">            # SUBTOPICS</span>
@@ -565,7 +565,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_task_complete_waiting_input"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_task_complete_waiting_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_task_complete_waiting_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test for task completing while waiting for input.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test for task completing while waiting for input.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
@@ -577,7 +577,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_new_task_waiting_input"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_new_task_waiting_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_new_task_waiting_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test task completing than a new task with the same ID being made while waitinf for input.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
@@ -632,7 +632,7 @@
 
 
 <div class="viewcode-block" id="TestAccount"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAccount">[docs]</a><span class="k">class</span> <span class="nc">TestAccount</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test different account-specific modes</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1278,7 +1278,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_empty_desc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_empty_desc">[docs]</a>    <span class="k">def</span> <span class="nf">test_empty_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        empty desc sets desc as &#39;&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">oid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">id</span>
@@ -1289,7 +1289,7 @@
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">==</span> <span class="n">r1d</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_desc_default_to_room"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_desc_default_to_room">[docs]</a>    <span class="k">def</span> <span class="nf">test_desc_default_to_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;no rhs changes room&#39;s desc&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;no rhs changes room&#39;s desc&quot;&quot;&quot;</span>
         <span class="n">rid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span>
         <span class="n">o2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
         <span class="n">r1d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
@@ -1900,7 +1900,7 @@
 
 <div class="viewcode-block" id="TestCommsChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.comms.CHANNEL_DEFAULT_TYPECLASS&quot;</span><span class="p">,</span> <span class="n">DefaultChannel</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">TestCommsChannel</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the central `channel` command.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1950,7 +1950,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__alias__unalias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__alias__unalias">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__alias__unalias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add and then remove a channel alias&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add and then remove a channel alias&quot;&quot;&quot;</span>
 
         <span class="c1"># add alias</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -2030,7 +2030,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__ban__unban"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__ban__unban">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__ban__unban</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test first ban and then unban&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test first ban and then unban&quot;&quot;&quot;</span>
 
         <span class="c1"># ban</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
@@ -2132,7 +2132,7 @@
 
 
 <div class="viewcode-block" id="TestBatchProcess"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess">[docs]</a><span class="k">class</span> <span class="nc">TestBatchProcess</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the batch processor.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

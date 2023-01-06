@@ -162,7 +162,7 @@
 
 <div class="viewcode-block" id="FileHelpEntry"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">FileHelpEntry</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a help entry read from file. This mimics the api of the</span>
 <span class="sd">    database-bound HelpEntry so that they can be used interchangeably in the</span>
 <span class="sd">    help command.</span>
@@ -177,7 +177,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">search_index_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property for easily retaining a search index entry for this object.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -202,7 +202,7 @@
         <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FileHelpEntry.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to view details for</span>
 <span class="sd">        this object.</span>
 
@@ -237,7 +237,7 @@
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
 <div class="viewcode-block" id="FileHelpEntry.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
 
 <span class="sd">        ex. Account#1 = &#39;/admin/accounts/accountdb/1/change/&#39;</span>
@@ -249,7 +249,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="FileHelpEntry.access"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpEntry.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;view&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if another object has permission to access this help entry.</span>
 
 <span class="sd">        Args:</span>
@@ -262,7 +262,7 @@
 
 
 <div class="viewcode-block" id="FileHelpStorageHandler"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpStorageHandler">[docs]</a><span class="k">class</span> <span class="nc">FileHelpStorageHandler</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This reads and stores help entries for quick access. By default</span>
 <span class="sd">    it reads modules from `settings.FILE_HELP_ENTRY_MODULES`.</span>
 
@@ -272,7 +272,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FileHelpStorageHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpStorageHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">help_file_modules</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FILE_HELP_ENTRY_MODULES</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the storage.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">help_file_modules</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">part</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">help_file_modules</span><span class="p">)]</span>
@@ -281,7 +281,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="FileHelpStorageHandler.load"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpStorageHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load/reload file-based help-entries from file.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -325,7 +325,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">help_entries</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">unique_help_entries</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="FileHelpStorageHandler.all"><a class="viewcode-back" href="../../../api/evennia.help.filehelp.html#evennia.help.filehelp.FileHelpStorageHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all help entries.</span>
 
 <span class="sd">        Args:</span>

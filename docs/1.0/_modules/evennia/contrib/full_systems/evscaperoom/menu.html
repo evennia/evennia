@@ -121,14 +121,14 @@
 
 <span class="s2">This is </span><span class="si">{percent}% c</span><span class="s2">omplete and has </span><span class="si">{nplayers}</span><span class="s2"> player(s) in it already:</span>
 
-<span class="s2"> </span><span class="si">{players}</span><span class="s2"></span>
+<span class="s2"> </span><span class="si">{players}</span>
 
 <span class="s2">|yDo you want to join this room?|n</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 
 <span class="k">def</span> <span class="nf">_move_to_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper to move a user to a room</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -164,7 +164,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_all_rooms</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a list of all available rooms and store the mapping</span>
 <span class="sd">    between option and room so we get to it later.</span>
 
@@ -188,7 +188,7 @@
 
 
 <span class="k">def</span> <span class="nf">_select_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menuchoice</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a room from the selection using the mapping we created earlier.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">room</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">room_map</span><span class="p">[</span><span class="n">menuchoice</span><span class="p">]</span>
@@ -305,7 +305,7 @@
 
 
 <div class="viewcode-block" id="EvscaperoomMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.EvscaperoomMenu">[docs]</a><span class="k">class</span> <span class="nc">EvscaperoomMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom menu with a different formatting of options.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -330,7 +330,7 @@
 
 <span class="c1"># access function</span>
 <div class="viewcode-block" id="run_evscaperoom_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.run_evscaperoom_menu">[docs]</a><span class="k">def</span> <span class="nf">run_evscaperoom_menu</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run room selection menu</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -406,7 +406,7 @@
 
 
 <div class="viewcode-block" id="OptionsMenu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.OptionsMenu">[docs]</a><span class="k">class</span> <span class="nc">OptionsMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom display of Option menu</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -416,7 +416,7 @@
 
 <span class="c1"># access function</span>
 <div class="viewcode-block" id="run_option_menu"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.run_option_menu">[docs]</a><span class="k">def</span> <span class="nf">run_option_menu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run option menu in-game</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">menutree</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;node_start&quot;</span><span class="p">:</span> <span class="n">node_options</span><span class="p">}</span>

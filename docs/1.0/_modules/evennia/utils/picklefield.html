@@ -126,7 +126,7 @@
 
 
 <div class="viewcode-block" id="PickledObject"><a class="viewcode-back" href="../../../api/evennia.utils.picklefield.html#evennia.utils.picklefield.PickledObject">[docs]</a><span class="k">class</span> <span class="nc">PickledObject</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A subclass of string so it can be told whether a string is a pickled</span>
 <span class="sd">    object or not (if the object is an instance of this class then it must</span>
 <span class="sd">    [well, should] be a pickled one).</span>
@@ -140,7 +140,7 @@
 
 
 <span class="k">class</span> <span class="nc">_ObjectWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class used to wrap object that have properties that may clash with the</span>
 <span class="sd">    ORM internals.</span>
 
@@ -192,12 +192,12 @@
 
 
 <div class="viewcode-block" id="PickledWidget"><a class="viewcode-back" href="../../../api/evennia.utils.picklefield.html#evennia.utils.picklefield.PickledWidget">[docs]</a><span class="k">class</span> <span class="nc">PickledWidget</span><span class="p">(</span><span class="n">Textarea</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is responsible for outputting HTML representing a given field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PickledWidget.render"><a class="viewcode-back" href="../../../api/evennia.utils.picklefield.html#evennia.utils.picklefield.PickledWidget.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">renderer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Display of the PickledField in django admin&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display of the PickledField in django admin&quot;&quot;&quot;</span>
 
         <span class="n">repr_value</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
@@ -229,7 +229,7 @@
 
 
 <div class="viewcode-block" id="PickledFormField"><a class="viewcode-back" href="../../../api/evennia.utils.picklefield.html#evennia.utils.picklefield.PickledFormField">[docs]</a><span class="k">class</span> <span class="nc">PickledFormField</span><span class="p">(</span><span class="n">CharField</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This represents one input field for the form.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -275,7 +275,7 @@
 
 
 <div class="viewcode-block" id="PickledObjectField"><a class="viewcode-back" href="../../../api/evennia.utils.picklefield.html#evennia.utils.picklefield.PickledObjectField">[docs]</a><span class="k">class</span> <span class="nc">PickledObjectField</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Field</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A field that will accept *any* python object and store it in the</span>
 <span class="sd">    database. PickledObjectField will optionally compress its values if</span>
 <span class="sd">    declared with the keyword argument ``compress=True``.</span>
@@ -291,7 +291,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PickledObjectField.get_default"><a class="viewcode-back" href="../../../api/evennia.utils.picklefield.html#evennia.utils.picklefield.PickledObjectField.get_default">[docs]</a>    <span class="k">def</span> <span class="nf">get_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the default value for this field.</span>
 
 <span class="sd">        The default implementation on models.Field calls force_str</span>
@@ -310,7 +310,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_default</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PickledObjectField.from_db_value"><a class="viewcode-back" href="../../../api/evennia.utils.picklefield.html#evennia.utils.picklefield.PickledObjectField.from_db_value">[docs]</a>    <span class="k">def</span> <span class="nf">from_db_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        B64decode and unpickle the object, optionally decompressing it.</span>
 
 <span class="sd">        If an error is raised in de-pickling and we&#39;re sure the value is</span>
@@ -340,7 +340,7 @@
         <span class="k">return</span> <span class="n">wrap_conflictual_object</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PickledObjectField.get_db_prep_value"><a class="viewcode-back" href="../../../api/evennia.utils.picklefield.html#evennia.utils.picklefield.PickledObjectField.get_db_prep_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_prep_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prepared</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pickle and b64encode the object, optionally compressing it.</span>
 
 <span class="sd">        The pickling protocol is specified explicitly (by default 2),</span>

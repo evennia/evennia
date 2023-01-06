@@ -98,7 +98,7 @@
 
 
 <div class="viewcode-block" id="get_event_handler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.utils.html#evennia.contrib.base_systems.ingame_python.utils.get_event_handler">[docs]</a><span class="k">def</span> <span class="nf">get_event_handler</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Return the event handler or None.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the event handler or None.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">script</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;event_handler&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
@@ -109,7 +109,7 @@
 
 
 <div class="viewcode-block" id="register_events"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.utils.html#evennia.contrib.base_systems.ingame_python.utils.register_events">[docs]</a><span class="k">def</span> <span class="nf">register_events</span><span class="p">(</span><span class="n">path_or_typeclass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register the events in this typeclass.</span>
 
 <span class="sd">    Args:</span>
@@ -165,7 +165,7 @@
 
 
 <div class="viewcode-block" id="get_next_wait"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.utils.html#evennia.contrib.base_systems.ingame_python.utils.get_next_wait">[docs]</a><span class="k">def</span> <span class="nf">get_next_wait</span><span class="p">(</span><span class="nb">format</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the length of time in seconds before format.</span>
 
 <span class="sd">    Args:</span>
@@ -239,7 +239,7 @@
 
 
 <div class="viewcode-block" id="time_event"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.utils.html#evennia.contrib.base_systems.ingame_python.utils.time_event">[docs]</a><span class="k">def</span> <span class="nf">time_event</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a time-related event.</span>
 
 <span class="sd">    Args:</span>
@@ -263,7 +263,7 @@
 
 
 <div class="viewcode-block" id="keyword_event"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.utils.html#evennia.contrib.base_systems.ingame_python.utils.keyword_event">[docs]</a><span class="k">def</span> <span class="nf">keyword_event</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom call for events with keywords (like push, or pull, or turn...).</span>
 
 <span class="sd">    Args:</span>
@@ -292,7 +292,7 @@
 
 
 <div class="viewcode-block" id="phrase_event"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.utils.html#evennia.contrib.base_systems.ingame_python.utils.phrase_event">[docs]</a><span class="k">def</span> <span class="nf">phrase_event</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom call for events with keywords in sentences (like say or whisper).</span>
 
 <span class="sd">    Args:</span>
@@ -329,7 +329,7 @@
 
 <div class="viewcode-block" id="InterruptEvent"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.utils.html#evennia.contrib.base_systems.ingame_python.utils.InterruptEvent">[docs]</a><span class="k">class</span> <span class="nc">InterruptEvent</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interrupt the current event.</span>
 
 <span class="sd">    You shouldn&#39;t have to use this exception directly, probably use the</span>

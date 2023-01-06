@@ -87,12 +87,12 @@
 
 
 <div class="viewcode-block" id="GitCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand">[docs]</a><span class="k">class</span> <span class="nc">GitCommand</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The shared functionality between git/git evennia</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GitCommand.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the arguments, set default arg to &#39;status&#39; and check for existence of currently targeted repo</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
@@ -134,20 +134,20 @@
             <span class="k">raise</span> <span class="n">InterruptCommand</span></div>
 
 <div class="viewcode-block" id="GitCommand.short_sha"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.short_sha">[docs]</a>    <span class="k">def</span> <span class="nf">short_sha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">hexsha</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Utility: Get the short SHA of a commit.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">short_sha</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">rev_parse</span><span class="p">(</span><span class="n">hexsha</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">short_sha</span></div>
 
 <div class="viewcode-block" id="GitCommand.get_status"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the status of the active git repository, displaying unstaged changes/untracked files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time_of_commit</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">committed_date</span><span class="p">)</span>
         <span class="n">status_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;Branch: |w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branch</span><span class="si">}</span><span class="s2">|n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">rev_parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">) (</span><span class="si">{</span><span class="n">time_of_commit</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Branch: |w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branch</span><span class="si">}</span><span class="s2">|n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">rev_parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span><span class="p">,</span><span class="w"> </span><span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">) (</span><span class="si">{</span><span class="n">time_of_commit</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;By </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">)</span>
@@ -160,7 +160,7 @@
         <span class="k">return</span> <span class="n">status_msg</span></div>
 
 <div class="viewcode-block" id="GitCommand.get_branches"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.get_branches">[docs]</a>    <span class="k">def</span> <span class="nf">get_branches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display current and available branches.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">remote_refs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">remote</span><span class="p">()</span><span class="o">.</span><span class="n">refs</span>
@@ -170,7 +170,7 @@
         <span class="k">return</span> <span class="n">branch_msg</span></div>
 
 <div class="viewcode-block" id="GitCommand.checkout"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.checkout">[docs]</a>    <span class="k">def</span> <span class="nf">checkout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check out a specific branch.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">remote_refs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">remote</span><span class="p">()</span><span class="o">.</span><span class="n">refs</span>
@@ -194,7 +194,7 @@
             <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="GitCommand.pull"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attempt to pull new code.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">old_commit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commit</span>
@@ -208,12 +208,12 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;You have pulled new code. Server restart initiated.|/Head now at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">rev_parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">.|/Author: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">)|/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;You have pulled new code. Server restart initiated.|/Head now at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">rev_parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span><span class="p">,</span><span class="w"> </span><span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">.|/Author: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">)|/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="GitCommand.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCommand.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provide basic Git functionality within the game.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -234,7 +234,7 @@
 
 
 <div class="viewcode-block" id="CmdGitEvennia"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.CmdGitEvennia">[docs]</a><span class="k">class</span> <span class="nc">CmdGitEvennia</span><span class="p">(</span><span class="n">GitCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pull the latest code from the evennia core or checkout a different branch.</span>
 
 <span class="sd">    Usage:</span>
@@ -257,7 +257,7 @@
 
 
 <div class="viewcode-block" id="CmdGit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.CmdGit">[docs]</a><span class="k">class</span> <span class="nc">CmdGit</span><span class="p">(</span><span class="n">GitCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pull the latest code from your repository or checkout a different branch.</span>
 
 <span class="sd">    Usage:</span>
@@ -281,7 +281,7 @@
 
 <span class="c1"># CmdSet for easily install all commands</span>
 <div class="viewcode-block" id="GitCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.git_integration.html#evennia.contrib.utils.git_integration.git_integration.GitCmdSet">[docs]</a><span class="k">class</span> <span class="nc">GitCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The git command.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

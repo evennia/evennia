@@ -199,7 +199,7 @@ weather, NPC artificial intelligence and game economy. Basically everything abou
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom rule-restricted character. We randomize</span>
 <span class="sd">    the initial skill and ability values bettween 1-10.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -250,7 +250,7 @@ the following command:</p>
         <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are now level </span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">skill_combat</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This determines outcome of combat. The one who</span>
 <span class="sd">    rolls under their combat skill AND higher than</span>
 <span class="sd">    their opponent&#39;s roll hits.</span>
@@ -285,7 +285,7 @@ the following command:</p>
 <span class="n">SKILLS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;combat&quot;</span><span class="p">:</span> <span class="n">skill_combat</span><span class="p">}</span>
 
 <span class="k">def</span> <span class="nf">roll_challenge</span><span class="p">(</span><span class="n">character1</span><span class="p">,</span> <span class="n">character2</span><span class="p">,</span> <span class="n">skillname</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the outcome of a skill challenge between</span>
 <span class="sd">    two characters based on the skillname given.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -307,7 +307,7 @@ everyone of their results via <code class="docutils literal notranslate"><span c
 <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">rules</span>
 
 <span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    attack an opponent</span>
 
 <span class="sd">    Usage:</span>

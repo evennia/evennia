@@ -199,7 +199,7 @@
 
 
 <div class="viewcode-block" id="unload_module"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.unload_module">[docs]</a><span class="k">def</span> <span class="nf">unload_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reset import so one can mock global constants.</span>
 
 <span class="sd">    Args:</span>
@@ -240,7 +240,7 @@
 
 
 <div class="viewcode-block" id="EvenniaTestMixin"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTestMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evennia test environment mixin</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -326,7 +326,7 @@
 
 <div class="viewcode-block" id="EvenniaTestMixin.setUp"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.setUp">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.scripts.taskhandler.deferLater&quot;</span><span class="p">,</span> <span class="n">_mock_deferlater</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up testing environment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backups</span> <span class="o">=</span> <span class="p">(</span>
@@ -365,7 +365,7 @@
 
 <div class="viewcode-block" id="EvenniaCommandTestMixin"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portal.LoopingCall&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
 <span class="k">class</span> <span class="nc">EvenniaCommandTestMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin to add to a test in order to provide the `.call` helper for</span>
 <span class="sd">    testing the execution and returns of a command.</span>
 
@@ -393,9 +393,9 @@
     <span class="c1"># formatting for .call&#39;s error message</span>
     <span class="n">_ERROR_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">=========================== Wanted message ===================================</span>
-<span class="si">{expected_msg}</span><span class="s2"></span>
+<span class="si">{expected_msg}</span>
 <span class="s2">=========================== Returned message =================================</span>
-<span class="si">{returned_msg}</span><span class="s2"></span>
+<span class="si">{returned_msg}</span>
 <span class="s2">==============================================================================</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
@@ -413,7 +413,7 @@
         <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">raw_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test a command by assigning all the needed properties to a cmdobj and</span>
 <span class="sd">        running the sequence. The resulting `.msg` calls will be mocked and</span>
 <span class="sd">        the text= calls to them compared to a expected output.</span>
@@ -625,14 +625,14 @@
 
 <div class="viewcode-block" id="BaseEvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseEvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base test (with no default objects) but with enforced default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="EvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For use with gamedir settings; Just like the normal test case, only for naming consistency.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -642,14 +642,14 @@
 
 <div class="viewcode-block" id="BaseEvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseEvenniaTest</span><span class="p">(</span><span class="n">EvenniaTestMixin</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class parent has all default objects and uses only default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="EvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTest</span><span class="p">(</span><span class="n">EvenniaTestMixin</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This test class is intended for inheriting in mygame tests.</span>
 <span class="sd">    It helps ensure your tests are run with your own objects</span>
 <span class="sd">    and settings from your game folder.</span>
@@ -675,14 +675,14 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.system.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseEvenniaCommandTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Commands only using the default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="EvenniaCommandTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaCommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parent class to inherit from - makes tests use your own</span>
 <span class="sd">    classes and settings in mygame.</span>
 

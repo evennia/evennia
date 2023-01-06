@@ -85,7 +85,7 @@
 
 
 <div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base class for components.</span>
 <span class="sd">    Any component must inherit from this class to be considered for usage.</span>
 
@@ -100,7 +100,7 @@
 
 <div class="viewcode-block" id="Component.default_create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.default_create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">default_create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called when the host is created</span>
 <span class="sd">         and should return the base initialized state of a component.</span>
 
@@ -116,7 +116,7 @@
 
 <div class="viewcode-block" id="Component.create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the method to call when supplying kwargs to initialize a component.</span>
 
 <span class="sd">        Args:</span>
@@ -136,7 +136,7 @@
         <span class="k">return</span> <span class="n">new</span></div>
 
 <div class="viewcode-block" id="Component.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This deletes all component attributes from the host&#39;s db</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_db_field_names</span><span class="p">:</span>
@@ -144,7 +144,7 @@
 
 <div class="viewcode-block" id="Component.load"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.load">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a component instance</span>
 <span class="sd">         This is called whenever a component is loaded (ex: Server Restart)</span>
 
@@ -159,7 +159,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">host</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Component.at_added"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.at_added">[docs]</a>    <span class="k">def</span> <span class="nf">at_added</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the method called when a component is registered on a host.</span>
 
 <span class="sd">        Args:</span>
@@ -176,7 +176,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span></div>
 
 <div class="viewcode-block" id="Component.at_removed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component.at_removed">[docs]</a>    <span class="k">def</span> <span class="nf">at_removed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the method called when a component is removed from a host.</span>
 
 <span class="sd">        Args:</span>
@@ -189,7 +189,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut property returning the host&#39;s AttributeHandler.</span>
 
 <span class="sd">        Returns:</span>
@@ -200,7 +200,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut property returning the host&#39;s In-Memory AttributeHandler (Non Persisted).</span>
 
 <span class="sd">        Returns:</span>

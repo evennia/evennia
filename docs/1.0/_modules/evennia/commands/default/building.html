@@ -164,7 +164,7 @@
 
 
 <div class="viewcode-block" id="ObjManipCommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.ObjManipCommand">[docs]</a><span class="k">class</span> <span class="nc">ObjManipCommand</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a parent class for some of the defining objmanip commands</span>
 <span class="sd">    since they tend to have some more variables to define new objects.</span>
 
@@ -188,7 +188,7 @@
     <span class="c1"># included in a commandset on its own!</span>
 
 <div class="viewcode-block" id="ObjManipCommand.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.ObjManipCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We need to expand the default parsing to get all</span>
 <span class="sd">        the cases, see the module doc.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -243,7 +243,7 @@
 
 
 <div class="viewcode-block" id="CmdSetObjAlias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetObjAlias">[docs]</a><span class="k">class</span> <span class="nc">CmdSetObjAlias</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    adding permanent aliases for object</span>
 
 <span class="sd">    Usage:</span>
@@ -272,7 +272,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdSetObjAlias.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetObjAlias.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the aliases.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the aliases.&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -363,7 +363,7 @@
 
 
 <div class="viewcode-block" id="CmdCopy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCopy">[docs]</a><span class="k">class</span> <span class="nc">CmdCopy</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    copy an object and its properties</span>
 
 <span class="sd">    Usage:</span>
@@ -379,7 +379,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdCopy.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCopy.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Uses ObjManipCommand.parse()&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Uses ObjManipCommand.parse()&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
@@ -441,7 +441,7 @@
 
 
 <div class="viewcode-block" id="CmdCpAttr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr">[docs]</a><span class="k">class</span> <span class="nc">CmdCpAttr</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    copy attributes between objects</span>
 
 <span class="sd">    Usage:</span>
@@ -469,7 +469,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdCpAttr.check_from_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_from_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_from_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for overriding on subclassed commands. Checks to make sure a</span>
 <span class="sd">        caller can copy the attr from the object in question. If not, return a</span>
 <span class="sd">        false value and the command will abort. An error message should be</span>
@@ -480,7 +480,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="CmdCpAttr.check_to_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_to_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_to_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for overriding on subclassed commands. Checks to make sure a</span>
 <span class="sd">        caller can write to the specified attribute on the specified object.</span>
 <span class="sd">        If not, return a false value and the attribute will be skipped. An</span>
@@ -489,7 +489,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="CmdCpAttr.check_has_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.check_has_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_has_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for overriding on subclassed commands. Do any preprocessing</span>
 <span class="sd">        required and verify an object has an attribute.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -499,14 +499,14 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="CmdCpAttr.get_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.get_attr">[docs]</a>    <span class="k">def</span> <span class="nf">get_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for overriding on subclassed commands. Do any preprocessing</span>
 <span class="sd">        required and get the attribute from the object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdCpAttr.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCpAttr.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do the copying.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -586,7 +586,7 @@
 
 
 <div class="viewcode-block" id="CmdMvAttr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdMvAttr">[docs]</a><span class="k">class</span> <span class="nc">CmdMvAttr</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    move attributes between objects</span>
 
 <span class="sd">    Usage:</span>
@@ -608,7 +608,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdMvAttr.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdMvAttr.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do the moving</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
@@ -628,7 +628,7 @@
 
 
 <div class="viewcode-block" id="CmdCreate"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdCreate</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create new objects</span>
 
 <span class="sd">    Usage:</span>
@@ -661,7 +661,7 @@
     <span class="n">new_obj_lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin);delete:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin)&quot;</span>
 
 <div class="viewcode-block" id="CmdCreate.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates the object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -715,7 +715,7 @@
 
 
 <span class="k">def</span> <span class="nf">_desc_save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save line buffer to the desc prop. This should</span>
 <span class="sd">    return True if successful and also report its status to the user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -730,7 +730,7 @@
 
 
 <div class="viewcode-block" id="CmdDesc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdDesc">[docs]</a><span class="k">class</span> <span class="nc">CmdDesc</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    describe an object or the current room.</span>
 
 <span class="sd">    Usage:</span>
@@ -776,7 +776,7 @@
         <span class="k">return</span></div>
 
 <div class="viewcode-block" id="CmdDesc.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdDesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Define command&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span> <span class="s2">&quot;edit&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
@@ -806,7 +806,7 @@
 
 
 <div class="viewcode-block" id="CmdDestroy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdDestroy">[docs]</a><span class="k">class</span> <span class="nc">CmdDestroy</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    permanently delete objects</span>
 
 <span class="sd">    Usage:</span>
@@ -837,7 +837,7 @@
     <span class="n">default_confirm</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span>  <span class="c1"># what to assume if just pressing enter (yes/no)</span>
 
 <div class="viewcode-block" id="CmdDestroy.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdDestroy.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implements the command.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements the command.&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">delete</span> <span class="o">=</span> <span class="kc">True</span>
@@ -945,7 +945,7 @@
 
 
 <div class="viewcode-block" id="CmdDig"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdDig">[docs]</a><span class="k">class</span> <span class="nc">CmdDig</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    build new rooms and connect them to the current location</span>
 
 <span class="sd">    Usage:</span>
@@ -982,7 +982,7 @@
     <span class="p">)</span>
 
 <div class="viewcode-block" id="CmdDig.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdDig.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Do the digging. Inherits variables from ObjManipCommand.parse()&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Do the digging. Inherits variables from ObjManipCommand.parse()&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -1087,7 +1087,7 @@
 
 
 <div class="viewcode-block" id="CmdTunnel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTunnel">[docs]</a><span class="k">class</span> <span class="nc">CmdTunnel</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create new rooms in cardinal directions only</span>
 
 <span class="sd">    Usage:</span>
@@ -1136,7 +1136,7 @@
     <span class="p">}</span>
 
 <div class="viewcode-block" id="CmdTunnel.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTunnel.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implements the tunnel command&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements the tunnel command&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
@@ -1187,7 +1187,7 @@
 
 
 <div class="viewcode-block" id="CmdLink"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdLink">[docs]</a><span class="k">class</span> <span class="nc">CmdLink</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    link existing rooms together with exits</span>
 
 <span class="sd">    Usage:</span>
@@ -1212,7 +1212,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdLink.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdLink.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Perform the link&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the link&quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -1293,7 +1293,7 @@
 
 
 <div class="viewcode-block" id="CmdUnLink"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdUnLink">[docs]</a><span class="k">class</span> <span class="nc">CmdUnLink</span><span class="p">(</span><span class="n">CmdLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    remove exit-connections between rooms</span>
 
 <span class="sd">    Usage:</span>
@@ -1310,7 +1310,7 @@
     <span class="n">help_key</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdUnLink.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdUnLink.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All we need to do here is to set the right command</span>
 <span class="sd">        and call func in CmdLink</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1329,7 +1329,7 @@
 
 
 <div class="viewcode-block" id="CmdSetHome"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetHome">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHome</span><span class="p">(</span><span class="n">CmdLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    set an object&#39;s home location</span>
 
 <span class="sd">    Usage:</span>
@@ -1349,7 +1349,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdSetHome.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetHome.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;implement the command&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;implement the command&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: sethome &lt;obj&gt; [= &lt;home_location&gt;]&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
@@ -1383,7 +1383,7 @@
 
 
 <div class="viewcode-block" id="CmdListCmdSets"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdListCmdSets">[docs]</a><span class="k">class</span> <span class="nc">CmdListCmdSets</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    list command sets defined on an object</span>
 
 <span class="sd">    Usage:</span>
@@ -1398,7 +1398,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdListCmdSets.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdListCmdSets.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;list the cmdsets&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;list the cmdsets&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">:</span>
@@ -1412,7 +1412,7 @@
 
 
 <div class="viewcode-block" id="CmdName"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdName">[docs]</a><span class="k">class</span> <span class="nc">CmdName</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    change the name and/or aliases of an object</span>
 
 <span class="sd">    Usage:</span>
@@ -1429,7 +1429,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdName.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdName.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;change the name&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;change the name&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -1487,7 +1487,7 @@
 
 
 <div class="viewcode-block" id="CmdOpen"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen">[docs]</a><span class="k">class</span> <span class="nc">CmdOpen</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    open a new exit from the current room</span>
 
 <span class="sd">    Usage:</span>
@@ -1508,7 +1508,7 @@
     <span class="n">new_obj_lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin);delete:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin)&quot;</span>
     <span class="c1"># a custom member method to chug out exits and do checks</span>
 <div class="viewcode-block" id="CmdOpen.create_exit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen.create_exit">[docs]</a>    <span class="k">def</span> <span class="nf">create_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">exit_aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function to avoid code duplication.</span>
 <span class="sd">        At this point we know destination is a valid location</span>
 
@@ -1600,7 +1600,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">exit_typeclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;option&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="CmdOpen.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is where the processing starts.</span>
 <span class="sd">        Uses the ObjManipCommand.parser() for pre-processing</span>
 <span class="sd">        as well as the self.create_exit() method.</span>
@@ -1627,7 +1627,7 @@
 
 
 <span class="k">def</span> <span class="nf">_convert_from_string</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">strobj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a single object in *string form* to its equivalent python</span>
 <span class="sd">    type.</span>
 
@@ -1667,7 +1667,7 @@
 
 
 <div class="viewcode-block" id="CmdSetAttribute"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute">[docs]</a><span class="k">class</span> <span class="nc">CmdSetAttribute</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    set attribute on an object or account</span>
 
 <span class="sd">    Usage:</span>
@@ -1723,7 +1723,7 @@
     <span class="n">not_found</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CmdSetAttribute.check_obj"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.check_obj">[docs]</a>    <span class="k">def</span> <span class="nf">check_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This may be overridden by subclasses in case restrictions need to be</span>
 <span class="sd">        placed on whether certain objects can have attributes set by certain</span>
 <span class="sd">        accounts.</span>
@@ -1735,7 +1735,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="CmdSetAttribute.check_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.check_attr">[docs]</a>    <span class="k">def</span> <span class="nf">check_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This may be overridden by subclasses in case restrictions need to be</span>
 <span class="sd">        placed on what attributes can be set by who beyond the normal lock.</span>
 
@@ -1746,7 +1746,7 @@
         <span class="k">return</span> <span class="n">attr_name</span></div>
 
 <div class="viewcode-block" id="CmdSetAttribute.split_nested_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.split_nested_attr">[docs]</a>    <span class="k">def</span> <span class="nf">split_nested_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Yields tuples of (possible attr name, nested keys on that attr).</span>
 <span class="sd">        For performance, this is biased to the deepest match, but allows compatibility</span>
 <span class="sd">        with older attrs that might have been named with `[]`&#39;s.</span>
@@ -1792,7 +1792,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="CmdSetAttribute.view_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.view_attr">[docs]</a>    <span class="k">def</span> <span class="nf">view_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Look up the value of an attribute and return a string displaying it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nested</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1809,7 +1809,7 @@
         <span class="k">return</span> <span class="n">error</span></div>
 
 <div class="viewcode-block" id="CmdSetAttribute.rm_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.rm_attr">[docs]</a>    <span class="k">def</span> <span class="nf">rm_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove an attribute from the object, or a nested data structure, and report back.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nested</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1897,10 +1897,10 @@
 
     <span class="nd">@interactive</span>
     <span class="k">def</span> <span class="nf">edit_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Activate the line editor&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Activate the line editor&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Called for the editor to load the buffer&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Called for the editor to load the buffer&quot;&quot;&quot;</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">old_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1911,7 +1911,7 @@
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">old_value</span><span class="p">)</span>  <span class="c1"># we already confirmed we are ok with this</span>
 
         <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Called when editor saves its buffer.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Called when editor saves its buffer.&quot;&quot;&quot;</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved Attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
@@ -1934,7 +1934,7 @@
         <span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">save</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CmdSetAttribute.search_for_obj"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.search_for_obj">[docs]</a>    <span class="k">def</span> <span class="nf">search_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Searches for an object matching objname. The object may be of different typeclasses.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            objname: Name of the object we&#39;re looking for</span>
@@ -1967,7 +1967,7 @@
         <span class="k">return</span> <span class="n">found_obj</span></div>
 
 <div class="viewcode-block" id="CmdSetAttribute.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement the set attribute - a limited form of py.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement the set attribute - a limited form of py.&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -2076,7 +2076,7 @@
 
 
 <div class="viewcode-block" id="CmdTypeclass"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTypeclass">[docs]</a><span class="k">class</span> <span class="nc">CmdTypeclass</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    set or change an object&#39;s typeclass</span>
 
 <span class="sd">    Usage:</span>
@@ -2178,7 +2178,7 @@
         <span class="k">return</span> <span class="n">obj</span>
 
 <div class="viewcode-block" id="CmdTypeclass.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTypeclass.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implements command&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -2377,7 +2377,7 @@
 
 
 <div class="viewcode-block" id="CmdWipe"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdWipe">[docs]</a><span class="k">class</span> <span class="nc">CmdWipe</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    clear all attributes from an object</span>
 
 <span class="sd">    Usage:</span>
@@ -2396,7 +2396,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdWipe.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdWipe.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        inp is the dict produced in ObjManipCommand.parse()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2428,7 +2428,7 @@
 
 
 <div class="viewcode-block" id="CmdLock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdLock">[docs]</a><span class="k">class</span> <span class="nc">CmdLock</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    assign a lock definition to an object</span>
 
 <span class="sd">    Usage:</span>
@@ -2465,7 +2465,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdLock.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdLock.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets up the command&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets up the command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -2559,7 +2559,7 @@
 
 
 <div class="viewcode-block" id="CmdExamine"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine">[docs]</a><span class="k">class</span> <span class="nc">CmdExamine</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    get detailed information about an object</span>
 
 <span class="sd">    Usage:</span>
@@ -2595,7 +2595,7 @@
     <span class="n">separator</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
 
 <div class="viewcode-block" id="CmdExamine.msg"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Central point for sending messages to the caller. This tags</span>
 <span class="sd">        the message as &#39;examine&#39; for eventual custom markup in the client.</span>
 
@@ -2895,7 +2895,7 @@
                 <span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdExamine.get_formatted_obj_data"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.get_formatted_obj_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_formatted_obj_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls all other `format_*` methods.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2941,7 +2941,7 @@
         <span class="k">return</span> <span class="n">objdata</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_output"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_output">[docs]</a>    <span class="k">def</span> <span class="nf">format_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats the full examine page return.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2963,7 +2963,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">main_str</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">_search_by_object_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">,</span> <span class="n">objtype</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Route to different search functions depending on the object type being</span>
 <span class="sd">        examined. This also handles error reporting for multimatches/no matches.</span>
 
@@ -3045,7 +3045,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">examine_objs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj_attrs</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="CmdExamine.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Process command&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process command&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">obj_attrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">examine_objs</span><span class="p">:</span>
             <span class="c1"># these are parsed out in .parse already</span>
 
@@ -3112,7 +3112,7 @@
 
 
 <div class="viewcode-block" id="CmdFind"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdFind">[docs]</a><span class="k">class</span> <span class="nc">CmdFind</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    search the database for objects</span>
 
 <span class="sd">    Usage:</span>
@@ -3141,7 +3141,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdFind.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdFind.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Search functionality&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search functionality&quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
 
@@ -3311,7 +3311,7 @@
 
 
 <span class="k">class</span> <span class="nc">ScriptEvMore</span><span class="p">(</span><span class="n">EvMore</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Listing 1000+ Scripts can be very slow and memory-consuming. So</span>
 <span class="sd">    we use this custom EvMore child to build en EvTable only for</span>
 <span class="sd">    each page of the list.</span>
@@ -3319,12 +3319,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">init_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scripts</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Prepare the script list pagination&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the script list pagination&quot;&quot;&quot;</span>
         <span class="n">script_pages</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">scripts</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init_pages</span><span class="p">(</span><span class="n">script_pages</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">page_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scripts</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Takes a page of scripts and formats the output</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Takes a page of scripts and formats the output</span>
 <span class="sd">        into an EvTable.&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">scripts</span><span class="p">:</span>
@@ -3377,7 +3377,7 @@
 
 
 <div class="viewcode-block" id="CmdScripts"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdScripts">[docs]</a><span class="k">class</span> <span class="nc">CmdScripts</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List and manage all running scripts. Allows for creating new global</span>
 <span class="sd">    scripts.</span>
 
@@ -3463,7 +3463,7 @@
                     <span class="k">return</span> <span class="n">scripts</span>
 
 <div class="viewcode-block" id="CmdScripts.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdScripts.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;implement method&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;implement method&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -3583,7 +3583,7 @@
 
 
 <div class="viewcode-block" id="CmdObjects"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdObjects">[docs]</a><span class="k">class</span> <span class="nc">CmdObjects</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    statistics on objects in the database</span>
 
 <span class="sd">    Usage:</span>
@@ -3599,7 +3599,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
 <div class="viewcode-block" id="CmdObjects.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdObjects.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">nlim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">10</span>
@@ -3669,7 +3669,7 @@
 
 
 <div class="viewcode-block" id="CmdTeleport"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTeleport">[docs]</a><span class="k">class</span> <span class="nc">CmdTeleport</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    teleport object to another location</span>
 
 <span class="sd">    Usage:</span>
@@ -3711,7 +3711,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdTeleport.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTeleport.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Breaking out searching here to make this easier to override.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3728,7 +3728,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdTeleport.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTeleport.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Performs the teleport&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs the teleport&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">obj_to_teleport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_teleport</span>
@@ -3819,7 +3819,7 @@
 
 
 <div class="viewcode-block" id="CmdTag"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTag">[docs]</a><span class="k">class</span> <span class="nc">CmdTag</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    handles the tags of an object</span>
 
 <span class="sd">    Usage:</span>
@@ -3848,7 +3848,7 @@
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(/\w+?(\s|$))|\s|$&quot;</span>
 
 <div class="viewcode-block" id="CmdTag.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTag.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement the tag functionality&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement the tag functionality&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: tag[/switches] &lt;obj&gt; [= &lt;tag&gt;[:&lt;category&gt;]]&quot;</span><span class="p">)</span>
@@ -3972,7 +3972,7 @@
 
 
 <div class="viewcode-block" id="CmdSpawn"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSpawn">[docs]</a><span class="k">class</span> <span class="nc">CmdSpawn</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    spawn objects from prototype</span>
 
 <span class="sd">    Usage:</span>
@@ -4057,7 +4057,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
     <span class="k">def</span> <span class="nf">_search_prototype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototype_key</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search for prototype and handle no/multi-match and access.</span>
 
 <span class="sd">        Returns a single found prototype or None - in the</span>
@@ -4094,7 +4094,7 @@
         <span class="k">return</span> <span class="n">prototype</span>
 
     <span class="k">def</span> <span class="nf">_parse_prototype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">expect</span><span class="o">=</span><span class="nb">dict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse a prototype dict or key from the input and convert it safely</span>
 <span class="sd">        into a dict if appropriate.</span>
 
@@ -4149,7 +4149,7 @@
         <span class="k">return</span> <span class="n">prototype</span>
 
     <span class="k">def</span> <span class="nf">_get_prototype_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prototypes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display the detailed specs of one or more prototypes.</span>
 
 <span class="sd">        Args:</span>
@@ -4176,12 +4176,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No prototypes found.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_list_prototypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Display prototypes as a list, optionally limited by key/tags.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display prototypes as a list, optionally limited by key/tags.&quot;&quot;&quot;</span>
         <span class="n">protlib</span><span class="o">.</span><span class="n">list_prototypes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
     <span class="nd">@interactive</span>
     <span class="k">def</span> <span class="nf">_update_existing_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">prototype_key</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update existing objects (if any) with this prototype-key to the latest</span>
 <span class="sd">        prototype version.</span>
 
@@ -4230,7 +4230,7 @@
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">_parse_key_desc_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argstring</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse ;-separated input list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">key</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">tags</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[]</span>
@@ -4248,7 +4248,7 @@
         <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">tags</span>
 
 <div class="viewcode-block" id="CmdSpawn.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSpawn.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implements the spawner&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements the spawner&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">noloc</span> <span class="o">=</span> <span class="s2">&quot;noloc&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>

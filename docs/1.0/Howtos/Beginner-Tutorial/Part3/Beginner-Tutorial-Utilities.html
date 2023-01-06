@@ -198,7 +198,7 @@ likely gradually expand on your enums as you figure out what you’ll need).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/enums.py</span>
 
 <span class="k">class</span> <span class="nc">Ability</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The six base ability-bonuses and other </span>
 <span class="sd">    abilities</span>
 
@@ -254,9 +254,9 @@ a function that produces a pretty display of any object we pass to it.</p>
 
 <span class="n">_OBJ_STATS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">|c</span><span class="si">{key}</span><span class="s2">|n</span>
-<span class="s2">Value: ~|y</span><span class="si">{value}</span><span class="s2">|n coins</span><span class="si">{carried}</span><span class="s2"></span>
+<span class="s2">Value: ~|y</span><span class="si">{value}</span><span class="s2">|n coins</span><span class="si">{carried}</span>
 
-<span class="si">{desc}</span><span class="s2"></span>
+<span class="si">{desc}</span>
 
 <span class="s2">Slots: |w</span><span class="si">{size}</span><span class="s2">|n, Used from: |w</span><span class="si">{use_slot_name}</span><span class="s2">|n</span>
 <span class="s2">Quality: |w</span><span class="si">{quality}</span><span class="s2">|n, Uses: |wuses|n</span>
@@ -266,7 +266,7 @@ a function that produces a pretty display of any object we pass to it.</p>
 
 
 <span class="k">def</span> <span class="nf">get_obj_stats</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
-    <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    Get a string of stats about the object.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
@@ -349,7 +349,7 @@ testing <code class="docutils literal notranslate"><span class="pre">get_obj_sta
         <span class="c1"># check that the result is what we expected</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">result</span><span class="p">,</span> 
-            <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">|ctestobj|n</span>
 <span class="sd">Value: ~|y10|n coins</span>
 

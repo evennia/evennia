@@ -112,7 +112,7 @@
                    <span class="n">wrapped</span><span class="p">,</span>
                    <span class="n">assigned</span> <span class="o">=</span> <span class="n">WRAPPER_ASSIGNMENTS</span><span class="p">,</span>
                    <span class="n">updated</span> <span class="o">=</span> <span class="n">WRAPPER_UPDATES</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Update a wrapper function to look like the wrapped function</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update a wrapper function to look like the wrapped function</span>
 
 <span class="sd">       wrapper is the function to be updated</span>
 <span class="sd">       wrapped is the original function</span>
@@ -141,7 +141,7 @@
 <span class="k">def</span> <span class="nf">wraps</span><span class="p">(</span><span class="n">wrapped</span><span class="p">,</span>
           <span class="n">assigned</span> <span class="o">=</span> <span class="n">WRAPPER_ASSIGNMENTS</span><span class="p">,</span>
           <span class="n">updated</span> <span class="o">=</span> <span class="n">WRAPPER_UPDATES</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decorator factory to apply update_wrapper() to a wrapper function</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator factory to apply update_wrapper() to a wrapper function</span>
 
 <span class="sd">       Returns a decorator that invokes update_wrapper() with the decorated</span>
 <span class="sd">       function as the wrapper argument and the arguments to wraps() as the</span>
@@ -262,7 +262,7 @@
 <span class="p">}</span>
 
 <span class="k">def</span> <span class="nf">total_ordering</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class decorator that fills in missing ordering methods&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class decorator that fills in missing ordering methods&quot;&quot;&quot;</span>
     <span class="c1"># Find user-defined comparisons (not those inherited from object).</span>
     <span class="n">roots</span> <span class="o">=</span> <span class="p">{</span><span class="n">op</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">_convert</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="kc">None</span><span class="p">)}</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">roots</span><span class="p">:</span>
@@ -280,7 +280,7 @@
 <span class="c1">################################################################################</span>
 
 <span class="k">def</span> <span class="nf">cmp_to_key</span><span class="p">(</span><span class="n">mycmp</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a cmp= function into a key= function&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a cmp= function into a key= function&quot;&quot;&quot;</span>
     <span class="k">class</span> <span class="nc">K</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -311,7 +311,7 @@
 <span class="n">_initial_missing</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
 
 <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">sequence</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">_initial_missing</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    reduce(function, iterable[, initial]) -&gt; value</span>
 
 <span class="sd">    Apply a function of two arguments cumulatively to the items of a sequence</span>
@@ -350,7 +350,7 @@
 
 <span class="c1"># Purely functional, no descriptor behaviour</span>
 <span class="k">class</span> <span class="nc">partial</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;New function with partial application of the given arguments</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;New function with partial application of the given arguments</span>
 <span class="sd">    and keywords.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -421,7 +421,7 @@
 
 <span class="c1"># Descriptor version</span>
 <span class="k">class</span> <span class="nc">partialmethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Method descriptor with partial application of the given arguments</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method descriptor with partial application of the given arguments</span>
 <span class="sd">    and keywords.</span>
 
 <span class="sd">    Supports wrapping existing descriptors and handles non-descriptor</span>
@@ -506,7 +506,7 @@
 <span class="n">_CacheInfo</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;CacheInfo&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;hits&quot;</span><span class="p">,</span> <span class="s2">&quot;misses&quot;</span><span class="p">,</span> <span class="s2">&quot;maxsize&quot;</span><span class="p">,</span> <span class="s2">&quot;currsize&quot;</span><span class="p">])</span>
 
 <span class="k">class</span> <span class="nc">_HashedSeq</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; This class guarantees that hash() will be called no more than once</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This class guarantees that hash() will be called no more than once</span>
 <span class="sd">        per element.  This is important because the lru_cache() will hash</span>
 <span class="sd">        the key multiple times on a cache miss.</span>
 
@@ -525,7 +525,7 @@
              <span class="n">kwd_mark</span> <span class="o">=</span> <span class="p">(</span><span class="nb">object</span><span class="p">(),),</span>
              <span class="n">fasttypes</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">},</span>
              <span class="nb">tuple</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="nb">len</span><span class="o">=</span><span class="nb">len</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Make a cache key from optionally typed positional and keyword arguments</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a cache key from optionally typed positional and keyword arguments</span>
 
 <span class="sd">    The key is constructed in a way that is flat as possible rather than</span>
 <span class="sd">    as a nested structure that would take more memory.</span>
@@ -553,7 +553,7 @@
     <span class="k">return</span> <span class="n">_HashedSeq</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">typed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Least-recently-used cache decorator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Least-recently-used cache decorator.</span>
 
 <span class="sd">    If *maxsize* is set to None, the LRU features are disabled and the cache</span>
 <span class="sd">    can grow without bound.</span>
@@ -697,12 +697,12 @@
             <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">cache_info</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;Report cache statistics&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Report cache statistics&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_CacheInfo</span><span class="p">(</span><span class="n">hits</span><span class="p">,</span> <span class="n">misses</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">,</span> <span class="n">cache_len</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">cache_clear</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;Clear the cache and cache statistics&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the cache and cache statistics&quot;&quot;&quot;</span>
         <span class="k">nonlocal</span> <span class="n">hits</span><span class="p">,</span> <span class="n">misses</span><span class="p">,</span> <span class="n">full</span>
         <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
             <span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -734,7 +734,7 @@
 <span class="c1">################################################################################</span>
 
 <span class="k">def</span> <span class="nf">_c3_merge</span><span class="p">(</span><span class="n">sequences</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Merges MROs in *sequences* to a single MRO using the C3 algorithm.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merges MROs in *sequences* to a single MRO using the C3 algorithm.</span>
 
 <span class="sd">    Adapted from https://www.python.org/download/releases/2.3/mro/.</span>
 
@@ -761,7 +761,7 @@
                 <span class="k">del</span> <span class="n">seq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">_c3_mro</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">abcs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes the method resolution order using extended C3 linearization.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the method resolution order using extended C3 linearization.</span>
 
 <span class="sd">    If no *abcs* are given, the algorithm works exactly like the built-in C3</span>
 <span class="sd">    linearization used for method resolution.</span>
@@ -806,7 +806,7 @@
     <span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">_compose_mro</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">types</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Calculates the method resolution order for a given class *cls*.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the method resolution order for a given class *cls*.</span>
 
 <span class="sd">    Includes relevant abstract base classes (with their respective bases) from</span>
 <span class="sd">    the *types* iterable. Uses a modified C3 linearization algorithm.</span>
@@ -848,7 +848,7 @@
     <span class="k">return</span> <span class="n">_c3_mro</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">abcs</span><span class="o">=</span><span class="n">mro</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">_find_impl</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns the best matching implementation from *registry* for type *cls*.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the best matching implementation from *registry* for type *cls*.</span>
 
 <span class="sd">    Where there is no registered implementation for a specific type, its method</span>
 <span class="sd">    resolution order is used to find a more generic implementation.</span>
@@ -874,7 +874,7 @@
     <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">singledispatch</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Single-dispatch generic function decorator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single-dispatch generic function decorator.</span>
 
 <span class="sd">    Transforms a function into a generic function, which can have different</span>
 <span class="sd">    behaviours depending upon the type of its first argument. The decorated</span>
@@ -892,7 +892,7 @@
     <span class="n">cache_token</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">dispatch</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;generic_func.dispatch(cls) -&gt; &lt;function implementation&gt;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;generic_func.dispatch(cls) -&gt; &lt;function implementation&gt;</span>
 
 <span class="sd">        Runs the dispatch algorithm to return the best available implementation</span>
 <span class="sd">        for the given *cls* registered on *generic_func*.</span>
@@ -918,7 +918,7 @@
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">GenericAlias</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;generic_func.register(cls, func) -&gt; func</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;generic_func.register(cls, func) -&gt; func</span>
 
 <span class="sd">        Registers a new implementation for the given *cls* on a *generic_func*.</span>
 
@@ -976,7 +976,7 @@
 
 <span class="c1"># Descriptor version</span>
 <span class="k">class</span> <span class="nc">singledispatchmethod</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Single-dispatch generic method descriptor.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single-dispatch generic method descriptor.</span>
 
 <span class="sd">    Supports wrapping existing descriptors and handles non-descriptor</span>
 <span class="sd">    callables as instance methods.</span>
@@ -990,7 +990,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
 
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;generic_method.register(cls, func) -&gt; func</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;generic_method.register(cls, func) -&gt; func</span>
 
 <span class="sd">        Registers a new implementation for the given *cls* on a *generic_method*.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

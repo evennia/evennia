@@ -97,13 +97,13 @@
 
 
 <div class="viewcode-block" id="GeneralViewSetMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.GeneralViewSetMixin">[docs]</a><span class="k">class</span> <span class="nc">GeneralViewSetMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin for both typeclass- and non-typeclass entities.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GeneralViewSetMixin.get_serializer_class"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.GeneralViewSetMixin.get_serializer_class">[docs]</a>    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allow different serializers for certain actions.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -114,7 +114,7 @@
 
 
 <div class="viewcode-block" id="TypeclassViewSetMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.TypeclassViewSetMixin">[docs]</a><span class="k">class</span> <span class="nc">TypeclassViewSetMixin</span><span class="p">(</span><span class="n">GeneralViewSetMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This mixin adds some shared functionality to each viewset of a typeclass. They all use the same</span>
 <span class="sd">    permission classes and filter backend. You can override any of these in your own viewsets.</span>
 
@@ -136,7 +136,7 @@
 
 <div class="viewcode-block" id="TypeclassViewSetMixin.set_attribute"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.TypeclassViewSetMixin.set_attribute">[docs]</a>    <span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="s2">&quot;post&quot;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This action will set an attribute if the db_value is defined, or remove</span>
 <span class="sd">        it if no db_value is provided.</span>
 
@@ -164,7 +164,7 @@
 
 
 <div class="viewcode-block" id="ObjectDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.ObjectDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Object is the parent for all in-game entities that have a location</span>
 <span class="sd">    (rooms, exits, characters etc).</span>
 
@@ -182,7 +182,7 @@
 
 
 <div class="viewcode-block" id="CharacterViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.CharacterViewSet">[docs]</a><span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Characters are a type of Object commonly used as player avatars in-game.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -191,7 +191,7 @@
 
 
 <div class="viewcode-block" id="RoomViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.RoomViewSet">[docs]</a><span class="k">class</span> <span class="nc">RoomViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rooms indicate discrete locations in-game.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -200,7 +200,7 @@
 
 
 <div class="viewcode-block" id="ExitViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.ExitViewSet">[docs]</a><span class="k">class</span> <span class="nc">ExitViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exits are objects with a destination and allows for traversing from one</span>
 <span class="sd">    location to another.</span>
 
@@ -210,7 +210,7 @@
 
 
 <div class="viewcode-block" id="AccountDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.AccountDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">AccountDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accounts represent the players connected to the game</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -222,7 +222,7 @@
 
 
 <div class="viewcode-block" id="ScriptDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.ScriptDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">ScriptDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Scripts are meta-objects for storing system data, running timers etc. They</span>
 <span class="sd">    have no in-game existence.</span>
 
@@ -235,7 +235,7 @@
 
 
 <div class="viewcode-block" id="HelpViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.HelpViewSet">[docs]</a><span class="k">class</span> <span class="nc">HelpViewSet</span><span class="p">(</span><span class="n">GeneralViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Database-stored help entries.</span>
 <span class="sd">    Note that command auto-help and file-based help entries are not accessible this way.</span>
 

@@ -134,7 +134,7 @@
 
 
 <span class="k">def</span> <span class="nf">format_header</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Formats a header</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">width</span> <span class="o">=</span> <span class="n">_HEADER_WIDTH</span> <span class="o">-</span> <span class="mi">10</span>
@@ -155,7 +155,7 @@
 
 
 <span class="k">def</span> <span class="nf">format_code</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Formats the viewing of code and errors</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -165,7 +165,7 @@
 
 
 <span class="k">def</span> <span class="nf">batch_cmd_exec</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function for executing a single batch-command entry</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ptr</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_stackptr</span>
@@ -181,7 +181,7 @@
 
 
 <span class="k">def</span> <span class="nf">batch_code_exec</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function for executing a single batch-code entry</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ptr</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_stackptr</span>
@@ -198,7 +198,7 @@
 
 
 <span class="k">def</span> <span class="nf">step_pointer</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Step in stack, returning the item located.</span>
 
 <span class="sd">    stackptr - current position in stack</span>
@@ -216,7 +216,7 @@
 
 
 <span class="k">def</span> <span class="nf">show_curr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">showall</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Show the current position in stack</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">stackptr</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">batch_stackptr</span>
@@ -239,7 +239,7 @@
 
 
 <span class="k">def</span> <span class="nf">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This purges all effects running</span>
 <span class="sd">    on the caller.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -269,7 +269,7 @@
 
 
 <div class="viewcode-block" id="CmdBatchCommands"><a class="viewcode-back" href="../../../../api/evennia.commands.default.batchprocess.html#evennia.commands.default.batchprocess.CmdBatchCommands">[docs]</a><span class="k">class</span> <span class="nc">CmdBatchCommands</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    build from batch-command file</span>
 
 <span class="sd">    Usage:</span>
@@ -291,7 +291,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdBatchCommands.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.batchprocess.html#evennia.commands.default.batchprocess.CmdBatchCommands.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Starts the processor.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Starts the processor.&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -361,7 +361,7 @@
 
 
 <div class="viewcode-block" id="CmdBatchCode"><a class="viewcode-back" href="../../../../api/evennia.commands.default.batchprocess.html#evennia.commands.default.batchprocess.CmdBatchCode">[docs]</a><span class="k">class</span> <span class="nc">CmdBatchCode</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    build from batch-code file</span>
 
 <span class="sd">    Usage:</span>
@@ -387,7 +387,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
 <div class="viewcode-block" id="CmdBatchCode.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.batchprocess.html#evennia.commands.default.batchprocess.CmdBatchCode.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Starts the processor.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Starts the processor.&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -460,7 +460,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateAbort</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    abort</span>
 
 <span class="sd">    This is a safety feature. It force-ejects us out of the processor and to</span>
@@ -473,13 +473,13 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(batchcommands)&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Exit back to default.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exit back to default.&quot;&quot;&quot;</span>
         <span class="n">purge_processor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Exited processor and reset out active cmdset back to the default one.&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">CmdStateLL</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ll</span>
 
 <span class="sd">    Look at the full source for the current</span>
@@ -495,7 +495,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStatePP</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    pp</span>
 
 <span class="sd">    Process the currently shown command definition.</span>
@@ -506,7 +506,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(batchcommands)&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This checks which type of processor we are running.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -517,7 +517,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateRR</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    rr</span>
 
 <span class="sd">    Reload the batch file, keeping the current</span>
@@ -540,7 +540,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateRRR</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    rrr</span>
 
 <span class="sd">    Reload the batch file, starting over</span>
@@ -563,7 +563,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateNN</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    nn</span>
 
 <span class="sd">    Go to next command. No commands are executed.</span>
@@ -585,7 +585,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateNL</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    nl</span>
 
 <span class="sd">    Go to next command, viewing its full source.</span>
@@ -608,7 +608,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateBB</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    bb</span>
 
 <span class="sd">    Backwards to previous command. No commands</span>
@@ -631,7 +631,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateBL</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    bl</span>
 
 <span class="sd">    Backwards to previous command, viewing its full</span>
@@ -654,7 +654,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateSS</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ss [steps]</span>
 
 <span class="sd">    Process current command, then step to the next</span>
@@ -684,7 +684,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateSL</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    sl [steps]</span>
 
 <span class="sd">    Process current command, then step to the next</span>
@@ -714,7 +714,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateCC</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    cc</span>
 
 <span class="sd">    Continue to process all remaining</span>
@@ -744,7 +744,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateJJ</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    jj &lt;command number&gt;</span>
 
 <span class="sd">    Jump to specific command number</span>
@@ -769,7 +769,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateJL</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    jl &lt;command number&gt;</span>
 
 <span class="sd">    Jump to specific command number and view its full source.</span>
@@ -794,7 +794,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateQQ</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    qq</span>
 
 <span class="sd">    Quit the batchprocessor.</span>
@@ -810,7 +810,7 @@
 
 
 <span class="k">class</span> <span class="nc">CmdStateHH</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Help command&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help command&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hh&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;BatchProcess&quot;</span>
@@ -854,7 +854,7 @@
 
 
 <span class="k">class</span> <span class="nc">BatchSafeCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The base cmdset for the batch processor.</span>
 <span class="sd">    This sets a &#39;safe&#39; abort command that will</span>
 <span class="sd">    always be available to get out of everything.</span>
@@ -864,12 +864,12 @@
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">150</span>  <span class="c1"># override other cmdsets.</span>
 
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Init the cmdset&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init the cmdset&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStateAbort</span><span class="p">())</span>
 
 
 <span class="k">class</span> <span class="nc">BatchInteractiveCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The cmdset for the interactive batch processor mode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -877,7 +877,7 @@
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">104</span>
 
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;init the cmdset&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;init the cmdset&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStateAbort</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStateLL</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStatePP</span><span class="p">())</span>

@@ -228,7 +228,7 @@ access) and the IC “Character objects”.</p>
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="c1"># [...]</span>
     <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method customizes how character names are displayed. We assume</span>
 <span class="sd">        only permissions of types &quot;Developers&quot; and &quot;Admins&quot; require</span>
 <span class="sd">        special attention.</span>
@@ -277,7 +277,7 @@ Evennia’s default “mux-like” commands here.</p>
 <span class="kn">import</span> <span class="nn">evennia</span>
 
 <span class="k">class</span> <span class="nc">CmdMakeGM</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change an account&#39;s GM status</span>
 
 <span class="sd">    Usage:</span>
@@ -535,7 +535,7 @@ example.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_charsheet</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">update_charsheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call this to update the sheet after any of the ingoing data</span>
 <span class="sd">        has changed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -584,7 +584,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
     <span class="k">return</span> <span class="kc">True</span>
 
 <span class="k">class</span> <span class="nc">CmdSheet</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Edit a field on the character sheet</span>
 
 <span class="sd">    Usage:</span>
@@ -647,7 +647,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># continuing in mygame/commands/command.py</span>
 
 <span class="k">class</span> <span class="nc">CmdGMsheet</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    GM-modification of char sheets</span>
 
 <span class="sd">    Usage:</span>

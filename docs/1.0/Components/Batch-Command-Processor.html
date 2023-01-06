@@ -143,46 +143,46 @@ them in-game, except you have more freedom with line breaks.</p>
 <li><p>You <em>cannot</em> nest another <code class="docutils literal notranslate"><span class="pre">batchcommand</span></code> statement into your batch file. If you want to link many batch-files together, use the <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> batch instruction instead. You also cannot launch the <code class="docutils literal notranslate"><span class="pre">batchcode</span></code> command from your batch file, the two batch processors are not compatible.</p></li>
 </ul>
 <p>Below is a version of the example file found in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/batch_cmds.ev</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
-    <span class="c1"># This is an example batch build file for Evennia. </span>
-    <span class="c1">#</span>
-    
-    <span class="c1"># This creates a red button</span>
-    @create button:tutorial_examples.red_button.RedButton
-    <span class="c1"># (This comment ends input for @create)</span>
-    <span class="c1"># Next command. Let&#39;s create something. </span>
-    @set button/desc <span class="o">=</span> 
-      This is a large red button. Now and <span class="k">then</span> 
-      it flashes <span class="k">in</span> an evil, yet strangely tantalizing way. 
-    
-      A big sign sits next to it. It says:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># This is an example batch build file for Evennia. </span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1"># This creates a red button</span>
+<span class="w">    </span>@create<span class="w"> </span>button:tutorial_examples.red_button.RedButton
+<span class="w">    </span><span class="c1"># (This comment ends input for @create)</span>
+<span class="w">    </span><span class="c1"># Next command. Let&#39;s create something. </span>
+<span class="w">    </span>@set<span class="w"> </span>button/desc<span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="w">      </span>This<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>large<span class="w"> </span>red<span class="w"> </span>button.<span class="w"> </span>Now<span class="w"> </span>and<span class="w"> </span><span class="k">then</span><span class="w"> </span>
+<span class="w">      </span>it<span class="w"> </span>flashes<span class="w"> </span><span class="k">in</span><span class="w"> </span>an<span class="w"> </span>evil,<span class="w"> </span>yet<span class="w"> </span>strangely<span class="w"> </span>tantalizing<span class="w"> </span>way.<span class="w"> </span>
+<span class="w">    </span>
+<span class="w">      </span>A<span class="w"> </span>big<span class="w"> </span>sign<span class="w"> </span>sits<span class="w"> </span>next<span class="w"> </span>to<span class="w"> </span>it.<span class="w"> </span>It<span class="w"> </span>says:
 
-    
-    -----------
-    
-     Press me! 
-    
-    -----------
+<span class="w">    </span>
+<span class="w">    </span>-----------
+<span class="w">    </span>
+<span class="w">     </span>Press<span class="w"> </span>me!<span class="w"> </span>
+<span class="w">    </span>
+<span class="w">    </span>-----------
 
-    
-      ... It really begs to be pressed! You 
-    know you want to! 
-    
-    <span class="c1"># This inserts the commands from another batch-cmd file named</span>
-    <span class="c1"># batch_insert_file.ev.</span>
-    <span class="c1">#INSERT examples.batch_insert_file</span>
-    
-      
-    <span class="c1"># (This ends the @set command). Note that single line breaks </span>
-    <span class="c1"># and extra whitespace in the argument are ignored. Empty lines </span>
-    <span class="c1"># translate into line breaks in the output.</span>
-    <span class="c1"># Now let&#39;s place the button where it belongs (let&#39;s say limbo #2 is </span>
-    <span class="c1"># the evil lair in our example)</span>
-    @teleport <span class="c1">#2</span>
-    <span class="c1"># (This comments ends the @teleport command.) </span>
-    <span class="c1"># Now we drop it so others can see it. </span>
-    <span class="c1"># The very last command in the file needs not be ended with #.</span>
-    drop button
+<span class="w">    </span>
+<span class="w">      </span>...<span class="w"> </span>It<span class="w"> </span>really<span class="w"> </span>begs<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>pressed!<span class="w"> </span>You<span class="w"> </span>
+<span class="w">    </span>know<span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to!<span class="w"> </span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1"># This inserts the commands from another batch-cmd file named</span>
+<span class="w">    </span><span class="c1"># batch_insert_file.ev.</span>
+<span class="w">    </span><span class="c1">#INSERT examples.batch_insert_file</span>
+<span class="w">    </span>
+<span class="w">      </span>
+<span class="w">    </span><span class="c1"># (This ends the @set command). Note that single line breaks </span>
+<span class="w">    </span><span class="c1"># and extra whitespace in the argument are ignored. Empty lines </span>
+<span class="w">    </span><span class="c1"># translate into line breaks in the output.</span>
+<span class="w">    </span><span class="c1"># Now let&#39;s place the button where it belongs (let&#39;s say limbo #2 is </span>
+<span class="w">    </span><span class="c1"># the evil lair in our example)</span>
+<span class="w">    </span>@teleport<span class="w"> </span><span class="c1">#2</span>
+<span class="w">    </span><span class="c1"># (This comments ends the @teleport command.) </span>
+<span class="w">    </span><span class="c1"># Now we drop it so others can see it. </span>
+<span class="w">    </span><span class="c1"># The very last command in the file needs not be ended with #.</span>
+<span class="w">    </span>drop<span class="w"> </span>button
 </pre></div>
 </div>
 <p>To test this, run <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code> on the file:</p>

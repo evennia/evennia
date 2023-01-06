@@ -115,7 +115,7 @@
 
 
 <div class="viewcode-block" id="MapNode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode">[docs]</a><span class="k">class</span> <span class="nc">MapNode</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This represents a &#39;room&#39; node on the map. Note that the map system deals with two grids, the</span>
 <span class="sd">    finer `xygrid`, which is the per-character grid on the map, and the `XYgrid` which contains only</span>
 <span class="sd">    the even-integer coordinates and also represents in-game coordinates/rooms. MapNodes are always</span>
@@ -174,7 +174,7 @@
     <span class="p">}</span>
 
 <div class="viewcode-block" id="MapNode.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">node_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xymap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the mapnode.</span>
 
 <span class="sd">        Args:</span>
@@ -230,11 +230,11 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MapNode.log"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;log messages using the xygrid parent&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;log messages using the xygrid parent&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">xymap</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapNode.generate_prototype_key"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.generate_prototype_key">[docs]</a>    <span class="k">def</span> <span class="nf">generate_prototype_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a deterministic prototype key to allow for users to apply prototypes without</span>
 <span class="sd">        needing a separate new name for every one.</span>
 
@@ -242,7 +242,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid5</span><span class="p">(</span><span class="n">UUID_XYZ_NAMESPACE</span><span class="p">,</span> <span class="nb">str</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">))))</span></div>
 
 <div class="viewcode-block" id="MapNode.build_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.build_links">[docs]</a>    <span class="k">def</span> <span class="nf">build_links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called by the map parser when this node is encountered. It tells the node</span>
 <span class="sd">        to scan in all directions and follow any found links to other nodes. Since there</span>
 <span class="sd">        could be multiple steps to reach another node, the system will iterate down each</span>
@@ -306,7 +306,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">shortest_route_to_node</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">first_step_name</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapNode.linkweights"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.linkweights">[docs]</a>    <span class="k">def</span> <span class="nf">linkweights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nnodes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve all the weights for the direct links to all other nodes. This is</span>
 <span class="sd">        used for the efficient generation of shortest-paths.</span>
 
@@ -327,7 +327,7 @@
         <span class="k">return</span> <span class="n">link_graph</span></div>
 
 <div class="viewcode-block" id="MapNode.get_display_symbol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.get_display_symbol">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override for customizing how the display_symbol is determined.</span>
 
 <span class="sd">        Returns:</span>
@@ -341,7 +341,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_symbol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_symbol</span></div>
 
 <div class="viewcode-block" id="MapNode.get_spawn_xyz"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.get_spawn_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">get_spawn_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This should return the XYZ-coordinates for spawning this node. This normally</span>
 <span class="sd">        the XYZ of the current map, but for traversal-nodes, it can also be the location</span>
 <span class="sd">        on another map.</span>
@@ -353,7 +353,7 @@
 
 <div class="viewcode-block" id="MapNode.get_exit_spawn_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.get_exit_spawn_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_exit_spawn_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">return_aliases</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve the spawn name for the exit being created by this link.</span>
 
 <span class="sd">        Args:</span>
@@ -373,7 +373,7 @@
         <span class="k">return</span> <span class="n">key</span></div>
 
 <div class="viewcode-block" id="MapNode.spawn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.spawn">[docs]</a>    <span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build an actual in-game room from this node.</span>
 
 <span class="sd">        This should be called as part of the node-sync step of the map sync. The reason is</span>
@@ -419,7 +419,7 @@
         <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prototype</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span><span class="n">nodeobj</span><span class="p">],</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapNode.spawn_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.spawn_links">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build actual in-game exits based on the links out of this room.</span>
 
 <span class="sd">        Args:</span>
@@ -510,7 +510,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapNode.unspawn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.unspawn">[docs]</a>    <span class="k">def</span> <span class="nf">unspawn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all spawned objects related to this node and all links.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -530,7 +530,7 @@
 
 
 <div class="viewcode-block" id="TransitionMapNode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode">[docs]</a><span class="k">class</span> <span class="nc">TransitionMapNode</span><span class="p">(</span><span class="n">MapNode</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This node acts as an end-node for a link that actually leads to a specific node on another</span>
 <span class="sd">    map. It is not actually represented by a separate room in-game.</span>
 
@@ -560,7 +560,7 @@
     <span class="n">taget_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TransitionMapNode.get_spawn_xyz"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode.get_spawn_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">get_spawn_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make sure to return the coord of the *target* - this will be used when building</span>
 <span class="sd">        the exit to this node (since the prototype is None, this node itself will not be built).</span>
 
@@ -576,14 +576,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_map_xyz</span></div>
 
 <div class="viewcode-block" id="TransitionMapNode.build_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode.build_links">[docs]</a>    <span class="k">def</span> <span class="nf">build_links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Check so we don&#39;t have too many links&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check so we don&#39;t have too many links&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build_links</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span><span class="s2">&quot;may have at most one link connecting to it.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="MapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink">[docs]</a><span class="k">class</span> <span class="nc">MapLink</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This represents one or more links between an &#39;incoming direction&#39;</span>
 <span class="sd">    and an &#39;outgoing direction&#39;. It&#39;s like a railway track between</span>
 <span class="sd">    MapNodes. A Link can be placed on any location in the grid, but even when</span>
@@ -682,7 +682,7 @@
     <span class="n">spawn_aliases</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="MapLink.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xymap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the link.</span>
 
 <span class="sd">        Args:</span>
@@ -713,7 +713,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MapLink.generate_prototype_key"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.generate_prototype_key">[docs]</a>    <span class="k">def</span> <span class="nf">generate_prototype_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a deterministic prototype key to allow for users to apply prototypes without</span>
 <span class="sd">        needing a separate new name for every one.</span>
 
@@ -724,7 +724,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid5</span><span class="p">(</span><span class="n">UUID_XYZ_NAMESPACE</span><span class="p">,</span> <span class="nb">str</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">))))</span></div>
 
 <div class="viewcode-block" id="MapLink.traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.traverse">[docs]</a>    <span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">,</span> <span class="n">_weight</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">_linklen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Recursively traverse the links out of this LinkNode.</span>
 
 <span class="sd">        Args:</span>
@@ -793,7 +793,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapLink.get_linked_neighbors"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.get_linked_neighbors">[docs]</a>    <span class="k">def</span> <span class="nf">get_linked_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A helper to get all directions to which there appears to be a</span>
 <span class="sd">        visual link/node. This does not trace the length of the link and check weights etc.</span>
 
@@ -821,7 +821,7 @@
         <span class="k">return</span> <span class="n">links</span></div>
 
 <div class="viewcode-block" id="MapLink.at_empty_target"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.at_empty_target">[docs]</a>    <span class="k">def</span> <span class="nf">at_empty_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">,</span> <span class="n">end_direction</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called by `.traverse` when it finds this link pointing to nowhere.</span>
 
 <span class="sd">        Args:</span>
@@ -841,7 +841,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="MapLink.get_direction"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.get_direction">[docs]</a>    <span class="k">def</span> <span class="nf">get_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override for customizing how the directions are</span>
 <span class="sd">        determined.</span>
 
@@ -861,7 +861,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">directions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">start_direction</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapLink.get_weight"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">,</span> <span class="n">current_weight</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override for customizing how the weights are determined.</span>
 
 <span class="sd">        Args:</span>
@@ -876,7 +876,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">start_direction</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_weight</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapLink.get_display_symbol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.get_display_symbol">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook to override for customizing how the display_symbol is determined.</span>
 <span class="sd">        This is called after all other hooks, at map visualization.</span>
 
@@ -892,7 +892,7 @@
 
 
 <div class="viewcode-block" id="SmartRerouterMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartRerouterMapLink">[docs]</a><span class="k">class</span> <span class="nc">SmartRerouterMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A &#39;smart&#39; link without visible direction, but which uses its topological surroundings</span>
 <span class="sd">    to figure out how it connects. All such links are two-way. It can be used to create &#39;knees&#39; and</span>
 <span class="sd">    multi-crossings of links. Remember that this is still a link, so user will not &#39;stop&#39; at it,</span>
@@ -925,7 +925,7 @@
     <span class="n">multilink</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="SmartRerouterMapLink.get_direction"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartRerouterMapLink.get_direction">[docs]</a>    <span class="k">def</span> <span class="nf">get_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dynamically determine the direction based on a source direction and grid topology.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -964,7 +964,7 @@
 
 
 <div class="viewcode-block" id="SmartTeleporterMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink">[docs]</a><span class="k">class</span> <span class="nc">SmartTeleporterMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The teleport link works by connecting to nowhere - and will then continue</span>
 <span class="sd">    on another teleport link with the same symbol elsewhere on the map. The teleport</span>
 <span class="sd">    symbol must connect to only one other link (not to a node).</span>
@@ -998,7 +998,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">paired_teleporter</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SmartTeleporterMapLink.at_empty_target"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink.at_empty_target">[docs]</a>    <span class="k">def</span> <span class="nf">at_empty_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">,</span> <span class="n">end_direction</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called during traversal, when finding an unknown direction out of the link (same as</span>
 <span class="sd">        targeting a link at an empty spot on the grid). This will also search for</span>
 <span class="sd">        a unique, matching teleport to send to.</span>
@@ -1043,7 +1043,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">paired_teleporter</span></div>
 
 <div class="viewcode-block" id="SmartTeleporterMapLink.get_direction"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink.get_direction">[docs]</a>    <span class="k">def</span> <span class="nf">get_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Figure out the connected link and paired teleport.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1073,7 +1073,7 @@
 
 
 <div class="viewcode-block" id="SmartMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartMapLink">[docs]</a><span class="k">class</span> <span class="nc">SmartMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A &#39;smart&#39; link withot visible direction, but which uses its topological surroundings</span>
 <span class="sd">    to figure out how it connects. Unlike the `SmartRerouterMapLink`, this link type is</span>
 <span class="sd">    also a &#39;direction&#39; of its own and can thus connect directly to nodes. It can only describe</span>
@@ -1120,7 +1120,7 @@
     <span class="n">multilink</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="SmartMapLink.get_direction"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartMapLink.get_direction">[docs]</a>    <span class="k">def</span> <span class="nf">get_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_direction</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Figure out the direction from a specific source direction based on grid topology.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1155,7 +1155,7 @@
 
 
 <div class="viewcode-block" id="InvisibleSmartMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InvisibleSmartMapLink">[docs]</a><span class="k">class</span> <span class="nc">InvisibleSmartMapLink</span><span class="p">(</span><span class="n">SmartMapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a smart maplink that does not show as such on the map - instead it will figure out</span>
 <span class="sd">    how it should look had it been one of the &#39;normal&#39; cardinal-direction links and display</span>
 <span class="sd">    itself as that instead. This doesn&#39;t change its functionality, only the symbol shown</span>
@@ -1200,7 +1200,7 @@
     <span class="p">}</span>
 
 <div class="viewcode-block" id="InvisibleSmartMapLink.get_display_symbol"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InvisibleSmartMapLink.get_display_symbol">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The SmartMapLink already calculated the directions before this, so we</span>
 <span class="sd">        just need to figure out what to replace this with in order to make this &#39;invisible&#39;</span>
 
@@ -1233,14 +1233,14 @@
 
 
 <div class="viewcode-block" id="BasicMapNode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BasicMapNode">[docs]</a><span class="k">class</span> <span class="nc">BasicMapNode</span><span class="p">(</span><span class="n">MapNode</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A map node/room&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A map node/room&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="s2">&quot;xyz_room&quot;</span></div>
 
 
 <div class="viewcode-block" id="InterruptMapNode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapNode">[docs]</a><span class="k">class</span> <span class="nc">InterruptMapNode</span><span class="p">(</span><span class="n">MapNode</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A point of interest node/room. Pathfinder will ignore but auto-stepper will</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A point of interest node/room. Pathfinder will ignore but auto-stepper will</span>
 <span class="sd">    stop here if passing through. Beginner-Tutorial from here is fine.&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;I&quot;</span>
@@ -1250,7 +1250,7 @@
 
 
 <div class="viewcode-block" id="MapTransitionNode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapTransitionNode">[docs]</a><span class="k">class</span> <span class="nc">MapTransitionNode</span><span class="p">(</span><span class="n">TransitionMapNode</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Transition-target node to other map. This is not actually spawned in-game.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transition-target node to other map. This is not actually spawned in-game.&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span>
     <span class="n">display_symbol</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
@@ -1259,7 +1259,7 @@
 
 
 <div class="viewcode-block" id="NSMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSMapLink">[docs]</a><span class="k">class</span> <span class="nc">NSMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Two-way, North-South link&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Two-way, North-South link&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span>
     <span class="n">display_symbol</span> <span class="o">=</span> <span class="s2">&quot;||&quot;</span>
@@ -1268,7 +1268,7 @@
 
 
 <div class="viewcode-block" id="EWMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWMapLink">[docs]</a><span class="k">class</span> <span class="nc">EWMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Two-way, East-West link&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Two-way, East-West link&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">}</span>
@@ -1276,7 +1276,7 @@
 
 
 <div class="viewcode-block" id="NESWMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NESWMapLink">[docs]</a><span class="k">class</span> <span class="nc">NESWMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Two-way, NorthWest-SouthWest link&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Two-way, NorthWest-SouthWest link&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ne&quot;</span><span class="p">:</span> <span class="s2">&quot;sw&quot;</span><span class="p">,</span> <span class="s2">&quot;sw&quot;</span><span class="p">:</span> <span class="s2">&quot;ne&quot;</span><span class="p">}</span>
@@ -1284,7 +1284,7 @@
 
 
 <div class="viewcode-block" id="SENWMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SENWMapLink">[docs]</a><span class="k">class</span> <span class="nc">SENWMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Two-way, SouthEast-NorthWest link&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Two-way, SouthEast-NorthWest link&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;se&quot;</span><span class="p">:</span> <span class="s2">&quot;nw&quot;</span><span class="p">,</span> <span class="s2">&quot;nw&quot;</span><span class="p">:</span> <span class="s2">&quot;se&quot;</span><span class="p">}</span>
@@ -1292,7 +1292,7 @@
 
 
 <div class="viewcode-block" id="PlusMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.PlusMapLink">[docs]</a><span class="k">class</span> <span class="nc">PlusMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Two-way, crossing North-South and East-West links&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Two-way, crossing North-South and East-West links&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;+&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">}</span>
@@ -1300,7 +1300,7 @@
 
 
 <div class="viewcode-block" id="CrossMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.CrossMapLink">[docs]</a><span class="k">class</span> <span class="nc">CrossMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Two-way, crossing NorthEast-SouthWest and SouthEast-NorthWest links&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Two-way, crossing NorthEast-SouthWest and SouthEast-NorthWest links&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ne&quot;</span><span class="p">:</span> <span class="s2">&quot;sw&quot;</span><span class="p">,</span> <span class="s2">&quot;sw&quot;</span><span class="p">:</span> <span class="s2">&quot;ne&quot;</span><span class="p">,</span> <span class="s2">&quot;se&quot;</span><span class="p">:</span> <span class="s2">&quot;nw&quot;</span><span class="p">,</span> <span class="s2">&quot;nw&quot;</span><span class="p">:</span> <span class="s2">&quot;se&quot;</span><span class="p">}</span>
@@ -1308,7 +1308,7 @@
 
 
 <div class="viewcode-block" id="NSOneWayMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSOneWayMapLink">[docs]</a><span class="k">class</span> <span class="nc">NSOneWayMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;One-way North-South link&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One-way North-South link&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;s&quot;</span><span class="p">}</span>
@@ -1316,7 +1316,7 @@
 
 
 <div class="viewcode-block" id="SNOneWayMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SNOneWayMapLink">[docs]</a><span class="k">class</span> <span class="nc">SNOneWayMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;One-way South-North link&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One-way South-North link&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;^&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;n&quot;</span><span class="p">}</span>
@@ -1324,7 +1324,7 @@
 
 
 <div class="viewcode-block" id="EWOneWayMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWOneWayMapLink">[docs]</a><span class="k">class</span> <span class="nc">EWOneWayMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;One-way East-West link&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One-way East-West link&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;&lt;&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="s2">&quot;w&quot;</span><span class="p">}</span>
@@ -1332,7 +1332,7 @@
 
 
 <div class="viewcode-block" id="WEOneWayMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.WEOneWayMapLink">[docs]</a><span class="k">class</span> <span class="nc">WEOneWayMapLink</span><span class="p">(</span><span class="n">MapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;One-way West-East link&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One-way West-East link&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;&gt;&quot;</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">}</span>
@@ -1340,7 +1340,7 @@
 
 
 <div class="viewcode-block" id="UpMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.UpMapLink">[docs]</a><span class="k">class</span> <span class="nc">UpMapLink</span><span class="p">(</span><span class="n">SmartMapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Up direction. Note that this stays on the same z-coord so it&#39;s a &#39;fake&#39; up.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Up direction. Note that this stays on the same z-coord so it&#39;s a &#39;fake&#39; up.&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;u&quot;</span>
 
@@ -1360,7 +1360,7 @@
 
 
 <div class="viewcode-block" id="DownMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.DownMapLink">[docs]</a><span class="k">class</span> <span class="nc">DownMapLink</span><span class="p">(</span><span class="n">UpMapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Down direction. Note that this stays on the same z-coord, so it&#39;s a &#39;fake&#39; down.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Down direction. Note that this stays on the same z-coord, so it&#39;s a &#39;fake&#39; down.&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>
     <span class="c1"># all movement over this link is &#39;down&#39;, regardless of where on the xygrid we move.</span>
@@ -1379,7 +1379,7 @@
 
 
 <div class="viewcode-block" id="InterruptMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapLink">[docs]</a><span class="k">class</span> <span class="nc">InterruptMapLink</span><span class="p">(</span><span class="n">InvisibleSmartMapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A (still passable) link. Pathfinder will treat this as any link, but auto-stepper</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A (still passable) link. Pathfinder will treat this as any link, but auto-stepper</span>
 <span class="sd">    will always abort before crossing this link - so this must be crossed manually.&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
@@ -1388,7 +1388,7 @@
 
 
 <div class="viewcode-block" id="BlockedMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BlockedMapLink">[docs]</a><span class="k">class</span> <span class="nc">BlockedMapLink</span><span class="p">(</span><span class="n">InvisibleSmartMapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Causes the shortest-path algorithm to consider this a blocked path. The block will not show up</span>
 <span class="sd">    in the map display (and exit can be traversed normally), pathfinder will just not include this</span>
 <span class="sd">    link in any paths.</span>
@@ -1410,13 +1410,13 @@
 
 
 <div class="viewcode-block" id="RouterMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.RouterMapLink">[docs]</a><span class="k">class</span> <span class="nc">RouterMapLink</span><span class="p">(</span><span class="n">SmartRerouterMapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A link that connects other links to build &#39;knees&#39;, pass-throughs etc.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A link that connects other links to build &#39;knees&#39;, pass-throughs etc.&quot;&quot;&quot;</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;o&quot;</span></div>
 
 
 <div class="viewcode-block" id="TeleporterMapLink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TeleporterMapLink">[docs]</a><span class="k">class</span> <span class="nc">TeleporterMapLink</span><span class="p">(</span><span class="n">SmartTeleporterMapLink</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Teleporter links. Must appear in pairs on the same xy map. To make it one-way, add additional</span>
 <span class="sd">    one-way link out of the teleporter on one side.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

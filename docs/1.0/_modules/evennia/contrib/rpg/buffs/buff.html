@@ -209,20 +209,20 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ticknum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns how many ticks this buff has gone through as an integer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns how many ticks this buff has gone through as an integer.&quot;&quot;&quot;</span>
         <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickrate</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">owner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return this buff&#39;s owner (the object its handler is attached to)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return this buff&#39;s owner (the object its handler is attached to)&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">owner</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">timeleft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns how much time this buff has left. If -1, it is permanent.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns how much time this buff has left. If -1, it is permanent.&quot;&quot;&quot;</span>
         <span class="n">_tl</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
             <span class="n">_tl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
@@ -232,16 +232,16 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ticking</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns if this buff ticks or not (tickrate =&gt; 1)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns if this buff ticks or not (tickrate =&gt; 1)&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickrate</span> <span class="o">&gt;=</span> <span class="mi">1</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">stacking</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns if this buff stacks or not (maxstacks &gt; 1)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns if this buff stacks or not (maxstacks &gt; 1)&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxstacks</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="BaseBuff.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">buffkey</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            handler:    The handler this buff is attached to</span>
 <span class="sd">            buffkey:    The key this buff uses on the cache</span>
@@ -260,14 +260,14 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseBuff.conditional"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.conditional">[docs]</a>    <span class="k">def</span> <span class="nf">conditional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook function for conditional evaluation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function for conditional evaluation.</span>
 
 <span class="sd">        This must return True for a buff to apply modifiers, trigger effects, or tick.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="c1"># region helper methods</span>
 <div class="viewcode-block" id="BaseBuff.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Helper method which removes this buff from its handler. Use dispel if you are dispelling it instead.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method which removes this buff from its handler. Use dispel if you are dispelling it instead.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            loud:   (optional) Whether to call at_remove or not (default: True)</span>
@@ -279,7 +279,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="n">loud</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="n">expire</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseBuff.dispel"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.dispel">[docs]</a>    <span class="k">def</span> <span class="nf">dispel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Helper method which dispels this buff (removes and calls at_dispel).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method which dispels this buff (removes and calls at_dispel).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            loud:   (optional) Whether to call at_remove or not (default: True)</span>
@@ -290,7 +290,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="n">loud</span><span class="p">,</span> <span class="n">dispel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="n">delay</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseBuff.pause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Helper method which pauses this buff on its handler.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method which pauses this buff on its handler.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            context:    (optional) A dictionary you wish to pass to the at_pause method as kwargs&quot;&quot;&quot;</span>
@@ -299,7 +299,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseBuff.unpause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Helper method which unpauses this buff on its handler.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method which unpauses this buff on its handler.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs&quot;&quot;&quot;</span>
@@ -308,12 +308,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">unpause</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseBuff.reset"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Resets the buff start time as though it were just applied; functionally identical to a refresh&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resets the buff start time as though it were just applied; functionally identical to a refresh&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BaseBuff.update_cache"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.update_cache">[docs]</a>    <span class="k">def</span> <span class="nf">update_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Updates this buff&#39;s cache using the given values, both internally (this instance) and on the handler.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates this buff&#39;s cache using the given values, both internally (this instance) and on the handler.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            to_cache:   The dictionary of values you want to add to the cache&quot;&quot;&quot;</span>
@@ -328,57 +328,57 @@
 
     <span class="c1"># region hook methods</span>
 <div class="viewcode-block" id="BaseBuff.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook function called when this buff object is initialized.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function called when this buff object is initialized.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_apply"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_apply">[docs]</a>    <span class="k">def</span> <span class="nf">at_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook function to run when this buff is applied to an object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function to run when this buff is applied to an object.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_remove">[docs]</a>    <span class="k">def</span> <span class="nf">at_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook function to run when this buff is removed from an object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function to run when this buff is removed from an object.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_dispel"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_dispel">[docs]</a>    <span class="k">def</span> <span class="nf">at_dispel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook function to run when this buff is dispelled from an object (removed by someone other than the buff holder).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function to run when this buff is dispelled from an object (removed by someone other than the buff holder).&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_expire"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_expire">[docs]</a>    <span class="k">def</span> <span class="nf">at_expire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook function to run when this buff expires from an object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function to run when this buff expires from an object.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_pre_check"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_pre_check">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook function to run before this buff&#39;s modifiers are checked.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function to run before this buff&#39;s modifiers are checked.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_post_check"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_post_check">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook function to run after this buff&#39;s mods are checked.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function to run after this buff&#39;s mods are checked.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_trigger"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook for the code you want to run whenever the effect is triggered.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook for the code you want to run whenever the effect is triggered.</span>
 <span class="sd">        Passes the trigger string to the function, so you can have multiple</span>
 <span class="sd">        triggers on one buff.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_tick"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_tick">[docs]</a>    <span class="k">def</span> <span class="nf">at_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook for actions that occur per-tick, a designer-set sub-duration.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook for actions that occur per-tick, a designer-set sub-duration.</span>
 <span class="sd">        `initial` tells you if it&#39;s the first tick that happens (when a buff is applied).&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_pause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_pause">[docs]</a>    <span class="k">def</span> <span class="nf">at_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook for when this buff is paused&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook for when this buff is paused&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseBuff.at_unpause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_unpause">[docs]</a>    <span class="k">def</span> <span class="nf">at_unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Hook for when this buff is unpaused.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook for when this buff is unpaused.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
     <span class="c1"># endregion</span>
 
 
 <div class="viewcode-block" id="Mod"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.Mod">[docs]</a><span class="k">class</span> <span class="nc">Mod</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A single stat mod object. One buff or trait can hold multiple mods, for the same or different stats.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single stat mod object. One buff or trait can hold multiple mods, for the same or different stats.&quot;&quot;&quot;</span>
 
     <span class="n">stat</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>  <span class="c1"># The stat string that is checked to see if this mod should be applied</span>
     <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Buff&#39;s value</span>
@@ -386,7 +386,7 @@
     <span class="n">modifier</span> <span class="o">=</span> <span class="s2">&quot;add&quot;</span>  <span class="c1"># The modifier the buff applies. &#39;add&#39; or &#39;mult&#39;</span>
 
 <div class="viewcode-block" id="Mod.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.Mod.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">modifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">perstack</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            stat:       The stat the buff affects. Normally matches the object attribute name</span>
 <span class="sd">            mod:        The modifier the buff applies. &quot;add&quot; for add/sub or &quot;mult&quot; for mult/div</span>
@@ -406,7 +406,7 @@
     <span class="n">_owner</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="BuffHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">dbkey</span><span class="o">=</span><span class="n">dbkey</span><span class="p">,</span> <span class="n">autopause</span><span class="o">=</span><span class="n">autopause</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            owner:  The object this handler is attached to</span>
 <span class="sd">            dbkey:  (optional) The string key of the db attribute to use for the buff cache</span>
@@ -422,7 +422,7 @@
     <span class="c1"># region properties</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">owner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The object this handler is attached to.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The object this handler is attached to.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerref</span><span class="p">:</span>
             <span class="n">_owner</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ownerref</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_owner</span><span class="p">:</span>
@@ -432,7 +432,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">buffcache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The object attribute we use for the buff cache. Auto-creates if not present.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The object attribute we use for the buff cache. Auto-creates if not present.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbkey</span><span class="p">):</span>
@@ -441,35 +441,35 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;All buffs on this handler that modify a stat.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All buffs on this handler that modify a stat.&quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span>
         <span class="n">_t</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">mods</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">_t</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">effects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;All buffs on this handler that trigger off an event.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All buffs on this handler that trigger off an event.&quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span>
         <span class="n">_e</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">triggers</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">_e</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">playtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;All buffs on this handler that only count down during active playtime.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All buffs on this handler that only count down during active playtime.&quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span>
         <span class="n">_pt</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">playtime</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">_pt</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">paused</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;All buffs on this handler that are paused.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All buffs on this handler that are paused.&quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span>
         <span class="n">_p</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">paused</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">_p</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">expired</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;All buffs on this handler that have expired (no duration or no stacks).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All buffs on this handler that have expired (no duration or no stacks).&quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span>
         <span class="n">_e</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">k</span><span class="p">:</span> <span class="n">buff</span>
@@ -484,14 +484,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">visible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;All buffs on this handler that are visible.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;All buffs on this handler that are visible.&quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span>
         <span class="n">_v</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">visible</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">_v</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns dictionary of instanced buffs equivalent to ALL buffs on this handler,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns dictionary of instanced buffs equivalent to ALL buffs on this handler,</span>
 <span class="sd">        regardless of state, type, or anything else.&quot;&quot;&quot;</span>
         <span class="n">_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">_a</span>
@@ -512,7 +512,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 
-        <span class="sd">&quot;&quot;&quot;Add a buff to this object, respecting all stacking/refresh/reapplication rules. Takes</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a buff to this object, respecting all stacking/refresh/reapplication rules. Takes</span>
 <span class="sd">        a number of optional parameters to allow for customization.</span>
 
 <span class="sd">        Args:</span>
@@ -599,7 +599,7 @@
 
     <span class="c1"># region removers</span>
 <div class="viewcode-block" id="BuffHandler.remove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">stacks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dispel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove a buff or effect with matching key from this object. Normally calls at_remove,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a buff or effect with matching key from this object. Normally calls at_remove,</span>
 <span class="sd">        calls at_expire if the buff expired naturally, and optionally calls at_dispel. Can also</span>
 <span class="sd">        remove stacks instead of the entire buff (still calls at_remove). Typically called via a helper method</span>
 <span class="sd">        on the buff instance, or other methods on the handler.</span>
@@ -642,7 +642,7 @@
         <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes all buffs of a specified type from this object. Functionally similar to remove, but takes a type instead.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes all buffs of a specified type from this object. Functionally similar to remove, but takes a type instead.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            bufftype:   The buff class to remove</span>
@@ -664,7 +664,7 @@
         <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes all buffs modifying the specified stat from this object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes all buffs modifying the specified stat from this object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            stat:       The stat string to search for</span>
@@ -686,7 +686,7 @@
         <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes all buffs with the specified trigger from this object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes all buffs with the specified trigger from this object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            trigger:    The stat string to search for</span>
@@ -708,7 +708,7 @@
         <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes all buffs from the specified source from this object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes all buffs from the specified source from this object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            source:     The source to search for</span>
@@ -731,7 +731,7 @@
         <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes all buffs with the cachevalue from this object. Functionally similar to remove, but checks the buff&#39;s cache values instead.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes all buffs with the cachevalue from this object. Functionally similar to remove, but checks the buff&#39;s cache values instead.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            key:         The key of the cache value to check</span>
@@ -747,14 +747,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_via_dict</span><span class="p">(</span><span class="n">_remove</span><span class="p">,</span> <span class="n">loud</span><span class="p">,</span> <span class="n">dispel</span><span class="p">,</span> <span class="n">expire</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BuffHandler.clear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dispel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes all buffs on this handler&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes all buffs on this handler&quot;&quot;&quot;</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_via_dict</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">loud</span><span class="p">,</span> <span class="n">dispel</span><span class="p">,</span> <span class="n">expire</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
 
     <span class="c1"># endregion</span>
     <span class="c1"># region getters</span>
 <div class="viewcode-block" id="BuffHandler.get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;If the specified key is on this handler, return the instanced buff. Otherwise return None.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If the specified key is on this handler, return the instanced buff. Otherwise return None.</span>
 <span class="sd">        You should delete this when you&#39;re done with it, so that garbage collection doesn&#39;t have to.</span>
 
 <span class="sd">        Args:</span>
@@ -766,14 +766,14 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="BuffHandler.get_all"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_all">[docs]</a>    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a dictionary of instanced buffs (all of them) on this handler in the format {buffkey: instance}&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dictionary of instanced buffs (all of them) on this handler in the format {buffkey: instance}&quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffcache</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_cache</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{}</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 <div class="viewcode-block" id="BuffHandler.get_by_type"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buff</span><span class="p">:</span> <span class="n">BaseBuff</span><span class="p">,</span> <span class="n">to_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Finds all buffs matching the given type.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finds all buffs matching the given type.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            buff:       The buff class to search for</span>
@@ -784,7 +784,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_buff</span><span class="p">,</span> <span class="n">buff</span><span class="p">)}</span></div>
 
 <div class="viewcode-block" id="BuffHandler.get_by_stat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_stat">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_stat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Finds all buffs which contain a Mod object that modifies the specified stat.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finds all buffs which contain a Mod object that modifies the specified stat.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            stat:       The string identifier to find relevant mods</span>
@@ -796,7 +796,7 @@
         <span class="k">return</span> <span class="n">buffs</span></div>
 
 <div class="viewcode-block" id="BuffHandler.get_by_trigger"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Finds all buffs with the matching string in their triggers.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finds all buffs with the matching string in their triggers.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            trigger:    The string identifier to find relevant buffs</span>
@@ -808,7 +808,7 @@
         <span class="k">return</span> <span class="n">buffs</span></div>
 
 <div class="viewcode-block" id="BuffHandler.get_by_source"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_source">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">to_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find all buffs with the matching source.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all buffs with the matching source.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            source: The source you want to filter buffs by</span>
@@ -820,7 +820,7 @@
         <span class="k">return</span> <span class="n">buffs</span></div>
 
 <div class="viewcode-block" id="BuffHandler.get_by_cachevalue"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_cachevalue">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_cachevalue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find all buffs with a matching {key: value} pair in its cache. Allows you to search buffs by arbitrary cache values</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all buffs with a matching {key: value} pair in its cache. Allows you to search buffs by arbitrary cache values</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            key:    The key of the cache value to check</span>
@@ -838,7 +838,7 @@
     <span class="c1"># endregion</span>
 
 <div class="viewcode-block" id="BuffHandler.has"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buff</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Checks if the specified buff type or key exists on the handler.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the specified buff type or key exists on the handler.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            buff:   The buff to search for. This can be a string (the key) or a class reference (the buff type)</span>
@@ -862,7 +862,7 @@
 <div class="viewcode-block" id="BuffHandler.check"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trigger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">strongest</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Finds all buffs and perks related to a stat and applies their effects.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finds all buffs and perks related to a stat and applies their effects.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            value:  The value you intend to modify</span>
@@ -912,7 +912,7 @@
         <span class="k">return</span> <span class="n">final</span></div>
 
 <div class="viewcode-block" id="BuffHandler.trigger"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.trigger">[docs]</a>    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calls the at_trigger method on all buffs with the matching trigger.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls the at_trigger method on all buffs with the matching trigger.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            trigger:    The string identifier to find relevant buffs. Passed to the at_trigger method.</span>
@@ -939,7 +939,7 @@
             <span class="n">buff</span><span class="o">.</span><span class="n">at_trigger</span><span class="p">(</span><span class="n">trigger</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BuffHandler.pause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Pauses the buff. This excludes it from being checked for mods, triggered, or cleaned up. Used to make buffs &#39;playtime&#39; instead of &#39;realtime&#39;.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pauses the buff. This excludes it from being checked for mods, triggered, or cleaned up. Used to make buffs &#39;playtime&#39; instead of &#39;realtime&#39;.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            key:    The key for the buff you wish to pause</span>
@@ -980,7 +980,7 @@
             <span class="n">instance</span><span class="o">.</span><span class="n">at_pause</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BuffHandler.unpause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Unpauses a buff. This makes it visible to the various buff systems again.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpauses a buff. This makes it visible to the various buff systems again.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            key:    The key for the buff you wish to pause</span>
@@ -1019,7 +1019,7 @@
                 <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BuffHandler.view"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            to_filter:  (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)&quot;&quot;&quot;</span>
@@ -1031,7 +1031,7 @@
         <span class="k">return</span> <span class="n">_flavor</span></div>
 
 <div class="viewcode-block" id="BuffHandler.view_modifiers"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.view_modifiers">[docs]</a>    <span class="k">def</span> <span class="nf">view_modifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Checks all modifiers of the specified stat without actually applying them. Hits the conditional hook for relevant buffs.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks all modifiers of the specified stat without actually applying them. Hits the conditional hook for relevant buffs.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            stat:   The mod identifier string to search for</span>
@@ -1059,13 +1059,13 @@
         <span class="k">return</span> <span class="n">calc</span></div>
 
 <div class="viewcode-block" id="BuffHandler.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes expired buffs, ensures pause state is respected.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes expired buffs, ensures pause state is respected.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_state</span><span class="p">()</span>
         <span class="n">cleanup_buffs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
     <span class="c1"># region private methods</span>
     <span class="k">def</span> <span class="nf">_validate_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validates the state of paused/unpaused playtime buffs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates the state of paused/unpaused playtime buffs.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">autopause</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
@@ -1074,7 +1074,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_pause_playtime</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_pause_playtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">owner</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Pauses all playtime buffs when attached object is unpuppeted.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pauses all playtime buffs when attached object is unpuppeted.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">sender</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">buffs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">playtime</span>
@@ -1084,7 +1084,7 @@
             <span class="n">buff</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_unpause_playtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">owner</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Unpauses all playtime buffs when attached object is puppeted.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpauses all playtime buffs when attached object is puppeted.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">sender</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">buffs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">playtime</span>
@@ -1095,7 +1095,7 @@
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_calculate_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">buffs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the total value of applicable mods.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the total value of applicable mods.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            stat:   The string identifier to search mods for</span>
@@ -1125,7 +1125,7 @@
         <span class="k">return</span> <span class="n">calculated</span>
 
     <span class="k">def</span> <span class="nf">_apply_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">calc</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">strongest</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Applies modifiers to a value.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies modifiers to a value.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            value:  The value to modify</span>
@@ -1149,7 +1149,7 @@
         <span class="k">return</span> <span class="n">final</span>
 
     <span class="k">def</span> <span class="nf">_remove_via_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dispel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes buffs within the provided dictionary from this handler. Used for remove methods besides the basic remove.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes buffs within the provided dictionary from this handler. Used for remove methods besides the basic remove.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">buffs</span><span class="p">:</span>
@@ -1170,7 +1170,7 @@
 
 
 <div class="viewcode-block" id="BuffableProperty"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffableProperty">[docs]</a><span class="k">class</span> <span class="nc">BuffableProperty</span><span class="p">(</span><span class="n">AttributeProperty</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An example of a way you can extend AttributeProperty to create properties that automatically check buffs for you.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An example of a way you can extend AttributeProperty to create properties that automatically check buffs for you.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BuffableProperty.at_get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffableProperty.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="n">_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">)</span>
@@ -1178,7 +1178,7 @@
 
 
 <div class="viewcode-block" id="CmdBuff"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff">[docs]</a><span class="k">class</span> <span class="nc">CmdBuff</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Buff a target.</span>
 
 <span class="sd">    Usage:</span>
@@ -1220,14 +1220,14 @@
 
 
 <div class="viewcode-block" id="cleanup_buffs"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.cleanup_buffs">[docs]</a><span class="k">def</span> <span class="nf">cleanup_buffs</span><span class="p">(</span><span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Cleans up all expired buffs from a handler.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cleans up all expired buffs from a handler.&quot;&quot;&quot;</span>
     <span class="n">_remove</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">expired</span>
     <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_remove</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="n">v</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">expire</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="tick_buff"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.tick_buff">[docs]</a><span class="k">def</span> <span class="nf">tick_buff</span><span class="p">(</span><span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span><span class="p">,</span> <span class="n">buffkey</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Ticks a buff. If a buff&#39;s tickrate is 1 or larger, this is called when the buff is applied, and then once per tick cycle.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ticks a buff. If a buff&#39;s tickrate is 1 or larger, this is called when the buff is applied, and then once per tick cycle.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        handler:    The handler managing the ticking buff</span>

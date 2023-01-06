@@ -497,12 +497,12 @@ serialize the db-objects you want to store.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span> <span class="o">=</span> <span class="n">mydbobj</span>
 
     <span class="k">def</span> <span class="nf">__serialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This is called before serialization and allows</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is called before serialization and allows</span>
 <span class="sd">        us to custom-handle those &#39;hidden&#39; dbobjs&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="o">.</span><span class="n">dbserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span>
 
     <span class="k">def</span> <span class="nf">__deserialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This is called after deserialization and allows you to</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is called after deserialization and allows you to</span>
 <span class="sd">        restore the &#39;hidden&#39; dbobjs you serialized before&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mydbobj</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="c1"># make sure to check if it&#39;s bytes before trying dbunserialize</span>
