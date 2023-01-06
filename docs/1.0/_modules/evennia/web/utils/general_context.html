@@ -99,6 +99,8 @@
 <span class="n">SERVER_VERSION</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">SERVER_HOSTNAME</span> <span class="o">=</span> <span class="kc">None</span>
 
+<span class="n">REGISTER_ENABLED</span> <span class="o">=</span> <span class="kc">None</span>
+
 <span class="n">TELNET_ENABLED</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">TELNET_SSL_ENABLED</span> <span class="o">=</span> <span class="kc">None</span>
@@ -127,6 +129,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">GAME_NAME</span><span class="p">,</span> <span class="n">GAME_SLOGAN</span><span class="p">,</span> <span class="n">SERVER_VERSION</span><span class="p">,</span> <span class="n">SERVER_HOSTNAME</span>
+    <span class="k">global</span> <span class="n">REGISTER_ENABLED</span>
     <span class="k">global</span> <span class="n">TELNET_ENABLED</span><span class="p">,</span> <span class="n">TELNET_PORTS</span>
     <span class="k">global</span> <span class="n">TELNET_SSL_ENABLED</span><span class="p">,</span> <span class="n">TELNET_SSL_PORTS</span>
     <span class="k">global</span> <span class="n">SSH_ENABLED</span><span class="p">,</span> <span class="n">SSH_PORTS</span>
@@ -144,6 +147,8 @@
         <span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="n">SERVER_VERSION</span>
     <span class="n">SERVER_HOSTNAME</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVER_HOSTNAME</span>
 
+    <span class="n">REGISTER_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">NEW_ACCOUNT_REGISTRATION_ENABLED</span>
+    
     <span class="n">TELNET_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TELNET_ENABLED</span>
     <span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TELNET_PORTS</span>
     <span class="n">TELNET_SSL_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SSL_ENABLED</span>
@@ -196,6 +201,7 @@
         <span class="s2">&quot;evennia_setupapps&quot;</span><span class="p">:</span> <span class="n">GAME_SETUP</span><span class="p">,</span>
         <span class="s2">&quot;evennia_connectapps&quot;</span><span class="p">:</span> <span class="n">CONNECTIONS</span><span class="p">,</span>
         <span class="s2">&quot;evennia_websiteapps&quot;</span><span class="p">:</span> <span class="n">WEBSITE</span><span class="p">,</span>
+        <span class="s2">&quot;register_enabled&quot;</span><span class="p">:</span> <span class="n">REGISTER_ENABLED</span><span class="p">,</span>
         <span class="s2">&quot;telnet_enabled&quot;</span><span class="p">:</span> <span class="n">TELNET_ENABLED</span><span class="p">,</span>
         <span class="s2">&quot;telnet_ports&quot;</span><span class="p">:</span> <span class="n">TELNET_PORTS</span><span class="p">,</span>
         <span class="s2">&quot;telnet_ssl_enabled&quot;</span><span class="p">:</span> <span class="n">TELNET_SSL_ENABLED</span><span class="p">,</span>

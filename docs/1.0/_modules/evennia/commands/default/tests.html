@@ -2190,7 +2190,15 @@
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedInfo</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
-        <span class="k">del</span> <span class="n">gametime</span><span class="o">.</span><span class="n">SERVER_START_TIME</span></div></div>
+        <span class="k">del</span> <span class="n">gametime</span><span class="o">.</span><span class="n">SERVER_START_TIME</span></div>
+
+<div class="viewcode-block" id="TestUnconnectedCommand.test_disabled_registration"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestUnconnectedCommand.test_disabled_registration">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">NEW_ACCOUNT_REGISTRATION_ENABLED</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_disabled_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedCreate</span><span class="p">(),</span>
+            <span class="s2">&quot;testacct testpass&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Registration is currently disabled.&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 
 
 <span class="c1"># Test syscommands</span>

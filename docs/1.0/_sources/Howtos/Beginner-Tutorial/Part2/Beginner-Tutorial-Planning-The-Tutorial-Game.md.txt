@@ -60,8 +60,7 @@ The default hierarchy is
 - `Admin` - can kick and ban accounts
 - `Developer` - full access, usually also trusted with server access
 
-There is also the _superuser_, the "owner" of the game you create when you first set up your database. This user
-goes outside the regular hierarchy and should usually only.
+There is also the _superuser_, the "owner" of the game you create when you first set up your database. This user goes outside the regular hierarchy and while powerful it's not so suitable for testing since it bypasses all [locks](../../../Components/Locks.md) (using `quell` or a separate `Developer`-level account is recommended).
 
 **EvAdventure Answer**
 

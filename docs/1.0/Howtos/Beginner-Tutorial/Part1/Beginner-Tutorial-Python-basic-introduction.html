@@ -142,8 +142,7 @@ superuser powers back:</p>
 </div>
 <section id="evennia-hello-world">
 <h2><span class="section-number">3.1. </span>Evennia Hello world<a class="headerlink" href="#evennia-hello-world" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">py</span></code> Command (or <code class="docutils literal notranslate"><span class="pre">!</span></code>, which is an alias) allows you as a superuser to execute raw Python from in-
-game. This is useful for quick testing. From the game’s input line, enter the following:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">py</span></code> Command (or <code class="docutils literal notranslate"><span class="pre">!</span></code>, which is an alias) allows you as a superuser to execute raw Python from in-game. This is useful for quick testing. From the game’s input line, enter the following:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;Hello World!&quot;)
 </pre></div>
 </div>
@@ -511,8 +510,7 @@ and the concept of <em>Leap before you Look</em>.</p>
 <section id="finding-others-to-send-to">
 <h2><span class="section-number">3.7. </span>Finding others to send to<a class="headerlink" href="#finding-others-to-send-to" title="Permalink to this headline">¶</a></h2>
 <p>Let’s wrap up this first Python <code class="docutils literal notranslate"><span class="pre">py</span></code> crash-course by finding someone else to send to.</p>
-<p>In Evennia’s <code class="docutils literal notranslate"><span class="pre">contrib/</span></code> folder (<code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/mirror.py</span></code>) is a handy little
-object called the <code class="docutils literal notranslate"><span class="pre">TutorialMirror</span></code>. The mirror will echo whatever is being sent to it to
+<p>In Evennia’s <code class="docutils literal notranslate"><span class="pre">contrib/</span></code> folder (<code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/mirror.py</span></code>) is a handy little object called the <code class="docutils literal notranslate"><span class="pre">TutorialMirror</span></code>. The mirror will echo whatever is being sent to it to
 the room it is in.</p>
 <p>On the game command-line, let’s create a mirror:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop mirror:contrib.tutorials.mirror.TutorialMirror
@@ -530,31 +528,24 @@ mirror shows your reflection:
 This is User #1
 </pre></div>
 </div>
-<p>What you are seeing is actually your own avatar in the game, the same thing that is available as <code class="docutils literal notranslate"><span class="pre">me</span></code> in the <code class="docutils literal notranslate"><span class="pre">py</span></code>
-command.</p>
-<p>What we are aiming for now is the equivalent of <code class="docutils literal notranslate"><span class="pre">mirror.msg(&quot;Mirror</span> <span class="pre">Mirror</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">wall&quot;)</span></code>. But the first thing that
-comes to mind will not work:</p>
+<p>What you are seeing is actually your own avatar in the game, the same thing that is available as <code class="docutils literal notranslate"><span class="pre">me</span></code> in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command.</p>
+<p>What we are aiming for now is the equivalent of <code class="docutils literal notranslate"><span class="pre">mirror.msg(&quot;Mirror</span> <span class="pre">Mirror</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">wall&quot;)</span></code>. But the first thing that comes to mind will not work:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py mirror.msg(&quot;Mirror, Mirror on the wall ...&quot;)
 NameError: name &#39;mirror&#39; is not defined.
 </pre></div>
 </div>
-<p>This is not surprising: Python knows nothing about “mirrors” or locations or anything. The <code class="docutils literal notranslate"><span class="pre">me</span></code> we’ve been using
-is, as mentioned, just a convenient thing the Evennia devs makes available to the <code class="docutils literal notranslate"><span class="pre">py</span></code> command. They couldn’t possibly
-predict that you wanted to talk to mirrors.</p>
-<p>Instead we will need to <em>search</em> for that <code class="docutils literal notranslate"><span class="pre">mirror</span></code> object before we can send to it.
-Make sure you are in the same location as the mirror and try:</p>
+<p>This is not surprising: Python knows nothing about “mirrors” or locations or anything. The <code class="docutils literal notranslate"><span class="pre">me</span></code> we’ve been using is, as mentioned, just a convenient thing the Evennia devs makes available to the <code class="docutils literal notranslate"><span class="pre">py</span></code> command. They couldn’t possibly predict that you wanted to talk to mirrors.</p>
+<p>Instead we will need to <em>search</em> for that <code class="docutils literal notranslate"><span class="pre">mirror</span></code> object before we can send to it. Make sure you are in the same location as the mirror and try:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.search(&quot;mirror&quot;)
 mirror
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">me.search(&quot;name&quot;)</span></code> will, by default, search and <em>return</em> an object with the given name found in <em>the same location</em>
-as the <code class="docutils literal notranslate"><span class="pre">me</span></code> object is. If it can’t find anything you’ll see an error.</p>
+<p><code class="docutils literal notranslate"><span class="pre">me.search(&quot;name&quot;)</span></code> will, by default, search and <em>return</em> an object with the given name found in <em>the same location</em> as the <code class="docutils literal notranslate"><span class="pre">me</span></code> object is. If it can’t find anything you’ll see an error.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Function returns</p>
 <p>Whereas a function like <code class="docutils literal notranslate"><span class="pre">print</span></code> only prints its arguments, it’s very common
 for functions/methods to <code class="docutils literal notranslate"><span class="pre">return</span></code> a result of some kind. Think of the function
-as a machine - you put something in and out comes a result you can use. In the case
-of <code class="docutils literal notranslate"><span class="pre">me.search</span></code>, it will perform a database search and spit out the object it finds.</p>
+as a machine - you put something in and out comes a result you can use. In the case of <code class="docutils literal notranslate"><span class="pre">me.search</span></code>, it will perform a database search and spit out the object it finds.</p>
 </aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.search(&quot;dummy&quot;)
 Could not find &#39;dummy&#39;.
@@ -568,14 +559,11 @@ mirror echoes back to you:
 &quot;Mirror, Mirror on the wall ...&quot;
 </pre></div>
 </div>
-<p>The mirror is useful for testing  because its <code class="docutils literal notranslate"><span class="pre">.msg</span></code> method just echoes whatever is sent to it back to the room. More common
-would be to talk to a player character, in which case the text you sent would have appeared in their game client.</p>
+<p>The mirror is useful for testing  because its <code class="docutils literal notranslate"><span class="pre">.msg</span></code> method just echoes whatever is sent to it back to the room. More common would be to talk to a player character, in which case the text you sent would have appeared in their game client.</p>
 </section>
 <section id="multi-line-py">
 <h2><span class="section-number">3.8. </span>Multi-line py<a class="headerlink" href="#multi-line-py" title="Permalink to this headline">¶</a></h2>
-<p>So far we have use <code class="docutils literal notranslate"><span class="pre">py</span></code> in single-line mode, using <code class="docutils literal notranslate"><span class="pre">;</span></code> to separate multiple inputs. This is very convenient
-when you want to do some quick testing. But you can also start a full multi-line Python interactive interpreter
-inside Evennia.</p>
+<p>So far we have use <code class="docutils literal notranslate"><span class="pre">py</span></code> in single-line mode, using <code class="docutils literal notranslate"><span class="pre">;</span></code> to separate multiple inputs. This is very convenient when you want to do some quick testing. But you can also start a full multi-line Python interactive interpreter inside Evennia.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
 Evennia Interactive Python mode
 Python 3.11.0 (default, Nov 22 2022, 11:21:55)

@@ -208,8 +208,7 @@ players is low.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">Admin</span></code> - can kick and ban accounts</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Developer</span></code> - full access, usually also trusted with server access</p></li>
 </ul>
-<p>There is also the <em>superuser</em>, the “owner” of the game you create when you first set up your database. This user
-goes outside the regular hierarchy and should usually only.</p>
+<p>There is also the <em>superuser</em>, the “owner” of the game you create when you first set up your database. This user goes outside the regular hierarchy and while powerful it’s not so suitable for testing since it bypasses all <a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">locks</span></a> (using <code class="docutils literal notranslate"><span class="pre">quell</span></code> or a separate <code class="docutils literal notranslate"><span class="pre">Developer</span></code>-level account is recommended).</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We are okay with keeping the default permission structure for our game.</p>
 </section>
