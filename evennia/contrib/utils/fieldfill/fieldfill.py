@@ -234,7 +234,7 @@ def init_fill_field(
     # Initialize menu of selections
     FieldEvMenu(
         caller,
-        "evennia.contrib.utils.fieldfill",
+        "evennia.contrib.utils.fieldfill.fieldfill",
         startnode="menunode_fieldfill",
         auto_look=False,
         persistent=persistent,
