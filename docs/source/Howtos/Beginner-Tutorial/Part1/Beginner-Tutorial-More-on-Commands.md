@@ -44,7 +44,7 @@ class CmdHit(Command):
             target, *weapon = target.split(" ", 1)
         self.target = target.strip()
         if weapon:
-            self.weapon = weapon.strip()
+            self.weapon = weapon[0].strip()
         else:
             self.weapon = ""
 
@@ -88,25 +88,20 @@ The `parse` method is a special one Evennia knows to call _before_ `func`. At th
     2. `hit smaug sword` gives `["smaug sword"]`
     3. `hit smaug with sword` gives `["smaug", "sword"]`
 
-    So we get a list of 1 or 2 elements. We assign it to two variables like this, `target, *weapon = `. That
-    asterisk in `*weapon` is a nifty trick - it will automatically become a list of _0 or more_ values. It sorts of
-    "soaks" up everything left over.
-    1. `target` becomes `"smaug"` and `weapon` becomes `[]`
-    2. `target` becomes `"smaug sword"` and `weapon` becomes `[]`
-    3. `target` becomes `"smaug"` and `weapon` becomes `sword`
+    So we get a list of 1 or 2 elements. We assign it to two variables like this, `target, *weapon = `. That asterisk in `*weapon` is a nifty trick - it will automatically become a tuple of _0 or more_ values. It sorts of "soaks" up everything left over.
+    1. `target` becomes `"smaug"` and `weapon` becomes `()` (an empty tuple)
+    2. `target` becomes `"smaug sword"` and `weapon` becomes `()`
+    3. `target` becomes `"smaug"` and `weapon` becomes `("sword",)` (this is a tuple with one element, the comma [is required](https://docs.python.org/3/tutorial/datastructures.html?highlight=tuple#tuples-and-sequences) to indicate this).
+	
 - **Lines 16-17** - In this `if` condition we check if `weapon` is falsy (that is, the empty list). This can happen
     under two conditions (from the example above):
     1. `target` is simply `smaug`
     2. `target` is `smaug sword`
 
-    To separate these cases we split `target` once again, this time by empty space `" "`. Again we store the
-    result back with `target, *weapon =`. The result will be one of the following:
-    1. `target` remains `smaug` and `weapon` remains `[]`
-    2. `target` becomes `smaug` and `weapon` becomes `sword`
-- **Lines 18-22** - We now store `target` and `weapon` into `self.target` and `self.weapon`. We must do this in order
-   for these local variables to made available in `func` later. Note how we need to check so `weapon` is not falsy
-   before running `strip()` on it. This is because we know that if it's falsy, it's an empty list `[]` and lists
-   don't have the `.strip()` method on them (so if we tried to use it, we'd get an error).
+    To separate these cases we split `target` once again, this time by empty space `" "`. Again we store the result back with `target, *weapon =`. The result will be one of the following:
+    1. `target` remains `"smaug"` and `weapon` remains `[]`
+    2. `target` becomes `"smaug"` and `weapon` becomes `("sword",)`
+- **Lines 18-22** - We now store `target` and `weapon` into `self.target` and `self.weapon`. We must store on `self` in order for these local variables to become available in `func` later. Note that once we know that `weapon` exists, it must be a tuple (like `("sword",)`), so we use `weapon[0]` to get the first element of that tuple (tuples and lists in Python are indexed from 0). The instruction `weapon[0].strip()` can be read as "get the first string stored in the tuple `weapon` and remove all extra whitespace on it with `.strip()`". If we forgot the `[0]` here, we'd get an error since a tuple (unlike the string inside the tuple) does not have the `.strip()` method. 
 
 Now onto the `func` method. The main difference is we now have `self.target` and `self.weapon` available for convenient use.
 ```{sidebar}
