@@ -2115,6 +2115,14 @@ class TestUnconnectedCommand(BaseEvenniaCommandTest):
         self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
         del gametime.SERVER_START_TIME
 
+    @override_settings(NEW_ACCOUNT_REGISTRATION_ENABLED=False)
+    def test_disabled_registration(self):
+        self.call(
+            unloggedin.CmdUnconnectedCreate(),
+            "testacct testpass",
+            "Registration is currently disabled.",
+        )
+
 
 # Test syscommands
 
