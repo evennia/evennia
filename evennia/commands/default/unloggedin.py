@@ -174,11 +174,11 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
     def at_pre_cmd(self):
         """Verify that account creation is enabled."""
-        if not settings.REGISTER_ENABLED:
+        if not settings.NEW_ACCOUNT_REGISTRATION_ENABLED:
             # truthy return cancels the command
             self.msg("Registration is currently disabled.")
             return True
-        
+
         return super().at_pre_cmd()
 
     def func(self):
