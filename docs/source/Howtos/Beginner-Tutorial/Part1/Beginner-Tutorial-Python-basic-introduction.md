@@ -18,8 +18,7 @@ superuser powers back:
 
 ## Evennia Hello world
 
-The `py` Command (or `!`, which is an alias) allows you as a superuser to execute raw Python from in-
-game. This is useful for quick testing. From the game's input line, enter the following:
+The `py` Command (or `!`, which is an alias) allows you as a superuser to execute raw Python from in-game. This is useful for quick testing. From the game's input line, enter the following:
 
     > py print("Hello World!")
 
@@ -419,8 +418,7 @@ suitable targets.
 
 Let's wrap up this first Python `py` crash-course by finding someone else to send to.
 
-In Evennia's `contrib/` folder (`evennia/contrib/tutorial_examples/mirror.py`) is a handy little
-object called the `TutorialMirror`. The mirror will echo whatever is being sent to it to
+In Evennia's `contrib/` folder (`evennia/contrib/tutorial_examples/mirror.py`) is a handy little object called the `TutorialMirror`. The mirror will echo whatever is being sent to it to
 the room it is in.
 
 On the game command-line, let's create a mirror:
@@ -440,34 +438,27 @@ A mirror should appear in your location.
     mirror shows your reflection:
     This is User #1
 
-What you are seeing is actually your own avatar in the game, the same thing that is available as `me` in the `py`
-command.
+What you are seeing is actually your own avatar in the game, the same thing that is available as `me` in the `py` command.
 
-What we are aiming for now is the equivalent of `mirror.msg("Mirror Mirror on the wall")`. But the first thing that
-comes to mind will not work:
+What we are aiming for now is the equivalent of `mirror.msg("Mirror Mirror on the wall")`. But the first thing that comes to mind will not work:
 
     > py mirror.msg("Mirror, Mirror on the wall ...")
     NameError: name 'mirror' is not defined.
 
-This is not surprising: Python knows nothing about "mirrors" or locations or anything. The `me` we've been using
-is, as mentioned, just a convenient thing the Evennia devs makes available to the `py` command. They couldn't possibly
-predict that you wanted to talk to mirrors.
+This is not surprising: Python knows nothing about "mirrors" or locations or anything. The `me` we've been using is, as mentioned, just a convenient thing the Evennia devs makes available to the `py` command. They couldn't possibly predict that you wanted to talk to mirrors.
 
-Instead we will need to _search_ for that `mirror` object before we can send to it.
-Make sure you are in the same location as the mirror and try:
+Instead we will need to _search_ for that `mirror` object before we can send to it. Make sure you are in the same location as the mirror and try:
 
     > py me.search("mirror")
     mirror
 
-`me.search("name")` will, by default, search and _return_ an object with the given name found in _the same location_
-as the `me` object is. If it can't find anything you'll see an error.
+`me.search("name")` will, by default, search and _return_ an object with the given name found in _the same location_ as the `me` object is. If it can't find anything you'll see an error.
 
 ```{sidebar} Function returns
 
 Whereas a function like `print` only prints its arguments, it's very common
 for functions/methods to `return` a result of some kind. Think of the function
-as a machine - you put something in and out comes a result you can use. In the case
-of `me.search`, it will perform a database search and spit out the object it finds.
+as a machine - you put something in and out comes a result you can use. In the case of `me.search`, it will perform a database search and spit out the object it finds.
 ```
 
     > py me.search("dummy")
@@ -482,15 +473,12 @@ Now that we know how to find the 'mirror' object, we just need to use that inste
     mirror echoes back to you:
     "Mirror, Mirror on the wall ..."
 
-The mirror is useful for testing  because its `.msg` method just echoes whatever is sent to it back to the room. More common
-would be to talk to a player character, in which case the text you sent would have appeared in their game client.
+The mirror is useful for testing  because its `.msg` method just echoes whatever is sent to it back to the room. More common would be to talk to a player character, in which case the text you sent would have appeared in their game client.
 
 
 ## Multi-line py
 
-So far we have use `py` in single-line mode, using `;` to separate multiple inputs. This is very convenient
-when you want to do some quick testing. But you can also start a full multi-line Python interactive interpreter
-inside Evennia.
+So far we have use `py` in single-line mode, using `;` to separate multiple inputs. This is very convenient when you want to do some quick testing. But you can also start a full multi-line Python interactive interpreter inside Evennia.
 
     > py
     Evennia Interactive Python mode
