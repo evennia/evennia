@@ -66,7 +66,7 @@ class TestExtendedRoom(BaseEvenniaCommandTest):
         self.call(
             extended_room.CmdExtendedRoomLook(), 
             "testdetail", 
-            "You look closely at the {}.\n|{}".format("testdetail", self.DETAIL_DESC)
+            "You look closely at {}.\n|{}".format("testdetail", self.DETAIL_DESC)
         )
         self.call(
             extended_room.CmdExtendedRoomLook(), "nonexistent", "Could not find 'nonexistent'."
