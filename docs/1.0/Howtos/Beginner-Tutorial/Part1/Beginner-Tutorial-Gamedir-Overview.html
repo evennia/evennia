@@ -168,9 +168,9 @@ of Evennia. These manifest in game like the server understanding input like <cod
 <p>A <code class="docutils literal notranslate"><span class="pre">class</span></code> is  template for creating object-instances of a particular type in Python. We will explain classes in more detail in the next lesson.</p>
 </aside>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/commands/command.py">command.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">commands.command</span></code>) - this contain the
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/commands/command.py">command.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">commands.command</span></code>) - this contain the
 base <em>classes</em> for designing new input commands, or override the defaults.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/commands/default_cmdsets.py">default_cmdsets.py</a> (Python path: <code class="docutils literal notranslate"><span class="pre">commands.default_commands</span></code>) -
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/commands/default_cmdsets.py">default_cmdsets.py</a> (Python path: <code class="docutils literal notranslate"><span class="pre">commands.default_commands</span></code>) -
 a cmdset (Command-Set) groups Commands together. Command-sets can be added and removed from objects on the fly,
 meaning a user could have a different set of commands (or versions of commands) available depending on their circumstance
 in the game. In order to add a new command to the game, it’s common to import the new command-class
@@ -254,23 +254,23 @@ to add them.</p></li>
 to the database. This allows a Character to remain in the same place and your updated strength stat to still
 be the same after a server reboot.</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/typeclasses/accounts.py">accounts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.accounts</span></code>) - An
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/accounts.py">accounts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.accounts</span></code>) - An
 <a class="reference internal" href="../../../Components/Accounts.html"><span class="doc std std-doc">Account</span></a> represents the player connecting to the game. It holds information like email,
 password and other out-of-character details.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/typeclasses/channels.py">channels.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.channels</span></code>) -
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/channels.py">channels.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.channels</span></code>) -
 <a class="reference internal" href="../../../Components/Channels.html"><span class="doc std std-doc">Channels</span></a> are used to manage in-game communication between players.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/typeclasses/objects.py">objects.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.objects</span></code>) -
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/objects.py">objects.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.objects</span></code>) -
 <a class="reference internal" href="../../../Components/Objects.html"><span class="doc std std-doc">Objects</span></a> represent all things having a location within the game world.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/typeclasses/characters.py">characters.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.characters</span></code>) -
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/characters.py">characters.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.characters</span></code>) -
 The <a class="reference internal" href="../../../Components/Objects.html#characters"><span class="std std-doc">Character</span></a> is a subclass of Objects, controlled by Accounts - they are the player’s
 avatars in the game world.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/typeclasses/rooms.py">rooms.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.rooms</span></code>) - A
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/rooms.py">rooms.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.rooms</span></code>) - A
 <a class="reference internal" href="../../../Components/Objects.html#rooms"><span class="std std-doc">Room</span></a> is also a subclass of Object; describing discrete locations. While the traditional
 term is ‘room’, such a location can be anything and on any scale that fits your game, from a forest glade,
 an entire planet or an actual dungeon room.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/typeclasses/exits.py">exits.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.exits</span></code>) -
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/exits.py">exits.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.exits</span></code>) -
 <a class="reference internal" href="../../../Components/Objects.html#exits"><span class="std std-doc">Exits</span></a> is another subclass of Object. Exits link one Room to another.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/typeclasses/scripts.py">scripts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.scripts</span></code>) -
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/scripts.py">scripts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.scripts</span></code>) -
 <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a> are ‘out-of-character’ objects. They have no location in-game and can serve as basis for
 anything that needs database persistence, such as combat, weather, or economic systems. They also have the ability to execute code repeatedly, on a timer.</p></li>
 </ul>
@@ -299,10 +299,10 @@ Evennia will copy static data from <code class="docutils literal notranslate"><s
 <p>This folder only contains some example files. It’s meant to hold ‘the rest’ of your game implementation. Many
 people change and re-structure this in various ways to better fit their ideas.</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/world/batch_cmds.ev">batch_cmds.ev</a> - This is an <code class="docutils literal notranslate"><span class="pre">.ev</span></code> file, which is essentially
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/world/batch_cmds.ev">batch_cmds.ev</a> - This is an <code class="docutils literal notranslate"><span class="pre">.ev</span></code> file, which is essentially
 just a list of Evennia commands to execute in sequence. This one is empty and ready to expand on. The
 <a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html"><span class="doc std std-doc">Tutorial World</span></a> was built with such a batch-file.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/world/prototypes.py">prototypes.py</a> - A <a class="reference internal" href="../../../Components/Prototypes.html"><span class="doc std std-doc">prototype</span></a> is a way to easily vary objects without changing their base typeclass. For example, one could use prototypes to  tell that Two goblins, while both of the class ‘Goblin’ (so they follow the same code logic), should have different  equipment, stats and looks.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/world/prototypes.py">prototypes.py</a> - A <a class="reference internal" href="../../../Components/Prototypes.html"><span class="doc std std-doc">prototype</span></a> is a way to easily vary objects without changing their base typeclass. For example, one could use prototypes to  tell that Two goblins, while both of the class ‘Goblin’ (so they follow the same code logic), should have different  equipment, stats and looks.</p></li>
 </ul>
 </section>
 </section>

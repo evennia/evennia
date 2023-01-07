@@ -129,7 +129,7 @@ from evennia.some_module.other_module import SomeClass
 </pre></div>
 </div>
 <p>and so on.</p>
-<p>If you installed Evennia with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>, the library folder will be installed deep inside your Python installation; you are better off <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia">looking at it on github</a>. If you cloned it, you should have an <code class="docutils literal notranslate"><span class="pre">evennia</span></code> folder to look into.</p>
+<p>If you installed Evennia with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>, the library folder will be installed deep inside your Python installation; you are better off <a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia">looking at it on github</a>. If you cloned it, you should have an <code class="docutils literal notranslate"><span class="pre">evennia</span></code> folder to look into.</p>
 <p>You’ll find this being the outermost structure:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia/
     bin/
@@ -205,7 +205,7 @@ from here to <code class="docutils literal notranslate"><span class="pre">mygame
 </pre></div>
 </div>
 <p>We want to figure out just what this DefaultObject offers. Since this is imported directly from <code class="docutils literal notranslate"><span class="pre">evennia</span></code>, we are actually importing from <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code>.</p>
-<p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/__init__.py#L160">Look at Line 160</a> of <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> and you’ll find this line:</p>
+<p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/__init__.py#L160">Look at Line 160</a> of <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> and you’ll find this line:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from .objects.objects import DefaultObject
 </pre></div>
 </div>
