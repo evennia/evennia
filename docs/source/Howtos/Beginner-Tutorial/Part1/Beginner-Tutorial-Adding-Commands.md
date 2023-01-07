@@ -60,8 +60,7 @@ class CmdEcho(Command):
 
 ```
 
-This is the simplest form of command you can imagine. It just gives itself a name, "echo". This is
-what you will use to call this command later.
+This is the simplest form of command you can imagine. It just gives itself a name, "echo". This is what you will use to call this command later.
 
 Next we need to put this in a CmdSet. It will be a one-command CmdSet for now! Change your file as such:
 
@@ -82,7 +81,7 @@ class MyCmdSet(CmdSet):
 
 ```
 
-Our `EchoCmdSet` class must have an `at_cmdset_creation` method, named exactly like this - this is what Evennia will be looking for when setting up the cmdset later, so if you didn't set it up, it will use the parent's version, which is empty. Inside we add the command class to the cmdset by `self.add()`. If you wanted to add more commands to this CmdSet you could just add more lines of `self.add` after this.
+Our `MyCmdSet` class must have an `at_cmdset_creation` method, named exactly like this - this is what Evennia will be looking for when setting up the cmdset later, so if you didn't set it up, it will use the parent's version, which is empty. Inside we add the command class to the cmdset by `self.add()`. If you wanted to add more commands to this CmdSet you could just add more lines of `self.add` after this.
 
 Finally, let's add this command to ourselves so we can try it out. In-game you can experiment with `py` again:
 
@@ -231,8 +230,7 @@ But for now, keep it around, we'll expand it with some more examples.
 
 ### Figuring out who to hit
 
-Let's try something a little more exciting than just echo. Let's make a `hit` command, for punching
-someone in the face! This is how we want it to work:
+Let's try something a little more exciting than just echo. Let's make a `hit` command, for punching someone in the face! This is how we want it to work:
 
     > hit <target>
     You hit <target> with full force!
@@ -241,7 +239,14 @@ Not only that, we want the `<target>` to see
 
     You got hit by <hitter> with full force!
 
-Here, `<hitter>` would be the one using the `hit` command and `<target>` is the one doing the punching.
+Here, `<hitter>` would be the one using the `hit` command and `<target>` is the one doing the punching; so if your name was `Anna`, and you hit someone named `Bob`, this would look like this: 
+
+    > hit bob
+    You hit Bob with full force!
+
+And Bob would see
+
+    You got hit by by Anna with full force!
 
 Still in `mygame/commands/mycommands.py`, add a new class, between `CmdEcho` and `MyCmdSet`.
 
@@ -345,8 +350,7 @@ Next we reload to let Evennia know of these code changes and try it out:
     You hit YourName with full force!
     You got hit by YourName with full force!
 
-Lacking a target, we hit ourselves. If you have one of the dragons still around from the previous lesson
-you could try to hit it (if you dare):
+Lacking a target, we hit ourselves. If you have one of the dragons still around from the previous lesson you could try to hit it (if you dare):
 
     hit smaug
     You hit Smaug with full force!
