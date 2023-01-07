@@ -157,10 +157,13 @@ _githubstart = "github:"
 _apistart = "api:"
 _choose_issue = "github:issue"
 _sourcestart = "src:"
+_discussions = "github:discussions"
 # remaps
 _github_code_root = "https://github.com/evennia/evennia/blob/"
 _github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
 _github_issue_choose = "https://github.com/evennia/evennia/issues/new/choose"
+_github_discussions = "https://github.com/evennia/evennia/discussions"
+
 _ref_regex = re.compile(  # normal reference-links [txt](url)
     r"\[(?P<txt>[\w -\[\]\`\n]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M
 )
@@ -194,11 +197,13 @@ def url_resolver(app, docname, source):
         if url.endswith(_choose_issue):
             # github:issue shortcut
             return _github_issue_choose
+        elif url.endswith(_discussions):
+            return _github_discussions
         elif _githubstart in url:
             # github:develop/... shortcut
             urlpath = url[url.index(_githubstart) + len(_githubstart) :]
-            if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
-                urlpath = "master/" + urlpath
+            if not (urlpath.startswith("develop/") or urlpath.startswith("main/")):
+                urlpath = "main/" + urlpath
             return _github_code_root + urlpath
         elif _sourcestart in url:
             ind = url.index(_sourcestart)
