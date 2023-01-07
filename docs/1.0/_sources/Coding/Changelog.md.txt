@@ -1,22 +1,31 @@
 # Changelog
 
-### Evennia 1.0.2
+## Evennia 1.1.0
+Jan 7, 2023
+
+- Stop new registrations with `settings.NEW_ACCOUNT_REGISTRATION_ENABLED`
+  (inspectorcaracal)
+- Bug fixes.
+
+## Evennia 1.0.2
 Dec 21, 2022
 
-Bug fix release. Fix more issues with discord bot reconnecting. Some doc
+- Bug fix release. Fix more issues with discord bot reconnecting. Some doc
 updates.
 
-### Evennia 1.0.1
+## Evennia 1.0.1
 Dec 7, 2022
 
-Bug fix release. Main issue was reconnect bug for discord bot.
+- Bug fix release. Main issue was reconnect bug for discord bot.
 
-## Evennia 1.0
+## Evennia 1.0.0
 
 2019-2022
 
 _Changed to using `main` branch to follow github standard. Old `master` branch remains
 for now but will not be used anymore, so as to not break installs during transition._
+
+Also changing to using semantic versioning with this version.
 
 Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.10, 3.11.  PostgreSQL 11+.
 
