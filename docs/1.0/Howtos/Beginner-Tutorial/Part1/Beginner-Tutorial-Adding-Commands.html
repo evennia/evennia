@@ -161,8 +161,7 @@ database. They are “just” normal Python classes.</p>
 
 </pre></div>
 </div>
-<p>This is the simplest form of command you can imagine. It just gives itself a name, “echo”. This is
-what you will use to call this command later.</p>
+<p>This is the simplest form of command you can imagine. It just gives itself a name, “echo”. This is what you will use to call this command later.</p>
 <p>Next we need to put this in a CmdSet. It will be a one-command CmdSet for now! Change your file as such:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
@@ -179,7 +178,7 @@ what you will use to call this command later.</p>
 
 </pre></div>
 </div>
-<p>Our <code class="docutils literal notranslate"><span class="pre">EchoCmdSet</span></code> class must have an <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code> method, named exactly like this - this is what Evennia will be looking for when setting up the cmdset later, so if you didn’t set it up, it will use the parent’s version, which is empty. Inside we add the command class to the cmdset by <code class="docutils literal notranslate"><span class="pre">self.add()</span></code>. If you wanted to add more commands to this CmdSet you could just add more lines of <code class="docutils literal notranslate"><span class="pre">self.add</span></code> after this.</p>
+<p>Our <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> class must have an <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code> method, named exactly like this - this is what Evennia will be looking for when setting up the cmdset later, so if you didn’t set it up, it will use the parent’s version, which is empty. Inside we add the command class to the cmdset by <code class="docutils literal notranslate"><span class="pre">self.add()</span></code>. If you wanted to add more commands to this CmdSet you could just add more lines of <code class="docutils literal notranslate"><span class="pre">self.add</span></code> after this.</p>
 <p>Finally, let’s add this command to ourselves so we can try it out. In-game you can experiment with <code class="docutils literal notranslate"><span class="pre">py</span></code> again:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;)
 </pre></div>
@@ -319,8 +318,7 @@ needing to re-add the MyCmdSet again. To remove the cmdset again, you’d do</p>
 </section>
 <section id="figuring-out-who-to-hit">
 <h3><span class="section-number">8.1.2. </span>Figuring out who to hit<a class="headerlink" href="#figuring-out-who-to-hit" title="Permalink to this headline">¶</a></h3>
-<p>Let’s try something a little more exciting than just echo. Let’s make a <code class="docutils literal notranslate"><span class="pre">hit</span></code> command, for punching
-someone in the face! This is how we want it to work:</p>
+<p>Let’s try something a little more exciting than just echo. Let’s make a <code class="docutils literal notranslate"><span class="pre">hit</span></code> command, for punching someone in the face! This is how we want it to work:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit &lt;target&gt;
 You hit &lt;target&gt; with full force!
 </pre></div>
@@ -329,7 +327,15 @@ You hit &lt;target&gt; with full force!
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You got hit by &lt;hitter&gt; with full force!
 </pre></div>
 </div>
-<p>Here, <code class="docutils literal notranslate"><span class="pre">&lt;hitter&gt;</span></code> would be the one using the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command and <code class="docutils literal notranslate"><span class="pre">&lt;target&gt;</span></code> is the one doing the punching.</p>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">&lt;hitter&gt;</span></code> would be the one using the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command and <code class="docutils literal notranslate"><span class="pre">&lt;target&gt;</span></code> is the one doing the punching; so if your name was <code class="docutils literal notranslate"><span class="pre">Anna</span></code>, and you hit someone named <code class="docutils literal notranslate"><span class="pre">Bob</span></code>, this would look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit bob
+You hit Bob with full force!
+</pre></div>
+</div>
+<p>And Bob would see</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You got hit by by Anna with full force!
+</pre></div>
+</div>
 <p>Still in <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code>, add a new class, between <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> and <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
@@ -448,8 +454,7 @@ You hit YourName with full force!
 You got hit by YourName with full force!
 </pre></div>
 </div>
-<p>Lacking a target, we hit ourselves. If you have one of the dragons still around from the previous lesson
-you could try to hit it (if you dare):</p>
+<p>Lacking a target, we hit ourselves. If you have one of the dragons still around from the previous lesson you could try to hit it (if you dare):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>hit smaug
 You hit Smaug with full force!
 </pre></div>
