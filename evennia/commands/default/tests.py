@@ -81,7 +81,9 @@ class TestGeneral(BaseEvenniaCommandTest):
         self.call(general.CmdInventory(), "", "You are not carrying anything.")
 
     def test_pose(self):
+        self.char2.msg = Mock()
         self.call(general.CmdPose(), "looks around", "Char looks around")
+        self.char2.msg.assert_called_with(text=('Char looks around', {'type': 'pose'}), from_obj=self.char1)
 
     def test_nick(self):
         self.call(
