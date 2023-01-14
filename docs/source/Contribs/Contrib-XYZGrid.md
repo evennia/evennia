@@ -49,7 +49,7 @@ Exits: northeast and east
    doing
 
         (cd to evennia/ folder)
-        pip install -r requirements_extra.txt
+        pip install evennia[extra]
         (then go back to your mygame/ folder)
 
    This will install all optional requirements of Evennia.
@@ -1352,7 +1352,7 @@ rooms without editing the map files outside of the game.
 ## Installation
 
 1. If you haven't before, install the extra contrib requirements.
-   You can do so by doing `pip install -r requirements_extra.txt` from the
+   You can do so by doing `pip install evennia[extra]` from the
    `evennia/` folder.
 2. Import and add the `evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet` to the
    `CharacterCmdset` cmdset in `mygame/commands.default_cmds.py`. Reload
