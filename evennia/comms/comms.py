@@ -2,6 +2,8 @@
 Base typeclass for in-game Channels.
 
 """
+import re
+
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
@@ -476,7 +478,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         # the message-pattern allows us to type the channel on its own without
         # needing to use the `channel` command explicitly.
-        msg_nick_pattern = self.channel_msg_nick_pattern.format(alias=alias)
+        msg_nick_pattern = self.channel_msg_nick_pattern.format(alias=re.escape(alias))
         msg_nick_replacement = self.channel_msg_nick_replacement.format(channelname=chan_key)
         user.nicks.add(
             msg_nick_pattern,

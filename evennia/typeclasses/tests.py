@@ -4,11 +4,10 @@ Unit tests for typeclass base system
 """
 
 from django.test import override_settings
-from mock import patch
-from parameterized import parameterized
-
 from evennia.objects.objects import DefaultObject
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
+from mock import patch
+from parameterized import parameterized
 
 # ------------------------------------------------------------
 # Manager tests
@@ -432,3 +431,17 @@ class TestNickHandler(BaseEvenniaTest):
 
         self.assertEqual(expected_replaced, actual_replaced)
         self.char1.nicks.clear()
+
+    def test_nick_with_parenthesis(self):
+        """
+        Test case where input has a special character
+
+        """
+        import re
+
+        from evennia.typeclasses.attributes import initialize_nick_templates
+
+        nick_regex, replacement_string = initialize_nick_templates(
+            re.escape("OOC["), "ooc", pattern_is_regex=True
+        )
+        re.compile(nick_regex, re.I + re.DOTALL + re.U)
