@@ -99,7 +99,7 @@ Choose who to block:
 
 """
 
-from collections import defaultdict
+from collections import defaultdict, deque
 
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
@@ -113,12 +113,100 @@ from .npcs import EvAdventureNPC
 COMBAT_HANDLER_KEY = "evadventure_turnbased_combathandler"
 COMBAT_HANDLER_INTERVAL = 30
 
+COMBAT_ACTION_DICT_DONOTHING = {"key": "nothing", "desc": "Do nothing"}
+
 
 class CombatFailure(RuntimeError):
     """
     Some failure during actions.
 
     """
+
+
+class EvAdventureCombatHandler(DefaultScript):
+    """
+    This script is created when a combat starts. It 'ticks' the combat and tracks
+    all sides of it.
+
+    """
+
+    # how many actions can be queued at a time (per combatant)
+    max_action_queue_size = 1
+
+    # available actions
+    action_classes = {}
+
+    # who is involved in combat, and their action queue,
+    # as {combatant: [actiondict, actiondict,...]}
+    combatants = AttributeProperty(defaultdict(list))
+
+    def add_combatant(self, combatant):
+        """
+        Add a new combatant to the battle.
+
+        Args:
+            combatant (EvAdventureCharacter, EvAdventureNPC): A combatant to add to
+                the combat.
+
+        """
+        if combatant not in self.combatants:
+            self.combatants[combatant] = deque((), self.max_action_queue_size)
+
+    def remove_combatant(self, combatant):
+        """
+        Remove a combatant from the battle. This removes their queue.
+
+        Args:
+            combatant (EvAdventureCharacter, EvAdventureNPC): A combatant to add to
+                the combat.
+
+        """
+        self.combatants.pop(combatant, None)
+
+    def queue_action(self, combatant, action_dict):
+        """
+        Queue an action by adding the new actiondict to the back of the queue. If the
+        queue was alrady at max-size, the front of the queue will be discarded.
+
+        Args:
+            combatant (EvAdventureCharacter, EvAdventureNPC): A combatant queueing the action.
+            action_dict (dict): A dict describing the action class by name along with properties.
+
+        Example:
+            If the queue max-size is 3 and was `[a, b, c]` (where each element is an action-dict),
+            then using this method to add the new action-dict `d` will lead to a queue `[b, c, d]` -
+            that is, adding the new action will discard the one currently at the front of the queue
+            to make room.
+
+        """
+        self.combatants[combatant].append(action_dict)
+
+    def do_next_action(self, combatant):
+        """
+        Perform a combatant's next queued action. Note that there is _always_ an action queued,
+        even if this action is 'do nothing'. We don't pop anything from the queue, instead we keep
+        rotating the queue. When the queue as a length of one, this means just repeating the
+        same action over and over.
+
+        Args:
+            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant performing and action.
+
+        Example:
+            If the combatant's action queue is `[a, b, c]` (where each element is an action-dict),
+            then calling this method will lead to action `a` being performed. After this method, the
+            queue will be rotated to the left and be `[b, c, a]` (so next time, `b` will be used).
+
+        """
+        queue = self.combatants[combatant]
+        action_dict = queue[0] if queue else COMBAT_ACTION_DICT_DONOTHING
+        # rotate the queue to the left so that the first element is now the last one
+        queue.rotate(-1)
+
+        # use the action-dict to select and create an action from an action class
+        action_class = self.action_classes[action_dict["key"]]
+        action = action_class(**action_dict)
+
+        action.execute(combatant)
 
 
 # -----------------------------------------------------------------------------------
@@ -306,8 +394,8 @@ class CombatActionAttack(CombatAction):
 
 class CombatActionStunt(CombatAction):
     """
-    Perform a stunt. A stunt grants an advantage to yours or another player for their next
-    action, or a disadvantage to yours or an enemy's next action.
+    Perform a stunt. A stunt grants an advantage to you or another player for their next
+    action, or a disadvantage to your or an enemy's next action.
 
     Note that while the check happens between the user and a target, another (the 'beneficiary'
     could still gain the effect. This allows for boosting allies or making them better
