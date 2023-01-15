@@ -15,7 +15,6 @@ from collections import defaultdict
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import smart_str
-
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.dbserialize import from_pickle, to_pickle
 from evennia.utils.idmapper.models import SharedMemoryModel
@@ -339,10 +338,12 @@ class Attribute(IAttribute, SharedMemoryModel):
     db_value = PickledObjectField(
         "value",
         null=True,
-        help_text="The data returned when the attribute is accessed. Must be "
-        "written as a Python literal if editing through the admin "
-        "interface. Attribute values which are not Python literals "
-        "cannot be edited through the admin interface.",
+        help_text=(
+            "The data returned when the attribute is accessed. Must be "
+            "written as a Python literal if editing through the admin "
+            "interface. Attribute values which are not Python literals "
+            "cannot be edited through the admin interface."
+        ),
     )
     db_strvalue = models.TextField(
         "strvalue", null=True, blank=True, help_text="String-specific storage for quick look-up"
@@ -365,9 +366,11 @@ class Attribute(IAttribute, SharedMemoryModel):
         db_index=True,
         blank=True,
         null=True,
-        help_text="Which model of object this attribute is attached to (A "
-        "natural key like 'objects.objectdb'). You should not change "
-        "this value unless you know what you are doing.",
+        help_text=(
+            "Which model of object this attribute is attached to (A "
+            "natural key like 'objects.objectdb'). You should not change "
+            "this value unless you know what you are doing."
+        ),
     )
     # subclass of Attribute (None or nick)
     db_attrtype = models.CharField(
@@ -1734,7 +1737,13 @@ class NickHandler(AttributeHandler):
             nick_regex, template, _, _ = nick.value
             regex = self._regex_cache.get(nick_regex)
             if not regex:
-                regex = re.compile(nick_regex, re.I + re.DOTALL + re.U)
+                try:
+                    regex = re.compile(nick_regex, re.I + re.DOTALL + re.U)
+                except re.error:
+                    from evennia.utils import logger
+
+                    logger.log_trace("Probably nick being created with unvalidated regex mapping.")
+                    continue
                 self._regex_cache[nick_regex] = regex
 
             is_match, raw_string = parse_nick_template(raw_string, regex, template)
