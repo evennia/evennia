@@ -440,6 +440,45 @@ class Character(DefaultCharacter):
 
 ```
 
+## Adding additional TraitHandlers
+
+Sometimes, it is easier to top-level classify traits, such as stats, skills, or other categories of traits you want to handle independantly of each other. Here is an example showing an example on the object typeclass, expanding on the first installation example:
+
+```python
+# mygame/typeclasses/objects.py
+
+from evennia import DefaultCharacter
+from evennia.utils import lazy_property
+from evennia.contrib.rpg.traits import TraitHandler
+
+# ...
+
+class Character(DefaultCharacter):
+    ...
+    @lazy_property
+    def traits(self):
+        # this adds the handler as .traits
+        return TraitHandler(self)
+    
+    @lazy_property
+    def stats(self):
+        # this adds the handler as .stats
+        return TraitHandler(self, db_attribute_key="stats")
+
+    @lazy_property
+    def skills(self):
+        # this adds the handler as .skills
+        return TraitHandler(self, db_attribute_key="skills")
+
+
+    def at_object_creation(self):
+        # (or wherever you want)
+        self.stats.add("str", "Strength", trait_type="static", base=10, mod=2)
+        self.traits.add("hp", "Health", trait_type="gauge", min=0, max=100)
+        self.skills.add("hunting", "Hunting Skill", trait_type="counter",
+                        base=10, mod=1, min=0, max=100)
+```
+
 
 ----
 
