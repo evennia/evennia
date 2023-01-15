@@ -92,7 +92,6 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="kn">import</span> <span class="n">smart_str</span>
-
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">from_pickle</span><span class="p">,</span> <span class="n">to_pickle</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span>
@@ -416,10 +415,12 @@
     <span class="n">db_value</span> <span class="o">=</span> <span class="n">PickledObjectField</span><span class="p">(</span>
         <span class="s2">&quot;value&quot;</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;The data returned when the attribute is accessed. Must be &quot;</span>
-        <span class="s2">&quot;written as a Python literal if editing through the admin &quot;</span>
-        <span class="s2">&quot;interface. Attribute values which are not Python literals &quot;</span>
-        <span class="s2">&quot;cannot be edited through the admin interface.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The data returned when the attribute is accessed. Must be &quot;</span>
+            <span class="s2">&quot;written as a Python literal if editing through the admin &quot;</span>
+            <span class="s2">&quot;interface. Attribute values which are not Python literals &quot;</span>
+            <span class="s2">&quot;cannot be edited through the admin interface.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">db_strvalue</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
         <span class="s2">&quot;strvalue&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;String-specific storage for quick look-up&quot;</span>
@@ -442,9 +443,11 @@
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Which model of object this attribute is attached to (A &quot;</span>
-        <span class="s2">&quot;natural key like &#39;objects.objectdb&#39;). You should not change &quot;</span>
-        <span class="s2">&quot;this value unless you know what you are doing.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Which model of object this attribute is attached to (A &quot;</span>
+            <span class="s2">&quot;natural key like &#39;objects.objectdb&#39;). You should not change &quot;</span>
+            <span class="s2">&quot;this value unless you know what you are doing.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="c1"># subclass of Attribute (None or nick)</span>
     <span class="n">db_attrtype</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
@@ -1811,7 +1814,13 @@
             <span class="n">nick_regex</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span>
             <span class="n">regex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regex_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nick_regex</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">regex</span><span class="p">:</span>
-                <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">nick_regex</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">nick_regex</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">re</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Probably nick being created with unvalidated regex mapping.&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_regex_cache</span><span class="p">[</span><span class="n">nick_regex</span><span class="p">]</span> <span class="o">=</span> <span class="n">regex</span>
 
             <span class="n">is_match</span><span class="p">,</span> <span class="n">raw_string</span> <span class="o">=</span> <span class="n">parse_nick_template</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>

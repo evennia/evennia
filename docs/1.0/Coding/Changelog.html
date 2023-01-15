@@ -62,6 +62,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#evennia-1-1-1">Evennia 1.1.1</a></li>
 <li><a class="reference internal" href="#evennia-1-1-0">Evennia 1.1.0</a></li>
 <li><a class="reference internal" href="#evennia-1-0-2">Evennia 1.0.2</a></li>
 <li><a class="reference internal" href="#evennia-1-0-1">Evennia 1.0.1</a></li>
@@ -164,6 +165,15 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<section id="evennia-1-1-1">
+<h2>Evennia 1.1.1<a class="headerlink" href="#evennia-1-1-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Bug fix: Better handler malformed alias-regex given to nickhandler. A
+regex-relevant character in a channel alias could cause server to not restart.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">attr</span></code> keyword to <code class="docutils literal notranslate"><span class="pre">create_channel</span></code>. This allows setting attributes on
+channels at creation, also from <code class="docutils literal notranslate"><span class="pre">DEFAULT_CHANNELS</span></code> definitions.</p></li>
+</ul>
+</section>
 <section id="evennia-1-1-0">
 <h2>Evennia 1.1.0<a class="headerlink" href="#evennia-1-1-0" title="Permalink to this headline">¶</a></h2>
 <p>Jan 7, 2023</p>
