@@ -64,7 +64,7 @@ class SetGender(Command):
     Sets gender on yourself
 
     Usage:
-      @gender male||female||neutral||ambiguous
+      @gender male || female || neutral || ambiguous
 
     """
 
