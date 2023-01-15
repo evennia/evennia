@@ -2,7 +2,7 @@
 
 Contribution by helpme (2022)
 
-A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local mygame repo and Evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc. 
+A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local mygame repo and Evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc.
 
 Once the contrib is set up, integrating remote changes is as simple as entering the following into your game:
 
@@ -14,11 +14,16 @@ The repositories you want to work with, be it only your local mygame repo, only 
 
 ## Dependencies
 
-This package requires the dependency "gitpython", a python library used to interact with git repositories. To install, it's easiest to install Evennia's extra requirements:
+This package requires the dependency "gitpython", a python library used to
+interact with git repositories. To install, it's easiest to install Evennia's
+extra requirements:
 
-- Activate your `virtualenv`
-- `cd` to the root of the Evennia repository. There should be an `requirements_extra.txt` file here.
-- `pip install -r requirements_extra.txt`
+    pip install evennia[extra]
+
+If you installed with `git` you can also do
+
+- `cd` to the root of the Evennia repository.
+- `pip install --upgrade -e .[extra]`
 
 ## Installation
 
@@ -66,6 +71,7 @@ The supported commands are:
 ## Settings Used
 
 The utility uses the existing GAME_DIR and EVENNIA_DIR settings from settings.py. You should not need to alter these if you have a standard directory setup, they ought to exist without any setup required from you.
+
 
 ----
 

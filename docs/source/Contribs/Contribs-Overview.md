@@ -791,7 +791,7 @@ to any callable of your choice.
 
 _Contribution by helpme (2022)_
 
-A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local mygame repo and Evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc. 
+A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local mygame repo and Evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc.
 
 [Read the documentation](./Contrib-Git-Integration.md) - [Browse the Code](evennia.contrib.utils.git_integration)
 
