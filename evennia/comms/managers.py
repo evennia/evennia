@@ -7,7 +7,6 @@ Comm system components.
 
 from django.conf import settings
 from django.db.models import Q
-
 from evennia.server import signals
 from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
 from evennia.utils import logger
@@ -291,7 +290,14 @@ class MsgManager(TypedObjectManager):
     message_search = search_message
 
     def create_message(
-        self, senderobj, message, receivers=None, locks=None, tags=None, header=None, **kwargs
+        self,
+        senderobj,
+        message,
+        receivers=None,
+        locks=None,
+        tags=None,
+        header=None,
+        **kwargs,
     ):
         """
         Create a new communication Msg. Msgs represent a unit of
@@ -308,7 +314,7 @@ class MsgManager(TypedObjectManager):
                 to, or a list of them. If a string, it's an identifier for an external
                 receiver.
             locks (str): Lock definition string.
-            tags (list): A list of tags or tuples `(tag, category)`.
+            tags (list): A list of tags or tuples `(tag[,category[,data]])`.
             header (str): Mime-type or other optional information for the message
 
         Notes:
@@ -446,7 +452,15 @@ class ChannelDBManager(TypedObjectManager):
         return channels
 
     def create_channel(
-        self, key, aliases=None, desc=None, locks=None, keep_log=True, typeclass=None, tags=None
+        self,
+        key,
+        aliases=None,
+        desc=None,
+        locks=None,
+        keep_log=True,
+        typeclass=None,
+        tags=None,
+        attrs=None,
     ):
         """
         Create A communication Channel. A Channel serves as a central hub
@@ -466,7 +480,8 @@ class ChannelDBManager(TypedObjectManager):
             keep_log (bool): Log channel throughput.
             typeclass (str or class): The typeclass of the Channel (not
                 often used).
-            tags (list): A list of tags or tuples `(tag, category)`.
+            tags (list): A list of tags or tuples `(tag[,category[,data]])`.
+            attrs (list): List of attributes on form `(name, value[,category[,lockstring]])`
 
         Returns:
             channel (Channel): A newly created channel.
@@ -483,7 +498,13 @@ class ChannelDBManager(TypedObjectManager):
 
         # store call signature for the signal
         new_channel._createdict = dict(
-            key=key, aliases=aliases, desc=desc, locks=locks, keep_log=keep_log, tags=tags
+            key=key,
+            aliases=aliases,
+            desc=desc,
+            locks=locks,
+            keep_log=keep_log,
+            tags=tags,
+            attrs=attrs,
         )
 
         # this will trigger the save signal which in turn calls the
