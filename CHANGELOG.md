@@ -1,6 +1,6 @@
 # Changelog
 
-## Main
+## Evennia 1.1.1
 
 - Bug fix: Better handler malformed alias-regex given to nickhandler. A
   regex-relevant character in a channel alias could cause server to not restart.
