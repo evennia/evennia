@@ -179,12 +179,14 @@ option.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <ol>
-<li><p>XYZGrid requires the <code class="docutils literal notranslate"><span class="pre">scipy</span></code> library. Easiest is to just install the
-optional/contrib requirements in <code class="docutils literal notranslate"><span class="pre">evennia/requirements_extra.txt</span></code> by
-doing</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> (cd to evennia/ folder)
- pip install -r requirements_extra.txt
- (then go back to your mygame/ folder)
+<li><p>XYZGrid requires the <code class="docutils literal notranslate"><span class="pre">scipy</span></code> library. Easiest is to get the ‘extra’
+dependencies of Evennia with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia[extra]
+</pre></div>
+</div>
+<p>If you use the <code class="docutils literal notranslate"><span class="pre">git</span></code> install, you can also</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(cd to evennia/ folder)
+pip install --upgrade -e .[extra]
 </pre></div>
 </div>
 <p>This will install all optional requirements of Evennia.</p>
@@ -1528,8 +1530,9 @@ rooms without editing the map files outside of the game.</p>
 <h2>Installation<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ol>
 <li><p>If you haven’t before, install the extra contrib requirements.
-You can do so by doing <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements_extra.txt</span></code> from the
-<code class="docutils literal notranslate"><span class="pre">evennia/</span></code> folder.</p></li>
+You can do so by doing <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">evennia[extra]</span></code>, or if you used <code class="docutils literal notranslate"><span class="pre">git</span></code> to
+install, do <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">-e</span> <span class="pre">.[extra]</span></code> from the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> repo
+folder.</p></li>
 <li><p>Import and add the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet</span></code> to the
 <code class="docutils literal notranslate"><span class="pre">CharacterCmdset</span></code> cmdset in <code class="docutils literal notranslate"><span class="pre">mygame/commands.default_cmds.py</span></code>. Reload
 the server. This makes the <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">goto/path</span></code> and modified <code class="docutils literal notranslate"><span class="pre">teleport</span></code>  and

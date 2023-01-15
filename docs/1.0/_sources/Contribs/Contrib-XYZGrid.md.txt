@@ -44,13 +44,15 @@ Exits: northeast and east
 
 ## Installation
 
-1. XYZGrid requires the `scipy` library. Easiest is to just install the
-   optional/contrib requirements in `evennia/requirements_extra.txt` by
-   doing
+1. XYZGrid requires the `scipy` library. Easiest is to get the 'extra'
+   dependencies of Evennia with
 
-        (cd to evennia/ folder)
-        pip install -r requirements_extra.txt
-        (then go back to your mygame/ folder)
+       pip install evennia[extra]
+
+   If you use the `git` install, you can also
+
+       (cd to evennia/ folder)
+       pip install --upgrade -e .[extra]
 
    This will install all optional requirements of Evennia.
 2. Import and [add] the `evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet` to the
@@ -1352,8 +1354,9 @@ rooms without editing the map files outside of the game.
 ## Installation
 
 1. If you haven't before, install the extra contrib requirements.
-   You can do so by doing `pip install -r requirements_extra.txt` from the
-   `evennia/` folder.
+   You can do so by doing `pip install evennia[extra]`, or if you used `git` to
+   install, do `pip install --upgrade -e .[extra]` from the `evennia/` repo
+   folder.
 2. Import and add the `evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet` to the
    `CharacterCmdset` cmdset in `mygame/commands.default_cmds.py`. Reload
    the server. This makes the `map`, `goto/path` and modified `teleport`  and

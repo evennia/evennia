@@ -117,10 +117,12 @@ This package requires the dependency "boto3 >= 1.4.4", the official
 AWS python package. To install, it's easiest to just install Evennia's
 extra requirements;
 
-- Activate your `virtualenv`
-- `cd` to the root of the Evennia repository. There should be an `requirements_extra.txt`
-file here.
-- `pip install -r requirements_extra.txt`
+    pip install evennia[extra]
+
+If you installed Evennia with `git`, you can also
+
+- `cd` to the root of the Evennia repository.
+- `pip install --upgrade -e .[extra]`
 
 ## Configure Evennia
 

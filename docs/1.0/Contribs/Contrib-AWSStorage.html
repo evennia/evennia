@@ -220,11 +220,13 @@ create the bucket and set the ACL yourself before you continue.</p>
 <p>This package requires the dependency “boto3 &gt;= 1.4.4”, the official
 AWS python package. To install, it’s easiest to just install Evennia’s
 extra requirements;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia[extra]
+</pre></div>
+</div>
+<p>If you installed Evennia with <code class="docutils literal notranslate"><span class="pre">git</span></code>, you can also</p>
 <ul class="simple">
-<li><p>Activate your <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the root of the Evennia repository. There should be an <code class="docutils literal notranslate"><span class="pre">requirements_extra.txt</span></code>
-file here.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements_extra.txt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the root of the Evennia repository.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">-e</span> <span class="pre">.[extra]</span></code></p></li>
 </ul>
 </section>
 <section id="configure-evennia">

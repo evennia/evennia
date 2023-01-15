@@ -117,11 +117,16 @@
 <p>The repositories you want to work with, be it only your local mygame repo, only Evennia core, or both, must be git directories for the command to function. If you are only interested in using this to get upstream Evennia changes, only the Evennia repository needs to be a git repository. <a class="reference external" href="https://www.evennia.com/docs/1.0-dev/Coding/Version-Control.html">Get started with version control here.</a></p>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<p>This package requires the dependency “gitpython”, a python library used to interact with git repositories. To install, it’s easiest to install Evennia’s extra requirements:</p>
+<p>This package requires the dependency “gitpython”, a python library used to
+interact with git repositories. To install, it’s easiest to install Evennia’s
+extra requirements:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia[extra]
+</pre></div>
+</div>
+<p>If you installed with <code class="docutils literal notranslate"><span class="pre">git</span></code> you can also do</p>
 <ul class="simple">
-<li><p>Activate your <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the root of the Evennia repository. There should be an <code class="docutils literal notranslate"><span class="pre">requirements_extra.txt</span></code> file here.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements_extra.txt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the root of the Evennia repository.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">-e</span> <span class="pre">.[extra]</span></code></p></li>
 </ul>
 </section>
 <section id="installation">

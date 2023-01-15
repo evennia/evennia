@@ -18,7 +18,7 @@ Prior to 1.0, all Evennia installs were [Git-installs](./Installation-Git.md). T
 - `git pull`
 - `git checkout main` (instead of `master` which was used for `0.9.5`)
 - `pip install --upgrade -e .`
-- If you want the optional extra libs (needed by some contribs), do `pip install -e --upgrade .[extra]`
+- If you want the optional extra libs (needed by some contribs), do `pip install --upgrade -e .[extra]`
 - Test that you can run the `evennia` command.
 
 ### Upgrading your game dir

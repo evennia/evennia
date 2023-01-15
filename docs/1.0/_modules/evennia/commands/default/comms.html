@@ -389,7 +389,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">):</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not allowed to send messages to channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not allowed to send messages to channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># avoid unsafe tokens in message</span>
@@ -2057,6 +2057,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The Discord bot is already running.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">discord_bot</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Starting the Discord bot session.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="s2">&quot;guild&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
