@@ -297,7 +297,7 @@ will be retained.</p></li>
 to, or a list of them. If a string, it’s an identifier for an external
 receiver.</p></li>
 <li><p><strong>locks</strong> (<em>str</em>) – Lock definition string.</p></li>
-<li><p><strong>tags</strong> (<em>list</em>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – A list of tags or tuples <strong>(tag[,category[,data]])</strong>.</p></li>
 <li><p><strong>header</strong> (<em>str</em>) – Mime-type or other optional information for the message</p></li>
 </ul>
 </dd>
@@ -382,7 +382,7 @@ case sensitive) match.</p></li>
 
 <dl class="py method">
 <dt id="evennia.comms.managers.ChannelDBManager.create_channel">
-<code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_log</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/managers.html#ChannelDBManager.create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.managers.ChannelDBManager.create_channel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_log</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attrs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/managers.html#ChannelDBManager.create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.managers.ChannelDBManager.create_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create A communication Channel. A Channel serves as a central hub
 for distributing Msgs to groups of people without specifying the
 receivers explicitly. Instead accounts may ‘connect’ to the channel
@@ -401,7 +401,8 @@ keep_log switch.</p>
 <li><p><strong>keep_log</strong> (<em>bool</em>) – Log channel throughput.</p></li>
 <li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>class</em>) – The typeclass of the Channel (not
 often used).</p></li>
-<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – A list of tags or tuples <strong>(tag[,category[,data]])</strong>.</p></li>
+<li><p><strong>attrs</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of attributes on form <strong>(name, value[,category[,lockstring]])</strong></p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>

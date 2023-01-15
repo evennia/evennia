@@ -84,7 +84,6 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
-
 <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypeclassManager</span><span class="p">,</span> <span class="n">TypedObjectManager</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -368,7 +367,14 @@
     <span class="n">message_search</span> <span class="o">=</span> <span class="n">search_message</span>
 
 <div class="viewcode-block" id="MsgManager.create_message"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.create_message">[docs]</a>    <span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">senderobj</span><span class="p">,</span>
+        <span class="n">message</span><span class="p">,</span>
+        <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new communication Msg. Msgs represent a unit of</span>
@@ -385,7 +391,7 @@
 <span class="sd">                to, or a list of them. If a string, it&#39;s an identifier for an external</span>
 <span class="sd">                receiver.</span>
 <span class="sd">            locks (str): Lock definition string.</span>
-<span class="sd">            tags (list): A list of tags or tuples `(tag, category)`.</span>
+<span class="sd">            tags (list): A list of tags or tuples `(tag[,category[,data]])`.</span>
 <span class="sd">            header (str): Mime-type or other optional information for the message</span>
 
 <span class="sd">        Notes:</span>
@@ -523,7 +529,15 @@
         <span class="k">return</span> <span class="n">channels</span></div>
 
 <div class="viewcode-block" id="ChannelDBManager.create_channel"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.ChannelDBManager.create_channel">[docs]</a>    <span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">,</span>
+        <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create A communication Channel. A Channel serves as a central hub</span>
@@ -543,7 +557,8 @@
 <span class="sd">            keep_log (bool): Log channel throughput.</span>
 <span class="sd">            typeclass (str or class): The typeclass of the Channel (not</span>
 <span class="sd">                often used).</span>
-<span class="sd">            tags (list): A list of tags or tuples `(tag, category)`.</span>
+<span class="sd">            tags (list): A list of tags or tuples `(tag[,category[,data]])`.</span>
+<span class="sd">            attrs (list): List of attributes on form `(name, value[,category[,lockstring]])`</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            channel (Channel): A newly created channel.</span>
@@ -560,7 +575,13 @@
 
         <span class="c1"># store call signature for the signal</span>
         <span class="n">new_channel</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="n">keep_log</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
+            <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span>
+            <span class="n">keep_log</span><span class="o">=</span><span class="n">keep_log</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># this will trigger the save signal which in turn calls the</span>

@@ -66,6 +66,8 @@
 <li><a class="reference internal" href="#viewing-and-joining-channels">Viewing and joining channels</a></li>
 <li><a class="reference internal" href="#talk-on-channels">Talk on channels</a></li>
 <li><a class="reference internal" href="#channel-administration">Channel administration</a><ul>
+<li><a class="reference internal" href="#default-channels-from-settings">Default channels from settings</a></li>
+<li><a class="reference internal" href="#managing-channels-in-game">Managing channels in-game</a></li>
 <li><a class="reference internal" href="#restricting-channel-administration">Restricting channel administration</a></li>
 </ul>
 </li>
@@ -227,7 +229,34 @@ offline). You can step further back by specifying how many lines back to start:<
 </section>
 <section id="channel-administration">
 <h3>Channel administration<a class="headerlink" href="#channel-administration" title="Permalink to this headline">¶</a></h3>
-<p>To create/destroy a new channel you can do</p>
+<p>Evennia can create certain channels when it starts. Channels can also
+be created on-the-fly in-game.</p>
+<section id="default-channels-from-settings">
+<h4>Default channels from settings<a class="headerlink" href="#default-channels-from-settings" title="Permalink to this headline">¶</a></h4>
+<p>You can specify ‘default’ channels you want to auto-create from the Evennia
+settings. New accounts will automatically be subscribed to such ‘default’ channels if
+they have the right permissions. This is a list of one dict per channel (example is the default public channel):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
+<span class="n">DEFAULT_CHANNELS</span> <span class="o">=</span> <span class="p">[</span> 
+	<span class="p">{</span>
+         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Public&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;pub&quot;</span><span class="p">,),</span>
+         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Public discussion&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;locks&quot;</span><span class="p">:</span> <span class="s2">&quot;control:perm(Admin);listen:all();send:all()&quot;</span><span class="p">,</span>
+     <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Each dict is fed as <code class="docutils literal notranslate"><span class="pre">**channeldict</span></code> into the <a class="reference internal" href="../api/evennia.utils.create.html#evennia.utils.create.create_channel" title="evennia.utils.create.create_channel"><span class="xref myst py py-func">create_channel</span></a> function, and thus supports all the same keywords.</p>
+<p>Evennia also has two system-related channels:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CHANNEL_MUDINFO</span></code> is a dict describing the “MudInfo” channel. This is assumed to exist and is a place for Evennia to echo important server information. The idea is that server admins and staff can subscribe to this channel to stay in the loop.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CHANNEL_CONECTINFO</span></code> is not defined by default. It will receive connect/disconnect-messages and could be visible also for regular players. If not given, connection-info will just be logged quietly.</p></li>
+</ul>
+</section>
+<section id="managing-channels-in-game">
+<h4>Managing channels in-game<a class="headerlink" href="#managing-channels-in-game" title="Permalink to this headline">¶</a></h4>
+<p>To create/destroy a new channel on the fly you can do</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/create channelname;alias;alias = description
 channel/destroy channelname
 </pre></div>
@@ -265,6 +294,7 @@ even be able to join the channel and it will not appear in listings for them.</p
 <li><p><code class="docutils literal notranslate"><span class="pre">control</span></code> - this is assigned to you automatically when you create the channel. With
 control over the channel you can edit it, boot users and do other management tasks.</p></li>
 </ul>
+</section>
 <section id="restricting-channel-administration">
 <h4>Restricting channel administration<a class="headerlink" href="#restricting-channel-administration" title="Permalink to this headline">¶</a></h4>
 <p>By default everyone can use the channel command (<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdChannel</span></a>) to create channels and will then control the channels they created (to boot/ban people etc). If you as a developer does not want regular players to do this (perhaps you want only staff to be able to spawn new channels), you can override the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command and change its <code class="docutils literal notranslate"><span class="pre">locks</span></code> property.</p>
