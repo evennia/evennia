@@ -312,7 +312,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         if not channel.access(self.caller, "send"):
-            caller.msg(f"You are not allowed to send messages to channel {channel}")
+            self.caller.msg(f"You are not allowed to send messages to channel {channel}")
             return
 
         # avoid unsafe tokens in message
@@ -1980,6 +1980,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("The Discord bot is already running.")
             else:
                 discord_bot.start()
+                self.msg("Starting the Discord bot session.")
             return
 
         if "guild" in self.switches:

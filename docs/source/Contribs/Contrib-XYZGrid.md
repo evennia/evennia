@@ -1354,9 +1354,14 @@ rooms without editing the map files outside of the game.
 ## Installation
 
 1. If you haven't before, install the extra contrib requirements.
+<<<<<<< HEAD
    You can do so by doing `pip install evennia[extra]`, or if you used `git` to
    install, do `pip install --upgrade -e .[extra]` from the `evennia/` repo
    folder.
+=======
+   You can do so by doing `pip install evennia[extra]` from the
+   `evennia/` folder.
+>>>>>>> f4253e600eac5c55445e8cb599e49d5cf060494a
 2. Import and add the `evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet` to the
    `CharacterCmdset` cmdset in `mygame/commands.default_cmds.py`. Reload
    the server. This makes the `map`, `goto/path` and modified `teleport`  and
