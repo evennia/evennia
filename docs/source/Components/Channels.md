@@ -112,7 +112,37 @@ This again retrieve 20 lines, but starting 30 lines back (so you'll get lines
 
 ### Channel administration
 
-To create/destroy a new channel you can do
+Evennia can create certain channels when it starts. Channels can also 
+be created on-the-fly in-game. 
+
+#### Default channels from settings 
+
+You can specify 'default' channels you want to auto-create from the Evennia 
+settings. New accounts will automatically be subscribed to such 'default' channels if 
+they have the right permissions. This is a list of one dict per channel (example is the default public channel):
+
+```python
+# in mygame/server/conf/settings.py
+DEFAULT_CHANNELS = [ 
+	{
+         "key": "Public",
+         "aliases": ("pub",),
+         "desc": "Public discussion",
+         "locks": "control:perm(Admin);listen:all();send:all()",
+     },
+]
+```
+
+Each dict is fed as `**channeldict` into the [create_channel](evennia.utils.create.create_channel) function, and thus supports all the same keywords.
+
+Evennia also has two system-related channels:
+ 
+- `CHANNEL_MUDINFO` is a dict describing the "MudInfo" channel. This is assumed to exist and is a place for Evennia to echo important server information. The idea is that server admins and staff can subscribe to this channel to stay in the loop. 
+- `CHANNEL_CONECTINFO` is not defined by default. It will receive connect/disconnect-messages and could be visible also for regular players. If not given, connection-info will just be logged quietly.
+
+#### Managing channels in-game
+
+To create/destroy a new channel on the fly you can do
 
     channel/create channelname;alias;alias = description
     channel/destroy channelname

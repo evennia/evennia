@@ -5,7 +5,6 @@ Base typeclass for in-game Channels.
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
-
 from evennia.comms.managers import ChannelManager
 from evennia.comms.models import ChannelDB
 from evennia.typeclasses.models import TypeclassBase
@@ -98,6 +97,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 self.attributes.add("desc", cdict["desc"])
             if cdict.get("tags"):
                 self.tags.batch_add(*cdict["tags"])
+            if cdict.get("attrs"):
+                self.attributes.batch_add(*cdict["attrs"])
 
     def basetype_setup(self):
         self.locks.add("send:all();listen:all();control:perm(Admin)")
