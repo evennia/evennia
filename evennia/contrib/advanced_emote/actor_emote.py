@@ -57,7 +57,6 @@ class CmdI(Command):
             for w, token_tuple in enumerate(msg_tokens_pos):
                 cur_pos = msg_tokens_pos[w][1]
                 cur_token = token_tuple[0]
-                self.caller.msg(cur_pos)
                 capitalize = 1 if sentence_end else 0
                 sentence_end = 1 if cur_token in punctuation else 0
                 # Part of speech corrections for emotes.
