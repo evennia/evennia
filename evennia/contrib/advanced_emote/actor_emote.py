@@ -76,7 +76,7 @@ class CmdI(Command):
                 elif (cur_token == "I"):
                     recent_subjects = [self.caller.key] + recent_subjects
                     cur_token = f"$You({from_key}, {from_gender})" if capitalize else f"$pron(you, {from_gender})"
-                elif cur_pos in ["VB", "VBP"] and recent_subjects[0]:
+                elif cur_pos in ["VB", "VBP"] and recent_subjects[0] and prev_token not in ["to"]:
                     cur_token = f"$conj({cur_token})"
                 elif (cur_token == "It"):
                     recent_subjects = [""] + recent_subjects
