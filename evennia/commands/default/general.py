@@ -357,7 +357,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
     """
 
     key = "inventory"
-    aliases = ["inv", "i"]
+    aliases = ["inv"]
     locks = "cmd:all()"
     arg_regex = r"$"
 

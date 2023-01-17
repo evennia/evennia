@@ -1,5 +1,14 @@
 # Changelog
 
+## Evennia 1.2.0
+
+- Added the `advanced_emote` contrib, which allows regular players to write emotes 
+  in actor-stance using the `I`, `My`, and `Mine` commands.
+- Added `$prot()` inlinefunc for pronoun parsing in actor-stance strings using
+  `msg_contents` with specific targets ("and nods to $prot(pronoun, target)").
+- Added optional dependency nltk, only necessary if you use advanced_emote, and
+  the convenience script get_nltk_data.py for downloading its dataset.
+
 ## Evennia 1.1.1
 
 - Bug fix: Better handler malformed alias-regex given to nickhandler. A

@@ -1438,6 +1438,41 @@ def funcparser_callable_pronoun_capitalize(
     )
 
 
+def funcparser_callable_pronoun_target(
+    *args, caller=None, receiver=None, mapping=None, capitalize=False, **kwargs
+):
+    """
+    Usage: $prot(word, target, [options]) - $pron, with a target other than the caller.
+
+    """
+    if args[1] and mapping:
+        # this would mean a $prot(word, target) form
+        try:
+            target = mapping.get(args[1])
+        except KeyError:
+            pass
+
+    if not (target and receiver):
+        raise ParsingError("No target or receiver supplied to $prot target.")
+
+    return funcparser_callable_pronoun(
+        *args, caller=target, receiver=receiver, capitalize=capitalize, **kwargs
+    )
+
+
+def funcparser_callable_pronoun_target_capitalize(
+    *args, caller=None, receiver=None, mapping=None, capitalize=True, **kwargs
+):
+    """
+    Usage: $Prot(word, target, [options]) - $Pron, with a target other than the caller.
+
+    """
+    return funcparser_callable_pronoun_target(
+        *args, caller=None, receiver=receiver, mapping=mapping, capitalize=capitalize, **kwargs
+    )
+
+
+
 # these are made available as callables by adding 'evennia.utils.funcparser' as
 # a callable-path when initializing the FuncParser.
 
@@ -1490,4 +1525,6 @@ ACTOR_STANCE_CALLABLES = {
     "conj": funcparser_callable_conjugate,
     "pron": funcparser_callable_pronoun,
     "Pron": funcparser_callable_pronoun_capitalize,
+    "prot": funcparser_callable_pronoun_target,
+    "Prot": funcparser_callable_pronoun_target_capitalize,
 }
