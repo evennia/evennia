@@ -1,4 +1,4 @@
-from evennia import DefaultObject, DefaultRoom
+from evennia import DefaultCharacter, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.search import (
@@ -98,26 +98,26 @@ class TestSearch(EvenniaTest):
         self.assertEqual(len(found), 0, errors)
 
     def test_search_objects_by_typeclass_room(self):
-        """Test searching for objects of typeclass Room"""
-        existingRooms = search_typeclass("typeclasses.rooms.Room")
+        """Test searching for objects of typeclass Room."""
+        existing_rooms = search_typeclass("evennia.DefaultRoom")
         newest_room, errors = DefaultRoom.create("somewhere")
-        found = search_typeclass("typeclasses.rooms.Room")
-        self.assertEqual(len(found), 1+len(existingRooms), errors)
-        self.assertIn(newestRoom, found, errors)
-        self.assertNotIn(newestRoom, existingRooms, errors)
+        found = search_typeclass("evennia.DefaultRoom")
+        self.assertEqual(len(found), 1+len(existing_rooms), errors)
+        self.assertIn(newest_room, found, errors)
+        self.assertNotIn(newest_room, existing_rooms, errors)
         for room in found:
-            self.assertIsInstance(room, typeclasses.rooms.Room, errors)
-        self.assertIn(existingRooms, found, errors)      
+            self.assertIsInstance(room, evennia.DefaultRoom, errors)
+        self.assertIn(existing_rooms, found, errors)      
         
     def test_search_objects_by_typeclass_character(self):
         """Test searching for objects of typeclass Character"""
-        existingCharacters = search_typeclass("typeclasses.characters.Characters")
+        existing_characters = search_typeclass("evennia.DefaultCharacter")
         newest_character, errors = DefaultCharacter.create("someone")
-        found = search_typeclass("typeclasses.characters.Character")
-        self.assertEqual(len(found), 1+len(existingCharacters), errors)
-        self.assertIn(newestCharacter, found, errors)
-        self.assertNotIn(newestCharacter, existingCharacters, errors)
+        found = search_typeclass("evennia.DefaultCharacter")
+        self.assertEqual(len(found), 1+len(existing_characters), errors)
+        self.assertIn(newest_character, found, errors)
+        self.assertNotIn(newest_character, existing_characters, errors)
         for character in found:
-            self.assertIsInstance(character, typeclasses.characters.Character, errors)
-        self.assertIn(existingCharacters, found, errors)
+            self.assertIsInstance(character, evennia.DefaultCharacter, errors)
+        self.assertIn(existing_characters, found, errors)
         
