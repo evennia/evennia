@@ -43,6 +43,7 @@ class CmdI(Command):
             punctuation = [".", ";", "!", "?"]
             nospace_joins = [","] + punctuation
             noun_hints = ["a", "her", "his", "their", "the"]
+            prepositions = ["aboard", "about", "above", "across", "after", "against", "along", "alongside", "amid", "among", "around", "at", "before", "behind", "below", "beneath", "beside", "besides", "between", "beyond", "but", "by", "concerning", "considering", "despite", "down", "during", "except", "excepting", "for", "from", "in", "inside", "into", "like", "near", "of", "off", "on", "onto", "opposite", "out", "outside", "over", "past", "regarding", "round", "save", "since", "through", "throughout", "till", "to", "toward", "under", "underneath", "until", "unto", "up", "upon", "via", "with", "within", "without"]
             from_key = self.caller.key
             from_gender = self.caller.attributes.get("gender", default="plural")
             unparsed_msg = f"{self.cmdstring.capitalize()}{self.args}"
@@ -67,6 +68,8 @@ class CmdI(Command):
                 # Handle pronouns and conjugation
                 if (cur_token == "me"):
                     cur_token = f"$pron(You, {from_gender})" if capitalize else f"$pron(you, {from_gender})"
+                elif (cur_token in prepositions):
+                    cur_pos = "IN"
                 elif (cur_token == "my"):
                     cur_token = f"$pron(Your, {from_gender})" if capitalize else f"$pron(your, {from_gender})"
                 elif (cur_token == "mine"):
