@@ -621,7 +621,7 @@ class DiscordBot(Bot):
         # connect
         global _SESSIONS
         if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSION_HANDLER as _SESSIONS
         # these will be made available as properties on the protocol factory
         configdict = {"uid": self.dbid}
         _SESSIONS.start_bot_session(self.factory_path, configdict)
