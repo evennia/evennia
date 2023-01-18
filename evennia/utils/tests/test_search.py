@@ -1,4 +1,9 @@
-from evennia import DefaultCharacter, DefaultObject, DefaultRoom
+from evennia import (
+    create_object,
+    DefaultCharacter,
+    DefaultObject,
+    DefaultRoom
+)
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.search import (
@@ -100,7 +105,7 @@ class TestSearch(EvenniaTest):
     def test_search_objects_by_typeclass_room(self):
         """Test searching for objects of typeclass Room."""
         existing_rooms = search_typeclass("evennia.DefaultRoom")
-        newest_room = evennia.create_object(DefaultRoom, key="somewhere")
+        newest_room = create_object(DefaultRoom, key="somewhere")
         found = search_typeclass("evennia.DefaultRoom")
         self.assertEqual(len(found), 1+len(existing_rooms), "not all rooms found")
         self.assertIn(newest_room, found, "newly created room not found")
@@ -111,7 +116,7 @@ class TestSearch(EvenniaTest):
     def test_search_objects_by_typeclass_character(self):
         """Test searching for objects of typeclass Character"""
         existing_characters = search_typeclass("evennia.DefaultCharacter")
-        newest_character = evennia.create_object(DefaultCharacter, key="someone")
+        newest_character = create_object(DefaultCharacter, key="someone")
         found = search_typeclass("evennia.DefaultCharacter")
         self.assertEqual(len(found), 1+len(existing_characters), "not all characters found")
         self.assertIn(newest_character, found, "newly created character not found")
