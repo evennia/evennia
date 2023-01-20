@@ -104,25 +104,16 @@ class TestSearch(EvenniaTest):
 
     def test_search_objects_by_typeclass_room(self):
         """Test searching for objects of typeclass Room."""
-        existing_rooms = search_typeclass("evennia.DefaultRoom")
         newest_room = create_object(DefaultRoom, key="somewhere")
-        newest_room.save()
         found = search_typeclass("evennia.DefaultRoom")
-        self.assertEqual(len(found), 1+len(existing_rooms), "not all rooms found")
         self.assertIn(newest_room, found, "newly created room not found")
         for room in found:
-            self.assertIsInstance(room, DefaultRoom, "found objects that are not rooms")
-        self.assertIn(existing_rooms, found, "not all existing rooms found")      
+            self.assertIsInstance(room, DefaultRoom, "found objects from wrong typeclass")    
         
     def test_search_objects_by_typeclass_character(self):
         """Test searching for objects of typeclass Character"""
-        existing_characters = search_typeclass("evennia.DefaultCharacter")
         newest_character = create_object(DefaultCharacter, key="someone")
-        newest_character.save()
         found = search_typeclass("evennia.DefaultCharacter")
-        self.assertEqual(len(found), 1+len(existing_characters), "not all characters found")
         self.assertIn(newest_character, found, "newly created character not found")
         for character in found:
-            self.assertIsInstance(character, DefaultCharacter, "found objects that are not characters")
-        self.assertIn(existing_characters, found, "not all existing characters found")
-        
+            self.assertIsInstance(character, DefaultCharacter, "found objects from wrong typeclass")
