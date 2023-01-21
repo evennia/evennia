@@ -48,7 +48,6 @@ import inspect
 import random
 
 from django.conf import settings
-
 from evennia.utils import logger, search
 from evennia.utils.utils import (
     callables_from_module,
@@ -706,7 +705,7 @@ def funcparser_callable_an(*args, **kwargs):
     if not args:
         return ""
     item = str(args[0])
-    if item and item[0] in "aeiouy":
+    if item and item[0] in "aeiouyAEIOUY":
         return f"an {item}"
     return f"a {item}"
 
