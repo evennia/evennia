@@ -146,6 +146,21 @@ class EvAdventureConsumable(EvAdventureObject):
             self.delete()
 
 
+class EvAdventureThrowable(EvAdventureWeapon, EvAdventureConsumable):
+    """
+    Something you can throw at an enemy to harm them once, like a knife or exploding potion/grenade.
+
+    Note: In Knave, ranged attacks are done with WIS (representing the stillness of your mind?)
+
+    """
+
+    obj_type = (ObjType.THROWABLE, ObjType.WEAPON, ObjType.CONSUMABLE)
+
+    attack_type = AttributeProperty(Ability.WIS)
+    defense_type = AttributeProperty(Ability.DEX)
+    damage_roll = AttributeProperty("1d6")
+
+
 class WeaponEmptyHand:
     """
     This is a dummy-class loaded when you wield no weapons. We won't create any db-object for it.
