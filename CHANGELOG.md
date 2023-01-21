@@ -1,5 +1,10 @@
 # Changelog
 
+## Main
+
+- Bug fix: $an() inlinefunc didn't understand to use 'an' words starting with a
+  capital vowel
+
 ## Evennia 1.1.1
 
 - Bug fix: Better handler malformed alias-regex given to nickhandler. A
