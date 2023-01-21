@@ -67,6 +67,7 @@ class ObjType(Enum):
     HELMET = "helmet"
     CONSUMABLE = "consumable"
     GEAR = "gear"
+    THROWABLE = "throwable"
     MAGIC = "magic"
     QUEST = "quest"
     TREASURE = "treasure"
