@@ -33,7 +33,7 @@ FROM python:3.11-alpine
 LABEL maintainer="https://www.evennia.com"
 
 # install compilation environment
-RUN apk update && apk add bash gcc jpeg-dev musl-dev procps \
+RUN apk update && apk add --no-cache bash gcc jpeg-dev musl-dev procps \
 libffi-dev openssl-dev zlib-dev gettext \
 g++ gfortran python3-dev cmake openblas-dev
 
@@ -43,10 +43,10 @@ COPY ./setup.py /usr/src/evennia/
 COPY ./bin /usr/src/evennia/bin/
 
 # install dependencies
-RUN pip install --upgrade pip && \
-    pip install cryptography pyasn1 service_identity && \
-    pip install -e /usr/src/evennia --trusted-host pypi.python.org && \
-    pip install evennia[extra]
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir cryptography pyasn1 service_identity && \
+    pip install --no-cache-dir -e /usr/src/evennia --trusted-host pypi.python.org && \
+    pip install --no-cache-dir evennia[extra]
 
 # add the project source; this should always be done after all
 # expensive operations have completed to avoid prematurely
@@ -66,7 +66,7 @@ VOLUME /usr/src/game
 WORKDIR /usr/src/game
 
 # set bash prompt and pythonpath to evennia lib
-ENV PS1 "evennia|docker \w $ " 
+ENV PS1 "evennia|docker \w $ "
 ENV PYTHONPATH /usr/src/evennia
 
 # create and switch to a non-root user for runtime security
