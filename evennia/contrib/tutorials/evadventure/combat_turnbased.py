@@ -102,6 +102,7 @@ Choose who to block:
 import random
 from collections import defaultdict, deque
 
+from evennia import Command, create_script
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils import dbserialize, delay, evmenu, evtable, logger
@@ -222,6 +223,10 @@ class CombatActionDoNothing(CombatAction):
 
     Note:
         Refer to as 'nothing'
+
+    action_dict = {
+            "key": "nothing"
+        }
     """
 
 
@@ -229,9 +234,9 @@ class CombatActionAttack(CombatAction):
     """
     A regular attack, using a wielded weapon.
 
-    action-dict ('attack')
-        {
-        "defender": Character/Object
+    action-dict = {
+            "key": "attack",
+            "target": Character/Object
         }
 
     Note:
@@ -242,17 +247,17 @@ class CombatActionAttack(CombatAction):
     def execute(self):
         attacker = self.combatant
         weapon = attacker.weapon
-        defender = self.defender
+        target = self.target
 
         is_hit, quality, txt = rules.dice.opposed_saving_throw(
             attacker,
-            defender,
+            target,
             attack_type=weapon.attack_type,
             defense_type=attacker.weapon.defense_type,
-            advantage=self.has_advantage(attacker, defender),
-            disadvantage=self.has_disadvantage(attacker, defender),
+            advantage=self.has_advantage(attacker, target),
+            disadvantage=self.has_disadvantage(attacker, target),
         )
-        self.msg(f"$You() $conj(attack) $You({defender.key}) with {weapon.key}: {txt}")
+        self.msg(f"$You() $conj(attack) $You({target.key}) with {weapon.key}: {txt}")
         if is_hit:
             # enemy hit, calculate damage
             weapon_dmg_roll = attacker.weapon.damage_roll
@@ -262,14 +267,14 @@ class CombatActionAttack(CombatAction):
             if quality is Ability.CRITICAL_SUCCESS:
                 dmg += rules.dice.roll(weapon_dmg_roll)
                 message = (
-                    f" $You() |ycritically|n $conj(hit) $You({defender.key}) for |r{dmg}|n damage!"
+                    f" $You() |ycritically|n $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
                 )
             else:
-                message = f" $You() $conj(hit) $You({defender.key}) for |r{dmg}|n damage!"
+                message = f" $You() $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
             self.msg(message)
 
             # call hook
-            defender.at_damage(dmg, attacker=attacker)
+            target.at_damage(dmg, attacker=attacker)
 
             # note that we mustn't remove anyone from combat yet, because this is
             # happening simultaneously. So checking of the final hp
@@ -277,7 +282,7 @@ class CombatActionAttack(CombatAction):
 
         else:
             # a miss
-            message = f" $You() $conj(miss) $You({defender.key})."
+            message = f" $You() $conj(miss) $You({target.key})."
             if quality is Ability.CRITICAL_FAILURE:
                 attacker.weapon.quality -= 1
                 message += ".. it's a |rcritical miss!|n, damaging the weapon."
@@ -291,14 +296,14 @@ class CombatActionStunt(CombatAction):
     against an ally, or granting an advantage against them, we need to make a check first. We don't
     do a check if giving an advantage to an ally or ourselves.
 
-    action_dict:
-        {
-        "recipient": Character/NPC,
-        "target": Character/NPC,
-        "advantage": bool,  # if False, it's a disadvantage
-        "stunt_type": Ability,  # what ability (like STR, DEX etc) to use to perform this stunt.
-        "defense_type": Ability, # what ability to use to defend against (negative) effects of this
-            stunt.
+    action_dict = {
+           "key": "stunt",
+           "recipient": Character/NPC,
+           "target": Character/NPC,
+           "advantage": bool,  # if False, it's a disadvantage
+           "stunt_type": Ability,  # what ability (like STR, DEX etc) to use to perform this stunt.
+           "defense_type": Ability, # what ability to use to defend against (negative) effects of this
+               stunt.
         }
 
     Note:
@@ -357,10 +362,11 @@ class CombatActionUseItem(CombatAction):
     scrolls and potions, not swords and shields). If this is some sort of weapon or spell rune,
     we refer to the item to determine what to use for attack/defense rolls.
 
-    action_dict: }
-        "item": Object
-        "target": Character/NPC/Object
-    }
+    action_dict = {
+            "key": "use",
+            "item": Object
+            "target": Character/NPC/Object
+        }
 
     Note:
         Refer to as 'use'
@@ -397,8 +403,9 @@ class CombatActionWield(CombatAction):
     wielding, if any.
 
     action_dict = {
-        "item": Object
-    }
+            "key": "wield",
+            "item": Object
+        }
 
     Note:
         Refer to as 'wield'.
@@ -412,6 +419,11 @@ class CombatActionWield(CombatAction):
 class CombatActionFlee(CombatAction):
     """
     Start (or continue) fleeing/disengaging from combat.
+
+    action_dict = {
+           "key": "flee",
+           "item": Object
+        }
 
     Note:
         Refer to as 'flee'.
@@ -431,6 +443,7 @@ class CombatActionHinder(CombatAction):
     Hinder a fleeing opponent from fleeing/disengaging from combat.
 
     action_dict = {
+        "key": "hinder",
         "target": Character/NPC
     }
 
@@ -706,6 +719,85 @@ class EvAdventureCombatHandler(DefaultScript):
 
 
 # Command-based combat commands
+
+
+class CmdAttack(Command):
+    """
+    Start or join a fight.
+
+    Usage:
+      attack <target>
+      hit <target>
+
+    """
+
+    key = "attack"
+    aliases = ("hit",)
+
+    def parse(self):
+        self.args = self.args.strip()
+
+    def func(self):
+        if not self.args:
+            self.msg("What are you attacking?")
+            reuturn
+
+        target = self.search(self.args)
+        if not target:
+            return
+
+        location = self.caller.location
+        combathandler = location.scripts.get("combathandler")
+        if not combathandler:
+            combathandler = create_script(
+                EvAdventureCombatHandler,
+                key="combathandler",
+                obj=location,
+                interval=2,
+                persistent=True,
+            )
+        # this can be done over and over
+        combathandler.add_combatant(self)
+        combathandler.queue_action(self.caller, {"target": target})
+
+
+class CmdStunt(Command):
+    """
+    Perform a combat stunt, that boosts an ally against a target, or
+    foils an enemy, giving them disadvantage against an ally.
+
+    Usage:
+        boost <recipient> vs <target>
+        foil <recipient> vs <target>
+        boost vs <target>    (same as boost me vs target)
+        foil <target>        (same as foil <target> vs me)
+
+    Example:
+        boost me vs Goblin
+        boost vs Goblin
+        foil Goblin vs me
+        foil Goblin
+        boost Wizard vs Goblin
+
+    """
+
+    key = "stunt"
+    aliases = (
+        "boost",
+        "foil",
+    )
+
+    def parse(self):
+        if " vs " in self.args:
+            self.recipient, self.target = (part.strip() for part in self.args.split(" vs "))
+        elif self.cmdname == "foil":
+            self.recipient, self.target = "me", self.args.strip()
+        else:
+            self.recipient, self.target = self.args.strip(), "me"
+
+    def func(self):
+
+        pass
 
 
 # -----------------------------------------------------------------------------------
