@@ -323,6 +323,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
             reason (str or None): Close reason as sent by the WebSocket peer.
 
         """
+        self.sessionhandler.disconnect(self)
         if self.nextHeartbeatCall:
             self.nextHeartbeatCall.cancel()
             self.nextHeartbeatCall = None
@@ -424,7 +425,6 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
             reason (str or None): Motivation for the disconnection.
 
         """
-        self.sessionhandler.disconnect(self)
         self.sendClose(self.CLOSE_STATUS_CODE_NORMAL, reason)
 
     def identify(self, *args, **kwargs):
