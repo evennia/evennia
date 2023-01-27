@@ -310,24 +310,102 @@ In the following sections we'll discuss each component in turn.
 
 ### The Zcoord
 
-Each XYMap on the grid has a Z-coordinate which usually can be treated just as the
-name of the map. This is a string that must be unique across the entire grid.
-It is added as the key 'zcoord' to `XYMAP_DATA`.
-
-Actual 3D movement is usually impractical in a text-based game, so all movements
-and pathfinding etc happens within each XYMap (up/down is 'faked' within the XY
-plane). Even for the most hardcore of sci-fi space game, moving on a 2D plane
-usually makes it much easier for players than to attempt to have them visualize
-actual 3D movements.
-
-If you really wanted an actual 3D coordinate system, you could theoretically
-make all maps the same size and name them `0`, `1`, `2` etc. But even then, you
-could not freely move up/down between every point (a special Transitional Node
-is required as outlined below). Also pathfinding will only work per-XYMap.
+Each XYMap on the grid has a Z-coordinate which usually can be treated just as
+the name of the map. The Z-coordinate can be either a string or an integer, and must
+be unique across the entire grid. It is added as the key 'zcoord' to `XYMAP_DATA`.
 
 Most users will want to just treat each map as a location, and name the
 "Z-coordinate" things like `Dungeon of Doom`, `The ice queen's palace` or `City
-of Blackhaven`.
+of Blackhaven`. But you could also name it -1, 0, 1, 2, 3 if you wanted.
+
+Pathfinding happens only within each XYMap (up/down is normally 'faked' by moving
+sideways to a new area of the XY plane).
+
+#### A true 3D map
+
+Even for the most hardcore of sci-fi space game, consider sticking to 2D
+movement. It's hard enough for players to visualize a 3D volume with graphics.
+In text it's even harder.
+
+That said, if you want to set up a true X, Y, Z 3D coordinate system (where
+you can move up/down from every point), you can do that too.
+
+This contrib provides an example command `commands.CmdFlyAndDive` that provides the player
+with the ability to use `fly` and `dive` to move straight up/down between Z
+coordinates. Just add it (or its cmdset `commands.XYZGridFlyDiveCmdSet`) to your
+Character cmdset and reload to try it out.
+
+For the fly/dive to work you need to build your grid as a 'stack' of XY-grid maps
+and name them by their Z-coordinate as an integer. The fly/dive actions will
+only work if there is actually a matching room directly above/below.
+
+> Note that since pathfinding only works within each XYmap, the player will not
+> be able to include fly/dive in their autowalking - this is always a manual
+> action.
+
+As an example, let's assume coordinate `(1, 1, -3)`
+is the bottom of a deep well leading up to the surface (at level 0)
+
+```
+LEVEL_MINUS_3 = r"""
++ 0 1
+
+1   #
+    |
+0 #-#
+
++ 0 1
+"""
+
+LEVEL_MINUS_2 = r"""
++ 0 1
+
+1   #
+
+0
+
++ 0 1
+"""
+
+LEVEL_MINUS_1 = r"""
++ 0 1
+
+1   #
+
+0
+
++ 0 1
+"""
+
+LEVEL_0 = r"""
++ 0 1
+
+1 #-#
+  |x|
+0 #-#
+
++ 0 1
+"""
+
+XYMAP_DATA_LIST = [
+    {"zcoord": -3, "map": LEVEL_MINUS_3},
+    {"zcoord": -2, "map": LEVEL_MINUS_2},
+    {"zcoord": -1, "map": LEVEL_MINUS_1},
+    {"zcoord": 0, "map": LEVEL_0},
+]
+```
+
+In this example, if we arrive to the bottom of the well at `(1, 1, -3)` we
+`fly` straight up three levels until we arrive at `(1, 1, 0)`, at the corner
+of some sort of open field.
+
+We can dive down from `(1, 1, 0)`. In the default implementation you must `dive` 3 times
+to get to the bottom. If you wanted you could tweak the command so you
+automatically fall to the bottom and take damage etc.
+
+We can't fly/dive up/down from any other XY positions because there are no open rooms at the
+adjacent Z coordinates.
+
 
 ### Map String
 

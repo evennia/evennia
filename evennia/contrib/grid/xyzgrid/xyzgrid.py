@@ -201,7 +201,7 @@ class XYZGrid(DefaultScript):
         """
         for mapdata in mapdatas:
             zcoord = mapdata.get("zcoord")
-            if not zcoord:
+            if not zcoord is not None:
                 raise RuntimeError("XYZGrid.add_map data must contain 'zcoord'.")
 
             self.db.map_data[zcoord] = mapdata
