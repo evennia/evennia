@@ -9,7 +9,6 @@ used as stand-alone XYZ-coordinate-aware rooms.
 
 from django.conf import settings
 from django.db.models import Q
-
 from evennia.objects.manager import ObjectManager
 from evennia.objects.objects import DefaultExit, DefaultRoom
 
@@ -290,11 +289,13 @@ class XYZRoom(DefaultRoom):
             if x is None or y is None or z is None:
                 # don't cache unfinished coordinate (probably tags have not finished saving)
                 return tuple(
-                    int(coord) if coord is not None and coord.isdigit() else coord
+                    int(coord) if coord is not None and coord.lstrip("-").isdigit() else coord
                     for coord in (x, y, z)
                 )
             # cache result, convert to correct types (tags are strings)
-            self._xyz = tuple(int(coord) if coord.isdigit() else coord for coord in (x, y, z))
+            self._xyz = tuple(
+                int(coord) if coord.lstrip("-").isdigit() else coord for coord in (x, y, z)
+            )
 
         return self._xyz
 

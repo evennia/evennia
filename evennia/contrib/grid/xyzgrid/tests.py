@@ -7,11 +7,10 @@ from random import randint
 from unittest import mock
 
 from django.test import TestCase
+from evennia.utils.test_resources import BaseEvenniaCommandTest, BaseEvenniaTest
 from parameterized import parameterized
 
-from evennia.utils.test_resources import BaseEvenniaTest
-
-from . import xymap, xymap_legend, xyzgrid, xyzroom
+from . import commands, xymap, xymap_legend, xyzgrid, xyzroom
 
 MAP1 = """
 
@@ -341,6 +340,54 @@ MAP12b = r"""
 
 """
 
+MAP13a = r"""
+
++ 0 1
+
+1 #-#
+  |
+0 #
+
++ 0 1
+
+"""
+
+MAP13b = r"""
+
++ 0 1
+
+1   #
+
+0
+
++ 0 1
+
+"""
+
+MAP13c = r"""
+
++ 0 1
+
+1   #
+
+0
+
++ 0 1
+
+"""
+
+MAP13d = r"""
+
++ 0 1
+
+1 #-#
+  |
+0 #
+
++ 0 1
+
+"""
+
 
 class _MapTest(BaseEvenniaTest):
     """
@@ -517,8 +564,10 @@ class TestMap2(_MapTest):
             ((1, 0), "#-#-#-#\n|   |  \n#-#-#--\n  |    \n  @-#-#"),
             (
                 (2, 2),
-                "    #---#\n    |   |\n#   |   #\n|   |    \n#-#-@-#--\n|   "
-                "|    \n#-#-#---#\n  |     |\n  #-#-#-#",
+                (
+                    "    #---#\n    |   |\n#   |   #\n|   |    \n#-#-@-#--\n|   "
+                    "|    \n#-#-#---#\n  |     |\n  #-#-#-#"
+                ),
             ),
             ((4, 5), "#-#-@  \n|   |  \n#---#  \n|   |  \n|   #-#"),
             ((5, 2), "--#  \n  |  \n  #-#\n    |\n#---@\n     \n--#-#\n  |  \n#-#  "),
@@ -577,8 +626,10 @@ class TestMap2(_MapTest):
                 (2, 2),
                 2,
                 None,
-                "    #      \n    |      \n    #---#  \n    |      \n    |      \n    |      \n"
-                "#-#-@-#---#\n    |      \n  #-#---#  ",
+                (
+                    "    #      \n    |      \n    #---#  \n    |      \n    |      \n    |      \n"
+                    "#-#-@-#---#\n    |      \n  #-#---#  "
+                ),
             ),
             ((2, 2), 2, (5, 5), "  |  \n  |  \n#-@-#\n  |  \n#-#--"),  # limit display size
             ((2, 2), 4, (3, 3), " | \n-@-\n | "),
@@ -648,8 +699,10 @@ class TestMap3(_MapTest):
                 (2, 2),
                 2,
                 None,
-                "      #  \n     /   \n  # /    \n  |/     \n  #     #\n  |\\   / \n  # @-#  \n  "
-                "|/   \\ \n  #     #\n / \\     \n#   #    ",
+                (
+                    "      #  \n     /   \n  # /    \n  |/     \n  #     #\n  |\\   / \n  # @-#  \n"
+                    "  |/   \\ \n  #     #\n / \\     \n#   #    "
+                ),
             ),
             ((5, 2), 2, None, "  #  \n  |  \n  #  \n / \\ \n#   @\n \\ / \n  #  \n  |  \n  #  "),
         ]
@@ -879,8 +932,7 @@ class TestMap8(_MapTest):
                 (2, 2),
                 1,
                 None,
-                "  #-o  \n    |  \n#   o  \n|   |  \no-o-@-#\n    "
-                "|  \n    o  \n    |  \n    #  ",
+                "  #-o  \n    |  \n#   o  \n|   |  \no-o-@-#\n    |  \n    o  \n    |  \n    #  ",
             ),
         ]
     )
@@ -901,24 +953,24 @@ class TestMap8(_MapTest):
                 (3, 2),
                 1,
                 None,
-                "  #-o  \n    |  \n#   o  \n|   |  \no-o-@..\n    |  \n    o  "
-                "\n    |  \n    #  ",
+                "  #-o  \n    |  \n#   o  \n|   |  \no-o-@..\n    |  \n    o  \n    |  \n    #  ",
             ),
             (
                 (2, 2),
                 (5, 3),
                 1,
                 None,
-                "  #-o  \n    |  \n#   o  \n|   |  \no-o-@-#\n    .  \n    .  "
-                "\n    .  \n    ...",
+                "  #-o  \n    |  \n#   o  \n|   |  \no-o-@-#\n    .  \n    .  \n    .  \n    ...",
             ),
             (
                 (2, 2),
                 (5, 3),
                 2,
                 None,
-                "#-#-o      \n|  \\|      \n#-o-o-#   .\n|   |\\    .\no-o-@-"
-                "#   .\n    .    . \n    .   .  \n    .  .   \n#---...    ",
+                (
+                    "#-#-o      \n|  \\|      \n#-o-o-#   .\n|   |\\    .\no-o-@-"
+                    "#   .\n    .    . \n    .   .  \n    .  .   \n#---...    "
+                ),
             ),
             ((5, 3), (2, 2), 2, (13, 7), "    o-o\n    | |\n    o-@\n      .\n.     .\n.    . "),
             (
@@ -926,8 +978,10 @@ class TestMap8(_MapTest):
                 (1, 1),
                 2,
                 None,
-                "        o-o\n        | |\n        o-@\n.         .\n.....     "
-                ".\n    .    . \n    .   .  \n    .  .   \n#---...    ",
+                (
+                    "        o-o\n        | |\n        o-@\n.         .\n.....     "
+                    ".\n    .    . \n    .   .  \n    .  .   \n#---...    "
+                ),
             ),
         ]
     )
@@ -1501,3 +1555,49 @@ class TestCallbacks(BaseEvenniaTest):
         self.assertEqual(
             mock_exit_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()]
         )
+
+
+class TestFlyDiveCommand(BaseEvenniaCommandTest):
+    def setUp(self):
+        super().setUp()
+
+        self.grid, err = xyzgrid.XYZGrid.create("testgrid")
+
+        self.map_data13a = {"map": MAP13a, "zcoord": -2}
+        self.map_data13b = {"map": MAP13b, "zcoord": -1}
+        self.map_data13c = {"map": MAP13c, "zcoord": 0}
+        self.map_data13d = {"map": MAP13d, "zcoord": 1}  # not contiguous
+
+        self.grid.add_maps(self.map_data13a, self.map_data13b, self.map_data13c, self.map_data13d)
+        self.grid.spawn()
+
+    def tearDown(self):
+        self.grid.delete()
+
+    @parameterized.expand(
+        [
+            # startcoord, cmd, succeed?, endcoord
+            ((0, 0, -2), "fly", False, (0, 0, -2)),
+            ((1, 1, -2), "fly", True, (1, 1, -1)),
+            ((1, 1, -1), "fly", True, (1, 1, 0)),
+            ((1, 1, 0), "fly", True, (1, 1, 1)),
+            ((1, 1, 1), "fly", False, (1, 1, 1)),
+            ((0, 0, 1), "fly", False, (0, 0, 1)),
+            ((0, 0, 1), "dive", False, (0, 0, 1)),
+            ((1, 1, 1), "dive", True, (1, 1, 0)),
+            ((1, 1, 0), "dive", True, (1, 1, -1)),
+            ((1, 1, -1), "dive", True, (1, 1, -2)),
+            ((1, 1, -2), "dive", False, (1, 1, -2)),
+        ]
+    )
+    def test_fly_and_dive(self, startcoord, cmdstring, success, endcoord):
+        """
+        Test flying up and down and seeing if it works at different locations.
+
+        """
+        start_room = xyzgrid.XYZRoom.objects.get_xyz(xyz=startcoord)
+        self.char1.move_to(start_room)
+
+        self.call(commands.CmdFlyAndDive(), "", "You" if success else "Can't", cmdstring=cmdstring)
+
+        self.assertEqual(self.char1.location.xyz, endcoord)

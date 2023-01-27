@@ -10,7 +10,6 @@ the commands with XYZ-aware equivalents.
 from collections import namedtuple
 
 from django.conf import settings
-
 from evennia import CmdSet, InterruptCommand, default_cmds
 from evennia.commands.default import building
 from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
@@ -507,3 +506,82 @@ class XYZGridCmdSet(CmdSet):
         self.add(CmdXYZOpen())
         self.add(CmdGoto())
         self.add(CmdMap())
+
+
+# Optional fly/dive commands to move between maps (enable
+# full 3D-grid movements)
+
+
+class CmdFlyAndDive(COMMAND_DEFAULT_CLASS):
+    """
+    Fly or Dive up and down.
+
+    Usage:
+      fly
+      dive
+
+    Will fly up one room or dive down one room at your current position. If
+    there is no room above/below you, your movement will fail.
+
+    """
+
+    key = "fly or dive"
+    aliases = ("fly", "dive")
+
+    def func(self):
+        caller = self.caller
+
+        action = self.cmdname
+
+        try:
+            xyz_start = caller.location.xyz
+        except AttributeError:
+            caller.msg(f"You cannot {action} here.")
+            return
+        try:
+            zcoord = int(xyz_start[2])
+        except ValueError:
+            caller.msg(f"You cannot {action} here.")
+            return
+
+        if action == "fly":
+            diff = 1
+            direction = "upwards"
+            from_direction = "below"
+            error_message = "Can't fly here - you'd hit your head."
+        elif action == "dive":
+            diff = -1
+            direction = "downwards"
+            from_direction = "above"
+            error_message = "Can't dive here - you'd just fall flat on the ground."
+        else:
+            caller.msg("You must decide if you want to |wfly|n up or |wdive|n down.")
+            return
+
+        target_coord = (str(xyz_start[0]), str(xyz_start[1]), zcoord + diff)
+        try:
+            target = XYZRoom.objects.get_xyz(xyz=(target_coord))
+        except XYZRoom.DoesNotExist:
+            # no available room above/below to fly/dive to
+            caller.msg(error_message)
+            return
+        # action succeeds, we have a target. One could picture being able to
+        # lock certain rooms from flight/dive, here we allow it as long as there
+        # is a suitable room above/below.
+        caller.location.msg_contents(f"$You() {action} {direction}.", from_obj=caller)
+        caller.move_to(target, quiet=True)
+        target.msg_contents(
+            f"$You() {action} from {from_direction}.", from_obj=caller, exclude=[caller]
+        )
+
+
+class XYZGridFlyDiveCmdSet(CmdSet):
+    """
+    Optional cmdset if you want the fly/dive commands to move in a 3D environment.
+
+    """
+
+    key = "xyzgrid_flydive_cmdset"
+
+    def at_cmdset_creation(self):
+        self.add(CmdFlyAndDive())
