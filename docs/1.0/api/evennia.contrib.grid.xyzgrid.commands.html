@@ -402,6 +402,78 @@ self.add().</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.commands.</code><code class="sig-name descname">CmdFlyAndDive</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdFlyAndDive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Fly or Dive up and down.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>fly
+dive</p>
+</dd>
+</dl>
+<p>Will fly up one room or dive down one room at your current position. If
+there is no room above/below you, your movement will fail.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.key">
+<code class="sig-name descname">key</code><em class="property"> = 'fly or dive'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['dive', 'fly']</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdFlyAndDive.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'dive fly', 'category': 'general', 'key': 'fly or dive', 'no_prefix': ' dive fly', 'tags': '', 'text': '\n    Fly or Dive up and down.\n\n    Usage:\n      fly\n      dive\n\n    Will fly up one room or dive down one room at your current position. If\n    there is no room above/below you, your movement will fail.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.commands.</code><code class="sig-name descname">XYZGridFlyDiveCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#XYZGridFlyDiveCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Optional cmdset if you want the fly/dive commands to move in a 3D environment.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'xyzgrid_flydive_cmdset'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#XYZGridFlyDiveCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

@@ -698,7 +698,7 @@
         <span class="c1"># connect</span>
         <span class="k">global</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSION_HANDLER</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
         <span class="c1"># these will be made available as properties on the protocol factory</span>
         <span class="n">configdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">}</span>
         <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>

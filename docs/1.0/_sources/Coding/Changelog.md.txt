@@ -1,11 +1,20 @@
 # Changelog
 
+## Main
+
+- Feature: Add `fly/dive` commands to `XYZGrid` contrib to showcase treating its
+  Z-axis as a full 3D grid. Also fixed minor bug in `XYZGrid` contrib when using
+  a Z axis named using an integer rather than a string.
+- Bug fix: `$an()` inlinefunc didn't understand to use 'an' words starting with a
+  capital vowel
+- Bug fix: Another case of the 'duplicate Discord bot connections' bug
+
 ## Evennia 1.1.1
 
 - Bug fix: Better handler malformed alias-regex given to nickhandler. A
   regex-relevant character in a channel alias could cause server to not restart.
-- Add `attr` keyword to `create_channel`. This allows setting attributes on
-  channels at creation, also from `DEFAULT_CHANNELS` definitions.
+- Feature: Add `attr` keyword to `create_channel`. This allows setting
+  attributes on channels at creation, also from `DEFAULT_CHANNELS` definitions.
 
 ## Evennia 1.1.0
 Jan 7, 2023

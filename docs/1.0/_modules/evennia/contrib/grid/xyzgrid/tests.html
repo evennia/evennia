@@ -84,11 +84,10 @@
 <span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
 
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="n">BaseEvenniaTest</span>
 <span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
-
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">xymap</span><span class="p">,</span> <span class="n">xymap_legend</span><span class="p">,</span> <span class="n">xyzgrid</span><span class="p">,</span> <span class="n">xyzroom</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">commands</span><span class="p">,</span> <span class="n">xymap</span><span class="p">,</span> <span class="n">xymap_legend</span><span class="p">,</span> <span class="n">xyzgrid</span><span class="p">,</span> <span class="n">xyzroom</span>
 
 <span class="n">MAP1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 
@@ -418,6 +417,54 @@
 
 <span class="s2">&quot;&quot;&quot;</span>
 
+<span class="n">MAP13a</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1 #-#</span>
+<span class="s2">  |</span>
+<span class="s2">0 #</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">MAP13b</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1   #</span>
+
+<span class="s2">0</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">MAP13c</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1   #</span>
+
+<span class="s2">0</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">MAP13d</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1 #-#</span>
+<span class="s2">  |</span>
+<span class="s2">0 #</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
 
 <span class="k">class</span> <span class="nc">_MapTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -594,8 +641,10 @@
             <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;#-#-#-#</span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">#-#-#--</span><span class="se">\n</span><span class="s2">  |    </span><span class="se">\n</span><span class="s2">  @-#-#&quot;</span><span class="p">),</span>
             <span class="p">(</span>
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-                <span class="s2">&quot;    #---#</span><span class="se">\n</span><span class="s2">    |   |</span><span class="se">\n</span><span class="s2">#   |   #</span><span class="se">\n</span><span class="s2">|   |    </span><span class="se">\n</span><span class="s2">#-#-@-#--</span><span class="se">\n</span><span class="s2">|   &quot;</span>
-                <span class="s2">&quot;|    </span><span class="se">\n</span><span class="s2">#-#-#---#</span><span class="se">\n</span><span class="s2">  |     |</span><span class="se">\n</span><span class="s2">  #-#-#-#&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;    #---#</span><span class="se">\n</span><span class="s2">    |   |</span><span class="se">\n</span><span class="s2">#   |   #</span><span class="se">\n</span><span class="s2">|   |    </span><span class="se">\n</span><span class="s2">#-#-@-#--</span><span class="se">\n</span><span class="s2">|   &quot;</span>
+                    <span class="s2">&quot;|    </span><span class="se">\n</span><span class="s2">#-#-#---#</span><span class="se">\n</span><span class="s2">  |     |</span><span class="se">\n</span><span class="s2">  #-#-#-#&quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">&quot;#-#-@  </span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">#---#  </span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">|   #-#&quot;</span><span class="p">),</span>
             <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;--#  </span><span class="se">\n</span><span class="s2">  |  </span><span class="se">\n</span><span class="s2">  #-#</span><span class="se">\n</span><span class="s2">    |</span><span class="se">\n</span><span class="s2">#---@</span><span class="se">\n</span><span class="s2">     </span><span class="se">\n</span><span class="s2">--#-#</span><span class="se">\n</span><span class="s2">  |  </span><span class="se">\n</span><span class="s2">#-#  &quot;</span><span class="p">),</span>
@@ -654,8 +703,10 @@
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
                 <span class="mi">2</span><span class="p">,</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;    #      </span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">    #---#  </span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;#-#-@-#---#</span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">  #-#---#  &quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;    #      </span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">    #---#  </span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;#-#-@-#---#</span><span class="se">\n</span><span class="s2">    |      </span><span class="se">\n</span><span class="s2">  #-#---#  &quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">&quot;  |  </span><span class="se">\n</span><span class="s2">  |  </span><span class="se">\n</span><span class="s2">#-@-#</span><span class="se">\n</span><span class="s2">  |  </span><span class="se">\n</span><span class="s2">#-#--&quot;</span><span class="p">),</span>  <span class="c1"># limit display size</span>
             <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot; | </span><span class="se">\n</span><span class="s2">-@-</span><span class="se">\n</span><span class="s2"> | &quot;</span><span class="p">),</span>
@@ -725,8 +776,10 @@
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
                 <span class="mi">2</span><span class="p">,</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;      #  </span><span class="se">\n</span><span class="s2">     /   </span><span class="se">\n</span><span class="s2">  # /    </span><span class="se">\n</span><span class="s2">  |/     </span><span class="se">\n</span><span class="s2">  #     #</span><span class="se">\n</span><span class="s2">  |</span><span class="se">\\</span><span class="s2">   / </span><span class="se">\n</span><span class="s2">  # @-#  </span><span class="se">\n</span><span class="s2">  &quot;</span>
-                <span class="s2">&quot;|/   </span><span class="se">\\</span><span class="s2"> </span><span class="se">\n</span><span class="s2">  #     #</span><span class="se">\n</span><span class="s2"> / </span><span class="se">\\</span><span class="s2">     </span><span class="se">\n</span><span class="s2">#   #    &quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;      #  </span><span class="se">\n</span><span class="s2">     /   </span><span class="se">\n</span><span class="s2">  # /    </span><span class="se">\n</span><span class="s2">  |/     </span><span class="se">\n</span><span class="s2">  #     #</span><span class="se">\n</span><span class="s2">  |</span><span class="se">\\</span><span class="s2">   / </span><span class="se">\n</span><span class="s2">  # @-#  </span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  |/   </span><span class="se">\\</span><span class="s2"> </span><span class="se">\n</span><span class="s2">  #     #</span><span class="se">\n</span><span class="s2"> / </span><span class="se">\\</span><span class="s2">     </span><span class="se">\n</span><span class="s2">#   #    &quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;  #  </span><span class="se">\n</span><span class="s2">  |  </span><span class="se">\n</span><span class="s2">  #  </span><span class="se">\n</span><span class="s2"> / </span><span class="se">\\</span><span class="s2"> </span><span class="se">\n</span><span class="s2">#   @</span><span class="se">\n</span><span class="s2"> </span><span class="se">\\</span><span class="s2"> / </span><span class="se">\n</span><span class="s2">  #  </span><span class="se">\n</span><span class="s2">  |  </span><span class="se">\n</span><span class="s2">  #  &quot;</span><span class="p">),</span>
         <span class="p">]</span>
@@ -956,8 +1009,7 @@
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
                 <span class="mi">1</span><span class="p">,</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;  #-o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">#   o  </span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">o-o-@-#</span><span class="se">\n</span><span class="s2">    &quot;</span>
-                <span class="s2">&quot;|  </span><span class="se">\n</span><span class="s2">    o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">    #  &quot;</span><span class="p">,</span>
+                <span class="s2">&quot;  #-o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">#   o  </span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">o-o-@-#</span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">    o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">    #  &quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
@@ -978,24 +1030,24 @@
                 <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
                 <span class="mi">1</span><span class="p">,</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;  #-o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">#   o  </span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">o-o-@..</span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">    o  &quot;</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">    #  &quot;</span><span class="p">,</span>
+                <span class="s2">&quot;  #-o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">#   o  </span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">o-o-@..</span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">    o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">    #  &quot;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
                 <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
                 <span class="mi">1</span><span class="p">,</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;  #-o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">#   o  </span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">o-o-@-#</span><span class="se">\n</span><span class="s2">    .  </span><span class="se">\n</span><span class="s2">    .  &quot;</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    .  </span><span class="se">\n</span><span class="s2">    ...&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;  #-o  </span><span class="se">\n</span><span class="s2">    |  </span><span class="se">\n</span><span class="s2">#   o  </span><span class="se">\n</span><span class="s2">|   |  </span><span class="se">\n</span><span class="s2">o-o-@-#</span><span class="se">\n</span><span class="s2">    .  </span><span class="se">\n</span><span class="s2">    .  </span><span class="se">\n</span><span class="s2">    .  </span><span class="se">\n</span><span class="s2">    ...&quot;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
                 <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
                 <span class="mi">2</span><span class="p">,</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;#-#-o      </span><span class="se">\n</span><span class="s2">|  </span><span class="se">\\</span><span class="s2">|      </span><span class="se">\n</span><span class="s2">#-o-o-#   .</span><span class="se">\n</span><span class="s2">|   |</span><span class="se">\\</span><span class="s2">    .</span><span class="se">\n</span><span class="s2">o-o-@-&quot;</span>
-                <span class="s2">&quot;#   .</span><span class="se">\n</span><span class="s2">    .    . </span><span class="se">\n</span><span class="s2">    .   .  </span><span class="se">\n</span><span class="s2">    .  .   </span><span class="se">\n</span><span class="s2">#---...    &quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;#-#-o      </span><span class="se">\n</span><span class="s2">|  </span><span class="se">\\</span><span class="s2">|      </span><span class="se">\n</span><span class="s2">#-o-o-#   .</span><span class="se">\n</span><span class="s2">|   |</span><span class="se">\\</span><span class="s2">    .</span><span class="se">\n</span><span class="s2">o-o-@-&quot;</span>
+                    <span class="s2">&quot;#   .</span><span class="se">\n</span><span class="s2">    .    . </span><span class="se">\n</span><span class="s2">    .   .  </span><span class="se">\n</span><span class="s2">    .  .   </span><span class="se">\n</span><span class="s2">#---...    &quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s2">&quot;    o-o</span><span class="se">\n</span><span class="s2">    | |</span><span class="se">\n</span><span class="s2">    o-@</span><span class="se">\n</span><span class="s2">      .</span><span class="se">\n</span><span class="s2">.     .</span><span class="se">\n</span><span class="s2">.    . &quot;</span><span class="p">),</span>
             <span class="p">(</span>
@@ -1003,8 +1055,10 @@
                 <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                 <span class="mi">2</span><span class="p">,</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;        o-o</span><span class="se">\n</span><span class="s2">        | |</span><span class="se">\n</span><span class="s2">        o-@</span><span class="se">\n</span><span class="s2">.         .</span><span class="se">\n</span><span class="s2">.....     &quot;</span>
-                <span class="s2">&quot;.</span><span class="se">\n</span><span class="s2">    .    . </span><span class="se">\n</span><span class="s2">    .   .  </span><span class="se">\n</span><span class="s2">    .  .   </span><span class="se">\n</span><span class="s2">#---...    &quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;        o-o</span><span class="se">\n</span><span class="s2">        | |</span><span class="se">\n</span><span class="s2">        o-@</span><span class="se">\n</span><span class="s2">.         .</span><span class="se">\n</span><span class="s2">.....     &quot;</span>
+                    <span class="s2">&quot;.</span><span class="se">\n</span><span class="s2">    .    . </span><span class="se">\n</span><span class="s2">    .   .  </span><span class="se">\n</span><span class="s2">    .  .   </span><span class="se">\n</span><span class="s2">#---...    &quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
@@ -1578,6 +1632,52 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">mock_exit_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">,</span> <span class="p">[</span><span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">(),</span> <span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">()]</span>
         <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestFlyDiveCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand">[docs]</a><span class="k">class</span> <span class="nc">TestFlyDiveCommand</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestFlyDiveCommand.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">XYZGrid</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;testgrid&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_data13a</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAP13a</span><span class="p">,</span> <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_data13b</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAP13b</span><span class="p">,</span> <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_data13c</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAP13c</span><span class="p">,</span> <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_data13d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAP13d</span><span class="p">,</span> <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>  <span class="c1"># not contiguous</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">add_maps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data13a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data13b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data13c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data13d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">spawn</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestFlyDiveCommand.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="c1"># startcoord, cmd, succeed?, endcoord</span>
+            <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;fly&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;fly&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;fly&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;fly&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;fly&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;fly&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;dive&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;dive&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;dive&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;dive&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)),</span>
+            <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;dive&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_fly_and_dive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startcoord</span><span class="p">,</span> <span class="n">cmdstring</span><span class="p">,</span> <span class="n">success</span><span class="p">,</span> <span class="n">endcoord</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test flying up and down and seeing if it works at different locations.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_room</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">startcoord</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">start_room</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdFlyAndDive</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You&quot;</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="s2">&quot;Can&#39;t&quot;</span><span class="p">,</span> <span class="n">cmdstring</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">endcoord</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

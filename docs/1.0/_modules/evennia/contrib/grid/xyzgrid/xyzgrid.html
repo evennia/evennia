@@ -278,7 +278,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">mapdata</span> <span class="ow">in</span> <span class="n">mapdatas</span><span class="p">:</span>
             <span class="n">zcoord</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;zcoord&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">zcoord</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">zcoord</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;XYZGrid.add_map data must contain &#39;zcoord&#39;.&quot;</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">[</span><span class="n">zcoord</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapdata</span></div>

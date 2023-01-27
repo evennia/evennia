@@ -87,7 +87,6 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">InterruptCommand</span><span class="p">,</span> <span class="n">default_cmds</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">building</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> <span class="n">get_xyzgrid</span>
@@ -584,6 +583,85 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdXYZOpen</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGoto</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdMap</span><span class="p">())</span></div></div>
+
+
+<span class="c1"># Optional fly/dive commands to move between maps (enable</span>
+<span class="c1"># full 3D-grid movements)</span>
+
+
+<div class="viewcode-block" id="CmdFlyAndDive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive">[docs]</a><span class="k">class</span> <span class="nc">CmdFlyAndDive</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fly or Dive up and down.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      fly</span>
+<span class="sd">      dive</span>
+
+<span class="sd">    Will fly up one room or dive down one room at your current position. If</span>
+<span class="sd">    there is no room above/below you, your movement will fail.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;fly or dive&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;fly&quot;</span><span class="p">,</span> <span class="s2">&quot;dive&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CmdFlyAndDive.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xyz_start</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">xyz</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You cannot </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> here.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">zcoord</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">xyz_start</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You cannot </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> here.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;fly&quot;</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="s2">&quot;upwards&quot;</span>
+            <span class="n">from_direction</span> <span class="o">=</span> <span class="s2">&quot;below&quot;</span>
+            <span class="n">error_message</span> <span class="o">=</span> <span class="s2">&quot;Can&#39;t fly here - you&#39;d hit your head.&quot;</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;dive&quot;</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="s2">&quot;downwards&quot;</span>
+            <span class="n">from_direction</span> <span class="o">=</span> <span class="s2">&quot;above&quot;</span>
+            <span class="n">error_message</span> <span class="o">=</span> <span class="s2">&quot;Can&#39;t dive here - you&#39;d just fall flat on the ground.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must decide if you want to |wfly|n up or |wdive|n down.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">target_coord</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xyz_start</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">xyz_start</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">zcoord</span> <span class="o">+</span> <span class="n">diff</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="n">target_coord</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="c1"># no available room above/below to fly/dive to</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># action succeeds, we have a target. One could picture being able to</span>
+        <span class="c1"># lock certain rooms from flight/dive, here we allow it as long as there</span>
+        <span class="c1"># is a suitable room above/below.</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">direction</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;$You() </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">from_direction</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="n">caller</span><span class="p">]</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="XYZGridFlyDiveCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet">[docs]</a><span class="k">class</span> <span class="nc">XYZGridFlyDiveCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Optional cmdset if you want the fly/dive commands to move in a 3D environment.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;xyzgrid_flydive_cmdset&quot;</span>
+
+<div class="viewcode-block" id="XYZGridFlyDiveCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdFlyAndDive</span><span class="p">())</span></div></div>
 </pre></div>
 
           </div>

@@ -67,7 +67,10 @@
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#first-example-usage">First example usage</a></li>
 <li><a class="reference internal" href="#defining-an-xymap">Defining an XYMap</a><ul>
-<li><a class="reference internal" href="#the-zcoord">The Zcoord</a></li>
+<li><a class="reference internal" href="#the-zcoord">The Zcoord</a><ul>
+<li><a class="reference internal" href="#a-true-3d-map">A true 3D map</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#map-string">Map String</a></li>
 <li><a class="reference internal" href="#map-legend">Map legend</a><ul>
 <li><a class="reference internal" href="#important-node-link-properties">Important node/link properties</a></li>
@@ -432,20 +435,91 @@ how pathfinding should work etc.</p></li>
 <p>In the following sections we’ll discuss each component in turn.</p>
 <section id="the-zcoord">
 <h3>The Zcoord<a class="headerlink" href="#the-zcoord" title="Permalink to this headline">¶</a></h3>
-<p>Each XYMap on the grid has a Z-coordinate which usually can be treated just as the
-name of the map. This is a string that must be unique across the entire grid.
-It is added as the key ‘zcoord’ to <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code>.</p>
-<p>Actual 3D movement is usually impractical in a text-based game, so all movements
-and pathfinding etc happens within each XYMap (up/down is ‘faked’ within the XY
-plane). Even for the most hardcore of sci-fi space game, moving on a 2D plane
-usually makes it much easier for players than to attempt to have them visualize
-actual 3D movements.</p>
-<p>If you really wanted an actual 3D coordinate system, you could theoretically
-make all maps the same size and name them <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code> etc. But even then, you
-could not freely move up/down between every point (a special Transitional Node
-is required as outlined below). Also pathfinding will only work per-XYMap.</p>
+<p>Each XYMap on the grid has a Z-coordinate which usually can be treated just as
+the name of the map. The Z-coordinate can be either a string or an integer, and must
+be unique across the entire grid. It is added as the key ‘zcoord’ to <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code>.</p>
 <p>Most users will want to just treat each map as a location, and name the
-“Z-coordinate” things like <code class="docutils literal notranslate"><span class="pre">Dungeon</span> <span class="pre">of</span> <span class="pre">Doom</span></code>, <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">ice</span> <span class="pre">queen's</span> <span class="pre">palace</span></code> or <code class="docutils literal notranslate"><span class="pre">City</span> <span class="pre">of</span> <span class="pre">Blackhaven</span></code>.</p>
+“Z-coordinate” things like <code class="docutils literal notranslate"><span class="pre">Dungeon</span> <span class="pre">of</span> <span class="pre">Doom</span></code>, <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">ice</span> <span class="pre">queen's</span> <span class="pre">palace</span></code> or <code class="docutils literal notranslate"><span class="pre">City</span> <span class="pre">of</span> <span class="pre">Blackhaven</span></code>. But you could also name it -1, 0, 1, 2, 3 if you wanted.</p>
+<p>Pathfinding happens only within each XYMap (up/down is normally ‘faked’ by moving
+sideways to a new area of the XY plane).</p>
+<section id="a-true-3d-map">
+<h4>A true 3D map<a class="headerlink" href="#a-true-3d-map" title="Permalink to this headline">¶</a></h4>
+<p>Even for the most hardcore of sci-fi space game, consider sticking to 2D
+movement. It’s hard enough for players to visualize a 3D volume with graphics.
+In text it’s even harder.</p>
+<p>That said, if you want to set up a true X, Y, Z 3D coordinate system (where
+you can move up/down from every point), you can do that too.</p>
+<p>This contrib provides an example command <code class="docutils literal notranslate"><span class="pre">commands.CmdFlyAndDive</span></code> that provides the player
+with the ability to use <code class="docutils literal notranslate"><span class="pre">fly</span></code> and <code class="docutils literal notranslate"><span class="pre">dive</span></code> to move straight up/down between Z
+coordinates. Just add it (or its cmdset <code class="docutils literal notranslate"><span class="pre">commands.XYZGridFlyDiveCmdSet</span></code>) to your
+Character cmdset and reload to try it out.</p>
+<p>For the fly/dive to work you need to build your grid as a ‘stack’ of XY-grid maps
+and name them by their Z-coordinate as an integer. The fly/dive actions will
+only work if there is actually a matching room directly above/below.</p>
+<blockquote>
+<div><p>Note that since pathfinding only works within each XYmap, the player will not
+be able to include fly/dive in their autowalking - this is always a manual
+action.</p>
+</div></blockquote>
+<p>As an example, let’s assume coordinate <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">-3)</span></code>
+is the bottom of a deep well leading up to the surface (at level 0)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LEVEL_MINUS_3</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1   #</span>
+<span class="s2">    |</span>
+<span class="s2">0 #-#</span>
+
+<span class="s2">+ 0 1</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">LEVEL_MINUS_2</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1   #</span>
+
+<span class="s2">0</span>
+
+<span class="s2">+ 0 1</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">LEVEL_MINUS_1</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1   #</span>
+
+<span class="s2">0</span>
+
+<span class="s2">+ 0 1</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">LEVEL_0</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1 #-#</span>
+<span class="s2">  |x|</span>
+<span class="s2">0 #-#</span>
+
+<span class="s2">+ 0 1</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">XYMAP_DATA_LIST</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">LEVEL_MINUS_3</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">LEVEL_MINUS_2</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">LEVEL_MINUS_1</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">LEVEL_0</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>In this example, if we arrive to the bottom of the well at <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">-3)</span></code> we
+<code class="docutils literal notranslate"><span class="pre">fly</span></code> straight up three levels until we arrive at <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">0)</span></code>, at the corner
+of some sort of open field.</p>
+<p>We can dive down from <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">0)</span></code>. In the default implementation you must <code class="docutils literal notranslate"><span class="pre">dive</span></code> 3 times
+to get to the bottom. If you wanted you could tweak the command so you
+automatically fall to the bottom and take damage etc.</p>
+<p>We can’t fly/dive up/down from any other XY positions because there are no open rooms at the
+adjacent Z coordinates.</p>
+</section>
 </section>
 <section id="map-string">
 <h3>Map String<a class="headerlink" href="#map-string" title="Permalink to this headline">¶</a></h3>
