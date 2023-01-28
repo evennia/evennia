@@ -8,6 +8,7 @@
 - Bug fix: `$an()` inlinefunc didn't understand to use 'an' words starting with a
   capital vowel
 - Bug fix: Another case of the 'duplicate Discord bot connections' bug
+- Fix: Make XYZGrid contrib's MapParserErrors more succinct
 
 ## Evennia 1.1.1
 
