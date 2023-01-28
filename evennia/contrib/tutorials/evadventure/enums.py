@@ -40,6 +40,16 @@ class Ability(Enum):
     ALLEGIANCE_FRIENDLY = "friendly"
 
 
+ABILITY_REVERSE_MAP = {
+    "str": Ability.STR,
+    "dex": Ability.DEX,
+    "con": Ability.CON,
+    "int": Ability.INT,
+    "wis": Ability.WIS,
+    "cha": Ability.CHA,
+}
+
+
 class WieldLocation(Enum):
     """
     Wield (or wear) locations.
