@@ -652,7 +652,7 @@ More than one match for &#39;stand&#39; (please narrow target):
 <span class="sd">     Stand up.</span>
 <span class="sd">     &quot;&quot;&quot;</span>
      <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;stand&quot;</span>
-<span class="hll">     <span class="n">lock</span> <span class="o">=</span> <span class="s2">&quot;cmd:sitsonthis()&quot;</span>
+<span class="hll">     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:sitsonthis()&quot;</span>
 </span>
      <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
@@ -675,7 +675,7 @@ What will be checked is the <code class="docutils literal notranslate"><span cla
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    True if accessing_obj is sitting on/in the accessed_obj.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">==</span> <span class="n">accessing_obj</span>
+    <span class="k">return</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">==</span> <span class="n">accessing_obj</span>
 
 <span class="c1"># ...</span>
 </pre></div>
@@ -688,7 +688,7 @@ What will be checked is the <code class="docutils literal notranslate"><span cla
 </aside>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">accessing_obj</span></code> is the one trying to access the lock. So us, in this case.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">accessed_obj</span></code> is the entity we are trying to gain a particular type of access to. So the chair.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">accessed_obj</span></code> is the entity we are trying to gain a particular type of access to. Since we define the lock on the <code class="docutils literal notranslate"><span class="pre">CmdStand</span></code> class, this is <em>the command instance</em>. We are however not interested in that, but the object the command is assigned to (the chair). The object is available on the Command as <code class="docutils literal notranslate"><span class="pre">.obj</span></code>. So here, <code class="docutils literal notranslate"><span class="pre">accessed_obj.obj</span></code> is the chair.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> is a tuple holding any arguments passed to the lockfunc. Since we use <code class="docutils literal notranslate"><span class="pre">sitsondthis()</span></code> this will be empty (and if we add anything, it will be ignored).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> is a tuple of keyword arguments passed to the lockfuncs. This will be empty as well in our example.</p></li>
 </ul>
@@ -717,7 +717,7 @@ You stand up from armchair
 <li><p>In <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>, comment out the line <code class="docutils literal notranslate"><span class="pre">self.add(sittables.CmdNoSitStand)</span></code>.</p></li>
 </ul>
 <p>This disables the on-object command solution so we can try an alternative. Make sure to <code class="docutils literal notranslate"><span class="pre">reload</span></code> so the changes are known to Evennia.</p>
-<p>In this variation we will put the <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> commands on the <code class="docutils literal notranslate"><span class="pre">Character</span></code> instead of on the chair. This makes some things easier, but makes the Commands themselves more complex because they will not know which chair to sit on. We can’t just do <code class="docutils literal notranslate"><span class="pre">sit</span></code> anymore. This is how it will work.</p>
+<p>In this variation we will put the <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> commands on the <code class="docutils literal notranslate"><span class="pre">Character</span></code> instead of on the chair. This makes some things easier, but makes the Commands themselves more complex because they will not know which chair to sit on. We can’t just do <code class="docutils literal notranslate"><span class="pre">sit</span></code> anymore. This is how it will work:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit &lt;chair&gt;
 You sit on chair.
 &gt; stand
