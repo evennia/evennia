@@ -295,8 +295,8 @@ def get_xyzgrid(print_errors=True):
         xyzgrid.reload()
         return xyzgrid
     elif len(xyzgrid) > 1:
-        (
-            "Warning: More than one XYZGrid instances were found. This is an error and "
+        print(
+            "Warning: More than one XYZGrid instance were found. This is an error and "
             "only the first one will be used. Delete the other one(s) manually."
         )
     xyzgrid = xyzgrid[0]
@@ -304,7 +304,7 @@ def get_xyzgrid(print_errors=True):
         if not xyzgrid.ndb.loaded:
             xyzgrid.reload()
     except Exception as err:
-        raise
+        # raise   # debug
         if print_errors:
             print(err)
         else:
