@@ -447,7 +447,7 @@ class CmdStand(Command):
      Stand up.
      """
      key = "stand"
-     lock = "cmd:sitsonthis()"
+     locks = "cmd:sitsonthis()"
 
      def func(self):
          self.obj.do_stand(self.caller)
@@ -471,7 +471,7 @@ def sitsonthis(accessing_obj, accessed_obj, *args, **kwargs):
     """
     True if accessing_obj is sitting on/in the accessed_obj.
     """
-    return accessed_obj.db.sitting == accessing_obj
+    return accessed_obj.obj.db.sitting == accessing_obj
 
 # ...
 ```
@@ -486,7 +486,7 @@ Evennia provides a large number of default lockfuncs, such as checking permissio
 ```
 
 - `accessing_obj` is the one trying to access the lock. So us, in this case.
-- `accessed_obj` is the entity we are trying to gain a particular type of access to. So the chair.
+- `accessed_obj` is the entity we are trying to gain a particular type of access to. Since we define the lock on the `CmdStand` class, this is _the command instance_. We are however not interested in that, but the object the command is assigned to (the chair). The object is available on the Command as `.obj`. So here, `accessed_obj.obj` is the chair. 
 - `args` is a tuple holding any arguments passed to the lockfunc. Since we use `sitsondthis()` this will be empty (and if we add anything, it will be ignored).
 - `kwargs` is a tuple of keyword arguments passed to the lockfuncs. This will be empty as well in our example.
 
@@ -519,7 +519,7 @@ The make the following changes:
 
 This disables the on-object command solution so we can try an alternative. Make sure to `reload` so the changes are known to Evennia.
 
-In this variation we will put the `sit` and `stand` commands on the `Character` instead of on the chair. This makes some things easier, but makes the Commands themselves more complex because they will not know which chair to sit on. We can't just do `sit` anymore. This is how it will work.
+In this variation we will put the `sit` and `stand` commands on the `Character` instead of on the chair. This makes some things easier, but makes the Commands themselves more complex because they will not know which chair to sit on. We can't just do `sit` anymore. This is how it will work:
 
     > sit <chair>
     You sit on chair.
