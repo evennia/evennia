@@ -71,6 +71,19 @@ class TestExtendedRoom(BaseEvenniaCommandTest):
         self.call(
             extended_room.CmdExtendedRoomLook(), "nonexistent", "Could not find 'nonexistent'."
         )
+        
+    def test_cmdextendedlook_second_person(self):
+        # char2 is already in the same room. 
+        # replace char2.msg with a Mock; this disables it and will catch what it is called with
+        self.char2.msg = Mock() 
+
+        self.call(
+            extended_room.CmdExtendedRoomLook(), 
+            "testdetail"
+        )
+     
+        # check what char2 saw.
+        self.char2.msg.assert_called_with(text=('Char looks closely at testdetail.\n', {}), from_obj=self.char1)
 
     def test_cmdsetdetail(self):
         self.call(extended_room.CmdExtendedRoomDetail(), "", "Details on Room")
