@@ -11,7 +11,7 @@ You see: a flower
 Exits: north, east
 ```
 
-When you send a command like `look` into Evennia - what actually happens? How does that `look` string end up being handled by the `CmdLook` class? What happens when we use e.g. `caller.msg()` to send the message back 
+When you send a command like `look` into Evennia - what actually happens? How does that `look` string end up being handled by the `CmdLook` class? What happens when we use e.g. `caller.msg()` to send the message back?
 
 Understanding this flow of data - the _message path_ is important in order to understand how Evennia works.
 

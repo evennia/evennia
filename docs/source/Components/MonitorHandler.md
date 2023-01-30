@@ -5,7 +5,7 @@ The *MonitorHandler* is a system for watching changes in properties or Attribute
 monitor can be thought of as a sort of trigger that responds to change.
 
 The main use for the MonitorHandler is to report changes to the client; for example the client
-Session may ask Evennia to monitor the value of the Characer's `health` attribute and report
+Session may ask Evennia to monitor the value of the Character's `health` attribute and report
 whenever it changes. This way the client could for example update its health bar graphic as needed.
 
 ## Using the MonitorHandler

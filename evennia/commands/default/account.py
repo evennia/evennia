@@ -344,7 +344,7 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
                     ]
                 if not character_candidates:
                     # fall back to global search only if Builder+ has no
-                    # playable_characers in list and is not standing in a room
+                    # playable_characters in list and is not standing in a room
                     # with a matching char.
                     character_candidates.extend(
                         [
