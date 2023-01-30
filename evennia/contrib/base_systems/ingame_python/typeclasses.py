@@ -609,7 +609,7 @@ Variables you can use in this event:
 """
 
 EXIT_TRAVERSE = """
-After the characer has traversed through this exit.
+After the character has traversed through this exit.
 This event is called after a character has traversed through this
 exit.  Traversing cannot be prevented using 'deny()' at this
 point.  The character will be in a different room and she will

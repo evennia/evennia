@@ -386,8 +386,9 @@ class CraftingRecipe(CraftingRecipeBase):
                 {"key": "Bag of flour",
                  "typeclass": "typeclasses.food.Flour",
                  "desc": "A small bag of flour."
-                 "tags": [("flour", "crafting_material"),
+                 "tags": [("flour", "crafting_material")],
                 }
+            ]
 
         class BreadRecipe(CraftRecipe):
             name = "bread"
@@ -397,6 +398,7 @@ class CraftingRecipe(CraftingRecipeBase):
                 {"key": "bread",
                  "desc": "A tasty bread."
                 }
+            ]
 
 
     ## Properties on the class level:
