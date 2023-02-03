@@ -1,6 +1,6 @@
-# Configuring NGIX for SSL with Evennia
+# Configuring NGINX for Evennia with SSL
 
-> This is NOT a full set-up guide! It assumes you know how to get your own letsencrypt certs, and that you already have nginx installed. **If you don't already use nginx,** you should read the [guide for using HAProxy](link to haproxy guide) instead.
+> This is NOT a full set-up guide! It assumes you know how to get your own letsencrypt certs, that you already have nginx installed, and that you are familiar with nginx configuration files. **If you don't already use nginx,** you should follow the [guide for using HAProxy](Config-HAProxy) instead.
 
 ## SSL on the website and websocket
 
@@ -20,8 +20,12 @@ server {
 		# The websocket connection
 		proxy_pass http://localhost:4002;
 		proxy_http_version 1.1;
+		# allows the handshake to upgrade the connection
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "Upgrade";
+		# forwards the connection IP
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header Host $host;
 	}
 
@@ -29,6 +33,7 @@ server {
 		# The main website
 		proxy_pass http://localhost:4001;
 		proxy_http_version 1.1;
+		# forwards the connection IP
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header Host $http_host;
@@ -50,9 +55,11 @@ WEBSOCKET_CLIENT_URL = "wss://example.com/ws"
 # Turn off all external connections
 LOCKDOWN_MODE = True
 ```
-This makes sure that evennia uses the correct URI for websocket connections, and also prevents any external connections directly to Evennia's ports, limiting it to connections through the nginx proxies.
+This makes sure that evennia uses the correct URI for websocket connections. Setting `LOCKDOWN_MODE` on will also prevents any external connections directly to Evennia's ports, limiting it to connections through the nginx proxies.
 
 ## SSL on telnet
+
+> This will proxy ALL telnet access through nginx! If you want players to connect directly to Evennia's telnet ports instead of going through nginx, leave `LOCKDOWN_MODE` off and use a different SSL implementation.
 
 If you've only used nginx for websites, telnet is slightly more complicated. You need to set up stream parameters in your primary configuration file, e.g. `/etc/nginx/nginx.conf` - which, at least in my case, was not there by default.
 
@@ -74,16 +81,18 @@ server {
 	listen [::]:4040 ssl;
 	listen 4040 ssl;
 
-	ssl_certificate	 /path/to/your/cert/file;
-	ssl_certificate_key /path/to/your/cert/key;
+	ssl_certificate  /path/to/your/cert/file;
+	ssl_certificate_key  /path/to/your/cert/key;
 
-	# connect to Evennia's internal telnet port
+	# connect to Evennia's internal NON-SSL telnet port
 	proxy_pass localhost:4000;
+	# forwards the connection IP - requires --with-stream-realip-module
+	set_real_ip_from $realip_remote_addr:$realip_remote_port
 }
 ```
 Players can now connect with telnet+SSL to your server at `example.com:4040` - but *not* to the internal connection of `4000`.
 
-> ***! IMPORTANT: The default front page will be WRONG.*** It will show players that they can connect via normal telnet to port 4000, but in fact they will need to connect with telnet+SSL to 4040. You will need to change the `index.html` template and update the telnet section (NOT the telnet ssl section) to display the correct information.
+> ***IMPORTANT: With this configuration, the default front page will be WRONG.*** You will need to change the `index.html` template and update the telnet section (NOT the telnet ssl section!) to display the correct information.
 
 
 ## Don't Forget!
