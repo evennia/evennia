@@ -392,20 +392,21 @@ class Evennia:
         from evennia.utils.create import create_channel
 
         superuser = AccountDB.objects.get(id=1)
+
         # mudinfo
         mudinfo_chan = settings.CHANNEL_MUDINFO
-        if mudinfo_chan:
-            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
-                channel = create_channel(**mudinfo_chan)
-                channel.connect(superuser)
+        if mudinfo_chan and not ChannelDB.objects.filter(db_key__iexact=mudinfo_chan["key"]):
+            channel = create_channel(**mudinfo_chan)
+            channel.connect(superuser)
         # connectinfo
-        connectinfo_chan = settings.CHANNEL_MUDINFO
-        if connectinfo_chan:
-            if not ChannelDB.objects.filter(db_key=mudinfo_chan["key"]):
-                channel = create_channel(**connectinfo_chan)
+        connectinfo_chan = settings.CHANNEL_CONNECTINFO
+        if connectinfo_chan and not ChannelDB.objects.filter(
+            db_key__iexact=connectinfo_chan["key"]
+        ):
+            channel = create_channel(**connectinfo_chan)
         # default channels
         for chan_info in settings.DEFAULT_CHANNELS:
-            if not ChannelDB.objects.filter(db_key=chan_info["key"]):
+            if not ChannelDB.objects.filter(db_key__iexact=chan_info["key"]):
                 channel = create_channel(**chan_info)
                 channel.connect(superuser)
 
