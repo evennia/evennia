@@ -555,6 +555,24 @@ def rotate_log_file(filename="game.log", num_lines_to_append=None):
             file_handle.rotate(num_lines_to_append=num_lines_to_append)
 
 
+def delete_log_file(filename):
+    """
+    Delete a log file
+
+    Args:
+       filename(str): The name of the log file, located in settings.LOG_DIR
+    """
+    if log_file_exists(filename):
+        global _LOGDIR
+        if not _LOGDIR:
+            from django.conf import settings
+
+            _LOGDIR = settings.LOG_DIR
+
+        filename = os.path.join(_LOGDIR, filename)
+        os.remove(filename)
+
+
 def tail_log_file(filename, offset, nlines, callback=None):
     """
     Return the tail of the log file.
