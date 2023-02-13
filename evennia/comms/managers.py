@@ -440,12 +440,12 @@ class ChannelDBManager(TypedObjectManager):
                 return dbref_match
 
         if exact:
-            channels = self.filter_family(
+            channels = self.filter(
                 Q(db_key__iexact=ostring)
                 | Q(db_tags__db_tagtype__iexact="alias", db_tags__db_key__iexact=ostring)
             ).distinct()
         else:
-            channels = self.filter_family(
+            channels = self.filter(
                 Q(db_key__icontains=ostring)
                 | Q(db_tags__db_tagtype__iexact="alias", db_tags__db_key__icontains=ostring)
             ).distinct()

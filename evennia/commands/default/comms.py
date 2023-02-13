@@ -263,7 +263,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         # first see if this is a personal alias
         channelname = caller.nicks.get(key=channelname, category="channel") or channelname
-
         # always try the exact match first.
         channels = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channelname, exact=True)
 
