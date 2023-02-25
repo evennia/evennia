@@ -151,7 +151,7 @@ bound Python instances before. But you need to use `db_key` instead of `key` and
 remember to call `.save()` afterwards. Evennia has a helper function that is more common to use, 
 called `create_object`. Let's recreate Cuddly this time:
 
-    > py evennia.create_object('typeclasses.monster.Monster', key="Cuddly", location=here)
+    > py evennia.create_object('typeclasses.monsters.Monster', key="Cuddly", location=here)
     > look 
     
 Boom, Cuddly should now be in the room with you, a little less scary than Smaug. You specify the 
