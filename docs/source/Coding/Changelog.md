@@ -1,13 +1,20 @@
 # Changelog
 
-## Main
+## Main branch (git)
 
+- Doc: Add warning about `Django-wiki` (in wiki tutorial) only supporting Django <4.0.
+- Doc: Expanded `XYZGrid` docstring to clarify `MapLink` class will not itself
+  spawn anything, children must define their prototypes explicitly.
+- Doc: Explained why `AttributeProperty.at_get/set` will not be called if
+  accessing the Attribute from the `AttributeHandler` (bypassing the property)
 - Bug fix: Evtable options showed spurious empty lines if set without desc
 - Usage fix: The `teleport:` and `teleport_here:` locks where checked in
   `CmdTeleport`, but not actually set on any entities. These locks are now
   set with defaults on all objects,characters,rooms and exits.
 
 ## Evennia 1.2.0
+
+Feb 25, 2023
 
 - Bug fix: `TagHandler.get` did not consistently cast to string (aMiss-aWry)
 - Bug fix: Channels hard to manage if given in different case (aMiss-aWry)
@@ -24,6 +31,8 @@
 - Fix: Make XYZGrid contrib's MapParserErrors more succinct
 
 ## Evennia 1.1.1
+
+Jan 15, 2023
 
 - Bug fix: Better handler malformed alias-regex given to nickhandler. A
   regex-relevant character in a channel alias could cause server to not restart.

@@ -2,6 +2,7 @@
 
 ## Main branch (git)
 
+- Doc: Add warning about `Django-wiki` (in wiki tutorial) only supporting Django <4.0.
 - Doc: Expanded `XYZGrid` docstring to clarify `MapLink` class will not itself
   spawn anything, children must define their prototypes explicitly.
 - Doc: Explained why `AttributeProperty.at_get/set` will not be called if
