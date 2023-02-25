@@ -162,7 +162,9 @@ class AttributeProperty:
     Attribute property descriptor. Allows for specifying Attributes as Django-like 'fields'
     on the class level. Note that while one can set a lock on the Attribute,
     there is no way to *check* said lock when accessing via the property - use
-    the full AttributeHandler if you need to do access checks.
+    the full `AttributeHandler` if you need to do access checks. Note however that if you use the
+    full `AttributeHandler` to access this Attribute, the `at_get/at_set` methods on this class will
+    _not_ fire (because you are bypassing the `AttributeProperty` entirely in that case).
 
     Example:
     ::
@@ -288,6 +290,11 @@ class AttributeProperty:
         Raises:
             AttributeError: If the value is invalid to store.
 
+        Notes:
+            This is will only fire if you actually set the Attribute via this `AttributeProperty`.
+            That is, if you instead set it via the `AttributeHandler` (or via `.db`), you are
+            bypassing this `AttributeProperty` entirely and this method is never reached.
+
         """
         return value
 
@@ -302,6 +309,11 @@ class AttributeProperty:
 
         Returns:
             any: The value to return to the caller.
+
+        Notes:
+            This is will only fire if you actually get the Attribute via this `AttributeProperty`.
+            That is, if you instead get it via the `AttributeHandler` (or via `.db`), you are
+            bypassing this `AttributeProperty` entirely and this method is never reached.
 
         """
         return value
