@@ -7,6 +7,7 @@ import re
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
+
 from evennia.comms.managers import ChannelManager
 from evennia.comms.models import ChannelDB
 from evennia.typeclasses.models import TypeclassBase
@@ -66,7 +67,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
     # default nick-alias replacements (default using the 'channel' command)
     channel_msg_nick_pattern = r"{alias}\s*?|{alias}\s+?(?P<arg1>.+?)"
-    channel_msg_nick_replacement = "channel {channelname} = $1"
+    channel_msg_nick_replacement = "@channel {channelname} = $1"
 
     def at_first_save(self):
         """
