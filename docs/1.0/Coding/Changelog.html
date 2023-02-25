@@ -62,6 +62,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#main">Main</a></li>
 <li><a class="reference internal" href="#evennia-1-2-0">Evennia 1.2.0</a></li>
 <li><a class="reference internal" href="#evennia-1-1-1">Evennia 1.1.1</a></li>
 <li><a class="reference internal" href="#evennia-1-1-0">Evennia 1.1.0</a></li>
@@ -167,6 +168,15 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<section id="main">
+<h2>Main<a class="headerlink" href="#main" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Bug fix: Evtable options showed spurious empty lines if set without desc</p></li>
+<li><p>Usage fix: The <code class="docutils literal notranslate"><span class="pre">teleport:</span></code> and <code class="docutils literal notranslate"><span class="pre">teleport_here:</span></code> locks where checked in
+<code class="docutils literal notranslate"><span class="pre">CmdTeleport</span></code>, but not actually set on any entities. These locks are now
+set with defaults on all objects,characters,rooms and exits.</p></li>
+</ul>
+</section>
 <section id="evennia-1-2-0">
 <h2>Evennia 1.2.0<a class="headerlink" href="#evennia-1-2-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">

@@ -1,5 +1,12 @@
 # Changelog
 
+## Main
+
+- Bug fix: Evtable options showed spurious empty lines if set without desc
+- Usage fix: The `teleport:` and `teleport_here:` locks where checked in
+  `CmdTeleport`, but not actually set on any entities. These locks are now
+  set with defaults on all objects,characters,rooms and exits.
+
 ## Evennia 1.2.0
 
 - Bug fix: `TagHandler.get` did not consistently cast to string (aMiss-aWry)

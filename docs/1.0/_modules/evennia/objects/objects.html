@@ -91,7 +91,6 @@
 <span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectManager</span>
@@ -1624,6 +1623,8 @@
                     <span class="s2">&quot;call:true()&quot;</span><span class="p">,</span>  <span class="c1"># allow to call commands on this object</span>
                     <span class="s2">&quot;tell:perm(Admin)&quot;</span><span class="p">,</span>  <span class="c1"># allow emits to this object</span>
                     <span class="s2">&quot;puppet:pperm(Developer)&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;teleport:true()&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;teleport_here:true()&quot;</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># lock down puppeting only to staff by default</span></div>
@@ -2713,7 +2714,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;get:false()&quot;</span><span class="p">,</span> <span class="s2">&quot;call:false()&quot;</span><span class="p">])</span>  <span class="c1"># noone can pick up the character</span>
+            <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;get:false()&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;call:false()&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;teleport:perm(Admin)&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;teleport_here:perm(Admin)&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>  <span class="c1"># noone can pick up the character</span>
         <span class="p">)</span>  <span class="c1"># no commands can be called on character from outside</span>
         <span class="c1"># add the default cmdset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
@@ -2940,7 +2948,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;get:false()&quot;</span><span class="p">,</span> <span class="s2">&quot;puppet:false()&quot;</span><span class="p">])</span>
+            <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;get:false()&quot;</span><span class="p">,</span> <span class="s2">&quot;puppet:false()&quot;</span><span class="p">,</span> <span class="s2">&quot;teleport:false()&quot;</span><span class="p">,</span> <span class="s2">&quot;teleport_here:true()&quot;</span><span class="p">])</span>
         <span class="p">)</span>  <span class="c1"># would be weird to puppet a room ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 
@@ -3156,6 +3164,8 @@
                     <span class="s2">&quot;puppet:false()&quot;</span><span class="p">,</span>  <span class="c1"># would be weird to puppet an exit ...</span>
                     <span class="s2">&quot;traverse:all()&quot;</span><span class="p">,</span>  <span class="c1"># who can pass through exit by default</span>
                     <span class="s2">&quot;get:false()&quot;</span><span class="p">,</span>  <span class="c1"># noone can pick up the exit</span>
+                    <span class="s2">&quot;teleport:false()&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;teleport_here:false()&quot;</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>
         <span class="p">)</span>
