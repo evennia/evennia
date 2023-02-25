@@ -1,6 +1,18 @@
+from django.test import SimpleTestCase
+
 from evennia import DefaultChannel
+from evennia.commands.default.comms import CmdChannel
 from evennia.utils.create import create_message
 from evennia.utils.test_resources import BaseEvenniaTest
+
+
+class TestCommsNickMatchesCommand(SimpleTestCase):
+    def test(self):
+        """
+        Verifies that the nick being set by DefaultChannel matches the channel
+        command key.
+        """
+        self.assertTrue(DefaultChannel.channel_msg_nick_replacement.startswith(CmdChannel.key))
 
 
 class ObjectCreationTest(BaseEvenniaTest):
@@ -16,6 +28,29 @@ class ObjectCreationTest(BaseEvenniaTest):
         msg = create_message("peewee herman", "heh-heh!", header="mail time!")
         self.assertTrue(msg)
         self.assertEqual(str(msg), "peewee herman->: heh-heh!")
+
+
+class ChannelSubscriptionTests(BaseEvenniaTest):
+    def setUp(self):
+        super().setUp()
+        self.default_channel, _ = DefaultChannel.create(
+            "catlovers", description="A place for feline fanciers."
+        )
+        self.default_channel.connect(self.obj1)
+
+    def test_subscribe_unsubscribe(self):
+        self.default_channel.connect(self.char1)
+        self.assertTrue(self.default_channel.subscriptions.has(self.char1))
+        self.assertEqual(
+            self.char1.nicks.nickreplace("catlovers I love cats!"),
+            "@channel catlovers = I love cats!",
+        )
+        self.default_channel.disconnect(self.char1)
+        self.assertFalse(self.default_channel.subscriptions.has(self.char1))
+        self.assertEqual(
+            self.char1.nicks.nickreplace("catlovers I love cats!"),
+            "catlovers I love cats!",
+        )
 
 
 class ChannelWholistTests(BaseEvenniaTest):

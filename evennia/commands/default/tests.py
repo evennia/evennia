@@ -31,14 +31,7 @@ from evennia import (
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
-from evennia.commands.default import (
-    account,
-    admin,
-    batchprocess,
-    building,
-    comms,
-    general,
-)
+from evennia.commands.default import account, admin, batchprocess, building, comms, general
 from evennia.commands.default import help as help_module
 from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
@@ -83,7 +76,9 @@ class TestGeneral(BaseEvenniaCommandTest):
     def test_pose(self):
         self.char2.msg = Mock()
         self.call(general.CmdPose(), "looks around", "Char looks around")
-        self.char2.msg.assert_called_with(text=('Char looks around', {'type': 'pose'}), from_obj=self.char1)
+        self.char2.msg.assert_called_with(
+            text=("Char looks around", {"type": "pose"}), from_obj=self.char1
+        )
 
     def test_nick(self):
         self.call(
@@ -173,7 +168,6 @@ class TestGeneral(BaseEvenniaCommandTest):
 
 
 class TestHelp(BaseEvenniaCommandTest):
-
     maxDiff = None
 
     def setUp(self):
@@ -584,7 +578,6 @@ class TestAccount(BaseEvenniaCommandTest):
         ]
     )
     def test_ooc_look(self, multisession_mode, auto_puppet, max_nr_chars, expected_result):
-
         self.account.db._playable_characters = [self.char1]
         self.account.unpuppet_all()
 
@@ -1563,7 +1556,6 @@ class TestBuilding(BaseEvenniaCommandTest):
         )
 
     def test_script_multi_delete(self):
-
         script1 = create.create_script()
         script2 = create.create_script()
         script3 = create.create_script()
@@ -1867,7 +1859,7 @@ class TestCommsChannel(BaseEvenniaCommandTest):
         self.call(self.cmdchannel(), "/sub testchannel", "You are now subscribed")
         self.assertTrue(self.char1 in self.channel.subscriptions.all())
         self.assertEqual(
-            self.char1.nicks.nickreplace("testchannel Hello"), "channel testchannel = Hello"
+            self.char1.nicks.nickreplace("testchannel Hello"), "@channel testchannel = Hello"
         )
 
     def test_channel__unsub(self):
@@ -1883,7 +1875,7 @@ class TestCommsChannel(BaseEvenniaCommandTest):
             "/alias testchannel = foo",
             "Added/updated your alias 'foo' for channel testchannel.",
         )
-        self.assertEqual(self.char1.nicks.nickreplace("foo Hello"), "channel testchannel = Hello")
+        self.assertEqual(self.char1.nicks.nickreplace("foo Hello"), "@channel testchannel = Hello")
 
         # use alias
         self.channel.msg = Mock()
@@ -2084,7 +2076,6 @@ class TestBatchProcess(BaseEvenniaCommandTest):
 
 
 class CmdInterrupt(Command):
-
     key = "interrupt"
 
     def parse(self):
