@@ -34,7 +34,7 @@ An Evennia Object is, by definition, a Python class that includes  [evennia.obje
 
 Here, arrows indicate inheritance and point from-child-to-parent.
 
-So, for example `DefaultObjet` is a child of `DefaultCharacter` (in the Evennia library), which is a parent of `Character` (in the game dir). The class in the game-dir is the one you should modify for your game.
+So, for example `DefaultObject` is a child of `DefaultCharacter` (in the Evennia library), which is a parent of `Character` (in the game dir). The class in the game-dir is the one you should modify for your game.
 
 > Note the `ObjectParent` class. This is an empty mix-in that all classes in the game-dir inherits from. It's where you put things you want _all_ these classes to have. 
 

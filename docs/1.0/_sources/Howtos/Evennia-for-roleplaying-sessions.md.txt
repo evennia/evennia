@@ -28,7 +28,7 @@ defaults for our particular use-case. Below we will flesh out these components f
 
 We will assume you start from scratch. You need Evennia installed, as per the [Setup Quickstart](../Setup/Installation.md) 
 instructions. Initialize a new game directory with `evennia init
-`<gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the default database and keep all other settings to default for now. Familiarize yourself with the
+<gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the default database and keep all other settings to default for now. Familiarize yourself with the
 `mygame` folder before continuing. You might want to browse the  [Beginner Tutorial](Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Overview.md) tutorial, just to see roughly where things are modified.
 
 ## The Game Master role
