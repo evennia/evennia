@@ -3304,8 +3304,8 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     scripts.
 
     Usage:
-      script[/switches] [script-#dbref, key, script.path or <obj>]
-      script[/start||stop] <obj> = <script.path or script-key>
+      script[/switches] [script-#dbref, key, script.path]
+      script[/start||stop] <obj> = [<script.path or script-key>]
 
     Switches:
       start - start/unpause an existing script's timer.
@@ -3314,19 +3314,21 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
       delete - deletes script. This will also stop the timer as needed
 
     Examples:
-        script                         - list scripts
-        script myobj                   - list all scripts on object
-        script foo.bar.Script          - create a new global Script
-        script scriptname              - examine named existing global script
-        script myobj = foo.bar.Script  - create and assign script to object
-        script/stop myobj = scriptname - stop script on object
-        script/pause foo.Bar.Script    - pause global script
-        script/delete myobj            - delete ALL scripts on object
-        script/delete #dbref[-#dbref]  - delete script or range by dbref
+        script                            - list all scripts
+        script foo.bar.Script             - create a new global Script
+        script/pause foo.bar.Script       - pause global script
+        script scriptname|#dbref          - examine named existing global script
+        script/delete #dbref[-#dbref]     - delete script or range by #dbref
+
+        script myobj =                    - list all scripts on object
+        script myobj = foo.bar.Script     - create and assign script to object
+        script/stop myobj = name|#dbref   - stop named script on object
+        script/delete myobj = name|#dbref - delete script on object
+        script/delete myobj =             - delete ALL scripts on object
 
     When given with an `<obj>` as left-hand-side, this creates and
     assigns a new script to that object. Without an `<obj>`, this
-    manages and inspects global scripts
+    manages and inspects global scripts.
 
     If no switches are given, this command just views all active
     scripts. The argument can be either an object, at which point it
@@ -3403,11 +3405,16 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
         if self.rhs:
             obj_query = self.lhs
             script_query = self.rhs
+        elif self.rhs is not None:
+            # an empty "="
+            obj_query = self.lhs
+            script_query = None
         else:
-            obj_query = script_query = self.args
+            obj_query = None
+            script_query = self.args
 
-        scripts = self._search_script(script_query)
-        objects = caller.search(obj_query, quiet=True)
+        scripts = self._search_script(script_query) if script_query else None
+        objects = caller.search(obj_query, quiet=True) if obj_query else None
         obj = objects[0] if objects else None
 
         if not self.switches:

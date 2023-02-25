@@ -17,9 +17,6 @@ from unittest.mock import MagicMock, Mock, patch
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
-from parameterized import parameterized
-from twisted.internet import task
-
 from evennia import (
     DefaultCharacter,
     DefaultExit,
@@ -41,6 +38,8 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import create, gametime, utils
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
+from parameterized import parameterized
+from twisted.internet import task
 
 # ------------------------------------------------------------
 # Command testing
@@ -199,33 +198,41 @@ class TestHelp(BaseEvenniaCommandTest):
         [
             (
                 "test",  # main help entry
-                "Help for test\n\n"
-                "Main help text\n\n"
-                "Subtopics:\n"
-                "  test/creating extra stuff"
-                "  test/something else"
-                "  test/more",
+                (
+                    "Help for test\n\n"
+                    "Main help text\n\n"
+                    "Subtopics:\n"
+                    "  test/creating extra stuff"
+                    "  test/something else"
+                    "  test/more"
+                ),
             ),
             (
                 "test/creating extra stuff",  # subtopic, full match
-                "Help for test/creating extra stuff\n\n"
-                "Help on creating extra stuff.\n\n"
-                "Subtopics:\n"
-                "  test/creating extra stuff/subsubtopic\n",
+                (
+                    "Help for test/creating extra stuff\n\n"
+                    "Help on creating extra stuff.\n\n"
+                    "Subtopics:\n"
+                    "  test/creating extra stuff/subsubtopic\n"
+                ),
             ),
             (
                 "test/creating",  # startswith-match
-                "Help for test/creating extra stuff\n\n"
-                "Help on creating extra stuff.\n\n"
-                "Subtopics:\n"
-                "  test/creating extra stuff/subsubtopic\n",
+                (
+                    "Help for test/creating extra stuff\n\n"
+                    "Help on creating extra stuff.\n\n"
+                    "Subtopics:\n"
+                    "  test/creating extra stuff/subsubtopic\n"
+                ),
             ),
             (
                 "test/extra",  # partial match
-                "Help for test/creating extra stuff\n\n"
-                "Help on creating extra stuff.\n\n"
-                "Subtopics:\n"
-                "  test/creating extra stuff/subsubtopic\n",
+                (
+                    "Help for test/creating extra stuff\n\n"
+                    "Help on creating extra stuff.\n\n"
+                    "Subtopics:\n"
+                    "  test/creating extra stuff/subsubtopic\n"
+                ),
             ),
             (
                 "test/extra/subsubtopic",  # partial subsub-match
@@ -242,19 +249,23 @@ class TestHelp(BaseEvenniaCommandTest):
             ),
             (
                 "test/More/Second-more",
-                "Help for test/more/second-more\n\n"
-                "The Second More text.\n\n"
-                "Subtopics:\n"
-                "  test/more/second-more/more again"
-                "  test/more/second-more/third more",
+                (
+                    "Help for test/more/second-more\n\n"
+                    "The Second More text.\n\n"
+                    "Subtopics:\n"
+                    "  test/more/second-more/more again"
+                    "  test/more/second-more/third more"
+                ),
             ),
             (
                 "test/More/-more",  # partial match
-                "Help for test/more/second-more\n\n"
-                "The Second More text.\n\n"
-                "Subtopics:\n"
-                "  test/more/second-more/more again"
-                "  test/more/second-more/third more",
+                (
+                    "Help for test/more/second-more\n\n"
+                    "The Second More text.\n\n"
+                    "Subtopics:\n"
+                    "  test/more/second-more/more again"
+                    "  test/more/second-more/third more"
+                ),
             ),
             (
                 "test/more/second/more again",
@@ -1506,7 +1517,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(building.CmdFind(), f"=#{id1}-{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
 
     def test_script(self):
-        self.call(building.CmdScripts(), "Obj", "No scripts defined on Obj")
+        self.call(building.CmdScripts(), "Obj =", "No scripts defined on Obj")
         self.call(
             building.CmdScripts(),
             "Obj = scripts.scripts.DefaultScript",
@@ -1518,12 +1529,12 @@ class TestBuilding(BaseEvenniaCommandTest):
             "evennia.scripts.scripts.DoNothing",
             "Global Script Created - sys_do_nothing ",
         )
-        self.call(building.CmdScripts(), "Obj ", "dbref ")
+        self.call(building.CmdScripts(), "Obj =", "dbref ")
 
         self.call(
-            building.CmdScripts(), "/start Obj", "Script on Obj Started "
+            building.CmdScripts(), "/start Obj = ", "Script on Obj Started "
         )  # we allow running start again; this should still happen
-        self.call(building.CmdScripts(), "/stop Obj", "Script on Obj Stopped - ")
+        self.call(building.CmdScripts(), "/stop Obj =", "Script on Obj Stopped - ")
 
         self.call(
             building.CmdScripts(),
@@ -1586,9 +1597,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTeleport(),
             "Obj = Room2",
-            "Obj(#{}) is leaving Room(#{}), heading for Room2(#{}).|Teleported Obj -> Room2.".format(
-                oid, rid, rid2
-            ),
+            "Obj(#{}) is leaving Room(#{}), heading for Room2(#{}).|Teleported Obj -> Room2."
+            .format(oid, rid, rid2),
         )
         self.call(building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'.")
         self.call(
@@ -1704,7 +1714,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "{'prototype_key':'GOBLIN', 'typeclass':'evennia.objects.objects.DefaultCharacter', "
-            "'key':'goblin', 'location':'%s'}" % spawnLoc.dbref,
+            "'key':'goblin', 'location':'%s'}"
+            % spawnLoc.dbref,
             "Spawned goblin",
         )
         goblin = get_object(self, "goblin")
@@ -1752,7 +1763,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "/noloc {'prototype_parent':'TESTBALL', 'key': 'Ball', 'prototype_key': 'foo',"
-            " 'location':'%s'}" % spawnLoc.dbref,
+            " 'location':'%s'}"
+            % spawnLoc.dbref,
             "Spawned Ball",
         )
         ball = get_object(self, "Ball")
