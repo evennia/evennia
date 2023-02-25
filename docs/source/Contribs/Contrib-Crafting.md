@@ -3,7 +3,7 @@
 Contribution by Griatch 2020
 
 This implements a full crafting system. The principle is that of a 'recipe',
-where you combine items (tagged as ingredients) create something new. The recipe can also
+where you combine items (tagged as ingredients) to create something new. The recipe can also
 require certain (non-consumed) tools. An example would be to use the 'bread recipe' to
 combine 'flour', 'water' and 'yeast' with an 'oven' to bake a 'loaf of bread'.
 
