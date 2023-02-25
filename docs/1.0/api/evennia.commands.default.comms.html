@@ -77,8 +77,9 @@
     </ul>
    </div><h3>Links</h3>
 <ul>
-  <li><a href="https://www.evennia.com">Home page</a> </li>
-  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
   <li>
     <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
@@ -496,9 +497,8 @@ through self.caller.</p>
 <dl class="py method">
 <dt id="evennia.commands.default.comms.CmdChannel.create_channel">
 <code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.create_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new channel. Its name must not previously exist
-(users can alias as needed). Will also connect to the
-new channel.</p>
+<dd><p>Create a new channel. Its name must not previously exist (case agnostic)
+(users can alias as needed). Will also connect to the new channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

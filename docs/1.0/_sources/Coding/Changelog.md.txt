@@ -1,14 +1,19 @@
 # Changelog
 
-## Main
+## Evennia 1.2.0
 
-- New doc page for Nginx setup (InspectorCaracal)
+- Bug fix: `TagHandler.get` did not consistently cast to string (aMiss-aWry)
+- Bug fix: Channels hard to manage if given in different case (aMiss-aWry)
+- Feature: `logger.delete_log` function for deleting custom logs from inside the
+  server (aMiss-aWry)
+- Doc: Nginx setup (InspectorCaracal)
 - Feature: Add `fly/dive` commands to `XYZGrid` contrib to showcase treating its
   Z-axis as a full 3D grid. Also fixed minor bug in `XYZGrid` contrib when using
   a Z axis named using an integer rather than a string.
 - Bug fix: `$an()` inlinefunc didn't understand to use 'an' words starting with a
   capital vowel
 - Bug fix: Another case of the 'duplicate Discord bot connections' bug
+  (InspectorCaracal)
 - Fix: Make XYZGrid contrib's MapParserErrors more succinct
 
 ## Evennia 1.1.1

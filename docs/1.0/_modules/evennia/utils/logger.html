@@ -52,8 +52,9 @@
 </div>
 <script>$('#searchbox').show(0);</script><h3>Links</h3>
 <ul>
-  <li><a href="https://www.evennia.com">Home page</a> </li>
-  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
   <li>
     <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
@@ -630,6 +631,24 @@
         <span class="n">file_handle</span> <span class="o">=</span> <span class="n">_open_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">file_handle</span><span class="p">:</span>
             <span class="n">file_handle</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">num_lines_to_append</span><span class="o">=</span><span class="n">num_lines_to_append</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="delete_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.delete_log_file">[docs]</a><span class="k">def</span> <span class="nf">delete_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delete a log file</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       filename(str): The name of the log file, located in settings.LOG_DIR</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">log_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">_LOGDIR</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGDIR</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+            <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOG_DIR</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_LOGDIR</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="tail_log_file"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.tail_log_file">[docs]</a><span class="k">def</span> <span class="nf">tail_log_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">nlines</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

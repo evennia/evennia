@@ -52,8 +52,9 @@
 </div>
 <script>$('#searchbox').show(0);</script><h3>Links</h3>
 <ul>
-  <li><a href="https://www.evennia.com">Home page</a> </li>
-  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
   <li>
     <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
@@ -566,9 +567,8 @@
 
 <div class="viewcode-block" id="CmdChannel.create_channel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.create_channel">[docs]</a>    <span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new channel. Its name must not previously exist</span>
-<span class="sd">        (users can alias as needed). Will also connect to the</span>
-<span class="sd">        new channel.</span>
+<span class="sd">        Create a new channel. Its name must not previously exist (case agnostic)</span>
+<span class="sd">        (users can alias as needed). Will also connect to the new channel.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name (str): The new channel name/key.</span>
@@ -957,7 +957,6 @@
 
         <span class="k">if</span> <span class="s2">&quot;create&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># create a new channel</span>
-
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;manage&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have access to use channel/create.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
@@ -1014,7 +1013,7 @@
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_channels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="s2">&quot;Multiple possible channel matches/alias for &#39;</span><span class="si">{channel_name}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Multiple possible channel matches/alias for &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">found_channels</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>

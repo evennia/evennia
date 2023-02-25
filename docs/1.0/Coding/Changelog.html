@@ -62,7 +62,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#main">Main</a></li>
+<li><a class="reference internal" href="#evennia-1-2-0">Evennia 1.2.0</a></li>
 <li><a class="reference internal" href="#evennia-1-1-1">Evennia 1.1.1</a></li>
 <li><a class="reference internal" href="#evennia-1-1-0">Evennia 1.1.0</a></li>
 <li><a class="reference internal" href="#evennia-1-0-2">Evennia 1.0.2</a></li>
@@ -142,8 +142,9 @@
     </ul>
    </div><h3>Links</h3>
 <ul>
-  <li><a href="https://www.evennia.com">Home page</a> </li>
-  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
   <li>
     <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
@@ -166,16 +167,21 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<section id="main">
-<h2>Main<a class="headerlink" href="#main" title="Permalink to this headline">¶</a></h2>
+<section id="evennia-1-2-0">
+<h2>Evennia 1.2.0<a class="headerlink" href="#evennia-1-2-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>New doc page for Nginx setup (InspectorCaracal)</p></li>
+<li><p>Bug fix: <code class="docutils literal notranslate"><span class="pre">TagHandler.get</span></code> did not consistently cast to string (aMiss-aWry)</p></li>
+<li><p>Bug fix: Channels hard to manage if given in different case (aMiss-aWry)</p></li>
+<li><p>Feature: <code class="docutils literal notranslate"><span class="pre">logger.delete_log</span></code> function for deleting custom logs from inside the
+server (aMiss-aWry)</p></li>
+<li><p>Doc: Nginx setup (InspectorCaracal)</p></li>
 <li><p>Feature: Add <code class="docutils literal notranslate"><span class="pre">fly/dive</span></code> commands to <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> contrib to showcase treating its
 Z-axis as a full 3D grid. Also fixed minor bug in <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> contrib when using
 a Z axis named using an integer rather than a string.</p></li>
 <li><p>Bug fix: <code class="docutils literal notranslate"><span class="pre">$an()</span></code> inlinefunc didn’t understand to use ‘an’ words starting with a
 capital vowel</p></li>
-<li><p>Bug fix: Another case of the ‘duplicate Discord bot connections’ bug</p></li>
+<li><p>Bug fix: Another case of the ‘duplicate Discord bot connections’ bug
+(InspectorCaracal)</p></li>
 <li><p>Fix: Make XYZGrid contrib’s MapParserErrors more succinct</p></li>
 </ul>
 </section>
