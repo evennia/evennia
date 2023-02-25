@@ -6,9 +6,9 @@ echo "This will release Evennia $VERSION (based on evennia/VERSION.txt)."
 echo "Before continuing:"
 echo " 1. Make sure you have Evennia upload credentials for Github (tagging) and PyPi (main package)."
 echo " 2. Update CHANGELOG.md."
-echo " 3. Run 'make local' in docs/ to update dynamic docs and autodocstrings (may have to run twice)."
-echo " 4. Make sure VERSION.txt and pyproject.toml both show version $VERSION."
-echo " 5. Make sure all changes are committed, e.g. as 'Evennia 1.x.x bug-fix release' (un-staged files will be wiped)."
+echo " 3. Make sure pyproject.toml is set to the same version as evennia/VERSION.txt ($VERSION)."
+echo " 4. Run 'make local' in docs/ to update dynamic docs (like Changelog.md) and autodocstrings (may have to run twice)."
+echo " 5. Make sure all changes are committed, e.g. as 'Evennia $VERSION major/minor/patch release' (un-staged files will be wiped)."
 echo " 6. Make sure all unit tests pass!"
 
 read -p "Continue? [Y/n]> " yn
