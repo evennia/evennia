@@ -118,7 +118,6 @@ from copy import copy, deepcopy
 from textwrap import TextWrapper
 
 from django.conf import settings
-
 from evennia.utils.ansi import ANSIString
 from evennia.utils.utils import display_len as d_len
 from evennia.utils.utils import is_iter, justify
@@ -1543,7 +1542,6 @@ class EvTable:
             # we need to add new rows to new column
             empty_rows = ["" for _ in range(abs(excess))]
             column.add_rows(*empty_rows, **options)
-            self.nrows -= excess
 
         if xpos is None or xpos > wtable - 1:
             # add to the end

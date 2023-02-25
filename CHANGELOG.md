@@ -1,5 +1,9 @@
 # Changelog
 
+## Main
+
+- Bug fix: Evtable options showed spurious empty lines if set without desc
+
 ## Evennia 1.2.0
 
 - Bug fix: `TagHandler.get` did not consistently cast to string (aMiss-aWry)
