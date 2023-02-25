@@ -16,7 +16,9 @@
     <script src="../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuring an Apache Proxy" href="Config-Apache-Proxy.html" />
+    <link rel="prev" title="Configuring HAProxy" href="Config-HAProxy.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Config-Apache-Proxy.html" title="Configuring an Apache Proxy"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Config-HAProxy.html" title="Configuring HAProxy"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Configuring NGINX for Evennia with SSL</a></li> 
       </ul>
     </div>  
@@ -54,16 +63,22 @@
   <ul>
 <li><a class="reference internal" href="#">Configuring NGINX for Evennia with SSL</a><ul>
 <li><a class="reference internal" href="#ssl-on-the-website-and-websocket">SSL on the website and websocket</a></li>
-<li><a class="reference internal" href="#ssl-on-telnet">SSL on telnet</a></li>
+<li><a class="reference internal" href="#telnet-ssl">Telnet SSL</a></li>
 <li><a class="reference internal" href="#dont-forget">Don’t Forget!</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Config-HAProxy.html"
+                        title="previous chapter">Configuring HAProxy</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Config-Apache-Proxy.html"
+                        title="next chapter">Configuring an Apache Proxy</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Setup/Configuring-NGINX-for-Evennia-with-SSL.md.txt"
+      <li><a href="../_sources/Setup/Config-Nginx.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -79,7 +94,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Configuring-NGINX-for-Evennia-with-SSL.html">1.0 (main branch)</a></li>
+  <li><a href="Config-Nginx.html">1.0 (main branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -92,8 +107,9 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="configuring-nginx-for-evennia-with-ssl">
 <h1>Configuring NGINX for Evennia with SSL<a class="headerlink" href="#configuring-nginx-for-evennia-with-ssl" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://nginx.org/en/">Nginx</a> is a proxy server; you can put it between Evennia and the outside world to serve your game over encrypted connections. Another alternative is <a class="reference internal" href="Config-HAProxy.html"><span class="doc std std-doc">HAProxy</span></a>.</p>
 <blockquote>
-<div><p>This is NOT a full set-up guide! It assumes you know how to get your own letsencrypt certs, that you already have nginx installed, and that you are familiar with nginx configuration files. <strong>If you don’t already use nginx,</strong> you should follow the <a class="reference internal" href="Config-HAProxy.html"><span class="doc std std-doc">guide for using HAProxy</span></a> instead.</p>
+<div><p>This is NOT a full set-up guide! It assumes you know how to get your own <code class="docutils literal notranslate"><span class="pre">Letsencrypt</span></code> certificates, that you already have nginx installed, and that you are familiar with Nginx configuration files. <strong>If you don’t already use nginx,</strong> you are probably better off using the <a class="reference internal" href="Config-HAProxy.html"><span class="doc std std-doc">guide for using HAProxy</span></a> instead.</p>
 </div></blockquote>
 <section id="ssl-on-the-website-and-websocket">
 <h2>SSL on the website and websocket<a class="headerlink" href="#ssl-on-the-website-and-websocket" title="Permalink to this headline">¶</a></h2>
@@ -120,7 +136,7 @@
 		proxy_set_header Host $host;
 	}
 
-	location / {
+	lo[[Settings]]cation / {
 		# The main website
 		proxy_pass http://localhost:4001;
 		proxy_http_version 1.1;
@@ -136,7 +152,7 @@
 <p>This proxies the websocket connection through the <code class="docutils literal notranslate"><span class="pre">/ws</span></code> location, and the root location to the website.</p>
 <p>Following that example, you then need the following in your <code class="docutils literal notranslate"><span class="pre">server/conf/secret_settings.py</span></code></p>
 <blockquote>
-<div><p>Using <code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> for this means you can continue using default access points for local development, making your life easier.</p>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> file is not included in <code class="docutils literal notranslate"><span class="pre">git</span></code> commits and is to be used for secret stuff. This also means you can continue using default access points for local development, making your life easier.</p>
 </div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SERVER_HOSTNAME</span> <span class="o">=</span> <span class="s2">&quot;example.com&quot;</span>
 <span class="c1"># Set the FULL URI for the websocket, including the scheme</span>
@@ -147,13 +163,13 @@
 </div>
 <p>This makes sure that evennia uses the correct URI for websocket connections. Setting <code class="docutils literal notranslate"><span class="pre">LOCKDOWN_MODE</span></code> on will also prevents any external connections directly to Evennia’s ports, limiting it to connections through the nginx proxies.</p>
 </section>
-<section id="ssl-on-telnet">
-<h2>SSL on telnet<a class="headerlink" href="#ssl-on-telnet" title="Permalink to this headline">¶</a></h2>
+<section id="telnet-ssl">
+<h2>Telnet SSL<a class="headerlink" href="#telnet-ssl" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>This will proxy ALL telnet access through nginx! If you want players to connect directly to Evennia’s telnet ports instead of going through nginx, leave <code class="docutils literal notranslate"><span class="pre">LOCKDOWN_MODE</span></code> off and use a different SSL implementation.</p>
+<div><p>This will proxy ALL telnet access through nginx! If you want players to connect directly to Evennia’s telnet ports instead of going through nginx, leave <code class="docutils literal notranslate"><span class="pre">LOCKDOWN_MODE</span></code> off and use a different SSL implementation, such as activating Evennia’s internal telnet SSL port (see <code class="docutils literal notranslate"><span class="pre">settings.SSL_ENABLED</span></code> and <code class="docutils literal notranslate"><span class="pre">settings.SSL_PORTS</span></code> in  <a class="reference internal" href="Settings-Default.html"><span class="doc std std-doc">default settings file</span></a>).</p>
 </div></blockquote>
 <p>If you’ve only used nginx for websites, telnet is slightly more complicated. You need to set up stream parameters in your primary configuration file, e.g. <code class="docutils literal notranslate"><span class="pre">/etc/nginx/nginx.conf</span></code> - which, at least in my case, was not there by default.</p>
-<p>I chose to parallel the <code class="docutils literal notranslate"><span class="pre">http</span></code> structure, so I could have <code class="docutils literal notranslate"><span class="pre">streams-available</span></code> conf files symlinked in <code class="docutils literal notranslate"><span class="pre">streams-enabled</span></code> the same as my sites.</p>
+<p>We chose to parallel the <code class="docutils literal notranslate"><span class="pre">http</span></code> structure, so to have <code class="docutils literal notranslate"><span class="pre">streams-available</span></code> conf files symlinked in <code class="docutils literal notranslate"><span class="pre">streams-enabled</span></code> the same as other sites.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">stream</span> <span class="p">{</span>
 	<span class="n">include</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">streams</span><span class="o">.</span><span class="n">d</span><span class="o">/*.</span><span class="n">conf</span><span class="p">;</span>
 	<span class="n">include</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">streams</span><span class="o">-</span><span class="n">enabled</span><span class="o">/*</span><span class="p">;</span>
@@ -205,7 +221,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Config-Apache-Proxy.html" title="Configuring an Apache Proxy"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Config-HAProxy.html" title="Configuring HAProxy"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Configuring NGINX for Evennia with SSL</a></li> 
       </ul>
     </div>
