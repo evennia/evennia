@@ -1,22 +1,22 @@
 # Add a wiki on your website
 
-**Before doing this tutorial you will probably want to read the intro in
-[Basic Web tutorial](./Web-Changing-Webpage.md).**  Reading the three first parts of the
-[Django tutorial](https://docs.djangoproject.com/en/1.9/intro/tutorial01/) might help as well.
+```{warning}
+As of 2023, The [django wiki](https://django-wiki.readthedocs.io/en/main/) only supports Django 4.0. Evennia requires Django 4.1+. While the django-wiki is still active and will hopefully be updated eventually, for now there is likely to be issues or trouble to install. This tutorial will probably not work out of the gate.
+```
 
+```{note}
+Before doing this tutorial you will probably want to read the intro in [Basic Web tutorial](./Web-Changing-Webpage.md).  Reading the three first parts of the [Django tutorial](https://docs.djangoproject.com/en/1.9/intro/tutorial01/) might help as well.
+
+```
 This tutorial will provide a step-by-step process to installing a wiki on your website.
-Fortunately, you don't have to create the features manually, since it has been done by others, and
-we can integrate their work quite easily with Django.  I have decided to focus on
+Fortunately, you don't have to create the features manually, since it has been done by others, and we can integrate their work quite easily with Django.  I have decided to focus on
 the [Django-wiki](https://django-wiki.readthedocs.io/).
 
-The [Django-wiki](https://django-wiki.readthedocs.io/) offers a lot of features associated with wikis, is actively maintained (at this time, anyway), and isn't too difficult to install in Evennia.  You can
-see a [demonstration of Django-wiki here](https://demo.django-wiki.org).
+The [Django-wiki](https://django-wiki.readthedocs.io/) offers a lot of features associated with wikis, is actively maintained (at this time, anyway), and isn't too difficult to install in Evennia.  You can see a [demonstration of Django-wiki here](https://demo.django-wiki.org).
 
 ## Basic installation
 
-You should begin by shutting down the Evennia server if it is running.  We will run migrations and
-alter the virtual environment just a bit.  Open a terminal and activate your Python environment, the
-one you use to run the `evennia` command.
+You should begin by shutting down the Evennia server if it is running.  We will run migrations and alter the virtual environment just a bit.  Open a terminal and activate your Python environment, the one you use to run the `evennia` command.
 
 If you used the default location from the Evennia installation instructions, it should be one of the following:
 
@@ -39,9 +39,7 @@ It might take some time, the Django-wiki having some dependencies.
 
 ### Adding the wiki in the settings
 
-You will need to add a few settings to have the wiki app on your website.  Open your
-`server/conf/settings.py` file and add the following at the bottom (but before importing
-`secret_settings`).  Here's an example of a settings file with the Django-wiki added:
+You will need to add a few settings to have the wiki app on your website.  Open your `server/conf/settings.py` file and add the following at the bottom (but before importing `secret_settings`).  Here's an example of a settings file with the Django-wiki added: 
 
 ```python
 # Use the defaults from Evennia unless explicitly overridden
@@ -119,31 +117,22 @@ Last step! Go ahead and start up your server again.
 
     evennia start
 
-Once that's finished booting, go to your evennia website (e.g. http://localhost:4001 ) and log in
-with your superuser account, if you aren't already. Then, go to your new wiki (e.g.
-http://localhost:4001/wiki ). It'll prompt you to create a starting page - put whatever you want,
-you can change it later.
+Once that's finished booting, go to your evennia website (e.g. http://localhost:4001 ) and log in with your superuser account, if you aren't already. Then, go to your new wiki (e.g. http://localhost:4001/wiki ). It'll prompt you to create a starting page - put whatever you want, you can change it later.
 
 Congratulations! You're all done!
 
 ## Defining wiki permissions
 
-A wiki is usually intended as a collaborative effort - but you probably still want to set
-some rules about who is allowed to do what. Who can create new articles? Edit them? Delete
-them? Etc.
+A wiki is usually intended as a collaborative effort - but you probably still want to set some rules about who is allowed to do what. Who can create new articles? Edit them? Delete them? Etc.
 
 The two simplest ways to do this are to use Django-wiki's group-based permissions
-system - or, since this is an Evennia site, to define your own custom permission rules
-tied to Evennia's permissions system in your settings file.
+system - or, since this is an Evennia site, to define your own custom permission rules tied to Evennia's permissions system in your settings file.
 
 ### Group permissions
 
-The wiki itself controls reading/editing permissions per article. The creator of an article will
-always have read/write permissions on that article. Additionally, the article will have Group-based
-permissions and general permissions.
+The wiki itself controls reading/editing permissions per article. The creator of an article will always have read/write permissions on that article. Additionally, the article will have Group-based permissions and general permissions. 
 
-By default, Evennia's permission groups *won't* be recognized by the wiki, so you'll have to create your own.
-Go to the Groups page of your game's Django admin panel  and add whichever permission groups you want for your wiki here.
+By default, Evennia's permission groups *won't* be recognized by the wiki, so you'll have to create your own. Go to the Groups page of your game's Django admin panel  and add whichever permission groups you want for your wiki here.
 
 ***Note:*** *If you want to connect those groups to your game's permission levels, you'll need to modify the game to apply both to accounts.*
 
@@ -151,9 +140,7 @@ Once you've added those groups, they'll be usable in your wiki right away!
 
 ### Settings permissions
 
-Django-wiki also allows you to bypass its article-based permissions with custom site-wide permissions
-rules in your settings file. If you don't want to use the Group system, or if you want a simple
-solution for connecting the Evennia permission levels to wiki access, this is the way to go.
+Django-wiki also allows you to bypass its article-based permissions with custom site-wide permissions rules in your settings file. If you don't want to use the Group system, or if you want a simple solution for connecting the Evennia permission levels to wiki access, this is the way to go.
 
 Here's an example of a basic set-up that would go in your `settings.py` file:
 
