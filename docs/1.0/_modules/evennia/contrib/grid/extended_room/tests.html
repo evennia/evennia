@@ -140,10 +140,27 @@
             <span class="s2">&quot;here&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Room(#</span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPRING_DESC</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span> <span class="s2">&quot;testdetail&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DETAIL_DESC</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span> 
+            <span class="s2">&quot;testdetail&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;You look closely at </span><span class="si">{}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">|</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;testdetail&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DETAIL_DESC</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span> <span class="s2">&quot;nonexistent&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;nonexistent&#39;.&quot;</span>
         <span class="p">)</span></div>
+        
+<div class="viewcode-block" id="TestExtendedRoom.test_cmdextendedlook_second_person"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdextendedlook_second_person">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmdextendedlook_second_person</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># char2 is already in the same room. </span>
+        <span class="c1"># replace char2.msg with a Mock; this disables it and will catch what it is called with</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span> 
+            <span class="s2">&quot;testdetail&quot;</span>
+        <span class="p">)</span>
+     
+        <span class="c1"># check what char2 saw.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Char looks closely at testdetail.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestExtendedRoom.test_cmdsetdetail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdsetdetail">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmdsetdetail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Details on Room&quot;</span><span class="p">)</span>

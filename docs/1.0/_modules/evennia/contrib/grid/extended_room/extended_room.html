@@ -436,7 +436,10 @@
                 <span class="p">):</span>
                     <span class="n">detail</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">return_detail</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">detail</span><span class="p">:</span>
-                        <span class="c1"># we found a detail instead. Show that.</span>
+                        <span class="c1"># we found a detail</span>
+                        <span class="c1"># tell all the objects in the room we&#39;re looking closely at something</span>
+                        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() $conj(look) closely at </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+                        <span class="c1"># show the detail to the player</span>
                         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">detail</span><span class="p">)</span>
                         <span class="k">return</span>
                 <span class="c1"># no detail found. Trigger delayed error messages</span>
