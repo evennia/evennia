@@ -3382,8 +3382,8 @@
 <span class="sd">    scripts.</span>
 
 <span class="sd">    Usage:</span>
-<span class="sd">      script[/switches] [script-#dbref, key, script.path or &lt;obj&gt;]</span>
-<span class="sd">      script[/start||stop] &lt;obj&gt; = &lt;script.path or script-key&gt;</span>
+<span class="sd">      script[/switches] [script-#dbref, key, script.path]</span>
+<span class="sd">      script[/start||stop] &lt;obj&gt; = [&lt;script.path or script-key&gt;]</span>
 
 <span class="sd">    Switches:</span>
 <span class="sd">      start - start/unpause an existing script&#39;s timer.</span>
@@ -3392,19 +3392,21 @@
 <span class="sd">      delete - deletes script. This will also stop the timer as needed</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        script                         - list scripts</span>
-<span class="sd">        script myobj                   - list all scripts on object</span>
-<span class="sd">        script foo.bar.Script          - create a new global Script</span>
-<span class="sd">        script scriptname              - examine named existing global script</span>
-<span class="sd">        script myobj = foo.bar.Script  - create and assign script to object</span>
-<span class="sd">        script/stop myobj = scriptname - stop script on object</span>
-<span class="sd">        script/pause foo.Bar.Script    - pause global script</span>
-<span class="sd">        script/delete myobj            - delete ALL scripts on object</span>
-<span class="sd">        script/delete #dbref[-#dbref]  - delete script or range by dbref</span>
+<span class="sd">        script                            - list all scripts</span>
+<span class="sd">        script foo.bar.Script             - create a new global Script</span>
+<span class="sd">        script/pause foo.bar.Script       - pause global script</span>
+<span class="sd">        script scriptname|#dbref          - examine named existing global script</span>
+<span class="sd">        script/delete #dbref[-#dbref]     - delete script or range by #dbref</span>
+
+<span class="sd">        script myobj =                    - list all scripts on object</span>
+<span class="sd">        script myobj = foo.bar.Script     - create and assign script to object</span>
+<span class="sd">        script/stop myobj = name|#dbref   - stop named script on object</span>
+<span class="sd">        script/delete myobj = name|#dbref - delete script on object</span>
+<span class="sd">        script/delete myobj =             - delete ALL scripts on object</span>
 
 <span class="sd">    When given with an `&lt;obj&gt;` as left-hand-side, this creates and</span>
 <span class="sd">    assigns a new script to that object. Without an `&lt;obj&gt;`, this</span>
-<span class="sd">    manages and inspects global scripts</span>
+<span class="sd">    manages and inspects global scripts.</span>
 
 <span class="sd">    If no switches are given, this command just views all active</span>
 <span class="sd">    scripts. The argument can be either an object, at which point it</span>
@@ -3481,11 +3483,16 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
             <span class="n">obj_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
             <span class="n">script_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># an empty &quot;=&quot;</span>
+            <span class="n">obj_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+            <span class="n">script_query</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">obj_query</span> <span class="o">=</span> <span class="n">script_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+            <span class="n">obj_query</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">script_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
 
-        <span class="n">scripts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_script</span><span class="p">(</span><span class="n">script_query</span><span class="p">)</span>
-        <span class="n">objects</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">obj_query</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scripts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_script</span><span class="p">(</span><span class="n">script_query</span><span class="p">)</span> <span class="k">if</span> <span class="n">script_query</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">objects</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">obj_query</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj_query</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">objects</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>

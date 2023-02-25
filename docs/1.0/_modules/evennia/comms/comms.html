@@ -85,6 +85,7 @@
 <span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
+
 <span class="kn">from</span> <span class="nn">evennia.comms.managers</span> <span class="kn">import</span> <span class="n">ChannelManager</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
@@ -144,7 +145,7 @@
 
     <span class="c1"># default nick-alias replacements (default using the &#39;channel&#39; command)</span>
     <span class="n">channel_msg_nick_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{alias}</span><span class="s2">\s*?|</span><span class="si">{alias}</span><span class="s2">\s+?(?P&lt;arg1&gt;.+?)&quot;</span>
-    <span class="n">channel_msg_nick_replacement</span> <span class="o">=</span> <span class="s2">&quot;channel </span><span class="si">{channelname}</span><span class="s2"> = $1&quot;</span>
+    <span class="n">channel_msg_nick_replacement</span> <span class="o">=</span> <span class="s2">&quot;@channel </span><span class="si">{channelname}</span><span class="s2"> = $1&quot;</span>
 
 <div class="viewcode-block" id="DefaultChannel.at_first_save"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.at_first_save">[docs]</a>    <span class="k">def</span> <span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

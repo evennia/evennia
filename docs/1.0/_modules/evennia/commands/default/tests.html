@@ -95,9 +95,6 @@
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
-
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DefaultCharacter</span><span class="p">,</span>
     <span class="n">DefaultExit</span><span class="p">,</span>
@@ -109,14 +106,7 @@
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdparser</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">account</span><span class="p">,</span>
-    <span class="n">admin</span><span class="p">,</span>
-    <span class="n">batchprocess</span><span class="p">,</span>
-    <span class="n">building</span><span class="p">,</span>
-    <span class="n">comms</span><span class="p">,</span>
-    <span class="n">general</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">account</span><span class="p">,</span> <span class="n">admin</span><span class="p">,</span> <span class="n">batchprocess</span><span class="p">,</span> <span class="n">building</span><span class="p">,</span> <span class="n">comms</span><span class="p">,</span> <span class="n">general</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">help</span> <span class="k">as</span> <span class="n">help_module</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">syscommands</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">unloggedin</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
@@ -126,6 +116,8 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Command testing</span>
@@ -161,7 +153,9 @@
 <div class="viewcode-block" id="TestGeneral.test_pose"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral.test_pose">[docs]</a>    <span class="k">def</span> <span class="nf">test_pose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdPose</span><span class="p">(),</span> <span class="s2">&quot;looks around&quot;</span><span class="p">,</span> <span class="s2">&quot;Char looks around&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Char looks around&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;pose&#39;</span><span class="p">}),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Char looks around&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;pose&quot;</span><span class="p">}),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestGeneral.test_nick"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral.test_nick">[docs]</a>    <span class="k">def</span> <span class="nf">test_nick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -251,7 +245,6 @@
 
 
 <div class="viewcode-block" id="TestHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp">[docs]</a><span class="k">class</span> <span class="nc">TestHelp</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-
     <span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="TestHelp.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -283,33 +276,41 @@
         <span class="p">[</span>
             <span class="p">(</span>
                 <span class="s2">&quot;test&quot;</span><span class="p">,</span>  <span class="c1"># main help entry</span>
-                <span class="s2">&quot;Help for test</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Main help text</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;  test/creating extra stuff&quot;</span>
-                <span class="s2">&quot;  test/something else&quot;</span>
-                <span class="s2">&quot;  test/more&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Help for test</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Main help text</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  test/creating extra stuff&quot;</span>
+                    <span class="s2">&quot;  test/something else&quot;</span>
+                    <span class="s2">&quot;  test/more&quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;test/creating extra stuff&quot;</span><span class="p">,</span>  <span class="c1"># subtopic, full match</span>
-                <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;test/creating&quot;</span><span class="p">,</span>  <span class="c1"># startswith-match</span>
-                <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;test/extra&quot;</span><span class="p">,</span>  <span class="c1"># partial match</span>
-                <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;test/extra/subsubtopic&quot;</span><span class="p">,</span>  <span class="c1"># partial subsub-match</span>
@@ -326,19 +327,23 @@
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;test/More/Second-more&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Help for test/more/second-more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;The Second More text.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;  test/more/second-more/more again&quot;</span>
-                <span class="s2">&quot;  test/more/second-more/third more&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Help for test/more/second-more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;The Second More text.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  test/more/second-more/more again&quot;</span>
+                    <span class="s2">&quot;  test/more/second-more/third more&quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;test/More/-more&quot;</span><span class="p">,</span>  <span class="c1"># partial match</span>
-                <span class="s2">&quot;Help for test/more/second-more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;The Second More text.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;  test/more/second-more/more again&quot;</span>
-                <span class="s2">&quot;  test/more/second-more/third more&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Help for test/more/second-more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;The Second More text.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  test/more/second-more/more again&quot;</span>
+                    <span class="s2">&quot;  test/more/second-more/third more&quot;</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;test/more/second/more again&quot;</span><span class="p">,</span>
@@ -662,7 +667,6 @@
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_ooc_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multisession_mode</span><span class="p">,</span> <span class="n">auto_puppet</span><span class="p">,</span> <span class="n">max_nr_chars</span><span class="p">,</span> <span class="n">expected_result</span><span class="p">):</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">unpuppet_all</span><span class="p">()</span>
 
@@ -1591,7 +1595,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdFind</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;=#</span><span class="si">{</span><span class="n">id1</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">id2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mdiff</span><span class="si">}</span><span class="s2"> Matches(#</span><span class="si">{</span><span class="n">id1</span><span class="si">}</span><span class="s2">-#</span><span class="si">{</span><span class="n">id2</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_script"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_script">[docs]</a>    <span class="k">def</span> <span class="nf">test_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;No scripts defined on Obj&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj =&quot;</span><span class="p">,</span> <span class="s2">&quot;No scripts defined on Obj&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
@@ -1603,12 +1607,12 @@
             <span class="s2">&quot;evennia.scripts.scripts.DoNothing&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Global Script Created - sys_do_nothing &quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj =&quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;/start Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Script on Obj Started &quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;/start Obj = &quot;</span><span class="p">,</span> <span class="s2">&quot;Script on Obj Started &quot;</span>
         <span class="p">)</span>  <span class="c1"># we allow running start again; this should still happen</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;/stop Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Script on Obj Stopped - &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;/stop Obj =&quot;</span><span class="p">,</span> <span class="s2">&quot;Script on Obj Stopped - &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
@@ -1641,7 +1645,6 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_script_multi_delete"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_script_multi_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_script_multi_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">script1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
         <span class="n">script2</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
         <span class="n">script3</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
@@ -1672,9 +1675,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span>
             <span class="s2">&quot;Obj = Room2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj(#</span><span class="si">{}</span><span class="s2">) is leaving Room(#</span><span class="si">{}</span><span class="s2">), heading for Room2(#</span><span class="si">{}</span><span class="s2">).|Teleported Obj -&gt; Room2.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">oid</span><span class="p">,</span> <span class="n">rid</span><span class="p">,</span> <span class="n">rid2</span>
-            <span class="p">),</span>
+            <span class="s2">&quot;Obj(#</span><span class="si">{}</span><span class="s2">) is leaving Room(#</span><span class="si">{}</span><span class="s2">), heading for Room2(#</span><span class="si">{}</span><span class="s2">).|Teleported Obj -&gt; Room2.&quot;</span>
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oid</span><span class="p">,</span> <span class="n">rid</span><span class="p">,</span> <span class="n">rid2</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;NotFound = Room&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1790,7 +1792,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;{&#39;prototype_key&#39;:&#39;GOBLIN&#39;, &#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;, &quot;</span>
-            <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+            <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span>
+            <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned goblin&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">goblin</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;goblin&quot;</span><span class="p">)</span>
@@ -1838,7 +1841,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;/noloc {&#39;prototype_parent&#39;:&#39;TESTBALL&#39;, &#39;key&#39;: &#39;Ball&#39;, &#39;prototype_key&#39;: &#39;foo&#39;,&quot;</span>
-            <span class="s2">&quot; &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+            <span class="s2">&quot; &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span>
+            <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned Ball&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ball</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>
@@ -1945,7 +1949,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/sub testchannel&quot;</span><span class="p">,</span> <span class="s2">&quot;You are now subscribed&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="s2">&quot;testchannel Hello&quot;</span><span class="p">),</span> <span class="s2">&quot;channel testchannel = Hello&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="s2">&quot;testchannel Hello&quot;</span><span class="p">),</span> <span class="s2">&quot;@channel testchannel = Hello&quot;</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__unsub"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__unsub">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__unsub</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1961,7 +1965,7 @@
             <span class="s2">&quot;/alias testchannel = foo&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Added/updated your alias &#39;foo&#39; for channel testchannel.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="s2">&quot;foo Hello&quot;</span><span class="p">),</span> <span class="s2">&quot;channel testchannel = Hello&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="s2">&quot;foo Hello&quot;</span><span class="p">),</span> <span class="s2">&quot;@channel testchannel = Hello&quot;</span><span class="p">)</span>
 
         <span class="c1"># use alias</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
@@ -2162,7 +2166,6 @@
 
 
 <div class="viewcode-block" id="CmdInterrupt"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CmdInterrupt">[docs]</a><span class="k">class</span> <span class="nc">CmdInterrupt</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;interrupt&quot;</span>
 
 <div class="viewcode-block" id="CmdInterrupt.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CmdInterrupt.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
