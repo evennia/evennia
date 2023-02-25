@@ -206,7 +206,7 @@ will call <code class="docutils literal notranslate"><span class="pre">character
                         <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is already sitting there!&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="n">sitter</span>
-</span><span class="hll">        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_sitting</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+</span><span class="hll">        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_sitting</span> <span class="o">=</span> <span class="bp">self</span>
 </span><span class="hll">        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></pre></div></td></tr></table></div>
 </div>
@@ -357,7 +357,7 @@ will call <code class="docutils literal notranslate"><span class="pre">character
         <span class="k">if</span> <span class="ow">not</span> <span class="n">stander</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
             <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">del</span> <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_sitting</span>
 <span class="hll">            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></pre></div></td></tr></table></div>
@@ -676,7 +676,7 @@ What will be checked is the <code class="docutils literal notranslate"><span cla
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    True if accessing_obj is sitting on/in the accessed_obj.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">==</span> <span class="n">accessing_obj</span>
+    <span class="k">return</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">==</span> <span class="n">accessing_obj</span>
 
 <span class="c1"># ...</span>
 </pre></div>
@@ -813,7 +813,7 @@ You stand up from chair.
 <li><p><strong>Line 32</strong>: We use the parsed command arguments as the target-chair to search for. As discussed in the <a class="reference internal" href="Beginner-Tutorial-Searching-Things.html"><span class="doc std std-doc">search tutorial</span></a>, <code class="docutils literal notranslate"><span class="pre">self.caller.search()</span></code> will handle error messages itself. So if it returns <code class="docutils literal notranslate"><span class="pre">None</span></code>, we can just <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p></li>
 <li><p><strong>Line 35-38</strong>: The <code class="docutils literal notranslate"><span class="pre">try...except</span></code> block ‘catches’ and exception and handles it. In this case we try to run <code class="docutils literal notranslate"><span class="pre">do_sit</span></code> on the object. If the object we found is <em>not</em> a <code class="docutils literal notranslate"><span class="pre">Sittable</span></code>, it will likely not have a <code class="docutils literal notranslate"><span class="pre">do_sit</span></code> method and an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> will be raised. We should handle that case gracefully.</p></li>
 </ul>
-<p>Let’s do the <code class="docutils literal notranslate"><span class="pre">stand</span></code> command while we are at it. Since the Command is external to the chair we don’t know which object we are sitting on and have to search for it. In this case we really want to find <em>only</em> things we are sitting on.</p>
+<p>Let’s do the <code class="docutils literal notranslate"><span class="pre">stand</span></code> command while we are at it. Since the Command is external to the chair we need to figure out if we are sitting down or not.</p>
 <div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -858,10 +858,10 @@ You stand up from chair.
 </span></pre></div></td></tr></table></div>
 </div>
 <ul class="simple">
-<li><p><strong>Line 17</strong>: We didn’t need the <code class="docutils literal notranslate"><span class="pre">is_sitting</span></code> Attribute for the first version of these Commands, but we do need it now. Since we have this, we don’t need to search and know just which chair we sit on. If we don’t have this set, we are not sitting anywhere.</p></li>
+<li><p><strong>Line 17</strong>: We didn’t need the <code class="docutils literal notranslate"><span class="pre">is_sitting</span></code> Attribute for the first version of these Commands, but we do need it now. Since we have this, we don’t need to search and know just which chair we sit on. If we don’t have this Attribute set, we are not sitting anywhere.</p></li>
 <li><p><strong>Line 21</strong>: We stand up using the sittable we found.</p></li>
 </ul>
-<p>All that is left now is to make this available to us. This type of Command should be available to us all the time so we can put it in the default Cmdset on the Character. Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>.</p>
+<p>All that is left now is to make <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> available to us. This type of Command should be available to us all the time so we can put it in the default Cmdset on the Character. Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
 
 <span class="c1"># ...</span>
