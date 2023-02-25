@@ -1,4 +1,9 @@
-from evennia import DefaultObject, DefaultRoom
+from evennia import (
+    create_object,
+    DefaultCharacter,
+    DefaultObject,
+    DefaultRoom
+)
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.search import (
@@ -96,3 +101,19 @@ class TestSearch(EvenniaTest):
         object.db.an_attribute = "some value"
         found = search_object_attribute(key="an_attribute", value="wrong value")
         self.assertEqual(len(found), 0, errors)
+
+    def test_search_objects_by_typeclass_room(self):
+        """Test searching for objects of typeclass Room."""
+        newest_room = create_object(DefaultRoom, key="somewhere")
+        found = search_typeclass("evennia.DefaultRoom")
+        self.assertIn(newest_room, found, "newly created room not found")
+        for room in found:
+            self.assertIsInstance(room, DefaultRoom, "found objects from wrong typeclass")    
+        
+    def test_search_objects_by_typeclass_character(self):
+        """Test searching for objects of typeclass Character"""
+        newest_character = create_object(DefaultCharacter, key="someone")
+        found = search_typeclass("evennia.DefaultCharacter")
+        self.assertIn(newest_character, found, "newly created character not found")
+        for character in found:
+            self.assertIsInstance(character, DefaultCharacter, "found objects from wrong typeclass")
