@@ -209,8 +209,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "@channel"
-    aliases = ["@chan", "@channels"]
+    key = "channel"
+    aliases = ["chan", "channels"]
     help_category = "Comms"
     # these cmd: lock controls access to the channel command itself
     # the admin: lock controls access to /boot/ban/unban switches
@@ -777,7 +777,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             maxwidth=_DEFAULT_WIDTH,
         )
         for chan in subscribed:
-
             locks = "-"
             chanid = "-"
             if chan.access(self.caller, "control"):
@@ -1158,7 +1157,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             reason = reason[0].strip() if reason else ""
 
             for chan in channels:
-
                 if not chan.access(caller, "control"):
                     self.msg(f"You need 'control'-access to boot a user from {chan.key}.")
                     return

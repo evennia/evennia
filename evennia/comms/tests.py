@@ -1,6 +1,18 @@
+from django.test import SimpleTestCase
+
 from evennia import DefaultChannel
+from evennia.commands.default.comms import CmdChannel
 from evennia.utils.create import create_message
 from evennia.utils.test_resources import BaseEvenniaTest
+
+
+class TestCommsNickMatchesCommand(SimpleTestCase):
+    def test(self):
+        """
+        Verifies that the nick being set by DefaultChannel matches the channel
+        command key.
+        """
+        self.assertTrue(DefaultChannel.channel_msg_nick_replacement.startswith(CmdChannel.key))
 
 
 class ObjectCreationTest(BaseEvenniaTest):
