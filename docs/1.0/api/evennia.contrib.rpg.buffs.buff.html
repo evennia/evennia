@@ -975,6 +975,10 @@ to react to the retrieval or modify the result in some way.</p>
 <dd class="field-even"><p><em>any</em> – The value to return to the caller.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This is will only fire if you actually get the Attribute via this <strong>AttributeProperty</strong>.
+That is, if you instead get it via the <strong>AttributeHandler</strong> (or via <strong>.db</strong>), you are
+bypassing this <strong>AttributeProperty</strong> entirely and this method is never reached.</p>
 </dd></dl>
 
 </dd></dl>

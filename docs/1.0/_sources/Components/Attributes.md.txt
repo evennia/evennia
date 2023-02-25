@@ -192,6 +192,15 @@ You can e.g. `del char.strength` to set the value back to the default (the value
 
 See the [AttributeProperty API](evennia.typeclasses.attributes.AttributeProperty) for more details on how to create it with special options, like giving access-restrictions. 
 
+```{warning}
+While the `AttributeProperty` uses the `AttributeHandler` (`.attributes`) under the hood, the reverse is _not_ true. The `AttributeProperty` has helper methods, like `at_get` and `at_set`. These will _only_ be called if you access the Attribute using the property. 
+
+That is, if you do `obj.yourattribute = 1`, the `AttributeProperty.at_set` will be called. But while doing `obj.db.yourattribute = 1`, will lead to the same Attribute being saved, this is 'bypassing' the `AttributeProperty` and using the `AttributeHandler` directly. So in this case the `AttributeProperty.at_set` will _not_ be called. If you added some special functionality in `at_get` this may be confusing.
+
+To avoid confusion, you should aim to be consistent in how you access your Attributes - if you use a `AttributeProperty` to define it, use that also to access and modify the Attribute later.
+```
+
+
 ### Properties of Attributes
 
 An `Attribute` object is stored in the database. It has the following properties:

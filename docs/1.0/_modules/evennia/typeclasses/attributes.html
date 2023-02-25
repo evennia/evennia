@@ -240,7 +240,9 @@
 <span class="sd">    Attribute property descriptor. Allows for specifying Attributes as Django-like &#39;fields&#39;</span>
 <span class="sd">    on the class level. Note that while one can set a lock on the Attribute,</span>
 <span class="sd">    there is no way to *check* said lock when accessing via the property - use</span>
-<span class="sd">    the full AttributeHandler if you need to do access checks.</span>
+<span class="sd">    the full `AttributeHandler` if you need to do access checks. Note however that if you use the</span>
+<span class="sd">    full `AttributeHandler` to access this Attribute, the `at_get/at_set` methods on this class will</span>
+<span class="sd">    _not_ fire (because you are bypassing the `AttributeProperty` entirely in that case).</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">    ::</span>
@@ -366,6 +368,11 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            AttributeError: If the value is invalid to store.</span>
 
+<span class="sd">        Notes:</span>
+<span class="sd">            This is will only fire if you actually set the Attribute via this `AttributeProperty`.</span>
+<span class="sd">            That is, if you instead set it via the `AttributeHandler` (or via `.db`), you are</span>
+<span class="sd">            bypassing this `AttributeProperty` entirely and this method is never reached.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
@@ -380,6 +387,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            any: The value to return to the caller.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This is will only fire if you actually get the Attribute via this `AttributeProperty`.</span>
+<span class="sd">            That is, if you instead get it via the `AttributeHandler` (or via `.db`), you are</span>
+<span class="sd">            bypassing this `AttributeProperty` entirely and this method is never reached.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">value</span></div></div>

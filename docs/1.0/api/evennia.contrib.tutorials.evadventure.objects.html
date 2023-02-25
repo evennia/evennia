@@ -128,7 +128,9 @@ rune sword (weapon+quest).</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -142,7 +144,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -156,7 +160,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -274,7 +280,9 @@ meaning it’s unusable.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -322,7 +330,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -370,7 +380,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -419,7 +431,9 @@ have a limited usage in this way.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -433,7 +447,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -556,7 +572,9 @@ not be usable anymore and probably be deleted.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -570,7 +588,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -584,7 +604,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -598,7 +620,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -612,7 +636,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -668,7 +694,9 @@ they are quite powerful (and scales with caster level).</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -682,7 +710,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -696,7 +726,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -710,7 +742,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -774,7 +808,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
@@ -788,7 +824,9 @@ the full AttributeHandler if you need to do access checks.</p>
 <dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
 there is no way to <em>check</em> said lock when accessing via the property - use
-the full AttributeHandler if you need to do access checks.</p>
+the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
+full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
+_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
