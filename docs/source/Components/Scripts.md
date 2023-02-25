@@ -11,7 +11,7 @@ If you ever consider creating an [Object](./Objects.md) with a `None`-location j
 - Scripts can _attach_ to Objects and Accounts via e.g. `obj.scripts.add/remove`. In the script you can then access the object/account as `self.obj` or `self.account`. This can be used to dynamically extend other typeclasses but also to use the timer component to affect the parent object in various ways. For historical reasons, a Script _not_ attached to an object is referred to as a _Global_ Script.
 
 ```{versionchanged} 1.0
-   In previus Evennia versions, stopping the Script's timer also meant deleting the Script object.
+   In previous Evennia versions, stopping the Script's timer also meant deleting the Script object.
    Starting with this version, the timer can be start/stopped separately and `.delete()` must be called
    on the Script explicitly to delete it.
 
@@ -333,7 +333,7 @@ GLOBAL_SCRIPTS.weather.db.current_weather = "Cloudy"
 ```
 
 ```{warning}
-Note that global scripts appear as properties on `GLOBAL_SCRIPTS` based on their `key`. If you were to create two global scripts with the same `key` (even with different typeclasses), the `GLOBAL_SCRIPTS` container will only return one of them (which one depends on order in the database). Best is to organize your scripts so that this does not happen. Otherwise, use `evennia.search_scripts` to get exactly the script you want.
+Note that global scripts appear as properties on `GLOBAL_SCRIPTS` based on their `key`. If you were to create two global scripts with the same `key` (even with different typeclasses), the `GLOBAL_SCRIPTS` container will only return one of them (which one depends on order in the database). Best is to organize your scripts so that this does not happen. Otherwise, use `evennia.search_script` to get exactly the script you want.
 ```
 
 There are two ways to make a script appear as a property on `GLOBAL_SCRIPTS`:
