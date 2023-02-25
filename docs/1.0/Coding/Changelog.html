@@ -171,6 +171,10 @@
 <section id="main">
 <h2>Main<a class="headerlink" href="#main" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Doc: Expanded <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> docstring to clarify <code class="docutils literal notranslate"><span class="pre">MapLink</span></code> class will not itself
+spawn anything, children must define their prototypes explicitly.</p></li>
+<li><p>Doc: Explained why <code class="docutils literal notranslate"><span class="pre">AttributeProperty.at_get/set</span></code> will not be called if
+accessing the Attribute from the <code class="docutils literal notranslate"><span class="pre">AttributeHandler</span></code> (bypassing the property)</p></li>
 <li><p>Bug fix: Evtable options showed spurious empty lines if set without desc</p></li>
 <li><p>Usage fix: The <code class="docutils literal notranslate"><span class="pre">teleport:</span></code> and <code class="docutils literal notranslate"><span class="pre">teleport_here:</span></code> locks where checked in
 <code class="docutils literal notranslate"><span class="pre">CmdTeleport</span></code>, but not actually set on any entities. These locks are now

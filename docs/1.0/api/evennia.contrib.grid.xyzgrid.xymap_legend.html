@@ -388,6 +388,9 @@ and an ‘outgoing direction’. It’s like a railway track between
 MapNodes. A Link can be placed on any location in the grid, but even when
 on an integer XY position they still don’t represent an actual in-game place
 but just a link between such places (the Nodes).</p>
+<p>&gt; Note that, if you want to create a child link-class that spawns onto the grid
+(usually an exit), you must set its <strong>.prototype</strong>. This parent class will not on
+its own spawn anything.</p>
 <p>Each link has a ‘weight’ &gt;=1,  this indicates how ‘slow’
 it is to traverse that link. This is used by the Dijkstra algorithm
 to find the ‘fastest’ route to a point. By default this weight is 1

@@ -91,15 +91,13 @@
     <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">zeros</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="se">\n</span><span class="s2">The XYZgrid contrib requires &quot;</span>
-        <span class="s2">&quot;the SciPy package. Install with `pip install scipy&#39;.&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="se">\n</span><span class="s2">The XYZgrid contrib requires the SciPy package. Install with `pip install scipy&#39;.&quot;</span>
     <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">exceptions</span> <span class="k">as</span> <span class="n">django_exceptions</span>
-
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
@@ -487,7 +485,7 @@
                 <span class="n">typeclass</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">typeclass</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;The prototype </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prototype</span><span class="si">}</span><span class="s2"> for this node has no &#39;typeclass&#39; key.&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;The prototype </span><span class="si">{</span><span class="n">prot</span><span class="si">}</span><span class="s2"> for this node has no &#39;typeclass&#39; key.&quot;</span><span class="p">,</span>
                         <span class="bp">self</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  spawning/updating exit xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2">, direction=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">typeclass</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
@@ -590,6 +588,10 @@
 <span class="sd">    MapNodes. A Link can be placed on any location in the grid, but even when</span>
 <span class="sd">    on an integer XY position they still don&#39;t represent an actual in-game place</span>
 <span class="sd">    but just a link between such places (the Nodes).</span>
+
+<span class="sd">    &gt; Note that, if you want to create a child link-class that spawns onto the grid</span>
+<span class="sd">    (usually an exit), you must set its `.prototype`. This parent class will not on</span>
+<span class="sd">    its own spawn anything.</span>
 
 <span class="sd">    Each link has a &#39;weight&#39; &gt;=1,  this indicates how &#39;slow&#39;</span>
 <span class="sd">    it is to traverse that link. This is used by the Dijkstra algorithm</span>
@@ -1056,7 +1058,7 @@
             <span class="n">direction</span><span class="p">,</span> <span class="n">link</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">neighbors</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="s2">&quot;node_index&quot;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span>
-                    <span class="s2">&quot;can only connect to a Link. Found </span><span class="si">{link}</span><span class="s2"> in &quot;</span> <span class="s2">&quot;direction </span><span class="si">{direction}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="bp">self</span>
+                    <span class="s2">&quot;can only connect to a Link. Found </span><span class="si">{link}</span><span class="s2"> in direction </span><span class="si">{direction}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="bp">self</span>
                 <span class="p">)</span>
             <span class="c1"># the string &#39;teleport&#39; will not be understood by the traverser, leading to</span>
             <span class="c1"># this being interpreted as an empty target and the `at_empty_target`</span>
