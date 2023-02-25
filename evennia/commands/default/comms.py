@@ -489,9 +489,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
     def create_channel(self, name, description, typeclass=None, aliases=None):
         """
-        Create a new channel. Its name must not previously exist
-        (users can alias as needed). Will also connect to the
-        new channel.
+        Create a new channel. Its name must not previously exist (case agnostic)
+        (users can alias as needed). Will also connect to the new channel.
 
         Args:
             name (str): The new channel name/key.
@@ -880,7 +879,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         if "create" in switches:
             # create a new channel
-
             if not self.access(caller, "manage"):
                 self.msg("You don't have access to use channel/create.")
                 return
@@ -937,7 +935,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 )
             elif len(found_channels) > 1:
                 errors.append(
-                    "Multiple possible channel matches/alias for '{channel_name}':\n"
+                    f"Multiple possible channel matches/alias for '{channel_name}':\n"
                     + ", ".join(chan.key for chan in found_channels)
                 )
             else:
