@@ -2,6 +2,10 @@
 
 ## Main
 
+- Doc: Expanded `XYZGrid` docstring to clarify `MapLink` class will not itself
+  spawn anything, children must define their prototypes explicitly.
+- Doc: Explained why `AttributeProperty.at_get/set` will not be called if
+  accessing the Attribute from the `AttributeHandler` (bypassing the property)
 - Bug fix: Evtable options showed spurious empty lines if set without desc
 - Usage fix: The `teleport:` and `teleport_here:` locks where checked in
   `CmdTeleport`, but not actually set on any entities. These locks are now
