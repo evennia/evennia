@@ -2,6 +2,8 @@
 
 ## Main branch (git)
 
+- Bug fix: Change so `script obj = [scriptname|id]` is required to manipulate scripts
+  on objects; `script scriptname|id` only works on global scripts.
 - Doc: Add warning about `Django-wiki` (in wiki tutorial) only supporting Django <4.0.
 - Doc: Expanded `XYZGrid` docstring to clarify `MapLink` class will not itself
   spawn anything, children must define their prototypes explicitly.
