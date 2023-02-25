@@ -1,6 +1,6 @@
 # Changelog
 
-## Main
+## Evennia 1.2.0
 
 - Bug fix: `TagHandler.get` did not consistently cast to string (aMiss-aWry)
 - Bug fix: Channels hard to manage if given in different case (aMiss-aWry)
