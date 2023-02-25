@@ -254,7 +254,7 @@ class TagHandler(object):
             database lookup.
 
         """
-        key = key.strip().lower() if key else None
+        key = str(key).strip().lower() if key else None
         category = category.strip().lower() if category else None
         if key:
             cachekey = "%s-%s" % (key, category)
@@ -323,7 +323,10 @@ class TagHandler(object):
             return
         if not key:  # don't allow an empty key in cache
             return
-        key, category = (key.strip().lower(), category.strip().lower() if category else category)
+        key, category = (
+            str(key).strip().lower(),
+            category.strip().lower() if category else category,
+        )
         cachekey = "%s-%s" % (key, category)
         catkey = "-%s" % category
         self._cache[cachekey] = tag_obj
@@ -340,7 +343,10 @@ class TagHandler(object):
             category (str or None): A cleaned category name
 
         """
-        key, category = (key.strip().lower(), category.strip().lower() if category else category)
+        key, category = (
+            str(key).strip().lower(),
+            category.strip().lower() if category else category,
+        )
         catkey = "-%s" % category
         if key:
             cachekey = "%s-%s" % (key, category)
@@ -419,7 +425,7 @@ class TagHandler(object):
         category = category.strip().lower() if category is not None else None
         if key:
             for tag_str in make_iter(key):
-                tag_str = tag_str.strip().lower()
+                tag_str = str(tag_str).strip().lower()
                 ret.append(bool(self._getcache(tag_str, category)))
         elif category:
             ret.extend(bool(tag) for tag in self._getcache(category=category))
@@ -507,7 +513,7 @@ class TagHandler(object):
         for key in make_iter(key):
             if not (key or key.strip()):  # we don't allow empty tags
                 continue
-            tagstr = key.strip().lower()
+            tagstr = str(key).strip().lower()
             category = category.strip().lower() if category else category
 
             # This does not delete the tag object itself. Maybe it should do

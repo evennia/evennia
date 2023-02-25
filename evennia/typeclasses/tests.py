@@ -314,6 +314,18 @@ class TestTags(BaseEvenniaTest):
         self.obj1.tags.add("tagC", "categoryC")
         self.assertFalse(self.obj1.tags.has(category="categoryD"))
 
+    def test_integer_tag(self):
+        self.obj1.tags.add(1)
+        self.assertTrue(self.obj1.tags.has(1))
+        self.assertTrue(self.obj1.tags.get(1))
+        self.assertTrue(self.obj1.tags.has("1"))
+        self.assertTrue(self.obj1.tags.get("1"))
+        self.obj1.tags.remove(1)
+        self.assertFalse(self.obj1.tags.has(1))
+        self.assertFalse(self.obj1.tags.get(1))
+        self.assertFalse(self.obj1.tags.has("1"))
+        self.assertFalse(self.obj1.tags.get("1"))
+
     def test_tag_add_no_category__issue_2688(self):
         """
         Adding a tag without a category should create a new tag:None tag
