@@ -43,5 +43,6 @@ Online-Setup
 Client-Support-Grid
 Security-Practices
 Config-HAProxy
+Config-Nginx
 Config-Apache-Proxy
 ```

@@ -1,6 +1,8 @@
 # Configuring NGINX for Evennia with SSL
 
-> This is NOT a full set-up guide! It assumes you know how to get your own letsencrypt certs, that you already have nginx installed, and that you are familiar with nginx configuration files. **If you don't already use nginx,** you should follow the [guide for using HAProxy](Config-HAProxy) instead.
+[Nginx](https://nginx.org/en/) is a proxy server; you can put it between Evennia and the outside world to serve your game over encrypted connections. Another alternative is [HAProxy](./Config-HAProxy.md). 
+
+> This is NOT a full set-up guide! It assumes you know how to get your own `Letsencrypt` certificates, that you already have nginx installed, and that you are familiar with Nginx configuration files. **If you don't already use nginx,** you are probably better off using the [guide for using HAProxy](./Config-HAProxy.md) instead.
 
 ## SSL on the website and websocket
 
@@ -29,7 +31,7 @@ server {
 		proxy_set_header Host $host;
 	}
 
-	location / {
+	lo[[Settings]]cation / {
 		# The main website
 		proxy_pass http://localhost:4001;
 		proxy_http_version 1.1;
@@ -46,7 +48,7 @@ This proxies the websocket connection through the `/ws` location, and the root l
 
 Following that example, you then need the following in your `server/conf/secret_settings.py`
 
-> Using `secret_settings.py` for this means you can continue using default access points for local development, making your life easier.
+> The `secret_settings.py` file is not included in `git` commits and is to be used for secret stuff. This also means you can continue using default access points for local development, making your life easier.
 
 ```python
 SERVER_HOSTNAME = "example.com"
@@ -57,13 +59,13 @@ LOCKDOWN_MODE = True
 ```
 This makes sure that evennia uses the correct URI for websocket connections. Setting `LOCKDOWN_MODE` on will also prevents any external connections directly to Evennia's ports, limiting it to connections through the nginx proxies.
 
-## SSL on telnet
+## Telnet SSL
 
-> This will proxy ALL telnet access through nginx! If you want players to connect directly to Evennia's telnet ports instead of going through nginx, leave `LOCKDOWN_MODE` off and use a different SSL implementation.
+> This will proxy ALL telnet access through nginx! If you want players to connect directly to Evennia's telnet ports instead of going through nginx, leave `LOCKDOWN_MODE` off and use a different SSL implementation, such as activating Evennia's internal telnet SSL port (see `settings.SSL_ENABLED` and `settings.SSL_PORTS` in  [default settings file](./Settings-Default.md)). 
 
 If you've only used nginx for websites, telnet is slightly more complicated. You need to set up stream parameters in your primary configuration file, e.g. `/etc/nginx/nginx.conf` - which, at least in my case, was not there by default.
 
-I chose to parallel the `http` structure, so I could have `streams-available` conf files symlinked in `streams-enabled` the same as my sites.
+We chose to parallel the `http` structure, so to have `streams-available` conf files symlinked in `streams-enabled` the same as other sites.
 
 ```
 stream {

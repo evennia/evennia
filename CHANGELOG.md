@@ -2,6 +2,7 @@
 
 ## Main
 
+- New doc page for Nginx setup (InspectorCaracal)
 - Feature: Add `fly/dive` commands to `XYZGrid` contrib to showcase treating its
   Z-axis as a full 3D grid. Also fixed minor bug in `XYZGrid` contrib when using
   a Z axis named using an integer rather than a string.
