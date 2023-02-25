@@ -13,7 +13,6 @@ from collections import defaultdict
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
-
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -1546,6 +1545,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     "call:true()",  # allow to call commands on this object
                     "tell:perm(Admin)",  # allow emits to this object
                     "puppet:pperm(Developer)",
+                    "teleport:true()",
+                    "teleport_here:true()",
                 ]
             )
         )  # lock down puppeting only to staff by default
@@ -2635,7 +2636,14 @@ class DefaultCharacter(DefaultObject):
         """
         super().basetype_setup()
         self.locks.add(
-            ";".join(["get:false()", "call:false()"])  # noone can pick up the character
+            ";".join(
+                [
+                    "get:false()",
+                    "call:false()",
+                    "teleport:perm(Admin)",
+                    "teleport_here:perm(Admin)",
+                ]
+            )  # noone can pick up the character
         )  # no commands can be called on character from outside
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_CHARACTER, persistent=True)
@@ -2862,7 +2870,7 @@ class DefaultRoom(DefaultObject):
 
         super().basetype_setup()
         self.locks.add(
-            ";".join(["get:false()", "puppet:false()"])
+            ";".join(["get:false()", "puppet:false()", "teleport:false()", "teleport_here:true()"])
         )  # would be weird to puppet a room ...
         self.location = None
 
@@ -3078,6 +3086,8 @@ class DefaultExit(DefaultObject):
                     "puppet:false()",  # would be weird to puppet an exit ...
                     "traverse:all()",  # who can pass through exit by default
                     "get:false()",  # noone can pick up the exit
+                    "teleport:false()",
+                    "teleport_here:false()",
                 ]
             )
         )
