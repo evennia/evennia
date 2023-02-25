@@ -10,7 +10,6 @@ from time import time
 import mock
 from anything import Something
 from django.test.utils import override_settings
-
 from evennia.prototypes import menus as olc_menus
 from evennia.prototypes import protfuncs as protofuncs
 from evennia.prototypes import prototypes as protlib
@@ -116,6 +115,8 @@ class TestUtils(BaseEvenniaTest):
                         "examine:perm(Builder)",
                         "get:all()",
                         "puppet:pperm(Developer)",
+                        "teleport:true()",
+                        "teleport_here:true()",
                         "tell:perm(Admin)",
                         "view:all()",
                     ]
@@ -170,11 +171,21 @@ class TestUtils(BaseEvenniaTest):
                 "key": "Obj",
                 "home": Something,
                 "location": Something,
-                "locks": (
-                    "call:true();control:perm(Developer);delete:perm(Admin);"
-                    "drop:holds();"
-                    "edit:perm(Admin);examine:perm(Builder);get:all();"
-                    "puppet:pperm(Developer);tell:perm(Admin);view:all()"
+                "locks": ";".join(
+                    [
+                        "call:true()",
+                        "control:perm(Developer)",
+                        "delete:perm(Admin)",
+                        "drop:holds()",
+                        "edit:perm(Admin)",
+                        "examine:perm(Builder)",
+                        "get:all()",
+                        "puppet:pperm(Developer)",
+                        "teleport:true()",
+                        "teleport_here:true()",
+                        "tell:perm(Admin)",
+                        "view:all()",
+                    ]
                 ),
                 "prototype_desc": "Built from Obj",
                 "prototype_key": Something,
@@ -192,11 +203,21 @@ class TestUtils(BaseEvenniaTest):
                 "home": Something,
                 "key": "Obj",
                 "location": Something,
-                "locks": (
-                    "call:true();control:perm(Developer);delete:perm(Admin);"
-                    "drop:holds();"
-                    "edit:perm(Admin);examine:perm(Builder);get:all();"
-                    "puppet:pperm(Developer);tell:perm(Admin);view:all()"
+                "locks": ";".join(
+                    [
+                        "call:true()",
+                        "control:perm(Developer)",
+                        "delete:perm(Admin)",
+                        "drop:holds()",
+                        "edit:perm(Admin)",
+                        "examine:perm(Builder)",
+                        "get:all()",
+                        "puppet:pperm(Developer)",
+                        "teleport:true()",
+                        "teleport_here:true()",
+                        "tell:perm(Admin)",
+                        "view:all()",
+                    ]
                 ),
                 "new": "new_val",
                 "permissions": ["Builder"],
@@ -217,12 +238,38 @@ class TestUtils(BaseEvenniaTest):
                 "prototype_key": (Something, Something, "UPDATE"),
                 "location": (Something, Something, "KEEP"),
                 "locks": (
-                    "call:true();control:perm(Developer);delete:perm(Admin);"
-                    "drop:holds();edit:perm(Admin);examine:perm(Builder);"
-                    "get:all();puppet:pperm(Developer);tell:perm(Admin);view:all()",
-                    "call:true();control:perm(Developer);delete:perm(Admin);drop:holds();"
-                    "edit:perm(Admin);examine:perm(Builder);get:all();"
-                    "puppet:pperm(Developer);tell:perm(Admin);view:all()",
+                    ";".join(
+                        [
+                            "call:true()",
+                            "control:perm(Developer)",
+                            "delete:perm(Admin)",
+                            "drop:holds()",
+                            "edit:perm(Admin)",
+                            "examine:perm(Builder)",
+                            "get:all()",
+                            "puppet:pperm(Developer)",
+                            "teleport:true()",
+                            "teleport_here:true()",
+                            "tell:perm(Admin)",
+                            "view:all()",
+                        ]
+                    ),
+                    ";".join(
+                        [
+                            "call:true()",
+                            "control:perm(Developer)",
+                            "delete:perm(Admin)",
+                            "drop:holds()",
+                            "edit:perm(Admin)",
+                            "examine:perm(Builder)",
+                            "get:all()",
+                            "puppet:pperm(Developer)",
+                            "teleport:true()",
+                            "teleport_here:true()",
+                            "tell:perm(Admin)",
+                            "view:all()",
+                        ]
+                    ),
                     "KEEP",
                 ),
                 "prototype_tags": (None, None, "KEEP"),
@@ -303,6 +350,8 @@ class TestUtils(BaseEvenniaTest):
                         "examine:perm(Builder)",
                         "get:all()",
                         "puppet:pperm(Developer)",
+                        "teleport:true()",
+                        "teleport_here:true()",
                         "tell:perm(Admin)",
                         "view:all()",
                     ]
@@ -700,12 +749,16 @@ class TestMenuModule(BaseEvenniaTest):
             "home": ("#2", "#2", "KEEP"),
             "key": ("TestChar", "TestChar", "KEEP"),
             "locks": (
-                "boot:false();call:false();control:perm(Developer);delete:false();"
-                "edit:false();examine:perm(Developer);get:false();msg:all();"
-                "puppet:false();tell:perm(Admin);view:all()",
-                "boot:false();call:false();control:perm(Developer);delete:false();"
-                "edit:false();examine:perm(Developer);get:false();msg:all();"
-                "puppet:false();tell:perm(Admin);view:all()",
+                (
+                    "boot:false();call:false();control:perm(Developer);delete:false();"
+                    "edit:false();examine:perm(Developer);get:false();msg:all();"
+                    "puppet:false();tell:perm(Admin);view:all()"
+                ),
+                (
+                    "boot:false();call:false();control:perm(Developer);delete:false();"
+                    "edit:false();examine:perm(Developer);get:false();msg:all();"
+                    "puppet:false();tell:perm(Admin);view:all()"
+                ),
                 "KEEP",
             ),
             "permissions": {"developer": ("developer", "developer", "KEEP")},
