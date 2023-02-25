@@ -118,20 +118,21 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="add-a-wiki-on-your-website">
 <h1>Add a wiki on your website<a class="headerlink" href="#add-a-wiki-on-your-website" title="Permalink to this headline">¶</a></h1>
-<p><strong>Before doing this tutorial you will probably want to read the intro in
-<a class="reference internal" href="Web-Changing-Webpage.html"><span class="doc std std-doc">Basic Web tutorial</span></a>.</strong>  Reading the three first parts of the
-<a class="reference external" href="https://docs.djangoproject.com/en/1.9/intro/tutorial01/">Django tutorial</a> might help as well.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>As of 2023, The <a class="reference external" href="https://django-wiki.readthedocs.io/en/main/">django wiki</a> only supports Django 4.0. Evennia requires Django 4.1+. While the django-wiki is still active and will hopefully be updated eventually, for now there is likely to be issues or trouble to install. This tutorial will probably not work out of the gate.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before doing this tutorial you will probably want to read the intro in <a class="reference internal" href="Web-Changing-Webpage.html"><span class="doc std std-doc">Basic Web tutorial</span></a>.  Reading the three first parts of the <a class="reference external" href="https://docs.djangoproject.com/en/1.9/intro/tutorial01/">Django tutorial</a> might help as well.</p>
+</div>
 <p>This tutorial will provide a step-by-step process to installing a wiki on your website.
-Fortunately, you don’t have to create the features manually, since it has been done by others, and
-we can integrate their work quite easily with Django.  I have decided to focus on
+Fortunately, you don’t have to create the features manually, since it has been done by others, and we can integrate their work quite easily with Django.  I have decided to focus on
 the <a class="reference external" href="https://django-wiki.readthedocs.io/">Django-wiki</a>.</p>
-<p>The <a class="reference external" href="https://django-wiki.readthedocs.io/">Django-wiki</a> offers a lot of features associated with wikis, is actively maintained (at this time, anyway), and isn’t too difficult to install in Evennia.  You can
-see a <a class="reference external" href="https://demo.django-wiki.org">demonstration of Django-wiki here</a>.</p>
+<p>The <a class="reference external" href="https://django-wiki.readthedocs.io/">Django-wiki</a> offers a lot of features associated with wikis, is actively maintained (at this time, anyway), and isn’t too difficult to install in Evennia.  You can see a <a class="reference external" href="https://demo.django-wiki.org">demonstration of Django-wiki here</a>.</p>
 <section id="basic-installation">
 <h2>Basic installation<a class="headerlink" href="#basic-installation" title="Permalink to this headline">¶</a></h2>
-<p>You should begin by shutting down the Evennia server if it is running.  We will run migrations and
-alter the virtual environment just a bit.  Open a terminal and activate your Python environment, the
-one you use to run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p>
+<p>You should begin by shutting down the Evennia server if it is running.  We will run migrations and alter the virtual environment just a bit.  Open a terminal and activate your Python environment, the one you use to run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p>
 <p>If you used the default location from the Evennia installation instructions, it should be one of the following:</p>
 <ul>
 <li><p>On Linux:</p>
@@ -155,9 +156,7 @@ one you use to run the <code class="docutils literal notranslate"><span class="p
 </section>
 <section id="adding-the-wiki-in-the-settings">
 <h3>Adding the wiki in the settings<a class="headerlink" href="#adding-the-wiki-in-the-settings" title="Permalink to this headline">¶</a></h3>
-<p>You will need to add a few settings to have the wiki app on your website.  Open your
-<code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file and add the following at the bottom (but before importing
-<code class="docutils literal notranslate"><span class="pre">secret_settings</span></code>).  Here’s an example of a settings file with the Django-wiki added:</p>
+<p>You will need to add a few settings to have the wiki app on your website.  Open your <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file and add the following at the bottom (but before importing <code class="docutils literal notranslate"><span class="pre">secret_settings</span></code>).  Here’s an example of a settings file with the Django-wiki added:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the defaults from Evennia unless explicitly overridden</span>
 <span class="kn">from</span> <span class="nn">evennia.settings_default</span> <span class="kn">import</span> <span class="o">*</span>
 
@@ -231,36 +230,25 @@ one you use to run the <code class="docutils literal notranslate"><span class="p
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia start
 </pre></div>
 </div>
-<p>Once that’s finished booting, go to your evennia website (e.g. <a class="reference external" href="http://localhost:4001">http://localhost:4001</a> ) and log in
-with your superuser account, if you aren’t already. Then, go to your new wiki (e.g.
-<a class="reference external" href="http://localhost:4001/wiki">http://localhost:4001/wiki</a> ). It’ll prompt you to create a starting page - put whatever you want,
-you can change it later.</p>
+<p>Once that’s finished booting, go to your evennia website (e.g. <a class="reference external" href="http://localhost:4001">http://localhost:4001</a> ) and log in with your superuser account, if you aren’t already. Then, go to your new wiki (e.g. <a class="reference external" href="http://localhost:4001/wiki">http://localhost:4001/wiki</a> ). It’ll prompt you to create a starting page - put whatever you want, you can change it later.</p>
 <p>Congratulations! You’re all done!</p>
 </section>
 </section>
 <section id="defining-wiki-permissions">
 <h2>Defining wiki permissions<a class="headerlink" href="#defining-wiki-permissions" title="Permalink to this headline">¶</a></h2>
-<p>A wiki is usually intended as a collaborative effort - but you probably still want to set
-some rules about who is allowed to do what. Who can create new articles? Edit them? Delete
-them? Etc.</p>
+<p>A wiki is usually intended as a collaborative effort - but you probably still want to set some rules about who is allowed to do what. Who can create new articles? Edit them? Delete them? Etc.</p>
 <p>The two simplest ways to do this are to use Django-wiki’s group-based permissions
-system - or, since this is an Evennia site, to define your own custom permission rules
-tied to Evennia’s permissions system in your settings file.</p>
+system - or, since this is an Evennia site, to define your own custom permission rules tied to Evennia’s permissions system in your settings file.</p>
 <section id="group-permissions">
 <h3>Group permissions<a class="headerlink" href="#group-permissions" title="Permalink to this headline">¶</a></h3>
-<p>The wiki itself controls reading/editing permissions per article. The creator of an article will
-always have read/write permissions on that article. Additionally, the article will have Group-based
-permissions and general permissions.</p>
-<p>By default, Evennia’s permission groups <em>won’t</em> be recognized by the wiki, so you’ll have to create your own.
-Go to the Groups page of your game’s Django admin panel  and add whichever permission groups you want for your wiki here.</p>
+<p>The wiki itself controls reading/editing permissions per article. The creator of an article will always have read/write permissions on that article. Additionally, the article will have Group-based permissions and general permissions.</p>
+<p>By default, Evennia’s permission groups <em>won’t</em> be recognized by the wiki, so you’ll have to create your own. Go to the Groups page of your game’s Django admin panel  and add whichever permission groups you want for your wiki here.</p>
 <p><em><strong>Note:</strong></em> <em>If you want to connect those groups to your game’s permission levels, you’ll need to modify the game to apply both to accounts.</em></p>
 <p>Once you’ve added those groups, they’ll be usable in your wiki right away!</p>
 </section>
 <section id="settings-permissions">
 <h3>Settings permissions<a class="headerlink" href="#settings-permissions" title="Permalink to this headline">¶</a></h3>
-<p>Django-wiki also allows you to bypass its article-based permissions with custom site-wide permissions
-rules in your settings file. If you don’t want to use the Group system, or if you want a simple
-solution for connecting the Evennia permission levels to wiki access, this is the way to go.</p>
+<p>Django-wiki also allows you to bypass its article-based permissions with custom site-wide permissions rules in your settings file. If you don’t want to use the Group system, or if you want a simple solution for connecting the Evennia permission levels to wiki access, this is the way to go.</p>
 <p>Here’s an example of a basic set-up that would go in your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In server/conf/settings.py</span>
 <span class="c1"># ...</span>
