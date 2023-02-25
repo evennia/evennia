@@ -13,15 +13,13 @@ try:
     from scipy import zeros
 except ImportError as err:
     raise ImportError(
-        f"{err}\nThe XYZgrid contrib requires "
-        "the SciPy package. Install with `pip install scipy'."
+        f"{err}\nThe XYZgrid contrib requires the SciPy package. Install with `pip install scipy'."
     )
 
 import uuid
 from collections import defaultdict
 
 from django.core import exceptions as django_exceptions
-
 from evennia.prototypes import spawner
 from evennia.utils.utils import class_from_module
 
@@ -409,7 +407,7 @@ class MapNode:
                 typeclass = prot.get("typeclass")
                 if typeclass is None:
                     raise MapError(
-                        f"The prototype {self.prototype} for this node has no 'typeclass' key.",
+                        f"The prototype {prot} for this node has no 'typeclass' key.",
                         self,
                     )
                 self.log(f"  spawning/updating exit xyz={xyz}, direction={key} ({typeclass})")
@@ -512,6 +510,10 @@ class MapLink:
     MapNodes. A Link can be placed on any location in the grid, but even when
     on an integer XY position they still don't represent an actual in-game place
     but just a link between such places (the Nodes).
+
+    > Note that, if you want to create a child link-class that spawns onto the grid
+    (usually an exit), you must set its `.prototype`. This parent class will not on
+    its own spawn anything.
 
     Each link has a 'weight' >=1,  this indicates how 'slow'
     it is to traverse that link. This is used by the Dijkstra algorithm
@@ -978,7 +980,7 @@ class SmartTeleporterMapLink(MapLink):
             direction, link = next(iter(neighbors.items()))
             if hasattr(link, "node_index"):
                 raise MapParserError(
-                    "can only connect to a Link. Found {link} in " "direction {direction}.", self
+                    "can only connect to a Link. Found {link} in direction {direction}.", self
                 )
             # the string 'teleport' will not be understood by the traverser, leading to
             # this being interpreted as an empty target and the `at_empty_target`
