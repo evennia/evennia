@@ -20,15 +20,11 @@ The *spawner* takes a prototype and uses it to create (spawn) new, custom object
 
 ### Using the OLC
 
-Enter the `olc` command or `spawn/olc` to enter the prototype wizard. This is a menu system for
-creating, loading, saving and manipulating prototypes. It's intended to be used by in-game builders
-and will give a better understanding of prototypes in general. Use `help` on each node of the menu
-for more information. Below are further details about how prototypes work and how they are used.
+Enter the `olc` command or `spawn/olc` to enter the prototype wizard. This is a menu system for creating, loading, saving and manipulating prototypes. It's intended to be used by in-game builders and will give a better understanding of prototypes in general. Use `help` on each node of the menu for more information. Below are further details about how prototypes work and how they are used.
 
 ### The prototype
 
-The prototype dictionary can either be created for you by the OLC (see above), be  written manually in a Python module (and then referenced by the `spawn` command/OLC), or created on-the-fly and
-manually loaded into the spawner function or `spawn` command.
+The prototype dictionary can either be created for you by the OLC (see above), be  written manually in a Python module (and then referenced by the `spawn` command/OLC), or created on-the-fly and manually loaded into the spawner function or `spawn` command.
 
 The dictionary defines all possible database-properties of an Object. It has a fixed set of allowed keys. When preparing to store the prototype in the database (or when using the OLC), some of these keys are mandatory. When just passing a one-time prototype-dict to the spawner the system is more lenient and will use defaults for keys not explicitly provided.
 
@@ -54,15 +50,12 @@ All keys starting with `prototype_` are for book keeping.
  - `prototype_key` - the 'name' of the prototype, used for referencing the prototype
     when spawning and inheritance. If defining a prototype in a module and this
     not set, it will be auto-set to the name of the prototype's variable in the module.
- - `prototype_parent` - If given, this should be the `prototype_key` of another prototype stored in
-    the system or available in a module. This makes this prototype *inherit* the keys from the
-    parent and only override what is needed. Give a tuple `(parent1, parent2, ...)` for multiple
-    left-right inheritance. If this is not given, a `typeclass` should usually be defined (below).
+ - `prototype_parent` - If given, this should be the `prototype_key` of another prototype stored in the system or available in a module. This makes this prototype *inherit* the keys from the
+    parent and only override what is needed. Give a tuple `(parent1, parent2, ...)` for multiple left-right inheritance. If this is not given, a `typeclass` should usually be defined (below).
  - `prototype_desc` - this is optional and used when listing the prototype in in-game listings.
  - `protototype_tags` - this is optional and allows for tagging the prototype in order to find it
    easier later.
- - `prototype_locks` - two lock types are supported: `edit` and `spawn`. The first lock restricts the copying and editing of the prototype when loaded through the OLC. The second determines who
-   may use the prototype to create new objects.
+ - `prototype_locks` - two lock types are supported: `edit` and `spawn`. The first lock restricts the copying and editing of the prototype when loaded through the OLC. The second determines who may use the prototype to create new objects.
 
 
 The remaining keys determine actual aspects of the objects to spawn from this prototype:
@@ -121,7 +114,10 @@ Finally, the value can be a *prototype function* (*Protfunc*). These look like s
      "attrs": {"desc": "This is a large $red(and very red) demon. "
                        "He has $randint(2,5) skulls in a chain around his neck."}
 ```
-At execution time, the place of the protfunc will be replaced with the result of that protfunc being called (this is always a string). A protfunc is a [FuncParser function](./FuncParser.md) run every time the prototype is used to spawn a new object.
+
+> If you want to escape a protfunc and have it appear verbatim, use `$$funcname()`.
+
+At spawn time, the place of the protfunc will be replaced with the result of that protfunc being called (this is always a string). A protfunc is a [FuncParser function](./FuncParser.md) run every time the prototype is used to spawn a new object. See the FuncParse for a lot more information.
 
 Here is how a protfunc is defined (same as other funcparser functions).
 
@@ -137,7 +133,12 @@ def red(*args, **kwargs):
    return f"|r{args[0]}|n"
 ```
 
-> Note that we must make sure to validate input and raise `ValueError` if that fails. Also, it is *not* possible to use keywords in the call to the protfunc (so something like `$echo(text, align=left)` is invalid). The `kwargs` requred is for internal evennia use and not used at all for protfuncs (only by inlinefuncs).
+> Note that we must make sure to validate input and raise `ValueError` on failure.
+
+The parser will always include the following reserved `kwargs`: 
+- `session` - the current [Session](evennia.server.ServerSession) performing the spawning. 
+- `prototype` - The Prototype-dict this function is a part of. This is intended to be used _read-only_. Be careful to modify a mutable structure like this from inside the function - you can cause really hard-to-find bugs this way. 
+- `current_key` - The current key of the `prototype` dict under which this protfunc is executed.
 
 To make this protfunc available to builders in-game, add it to a new module and add the path to that module to `settings.PROT_FUNC_MODULES`:
 
@@ -153,7 +154,7 @@ The default protfuncs available out of the box are defined in `evennia/prototype
 
 | Protfunc | Description |
 | --- | --- |
-| `$random()` | Returns random value in range [0, 1) |
+| `$random()` | Returns random value in range `[0, 1)` |
 |  `$randint(start, end)` |  Returns random value in range [start, end]  |
 | `$left_justify(<text>)` | Left-justify text |
 |  `$right_justify(<text>)` | Right-justify text to screen width |
@@ -170,7 +171,7 @@ The default protfuncs available out of the box are defined in `evennia/prototype
 | `$objlist(<query>)` | Like `$obj`, except always returns a list of zero, one or more results. |
 | `$dbref(dbref)` | Returns argument if it is formed as a #dbref (e.g. #1234), otherwise error. |
 
-For developers with access to Python, using protfuncs in prototypes is generally not useful. Passing real Python functions is a lot more powerful and flexible. Their main use is to allow in-game builders to do limited coding/scripting for their prototypes without giving them direct access to raw Python.
+For developers with access to Python, using protfuncs in prototypes is generally not useful. Passing real Python functions is a lot more powerful and flexible. Their main use is to allow in-game builders to do limited coding/scripting for their prototypes without giving them direct access to raw Python. 
 
 ## Database prototypes
 
@@ -203,10 +204,7 @@ Here is an example of a prototype defined in a module:
 		  "health": 20}
     ```
 
-> Note that in the example above, `"ORC_SHAMAN"` will become the `prototype_key` of this prototype.
-> It's the only case when `prototype_key` can be skipped in a prototype. However, if `prototype_key`
-> was given explicitly, that would take precedence. This is a legacy behavior and it's recommended
-> that you always add `prototype_key` to be consistent.
+> Note that in the example above, `"ORC_SHAMAN"` will become the `prototype_key` of this prototype. It's the only case when `prototype_key` can be skipped in a prototype. However, if `prototype_key`was given explicitly, that would take precedence. This is a legacy behavior and it's recommended > that you always add `prototype_key` to be consistent.
 
 
 ## Spawning 

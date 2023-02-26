@@ -77,30 +77,37 @@
             
   <h1>Source code for evennia.prototypes.protfuncs</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Protfuncs are FuncParser-callables that can be embedded in a prototype to</span>
-<span class="sd">provide custom logic without having access to Python. The protfunc is parsed at</span>
-<span class="sd">the time of spawning, using the creating object&#39;s session as input. If the</span>
-<span class="sd">protfunc returns a non-string, this is what will be added to the prototype.</span>
+<span class="sd">Protfuncs are FuncParser-callables that can be embedded in a prototype to provide custom logic</span>
+<span class="sd">without having access to Python. The protfunc is parsed at the time of spawning, using the creating</span>
+<span class="sd">object&#39;s session as input. If the protfunc returns a non-string, this is what will be added to the</span>
+<span class="sd">prototype.</span>
 
 <span class="sd">In the prototype dict, the protfunc is specified as a string inside the prototype, e.g.:</span>
 
-<span class="sd">    { ...</span>
+<span class="sd">```python</span>
+<span class="sd">{ ...</span>
 
-<span class="sd">    &quot;key&quot;: &quot;$funcname(args, kwargs)&quot;</span>
+<span class="sd">&quot;key&quot;: &quot;$funcname(args, kwargs)&quot;</span>
 
-<span class="sd">    ...  }</span>
+<span class="sd">...  }</span>
+<span class="sd">```</span>
 
 <span class="sd">Available protfuncs are either all callables in one of the modules of `settings.PROT_FUNC_MODULES`</span>
-<span class="sd">or all callables added to a dict FUNCPARSER_CALLABLES in such a module.</span>
+<span class="sd">or all callables added to a dict FUNCPARSER_CALLABLES in such a module. By default, base inlinefuncs</span>
+<span class="sd">for text manipulation and searching are included, as well as the special `$protkey` function.</span>
+<span class="sd">See the Prototypes and Spawner documentation for more info.</span>
 
-<span class="sd">    def funcname (*args, **kwargs)</span>
+<span class="sd">```python</span>
+<span class="sd">def funcname (*args, **kwargs):</span>
+<span class="sd">    return &quot;replacement text&quot;</span>
+<span class="sd">```</span>
 
 <span class="sd">At spawn-time the spawner passes the following extra kwargs into each callable (in addition to</span>
 <span class="sd">what is added in the call itself):</span>
 
-<span class="sd">    - session (Session): The Session of the entity spawning using this prototype.</span>
-<span class="sd">    - prototype (dict): The dict this protfunc is a part of.</span>
-<span class="sd">    - current_key (str): The active key this value belongs to in the prototype.</span>
+<span class="sd">- `session` (Session): The Session of the entity spawning using this prototype.</span>
+<span class="sd">- `prototype` (dict): The dict this protfunc is a part of.</span>
+<span class="sd">- `current_key` (str): The active key this value belongs to in the prototype.</span>
 
 <span class="sd">Any traceback raised by this function will be handled at the time of spawning and abort the spawn</span>
 <span class="sd">before any object is created/updated. It must otherwise return the value to store for the specified</span>
@@ -114,8 +121,9 @@
 <div class="viewcode-block" id="protfunc_callable_protkey"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.protfunc_callable_protkey">[docs]</a><span class="k">def</span> <span class="nf">protfunc_callable_protkey</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $protkey(keyname)</span>
+
 <span class="sd">    Returns the value of another key in this prototoype. Will raise an error if</span>
-<span class="sd">        the key is not found in this prototype.</span>
+<span class="sd">    the key is not found in this prototype.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>

@@ -138,15 +138,11 @@ Spawned<span class="w"> </span>Goblin<span class="w"> </span>Grunt<span class="o
 <h2>Working with Prototypes<a class="headerlink" href="#working-with-prototypes" title="Permalink to this headline">¶</a></h2>
 <section id="using-the-olc">
 <h3>Using the OLC<a class="headerlink" href="#using-the-olc" title="Permalink to this headline">¶</a></h3>
-<p>Enter the <code class="docutils literal notranslate"><span class="pre">olc</span></code> command or <code class="docutils literal notranslate"><span class="pre">spawn/olc</span></code> to enter the prototype wizard. This is a menu system for
-creating, loading, saving and manipulating prototypes. It’s intended to be used by in-game builders
-and will give a better understanding of prototypes in general. Use <code class="docutils literal notranslate"><span class="pre">help</span></code> on each node of the menu
-for more information. Below are further details about how prototypes work and how they are used.</p>
+<p>Enter the <code class="docutils literal notranslate"><span class="pre">olc</span></code> command or <code class="docutils literal notranslate"><span class="pre">spawn/olc</span></code> to enter the prototype wizard. This is a menu system for creating, loading, saving and manipulating prototypes. It’s intended to be used by in-game builders and will give a better understanding of prototypes in general. Use <code class="docutils literal notranslate"><span class="pre">help</span></code> on each node of the menu for more information. Below are further details about how prototypes work and how they are used.</p>
 </section>
 <section id="the-prototype">
 <h3>The prototype<a class="headerlink" href="#the-prototype" title="Permalink to this headline">¶</a></h3>
-<p>The prototype dictionary can either be created for you by the OLC (see above), be  written manually in a Python module (and then referenced by the <code class="docutils literal notranslate"><span class="pre">spawn</span></code> command/OLC), or created on-the-fly and
-manually loaded into the spawner function or <code class="docutils literal notranslate"><span class="pre">spawn</span></code> command.</p>
+<p>The prototype dictionary can either be created for you by the OLC (see above), be  written manually in a Python module (and then referenced by the <code class="docutils literal notranslate"><span class="pre">spawn</span></code> command/OLC), or created on-the-fly and manually loaded into the spawner function or <code class="docutils literal notranslate"><span class="pre">spawn</span></code> command.</p>
 <p>The dictionary defines all possible database-properties of an Object. It has a fixed set of allowed keys. When preparing to store the prototype in the database (or when using the OLC), some of these keys are mandatory. When just passing a one-time prototype-dict to the spawner the system is more lenient and will use defaults for keys not explicitly provided.</p>
 <p>In dictionary form, a prototype can look something like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -171,15 +167,12 @@ manually loaded into the spawner function or <code class="docutils literal notra
 <li><p><code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> - the ‘name’ of the prototype, used for referencing the prototype
 when spawning and inheritance. If defining a prototype in a module and this
 not set, it will be auto-set to the name of the prototype’s variable in the module.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> - If given, this should be the <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> of another prototype stored in
-the system or available in a module. This makes this prototype <em>inherit</em> the keys from the
-parent and only override what is needed. Give a tuple <code class="docutils literal notranslate"><span class="pre">(parent1,</span> <span class="pre">parent2,</span> <span class="pre">...)</span></code> for multiple
-left-right inheritance. If this is not given, a <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> should usually be defined (below).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> - If given, this should be the <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> of another prototype stored in the system or available in a module. This makes this prototype <em>inherit</em> the keys from the
+parent and only override what is needed. Give a tuple <code class="docutils literal notranslate"><span class="pre">(parent1,</span> <span class="pre">parent2,</span> <span class="pre">...)</span></code> for multiple left-right inheritance. If this is not given, a <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> should usually be defined (below).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">prototype_desc</span></code> - this is optional and used when listing the prototype in in-game listings.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">protototype_tags</span></code> - this is optional and allows for tagging the prototype in order to find it
 easier later.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">prototype_locks</span></code> - two lock types are supported: <code class="docutils literal notranslate"><span class="pre">edit</span></code> and <code class="docutils literal notranslate"><span class="pre">spawn</span></code>. The first lock restricts the copying and editing of the prototype when loaded through the OLC. The second determines who
-may use the prototype to create new objects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prototype_locks</span></code> - two lock types are supported: <code class="docutils literal notranslate"><span class="pre">edit</span></code> and <code class="docutils literal notranslate"><span class="pre">spawn</span></code>. The first lock restricts the copying and editing of the prototype when loaded through the OLC. The second determines who may use the prototype to create new objects.</p></li>
 </ul>
 <p>The remaining keys determine actual aspects of the objects to spawn from this prototype:</p>
 <ul class="simple">
@@ -232,7 +225,10 @@ may use the prototype to create new objects.</p></li>
                        <span class="s2">&quot;He has $randint(2,5) skulls in a chain around his neck.&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>At execution time, the place of the protfunc will be replaced with the result of that protfunc being called (this is always a string). A protfunc is a <a class="reference internal" href="FuncParser.html"><span class="doc std std-doc">FuncParser function</span></a> run every time the prototype is used to spawn a new object.</p>
+<blockquote>
+<div><p>If you want to escape a protfunc and have it appear verbatim, use <code class="docutils literal notranslate"><span class="pre">$$funcname()</span></code>.</p>
+</div></blockquote>
+<p>At spawn time, the place of the protfunc will be replaced with the result of that protfunc being called (this is always a string). A protfunc is a <a class="reference internal" href="FuncParser.html"><span class="doc std std-doc">FuncParser function</span></a> run every time the prototype is used to spawn a new object. See the FuncParse for a lot more information.</p>
 <p>Here is how a protfunc is defined (same as other funcparser functions).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is a silly example, you can just color the text red with |r directly!</span>
 <span class="k">def</span> <span class="nf">red</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -246,8 +242,14 @@ may use the prototype to create new objects.</p></li>
 </pre></div>
 </div>
 <blockquote>
-<div><p>Note that we must make sure to validate input and raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if that fails. Also, it is <em>not</em> possible to use keywords in the call to the protfunc (so something like <code class="docutils literal notranslate"><span class="pre">$echo(text,</span> <span class="pre">align=left)</span></code> is invalid). The <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> requred is for internal evennia use and not used at all for protfuncs (only by inlinefuncs).</p>
+<div><p>Note that we must make sure to validate input and raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> on failure.</p>
 </div></blockquote>
+<p>The parser will always include the following reserved <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">session</span></code> - the current <a class="reference internal" href="../api/evennia.server.serversession.html#evennia-server-serversession"><span class="std std-ref">Session</span></a> performing the spawning.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prototype</span></code> - The Prototype-dict this function is a part of. This is intended to be used <em>read-only</em>. Be careful to modify a mutable structure like this from inside the function - you can cause really hard-to-find bugs this way.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">current_key</span></code> - The current key of the <code class="docutils literal notranslate"><span class="pre">prototype</span></code> dict under which this protfunc is executed.</p></li>
+</ul>
 <p>To make this protfunc available to builders in-game, add it to a new module and add the path to that module to <code class="docutils literal notranslate"><span class="pre">settings.PROT_FUNC_MODULES</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
 
@@ -265,7 +267,7 @@ may use the prototype to create new objects.</p></li>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$random()</span></code></p></td>
-<td><p>Returns random value in range [0, 1)</p></td>
+<td><p>Returns random value in range <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$randint(start,</span> <span class="pre">end)</span></code></p></td>
 <td><p>Returns random value in range [start, end]</p></td>
@@ -347,10 +349,7 @@ ORC_SHAMAN = {&quot;key&quot;:&quot;Orc shaman&quot;,
 </pre></div>
 </div>
 <blockquote>
-<div><p>Note that in the example above, <code class="docutils literal notranslate"><span class="pre">&quot;ORC_SHAMAN&quot;</span></code> will become the <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> of this prototype.
-It’s the only case when <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> can be skipped in a prototype. However, if <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code>
-was given explicitly, that would take precedence. This is a legacy behavior and it’s recommended
-that you always add <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> to be consistent.</p>
+<div><p>Note that in the example above, <code class="docutils literal notranslate"><span class="pre">&quot;ORC_SHAMAN&quot;</span></code> will become the <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> of this prototype. It’s the only case when <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> can be skipped in a prototype. However, if <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code>was given explicitly, that would take precedence. This is a legacy behavior and it’s recommended &gt; that you always add <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> to be consistent.</p>
 </div></blockquote>
 </section>
 <section id="spawning">
