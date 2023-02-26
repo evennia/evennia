@@ -10,12 +10,15 @@ from time import time
 import mock
 from anything import Something
 from django.test.utils import override_settings
+from evennia.commands.default import building
+from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
 from evennia.prototypes import protfuncs as protofuncs
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes import spawner
 from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
-from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.utils.create import create_object
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
 from evennia.utils.tests.test_evmenu import TestEvMenu
 
 _PROTPARENTS = {
@@ -1047,3 +1050,28 @@ class TestIssue2908(BaseEvenniaTest):
 
         obj = spawner.spawn(prot, caller=self.char1)
         self.assertEqual(obj[0].location, self.room1)
+
+
+class TestIssue3101(EvenniaCommandTest):
+    """
+    Spawning and using create_object should store the same `typeclass_path` if using
+    the same actual typeclass.
+
+    """
+
+    def test_spawn_vs_create_paths(self):
+        self.call(
+            building.CmdSpawn(),
+            '{"key": "first thing", "typeclass": "evennia.DefaultObject"}',
+            "Spawned first thing",
+        )
+        self.call(
+            building.CmdCreate(),
+            "second thing:evennia.DefaultObject",
+            "You create a new DefaultObject: second thing",
+        )
+
+        obj1 = ObjectDB.objects.get(db_key="first thing")
+        obj2 = ObjectDB.objects.get(db_key="second thing")
+
+        self.assertEqual(obj1.typeclass_path, obj2.typeclass_path)
