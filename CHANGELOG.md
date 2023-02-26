@@ -2,6 +2,8 @@
 
 ## Main branch (git)
 
+- Bug fix: Building Menu contrib menu no using Replace over Union mergetype to
+  avoid clashing with in-game commands while building
 - Feature: RPSystem contrib `sdesc` command can now view/delete your sdesc.
 - Bug fix: Change so `script obj = [scriptname|id]` is required to manipulate scripts
   on objects; `script scriptname|id` only works on global scripts.
