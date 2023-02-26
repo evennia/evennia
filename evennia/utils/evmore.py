@@ -40,7 +40,6 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext as _
-
 from evennia.commands import cmdhandler
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
@@ -435,8 +434,11 @@ class EvMore(object):
             # no justification. Simple division by line
             lines = text.split("\n")
 
+        # note: If joining on ANSIString here, we will parse out || escapes into | too early,
+        # meaning the protocol will later parse into color; better to leave things and only parse
+        # once.
         self._data = [
-            _LBR.join(lines[i : i + self.height]) for i in range(0, len(lines), self.height)
+            "\n".join(lines[i : i + self.height]) for i in range(0, len(lines), self.height)
         ]
         self._npages = len(self._data)
 
