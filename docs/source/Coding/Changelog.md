@@ -2,6 +2,7 @@
 
 ## Main branch (git)
 
+- Feature: RPSystem contrib `sdesc` command can now view/delete your sdesc.
 - Bug fix: Change so `script obj = [scriptname|id]` is required to manipulate scripts
   on objects; `script scriptname|id` only works on global scripts.
 - Doc: Add warning about `Django-wiki` (in wiki tutorial) only supporting Django <4.0.

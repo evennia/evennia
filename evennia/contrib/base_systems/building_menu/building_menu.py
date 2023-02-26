@@ -126,7 +126,6 @@ from inspect import getfullargspec
 from textwrap import dedent
 
 from django.conf import settings
-
 from evennia import CmdSet, Command
 from evennia.commands import cmdhandler
 from evennia.utils.ansi import strip_ansi
@@ -399,6 +398,7 @@ class BuildingMenuCmdSet(CmdSet):
 
     key = "building_menu"
     priority = 5
+    mergetype = "Replace"
 
     def at_cmdset_creation(self):
         """Populates the cmdset with commands."""
