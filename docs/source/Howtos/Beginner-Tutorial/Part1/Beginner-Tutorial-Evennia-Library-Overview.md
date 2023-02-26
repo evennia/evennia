@@ -32,8 +32,7 @@ You'll find this being the outermost structure:
         docs/
         evennia/
 
-This outer layer is for Evennia's installation and package distribution. That internal folder `evennia/evennia/` is
-the _actual_ library, the thing covered by the API auto-docs and what you get when you do `import evennia`.
+This outer layer is for Evennia's installation and package distribution. That internal folder `evennia/evennia/` is the _actual_ library, the thing covered by the API auto-docs and what you get when you do `import evennia`.
 
 > The `evennia/docs/` folder contains the sources for this documentation. See
 > [contributing to the docs](../../../Contributing-Docs.md) if you want to learn more about how this works.
@@ -42,8 +41,7 @@ This is the structure of the Evennia library:
 
  - evennia
    - [`__init__.py`](../../../Evennia-API.md#shortcuts) - The "flat API" of Evennia resides here.
-   - [`settings_default.py`](../../../Setup/Settings.md#settings-file) - Root settings of Evennia. Copy settings
-from here to `mygame/server/settings.py` file.
+   - [`settings_default.py`](../../../Setup/Settings.md#settings-file) - Root settings of Evennia. Copy settings from here to `mygame/server/settings.py` file.
    - [`commands/`](../../../Components/Commands.md) - The command parser and handler.
      - `default/` - The [default commands](../../../Components/Default-Commands.md) and cmdsets.
    - [`comms/`](../../../Components/Channels.md) - Systems for communicating in-game.
