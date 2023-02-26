@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch (git)
+## Evennia 1.2.1
+
+Feb 26, 2023
 
 - Bug fix: Make sure command parser gives precedence to longer cmd-aliases. So
   if sending `smile at` and the cmd `smile` has alias `smile at`, the match is
@@ -12,9 +14,10 @@
 - Bug fix: Building Menu contrib menu no using Replace over Union mergetype to
   avoid clashing with in-game commands while building
 - Feature: RPSystem contrib `sdesc` command can now view/delete your sdesc.
-- Bug fix: Change so `script obj = [scriptname|id]` is required to manipulate scripts
-  on objects; `script scriptname|id` only works on global scripts.
-- Doc: Add warning about `Django-wiki` (in wiki tutorial) only supporting Django <4.0.
+- Bug fix: Change so `script obj = [scriptname|id]` is required to manipulate
+  scripts on objects; `script scriptname|id` only works on global scripts.
+- Doc: Add warning about `Django-wiki` (in wiki tutorial) only supporting
+  Django <4.0.
 - Doc: Expanded `XYZGrid` docstring to clarify `MapLink` class will not itself
   spawn anything, children must define their prototypes explicitly.
 - Doc: Explained why `AttributeProperty.at_get/set` will not be called if
