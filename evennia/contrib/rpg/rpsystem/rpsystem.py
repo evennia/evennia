@@ -154,18 +154,12 @@ from string import punctuation
 
 import inflect
 from django.conf import settings
-
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultObject
 from evennia.utils import ansi, logger
-from evennia.utils.utils import (
-    iter_to_str,
-    lazy_property,
-    make_iter,
-    variable_from_module,
-)
+from evennia.utils.utils import iter_to_str, lazy_property, make_iter, variable_from_module
 
 _INFLECT = inflect.engine()
 
@@ -203,7 +197,8 @@ _RE_PREFIX = re.compile(rf"^{_PREFIX}", re.UNICODE)
 # separate multimatches from one another and word is the first word in the
 # marker. So entering "/tall man" will return groups ("", "tall")
 # and "/2-tall man" will return groups ("2", "tall").
-_RE_OBJ_REF_START = re.compile(rf"{_PREFIX}(?:([0-9]+){_NUM_SEP})*(\w+)", _RE_FLAGS)
+# the negative lookbehind for [:/] is to avoid http:// urls being detected as a /sdesc
+_RE_OBJ_REF_START = re.compile(rf"(?<![:/]){_PREFIX}(?:([0-9]+){_NUM_SEP})*(\w+)", _RE_FLAGS)
 
 _RE_LEFT_BRACKETS = re.compile(r"\{+", _RE_FLAGS)
 _RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
