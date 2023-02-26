@@ -339,6 +339,9 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
             "Char2's sdesc was set to 'BarFoo Character'.",
             caller=self.char2,
         )
+
+        self.call(rpsystem.CmdSdesc(), "", 'Your short description is "Foobar Character".')
+
         self.call(rpsystem.CmdSay(), "Hello!", 'Char says, "Hello!"')
         self.call(rpsystem.CmdEmote(), "/me smiles to /BarFoo.", "Char smiles to BarFoo Character")
 
@@ -368,3 +371,5 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
             "You will now know them only as 'BarFoo Character'",
             cmdstring="forget",
         )
+
+        self.call(rpsystem.CmdSdesc(), "clear", 'Cleared sdesc, using name "Char".', inputs=["Y"])
