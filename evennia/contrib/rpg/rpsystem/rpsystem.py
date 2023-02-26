@@ -725,6 +725,13 @@ class SdescHandler:
 
         return sdesc
 
+    def clear(self):
+        """
+        Clear sdesc.
+
+        """
+        self.obj.attributes.remove("_sdesc")
+
     def get(self):
         """
         Simple getter. The sdesc should never be allowed to
@@ -959,6 +966,8 @@ class CmdSdesc(RPCommand):  # set/look at own sdesc
 
     Usage:
       sdesc <short description>
+      sdesc         - view current sdesc
+      sdesc clear   - remove sdesc
 
     Assigns a short description to yourself.
 
@@ -971,8 +980,18 @@ class CmdSdesc(RPCommand):  # set/look at own sdesc
         "Assign the sdesc"
         caller = self.caller
         if not self.args:
-            caller.msg("Usage: sdesc <sdesc-text>")
-            return
+            sdesc = caller.sdesc.get()
+            if not sdesc:
+                caller.msg("You have no short description set.")
+            else:
+                caller.msg(f'Your short description is "{sdesc}".')
+        elif self.args == "clear":
+            ret = yield "Do you want to clear your sdesc? [Y]/n?"
+            if ret.lower() in ("n", "no"):
+                caller.msg("Aborted.")
+            else:
+                caller.sdesc.clear()
+                caller.msg(f'Cleared sdesc, using name "{caller.key}".')
         else:
             # strip non-alfanum chars from end of sdesc
             sdesc = _RE_CHAREND.sub("", self.args)
