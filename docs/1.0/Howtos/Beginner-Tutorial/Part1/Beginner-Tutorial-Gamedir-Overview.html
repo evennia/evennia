@@ -120,10 +120,7 @@
 It is time to start to look at how things look ‘outside of the game’.</p>
 <p>Let’s do a tour of your game-dir (we assume it’s called <code class="docutils literal notranslate"><span class="pre">mygame</span></code>).</p>
 <blockquote>
-<div><p>When looking through files, ignore files ending with <code class="docutils literal notranslate"><span class="pre">.pyc</span></code> and the
-<code class="docutils literal notranslate"><span class="pre">__pycache__</span></code> folder if it exists. This is internal Python compilation files that you should never
-need to touch. Files <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> is also often empty and can be ignored (they have to do with
-Python package management).</p>
+<div><p>When looking through files, ignore files ending with <code class="docutils literal notranslate"><span class="pre">.pyc</span></code> and the <code class="docutils literal notranslate"><span class="pre">__pycache__</span></code> folder if it exists. This is internal Python compilation files that you should never  need to touch. Files <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> is also often empty and can be ignored (they have to do with Python package management).</p>
 </div></blockquote>
 <p>You may have noticed when we were building things in-game that we would often refer to code through  “python paths”, such as</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop button:tutorial_examples.red_button.RedButton
@@ -137,8 +134,7 @@ Python package management).</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">mygame/</span></code></p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">commands/</span></code> - This holds all your custom commands (user-input handlers). You both add your own
-and override Evennia’s defaults from here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">commands/</span></code> - This holds all your custom commands (user-input handlers). You both add your own and override Evennia’s defaults from here.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">server</span></code>/  - The structure of this folder should not change since Evennia expects it.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">conf/</span></code> - All server configuration files sits here. The most important file is <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>.</p></li>
@@ -146,13 +142,9 @@ and override Evennia’s defaults from here.</p></li>
 tailing the files in this directory.</p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">typeclasses/</span></code> - this holds empty templates describing all database-bound entities in the
-game, like Characters, Scripts, Accounts etc. Adding code here allows to customize and extend
-the defaults.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">web/</span></code> - This is where you override and extend the default templates, views and static files used
-for Evennia’s web-presence, like the website and the HTML5 webclient.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">world/</span></code> - this is a “miscellaneous” folder holding everything related to the world you are
-building, such as build scripts and rules modules that don’t fit with one of the other folders.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">typeclasses/</span></code> - this holds empty templates describing all database-bound entities in the  game, like Characters, Scripts, Accounts etc. Adding code here allows to customize and extend the defaults.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">web/</span></code> - This is where you override and extend the default templates, views and static files used  for Evennia’s web-presence, like the website and the HTML5 webclient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">world/</span></code> - this is a “miscellaneous” folder holding everything related to the world you are building, such as build scripts and rules modules that don’t fit with one of the other folders.</p></li>
 </ul>
 </li>
 </ul>
@@ -180,30 +172,21 @@ from <code class="docutils literal notranslate"><span class="pre">command.py</sp
 </section>
 <section id="server">
 <h2><span class="section-number">4.2. </span>server/<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
-<p>This folder contains resource necessary for running Evennia. Contrary to the other folders, the structure
-of this should be kept the way it is.</p>
+<p>This folder contains resource necessary for running Evennia. Contrary to the other folders, the structure  of this should be kept the way it is.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> - you will only have this file if you are using the default SQLite3 database. This file
-contains the entire database. Just copy it to make a backup. For development you could also just
-make a copy once you have set up everything you need and just copy that back to ‘reset’ the state.
-If you delete this file you can easily recreate it by running <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> - you will only have this file if you are using the default SQLite3 database. This file contains the entire database. Just copy it to make a backup. For development you could also just make a copy once you have set up everything you need and just copy that back to ‘reset’ the state. If you delete this file you can easily recreate it by running <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code>.</p></li>
 </ul>
 <section id="server-logs">
 <h3><span class="section-number">4.2.1. </span>server/logs/<a class="headerlink" href="#server-logs" title="Permalink to this headline">¶</a></h3>
-<p>This holds the server logs. When you do <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--log</span></code>, the evennia program is in fact tailing and concatenating
-the <code class="docutils literal notranslate"><span class="pre">server.log</span></code> and <code class="docutils literal notranslate"><span class="pre">portal.log</span></code> files in this directory. The logs are rotated every week. Depending on your settings,
-other logs, like the webserver HTTP request log can also be found here.</p>
+<p>This holds the server logs. When you do <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--log</span></code>, the evennia program is in fact tailing and concatenating the <code class="docutils literal notranslate"><span class="pre">server.log</span></code> and <code class="docutils literal notranslate"><span class="pre">portal.log</span></code> files in this directory. The logs are rotated every week. Depending on your settings, other logs, like the webserver HTTP request log can also be found here.</p>
 </section>
 <section id="server-conf">
 <h3><span class="section-number">4.2.2. </span>server/conf/<a class="headerlink" href="#server-conf" title="Permalink to this headline">¶</a></h3>
-<p>This contains all configuration files of the Evennia server. These are regular Python modules which
-means that they must be extended with valid Python. You can also add logic to them if you wanted to.</p>
-<p>Common for the settings is that you generally will never them directly via their python-path; instead Evennia
-knows where they are and will read them to configure itself at startup.</p>
+<p>This contains all configuration files of the Evennia server. These are regular Python modules which  means that they must be extended with valid Python. You can also add logic to them if you wanted to.</p>
+<p>Common for the settings is that you generally will never them directly via their python-path; instead Evennia knows where they are and will read them to configure itself at startup.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">settings.py</span></code> - this is by far the most important file. It’s nearly empty by default, rather you
-are expected to copy&amp;paste the changes you need from <a class="reference internal" href="../../../Setup/Settings-Default.html"><span class="doc std std-doc">evennia/default_settings.py</span></a>.
-The default settings file is extensively documented. Importing/accessing the values in the settings file is done in a special way, like this:</p>
+are expected to copy&amp;paste the changes you need from <a class="reference internal" href="../../../Setup/Settings-Default.html"><span class="doc std std-doc">evennia/default_settings.py</span></a>. The default settings file is extensively documented. Importing/accessing the values in the settings file is done in a special way, like this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  from django.conf import settings 
 </pre></div>
 </div>
@@ -213,97 +196,52 @@ The default settings file is extensively documented. Importing/accessing the val
 </div>
 <p>You cannot assign to the settings file dynamically; you must change the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file directly to  change a setting. See <a class="reference internal" href="../../../Setup/Settings.html"><span class="doc std std-doc">Settings</span></a> documentation for more details.</p>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> - If you are making your code effort public, you may not want to share all settings online.
-There may be server-specific secrets or just fine-tuning for your game systems that you prefer be kept secret
-from the players. Put such settings in here, it will override values in <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> and not be included in
-version control.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_initial_setup.py</span></code> - When Evennia starts up for the very first time, it does some basic tasks, like creating the
-superuser and Limbo room. Adding to this file allows to add more actions for it to for first-startup.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_search.py</span></code> - When searching for objects and either finding no match or more than one match, it will
-respond by giving a warning or offering the user to differentiate between the multiple matches. Modifying
-the code here will change this behavior to your liking.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_server_startstop.py</span></code> - This allows to inject code to execute every time the server starts, stops or reloads
-in different ways.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">connection_screens.py</span></code> - This allows for changing the connection screen you see when you first connect to your
-game.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">inlinefuncs.py</span></code> - <em>Inlinefuncs</em> are optional and limited ‘functions’ that can be embedded in any strings being
-sent to a player. They are written as <code class="docutils literal notranslate"><span class="pre">$funcname(args)</span></code> and are used to customize the output
-depending on the user receiving it. For example sending people the text <code class="docutils literal notranslate"><span class="pre">&quot;Let's</span> <span class="pre">meet</span> <span class="pre">at</span> <span class="pre">$realtime(13:00,</span> <span class="pre">GMT)!</span></code>
-would show every player seeing that string the time given in their own time zone. The functions added to this
-module will become new inlinefuncs in the game.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">inputfucs.py</span></code> - When a command like <code class="docutils literal notranslate"><span class="pre">look</span></code> is received by the server, it is handled by an <em>inputfunc</em>
-that redirects it to the cmdhandler system. But there could be other inputs coming from the clients, like
-button-presses or the request to update a health-bar. While most common cases are already covered, this is
-where one adds new functions to process new types of input.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lockfuncs.py</span></code> - <em>Locks</em> restrict access to things in-game. Lock funcs are used in a mini-language
-to defined more complex locks. For example you could have a lockfunc that checks if the user is carrying
-a given item, is bleeding or has a certain skill value. New functions added in this modules will
-become available for use in lock definitions.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mssp.py</span></code> - Mud Server Status Protocol is a way for online MUD archives/listings (which you usually have
-to sign up for) to track which MUDs are currently online, how many players they have etc. While Evennia handles
-the dynamic information automatically, this is were you set up the meta-info about your game, such as its
-theme, if player-killing is allowed and so on. This is a more generic form of the Evennia Game directory.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">portal_services_plugins.py</span></code> - If you want to add new external connection protocols to Evennia, this is the place
-to add them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> - If you are making your code effort public, you may not want to share all settings online.  There may be server-specific secrets or just fine-tuning for your game systems that you prefer be kept secret from the players. Put such settings in here, it will override values in <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> and not be included in  version control.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_initial_setup.py</span></code> - When Evennia starts up for the very first time, it does some basic tasks, like creating the  superuser and Limbo room. Adding to this file allows to add more actions for it to for first-startup.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_search.py</span></code> - When searching for objects and either finding no match or more than one match, it will respond by giving a warning or offering the user to differentiate between the multiple matches. Modifying the code here will change this behavior to your liking.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_startstop.py</span></code> - This allows to inject code to execute every time the server starts, stops or reloads in different ways.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connection_screens.py</span></code> - This allows for changing the connection screen you see when you first connect to your  game.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inlinefuncs.py</span></code> - <a class="reference internal" href="../../../Concepts/Inline-Functions.html"><span class="doc std std-doc">Inlinefuncs</span></a> are optional and limited ‘functions’ that can be embedded in any strings being  sent to a player. They are written as <code class="docutils literal notranslate"><span class="pre">$funcname(args)</span></code> and are used to customize the output  depending on the user receiving it. For example sending people the text <code class="docutils literal notranslate"><span class="pre">&quot;Let's</span> <span class="pre">meet</span> <span class="pre">at</span> <span class="pre">$realtime(13:00,</span> <span class="pre">GMT)!</span></code>  would show every player seeing that string the time given in their own time zone. The functions added to this module will become new inlinefuncs in the game. See also the <a class="reference internal" href="../../../Components/FuncParser.html"><span class="doc std std-doc">FuncParser</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inputfucs.py</span></code> - When a command like <code class="docutils literal notranslate"><span class="pre">look</span></code> is received by the server, it is handled by an <span class="xref myst">Inputfunc</span> that redirects it to the cmdhandler system. But there could be other inputs coming from the clients, like  button-presses or the request to update a health-bar. While most common cases are already covered, this is  where one adds new functions to process new types of input.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lockfuncs.py</span></code> - <a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">Locks</span></a> and their component <em>LockFuncs</em> restrict access to things in-game. Lock funcs are used in a mini-language  to defined more complex locks. For example you could have a lockfunc that checks if the user is carrying a given item, is bleeding or has a certain skill value. New functions added in this modules will  become available for use in lock definitions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mssp.py</span></code> - Mud Server Status Protocol is a way for online MUD archives/listings (which you usually have  to sign up for) to track which MUDs are currently online, how many players they have etc. While Evennia handles  the dynamic information automatically, this is were you set up the meta-info about your game, such as its  theme, if player-killing is allowed and so on. This is a more generic form of the Evennia Game directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">portal_services_plugins.py</span></code> - If you want to add new external connection protocols to Evennia, this is the place  to add them.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">server_services_plugins.py</span></code> - This allows to override internal server connection protocols.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">web_plugins.py</span></code> - This allows to add plugins to the Evennia webserver as it starts.</p></li>
 </ul>
 </section>
 <section id="typeclasses">
 <h3><span class="section-number">4.2.3. </span>typeclasses/<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a> of Evennia are Evennia-specific Python classes whose instances save themselves
-to the database. This allows a Character to remain in the same place and your updated strength stat to still
-be the same after a server reboot.</p>
+<p>The <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a> of Evennia are Evennia-specific Python classes whose instances save themselves to the database. This allows a Character to remain in the same place and your updated strength stat to still be the same after a server reboot.</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/accounts.py">accounts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.accounts</span></code>) - An
-<a class="reference internal" href="../../../Components/Accounts.html"><span class="doc std std-doc">Account</span></a> represents the player connecting to the game. It holds information like email,
-password and other out-of-character details.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/channels.py">channels.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.channels</span></code>) -
-<a class="reference internal" href="../../../Components/Channels.html"><span class="doc std std-doc">Channels</span></a> are used to manage in-game communication between players.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/objects.py">objects.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.objects</span></code>) -
-<a class="reference internal" href="../../../Components/Objects.html"><span class="doc std std-doc">Objects</span></a> represent all things having a location within the game world.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/characters.py">characters.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.characters</span></code>) -
-The <a class="reference internal" href="../../../Components/Objects.html#characters"><span class="std std-doc">Character</span></a> is a subclass of Objects, controlled by Accounts - they are the player’s
-avatars in the game world.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/rooms.py">rooms.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.rooms</span></code>) - A
-<a class="reference internal" href="../../../Components/Objects.html#rooms"><span class="std std-doc">Room</span></a> is also a subclass of Object; describing discrete locations. While the traditional
-term is ‘room’, such a location can be anything and on any scale that fits your game, from a forest glade,
-an entire planet or an actual dungeon room.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/exits.py">exits.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.exits</span></code>) -
-<a class="reference internal" href="../../../Components/Objects.html#exits"><span class="std std-doc">Exits</span></a> is another subclass of Object. Exits link one Room to another.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/scripts.py">scripts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.scripts</span></code>) -
-<a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a> are ‘out-of-character’ objects. They have no location in-game and can serve as basis for
-anything that needs database persistence, such as combat, weather, or economic systems. They also have the ability to execute code repeatedly, on a timer.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/accounts.py">accounts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.accounts</span></code>) - An  <a class="reference internal" href="../../../Components/Accounts.html"><span class="doc std std-doc">Account</span></a> represents the player connecting to the game. It holds information like email, password and other out-of-character details.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/channels.py">channels.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.channels</span></code>) -  <a class="reference internal" href="../../../Components/Channels.html"><span class="doc std std-doc">Channels</span></a> are used to manage in-game communication between players.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/objects.py">objects.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.objects</span></code>) -  <a class="reference internal" href="../../../Components/Objects.html"><span class="doc std std-doc">Objects</span></a> represent all things having a location within the game world.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/characters.py">characters.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.characters</span></code>) -  The <a class="reference internal" href="../../../Components/Objects.html#characters"><span class="std std-doc">Character</span></a> is a subclass of Objects, controlled by Accounts - they are the player’s avatars in the game world.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/rooms.py">rooms.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.rooms</span></code>) - A  <a class="reference internal" href="../../../Components/Objects.html#rooms"><span class="std std-doc">Room</span></a> is also a subclass of Object; describing discrete locations. While the traditional term is ‘room’, such a location can be anything and on any scale that fits your game, from a forest glade,  an entire planet or an actual dungeon room.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/exits.py">exits.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.exits</span></code>) -  <a class="reference internal" href="../../../Components/Objects.html#exits"><span class="std std-doc">Exits</span></a> is another subclass of Object. Exits link one Room to another.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/typeclasses/scripts.py">scripts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.scripts</span></code>) -  <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a> are ‘out-of-character’ objects. They have no location in-game and can serve as basis for  anything that needs database persistence, such as combat, weather, or economic systems. They also have the ability to execute code repeatedly, on a timer.</p></li>
 </ul>
 </section>
 <section id="web">
 <h3><span class="section-number">4.2.4. </span>web/<a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h3>
-<p>This folder contains folders for overriding the default web-presence of Evennia with your own designs. Most of these folders are empty except for a README file or a subset of other empty folders. See <a class="reference internal" href="../../../Components/Components-Overview.html#web-components"><span class="std std-doc">the Web overview</span></a> for more details (we’ll also get back to the web later in this beginner tutorial).</p>
+<p>This folder contains subfolders for overriding the default web-presence of Evennia with your own designs. Most of these folders are empty except for a README file or a subset of other empty folders. See <a class="reference internal" href="../../../Components/Components-Overview.html#web-components"><span class="std std-doc">the Web overview</span></a> for more details (we’ll also get back to the web later in this beginner tutorial).</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">media/</span></code> - this empty folder is where you can place your own images or other media files you want the
-web server to serve. If you are releasing your game with a lot of media (especially if you want videos) you
-should consider re-pointing Evennia to use some external service to serve your media instead.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">static_overrides/</span></code> - ‘static’ files include fonts, CSS and JS. Within this folder you’ll find sub-folders for
-overriding the static files for the <code class="docutils literal notranslate"><span class="pre">admin</span></code> (this is the Django web-admin), the <code class="docutils literal notranslate"><span class="pre">webclient</span></code> (this is thet
-HTML5 webclient) and the <code class="docutils literal notranslate"><span class="pre">website</span></code>. Adding files to this folder will replace same-named files in the
-default web presence.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">template_overrides/</span></code> - these are HTML files, for the <code class="docutils literal notranslate"><span class="pre">webclient</span></code> and the <code class="docutils literal notranslate"><span class="pre">website</span></code>. HTML files are written
-using <a class="reference external" href="https://jinja.palletsprojects.com/en/2.11.x/">Jinja</a> templating, which means that one can override
+<li><p><code class="docutils literal notranslate"><span class="pre">media/</span></code> - this empty folder is where you can place your own images or other media files you want the web server to serve. If you are releasing your game with a lot of media (especially if you want videos) you  should consider re-pointing Evennia to use some external service to serve your media instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">static_overrides/</span></code> - ‘static’ files include fonts, CSS and JS. Within this folder you’ll find sub-folders for  overriding the static files for the <code class="docutils literal notranslate"><span class="pre">admin</span></code> (this is the Django web-admin), the <code class="docutils literal notranslate"><span class="pre">webclient</span></code> (this is thet HTML5 webclient) and the <code class="docutils literal notranslate"><span class="pre">website</span></code>. Adding files to this folder will replace same-named files in the  default web presence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">template_overrides/</span></code> - these are HTML files, for the <code class="docutils literal notranslate"><span class="pre">webclient</span></code> and the <code class="docutils literal notranslate"><span class="pre">website</span></code>. HTML files are written using <a class="reference external" href="https://jinja.palletsprojects.com/en/2.11.x/">Jinja</a> templating, which means that one can override
 only particular parts of a default template without touching others.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">static/</span></code> - this is a work-directory for the web system and should <em>not</em> be manually modified. Basically,
-Evennia will copy static data from <code class="docutils literal notranslate"><span class="pre">static_overrides</span></code> here when the server starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">static/</span></code> - this is a work-directory for the web system and should <em>not</em> be manually modified. Basically, Evennia will copy static data from <code class="docutils literal notranslate"><span class="pre">static_overrides</span></code> here when the server starts.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">urls.py</span></code> - this module links up the Python code to the URLs you go to in the browser.</p></li>
 </ul>
 </section>
 <section id="world">
 <h3><span class="section-number">4.2.5. </span>world/<a class="headerlink" href="#world" title="Permalink to this headline">¶</a></h3>
-<p>This folder only contains some example files. It’s meant to hold ‘the rest’ of your game implementation. Many
-people change and re-structure this in various ways to better fit their ideas.</p>
+<p>This folder only contains some example files. It’s meant to hold ‘the rest’ of your game implementation. Many  people change and re-structure this in various ways to better fit their ideas.</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/world/batch_cmds.ev">batch_cmds.ev</a> - This is an <code class="docutils literal notranslate"><span class="pre">.ev</span></code> file, which is essentially
-just a list of Evennia commands to execute in sequence. This one is empty and ready to expand on. The
-<a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html"><span class="doc std std-doc">Tutorial World</span></a> was built with such a batch-file.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/world/batch_cmds.ev">batch_cmds.ev</a> - This is an <code class="docutils literal notranslate"><span class="pre">.ev</span></code> file, which is essentially just a list of Evennia commands to execute in sequence. This one is empty and ready to expand on. The  <a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html"><span class="doc std std-doc">Tutorial World</span></a> was built with such a batch-file.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/world/prototypes.py">prototypes.py</a> - A <a class="reference internal" href="../../../Components/Prototypes.html"><span class="doc std std-doc">prototype</span></a> is a way to easily vary objects without changing their base typeclass. For example, one could use prototypes to  tell that Two goblins, while both of the class ‘Goblin’ (so they follow the same code logic), should have different  equipment, stats and looks.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/game_template/world/help_entries.py">help_entries.py</a> - You can add new in-game <a class="reference internal" href="../../../Components/Help-System.html"><span class="doc std std-doc">Help entries</span></a> in several ways, such as adding them in the database using the <code class="docutils literal notranslate"><span class="pre">sethelp</span></code> command, or (for Commands) read the help directly from the source code. You can also add them through python modules. This module is an example on how to do so.</p></li>
 </ul>
 </section>
 </section>
