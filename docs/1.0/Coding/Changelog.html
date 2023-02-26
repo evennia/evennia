@@ -62,7 +62,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#main-branch-git">Main branch (git)</a></li>
+<li><a class="reference internal" href="#evennia-1-2-1">Evennia 1.2.1</a></li>
 <li><a class="reference internal" href="#evennia-1-2-0">Evennia 1.2.0</a></li>
 <li><a class="reference internal" href="#evennia-1-1-1">Evennia 1.1.1</a></li>
 <li><a class="reference internal" href="#evennia-1-1-0">Evennia 1.1.0</a></li>
@@ -168,8 +168,9 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<section id="main-branch-git">
-<h2>Main branch (git)<a class="headerlink" href="#main-branch-git" title="Permalink to this headline">¶</a></h2>
+<section id="evennia-1-2-1">
+<h2>Evennia 1.2.1<a class="headerlink" href="#evennia-1-2-1" title="Permalink to this headline">¶</a></h2>
+<p>Feb 26, 2023</p>
 <ul class="simple">
 <li><p>Bug fix: Make sure command parser gives precedence to longer cmd-aliases. So
 if sending <code class="docutils literal notranslate"><span class="pre">smile</span> <span class="pre">at</span></code> and the cmd <code class="docutils literal notranslate"><span class="pre">smile</span></code> has alias <code class="docutils literal notranslate"><span class="pre">smile</span> <span class="pre">at</span></code>, the match is
@@ -181,9 +182,10 @@ location rather than alias (in line with <code class="docutils literal notransla
 <li><p>Bug fix: Building Menu contrib menu no using Replace over Union mergetype to
 avoid clashing with in-game commands while building</p></li>
 <li><p>Feature: RPSystem contrib <code class="docutils literal notranslate"><span class="pre">sdesc</span></code> command can now view/delete your sdesc.</p></li>
-<li><p>Bug fix: Change so <code class="docutils literal notranslate"><span class="pre">script</span> <span class="pre">obj</span> <span class="pre">=</span> <span class="pre">[scriptname|id]</span></code> is required to manipulate scripts
-on objects; <code class="docutils literal notranslate"><span class="pre">script</span> <span class="pre">scriptname|id</span></code> only works on global scripts.</p></li>
-<li><p>Doc: Add warning about <code class="docutils literal notranslate"><span class="pre">Django-wiki</span></code> (in wiki tutorial) only supporting Django &lt;4.0.</p></li>
+<li><p>Bug fix: Change so <code class="docutils literal notranslate"><span class="pre">script</span> <span class="pre">obj</span> <span class="pre">=</span> <span class="pre">[scriptname|id]</span></code> is required to manipulate
+scripts on objects; <code class="docutils literal notranslate"><span class="pre">script</span> <span class="pre">scriptname|id</span></code> only works on global scripts.</p></li>
+<li><p>Doc: Add warning about <code class="docutils literal notranslate"><span class="pre">Django-wiki</span></code> (in wiki tutorial) only supporting
+Django &lt;4.0.</p></li>
 <li><p>Doc: Expanded <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> docstring to clarify <code class="docutils literal notranslate"><span class="pre">MapLink</span></code> class will not itself
 spawn anything, children must define their prototypes explicitly.</p></li>
 <li><p>Doc: Explained why <code class="docutils literal notranslate"><span class="pre">AttributeProperty.at_get/set</span></code> will not be called if
