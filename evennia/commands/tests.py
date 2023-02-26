@@ -4,7 +4,6 @@ Unit testing for the Command system itself.
 """
 
 from django.test import override_settings
-
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
@@ -991,9 +990,8 @@ class TestOptionTransferReplace(TestCase):
 
 import sys
 
-from twisted.trial.unittest import TestCase as TwistedTestCase
-
 from evennia.commands import cmdhandler
+from twisted.trial.unittest import TestCase as TwistedTestCase
 
 
 def _mockdelay(time, func, *args, **kwargs):
@@ -1232,3 +1230,35 @@ class TestCmdSet(BaseEvenniaTest):
         result = test_cmd_set.get("another command")
 
         self.assertIsInstance(result, _CmdTest2)
+
+
+class _CmdG(Command):
+    key = "smile"
+    aliases = ["smile at", "grin", "grin at"]
+
+
+class _CmdSetG(CmdSet):
+    def at_cmdset_creation(self):
+        self.add(_CmdG())
+
+
+class TestIssue3090(BaseEvenniaTest):
+    """
+    Command aliases should be prioritized longest-match to shortest-match.
+    https://github.com/evennia/evennia/issues/3090
+
+    """
+
+    def test_long_aliases(self):
+
+        cmdset_g = _CmdSetG()
+
+        # print(cmdset_g.commands[0]._keyaliases)
+
+        result = cmdparser.cmdparser("smile at", cmdset_g, None)[0]
+        self.assertEqual(result[0], "smile at")
+        self.assertEqual(result[1], "")
+        self.assertEqual(result[2].__class__, _CmdG)
+        self.assertEqual(result[3], 8)
+        self.assertEqual(result[4], 1.0)
+        self.assertEqual(result[5], "smile at")

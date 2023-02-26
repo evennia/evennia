@@ -11,7 +11,6 @@ import re
 from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
-
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.ansi import ANSIString
 from evennia.utils.evtable import EvTable
@@ -54,10 +53,14 @@ def _init_command(cls, **kwargs):
             cls.aliases = []
     cls.aliases = list(set(alias for alias in cls.aliases if alias and alias != cls.key))
 
-    # optimization - a set is much faster to match against than a list
+    # optimization - a set is much faster to match against than a list. This is useful
+    # for 'does any match' kind of queries
     cls._matchset = set([cls.key] + cls.aliases)
-    # optimization for looping over keys+aliases
-    cls._keyaliases = tuple(cls._matchset)
+    # optimization for looping over keys+aliases. We sort by longest entry first, since we
+    # want to be able to catch commands with spaces in the alias/key (so if you have key 'smile'
+    # and alias 'smile at', writing 'smile at' should not risk being interpreted as 'smile'
+    # with an argument 'at')
+    cls._keyaliases = tuple(sorted([cls.key] + cls.aliases, key=len, reverse=True))
 
     # by default we don't save the command between runs
     if not hasattr(cls, "save_for_next"):
@@ -303,10 +306,13 @@ class Command(metaclass=CommandMeta):
         matches.extend(x.lower() for x in self.aliases)
 
         self._matchset = set(matches)
-        # optimization for looping over keys+aliases
-        self._keyaliases = tuple(self._matchset)
+        # optimization for looping over keys+aliases. We sort by longest entry first, since we
+        # want to be able to catch commands with spaces in the alias/key (so if you have key 'smile'
+        # and alias 'smile at', writing 'smile at' should not risk being interpreted as 'smile'
+        # with an argument 'at')
+        self._keyaliases = tuple(sorted(matches, key=len, reverse=True))
 
-        self._noprefix_aliases = {x.lstrip(CMD_IGNORE_PREFIXES): x for x in matches}
+        self._noprefix_aliases = {x.lstrip(CMD_IGNORE_PREFIXES): x for x in self._keyaliases}
 
     def set_key(self, new_key):
         """

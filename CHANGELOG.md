@@ -2,6 +2,9 @@
 
 ## Main branch (git)
 
+- Bug fix: Make sure command parser gives precedence to longer cmd-aliases. So
+  if sending `smile at` and the cmd `smile` has alias `smile at`, the match is
+  ordered so the result is never interpreted as `smile` with an argument `at`.
 - Bug fix: || (escaped color tags) were parsed too early in help entries,
   leading to colors when wanting a | separator
 - Bug fix: Make sure spawned objects get `typeclass_path` pointing to the true
