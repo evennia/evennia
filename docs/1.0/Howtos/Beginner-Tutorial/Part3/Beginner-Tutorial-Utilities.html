@@ -119,6 +119,11 @@
 utilities that will be useful later. We will also learn how to write <em>tests</em>.</p>
 <section id="folder-structure">
 <h2><span class="section-number">1.1. </span>Folder structure<a class="headerlink" href="#folder-structure" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">This layout is for the tutorial!</p>
+<p>We make the <code class="docutils literal notranslate"><span class="pre">evadventure</span></code> folder stand-alone for the sake of the tutorial only. Leaving the code isolated makes it clear what we changed - and for you to grab what you want later. It also makes it easier to refer to matching code in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorials/evadventure</span></code>.</p>
+<p>For your own game you are encouraged to modify your game dir in-place instead (such as add to <code class="docutils literal notranslate"><span class="pre">commands/commands.py</span></code> and to modify the <code class="docutils literal notranslate"><span class="pre">typeclasses/</span></code> modules directly). Except for the <code class="docutils literal notranslate"><span class="pre">server/</span></code> folder, you are infact free to structure your game dir code pretty much as you like.</p>
+</aside>
 <p>Create a new folder under your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder, named <code class="docutils literal notranslate"><span class="pre">evadventure</span></code>. Inside it, create
 another folder <code class="docutils literal notranslate"><span class="pre">tests/</span></code> and make sure to put empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files in both. This turns both
 folders into packages Python understands to import from.</p>
@@ -161,8 +166,7 @@ folders into packages Python understands to import from.</p>
 <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.enums.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/enums.py</span></a>.</p>
 </aside>
 <p>Create a new file <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/enums.py</span></code>.</p>
-<p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html">enum</a> (enumeration) is a way to establish constants
-in Python. Best is to show an example:</p>
+<p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html">enum</a> (enumeration) is a way to establish constants in Python. Best is to show an example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a file mygame/evadventure/enums.py</span>
 
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
@@ -183,19 +187,11 @@ in Python. Best is to show an example:</p>
 
 </pre></div>
 </div>
-<p>Having enums is recommended practice. With them set up, it means we can make sure to refer to the
-same thing every time. Having all enums in one place also means you have a good overview of the
-constants you are dealing with.</p>
-<p>The alternative would be to for example pass around a string <code class="docutils literal notranslate"><span class="pre">&quot;constitution&quot;</span></code>. If you mis-spell
-this (<code class="docutils literal notranslate"><span class="pre">&quot;consitution&quot;</span></code>), you would not necessarily know it right away - the error would happen later
-when the string is not recognized. If you make a typo getting <code class="docutils literal notranslate"><span class="pre">Ability.COM</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Ability.CON</span></code>,
-Python will immediately raise an error since this enum is not recognized.</p>
+<p>Having enums is recommended practice. With them set up, it means we can make sure to refer to the  same thing every time. Having all enums in one place also means you have a good overview of the  constants you are dealing with.</p>
+<p>The alternative would be to for example pass around a string <code class="docutils literal notranslate"><span class="pre">&quot;constitution&quot;</span></code>. If you mis-spell  this (<code class="docutils literal notranslate"><span class="pre">&quot;consitution&quot;</span></code>), you would not necessarily know it right away - the error would happen later  when the string is not recognized. If you make a typo getting <code class="docutils literal notranslate"><span class="pre">Ability.COM</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Ability.CON</span></code>,  Python will immediately raise an error since this enum is not recognized.</p>
 <p>With enums you can also do nice direct comparisons like <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">ability</span> <span class="pre">is</span> <span class="pre">Ability.WIS:</span> <span class="pre">&lt;do</span> <span class="pre">stuff&gt;</span></code>.</p>
-<p>Note that the <code class="docutils literal notranslate"><span class="pre">Ability.STR</span></code> enum does not have the actual <em>value</em> of e.g. your Strength.
-It’s just a fixed label for the Strength ability.</p>
-<p>Here is the <code class="docutils literal notranslate"><span class="pre">enum.py</span></code> module needed for <em>Knave</em>. It covers the basic aspects of
-rule systems we need to track (check out the <em>Knave</em> rules. If you use another rule system you’ll
-likely gradually expand on your enums as you figure out what you’ll need).</p>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">Ability.STR</span></code> enum does not have the actual <em>value</em> of e.g. your Strength.  It’s just a fixed label for the Strength ability.</p>
+<p>Here is the <code class="docutils literal notranslate"><span class="pre">enum.py</span></code> module needed for <em>Knave</em>. It covers the basic aspects of  rule systems we need to track (check out the <em>Knave</em> rules. If you use another rule system you’ll  likely gradually expand on your enums as you figure out what you’ll need).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/enums.py</span>
 
 <span class="k">class</span> <span class="nc">Ability</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -235,8 +231,7 @@ likely gradually expand on your enums as you figure out what you’ll need).</p>
 <p>An example of the utility module is found in
 <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.utils.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/utils.py</span></a></p>
 </aside>
-<p>This is for general functions we may need from all over. In this case we only picture one utility,
-a function that produces a pretty display of any object we pass to it.</p>
+<p>This is for general functions we may need from all over. In this case we only picture one utility, a function that produces a pretty display of any object we pass to it.</p>
 <p>This is an example of the string we want to see:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Chipped</span> <span class="n">Sword</span> 
 <span class="n">Value</span><span class="p">:</span> <span class="o">~</span><span class="mi">10</span> <span class="n">coins</span> <span class="p">[</span><span class="n">wielded</span> <span class="ow">in</span> <span class="n">Weapon</span> <span class="n">hand</span><span class="p">]</span>
@@ -293,42 +288,26 @@ a function that produces a pretty display of any object we pass to it.</p>
     <span class="p">)</span>
 </pre></div>
 </div>
-<p>Here we set up the string template with place holders for where every piece of info should go.
-Study this string so you understand what it does. The <code class="docutils literal notranslate"><span class="pre">|c</span></code>, <code class="docutils literal notranslate"><span class="pre">|y</span></code>, <code class="docutils literal notranslate"><span class="pre">|w</span></code> and <code class="docutils literal notranslate"><span class="pre">|n</span></code> markers are
-<a class="reference internal" href="../../../Concepts/Colors.html"><span class="doc std std-doc">Evennia color markup</span></a> for making the text cyan, yellow, white and neutral-color respectively.</p>
-<p>We can guess some things, such that <code class="docutils literal notranslate"><span class="pre">obj.key</span></code> is the name of the object, and that <code class="docutils literal notranslate"><span class="pre">obj.db.desc</span></code> will
-hold its description (this is how it is in default Evennia).</p>
-<p>But so far we have not established how to get any of the other properties like <code class="docutils literal notranslate"><span class="pre">size</span></code> or <code class="docutils literal notranslate"><span class="pre">attack_type</span></code>.
-So we just set them to dummy values. We’ll need to get back to this when we have more code in place!</p>
+<p>Here we set up the string template with place holders for where every piece of info should go.  Study this string so you understand what it does. The <code class="docutils literal notranslate"><span class="pre">|c</span></code>, <code class="docutils literal notranslate"><span class="pre">|y</span></code>, <code class="docutils literal notranslate"><span class="pre">|w</span></code> and <code class="docutils literal notranslate"><span class="pre">|n</span></code> markers are  <a class="reference internal" href="../../../Concepts/Colors.html"><span class="doc std std-doc">Evennia color markup</span></a> for making the text cyan, yellow, white and neutral-color respectively.</p>
+<p>We can guess some things, such that <code class="docutils literal notranslate"><span class="pre">obj.key</span></code> is the name of the object, and that <code class="docutils literal notranslate"><span class="pre">obj.db.desc</span></code> will  hold its description (this is how it is in default Evennia).</p>
+<p>But so far we have not established how to get any of the other properties like <code class="docutils literal notranslate"><span class="pre">size</span></code> or <code class="docutils literal notranslate"><span class="pre">attack_type</span></code>. So we just set them to dummy values. We’ll need to get back to this when we have more code in place!</p>
 </section>
 <section id="testing">
 <h2><span class="section-number">1.4. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>It’s useful for any game dev to know how to effectively test their code. So we’ll try to include a
-<em>Testing</em> section at the end of each of the implementation lessons to follow. Writing tests for your code
-is optional but highly recommended; it can feel a little cumbersome at first, but you’ll thank yourself later.</p>
-</div>
 <blockquote>
 <div><p>create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/tests/test_utils.py</span></code></p>
 </div></blockquote>
-<p>How do you know if you made a typo in the code above? You could <em>manually</em> test it by reloading your
-Evennia server and do the following from in-game:</p>
+<p>How do you know if you made a typo in the code above? You could <em>manually</em> test it by reloading your  Evennia server and do the following from in-game:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>py from evadventure.utils import get_obj_stats;print(get_obj_stats(self))
 </pre></div>
 </div>
-<p>You should get back a nice string about yourself! If that works, great! But you’ll need to remember
-doing that test when you change this code later.</p>
+<p>You should get back a nice string about yourself! If that works, great! But you’ll need to remember doing that test when you change this code later.</p>
 <aside class="sidebar">
-<p>In [evennia/contrib/tutorials/evadventure/tests/test_utils.py](evennia.contrib.tutorials.
-evadventure.tests.test_utils)
-is an example of the testing module. To dive deeper into unit testing in Evennia, see the
-<a class="reference internal" href="../../../Coding/Unit-Testing.html"><span class="doc std std-doc">Unit testing</span></a> documentation.</p>
+<p>In <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.tests.test_utils.html#evennia-contrib-tutorials-evadventure-tests-test-utils"><span class="std std-ref">evennia/contrib/tutorials/evadventure/tests/test_utils.py</span></a>
+is an example of the testing module. To dive deeper into unit testing in Evennia, see the <a class="reference internal" href="../../../Coding/Unit-Testing.html"><span class="doc std std-doc">Unit testing</span></a> documentation.</p>
 </aside>
-<p>A <em>unit test</em> allows you to set up automated testing of code. Once you’ve written your test you
-can run it over and over and make sure later changes to your code didn’t break things.</p>
-<p>In this particular case, we <em>expect</em> to later have to update the test when <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> becomes more
-complete and returns more reasonable data.</p>
+<p>A <em>unit test</em> allows you to set up automated testing of code. Once you’ve written your test you  can run it over and over and make sure later changes to your code didn’t break things.</p>
+<p>In this particular case, we <em>expect</em> to later have to update the test when <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> becomes more  complete and returns more reasonable data.</p>
 <p>Evennia comes with extensive functionality to help you test your code. Here’s a module for
 testing <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/tests/test_utils.py</span>
@@ -365,38 +344,32 @@ testing <code class="docutils literal notranslate"><span class="pre">get_obj_sta
 
 </pre></div>
 </div>
-<p>What happens here is that we create a new test-class <code class="docutils literal notranslate"><span class="pre">TestUtils</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BaseEvenniaTest</span></code>.
-This inheritance is what makes this a testing class.</p>
-<p>We can have any number of methods on this class. To have a method recognized as one containing
-code to test, its name <em>must</em> start with <code class="docutils literal notranslate"><span class="pre">test_</span></code>. We have one - <code class="docutils literal notranslate"><span class="pre">test_get_obj_stats</span></code>.</p>
-<p>In this method we create a dummy <code class="docutils literal notranslate"><span class="pre">obj</span></code> and gives it a <code class="docutils literal notranslate"><span class="pre">key</span></code> “testobj”. Note how we add the
-<code class="docutils literal notranslate"><span class="pre">desc</span></code> <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> directly in the <code class="docutils literal notranslate"><span class="pre">create_object</span></code> call by specifying the attribute as a
-tuple <code class="docutils literal notranslate"><span class="pre">(name,</span> <span class="pre">value)</span></code>!</p>
+<p>What happens here is that we create a new test-class <code class="docutils literal notranslate"><span class="pre">TestUtils</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BaseEvenniaTest</span></code>.  This inheritance is what makes this a testing class.</p>
+<p>We can have any number of methods on this class. To have a method recognized as one containing  code to test, its name <em>must</em> start with <code class="docutils literal notranslate"><span class="pre">test_</span></code>. We have one - <code class="docutils literal notranslate"><span class="pre">test_get_obj_stats</span></code>.</p>
+<p>In this method we create a dummy <code class="docutils literal notranslate"><span class="pre">obj</span></code> and gives it a <code class="docutils literal notranslate"><span class="pre">key</span></code> “testobj”. Note how we add the  <code class="docutils literal notranslate"><span class="pre">desc</span></code> <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> directly in the <code class="docutils literal notranslate"><span class="pre">create_object</span></code> call by specifying the attribute as a  tuple <code class="docutils literal notranslate"><span class="pre">(name,</span> <span class="pre">value)</span></code>!</p>
 <p>We then get the result of passing this dummy-object through <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> we imported earlier.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">assertEqual</span></code> method is available on all testing classes and checks that the <code class="docutils literal notranslate"><span class="pre">result</span></code> is equal
-to the string we specify. If they are the same, the test <em>passes</em>, otherwise it <em>fails</em> and we
-need to investigate what went wrong.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">assertEqual</span></code> method is available on all testing classes and checks that the <code class="docutils literal notranslate"><span class="pre">result</span></code> is equal  to the string we specify. If they are the same, the test <em>passes</em>, otherwise it <em>fails</em> and we  need to investigate what went wrong.</p>
 <section id="running-your-test">
 <h3><span class="section-number">1.4.1. </span>Running your test<a class="headerlink" href="#running-your-test" title="Permalink to this headline">¶</a></h3>
 <p>To run your test you need to stand inside your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder and execute the following command:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .evadventure.tests
 </pre></div>
 </div>
-<p>This will run all your <code class="docutils literal notranslate"><span class="pre">evadventure</span></code> tests (if you had more of them). To only run your utility tests
-you could do</p>
+<p>This will run all your <code class="docutils literal notranslate"><span class="pre">evadventure</span></code> tests (if you had more of them). To only run your utility tests  you could do</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .evadventure.tests.test_utils
 </pre></div>
 </div>
-<p>If all goes well, you should get an <code class="docutils literal notranslate"><span class="pre">OK</span></code> back. Otherwise you need to check the failure, maybe
-your return string doesn’t quite match what you expected.</p>
+<p>If all goes well, you should get an <code class="docutils literal notranslate"><span class="pre">OK</span></code> back. Otherwise you need to check the failure, maybe  your return string doesn’t quite match what you expected.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>It’s useful for any game dev to know how to effectively test their code. So we’ll try to include a <em>Testing</em> section at the end of each of the implementation lessons to follow. Writing tests for your code is optional but highly recommended. It can feel a little cumbersome or time-consuming at first … but you’ll thank yourself later.</p>
+</div>
 </section>
 </section>
 <section id="summary">
 <h2><span class="section-number">1.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>It’s very important to understand how you import code between modules in Python, so if this is still
-confusing to you, it’s worth to read up on this more.</p>
-<p>That said, many newcomers are confused with how to begin, so by creating the folder structure, some
-small modules and even making your first unit test, you are off to a great start!</p>
+<p>It’s very important to understand how you import code between modules in Python, so if this is still confusing to you, it’s worth to read up on this more.</p>
+<p>That said, many newcomers are confused with how to begin, so by creating the folder structure, some  small modules and even making your first unit test, you are off to a great start!</p>
 </section>
 </section>
 
@@ -429,7 +402,7 @@ small modules and even making your first unit test, you are off to a great start
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, The Evennia developer community.
+        &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
