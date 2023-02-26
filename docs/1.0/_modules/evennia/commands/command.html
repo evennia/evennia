@@ -89,7 +89,6 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
@@ -132,10 +131,14 @@
             <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span> <span class="k">if</span> <span class="n">alias</span> <span class="ow">and</span> <span class="n">alias</span> <span class="o">!=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
 
-    <span class="c1"># optimization - a set is much faster to match against than a list</span>
+    <span class="c1"># optimization - a set is much faster to match against than a list. This is useful</span>
+    <span class="c1"># for &#39;does any match&#39; kind of queries</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">_matchset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
-    <span class="c1"># optimization for looping over keys+aliases</span>
-    <span class="bp">cls</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_matchset</span><span class="p">)</span>
+    <span class="c1"># optimization for looping over keys+aliases. We sort by longest entry first, since we</span>
+    <span class="c1"># want to be able to catch commands with spaces in the alias/key (so if you have key &#39;smile&#39;</span>
+    <span class="c1"># and alias &#39;smile at&#39;, writing &#39;smile at&#39; should not risk being interpreted as &#39;smile&#39;</span>
+    <span class="c1"># with an argument &#39;at&#39;)</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
     <span class="c1"># by default we don&#39;t save the command between runs</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;save_for_next&quot;</span><span class="p">):</span>
@@ -381,10 +384,13 @@
         <span class="n">matches</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
-        <span class="c1"># optimization for looping over keys+aliases</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span><span class="p">)</span>
+        <span class="c1"># optimization for looping over keys+aliases. We sort by longest entry first, since we</span>
+        <span class="c1"># want to be able to catch commands with spaces in the alias/key (so if you have key &#39;smile&#39;</span>
+        <span class="c1"># and alias &#39;smile at&#39;, writing &#39;smile at&#39; should not risk being interpreted as &#39;smile&#39;</span>
+        <span class="c1"># with an argument &#39;at&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_noprefix_aliases</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">CMD_IGNORE_PREFIXES</span><span class="p">):</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noprefix_aliases</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">CMD_IGNORE_PREFIXES</span><span class="p">):</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keyaliases</span><span class="p">}</span>
 
 <div class="viewcode-block" id="Command.set_key"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.set_key">[docs]</a>    <span class="k">def</span> <span class="nf">set_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

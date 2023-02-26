@@ -171,6 +171,9 @@
 <section id="main-branch-git">
 <h2>Main branch (git)<a class="headerlink" href="#main-branch-git" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Bug fix: Make sure command parser gives precedence to longer cmd-aliases. So
+if sending <code class="docutils literal notranslate"><span class="pre">smile</span> <span class="pre">at</span></code> and the cmd <code class="docutils literal notranslate"><span class="pre">smile</span></code> has alias <code class="docutils literal notranslate"><span class="pre">smile</span> <span class="pre">at</span></code>, the match is
+ordered so the result is never interpreted as <code class="docutils literal notranslate"><span class="pre">smile</span></code> with an argument <code class="docutils literal notranslate"><span class="pre">at</span></code>.</p></li>
 <li><p>Bug fix: || (escaped color tags) were parsed too early in help entries,
 leading to colors when wanting a | separator</p></li>
 <li><p>Bug fix: Make sure spawned objects get <code class="docutils literal notranslate"><span class="pre">typeclass_path</span></code> pointing to the true
