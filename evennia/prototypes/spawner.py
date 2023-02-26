@@ -137,10 +137,9 @@ import copy
 import hashlib
 import time
 
+import evennia
 from django.conf import settings
 from django.utils.translation import gettext as _
-
-import evennia
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.prototypes import (
@@ -151,7 +150,7 @@ from evennia.prototypes.prototypes import (
     value_to_obj_or_any,
 )
 from evennia.utils import logger
-from evennia.utils.utils import is_iter, make_iter
+from evennia.utils.utils import class_from_module, is_iter, make_iter
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _PROTOTYPE_META_NAMES = (
@@ -979,8 +978,13 @@ def spawn(*prototypes, caller=None, **kwargs):
         val = prot.pop("destination", None)
         create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj, **init_spawn_kwargs)
 
+        # we need the 'true' path to the typeclass (not its alias), so we make sure to load the typeclass
+        # and use its path directly
         val = prot.pop("typeclass", settings.BASE_OBJECT_TYPECLASS)
-        create_kwargs["db_typeclass_path"] = init_spawn_value(val, str, **init_spawn_kwargs)
+        typeclass = class_from_module(
+            init_spawn_value(val, str, **init_spawn_kwargs), settings.TYPECLASS_PATHS
+        )
+        create_kwargs["db_typeclass_path"] = f"{typeclass.__module__}.{typeclass.__name__}"
 
         # extract calls to handlers
         val = prot.pop("permissions", [])
