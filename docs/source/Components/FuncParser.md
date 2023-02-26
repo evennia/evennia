@@ -1,6 +1,28 @@
 # FuncParser inline text parsing
 
-The [FuncParser](evennia.utils.funcparser.FuncParser) extracts and executes 'inline functions' embedded in a string on the form `$funcname(args, kwargs)`. Under the hood, this will lead to a call to a Python function you control. The inline function call will be replaced by the return from the function.
+The [FuncParser](evennia.utils.funcparser.FuncParser) extracts and executes 'inline functions' embedded in a string on the form `$funcname(args, kwargs)`, executes the matching 'inline function' and replaces the call with the return from the call.  
+
+To test it, let's tell Evennia to apply the Funcparser on every outgoing message. This is disabled by default (not everyone needs this functionality). To activate, add to your settings file: 
+
+	FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = True
+
+After a reload, you can try this in-game 
+
+```{shell}
+> say I got $randint(1,5) gold!
+You say "I got 3 gold!"
+```
+
+To escape the inlinefunc (e.g. to explain to someone how it works, use `$$`)
+
+```{shell}
+> say To get a random value from 1 to 5, use $$randint(1,5).
+You say "To get a random value from 1 to 5, use $randint(1,5)."
+```
+
+While `randint` may look and work just like `random.randint` from the standard Python library, it is _not_. Instead it's a `inlinefunc` named `randint` made available to Evennia (which in turn uses the standard library function). For security reasons, only functions explicitly assigned to be used as inlinefuncs are viable. 
+
+The `FuncParser`  tool is initialized with the inlinefuncs it's supposed to recognize. Below is an example of a parser only only understanding a single `$pow` inlinefunc: 
 
 ```python
 from evennia.utils.funcparser import FuncParser
@@ -26,14 +48,6 @@ Normally the return is always converted to a string but you can also get the act
 ```python
 parser.parse_to_any("$pow(4)")
 16
-```
-
-To show a `$func()` verbatim in your code without parsing it, escape it as either `$$func()` or `\$func()`:
-
-
-```python
-parser.parse("This is an escaped $$pow(4) and so is this \$pow(3)")
-"This is an escaped $pow(4) and so is this $pow(3)"
 ```
 
 ## Working with FuncParser
@@ -261,9 +275,7 @@ It may be tempting to run use Python's in-built ``eval()`` or ``exec()`` functio
 
 ## Default funcparser callables
 
-These are some example callables you can import and add your parser. They are divided into
-global-level dicts in `evennia.utils.funcparser`. Just import the dict(s) and merge/add one or
-more to them when you create your `FuncParser` instance to have those callables be available.
+These are some example callables you can import and add your parser. They are divided into global-level dicts in `evennia.utils.funcparser`. Just import the dict(s) and merge/add one or more to them when you create your `FuncParser` instance to have those callables be available.
 
 ### `evennia.utils.funcparser.FUNCPARSER_CALLABLES`
 
@@ -330,6 +342,16 @@ Here the `caller` is the one sending the message and `receiver` the one to see i
   to do this, and only works for English verbs.
 - `$pron(pronoun [,options])` ([code](evennia.utils.funcparser.funcparser_callable_pronoun)) - Dynamically
   map pronouns (like his, herself, you, its etc) between 1st/2nd person to 3rd person.
+
+
+### `evennia.prototypes.protfuncs`
+
+This is used by the [Prototype system](./Prototypes.md) and allows for adding references inside the prototype. The funcparsing will happen before the spawn.
+
+Available inlinefuncs to prototypes:
+
+- All `FUNCPARSER_CALLABLES` and `SEARCHING_CALLABLES` 
+- `$protkey(key)` - returns the value of another key within the same prototype. Note that the system will try to convert this to a 'real' value (like turning the string "3" into the integer 3), for security reasons, not all embedded values can be converted this way. Note however that you can do nested calls with inlinefuncs, including adding your own converters.
 
 ### Example
 
