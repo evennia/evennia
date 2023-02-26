@@ -171,6 +171,10 @@
 <section id="main-branch-git">
 <h2>Main branch (git)<a class="headerlink" href="#main-branch-git" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Bug fix: || (escaped color tags) were parsed too early in help entries,
+leading to colors when wanting a | separator</p></li>
+<li><p>Bug fix: Make sure spawned objects get <code class="docutils literal notranslate"><span class="pre">typeclass_path</span></code> pointing to the true
+location rather than alias (in line with <code class="docutils literal notranslate"><span class="pre">create_object</span></code>).</p></li>
 <li><p>Bug fix: Building Menu contrib menu no using Replace over Union mergetype to
 avoid clashing with in-game commands while building</p></li>
 <li><p>Feature: RPSystem contrib <code class="docutils literal notranslate"><span class="pre">sdesc</span></code> command can now view/delete your sdesc.</p></li>

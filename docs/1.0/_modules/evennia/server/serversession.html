@@ -88,15 +88,10 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
-
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AttributeHandler</span><span class="p">,</span>
-    <span class="n">DbHolder</span><span class="p">,</span>
-    <span class="n">InMemoryAttributeBackend</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeHandler</span><span class="p">,</span> <span class="n">DbHolder</span><span class="p">,</span> <span class="n">InMemoryAttributeBackend</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
 
@@ -233,20 +228,20 @@
 <span class="sd">        Get the account associated with this session</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            account (Account): The associated Account.</span>
+<span class="sd">            account (Account or None): The associated Account.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ServerSession.get_puppet"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.get_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">get_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the in-game character associated with this session.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            puppet (Object): The puppeted object, if any.</span>
+<span class="sd">            puppet (Object or None): The puppeted object, if any.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">puppet</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">puppet</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="k">else</span> <span class="kc">None</span></div>
 
     <span class="n">get_character</span> <span class="o">=</span> <span class="n">get_puppet</span>
 
