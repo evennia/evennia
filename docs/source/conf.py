@@ -15,7 +15,7 @@ from sphinx.util.osutil import cd
 # -- Project information -----------------------------------------------------
 
 project = "Evennia"
-copyright = "2022, The Evennia developer community"
+copyright = "2023, The Evennia developer community"
 author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
