@@ -10,15 +10,10 @@ import time
 
 from django.conf import settings
 from django.utils import timezone
-
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.comms.models import ChannelDB
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
-from evennia.typeclasses.attributes import (
-    AttributeHandler,
-    DbHolder,
-    InMemoryAttributeBackend,
-)
+from evennia.typeclasses.attributes import AttributeHandler, DbHolder, InMemoryAttributeBackend
 from evennia.utils import logger
 from evennia.utils.utils import class_from_module, lazy_property, make_iter
 
@@ -155,20 +150,20 @@ class ServerSession(_BASE_SESSION_CLASS):
         Get the account associated with this session
 
         Returns:
-            account (Account): The associated Account.
+            account (Account or None): The associated Account.
 
         """
-        return self.logged_in and self.account
+        return self.account if self.logged_in else None
 
     def get_puppet(self):
         """
         Get the in-game character associated with this session.
 
         Returns:
-            puppet (Object): The puppeted object, if any.
+            puppet (Object or None): The puppeted object, if any.
 
         """
-        return self.logged_in and self.puppet
+        return self.puppet if self.logged_in else None
 
     get_character = get_puppet
 
