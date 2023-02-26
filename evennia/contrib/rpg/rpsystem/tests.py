@@ -5,7 +5,6 @@ Tests for RP system
 import time
 
 from anything import Anything
-
 from evennia import create_object
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import BaseEvenniaTest
@@ -79,7 +78,8 @@ class TestLanguage(BaseEvenniaTest):
     def test_obfuscate_whisper(self):
         self.assertEqual(rplanguage.obfuscate_whisper(text, level=0.0), text)
         assert rplanguage.obfuscate_whisper(text, level=0.1).startswith(
-            "-utom-t-d t-sting is -dv-nt-g-ous for - numb-r of r--sons: t-sts m-y b- -x-cut-d Continuously"
+            "-utom-t-d t-sting is -dv-nt-g-ous for - numb-r of r--sons: t-sts m-y b- -x-cut-d"
+            " Continuously"
         )
         assert rplanguage.obfuscate_whisper(text, level=0.5).startswith(
             "--------- --s---- -s -----------s f-- - ------ -f ---s--s: --s-s "
@@ -277,7 +277,8 @@ class TestRPSystem(BaseEvenniaTest):
         )
         self.assertEqual(
             self.out2[0],
-            "|bA nice sender of emotes|n is distracted from |bthe first receiver of emotes.|n by something.",
+            "|bA nice sender of emotes|n is distracted from |bthe first receiver of emotes.|n by"
+            " something.",
         )
 
     def test_send_case_sensitive_emote(self):
@@ -340,6 +341,11 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         )
         self.call(rpsystem.CmdSay(), "Hello!", 'Char says, "Hello!"')
         self.call(rpsystem.CmdEmote(), "/me smiles to /BarFoo.", "Char smiles to BarFoo Character")
+
+        # escape urls in say
+        self.call(rpsystem.CmdSay(), "https://evennia.com", 'Char says, "https://evennia.com"')
+        self.call(rpsystem.CmdSay(), "http://evennia.com", 'Char says, "http://evennia.com"')
+
         self.call(
             rpsystem.CmdPose(),
             "stands by the bar",
