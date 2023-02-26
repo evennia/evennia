@@ -417,6 +417,9 @@
             <span class="s2">&quot;Char2&#39;s sdesc was set to &#39;BarFoo Character&#39;.&quot;</span><span class="p">,</span>
             <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">rpsystem</span><span class="o">.</span><span class="n">CmdSdesc</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s1">&#39;Your short description is &quot;Foobar Character&quot;.&#39;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">rpsystem</span><span class="o">.</span><span class="n">CmdSay</span><span class="p">(),</span> <span class="s2">&quot;Hello!&quot;</span><span class="p">,</span> <span class="s1">&#39;Char says, &quot;Hello!&quot;&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">rpsystem</span><span class="o">.</span><span class="n">CmdEmote</span><span class="p">(),</span> <span class="s2">&quot;/me smiles to /BarFoo.&quot;</span><span class="p">,</span> <span class="s2">&quot;Char smiles to BarFoo Character&quot;</span><span class="p">)</span>
 
@@ -445,7 +448,9 @@
             <span class="s2">&quot;friend&quot;</span><span class="p">,</span>
             <span class="s2">&quot;You will now know them only as &#39;BarFoo Character&#39;&quot;</span><span class="p">,</span>
             <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;forget&quot;</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">rpsystem</span><span class="o">.</span><span class="n">CmdSdesc</span><span class="p">(),</span> <span class="s2">&quot;clear&quot;</span><span class="p">,</span> <span class="s1">&#39;Cleared sdesc, using name &quot;Char&quot;.&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">])</span></div></div>
 </pre></div>
 
           </div>

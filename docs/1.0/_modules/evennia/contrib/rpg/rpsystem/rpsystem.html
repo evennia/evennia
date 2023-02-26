@@ -803,6 +803,13 @@
 
         <span class="k">return</span> <span class="n">sdesc</span></div>
 
+<div class="viewcode-block" id="SdescHandler.clear"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear sdesc.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;_sdesc&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="SdescHandler.get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simple getter. The sdesc should never be allowed to</span>
@@ -1037,6 +1044,8 @@
 
 <span class="sd">    Usage:</span>
 <span class="sd">      sdesc &lt;short description&gt;</span>
+<span class="sd">      sdesc         - view current sdesc</span>
+<span class="sd">      sdesc clear   - remove sdesc</span>
 
 <span class="sd">    Assigns a short description to yourself.</span>
 
@@ -1049,8 +1058,18 @@
         <span class="s2">&quot;Assign the sdesc&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: sdesc &lt;sdesc-text&gt;&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">sdesc</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have no short description set.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Your short description is &quot;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="s2">&quot;clear&quot;</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="s2">&quot;Do you want to clear your sdesc? [Y]/n?&quot;</span>
+            <span class="k">if</span> <span class="n">ret</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">):</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cleared sdesc, using name &quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># strip non-alfanum chars from end of sdesc</span>
             <span class="n">sdesc</span> <span class="o">=</span> <span class="n">_RE_CHAREND</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>

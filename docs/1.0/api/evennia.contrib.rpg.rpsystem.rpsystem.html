@@ -474,6 +474,12 @@ of control sequences before setting.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.clear">
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#SdescHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear sdesc.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#SdescHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple getter. The sdesc should never be allowed to
@@ -695,7 +701,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&quot;', &quot;'&quot;]</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [&quot;'&quot;, '&quot;']</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -726,7 +732,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&quot; \'', 'category': 'general', 'key': 'say', 'no_prefix': ' &quot; \'', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '\' &quot;', 'category': 'general', 'key': 'say', 'no_prefix': ' \' &quot;', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -737,7 +743,9 @@ a different language.</p>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpg.rpsystem.rpsystem.RPCommand" title="evennia.contrib.rpg.rpsystem.rpsystem.RPCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.rpsystem.rpsystem.RPCommand</span></code></a></p>
 <p>Assign yourself a short description (sdesc).</p>
 <dl class="simple">
-<dt>Usage:</dt><dd><p>sdesc &lt;short description&gt;</p>
+<dt>Usage:</dt><dd><p>sdesc &lt;short description&gt;
+sdesc         - view current sdesc
+sdesc clear   - remove sdesc</p>
 </dd>
 </dl>
 <p>Assigns a short description to yourself.</p>
@@ -774,7 +782,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdSdesc.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'sdesc', 'no_prefix': ' ', 'tags': '', 'text': '\n    Assign yourself a short description (sdesc).\n\n    Usage:\n      sdesc &lt;short description&gt;\n\n    Assigns a short description to yourself.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSdesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'sdesc', 'no_prefix': ' ', 'tags': '', 'text': '\n    Assign yourself a short description (sdesc).\n\n    Usage:\n      sdesc &lt;short description&gt;\n      sdesc         - view current sdesc\n      sdesc clear   - remove sdesc\n\n    Assigns a short description to yourself.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSdesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -865,7 +873,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['recognize', 'forget']</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['forget', 'recognize']</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -892,7 +900,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'recognize forget', 'category': 'general', 'key': 'recog', 'no_prefix': ' recognize forget', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'forget recognize', 'category': 'general', 'key': 'recog', 'no_prefix': ' forget recognize', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
