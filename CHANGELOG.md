@@ -2,6 +2,8 @@
 
 ## Main branch (git)
 
+- Bug fix: || (escaped color tags) were parsed too early in help entries,
+  leading to colors when wanting a | separator
 - Bug fix: Make sure spawned objects get `typeclass_path` pointing to the true
   location rather than alias (in line with `create_object`).
 - Bug fix: Building Menu contrib menu no using Replace over Union mergetype to

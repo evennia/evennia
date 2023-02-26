@@ -10,6 +10,11 @@ sessions etc.
 import re
 
 from django.conf import settings
+from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
+from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
+from evennia.server.portal.mxp import Mxp, mxp_parse
+from evennia.utils import ansi
+from evennia.utils.utils import class_from_module, to_bytes
 from twisted.conch.telnet import (
     ECHO,
     GA,
@@ -27,12 +32,6 @@ from twisted.conch.telnet import (
 )
 from twisted.internet import protocol
 from twisted.internet.task import LoopingCall
-
-from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
-from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
-from evennia.server.portal.mxp import Mxp, mxp_parse
-from evennia.utils import ansi
-from evennia.utils.utils import class_from_module, to_bytes
 
 _RE_N = re.compile(r"\|n$")
 _RE_LEND = re.compile(rb"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
