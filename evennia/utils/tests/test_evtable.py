@@ -3,6 +3,8 @@ Tests for EvTable component.
 
 """
 
+from unittest import skip
+
 from evennia.utils import ansi, evtable
 from evennia.utils.test_resources import EvenniaTestCase
 
@@ -347,3 +349,39 @@ class TestEvTable(EvenniaTestCase):
 
         self.assertIn(ANSI_RED, str(table))
         self.assertIn(ANSI_CYAN, str(table))
+
+    @skip("Pending refactor into client-side ansi parsing")
+    def test_mxp_links(self):
+        """
+        Testing https://github.com/evennia/evennia/issues/3082
+
+        EvTable not properly handling mxp links given to it.
+
+        """
+
+        commands1 = [f"|lcsay This is command {inum}|ltcommand {inum}|le" for inum in range(1, 4)]
+        commands2 = [f"command {inum}" for inum in range(1, 4)]  # comparison strings, no MXP
+
+        # from evennia import set_trace
+
+        # set_trace()
+
+        cell1 = ansi.strip_mxp(str(evtable.EvCell(f"|lcsay This is command 1|ltcommand 1|le")))
+        cell2 = str(evtable.EvCell(f"command 1"))
+
+        print(f"cell1:------------\n{cell1}")
+        print(f"cell2:------------\n{cell2}")
+
+        table1a = ansi.strip_mxp(str(evtable.EvTable(*commands1)))
+        table1b = str(evtable.EvTable(*commands2))
+
+        table2a = ansi.strip_mxp(str(evtable.EvTable(table=[commands1])))
+        table2b = str(evtable.EvTable(table=[commands2]))
+
+        print(f"1a:---------------\n{table1a}")
+        print(f"1b:---------------\n{table1b}")
+        print(f"2a:---------------\n{table2a}")
+        print(f"2b:---------------\n{table2b}")
+
+        self.assertEqual(table1b, table1a)
+        self.assertEqual(table2b, table2a)
