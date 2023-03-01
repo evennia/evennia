@@ -3,6 +3,7 @@ from unittest import TestCase, mock
 from parameterized import parameterized
 
 from evennia import DefaultScript
+from evennia.objects.objects import DefaultObject
 from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 from evennia.utils.create import create_script
@@ -18,6 +19,42 @@ class TestScript(BaseEvenniaTest):
             self.assertFalse(errors, errors)
             mockinit.assert_called()
 
+class ListIntervalsScript(DefaultScript):
+    """
+    A script that does nothing. Used to test listing of script with nonzero intervals.
+    """
+    def at_script_creation(self):
+        """
+        Setup the script
+        """
+        self.key = "interval_test"
+        self.desc = "This is an empty placeholder script."
+        self.interval = 1
+        self.repeats = 1
+
+class TestScriptHandler(BaseEvenniaTest):
+    """
+    Test the ScriptHandler class.
+
+    """
+    def setUp(self):
+        self.obj, self.errors = DefaultObject.create("test_object")
+
+    def tearDown(self):
+        self.obj.delete()
+
+    def test_start(self):
+        "Check that ScriptHandler start function works correctly"
+        self.obj.scripts.add(ListIntervalsScript)
+        self.num = self.obj.scripts.start(self.obj.scripts.all()[0].key)
+        self.assertTrue(self.num == 1)
+    
+    def test_list_script_intervals(self):
+        "Checks that Scripthandler __str__ function lists script intervals correctly"
+        self.obj.scripts.add(ListIntervalsScript)
+        self.str = str(self.obj.scripts)
+        self.assertTrue("None/1" in self.str)
+        self.assertTrue("1 repeats" in self.str)
 
 class TestScriptDB(TestCase):
     "Check the singleton/static ScriptDB object works correctly"
