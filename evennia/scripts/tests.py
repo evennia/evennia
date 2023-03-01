@@ -7,6 +7,7 @@ from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 from evennia.utils.create import create_script
 from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.scripts.tickerhandler import TickerHandler
 
 
 class TestScript(BaseEvenniaTest):
@@ -17,6 +18,17 @@ class TestScript(BaseEvenniaTest):
             self.assertTrue(obj, errors)
             self.assertFalse(errors, errors)
             mockinit.assert_called()
+
+class Test_improve_coverage(TestCase):
+    def test_store_key_raises_RunTimeError(self):
+        with self.assertRaises(RuntimeError):
+            th=TickerHandler()
+            th._store_key(None, None, 0, None)
+
+    def test_remove_raises_RunTimeError(self):
+       with self.assertRaises(RuntimeError):
+            th=TickerHandler()
+            th.remove(callback=1)
 
 
 class TestScriptDB(TestCase):
