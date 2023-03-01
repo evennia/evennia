@@ -7,7 +7,7 @@ from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 from evennia.utils.create import create_script
 from evennia.utils.test_resources import BaseEvenniaTest
-
+from evennia.scripts.manager import ScriptDBManager
 
 class TestScript(BaseEvenniaTest):
     def test_create(self):
@@ -18,6 +18,11 @@ class TestScript(BaseEvenniaTest):
             self.assertFalse(errors, errors)
             mockinit.assert_called()
 
+class Test_improve_coverage(TestCase):
+    def test_not_obj_return_empty_list(self):
+        manager_obj = ScriptDBManager()
+        returned_list = manager_obj.get_all_scripts_on_obj(False)
+        self.assertEqual(returned_list, [])
 
 class TestScriptDB(TestCase):
     "Check the singleton/static ScriptDB object works correctly"
@@ -51,11 +56,9 @@ class TestScriptDB(TestCase):
         # Check the script is not recreated as a side-effect
         self.assertFalse(self.scr in ScriptDB.objects.get_all_scripts())
 
-
 class TestExtendedLoopingCall(TestCase):
     """
     Test the ExtendedLoopingCall class.
-
     """
 
     @mock.patch("evennia.scripts.scripts.LoopingCall")
