@@ -8,6 +8,8 @@ from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 from evennia.utils.create import create_script
 from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.scripts.monitorhandler import MonitorHandler
+import inspect
 from evennia.scripts.manager import ScriptDBManager
 
 class TestScript(BaseEvenniaTest):
@@ -129,3 +131,58 @@ class TestExtendedLoopingCall(TestCase):
         loopcall.__call__.assert_not_called()
         self.assertEqual(loopcall.interval, 20)
         loopcall._scheduleFrom.assert_called_with(121)
+        
+def dummy_func():
+    return 0
+class TestMonitorHandler(TestCase):
+    def setUp(self):
+        self.handler = MonitorHandler()
+    
+    def test_add(self):
+        obj = mock.Mock()
+        fieldname = "db_add"
+        callback = dummy_func
+        idstring = "test"
+        self.assertEquals(inspect.isfunction(callback),True)
+
+        self.handler.add(obj, fieldname, callback, idstring=idstring)
+
+        self.assertIn(fieldname, self.handler.monitors[obj])
+        self.assertIn(idstring, self.handler.monitors[obj][fieldname])
+        self.assertEqual(self.handler.monitors[obj][fieldname][idstring], (callback, False, {}))
+
+    def test_remove(self):
+        obj = mock.Mock()
+        fieldname = 'db_remove'
+        callback = dummy_func
+        idstring = 'test_remove'
+
+        self.handler.add(obj,fieldname,callback,idstring=idstring)
+        self.assertIn(fieldname,self.handler.monitors[obj])
+        self.assertEqual(self.handler.monitors[obj][fieldname][idstring], (callback, False, {}))
+
+        self.handler.remove(obj,fieldname,idstring=idstring)
+        self.assertEquals(self.handler.monitors[obj][fieldname], {})
+
+    def test_add_with_invalid_callback_does_not_work(self):
+        obj = mock.Mock()
+        fieldname = "db_key"
+        callback = "not_a_function"
+        
+        self.handler.add(obj, fieldname, callback)
+        self.assertNotIn(fieldname, self.handler.monitors[obj])
+
+    """ def test_add_raise_exception(self):
+        obj = mock.Mock()
+        fieldname = "db_add"
+        callback = 1
+        idstring = "test"
+       # self.assertEquals(inspect.isfunction(callback),True)
+        self.assertRaises(Exception,self.handler.add,obj, fieldname, callback, idstring=idstring)
+     """       
+
+       
+
+
+
+
