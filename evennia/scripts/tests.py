@@ -8,6 +8,7 @@ from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 from evennia.utils.create import create_script
 from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.scripts.tickerhandler import TickerHandler
 from evennia.scripts.monitorhandler import MonitorHandler
 import inspect
 from evennia.scripts.manager import ScriptDBManager
@@ -22,6 +23,16 @@ class TestScript(BaseEvenniaTest):
             mockinit.assert_called()
 
 class Test_improve_coverage(TestCase):
+    def test_store_key_raises_RunTimeError(self):
+        with self.assertRaises(RuntimeError):
+            th=TickerHandler()
+            th._store_key(None, None, 0, None)
+
+    def test_remove_raises_RunTimeError(self):
+       with self.assertRaises(RuntimeError):
+            th=TickerHandler()
+            th.remove(callback=1)
+            
     def test_not_obj_return_empty_list(self):
         manager_obj = ScriptDBManager()
         returned_list = manager_obj.get_all_scripts_on_obj(False)
