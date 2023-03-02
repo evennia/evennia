@@ -23,37 +23,51 @@ if (!Scorer) {
     },
     */
     // Evennia optimized scorer
-    score: function(query, result) {
-        var scorevar = 0;
-        if(result[1].startsWith("evennia.")) {
-            scorevar = result[4] * 0.8;
+    score: function(inquery, result) {
+        query = inquery.toLowerCase();
+        var title = result[1].toLowerCase().replace(/<\/?[^>]+(>|$)/g, "");
+        var score = result[4];
+
+        var mscore = score;
+
+        if (query === title) {
+            mscore = score * 10;
         }
-        else if(result[1].toLowerCase().startsWith(query) & query.length == result[1].length) {
-            scorevar = result[4] * 1.5;
+        else if (title.startsWith(query)) {
+            mscore = score * 8;
+            if (title.startsWith("evennia.")) {
+                mscore *= 0.2;
+            }
         }
-        else {
-            scorevar = result[4];
+        else if (title.includes(query)) {
+            mscore = score * 7;
+            if (title.startsWith("evennia.")) {
+                mscore *= 0.2;
+            }
         }
-        // console.debug("Scored:", result[1], scorevar)
-        return scorevar;
+        else { 
+            mscore = score * 0.5;
+        }
+        // console.log("result: " + title + ", " + score + "->" + mscore);
+        return mscore;
     },
     // query matches the full name of an object
-    objNameMatch: 11,
+    objNameMatch: 3,
     // or matches in the last dotted part of the object name
-    objPartialMatch: 6,
+    objPartialMatch: 2,
     // Additive scores depending on the priority of the object
-    objPrio: {0:  15,   // used to be importantResults
-              1:  5,   // used to be objectResults
-              2: -5},  // used to be unimportantResults
+    objPrio: {0:  3,   // used to be importantResults
+              1:  2,   // used to be objectResults
+              2: -15},  // used to be unimportantResults
     //  Used when the priority is not in the mapping.
     objPrioDefault: 0,
 
     // query found in title
-    title: 15,
-    partialTitle: 7,
+    title: 12,
+    partialTitle: 3,
     // query found in terms
-    term: 5,
-    partialTerm: 2
+    term: 2,
+    partialTerm: 1
   };
 }
 
