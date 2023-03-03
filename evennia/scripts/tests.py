@@ -12,6 +12,7 @@ from evennia.scripts.tickerhandler import TickerHandler
 from evennia.scripts.monitorhandler import MonitorHandler
 import inspect
 from evennia.scripts.manager import ScriptDBManager
+from collections import defaultdict
 
 class TestScript(BaseEvenniaTest):
     def test_create(self):
@@ -145,16 +146,16 @@ class TestExtendedLoopingCall(TestCase):
         
 def dummy_func():
     return 0
+
 class TestMonitorHandler(TestCase):
     def setUp(self):
         self.handler = MonitorHandler()
-    
+
     def test_add(self):
         obj = mock.Mock()
         fieldname = "db_add"
         callback = dummy_func
         idstring = "test"
-        self.assertEquals(inspect.isfunction(callback),True)
 
         self.handler.add(obj, fieldname, callback, idstring=idstring)
 
@@ -182,6 +183,36 @@ class TestMonitorHandler(TestCase):
         
         self.handler.add(obj, fieldname, callback)
         self.assertNotIn(fieldname, self.handler.monitors[obj])
+
+    def test_all(self):
+        obj = [mock.Mock(),mock.Mock()]
+        fieldname = ["db_all1","db_all2"]
+        callback = dummy_func
+        idstring = ["test_all1","test_all2"]
+
+        self.handler.add(obj[0], fieldname[0], callback, idstring=idstring[0])
+        self.handler.add(obj[1], fieldname[1], callback, idstring=idstring[1],persistent=True)
+     
+        output = self.handler.all()
+        self.assertEquals(output, 
+                          [(obj[0], fieldname[0], idstring[0], False, {}),
+                           (obj[1], fieldname[1], idstring[1], True, {})])
+        
+    def test_clear(self):
+        obj = mock.Mock()
+        fieldname = "db_add"
+        callback = dummy_func
+        idstring = "test"
+
+        self.handler.add(obj, fieldname, callback, idstring=idstring)
+        self.assertIn(obj, self.handler.monitors)
+
+        self.handler.clear()
+        self.assertNotIn(obj, self.handler.monitors)
+        self.assertEquals(defaultdict(lambda: defaultdict(dict)), self.handler.monitors)
+
+
+  
 
        
 
