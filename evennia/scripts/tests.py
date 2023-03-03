@@ -129,15 +129,6 @@ class TestMonitorHandler(TestCase):
         self.handler.add(obj, fieldname, callback)
         self.assertNotIn(fieldname, self.handler.monitors[obj])
 
-    """ def test_add_raise_exception(self):
-        obj = mock.Mock()
-        fieldname = "db_add"
-        callback = 1
-        idstring = "test"
-       # self.assertEquals(inspect.isfunction(callback),True)
-        self.assertRaises(Exception,self.handler.add,obj, fieldname, callback, idstring=idstring)
-     """       
-
        
 
 
