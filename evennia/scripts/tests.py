@@ -13,6 +13,7 @@ from evennia.scripts.monitorhandler import MonitorHandler
 import inspect
 from evennia.scripts.manager import ScriptDBManager
 from collections import defaultdict
+from evennia.utils.dbserialize import dbserialize
 
 class TestScript(BaseEvenniaTest):
     def test_create(self):
@@ -218,11 +219,26 @@ class TestMonitorHandler(TestCase):
         self.assertNotIn(obj, self.handler.monitors)
         self.assertEquals(defaultdict(lambda: defaultdict(dict)), self.handler.monitors)
 
+    def test_add_remove_attribute(self):
+        """Tests that adding and removing an object attribute to the monitor handler works correctly"""
+        obj = mock.Mock()
+        obj.name = "testaddattribute"
+        fieldname = "name"
+        callback = dummy_func
+        idstring = "test"
+        category = "testattribute"
 
-  
+        """Add attribute to handler and assert that it has been added"""
+        self.handler.add(obj, fieldname, callback, idstring=idstring,category=category)
 
-       
+        index = obj.attributes.get(fieldname, return_obj=True)
+        name = "db_value[testattribute]"
 
+        self.assertIn(name, self.handler.monitors[index])
+        self.assertIn(idstring, self.handler.monitors[index][name])
+        self.assertEqual(self.handler.monitors[index][name][idstring], (callback, False, {}))
 
-
-
+        """Remove attribute from the handler and assert that it is gone"""
+        self.handler.remove(obj,fieldname,idstring=idstring,category=category)
+        self.assertEquals(self.handler.monitors[index][name], {})
+        
