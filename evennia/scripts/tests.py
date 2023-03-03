@@ -3,12 +3,15 @@ from unittest import TestCase, mock
 from parameterized import parameterized
 
 from evennia import DefaultScript
+from evennia.objects.objects import DefaultObject
 from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 from evennia.utils.create import create_script
 from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.scripts.tickerhandler import TickerHandler
 from evennia.scripts.monitorhandler import MonitorHandler
 import inspect
+from evennia.scripts.manager import ScriptDBManager
 
 class TestScript(BaseEvenniaTest):
     def test_create(self):
@@ -19,6 +22,58 @@ class TestScript(BaseEvenniaTest):
             self.assertFalse(errors, errors)
             mockinit.assert_called()
 
+class Test_improve_coverage(TestCase):
+    def test_store_key_raises_RunTimeError(self):
+        with self.assertRaises(RuntimeError):
+            th=TickerHandler()
+            th._store_key(None, None, 0, None)
+
+    def test_remove_raises_RunTimeError(self):
+       with self.assertRaises(RuntimeError):
+            th=TickerHandler()
+            th.remove(callback=1)
+            
+    def test_not_obj_return_empty_list(self):
+        manager_obj = ScriptDBManager()
+        returned_list = manager_obj.get_all_scripts_on_obj(False)
+        self.assertEqual(returned_list, [])
+
+class ListIntervalsScript(DefaultScript):
+    """
+    A script that does nothing. Used to test listing of script with nonzero intervals.
+    """
+    def at_script_creation(self):
+        """
+        Setup the script
+        """
+        self.key = "interval_test"
+        self.desc = "This is an empty placeholder script."
+        self.interval = 1
+        self.repeats = 1
+
+class TestScriptHandler(BaseEvenniaTest):
+    """
+    Test the ScriptHandler class.
+
+    """
+    def setUp(self):
+        self.obj, self.errors = DefaultObject.create("test_object")
+
+    def tearDown(self):
+        self.obj.delete()
+
+    def test_start(self):
+        "Check that ScriptHandler start function works correctly"
+        self.obj.scripts.add(ListIntervalsScript)
+        self.num = self.obj.scripts.start(self.obj.scripts.all()[0].key)
+        self.assertTrue(self.num == 1)
+    
+    def test_list_script_intervals(self):
+        "Checks that Scripthandler __str__ function lists script intervals correctly"
+        self.obj.scripts.add(ListIntervalsScript)
+        self.str = str(self.obj.scripts)
+        self.assertTrue("None/1" in self.str)
+        self.assertTrue("1 repeats" in self.str)
 
 class TestScriptDB(TestCase):
     "Check the singleton/static ScriptDB object works correctly"
@@ -52,11 +107,9 @@ class TestScriptDB(TestCase):
         # Check the script is not recreated as a side-effect
         self.assertFalse(self.scr in ScriptDB.objects.get_all_scripts())
 
-
 class TestExtendedLoopingCall(TestCase):
     """
     Test the ExtendedLoopingCall class.
-
     """
 
     @mock.patch("evennia.scripts.scripts.LoopingCall")
@@ -89,6 +142,7 @@ class TestExtendedLoopingCall(TestCase):
         loopcall.__call__.assert_not_called()
         self.assertEqual(loopcall.interval, 20)
         loopcall._scheduleFrom.assert_called_with(121)
+        
 def dummy_func():
     return 0
 class TestMonitorHandler(TestCase):
