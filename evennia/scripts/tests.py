@@ -148,10 +148,15 @@ def dummy_func():
     return 0
 
 class TestMonitorHandler(TestCase):
+    """
+    Test the MonitorHandler class.
+    """
+
     def setUp(self):
         self.handler = MonitorHandler()
 
     def test_add(self):
+        """Tests that adding an object to the monitor handler works correctly"""
         obj = mock.Mock()
         fieldname = "db_add"
         callback = dummy_func
@@ -164,20 +169,20 @@ class TestMonitorHandler(TestCase):
         self.assertEqual(self.handler.monitors[obj][fieldname][idstring], (callback, False, {}))
 
     def test_remove(self):
+        """Tests that removing an object from the monitor handler works correctly"""
         obj = mock.Mock()
         fieldname = 'db_remove'
         callback = dummy_func
         idstring = 'test_remove'
 
+        """Add an object to the monitor handler and then remove it"""
         self.handler.add(obj,fieldname,callback,idstring=idstring)
-        self.assertIn(fieldname,self.handler.monitors[obj])
-        self.assertEqual(self.handler.monitors[obj][fieldname][idstring], (callback, False, {}))
-
         self.handler.remove(obj,fieldname,idstring=idstring)
         self.assertEquals(self.handler.monitors[obj][fieldname], {})
 
-    def test_add_with_invalid_callback_does_not_work(self):
+    def test_add_with_invalid_function(self):
         obj = mock.Mock()
+        """Tests that add method rejects objects where callback is not a function"""
         fieldname = "db_key"
         callback = "not_a_function"
         
@@ -185,6 +190,7 @@ class TestMonitorHandler(TestCase):
         self.assertNotIn(fieldname, self.handler.monitors[obj])
 
     def test_all(self):
+        """Tests that all method correctly returns information about added objects"""
         obj = [mock.Mock(),mock.Mock()]
         fieldname = ["db_all1","db_all2"]
         callback = dummy_func
@@ -199,6 +205,7 @@ class TestMonitorHandler(TestCase):
                            (obj[1], fieldname[1], idstring[1], True, {})])
         
     def test_clear(self):
+        """Tests that the clear function correctly clears the monitor handler"""
         obj = mock.Mock()
         fieldname = "db_add"
         callback = dummy_func
