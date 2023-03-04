@@ -146,7 +146,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># and only allow connections from localhost. Requires a cold reboot.</span>
 <span class="n">LOCKDOWN_MODE</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="c1"># Controls whether new account registration is available.</span>
-<span class="c1"># Set to False to lock down the registration page and the create account command. </span>
+<span class="c1"># Set to False to lock down the registration page and the create account command.</span>
 <span class="n">NEW_ACCOUNT_REGISTRATION_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="c1"># Activate telnet service</span>
 <span class="n">TELNET_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1109,7 +1109,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
     <span class="p">}</span>
 <span class="p">]</span>
 <span class="c1"># Django cache settings</span>
-<span class="c1"># https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache</span>
+<span class="c1"># https://docs.djangoproject.com/en/4.1/topics/cache/#setting-up-the-cache</span>
 <span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;django.core.cache.backends.locmem.LocMemCache&quot;</span><span class="p">,</span>
@@ -1168,7 +1168,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="n">AUTH_USER_MODEL</span> <span class="o">=</span> <span class="s2">&quot;accounts.AccountDB&quot;</span>
 
 <span class="c1"># Password validation plugins</span>
-<span class="c1"># https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators</span>
+<span class="c1"># https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators</span>
 <span class="n">AUTH_PASSWORD_VALIDATORS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;django.contrib.auth.password_validation.UserAttributeSimilarityValidator&quot;</span><span class="p">},</span>
     <span class="p">{</span>
