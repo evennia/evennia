@@ -15,6 +15,40 @@ from ..npcs import EvAdventureMob
 from ..objects import EvAdventureConsumable, EvAdventureRunestone, EvAdventureWeapon
 from .mixins import EvAdventureMixin
 
+
+class EvAdventureCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
+    """
+    Test methods on the turn-based combat handler
+
+    """
+
+    maxDiff = None
+
+    # make sure to mock away all time-keeping elements
+    @patch(
+        "evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.interval",
+        new=-1,
+    )
+    @patch(
+        "evennia.contrib.tutorials.evadventure.combat_turnbased.delay",
+        new=MagicMock(return_value=None),
+    )
+    def setUp(self):
+        super().setUp()
+        self.location.allow_combat = True
+        self.location.allow_death = True
+        self.combatant = self.character
+        self.target = create.create_object(
+            EvAdventureMob,
+            key="testmonster",
+            location=self.location,
+            attributes=(("is_idle", True),),
+        )
+
+        # this already starts turn 1
+        self.combathandler = combat_turnbased.join_combat(self.combatant, self.target)
+
+
 # class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
 #     """
 #     Test methods on the turn-based combat handler.

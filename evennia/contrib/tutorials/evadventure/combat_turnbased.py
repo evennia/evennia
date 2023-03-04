@@ -785,8 +785,8 @@ class _CmdCombatBase(Command):
 
         self.args = self.args.strip()
 
-        if not self.caller.location:
-            self.caller.msg("Can't fight here!")
+        if not self.caller.location or not self.callerlocation.allow_combat:
+            self.msg("Can't fight here!")
             raise InterruptCommand()
 
 
