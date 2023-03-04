@@ -15,7 +15,7 @@ you can "attach" any number of event-handlers to these signals. You can attach
 any number of handlers and they'll all fire whenever any entity triggers the
 signal.
 
-Evennia uses the [Django Signal system](https://docs.djangoproject.com/en/2.2/topics/signals/).
+Evennia uses the [Django Signal system](https://docs.djangoproject.com/en/4.1/topics/signals/).
 
 
 ## Working with Signals

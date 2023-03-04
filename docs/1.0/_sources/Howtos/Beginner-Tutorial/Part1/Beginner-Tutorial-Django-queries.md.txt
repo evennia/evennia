@@ -203,7 +203,7 @@ know to transform it. Success!
 All examples so far used `AND` relations. The arguments to `.filter` are added together with `AND`
 ("we want tag room to be "monlit" _and_ lycantrhopy be > 2").
 
-For queries using `OR` and `NOT` we need Django's [Q object](https://docs.djangoproject.com/en/1.11/topics/db/queries/#complex-lookups-with-q-objects). It is imported from Django directly:
+For queries using `OR` and `NOT` we need Django's [Q object](https://docs.djangoproject.com/en/4.1/topics/db/queries/#complex-lookups-with-q-objects). It is imported from Django directly:
 
     from django.db.models import Q
 

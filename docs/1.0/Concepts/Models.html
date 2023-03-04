@@ -199,7 +199,7 @@ to version control.</p>
 Python class. It defines <em>fields</em> on itself, objects of a special type. These become the “columns”
 of the database table. Finally, you create new instances of the model to add new rows to the
 database.</p>
-<p>We won’t describe all aspects of Django models here, for that we refer to the vast <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/db/models/">Django
+<p>We won’t describe all aspects of Django models here, for that we refer to the vast <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/db/models/">Django
 documentation</a> on the subject. Here is a
 (very) brief example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
@@ -233,7 +233,7 @@ lookups, so it’s recommended to put it on fields you know you’ll often use i
 <code class="docutils literal notranslate"><span class="pre">null=True</span></code> and <code class="docutils literal notranslate"><span class="pre">blank=True</span></code> keywords means that these fields may be left empty or set to the empty
 string without the database complaining. There are many other field types and keywords to define
 them, see django docs for more info.</p>
-<p>Similar to using <a class="reference external" href="https://docs.djangoproject.com/en/2.2/howto/legacy-databases/">django-admin</a> you
+<p>Similar to using <a class="reference external" href="https://docs.djangoproject.com/en/4.1/howto/legacy-databases/">django-admin</a> you
 are able to do <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">inspectdb</span></code> to get an automated listing of model information for an existing
 database.  As is the case with any model generating tool you should only use this as a starting
 point for your models.</p>
@@ -346,7 +346,7 @@ the actual <em>field names</em> in the query, not the wrapper name (so <code cla
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">db_text</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>See the <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/db/queries/">Django query documentation</a> for a
+<p>See the <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/db/queries/">Django query documentation</a> for a
 lot more information about querying the database.</p>
 </section>
 </section>

@@ -119,7 +119,7 @@ with a given Tag like this in code:
 
 > Note that searching for just "furniture" will only return the objects tagged with the "furniture" tag that has a category of `None`. We must explicitly give the category to get the "luxurious" furniture. 
 
-Using any of the `search_tag` variants will all return [Django Querysets](https://docs.djangoproject.com/en/2.1/ref/models/querysets/), including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them.
+Using any of the `search_tag` variants will all return [Django Querysets](https://docs.djangoproject.com/en/4.1/ref/models/querysets/), including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them.
 
 Remember when searching that not setting a category means setting it to `None` - this does *not*
 mean that category is undefined, rather `None` is considered the default, unnamed category.

@@ -308,7 +308,7 @@ know to transform it. Success!</p>
 <h2><span class="section-number">12.3. </span>Queries with OR or NOT<a class="headerlink" href="#queries-with-or-or-not" title="Permalink to this headline">¶</a></h2>
 <p>All examples so far used <code class="docutils literal notranslate"><span class="pre">AND</span></code> relations. The arguments to <code class="docutils literal notranslate"><span class="pre">.filter</span></code> are added together with <code class="docutils literal notranslate"><span class="pre">AND</span></code>
 (“we want tag room to be “monlit” <em>and</em> lycantrhopy be &gt; 2”).</p>
-<p>For queries using <code class="docutils literal notranslate"><span class="pre">OR</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span></code> we need Django’s <a class="reference external" href="https://docs.djangoproject.com/en/1.11/topics/db/queries/#complex-lookups-with-q-objects">Q object</a>. It is imported from Django directly:</p>
+<p>For queries using <code class="docutils literal notranslate"><span class="pre">OR</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span></code> we need Django’s <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/db/queries/#complex-lookups-with-q-objects">Q object</a>. It is imported from Django directly:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from django.db.models import Q
 </pre></div>
 </div>

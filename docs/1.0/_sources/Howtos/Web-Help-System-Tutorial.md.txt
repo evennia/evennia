@@ -41,7 +41,7 @@ game directory should look like:
 
 The "web/help_system" directory contains files created by Django.  We'll use some of them, but if
 you want to learn more about them all, you should read [the Django
-tutorial](https://docs.djangoproject.com/en/1.9/intro/tutorial01/).
+tutorial](https://docs.djangoproject.com/en/4.1/intro/tutorial01/).
 
 There is a last thing to be done: your folder has been added, but Django doesn't know about it, it
 doesn't know it's a new app.  We need to tell it, and we do so by editing a simple setting.  Open

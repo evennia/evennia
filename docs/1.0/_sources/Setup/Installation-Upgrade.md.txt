@@ -29,7 +29,7 @@ If you don't have anything you want to keep in your existing game dir, you can j
 - `cd` to your existing 0.9.5-based game folder (like `mygame`).
 - If you have changed `mygame/web`, _rename_ the folder to `web_0.9.5`. If you didn't change anything (or don't have anything you want to keep), you can _delete_ it entirely.
 - Copy `evennia/evennia/game_template/web` to `mygame/` (e.g. using `cp -Rf` or a file manager). This new `web` folder _replaces the old one_ and has a very different structure.
-- It's possible you need to replace/comment out import and calls to the deprecated [`django.conf.urls`](https://docs.djangoproject.com/en/3.2/ref/urls/#url). The new way to call it is [available here](https://docs.djangoproject.com/en/4.0/ref/urls/#django.urls.re_path).
+- It's possible you need to replace/comment out import and calls to the deprecated [`django.conf.urls`](https://docs.djangoproject.com/en/4.1/ref/urls/#url). The new way to call it is [available here](https://docs.djangoproject.com/en/4.0/ref/urls/#django.urls.re_path).
 - Run `evennia migrate`  - note that it's normal to see some warnings here, _don't_ run `makemigrations` even if the system asks you to.
 - Run `evennia start`
 

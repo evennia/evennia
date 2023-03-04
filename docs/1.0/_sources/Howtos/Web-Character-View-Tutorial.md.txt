@@ -226,4 +226,4 @@ page by using `{{ object.get_absolute_url }}` in any template where you have a g
 
 *Now that you've made a basic page and app with Django, you may want to read the full Django
 tutorial to get a better idea of what it can do. [You can find Django's tutorial
-here](https://docs.djangoproject.com/en/1.8/intro/tutorial01/).*
+here](https://docs.djangoproject.com/en/4.1/intro/tutorial01/).*

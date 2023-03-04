@@ -226,7 +226,7 @@ with a given Tag like this in code:</p>
 <blockquote>
 <div><p>Note that searching for just “furniture” will only return the objects tagged with the “furniture” tag that has a category of <code class="docutils literal notranslate"><span class="pre">None</span></code>. We must explicitly give the category to get the “luxurious” furniture.</p>
 </div></blockquote>
-<p>Using any of the <code class="docutils literal notranslate"><span class="pre">search_tag</span></code> variants will all return <a class="reference external" href="https://docs.djangoproject.com/en/2.1/ref/models/querysets/">Django Querysets</a>, including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them.</p>
+<p>Using any of the <code class="docutils literal notranslate"><span class="pre">search_tag</span></code> variants will all return <a class="reference external" href="https://docs.djangoproject.com/en/4.1/ref/models/querysets/">Django Querysets</a>, including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them.</p>
 <p>Remember when searching that not setting a category means setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code> - this does <em>not</em>
 mean that category is undefined, rather <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered the default, unnamed category.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span> 

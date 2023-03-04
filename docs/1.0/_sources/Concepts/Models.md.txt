@@ -92,7 +92,7 @@ of the database table. Finally, you create new instances of the model to add new
 database.
 
 We won't describe all aspects of Django models here, for that we refer to the vast [Django
-documentation](https://docs.djangoproject.com/en/2.2/topics/db/models/) on the subject. Here is a
+documentation](https://docs.djangoproject.com/en/4.1/topics/db/models/) on the subject. Here is a
 (very) brief example:
 
 ```python
@@ -129,7 +129,7 @@ lookups, so it's recommended to put it on fields you know you'll often use in qu
 string without the database complaining. There are many other field types and keywords to define
 them, see django docs for more info.
 
-Similar to using [django-admin](https://docs.djangoproject.com/en/2.2/howto/legacy-databases/) you
+Similar to using [django-admin](https://docs.djangoproject.com/en/4.1/howto/legacy-databases/) you
 are able to do `evennia inspectdb` to get an automated listing of model information for an existing
 database.  As is the case with any model generating tool you should only use this as a starting
 point for your models.
@@ -260,5 +260,5 @@ the actual *field names* in the query, not the wrapper name (so `db_key` and not
         self.caller.msg(match.db_text)
 ```
 
-See the [Django query documentation](https://docs.djangoproject.com/en/2.2/topics/db/queries/) for a
+See the [Django query documentation](https://docs.djangoproject.com/en/4.1/topics/db/queries/) for a
 lot more information about querying the database.

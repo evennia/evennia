@@ -265,7 +265,7 @@ around it!</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">...</span> <span class="pre">}}</span></code> are ‘slots’ usually embedded inside HTML tags or content. They reference a <em>context</em> (basically a dict) that the Python <em>view</em> makes available to it. Keys on the context are accessed with dot-notation, so if you provide a context <code class="docutils literal notranslate"><span class="pre">{&quot;stats&quot;:</span> <span class="pre">{&quot;hp&quot;:</span> <span class="pre">10,</span> <span class="pre">&quot;mp&quot;:</span> <span class="pre">5}}</span></code> to your template, you could access that as  <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">stats.hp</span> <span class="pre">}}</span></code> to display <code class="docutils literal notranslate"><span class="pre">10</span></code> at that location to display <code class="docutils literal notranslate"><span class="pre">10</span></code> at that location.</p></li>
 </ul>
 <p>This allows for template inheritance (making it easier to make all pages look the same without rewriting the same thing over and over)</p>
-<p>There’s a lot more information to be found in the <a class="reference external" href="https://docs.djangoproject.com/en/3.2/ref/templates/language/">Django template language documentation</a>.</p>
+<p>There’s a lot more information to be found in the <a class="reference external" href="https://docs.djangoproject.com/en/4.1/ref/templates/language/">Django template language documentation</a>.</p>
 </section>
 <section id="change-webpage-colors-and-styling">
 <h3>Change webpage colors and styling<a class="headerlink" href="#change-webpage-colors-and-styling" title="Permalink to this headline">¶</a></h3>
@@ -330,7 +330,7 @@ we find the view is in in <code class="docutils literal notranslate"><span class
 </pre></div>
 </div>
 <p>So we just import <code class="docutils literal notranslate"><span class="pre">index</span></code> from the new location and point to it. After a reload the front page will now redirect to use your copy rather than the original.</p>
-<p>The frontpage view is a class <code class="docutils literal notranslate"><span class="pre">EvenniaIndexView</span></code>. This is a <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/class-based-views/">Django class-based view</a>. It’s a little less visible what happens in a class-based view than in a function (since the class implements a lot of functionality as methods), but it’s powerful and much easier to extend/modify.</p>
+<p>The frontpage view is a class <code class="docutils literal notranslate"><span class="pre">EvenniaIndexView</span></code>. This is a <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/class-based-views/">Django class-based view</a>. It’s a little less visible what happens in a class-based view than in a function (since the class implements a lot of functionality as methods), but it’s powerful and much easier to extend/modify.</p>
 <p>The class property <code class="docutils literal notranslate"><span class="pre">template_name</span></code> sets the location of the template used under the <code class="docutils literal notranslate"><span class="pre">templates/</span></code> folder. So <code class="docutils literal notranslate"><span class="pre">website/index.html</span></code> points to <code class="docutils literal notranslate"><span class="pre">web/templates/website/index.html</span></code> (as we already explored above.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">get_context_data</span></code> is a convenient method for providing the context for the template. In the index-page’s case we want the game stats (number of recent players etc). These are then made available to use in <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">...</span> <span class="pre">}}</span></code> slots in the template as described in the previous section.</p>
 </section>
@@ -368,7 +368,7 @@ add <code class="docutils literal notranslate"><span class="pre">/test/</span></
 <ul>
 <li><p>Add a new <code class="docutils literal notranslate"><span class="pre">test.html</span></code> file under <code class="docutils literal notranslate"><span class="pre">mygame/web/templates/website/</span></code>. Easiest is to base this off an existing file. Make sure to <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extend</span> <span class="pre">base.html</span> <span class="pre">%}</span></code> if you want to get the same styling as the rest of your site.</p></li>
 <li><p>Add a new view <code class="docutils literal notranslate"><span class="pre">testview.py</span></code> under <code class="docutils literal notranslate"><span class="pre">mygame/web/website/views/</span></code> (don’t name it <code class="docutils literal notranslate"><span class="pre">test.py</span></code> or
-Django/Evennia will think it contains unit tests). Add a view there to process your page. This is a minimal view to start from (read much more <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/class-based-views/">in the Django docs</a>):</p>
+Django/Evennia will think it contains unit tests). Add a view there to process your page. This is a minimal view to start from (read much more <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/class-based-views/">in the Django docs</a>):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/website/views/testview.py</span>
 
 <span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">TemplateView</span>
@@ -410,18 +410,18 @@ character, with a big ‘Submit’ button at the bottom.</p>
 standard HTML element you need to add to your template. It also has some other
 requirements, such as <code class="docutils literal notranslate"><span class="pre">&lt;input&gt;</span></code> and often Javascript components as well (but
 usually Django will help with this). If you are unfamiliar with how HTML forms
-work, <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/forms/#html-forms">read about them here</a>.</p>
+work, <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/forms/#html-forms">read about them here</a>.</p>
 <p>The basic gist of it is that when you click to ‘submit’ the form, a POST HTML
 request will be sent to the server containing the data the user entered. It’s
 now up to the server to make sure the data makes sense (validation) and then
 process the input somehow (like creating a new character).</p>
 <p>On the backend side, we need to specify the logic for validating and processing
-the form data. This is done by the <code class="docutils literal notranslate"><span class="pre">Form</span></code> <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/forms/#forms-in-django">Django class</a>.
+the form data. This is done by the <code class="docutils literal notranslate"><span class="pre">Form</span></code> <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/forms/#forms-in-django">Django class</a>.
 This specifies <em>fields</em> on itself that define how to validate that piece of data.</p>
 <p>The form is then linked into the view-class by adding <code class="docutils literal notranslate"><span class="pre">form_class</span> <span class="pre">=</span> <span class="pre">MyFormClass</span></code> to
 the view (next to <code class="docutils literal notranslate"><span class="pre">template_name</span></code>).</p>
 <p>There are several example forms in <code class="docutils literal notranslate"><span class="pre">evennia/web/website/forms.py</span></code>. It’s also a good
-idea to read <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/forms/#building-a-form-in-django">Building a form in Django</a> on the Django website - it covers all you need.</p>
+idea to read <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/forms/#building-a-form-in-django">Building a form in Django</a> on the Django website - it covers all you need.</p>
 </section>
 </section>
 
