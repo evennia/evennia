@@ -34,7 +34,7 @@ This is how the inheritance looks for the typeclasses in Evennia:
                                                          └────┘
 ```
 
-- **Level 1** above is the "database model" level. This describes the database tables and fields (this is technically a [Django model](https://docs.djangoproject.com/en/2.2/topics/db/models/)).
+- **Level 1** above is the "database model" level. This describes the database tables and fields (this is technically a [Django model](https://docs.djangoproject.com/en/4.1/topics/db/models/)).
 - **Level 2** is where we find Evennia's default implementations of the various game entities, on top of the database. These classes define all the hook methods that Evennia calls in various situations. `DefaultObject` is a little special since it's the parent for `DefaultCharacter`, `DefaultRoom` and `DefaultExit`. They are all grouped under level 2 because they all represents defaults to build from.
 - **Level 3**, finally, holds empty template classes created in your game directory. This is the level you are meant to modify and tweak as you please, overloading the defaults as befits your game. The templates inherit directly from their defaults, so `Object` inherits from `DefaultObject` and `Room` inherits from `DefaultRoom`.
 
@@ -190,7 +190,7 @@ Most of the time you search for objects in the database by using convenience met
 `caller.search()` of [Commands](./Commands.md) or the search functions like `evennia.search_objects`.
 
 You can however also query for them directly using [Django's query
-language](https://docs.djangoproject.com/en/1.7/topics/db/queries/). This makes use of a _database
+language](https://docs.djangoproject.com/en/4.1/topics/db/queries/). This makes use of a _database
 manager_ that sits on all typeclasses, named `objects`. This manager holds methods that allow
 database searches against that particular type of object (this is the way Django normally works
 too). When using Django queries, you need to use the full field names (like `db_key`) to search:
@@ -294,7 +294,7 @@ The arguments to this method are described [in the API docs here](github:evennia
 
 *This is considered an advanced section.*
 
-Technically, typeclasses are [Django proxy models](https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models).  The only database
+Technically, typeclasses are [Django proxy models](https://docs.djangoproject.com/en/4.1/topics/db/models/#proxy-models).  The only database
 models that are "real" in the typeclass system (that is, are represented by actual tables in the database) are `AccountDB`, `ObjectDB`, `ScriptDB` and `ChannelDB` (there are also [Attributes](./Attributes.md) and [Tags](./Tags.md) but they are not typeclasses themselves). All the subclasses of them are "proxies", extending them with Python code without actually modifying the database layout.
 
 Evennia modifies Django's proxy model in various ways to allow them to work without any boiler plate (for example you don't need to set the Django "proxy" property in the model `Meta` subclass, Evennia handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as patches django to allow multiple inheritance from the same base class.

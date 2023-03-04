@@ -66,6 +66,13 @@ URL_REMAPS = {
     "./Locks.md#permissions": "Permissions",
     "modules": "Default-Commands.md",
 }
+DJANGO_LAST_TESTED_VERSION = "4.1"  # update as django requirements update
+
+DJANGO_URL_REGEX = re.compile(
+    r"(?P<djangodoc>https://docs\.djangoproject\.com/en/)(?P<version>dev|[1-9.]+)(?P<path>/.*?$)",
+    re.MULTILINE + re.DOTALL,
+)
+
 
 _USED_REFS = {}
 
@@ -153,6 +160,14 @@ def auto_link_remapper(no_autodoc=False):
         for strip_prefix in _STRIP_PREFIX:
             if url.startswith(strip_prefix):
                 url = url[len(strip_prefix) :]
+
+        # remap to specified django version of docs
+        django_url = django_match = DJANGO_URL_REGEX.sub(
+            rf"\g<djangodoc>{DJANGO_LAST_TESTED_VERSION}\g<path>", url
+        )
+        if url != django_url:
+            print(f"  Django doc url remap: {url} -> {django_url}")
+            url = django_url
 
         if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
             # skip regular http/s urls etc

@@ -72,7 +72,7 @@ Typeclasses are generally *not* translated, nor are console/log outputs.
 ```{sidebar} Windows users
 
 If you get errors concerning `gettext` or `xgettext` on Windows,
-see the [Django documentation](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows).
+see the [Django documentation](https://docs.djangoproject.com/en/4.1/topics/i18n/translation/#gettext-on-windows).
 A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
 available on Github as [gettext-iconv-windows](https://github.com/mlocati/gettext-iconv-windows).
 

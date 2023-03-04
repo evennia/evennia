@@ -141,7 +141,7 @@ The `evennia` program will also pass-through options used by the `django-admin`.
 
 ```
 
-For (many) more options, see [the django-admin docs](https://docs.djangoproject.com/en/1.7/ref/django-admin/#usage).
+For (many) more options, see [the django-admin docs](https://docs.djangoproject.com/en/4.1/ref/django-admin/#usage).
 
 ## Advanced handling of Evennia processes
 

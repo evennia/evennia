@@ -36,7 +36,7 @@ In `server/conf/settings.py`:
 If you decide to allow users to upload their own images to be served from your site, special care must be taken. Django will read the file headers to confirm it's an image (as opposed to a document or zip archive), but [code can be injected into an image file](https://insinuator.net/2014/05/django-image-validation-vulnerability/) *after* the headers that can be interpreted as HTML and/or give an attacker a web shell through which they can access
 other filesystem resources.
 
-[Django has a more comprehensive overview of how to handle user-uploaded files](https://docs.djangoproject.com/en/dev/topics/security/#user-uploaded-content-security), but
+[Django has a more comprehensive overview of how to handle user-uploaded files](https://docs.djangoproject.com/en/4.1/topics/security/#user-uploaded-content-security), but
 in short you should take care to do one of two things: 
 
 * Serve all user-uploaded assets from a *separate* domain or CDN (*not* a subdomain of the one you already have!). For example, you may be browsing `reddit.com` but note that all the user-submitted images are being served from the `redd.it` domain. There are both security and performance benefits to this (webservers tend to load local resources one-by-one, whereas they will request external resources in bulk).
