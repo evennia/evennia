@@ -146,6 +146,23 @@ class EvAdventureConsumable(EvAdventureObject):
             self.delete()
 
 
+class EvAdventureWeapon(EvAdventureObject):
+    """
+    Base weapon class for all EvAdventure weapons.
+
+    """
+
+    obj_type = ObjType.WEAPON
+    inventory_use_slot = AttributeProperty(WieldLocation.WEAPON_HAND)
+    quality = AttributeProperty(3)
+
+    # what ability used to attack with this weapon
+    attack_type = AttributeProperty(Ability.STR)
+    # what defense stat of the enemy it must defeat
+    defense_type = AttributeProperty(Ability.ARMOR)
+    damage_roll = AttributeProperty("1d6")
+
+
 class EvAdventureThrowable(EvAdventureWeapon, EvAdventureConsumable):
     """
     Something you can throw at an enemy to harm them once, like a knife or exploding potion/grenade.
@@ -177,23 +194,6 @@ class WeaponEmptyHand:
 
     def __repr__(self):
         return "<WeaponEmptyHand>"
-
-
-class EvAdventureWeapon(EvAdventureObject):
-    """
-    Base weapon class for all EvAdventure weapons.
-
-    """
-
-    obj_type = ObjType.WEAPON
-    inventory_use_slot = AttributeProperty(WieldLocation.WEAPON_HAND)
-    quality = AttributeProperty(3)
-
-    # what ability used to attack with this weapon
-    attack_type = AttributeProperty(Ability.STR)
-    # what defense stat of the enemy it must defeat
-    defense_type = AttributeProperty(Ability.ARMOR)
-    damage_roll = AttributeProperty("1d6")
 
 
 class EvAdventureRunestone(EvAdventureWeapon, EvAdventureConsumable):

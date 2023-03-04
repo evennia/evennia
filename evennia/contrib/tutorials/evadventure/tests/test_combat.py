@@ -3,20 +3,22 @@ Test EvAdventure combat.
 
 """
 
-from unittest.mock import MagicMock, patch
+from collections import deque
+from unittest.mock import Mock, call, patch
 
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest
 
-from .. import combat_turnbased
+from .. import combat_turnbased as combat
 from ..characters import EvAdventureCharacter
 from ..enums import WieldLocation
 from ..npcs import EvAdventureMob
 from ..objects import EvAdventureConsumable, EvAdventureRunestone, EvAdventureWeapon
+from ..rooms import EvAdventureRoom
 from .mixins import EvAdventureMixin
 
 
-class EvAdventureCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
+class EvAdventureCombatHandlerTest(BaseEvenniaTest):
     """
     Test methods on the turn-based combat handler
 
@@ -31,13 +33,19 @@ class EvAdventureCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
     )
     @patch(
         "evennia.contrib.tutorials.evadventure.combat_turnbased.delay",
-        new=MagicMock(return_value=None),
+        new=Mock(return_value=None),
     )
     def setUp(self):
         super().setUp()
+
+        self.location = create.create_object(EvAdventureRoom, key="testroom")
+        self.combatant = create.create_object(
+            EvAdventureCharacter, key="testchar", location=self.location
+        )
+
         self.location.allow_combat = True
         self.location.allow_death = True
-        self.combatant = self.character
+
         self.target = create.create_object(
             EvAdventureMob,
             key="testmonster",
@@ -45,8 +53,143 @@ class EvAdventureCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
             attributes=(("is_idle", True),),
         )
 
-        # this already starts turn 1
-        self.combathandler = combat_turnbased.join_combat(self.combatant, self.target)
+        self.combathandler = combat.get_or_create_combathandler(self.combatant)
+        # add target to combat
+        self.combathandler.add_combatants(self.target)
+
+    def test_combatanthandler_setup(self):
+        """Testing all is set up correctly in the combathandler"""
+
+        chandler = self.combathandler
+        self.assertEqual(dict(chandler.combatants), {self.combatant: deque(), self.target: deque()})
+        self.assertEqual(
+            dict(chandler.action_classes),
+            {
+                "nothing": combat.CombatActionDoNothing,
+                "attack": combat.CombatActionAttack,
+                "stunt": combat.CombatActionStunt,
+                "use": combat.CombatActionUseItem,
+                "wield": combat.CombatActionWield,
+                "flee": combat.CombatActionFlee,
+                "hinder": combat.CombatActionHinder,
+            },
+        )
+        self.assertEqual(chandler.flee_timeout, 1)
+        self.assertEqual(dict(chandler.advantage_matrix), {})
+        self.assertEqual(dict(chandler.disadvantage_matrix), {})
+        self.assertEqual(dict(chandler.fleeing_combatants), {})
+        self.assertEqual(dict(chandler.defeated_combatants), {})
+
+    def test_combathandler_msg(self):
+        """Test sending messages to all in handler"""
+
+        self.location.msg_contents = Mock()
+
+        self.combathandler.msg("test_message")
+
+        self.location.msg_contents.assert_called_with(
+            "test_message",
+            exclude=[],
+            from_obj=None,
+            mapping={"testchar": self.combatant, "testmonster": self.target},
+        )
+
+    def test_remove_combatant(self):
+        """Remove a combatant."""
+
+        self.combathandler.remove_combatant(self.target)
+
+        self.assertEqual(dict(self.combathandler.combatants), {self.combatant: deque()})
+
+    def test_stop_combat(self):
+        """Stopping combat, making sure combathandler is deleted."""
+
+        self.combathandler.stop_combat()
+        self.assertIsNone(self.combathandler.pk)
+
+    def test_get_sides(self):
+        """Getting the sides of combat"""
+
+        combatant2 = create.create_object(
+            EvAdventureCharacter, key="testchar2", location=self.location
+        )
+        target2 = create.create_object(
+            EvAdventureMob,
+            key="testmonster2",
+            location=self.location,
+            attributes=(("is_idle", True),),
+        )
+        self.combathandler.add_combatants(combatant2, target2)
+
+        # allies to combatant
+        allies, enemies = self.combathandler.get_sides(self.combatant)
+        self.assertEqual((allies, enemies), ([combatant2], [self.target, target2]))
+
+        # allies to monster
+        allies, enemies = self.combathandler.get_sides(self.target)
+        self.assertEqual((allies, enemies), ([target2], [self.combatant, combatant2]))
+
+    def test_queue_and_execute_action(self):
+        """Queue actions and execute"""
+
+        donothing = {"key": "nothing"}
+
+        self.combathandler.queue_action(self.combatant, donothing)
+        self.assertEqual(
+            dict(self.combathandler.combatants),
+            {self.combatant: deque([donothing]), self.target: deque()},
+        )
+
+        mock_action = Mock()
+        self.combathandler.action_classes["nothing"] = Mock(return_value=mock_action)
+
+        self.combathandler.execute_next_action(self.combatant)
+
+        self.combathandler.action_classes["nothing"].assert_called_with(
+            self.combathandler, self.combatant, donothing
+        )
+        mock_action.execute.assert_called_once()
+
+    def test_execute_full_turn(self):
+        """Run a full (passive) turn"""
+
+        donothing = {"key": "nothing"}
+
+        self.combathandler.queue_action(self.combatant, donothing)
+        self.combathandler.queue_action(self.target, donothing)
+
+        self.combathandler.execute_next_action = Mock()
+
+        self.combathandler.execute_full_turn()
+
+        self.combathandler.execute_next_action.assert_has_calls(
+            [call(self.combatant), call(self.target)], any_order=True
+        )
+
+    def _get_action(self, action_dict, action_dict2={"key": "nothing"}):
+
+        self.combathandler.queue_action(self.combatant, action_dict)
+        self.combathandler.queue_action(self.target, action_dict2)
+
+        action_cls1 = self.combathandler.action_classes[action_dict["key"]]
+        action_cls2 = self.combathandler.action_classes[action_dict2["key"]]
+
+        return action_cls1, action_cls2
+
+    def test_action__do_nothing(self):
+        """Do nothing"""
+
+        actiondict = {"key": "nothing"}
+
+        actioncls1, actioncls2 = self._get_action(actiondict, actiondict)
+
+        self.assertEqual(actioncls1, actioncls2)
+
+        self.combathandler.execute_full_turn()
+
+        self.assertEqual(self.combathandler.turn, 1)
+
+    # @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
 
 
 # class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):

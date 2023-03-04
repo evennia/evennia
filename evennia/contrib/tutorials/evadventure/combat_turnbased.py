@@ -492,10 +492,15 @@ class EvAdventureCombatHandler(DefaultScript):
     # how many actions can be queued at a time (per combatant)
     max_action_queue_size = 1
 
-    # available actions
+    # available actions in combat
     action_classes = {
         "nothing": CombatActionDoNothing,
         "attack": CombatActionAttack,
+        "stunt": CombatActionStunt,
+        "use": CombatActionUseItem,
+        "wield": CombatActionWield,
+        "flee": CombatActionFlee,
+        "hinder": CombatActionHinder,
     }
 
     # fallback action if not selecting anything
@@ -509,7 +514,7 @@ class EvAdventureCombatHandler(DefaultScript):
 
     # who is involved in combat, and their action queue,
     # as {combatant: [actiondict, actiondict,...]}
-    combatants = AttributeProperty(defaultdict(list))
+    combatants = AttributeProperty(defaultdict(deque))
 
     advantage_matrix = AttributeProperty(defaultdict(dict))
     disadvantage_matrix = AttributeProperty(defaultdict(dict))
@@ -549,21 +554,22 @@ class EvAdventureCombatHandler(DefaultScript):
             mapping={locobj.key: locobj for locobj in location_objs},
         )
 
-    def add_combatant(self, combatant):
+    def add_combatants(self, *combatants):
         """
         Add a new combatant to the battle.
 
         Args:
-            combatant (EvAdventureCharacter, EvAdventureNPC): A combatant to add to
+            *combatants (EvAdventureCharacter, EvAdventureNPC): Any number of combatants to add to
                 the combat.
         Returns:
             bool: True if the combatant was added, False otherwise (that is, they
                 were already added from before).
 
         """
-        if combatant not in self.combatants:
-            self.combatants[combatant] = deque((), self.max_action_queue_size)
-            return True
+        for combatant in combatants:
+            if combatant not in self.combatants:
+                self.combatants[combatant] = deque((), self.max_action_queue_size)
+                return True
 
     def remove_combatant(self, combatant):
         """
@@ -656,14 +662,14 @@ class EvAdventureCombatHandler(DefaultScript):
             queue will be rotated to the left and be `[b, c, a]` (so next time, `b` will be used).
 
         """
-        queue = self.combatants[combatant]
-        action_dict = queue[0] if queue else COMBAT_ACTION_DICT_DONOTHING
+        action_queue = self.combatants[combatant]
+        action_dict = action_queue[0] if action_queue else COMBAT_ACTION_DICT_DONOTHING
         # rotate the queue to the left so that the first element is now the last one
-        queue.rotate(-1)
+        action_queue.rotate(-1)
 
         # use the action-dict to select and create an action from an action class
         action_class = self.action_classes[action_dict["key"]]
-        action = action_class(combatant, action_dict)
+        action = action_class(self, combatant, action_dict)
 
         action.execute()
 
@@ -674,7 +680,8 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         self.turn += 1
         # random turn order
-        combatants = random.shuffle(list(self.combatants.keys()))
+        combatants = list(self.combatants.keys())
+        random.shuffle(combatants)  # shuffles in place
 
         # do everyone's next queued combat action
         for combatant in combatants:
@@ -704,11 +711,11 @@ class EvAdventureCombatHandler(DefaultScript):
             allies, enemies = (), ()
         else:
             # grab a random survivor and check of they have any living enemies.
-            surviving_combatant = random.choice(list(self.combatant.keys()))
+            surviving_combatant = random.choice(list(self.combatants.keys()))
             allies, enemies = self.get_sides(surviving_combatant)
 
         if not enemies:
-            # one way or another, there are no more enemies to fight
+            # if one way or another, there are no more enemies to fight
             still_standing = list_to_string(f"$You({comb.key})" for comb in allies)
             knocked_out = list_to_string(
                 f"$You({comb.key})" for comb in self.defeated_combatants if comb.hp > 0
@@ -727,6 +734,37 @@ class EvAdventureCombatHandler(DefaultScript):
                 txt.append(f"{killed} were killed.")
             self.msg(txt)
             self.stop_combat()
+
+
+def get_or_create_combathandler(combatant, combathandler_name="combathandler", combat_tick=5):
+    """
+    Joins or continues combat. This is a access function that will either get the
+    combathandler on the current room or create a new one.
+
+    Args:
+        combatant (EvAdventureCharacter, EvAdventureNPC): The one to
+
+    Returns:
+        CombatHandler: The new or created combathandler.
+
+    """
+
+    location = combatant.location
+
+    if not location:
+        raise CombatFailure("Cannot start combat without a location.")
+
+    combathandler = location.scripts.get(combathandler_name)
+    if not combathandler:
+        combathandler = create_script(
+            EvAdventureCombatHandler,
+            key=combathandler_name,
+            obj=location,
+            interval=combat_tick,
+            persistent=True,
+        )
+    combathandler.add_combatants(combatant)
+    return combathandler
 
 
 # ------------------------------------------------------------
@@ -770,15 +808,10 @@ class _CmdCombatBase(Command):
 
     @property
     def combathandler(self):
-        self.combathandler = self.caller.location.scripts.get(self.combathandler_name)
-        if not self.combathandler:
-            self.combathandler = create_script(
-                EvAdventureCombatHandler,
-                key=combathandler_name,
-                obj=location,
-                interval=self.combat_tick,
-                persistent=True,
-            )
+        combathandler = getattr(self, "combathandler", None)
+        if not combathandler:
+            self.combathandler = combathandler = get_or_create_combathandler(self.caller)
+        return combathandler
 
     def parse(self):
         super().parse()
@@ -847,7 +880,7 @@ class CmdAttack(_CmdCombatBase):
             return
 
         # this can be done over and over
-        is_new = self.combathandler.add_combatant(self)
+        is_new = self.combathandler.add_combatants(self)
         if is_new:
             # just joined combat - add the combat cmdset
             self.caller.cmdset.add(CombatCmdSet)
