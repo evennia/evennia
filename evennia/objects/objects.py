@@ -927,7 +927,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Perform move
         try:
             self.location = destination
-        except Exception as err:
+        except (Exception, RuntimeError) as err:
             logerr(errtxt.format(err="location change"), err)
             return False
 
