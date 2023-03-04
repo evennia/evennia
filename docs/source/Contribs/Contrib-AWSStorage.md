@@ -41,7 +41,7 @@ image uploaded by a user), the save (or load) communication follows the path:
     Django -> Storage backend
     Storage backend -> file storage location (e.g. hard drive)
 
-[django docs](https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_STORAGE)
+[django docs](https://docs.djangoproject.com/en/4.1/ref/settings/#std:setting-STATICFILES_STORAGE)
 
 This plugin, when enabled, overrides the default storage backend,
 which defaults to saving files at mygame/website/, instead,

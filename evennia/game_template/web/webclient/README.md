@@ -1,9 +1,9 @@
-# Webclient Views 
+# Webclient Views
 
 The webclient is mainly controlled by Javascript directly in the browser, so
 you usually customize it via `mygame/web/static/webclient/js/` - files instead.
 
-There is very little you can change from here, unless you want to implement 
+There is very little you can change from here, unless you want to implement
 your very own client from scratch.
 
 ## On views
@@ -19,5 +19,5 @@ responsible (usually) for producing the web page by filling in a _template_ - a
 HTML document that can have special tags in it that are replaced for dynamic
 content. It then returns the finished HTML page for the user to view.
 
-See the [Django docs on Views](https://docs.djangoproject.com/en/3.2/topics/http/views/) for 
+See the [Django docs on Views](https://docs.djangoproject.com/en/4.1/topics/http/views/) for
 more information.
