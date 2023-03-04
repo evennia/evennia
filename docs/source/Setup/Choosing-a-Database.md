@@ -8,7 +8,7 @@ This page gives an overview of the supported SQL databases as well as instructio
  - MySQL / MariaDB
 
 Since Evennia uses [Django](https://djangoproject.com), most of our notes are based off of what we know from the community and their documentation. While the information below may be useful, you can always find the most up-to-date and "correct" information at Django's [Notes about supported
-Databases](https://docs.djangoproject.com/en/dev/ref/databases/#ref-databases) page.
+Databases](https://docs.djangoproject.com/en/4.1/ref/databases/#ref-databases) page.
 
 ## SQLite3 (default)
 

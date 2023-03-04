@@ -1,6 +1,6 @@
 # The Web Admin
 
-The Evennia _Web admin_ is a customized [Django admin site](https://docs.djangoproject.com/en/3.2/ref/contrib/admin/)
+The Evennia _Web admin_ is a customized [Django admin site](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/)
 used for manipulating the game database using a graphical interface. You
 have to be logged into the site to use it. It then appears as an `Admin` link
 the top of your website. You can also go to [http://localhost:4001/admin](http://localhost:4001/admin) when
@@ -113,7 +113,7 @@ the `Can delete Account` permission, for example.
 ## Customizing the web admin
 
 Customizing the admin is a big topic and something beyond the scope of this
-documentation. See the [official Django docs](https://docs.djangoproject.com/en/3.2/ref/contrib/admin/) for
+documentation. See the [official Django docs](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/) for
 the details. This is just a brief summary.
 
 See the [Website](./Website.md) page for an overview of the components going into

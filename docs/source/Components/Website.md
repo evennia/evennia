@@ -162,7 +162,7 @@ Some important things to know:
 
 This allows for template inheritance (making it easier to make all pages look the same without rewriting the same thing over and over)
 
-There's a lot more information to be found in the [Django template language documentation](https://docs.djangoproject.com/en/3.2/ref/templates/language/).
+There's a lot more information to be found in the [Django template language documentation](https://docs.djangoproject.com/en/4.1/ref/templates/language/).
 
 ### Change webpage colors and styling
 
@@ -242,7 +242,7 @@ urlpatterns = [
 
 So we just import `index` from the new location and point to it. After a reload the front page will now redirect to use your copy rather than the original.
 
-The frontpage view is a class `EvenniaIndexView`. This is a [Django class-based view](https://docs.djangoproject.com/en/3.2/topics/class-based-views/). It's a little less visible what happens in a class-based view than in a function (since the class implements a lot of functionality as methods), but it's powerful and much easier to extend/modify.
+The frontpage view is a class `EvenniaIndexView`. This is a [Django class-based view](https://docs.djangoproject.com/en/4.1/topics/class-based-views/). It's a little less visible what happens in a class-based view than in a function (since the class implements a lot of functionality as methods), but it's powerful and much easier to extend/modify.
 
 The class property `template_name` sets the location of the template used under the `templates/` folder. So `website/index.html` points to `web/templates/website/index.html` (as we already explored above. 
 
@@ -283,7 +283,7 @@ Let's see how to make a `/test/` page from scratch.
 
 - Add a new `test.html` file under `mygame/web/templates/website/`. Easiest is to base this off an existing file. Make sure to `{% extend base.html %}` if you want to get the same styling as the rest of your site.
 - Add a new view `testview.py` under `mygame/web/website/views/` (don't name it `test.py` or
-  Django/Evennia will think it contains unit tests). Add a view there to process your page. This is a minimal view to start from (read much more [in the Django docs](https://docs.djangoproject.com/en/3.2/topics/class-based-views/)):
+  Django/Evennia will think it contains unit tests). Add a view there to process your page. This is a minimal view to start from (read much more [in the Django docs](https://docs.djangoproject.com/en/4.1/topics/class-based-views/)):
 
     ```python
     # mygame/web/website/views/testview.py
@@ -326,7 +326,7 @@ Firstly, this must be represented in HTML. The `<form> ... </form>` is a
 standard HTML element you need to add to your template. It also has some other
 requirements, such as `<input>` and often Javascript components as well (but
 usually Django will help with this). If you are unfamiliar with how HTML forms
-work, [read about them here](https://docs.djangoproject.com/en/3.2/topics/forms/#html-forms).
+work, [read about them here](https://docs.djangoproject.com/en/4.1/topics/forms/#html-forms).
 
 The basic gist of it is that when you click to 'submit' the form, a POST HTML
 request will be sent to the server containing the data the user entered. It's
@@ -334,11 +334,11 @@ now up to the server to make sure the data makes sense (validation) and then
 process the input somehow (like creating a new character).
 
 On the backend side, we need to specify the logic for validating and processing
-the form data. This is done by the `Form` [Django class](https://docs.djangoproject.com/en/3.2/topics/forms/#forms-in-django).
+the form data. This is done by the `Form` [Django class](https://docs.djangoproject.com/en/4.1/topics/forms/#forms-in-django).
 This specifies _fields_ on itself that define how to validate that piece of data.
 
 The form is then linked into the view-class by adding `form_class = MyFormClass` to
 the view (next to `template_name`).
 
 There are several example forms in `evennia/web/website/forms.py`. It's also a good
-idea to read [Building a form in Django](https://docs.djangoproject.com/en/3.2/topics/forms/#building-a-form-in-django) on the Django website - it covers all you need.
+idea to read [Building a form in Django](https://docs.djangoproject.com/en/4.1/topics/forms/#building-a-form-in-django) on the Django website - it covers all you need.
