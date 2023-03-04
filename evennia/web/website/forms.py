@@ -3,7 +3,6 @@ from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.forms import ModelForm
 from django.utils.html import escape
-
 from evennia.utils import class_from_module
 
 
@@ -127,13 +126,13 @@ class CharacterForm(ObjectForm):
     this is used for the 'desc' field to show a Textarea box instead of a Textbox.
 
     For help in building out your form, please see:
-    https://docs.djangoproject.com/en/1.11/topics/forms/#building-a-form-in-django
+    https://docs.djangoproject.com/en/4.1/topics/forms/#building-a-form-in-django
 
     For more information on fields and their capabilities, see:
-    https://docs.djangoproject.com/en/1.11/ref/forms/fields/
+    https://docs.djangoproject.com/en/4.1/ref/forms/fields/
 
     For more on widgets, see:
-    https://docs.djangoproject.com/en/1.11/ref/forms/widgets/
+    https://docs.djangoproject.com/en/4.1/ref/forms/widgets/
 
     """
 
