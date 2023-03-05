@@ -150,6 +150,19 @@ class TestExtendedLoopingCall(TestCase):
             loopcall = ExtendedLoopingCall(callback)
             loopcall.start(-1, now=True, start_delay=None, count_start=1)
 
+    def test__call__when_delay(self):
+        """ Test __call__ modifies start_delay and starttime if start_delay was previously set """
+        callback = mock.MagicMock()
+        loopcall = ExtendedLoopingCall(callback)
+        loopcall.clock.seconds = mock.MagicMock(return_value=1)
+        loopcall.start_delay = 2
+        loopcall.starttime = 0
+
+        loopcall()
+        
+        self.assertEqual(loopcall.start_delay, None)
+        self.assertEqual(loopcall.starttime, 1)
+
 def dummy_func():
     return 0
 class TestMonitorHandler(TestCase):
