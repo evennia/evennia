@@ -59,7 +59,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
 
         self.combathandler = combat.get_or_create_combathandler(self.combatant)
         # add target to combat
-        self.combathandler.add_combatants(self.target)
+        self.combathandler.add_combatant(self.target)
 
     def _get_action(self, action_dict={"key": "nothing"}):
         action_class = self.combathandler.action_classes[action_dict["key"]]
@@ -143,7 +143,8 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             location=self.location,
             attributes=(("is_idle", True),),
         )
-        self.combathandler.add_combatants(combatant2, target2)
+        self.combathandler.add_combatant(combatant2)
+        self.combathandler.add_combatant(target2)
 
         # allies to combatant
         allies, enemies = self.combathandler.get_sides(self.combatant)
@@ -360,9 +361,6 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         # swap to zweihander (two-handed sword)
         actiondict["item"] = zweihander
 
-        from evennia import set_trace
-
-        set_trace()
         self._run_actions(actiondict)
         self.assertEqual(self.combatant.weapon, zweihander)
         self.assertEqual(self.combatant.equipment.slots[WieldLocation.WEAPON_HAND], None)
