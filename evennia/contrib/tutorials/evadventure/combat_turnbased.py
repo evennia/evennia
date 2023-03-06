@@ -512,22 +512,18 @@ class EvAdventureCombatHandler(DefaultScript):
             mapping={locobj.key: locobj for locobj in location_objs},
         )
 
-    def add_combatants(self, *combatants):
+    def add_combatant(self, combatant):
         """
         Add a new combatant to the battle.
 
         Args:
             *combatants (EvAdventureCharacter, EvAdventureNPC): Any number of combatants to add to
                 the combat.
-        Returns:
-            bool: True if the combatant was added, False otherwise (that is, they
-                were already added from before).
-
         """
-        for combatant in combatants:
-            if combatant not in self.combatants:
-                self.combatants[combatant] = deque((), maxlen=self.max_action_queue_size)
-                return True
+        if combatant not in self.combatants:
+            self.combatants[combatant] = deque((), maxlen=self.max_action_queue_size)
+            return True
+        return False
 
     def remove_combatant(self, combatant):
         """
@@ -718,7 +714,7 @@ def get_or_create_combathandler(combatant, combathandler_name="combathandler", c
             interval=combat_tick,
             persistent=True,
         )
-    combathandler.add_combatants(combatant)
+    combathandler.add_combatant(combatant)
     return combathandler
 
 
@@ -835,7 +831,7 @@ class CmdAttack(_CmdCombatBase):
             return
 
         # this can be done over and over
-        is_new = self.combathandler.add_combatants(self)
+        is_new = self.combathandler.add_combatant(self)
         if is_new:
             # just joined combat - add the combat cmdset
             self.caller.cmdset.add(CombatCmdSet)
