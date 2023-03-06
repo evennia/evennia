@@ -1,5 +1,10 @@
 # Changelog
 
+## Main branch
+
+- Feature: Add support for saving `deque` with `maxlen` to Attributes (before
+  `maxlen` was ignored).
+
 ## Evennia 1.2.1
 
 Feb 26, 2023
