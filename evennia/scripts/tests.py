@@ -144,7 +144,10 @@ class TestExtendedLoopingCall(TestCase):
         loopcall.__call__.assert_not_called()
         self.assertEqual(loopcall.interval, 20)
         loopcall._scheduleFrom.assert_called_with(121)
-        
+
+"""
+Dummy function used as callback parameter
+"""
 def dummy_func():
     return 0
 
