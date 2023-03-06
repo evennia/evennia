@@ -277,7 +277,7 @@ class ContribClothing(DefaultObject):
             else:
                 message = f"$You() $conj(put) on {self.name}"
             if to_cover:
-                message += ", covering {iter_to_str(to_cover)}"
+                message += f", covering {iter_to_str(to_cover)}"
             wearer.location.msg_contents(message + ".", from_obj=wearer)
 
     def remove(self, wearer, quiet=False):
