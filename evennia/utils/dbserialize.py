@@ -30,7 +30,6 @@ except ImportError:
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import SafeString
-
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
 
@@ -209,6 +208,8 @@ class _SaverMutable:
                 dat = _SaverDefaultDict(item.default_factory, _parent=parent)
                 dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
                 return dat
+            elif dtype == deque:
+                dat = _SaverDeque(_parent=parent, maxlen=item.maxlen)
             elif dtype == set:
                 dat = _SaverSet(_parent=parent)
                 dat._data.update(process_tree(val, dat) for val in item)
@@ -431,9 +432,9 @@ class _SaverDeque(_SaverMutable):
     A deque that can be saved and operated on.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, maxlen=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self._data = deque()
+        self._data = deque((), maxlen=maxlen)
 
     @_save
     def append(self, *args, **kwargs):
@@ -513,6 +514,8 @@ def deserialize(obj):
             return defaultdict(
                 obj.default_factory, {_iter(key): _iter(val) for key, val in obj.items()}
             )
+        elif tname in ("_SaverDeque", deque):
+            return deque((_iter(val) for val in obj), maxlen=obj.maxlen)
         elif tname in _DESERIALIZE_MAPPING:
             return _DESERIALIZE_MAPPING[tname](_iter(val) for val in obj)
         elif is_iter(obj):
@@ -680,6 +683,8 @@ def to_pickle(data):
                 item.default_factory,
                 ((process_item(key), process_item(val)) for key, val in item.items()),
             )
+        elif dtype in (deque, _SaverDeque):
+            return deque((process_item(val) for val in item), maxlen=item.maxlen)
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
         elif dtype in (OrderedDict, _SaverOrderedDict):
@@ -776,7 +781,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == OrderedDict:
             return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == deque:
-            return deque(process_item(val) for val in item)
+            return deque((process_item(val) for val in item), maxlen=item.maxlen)
         elif hasattr(item, "__iter__"):
             try:
                 # we try to conserve the iterable class, if not convert to dict
@@ -849,7 +854,7 @@ def from_pickle(data, db_obj=None):
             )
             return dat
         elif dtype == deque:
-            dat = _SaverDeque(_parent=parent)
+            dat = _SaverDeque(_parent=parent, maxlen=item.maxlen)
             dat._data.extend(process_item(val) for val in item)
             return dat
         elif hasattr(item, "__iter__"):
@@ -920,7 +925,7 @@ def from_pickle(data, db_obj=None):
             )
             return dat
         elif dtype == deque:
-            dat = _SaverDeque(_db_obj=db_obj)
+            dat = _SaverDeque(_db_obj=db_obj, maxlen=data.maxlen)
             dat._data.extend(process_item(val) for val in data)
             return dat
         elif hasattr(data, "__iter__"):
