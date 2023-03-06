@@ -143,6 +143,37 @@ class TestExtendedLoopingCall(TestCase):
         self.assertEqual(loopcall.interval, 20)
         loopcall._scheduleFrom.assert_called_with(121)
         
+    def test_start_invalid_interval(self):
+        """ Test the .start method with interval less than zero """
+        with self.assertRaises(ValueError):
+            callback = mock.MagicMock()
+            loopcall = ExtendedLoopingCall(callback)
+            loopcall.start(-1, now=True, start_delay=None, count_start=1)
+
+    def test__call__when_delay(self):
+        """ Test __call__ modifies start_delay and starttime if start_delay was previously set """
+        callback = mock.MagicMock()
+        loopcall = ExtendedLoopingCall(callback)
+        loopcall.clock.seconds = mock.MagicMock(return_value=1)
+        loopcall.start_delay = 2
+        loopcall.starttime = 0
+
+        loopcall()
+        
+        self.assertEqual(loopcall.start_delay, None)
+        self.assertEqual(loopcall.starttime, 1)
+
+    def test_force_repeat(self):
+        """ Test forcing script to run that is scheduled to run in the future """
+        callback = mock.MagicMock()
+        loopcall = ExtendedLoopingCall(callback)
+        loopcall.clock.seconds = mock.MagicMock(return_value=0)
+
+        loopcall.start(20, now=False, start_delay=5, count_start=0)
+        loopcall.force_repeat()
+
+        callback.assert_called_once()
+
 def dummy_func():
     return 0
 class TestMonitorHandler(TestCase):
