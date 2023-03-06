@@ -5,10 +5,9 @@ Tests for dbserialize module
 from collections import defaultdict, deque
 
 from django.test import TestCase
-from parameterized import parameterized
-
 from evennia.objects.objects import DefaultObject
 from evennia.utils import dbserialize
+from parameterized import parameterized
 
 
 class TestDbSerialize(TestCase):
@@ -115,6 +114,18 @@ class TestDbSerialize(TestCase):
         self.assertEqual(self.obj.db.test, {"a": [1, 2, 3]})
         self.obj.db.test |= {"b": [5, 6]}
         self.assertEqual(self.obj.db.test, {"a": [1, 2, 3], "b": [5, 6]})
+
+    def test_deque_with_maxlen(self):
+        _dd = deque((), maxlen=1)
+        _dd.append(1)
+        _dd.append(2)
+        self.assertEqual(list(_dd), [2])
+
+        dd = deque((), maxlen=1)
+        self.obj.db.test = dd
+        self.obj.db.test.append(1)
+        self.obj.db.test.append(2)
+        self.assertEqual(list(self.obj.db.test), [2])
 
 
 class _InvalidContainer:
