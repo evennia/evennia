@@ -163,6 +163,17 @@ class TestExtendedLoopingCall(TestCase):
         self.assertEqual(loopcall.start_delay, None)
         self.assertEqual(loopcall.starttime, 1)
 
+    def test_force_repeat(self):
+        """ Test forcing script to run that is scheduled to run in the future """
+        callback = mock.MagicMock()
+        loopcall = ExtendedLoopingCall(callback)
+        loopcall.clock.seconds = mock.MagicMock(return_value=0)
+
+        loopcall.start(20, now=False, start_delay=5, count_start=0)
+        loopcall.force_repeat()
+
+        callback.assert_called_once()
+
 def dummy_func():
     return 0
 class TestMonitorHandler(TestCase):
