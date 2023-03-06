@@ -22,6 +22,7 @@ from evennia import AttributeProperty
 from evennia.objects.objects import DefaultObject
 from evennia.utils.utils import make_iter
 
+from . import rules
 from .enums import Ability, ObjType, WieldLocation
 from .utils import get_obj_stats
 
@@ -69,6 +70,25 @@ class EvAdventureObject(DefaultObject):
 
         """
         return "No help for this item."
+
+    def at_pre_use(self, *args, **kwargs):
+        """
+        Called before use. If returning False, usage should be aborted.
+        """
+        return True
+
+    def use(self, *args, **kwargs):
+        """
+        Use this object, whatever that may mean.
+
+        """
+        raise NotImplementedError
+
+    def at_post_use(self, *args, **kwargs):
+        """
+        Called after use happened.
+        """
+        pass
 
 
 class EvAdventureObjectFiller(EvAdventureObject):
@@ -119,17 +139,12 @@ class EvAdventureConsumable(EvAdventureObject):
     size = AttributeProperty(0.25)
     uses = AttributeProperty(1)
 
-    def at_use(self, user, *args, **kwargs):
+    def use(self, user, *args, **kwargs):
         """
-        Consume a 'use' of this item. Once it reaches 0 uses, it should normally
-        not be usable anymore and probably be deleted.
-
-        Args:
-            user (Object): The one using the item.
-            *args, **kwargs: Extra arguments depending on the usage and item.
+        Use the consumable.
 
         """
-        pass
+        raise NotImplementedError
 
     def at_post_use(self, user, *args, **kwargs):
         """
@@ -162,6 +177,43 @@ class EvAdventureWeapon(EvAdventureObject):
     defense_type = AttributeProperty(Ability.ARMOR)
     damage_roll = AttributeProperty("1d6")
 
+    def use(self, attacker, target, *args, advantage=False, disadvantage=False, **kwargs):
+        """When a weapon is used, it attacks an opponent"""
+
+        is_hit, quality, txt = rules.dice.opposed_saving_throw(
+            attacker,
+            target,
+            attack_type=self.attack_type,
+            defense_type=self.defense_type,
+            advantage=advantage,
+            disadvantage=disadvantage,
+        )
+        self.msg(f"$You() $conj(attack) $You({target.key}) with {self.key}: {txt}")
+        if is_hit:
+            # enemy hit, calculate damage
+            dmg = rules.dice.roll(self.damage_roll)
+
+            if quality is Ability.CRITICAL_SUCCESS:
+                # doble damage roll for critical success
+                dmg += rules.dice.roll(self.damage_roll)
+                message = (
+                    f" $You() |ycritically|n $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
+                )
+            else:
+                message = f" $You() $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
+            self.msg(message)
+
+            # call hook
+            target.at_damage(dmg, attacker=attacker)
+
+        else:
+            # a miss
+            message = f" $You() $conj(miss) $You({target.key})."
+            if quality is Ability.CRITICAL_FAILURE:
+                self.quality -= 1
+                message += ".. it's a |rcritical miss!|n, damaging the weapon."
+            self.msg(message)
+
 
 class EvAdventureThrowable(EvAdventureWeapon, EvAdventureConsumable):
     """
@@ -178,7 +230,7 @@ class EvAdventureThrowable(EvAdventureWeapon, EvAdventureConsumable):
     damage_roll = AttributeProperty("1d6")
 
 
-class WeaponEmptyHand:
+class WeaponEmptyHand(EvAdventureWeapon):
     """
     This is a dummy-class loaded when you wield no weapons. We won't create any db-object for it.
 
@@ -191,9 +243,6 @@ class WeaponEmptyHand:
     defense_type = Ability.ARMOR
     damage_roll = "1d4"
     quality = 100000  # let's assume fists are always available ...
-
-    def __repr__(self):
-        return "<WeaponEmptyHand>"
 
 
 class EvAdventureRunestone(EvAdventureWeapon, EvAdventureConsumable):

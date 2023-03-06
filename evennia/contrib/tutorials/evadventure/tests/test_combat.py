@@ -11,7 +11,7 @@ from evennia.utils.test_resources import BaseEvenniaTest
 
 from .. import combat_turnbased as combat
 from ..characters import EvAdventureCharacter
-from ..enums import WieldLocation
+from ..enums import Ability, WieldLocation
 from ..npcs import EvAdventureMob
 from ..objects import EvAdventureConsumable, EvAdventureRunestone, EvAdventureWeapon
 from ..rooms import EvAdventureRoom
@@ -53,9 +53,33 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             attributes=(("is_idle", True),),
         )
 
+        # mock the msg so we can check what they were sent later
+        self.combatant.msg = Mock()
+        self.target.msg = Mock()
+
         self.combathandler = combat.get_or_create_combathandler(self.combatant)
         # add target to combat
         self.combathandler.add_combatants(self.target)
+
+    def _get_action(self, action_dict={"key": "nothing"}):
+        action_class = self.combathandler.action_classes[action_dict["key"]]
+        return action_class(self.combathandler, self.combatant, action_dict)
+
+    def _run_actions(
+        self, action_dict, action_dict2={"key": "nothing"}, combatant_msg=None, target_msg=None
+    ):
+        """
+        Helper method to run an action and check so combatant saw the expected message.
+        """
+        self.combathandler.queue_action(self.combatant, action_dict)
+        self.combathandler.queue_action(self.target, action_dict2)
+        self.combathandler.execute_full_turn()
+        if combatant_msg is not None:
+            # this works because we mock combatant.msg in SetUp
+            self.combatant.msg.assert_called_with(combatant_msg)
+        if target_msg is not None:
+            # this works because we mock target.msg in SetUp
+            self.combatant.msg.assert_called_with(target_msg)
 
     def test_combatanthandler_setup(self):
         """Testing all is set up correctly in the combathandler"""
@@ -166,30 +190,233 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             [call(self.combatant), call(self.target)], any_order=True
         )
 
-    def _get_action(self, action_dict, action_dict2={"key": "nothing"}):
+    def test_combat_action(self):
+        """General tests of action functionality"""
 
-        self.combathandler.queue_action(self.combatant, action_dict)
-        self.combathandler.queue_action(self.target, action_dict2)
+        combatant = self.combatant
+        target = self.target
 
-        action_cls1 = self.combathandler.action_classes[action_dict["key"]]
-        action_cls2 = self.combathandler.action_classes[action_dict2["key"]]
+        action = self._get_action({"key": "nothing"})
 
-        return action_cls1, action_cls2
+        self.assertTrue(action.can_use())
+
+        action.give_advantage(combatant, target)
+        action.give_disadvantage(combatant, target)
+
+        self.assertTrue(action.has_advantage(combatant, target))
+        self.assertTrue(action.has_disadvantage(combatant, target))
+
+        action.lose_advantage(combatant, target)
+        action.lose_disadvantage(combatant, target)
+
+        self.assertFalse(action.has_advantage(combatant, target))
+        self.assertFalse(action.has_disadvantage(combatant, target))
+
+        action.flee(combatant)
+        self.assertIn(combatant, self.combathandler.fleeing_combatants)
+
+        action.unflee(combatant)
+        self.assertNotIn(combatant, self.combathandler.fleeing_combatants)
+
+        action.msg(f"$You() attack $You({target.key}).")
+        combatant.msg.assert_called_with(text=("You attack testmonster.", {}), from_obj=combatant)
 
     def test_action__do_nothing(self):
         """Do nothing"""
 
         actiondict = {"key": "nothing"}
-
-        actioncls1, actioncls2 = self._get_action(actiondict, actiondict)
-
-        self.assertEqual(actioncls1, actioncls2)
-
-        self.combathandler.execute_full_turn()
-
+        self._run_actions(actiondict, actiondict)
         self.assertEqual(self.combathandler.turn, 1)
 
-    # @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+        self.combatant.msg.assert_not_called()
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    def test_attack__miss(self, mock_randint):
+
+        actiondict = {"key": "attack", "target": self.target}
+
+        mock_randint.return_value = 8  # target has default armor 11, so 8+1 str will miss
+        self._run_actions(actiondict)
+        self.assertEqual(self.target.hp, 4)
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    def test_attack__success__still_alive(self, mock_randint):
+        actiondict = {"key": "attack", "target": self.target}
+
+        mock_randint.return_value = 11  # 11 + 1 str will hit beat armor 11
+        # make sure target survives
+        self.target.hp = 20
+        self._run_actions(actiondict)
+        self.assertEqual(self.target.hp, 9)
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    def test_attack__success__kill(self, mock_randint):
+        actiondict = {"key": "attack", "target": self.target}
+
+        mock_randint.return_value = 11  # 11 + 1 str will hit beat armor 11
+        self._run_actions(actiondict)
+        self.assertEqual(self.target.hp, -7)
+        # after this the combat is over
+        self.assertIsNone(self.combathandler.pk)
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    def test_stunt_fail(self, mock_randint):
+        action_dict = {
+            "key": "stunt",
+            "recipient": self.combatant,
+            "target": self.target,
+            "advantage": True,
+            "stunt_type": Ability.STR,
+            "defense_type": Ability.DEX,
+        }
+        mock_randint.return_value = 8  # fails 8+1 dex vs DEX 11 defence
+        self._run_actions(action_dict)
+        self.assertEqual(self.combathandler.advantage_matrix[self.combatant], {})
+        self.assertEqual(self.combathandler.disadvantage_matrix[self.combatant], {})
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    def test_stunt_advantage__success(self, mock_randint):
+        action_dict = {
+            "key": "stunt",
+            "recipient": self.combatant,
+            "target": self.target,
+            "advantage": True,
+            "stunt_type": Ability.STR,
+            "defense_type": Ability.DEX,
+        }
+        mock_randint.return_value = 11  #  11+1 dex vs DEX 11 defence is success
+        self._run_actions(action_dict)
+        self.assertEqual(
+            bool(self.combathandler.advantage_matrix[self.combatant][self.target]), True
+        )
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    def test_stunt_disadvantage__success(self, mock_randint):
+        action_dict = {
+            "key": "stunt",
+            "recipient": self.target,
+            "target": self.combatant,
+            "advantage": False,
+            "stunt_type": Ability.STR,
+            "defense_type": Ability.DEX,
+        }
+        mock_randint.return_value = 11  #  11+1 dex vs DEX 11 defence is success
+        self._run_actions(action_dict)
+        self.assertEqual(
+            bool(self.combathandler.disadvantage_matrix[self.target][self.combatant]), True
+        )
+
+    def test_use_item(self):
+        """
+        Use up a potion during combat.
+
+        """
+        item = create.create_object(
+            EvAdventureConsumable, key="Healing potion", attributes=[("uses", 2)]
+        )
+
+        item.use = Mock()
+
+        action_dict = {
+            "key": "use",
+            "item": item,
+            "target": self.target,
+        }
+
+        self.assertEqual(item.uses, 2)
+        self._run_actions(action_dict)
+        self.assertEqual(item.uses, 1)
+        self._run_actions(action_dict)
+        self.assertEqual(item.pk, None)  # deleted, it was used up
+
+    def test_swap_wielded_weapon_or_spell(self):
+        """
+        First draw a weapon (from empty fists), then swap that out to another weapon, then
+        swap to a spell rune.
+
+        """
+        sword = create.create_object(EvAdventureWeapon, key="sword")
+        zweihander = create.create_object(
+            EvAdventureWeapon,
+            key="zweihander",
+            attributes=(("inventory_use_slot", WieldLocation.TWO_HANDS),),
+        )
+        runestone = create.create_object(EvAdventureRunestone, key="ice rune")
+
+        # check hands are empty
+        self.assertEqual(self.combatant.weapon.key, "Empty Fists")
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.WEAPON_HAND], None)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.TWO_HANDS], None)
+
+        # swap to sword
+
+        actiondict = {"key": "wield", "item": sword}
+
+        self._run_actions(actiondict)
+        self.assertEqual(self.combatant.weapon, sword)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.WEAPON_HAND], sword)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.TWO_HANDS], None)
+
+        # swap to zweihander (two-handed sword)
+        actiondict["item"] = zweihander
+
+        from evennia import set_trace
+
+        set_trace()
+        self._run_actions(actiondict)
+        self.assertEqual(self.combatant.weapon, zweihander)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.WEAPON_HAND], None)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.TWO_HANDS], zweihander)
+
+        # swap to runestone (also using two hands)
+        actiondict["item"] = runestone
+
+        self._run_actions(actiondict)
+        self.assertEqual(self.combatant.weapon, runestone)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.WEAPON_HAND], None)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.TWO_HANDS], runestone)
+
+        # swap back to normal one-handed sword
+        actiondict["item"] = sword
+
+        self._run_actions(actiondict)
+        self.assertEqual(self.combatant.weapon, sword)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.WEAPON_HAND], sword)
+        self.assertEqual(self.combatant.equipment.slots[WieldLocation.TWO_HANDS], None)
+
+
+#     def test_flee__success(self):
+#         """
+#         Test fleeing twice, leading to leaving combat.
+#
+#         """
+#         # first flee records the fleeing state
+#         self._run_action(combat_turnbased.CombatActionFlee, None)
+#         self.assertTrue(self.combatant in self.combathandler.fleeing_combatants)
+#
+#         # second flee should remove combatant
+#         self._run_action(combat_turnbased.CombatActionFlee, None)
+#         self.assertIsNone(self.combathandler.pk)
+#
+#     @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+#     def test_flee__blocked(self, mock_randint):
+#         """ """
+#         mock_randint.return_value = 11  # means block will succeed
+#
+#         self._run_action(combat_turnbased.CombatActionFlee, None)
+#         self.assertTrue(self.combatant in self.combathandler.fleeing_combatants)
+#
+#         # other combatant blocks in the same turn
+#         self.combathandler.register_action(
+#             self.combatant, combat_turnbased.CombatActionFlee.key, None
+#         )
+#         self.combathandler.register_action(
+#             self.target, combat_turnbased.CombatActionBlock.key, self.combatant
+#         )
+#         self.combathandler._end_turn()
+#         # the fleeing combatant should remain now
+#         self.assertTrue(self.combatant not in self.combathandler.fleeing_combatants)
+#         self.assertTrue(self.combatant in self.combathandler.combatants)
 
 
 # class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):

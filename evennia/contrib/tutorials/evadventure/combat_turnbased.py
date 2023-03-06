@@ -196,7 +196,7 @@ class CombatAction:
                 the combatant doing the action and other combatants, respectively.
 
         """
-        self.combathandler.msg(self, message, combatant=self.combatant, broadcast=broadcast)
+        self.combathandler.msg(message, combatant=self.combatant, broadcast=broadcast)
 
     def can_use(self):
         """
@@ -250,44 +250,9 @@ class CombatActionAttack(CombatAction):
         weapon = attacker.weapon
         target = self.target
 
-        is_hit, quality, txt = rules.dice.opposed_saving_throw(
-            attacker,
-            target,
-            attack_type=weapon.attack_type,
-            defense_type=attacker.weapon.defense_type,
-            advantage=self.has_advantage(attacker, target),
-            disadvantage=self.has_disadvantage(attacker, target),
-        )
-        self.msg(f"$You() $conj(attack) $You({target.key}) with {weapon.key}: {txt}")
-        if is_hit:
-            # enemy hit, calculate damage
-            weapon_dmg_roll = attacker.weapon.damage_roll
-
-            dmg = rules.dice.roll(weapon_dmg_roll)
-
-            if quality is Ability.CRITICAL_SUCCESS:
-                dmg += rules.dice.roll(weapon_dmg_roll)
-                message = (
-                    f" $You() |ycritically|n $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
-                )
-            else:
-                message = f" $You() $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
-            self.msg(message)
-
-            # call hook
-            target.at_damage(dmg, attacker=attacker)
-
-            # note that we mustn't remove anyone from combat yet, because this is
-            # happening simultaneously. So checking of the final hp
-            # and rolling of death etc happens in the combathandler at the end of the turn.
-
-        else:
-            # a miss
-            message = f" $You() $conj(miss) $You({target.key})."
-            if quality is Ability.CRITICAL_FAILURE:
-                attacker.weapon.quality -= 1
-                message += ".. it's a |rcritical miss!|n, damaging the weapon."
-            self.msg(message)
+        if weapon.at_pre_use(attacker, target):
+            weapon.use(attacker, target, advantage=self.has_advantage(attacker, target))
+            weapon.at_post_use(attacker, target)
 
 
 class CombatActionStunt(CombatAction):
@@ -317,6 +282,7 @@ class CombatActionStunt(CombatAction):
         recipient = self.recipient  # the one to receive the effect of the stunt
         target = self.target  # the affected by the stunt (can be the same as recipient/combatant)
         is_success = False
+        txt = ""
 
         if target == self.combatant:
             # can always grant dis/advantage against yourself
@@ -369,7 +335,7 @@ class CombatActionUseItem(CombatAction):
     action_dict = {
             "key": "use",
             "item": Object
-            "target": Character/NPC/Object
+            "target": Character/NPC/Object/None
         }
 
     Note:
@@ -383,22 +349,14 @@ class CombatActionUseItem(CombatAction):
         user = self.combatant
         target = self.target
 
-        if user == target:
-            # always manage to use the item on yourself
-            is_success = True
-        else:
-            if item.has_obj_type(ObjType.WEAPON):
-                # this is something that harms the target. We need to roll defense
-                is_success, _, txt = rules.dice.opposed_saving_throw(
-                    user,
-                    target,
-                    attack_type=item.attack_type,
-                    defense_type=item.defense_type,
-                    advantage=self.has_advantage(user, target),
-                    disadvantage=self.has_disadvantage(user, target),
-                )
-
-        item.at_use(self.combatant, self.target)
+        if item.at_pre_use(user, target):
+            item.use(
+                user,
+                target,
+                advantage=self.has_advantage(user, target),
+                disadvantage=self.has_disadvantage(user, target),
+            )
+            item.at_post_use(user, target)
 
 
 class CombatActionWield(CombatAction):
@@ -514,13 +472,13 @@ class EvAdventureCombatHandler(DefaultScript):
 
     # who is involved in combat, and their action queue,
     # as {combatant: [actiondict, actiondict,...]}
-    combatants = AttributeProperty(defaultdict(deque))
+    combatants = AttributeProperty(dict)
 
     advantage_matrix = AttributeProperty(defaultdict(dict))
     disadvantage_matrix = AttributeProperty(defaultdict(dict))
 
     fleeing_combatants = AttributeProperty(dict)
-    defeated_combatants = AttributeProperty(dict)
+    defeated_combatants = AttributeProperty(list)
 
     def msg(self, message, combatant=None, broadcast=True):
         """
@@ -568,7 +526,7 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         for combatant in combatants:
             if combatant not in self.combatants:
-                self.combatants[combatant] = deque((), self.max_action_queue_size)
+                self.combatants[combatant] = deque((), maxlen=self.max_action_queue_size)
                 return True
 
     def remove_combatant(self, combatant):
@@ -693,7 +651,8 @@ class EvAdventureCombatHandler(DefaultScript):
                 # PCs roll on the death table here, NPCs die. Even if PCs survive, they
                 # are still out of the fight.
                 combatant.at_defeat()
-                self.defeated_combatants.append(self.combatant.pop(combatant))
+                self.combatants.pop(combatant)
+                self.defeated_combatants.append(combatant)
                 self.msg("|r$You() $conj(fall) to the ground, defeated.|n", combatant=combatant)
 
         # check if anyone managed to flee
@@ -717,12 +676,8 @@ class EvAdventureCombatHandler(DefaultScript):
         if not enemies:
             # if one way or another, there are no more enemies to fight
             still_standing = list_to_string(f"$You({comb.key})" for comb in allies)
-            knocked_out = list_to_string(
-                f"$You({comb.key})" for comb in self.defeated_combatants if comb.hp > 0
-            )
-            killed = list_to_string(
-                comb for comb in self.defeated_combatants if comb not in knocked_out
-            )
+            knocked_out = list_to_string(comb for comb in self.defeated_combatants if comb.hp > 0)
+            killed = list_to_string(comb for comb in self.defeated_combatants if comb.hp <= 0)
 
             if still_standing:
                 txt = [f"The combat is over. {still_standing} are still standing."]
