@@ -1489,4 +1489,5 @@ ACTOR_STANCE_CALLABLES = {
     "conj": funcparser_callable_conjugate,
     "pron": funcparser_callable_pronoun,
     "Pron": funcparser_callable_pronoun_capitalize,
+    **FUNCPARSER_CALLABLES,
 }
