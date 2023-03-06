@@ -28,8 +28,7 @@ nothing. Available actions:
 3. Make [S]tunt <target/yourself> (gain/give advantage/disadvantage for future attacks)
 4. S[W]ap weapon / spell rune
 5. [U]se <item>
-6. [F]lee/disengage (takes two turns)
-7. [B]lock <target> from fleeing
+6. [F]lee/disengage (takes one turn, during which attacks have advantage against you)
 8. [H]esitate/Do nothing
 
 You can also use say/emote between rounds.
@@ -118,8 +117,6 @@ from .objects import EvAdventureObject
 COMBAT_HANDLER_KEY = "evadventure_turnbased_combathandler"
 COMBAT_HANDLER_INTERVAL = 30
 
-COMBAT_ACTION_DICT_DONOTHING = {"key": "nothing", "desc": "Do nothing"}
-
 
 class CombatFailure(RuntimeError):
     """
@@ -168,24 +165,20 @@ class CombatAction:
         self.combathandler.disadvantage_matrix[recipient][target] = True
 
     def has_advantage(self, recipient, target):
-        return bool(self.combathandler.advantage_matrix[recipient].pop(target, False))
+        return bool(self.combathandler.advantage_matrix[recipient].pop(target, False)) or (
+            target in self.combathandler.fleeing_combatants
+        )
 
     def has_disadvantage(self, recipient, target):
-        return bool(self.combathandler.disadvantage_matrix[recipient].pop(target, False))
+        return bool(self.combathandler.disadvantage_matrix[recipient].pop(target, False)) or (
+            recipient in self.combathandler.fleeing_combatants
+        )
 
     def lose_advantage(self, recipient, target):
         self.combathandler.advantage_matrix[recipient][target] = False
 
     def lose_disadvantage(self, recipient, target):
         self.combathandler.disadvantage_matrix[recipient][target] = False
-
-    def flee(self, fleer):
-        if fleer not in self.combathandler.fleeing_combatants:
-            # we record the turn on which we started fleeing
-            self.combathandler.fleeing_combatants[fleer] = self.combathandler.turn
-
-    def unflee(self, fleer):
-        self.combathandler.fleeing_combatants.pop(fleer, None)
 
     def msg(self, message, broadcast=True):
         """
@@ -216,6 +209,13 @@ class CombatAction:
 
         """
         pass
+
+    def post_execute(self):
+        """
+        Called after execution.
+        """
+        # most actions abort ongoing fleeing actions.
+        self.combathandler.fleeing_combatants.pop(self.combatant, None)
 
 
 class CombatActionDoNothing(CombatAction):
@@ -392,52 +392,22 @@ class CombatActionFlee(CombatAction):
     """
 
     def execute(self):
+
+        if self.combatant not in self.combathandler.fleeing_combatants:
+            # we record the turn on which we started fleeing
+            self.combathandler.fleeing_combatants[self.combatant] = self.combathandler.turn
+
+        flee_timeout = self.combathandler.flee_timeout
         self.msg(
-            "$You() $conj(retreat), and will leave combat next round unless someone successfully "
-            "blocks the escape."
-        )
-        self.flee(self.combatant)
-
-
-class CombatActionHinder(CombatAction):
-    """
-    Hinder a fleeing opponent from fleeing/disengaging from combat.
-
-    action_dict = {
-        "key": "hinder",
-        "target": Character/NPC
-    }
-
-    Note:
-        Refer to as 'hinder'
-
-    """
-
-    def execute(self):
-
-        hinderer = self.combatant
-        target = self.target
-
-        is_success, _, txt = rules.dice.opposed_saving_throw(
-            hinderer,
-            target,
-            attack_type=Ability.DEX,
-            defense_type=Ability.DEX,
-            advantage=self.has_advantage(hinderer, target),
-            disadvantage=self.has_disadvantage(hinderer, target),
+            "$You() $conj(retreat), leaving yourself exposed while doing so (will escape in "
+            f"{flee_timeout} $pluralize(turn, {flee_timeout}))."
         )
 
-        # handle result
-        self.msg(
-            f"$You() $conj(try) to block the retreat of $You({target.key}). {txt}",
-        )
-        if is_success:
-            # managed to stop the target from fleeing/disengaging
-            self.unflee(target)
-            self.msg(f"$You() $conj(block) the retreat of $You({target.key})")
-        else:
-            # failed to hinder the target
-            self.msg(f"$You({target.key}) $conj(dodge) away from you $You()!")
+    def post_execute(self):
+        """
+        We override the default since we don't want to cancel fleeing here.
+        """
+        pass
 
 
 class EvAdventureCombatHandler(DefaultScript):
@@ -447,9 +417,6 @@ class EvAdventureCombatHandler(DefaultScript):
 
     """
 
-    # how many actions can be queued at a time (per combatant)
-    max_action_queue_size = 1
-
     # available actions in combat
     action_classes = {
         "nothing": CombatActionDoNothing,
@@ -458,17 +425,19 @@ class EvAdventureCombatHandler(DefaultScript):
         "use": CombatActionUseItem,
         "wield": CombatActionWield,
         "flee": CombatActionFlee,
-        "hinder": CombatActionHinder,
     }
 
+    # how many actions can be queued at a time (per combatant)
+    max_action_queue_size = 1
+
     # fallback action if not selecting anything
-    fallback_action = "attack"
+    fallback_action_dict = {"key": "nothing"}
+
+    # how many turns you must be fleeing before escaping
+    flee_timeout = 1
 
     # persistent storage
     turn = AttributeProperty(0)
-
-    # how many turns you must be fleeing before escaping
-    flee_timeout = AttributeProperty(1)
 
     # who is involved in combat, and their action queue,
     # as {combatant: [actiondict, actiondict,...]}
@@ -617,7 +586,7 @@ class EvAdventureCombatHandler(DefaultScript):
 
         """
         action_queue = self.combatants[combatant]
-        action_dict = action_queue[0] if action_queue else COMBAT_ACTION_DICT_DONOTHING
+        action_dict = action_queue[0] if action_queue else self.fallback_action_dict
         # rotate the queue to the left so that the first element is now the last one
         action_queue.rotate(-1)
 
@@ -626,6 +595,7 @@ class EvAdventureCombatHandler(DefaultScript):
         action = action_class(self, combatant, action_dict)
 
         action.execute()
+        action.post_execute()
 
     def execute_full_turn(self):
         """
@@ -653,9 +623,9 @@ class EvAdventureCombatHandler(DefaultScript):
 
         # check if anyone managed to flee
         flee_timeout = self.flee_timeout
-        for combatant, started_fleeing in dict(self.fleeing_combatants):
-            if self.turn - started_fleeing > flee_timeout:
-                # if they are still alive/fleeing and started fleeing >1 round ago, they succeed
+        for combatant, started_fleeing in self.fleeing_combatants.items():
+            if self.turn - started_fleeing >= flee_timeout:
+                # if they are still alive/fleeing and have been fleeing long enough, escape
                 self.msg("|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
                 self.remove_combatant(combatant)
 
