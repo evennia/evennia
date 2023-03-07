@@ -12,6 +12,8 @@ from evennia.scripts.tickerhandler import TickerHandler
 from evennia.scripts.monitorhandler import MonitorHandler
 import inspect
 from evennia.scripts.manager import ScriptDBManager
+from collections import defaultdict
+from evennia.utils.dbserialize import dbserialize
 
 class TestScript(BaseEvenniaTest):
     def test_create(self):
@@ -142,7 +144,7 @@ class TestExtendedLoopingCall(TestCase):
         loopcall.__call__.assert_not_called()
         self.assertEqual(loopcall.interval, 20)
         loopcall._scheduleFrom.assert_called_with(121)
-        
+
     def test_start_invalid_interval(self):
         """ Test the .start method with interval less than zero """
         with self.assertRaises(ValueError):
@@ -174,18 +176,26 @@ class TestExtendedLoopingCall(TestCase):
 
         callback.assert_called_once()
 
+"""
+Dummy function used as callback parameter
+"""
 def dummy_func():
     return 0
+
 class TestMonitorHandler(TestCase):
+    """
+    Test the MonitorHandler class.
+    """
+
     def setUp(self):
         self.handler = MonitorHandler()
-    
+
     def test_add(self):
+        """Tests that adding an object to the monitor handler works correctly"""
         obj = mock.Mock()
         fieldname = "db_add"
         callback = dummy_func
         idstring = "test"
-        self.assertEquals(inspect.isfunction(callback),True)
 
         self.handler.add(obj, fieldname, callback, idstring=idstring)
 
@@ -194,37 +204,75 @@ class TestMonitorHandler(TestCase):
         self.assertEqual(self.handler.monitors[obj][fieldname][idstring], (callback, False, {}))
 
     def test_remove(self):
+        """Tests that removing an object from the monitor handler works correctly"""
         obj = mock.Mock()
         fieldname = 'db_remove'
         callback = dummy_func
         idstring = 'test_remove'
 
+        """Add an object to the monitor handler and then remove it"""
         self.handler.add(obj,fieldname,callback,idstring=idstring)
-        self.assertIn(fieldname,self.handler.monitors[obj])
-        self.assertEqual(self.handler.monitors[obj][fieldname][idstring], (callback, False, {}))
-
         self.handler.remove(obj,fieldname,idstring=idstring)
         self.assertEquals(self.handler.monitors[obj][fieldname], {})
 
-    def test_add_with_invalid_callback_does_not_work(self):
+    def test_add_with_invalid_function(self):
         obj = mock.Mock()
+        """Tests that add method rejects objects where callback is not a function"""
         fieldname = "db_key"
         callback = "not_a_function"
         
         self.handler.add(obj, fieldname, callback)
         self.assertNotIn(fieldname, self.handler.monitors[obj])
 
-    """ def test_add_raise_exception(self):
+    def test_all(self):
+        """Tests that all method correctly returns information about added objects"""
+        obj = [mock.Mock(),mock.Mock()]
+        fieldname = ["db_all1","db_all2"]
+        callback = dummy_func
+        idstring = ["test_all1","test_all2"]
+
+        self.handler.add(obj[0], fieldname[0], callback, idstring=idstring[0])
+        self.handler.add(obj[1], fieldname[1], callback, idstring=idstring[1],persistent=True)
+     
+        output = self.handler.all()
+        self.assertEquals(output, 
+                          [(obj[0], fieldname[0], idstring[0], False, {}),
+                           (obj[1], fieldname[1], idstring[1], True, {})])
+        
+    def test_clear(self):
+        """Tests that the clear function correctly clears the monitor handler"""
         obj = mock.Mock()
         fieldname = "db_add"
-        callback = 1
+        callback = dummy_func
         idstring = "test"
-       # self.assertEquals(inspect.isfunction(callback),True)
-        self.assertRaises(Exception,self.handler.add,obj, fieldname, callback, idstring=idstring)
-     """       
 
-       
+        self.handler.add(obj, fieldname, callback, idstring=idstring)
+        self.assertIn(obj, self.handler.monitors)
 
+        self.handler.clear()
+        self.assertNotIn(obj, self.handler.monitors)
+        self.assertEquals(defaultdict(lambda: defaultdict(dict)), self.handler.monitors)
 
+    def test_add_remove_attribute(self):
+        """Tests that adding and removing an object attribute to the monitor handler works correctly"""
+        obj = mock.Mock()
+        obj.name = "testaddattribute"
+        fieldname = "name"
+        callback = dummy_func
+        idstring = "test"
+        category = "testattribute"
 
+        """Add attribute to handler and assert that it has been added"""
+        self.handler.add(obj, fieldname, callback, idstring=idstring,category=category)
 
+        index = obj.attributes.get(fieldname, return_obj=True)
+        name = "db_value[testattribute]"
+
+        self.assertIn(name, self.handler.monitors[index])
+        self.assertIn(idstring, self.handler.monitors[index][name])
+        self.assertEqual(self.handler.monitors[index][name][idstring], (callback, False, {}))
+
+        """Remove attribute from the handler and assert that it is gone"""
+        self.handler.remove(obj,fieldname,idstring=idstring,category=category)
+        self.assertEquals(self.handler.monitors[index][name], {})
+        
