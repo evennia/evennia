@@ -109,9 +109,11 @@ class TestScriptDB(TestCase):
         # Check the script is not recreated as a side-effect
         self.assertFalse(self.scr in ScriptDB.objects.get_all_scripts())
 
+
 class TestExtendedLoopingCall(TestCase):
     """
     Test the ExtendedLoopingCall class.
+
     """
 
     @mock.patch("evennia.scripts.scripts.LoopingCall")
@@ -275,4 +277,3 @@ class TestMonitorHandler(TestCase):
         """Remove attribute from the handler and assert that it is gone"""
         self.handler.remove(obj,fieldname,idstring=idstring,category=category)
         self.assertEquals(self.handler.monitors[index][name], {})
-        
