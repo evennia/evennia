@@ -15,6 +15,7 @@ from evennia.scripts.manager import ScriptDBManager
 from collections import defaultdict
 from evennia.utils.dbserialize import dbserialize
 
+
 class TestScript(BaseEvenniaTest):
     def test_create(self):
         "Check the script can be created via the convenience method."
