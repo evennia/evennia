@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from collections import defaultdict
 
 from parameterized import parameterized
 
@@ -10,9 +11,7 @@ from evennia.utils.create import create_script
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.scripts.tickerhandler import TickerHandler
 from evennia.scripts.monitorhandler import MonitorHandler
-import inspect
 from evennia.scripts.manager import ScriptDBManager
-from collections import defaultdict
 from evennia.utils.dbserialize import dbserialize
 
 
