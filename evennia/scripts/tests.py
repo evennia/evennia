@@ -1,3 +1,8 @@
+"""
+Unit tests for the scripts module
+
+"""
+
 from unittest import TestCase, mock
 from collections import defaultdict
 
@@ -25,18 +30,25 @@ class TestScript(BaseEvenniaTest):
             mockinit.assert_called()
 
 class TestTickerHandler(TestCase):
+    """ Test the TickerHandler class """
+
     def test_store_key_raises_RunTimeError(self):
+        """ Test _store_key method raises RuntimeError for interval < 1 """
         with self.assertRaises(RuntimeError):
             th=TickerHandler()
             th._store_key(None, None, 0, None)
 
     def test_remove_raises_RunTimeError(self):
+       """ Test remove method raises RuntimeError for catching old ordering of arguments """
        with self.assertRaises(RuntimeError):
             th=TickerHandler()
             th.remove(callback=1)
 
 class TestScriptDBManager(TestCase):
+    """ Test the ScriptDBManger class """
+
     def test_not_obj_return_empty_list(self):
+        """ Test get_all_scripts_on_obj returns empty list for falsy object """
         manager_obj = ScriptDBManager()
         returned_list = manager_obj.get_all_scripts_on_obj(False)
         self.assertEqual(returned_list, [])
