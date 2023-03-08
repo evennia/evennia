@@ -25,7 +25,7 @@ class TestScript(BaseEvenniaTest):
             self.assertFalse(errors, errors)
             mockinit.assert_called()
 
-class Test_improve_coverage(TestCase):
+class TestTickerHandler(TestCase):
     def test_store_key_raises_RunTimeError(self):
         with self.assertRaises(RuntimeError):
             th=TickerHandler()
@@ -35,7 +35,8 @@ class Test_improve_coverage(TestCase):
        with self.assertRaises(RuntimeError):
             th=TickerHandler()
             th.remove(callback=1)
-            
+
+class TestScriptDBManager(TestCase):
     def test_not_obj_return_empty_list(self):
         manager_obj = ScriptDBManager()
         returned_list = manager_obj.get_all_scripts_on_obj(False)
