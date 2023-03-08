@@ -179,10 +179,8 @@ class TestExtendedLoopingCall(TestCase):
 
         callback.assert_called_once()
 
-"""
-Dummy function used as callback parameter
-"""
 def dummy_func():
+    """ Dummy function used as callback parameter """
     return 0
 
 class TestMonitorHandler(TestCase):
