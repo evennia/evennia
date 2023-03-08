@@ -1,5 +1,5 @@
 """
-Unit tests for the scripts module
+Unit tests for the scripts package
 
 """
 
