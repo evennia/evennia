@@ -24,7 +24,7 @@ This will replace the default `look` and `get` commands with the container-frien
 
 The contrib includes a `ContainerObject` typeclass which has all of the set-up necessary to be used as a container. To use, all you need to do is create an object in-game with that typeclass - it will automatically inherit anything you implemented in your base Object typeclass as well.
 
-    create bag:evennia.contrib.game_systems.containers.ContainerObject
+    create bag:game_systems.containers.ContainerObject
 
 To make any other objects usable as containers, all you need to do is set the `get_from` lock type on it.
 
@@ -40,6 +40,6 @@ The `ContainerObject` class is intended to be usable as-is, but you can also inh
 
 ### `at_pre_get_from` and `at_pre_put_in` methods
 
-These two methods on `ContainerObject` are called as extra checks when attempting to either get an object from, or put an object in, a container. The contrib's `Container.at_pre_get_from` doesn't do any additional validation by default, while `ContainerObject.at_pre_put_in` does a simple capacity check.
+These two methods on `ContainerObject` are called as extra checks when attempting to either get an object from, or put an object in, a container. The contrib's `ContainerObject.at_pre_get_from` doesn't do any additional validation by default, while `ContainerObject.at_pre_put_in` does a simple capacity check.
 
 You can override these methods on your own child class to do any additional capacity or access checks.
