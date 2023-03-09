@@ -115,6 +115,9 @@ extra = [
 
   # Git contrib
   "gitpython >= 3.1.27",
+
+  # events calendar contrib
+  "python-dateutil >= 2.8.2",
 ]
 
 [project.urls]

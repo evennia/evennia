@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block titleblock %}
+{{ view.page_title }}
+{% endblock %}
+
+{% block content %}
+
+{% load addclass %}
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="card-title">{{ view.page_title }}</h1>
+        <hr />
+
+        {% for object in object_list %}
+        <div class="event-item">
+          <h3 class="card-header">
+            {{ object.name }} {% if object.creator %}(by {{ object.creator }}){% endif %}
+          </h3>
+          {% if object.status == "active" %}
+            <p class="lead">Happening Now!</p>
+          {% else %}
+            <span style="font-weight:bold">Starts:</span> {{ object.start_time|date:"j M Y, H:i e" }}<br/>
+          {% endif %}
+          <span style="font-weight:bold">Ends:</span> {{ object.end_time|date:"j M Y, H:i e" }}
+          <div class="card-body">
+            <p>{{ object.desc }}</p>
+          </div>
+        </div>
+        {% endfor %}
+          
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
