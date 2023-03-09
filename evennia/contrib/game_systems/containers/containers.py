@@ -27,8 +27,8 @@ or implement the same locks/hooks in your own typeclasses.
 
 `ContainerObject` implements the following new methods:
 
-    at_pre_get_from(self, getter, target, **kwargs) - called with the pre-get hooks
-    at_pre_put_in(self, putter, target, **kwargs)   - called with the pre-put hooks
+    at_pre_get_from(getter, target, **kwargs) - called with the pre-get hooks
+    at_pre_put_in(putter, target, **kwargs)   - called with the pre-put hooks
 """
 from django.conf import settings
 
@@ -70,19 +70,19 @@ class ContainerObject(_BASE_OBJECT_TYPECLASS):
 
     def at_pre_put_in(self, putter, target, **kwargs):
         """
-        This will be called when something attempts to get another object FROM this object,
-        rather than when getting this object itself.
+        This will be called when something attempts to put another object into this object.
 
         Args:
-            getter (Object): The actor attempting to take something from this object.
-            target (Object): The thing this object contains that is being removed.
+            putter (Object): The actor attempting to put something in this object.
+            target (Object): The thing being put into this object.
 
         NOTE:
             To add more complex capacity checks, modify this method on your child typeclass.
         """
         # check if we're already at capacity
         if len(self.contents) >= self.capacity:
-            putter.msg(f"You can't fit anything else in {self.get_numbered_name(1, putter)[0]}.")
+            singular, _ = self.get_numbered_name(1, putter)
+            putter.msg(f"You can't fit anything else in {singular}.")
             return False
 
         return True
@@ -209,7 +209,7 @@ class CmdContainerGet(CmdGet):
 
 class CmdPut(CmdDrop):
     """
-    put something down
+    put an object into something else
 
     Usage:
       put <obj> in <container>
