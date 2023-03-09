@@ -18,7 +18,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(ContainerCmdSet)
 ```
 
-This will replace the default `look` and `get` commands with the container-friendly versions provided by the contrib.
+This will replace the default `look` and `get` commands with the container-friendly versions provided by the contrib as well as add a new `put` command.
 
 ## Usage
 
@@ -26,7 +26,17 @@ The contrib includes a `ContainerObject` typeclass which has all of the set-up n
 
     create bag:game_systems.containers.ContainerObject
 
-To make any other objects usable as containers, all you need to do is set the `get_from` lock type on it.
+The contrib's `ContainerObject` comes with a capacity limit of a maximum number of items it can hold. This can be changed per individual object.
+
+In code:
+```py
+obj.capacity = 5
+```
+In game:
+
+    set box/capacity = 5
+
+You can also make any other objects usable as containers by setting the `get_from` lock type on it.
 
     lock mysterious box = get_from:true()
 
