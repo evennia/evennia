@@ -437,6 +437,7 @@ class EvAdventureCombatHandler(DefaultScript):
     flee_timeout = 1
 
     # persistent storage
+
     turn = AttributeProperty(0)
 
     # who is involved in combat, and their action queue,
@@ -569,6 +570,13 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         self.combatants[combatant].append(action_dict)
 
+        # track who inserted actions this turn (non-persistent)
+        did_action = set(self.nbd.did_action or ())
+        did_action.add(combatant)
+        if len(did_action) >= len(self.combatants):
+            # everyone has inserted an action. Start next turn without waiting!
+            self.force_repeat()
+
     def execute_next_action(self, combatant):
         """
         Perform a combatant's next queued action. Note that there is _always_ an action queued,
@@ -656,6 +664,22 @@ class EvAdventureCombatHandler(DefaultScript):
             self.msg(txt)
             self.stop_combat()
 
+    def get_combat_summary(self, combatant):
+        """
+        Get a 'battle report' - an overview of the current state of combat.
+
+                                    Goblin shaman
+        Ally (hurt)                 Goblin brawler
+        Bob               vs        Goblin grunt 1 (hurt)
+                                    Goblin grunt 2
+                                    Goblin grunt 3
+
+        """
+        allies, enemies = self.get_sides(combatant)
+        nallies, nenemies = len(allies), len(enemies)
+
+        # make a table with three columns
+
 
 def get_or_create_combathandler(combatant, combathandler_name="combathandler", combat_tick=5):
     """
@@ -711,7 +735,6 @@ Examples of commands:
     - |yuse <item> on <target>|n                 - use an item on an enemy or ally
 
     - |yflee|n                                   - start to flee or disengage from combat
-    - |yhinder|n                                 - hinder an enemy from fleeing
 
 Use |yhelp <command>|n for more info."""
 
@@ -762,7 +785,6 @@ class CombatCmdSet(CmdSet):
         self.add(CmdUseItem())
         self.add(CmdWield())
         self.add(CmdUseFlee())
-        self.add(CmdUseHinder())
 
 
 class CmdAttack(_CmdCombatBase):
@@ -965,44 +987,6 @@ class CmdFlee(_CmdCombatBase):
         self.msg("You prepare to flee!")
 
 
-class CmdHinder(_CmdCombatBase):
-    """
-    Hinder an enemy from fleeing combat. This is a DEX challenge. If you
-    don't specify a target, you'll try to block one that flees (or a random
-    one if there are multiple fleeing enemies).
-
-    Usage:
-      hinder [target]
-      block [target]
-
-    """
-
-    key = "hinder"
-    aliases = ["block"]
-
-    def func(self):
-
-        # see if anyone is trying to run away
-        combathandler = self.combathandler
-        allies, enemies = combathander.get_sides(self.caller)
-        fleeing_enemies = list(
-            set(enemies).intersection(set(combathandler.fleeing_combatants.values()))
-        )
-
-        if not fleeing_enemies:
-            self.caller.msg("No enemies are fleeing!")
-            return
-
-        if self.args:
-            target = self.caller.search(self.args, candidates=fleeing_enemies)
-            if not target:
-                return
-        else:
-            target = random.choice(fleeing_enemies)
-
-        combathandler.queue_action(self.caller, {"key": "hinder", "target": target})
-
-
 # -----------------------------------------------------------------------------------
 #
 # Turn-based combat (Final Fantasy style), using a menu
@@ -1010,10 +994,51 @@ class CmdHinder(_CmdCombatBase):
 # -----------------------------------------------------------------------------------
 
 
-def _get_menu_options(caller):
-    location = caller.location
+def _get_combathandler(caller):
+    evmenu = caller.ndb._evmenu
+    if not hasattr(evmenu, "combathandler"):
+        evmenu.combathandler = get_or_create_combathandler(caller)
+    return evmenu.combathandler
 
-    combathandler = location.scripts.get("combathandler")
+
+def _select_target(caller, raw_string, **kwargs):
+    """Helper to set a selection"""
+    action_dict = kwargs["action_dict"]
+    action_dict["target"] = kwargs["target"]
+
+    _get_combathandler(caller).queue_action(caller, action_dict)
+
+
+def node_choose_target(caller, raw_string, **kwargs):
+    """
+    Choose target!
+
+    """
+    text = kwargs.get("text", "Choose your target!")
+    target_type = kwargs.get("target_type", "enemies")
+
+    combathandler = _get_combathandler(caller)
+    allies, enemies = combathandler.get_sides(caller)
+
+    if target_type == "enemies":
+        targets = enemies
+    else:
+        targets = allies
+
+    options = [
+        {
+            "desc": target.get_display_name(caller),
+            "goto": (_select_target, {"target": target, **kwargs}),
+        }
+        for target in targets
+    ]
+
+    return text, options
+
+
+def node_combat(caller, raw_string, **kwargs):
+    """Base combat menu"""
+    text = ""
 
 
 ## -----------------------------------------------------------------------------------
