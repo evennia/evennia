@@ -87,6 +87,7 @@ ALTER ROLE evennia SET default_transaction_isolation TO 'read committed';
 ALTER ROLE evennia SET timezone TO 'UTC';
 
 GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;
+GRANT ALL ON SCHEMA public TO evennia;
 -- Other useful commands:
 --  \l       (list all databases and permissions)
 --  \q       (exit)
