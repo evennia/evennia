@@ -1,9 +1,7 @@
 # Part 3: How we get there (example game)
 
 ```{warning}
-The tutorial game is under development and is not yet complete, nor tested. Use the existing 
-lessons as inspiration and to help get you going, but don't expect out-of-the-box perfection 
-from it at this time.
+The tutorial game is under development and is not yet complete, nor tested. Use the existing lessons as inspiration and to help get you going, but don't expect out-of-the-box perfection from it at this time.
 ```
 
 ```{sidebar} Beginner Tutorial Parts
@@ -22,18 +20,14 @@ from it at this time.
 ```
 
 In part three of the Evennia Beginner tutorial we will go through the actual creation of 
-our tutorial game _EvAdventure_, based on the [Knave](https://www.drivethrurpg.com/product/250888/Knave)
-RPG ruleset. 
-
-This is a big part. You'll be seeing a lot of code and there are plenty of lessons to go through. 
-Take your time!
-
-If you followed the previous parts of this tutorial you will have some notions about Python and where to 
-find and make use of things in Evennia. We also have a good idea of the type of game we will
-create.
+our tutorial game _EvAdventure_, based on the [Knave](https://www.drivethrurpg.com/product/250888/Knave) RPG ruleset. 
 
 Even if this is not the game-style you are interested in, following along will give you a lot 
 of experience using Evennia and be really helpful for doing your own thing later!
+
+This is a big part. You'll be seeing a lot of code and there are plenty of lessons to go through.  Take your time!
+
+If you followed the previous parts of this tutorial series you will have some notions about Python and where to  find and make use of things in Evennia. We also have a good idea of the type of game we will create.
 
 Fully coded examples of all code we make in this part can be found in the 
 [evennia/contrib/tutorials/evadventure](../../../api/evennia.contrib.tutorials.evadventure.md) package.
@@ -53,7 +47,7 @@ Beginner-Tutorial-Equipment
 Beginner-Tutorial-Chargen
 Beginner-Tutorial-Rooms
 Beginner-Tutorial-NPCs
-Beginner-Tutorial-Turnbased-Combat
+Beginner-Tutorial-Combat
 Beginner-Tutorial-Quests
 Beginner-Tutorial-Shops
 Beginner-Tutorial-Dungeon
