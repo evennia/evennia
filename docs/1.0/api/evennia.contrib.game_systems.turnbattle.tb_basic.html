@@ -394,7 +394,7 @@ normal hook to overload for most object types.</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.at_pre_move">
-<code class="sig-name descname">at_pre_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_basic.html#TBBasicCharacter.at_pre_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.at_pre_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_pre_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_basic.html#TBBasicCharacter.at_pre_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.at_pre_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before starting to move this object to
 destination.</p>
 <dl class="field-list simple">
@@ -672,7 +672,7 @@ if there are still any actions you can take.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['hold', 'wait']</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -698,7 +698,7 @@ if there are still any actions you can take.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'no_prefix': ' wait hold', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hold wait', 'category': 'combat', 'key': 'pass', 'no_prefix': ' hold wait', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
