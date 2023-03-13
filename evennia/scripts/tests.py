@@ -188,6 +188,7 @@ class TestExtendedLoopingCall(TestCase):
 
         loopcall.start(20, now=False, start_delay=5, count_start=0)
         loopcall.force_repeat()
+        loopcall.stop()
 
         callback.assert_called_once()
 
