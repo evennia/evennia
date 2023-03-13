@@ -256,7 +256,7 @@ class EvAdventureMob(EvAdventureNPC):
             combatant in the current combat handler.
 
         """
-        from .combat_turnbased import CombatActionAttack, CombatActionDoNothing
+        from .combat import CombatActionAttack, CombatActionDoNothing
 
         if self.is_idle:
             # mob just stands around

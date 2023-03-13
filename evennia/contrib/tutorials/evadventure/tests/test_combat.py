@@ -7,9 +7,10 @@ from collections import deque
 from unittest.mock import Mock, call, patch
 
 from evennia.utils import create
+from evennia.utils.ansi import strip_ansi
 from evennia.utils.test_resources import BaseEvenniaTest
 
-from .. import combat_turnbased as combat
+from .. import combat
 from ..characters import EvAdventureCharacter
 from ..enums import Ability, WieldLocation
 from ..npcs import EvAdventureMob
@@ -28,11 +29,11 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
 
     # make sure to mock away all time-keeping elements
     @patch(
-        "evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.interval",
+        "evennia.contrib.tutorials.evadventure.combat.EvAdventureCombatHandler.interval",
         new=-1,
     )
     @patch(
-        "evennia.contrib.tutorials.evadventure.combat_turnbased.delay",
+        "evennia.contrib.tutorials.evadventure.combat.delay",
         new=Mock(return_value=None),
     )
     def setUp(self):
@@ -153,6 +154,25 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         allies, enemies = self.combathandler.get_sides(self.target)
         self.assertEqual((allies, enemies), ([target2], [self.combatant, combatant2]))
 
+    def test_get_combat_summary(self):
+        """Test combat summary"""
+
+        # as seen from one side
+        result = str(self.combathandler.get_combat_summary(self.combatant))
+
+        self.assertEqual(
+            strip_ansi(result),
+            " testchar (Perfect)                   vs                testmonster (Perfect) ",
+        )
+
+        # as seen from other side
+        result = str(self.combathandler.get_combat_summary(self.target))
+
+        self.assertEqual(
+            strip_ansi(result),
+            " testmonster (Perfect)                 vs                  testchar (Perfect) ",
+        )
+
     def test_queue_and_execute_action(self):
         """Queue actions and execute"""
 
@@ -224,7 +244,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
 
         self.combatant.msg.assert_not_called()
 
-    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    @patch("evennia.contrib.tutorials.evadventure.combat.rules.randint")
     def test_attack__miss(self, mock_randint):
 
         actiondict = {"key": "attack", "target": self.target}
@@ -233,7 +253,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         self._run_actions(actiondict)
         self.assertEqual(self.target.hp, 4)
 
-    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    @patch("evennia.contrib.tutorials.evadventure.combat.rules.randint")
     def test_attack__success__still_alive(self, mock_randint):
         actiondict = {"key": "attack", "target": self.target}
 
@@ -243,7 +263,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         self._run_actions(actiondict)
         self.assertEqual(self.target.hp, 9)
 
-    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    @patch("evennia.contrib.tutorials.evadventure.combat.rules.randint")
     def test_attack__success__kill(self, mock_randint):
         actiondict = {"key": "attack", "target": self.target}
 
@@ -253,7 +273,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         # after this the combat is over
         self.assertIsNone(self.combathandler.pk)
 
-    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    @patch("evennia.contrib.tutorials.evadventure.combat.rules.randint")
     def test_stunt_fail(self, mock_randint):
         action_dict = {
             "key": "stunt",
@@ -268,7 +288,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         self.assertEqual(self.combathandler.advantage_matrix[self.combatant], {})
         self.assertEqual(self.combathandler.disadvantage_matrix[self.combatant], {})
 
-    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    @patch("evennia.contrib.tutorials.evadventure.combat.rules.randint")
     def test_stunt_advantage__success(self, mock_randint):
         action_dict = {
             "key": "stunt",
@@ -284,7 +304,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             bool(self.combathandler.advantage_matrix[self.combatant][self.target]), True
         )
 
-    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
+    @patch("evennia.contrib.tutorials.evadventure.combat.rules.randint")
     def test_stunt_disadvantage__success(self, mock_randint):
         action_dict = {
             "key": "stunt",
