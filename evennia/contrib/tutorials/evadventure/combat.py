@@ -83,17 +83,8 @@ You hang back, passively defending.
 ------------------- Disengage
 
 You retreat, getting ready to get out of combat. Use two times in a row to
-leave combat. You flee last in a round. If anyone Blocks your retreat, this counter resets.
+leave combat. You flee last in a round.
 
-------------------- Block Fleeing
-
-You move to block the escape route of an opponent. If you win a DEX challenge,
-you'll negate the target's disengage action(s).
-
-Choose who to block:
-1: <enemy 1>
-2: <enemy 2>
-3: ...
 
 
 """
@@ -101,7 +92,7 @@ Choose who to block:
 import random
 from collections import defaultdict, deque
 
-from evennia import CmdSet, Command, create_script
+from evennia import CmdSet, Command, create_script, default_cmds
 from evennia.commands.command import InterruptCommand
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
@@ -571,7 +562,7 @@ class EvAdventureCombatHandler(DefaultScript):
         self.combatants[combatant].append(action_dict)
 
         # track who inserted actions this turn (non-persistent)
-        did_action = set(self.nbd.did_action or ())
+        did_action = set(self.ndb.did_action or ())
         did_action.add(combatant)
         if len(did_action) >= len(self.combatants):
             # everyone has inserted an action. Start next turn without waiting!
@@ -668,6 +659,15 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         Get a 'battle report' - an overview of the current state of combat.
 
+        Args:
+            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant to get.
+
+        Returns:
+            EvTable: A table representing the current state of combat.
+
+        Example:
+        ::
+
                                     Goblin shaman
         Ally (hurt)                 Goblin brawler
         Bob               vs        Goblin grunt 1 (hurt)
@@ -676,9 +676,40 @@ class EvAdventureCombatHandler(DefaultScript):
 
         """
         allies, enemies = self.get_sides(combatant)
+        # we must include outselves at the top of the list (we are not returned from get_sides)
+        allies.insert(0, combatant)
         nallies, nenemies = len(allies), len(enemies)
 
+        # prepare colors and hurt-levels
+        allies = [f"{ally} ({ally.hurt_level})" for ally in allies]
+        enemies = [f"{enemy} ({enemy.hurt_level})" for enemy in enemies]
+
+        # the center column with the 'vs'
+        vs_column = ["" for _ in range(max(nallies, nenemies))]
+        vs_column[len(vs_column) // 2] = "vs"
+
+        # the two allies / enemies columns should be centered vertically
+        diff = abs(nallies - nenemies)
+        top_empty = diff // 2
+        bot_empty = diff - top_empty
+        topfill = ["" for _ in range(top_empty)]
+        botfill = ["" for _ in range(bot_empty)]
+
+        if nallies >= nenemies:
+            enemies = topfill + enemies + botfill
+        else:
+            allies = topfill + allies + botfill
+
         # make a table with three columns
+        return evtable.EvTable(
+            table=[
+                evtable.EvColumn(*allies, align="l"),
+                evtable.EvColumn(*vs_column, align="c"),
+                evtable.EvColumn(*enemies, align="r"),
+            ],
+            border=None,
+            width=78,
+        )
 
 
 def get_or_create_combathandler(combatant, combathandler_name="combathandler", combat_tick=5):
@@ -767,24 +798,35 @@ class _CmdCombatBase(Command):
             raise InterruptCommand()
 
 
-class CombatCmdSet(CmdSet):
-    """
-    Commands to make available while in combat. Note that
-    the 'attack' command should also be added to the CharacterCmdSet,
-    in order for the user to attack things.
+class CmdLook(default_cmds.CmdLook):
 
-    """
+    key = "look"
+    aliases = ["l"]
 
-    priority = 1
-    mergetype = "Union"  # use Replace to lock down all other commands
-    no_exits = True  # don't allow combatants to walk away
+    template = """
+|c{room_name} |r(In Combat!)|n
+{room_desc}
+⚔ ⚔ ⚔ ⚔ ⚔
+{combat_summary}
+    """.strip()
 
-    def at_cmdset_creation(self):
-        self.add(CmdAttack())
-        self.add(CmdStunt())
-        self.add(CmdUseItem())
-        self.add(CmdWield())
-        self.add(CmdUseFlee())
+    def func(self):
+        if not self.args:
+            # when looking around with no argument, show the room description followed by the
+            # current combat state.
+            location = self.caller.location
+            combathandler = get_or_create_combathandler(self.caller)
+
+            self.caller.msg(
+                self.template.format(
+                    room_name=location.get_display_name(self.caller),
+                    room_desc=caller.at_look(location),
+                    combat_summary=combathandler.get_combat_summary(self.caller),
+                )
+            )
+        else:
+            # use regular look to look at things
+            super().func()
 
 
 class CmdAttack(_CmdCombatBase):
@@ -987,6 +1029,26 @@ class CmdFlee(_CmdCombatBase):
         self.msg("You prepare to flee!")
 
 
+class CombatCmdSet(CmdSet):
+    """
+    Commands to make available while in combat. Note that
+    the 'attack' command should also be added to the CharacterCmdSet,
+    in order for the user to attack things.
+
+    """
+
+    priority = 1
+    mergetype = "Union"  # use Replace to lock down all other commands
+    no_exits = True  # don't allow combatants to walk away
+
+    def at_cmdset_creation(self):
+        self.add(CmdAttack())
+        self.add(CmdStunt())
+        self.add(CmdUseItem())
+        self.add(CmdWield())
+        self.add(CmdUseFlee())
+
+
 # -----------------------------------------------------------------------------------
 #
 # Turn-based combat (Final Fantasy style), using a menu
@@ -1038,6 +1100,7 @@ def node_choose_target(caller, raw_string, **kwargs):
 
 def node_combat(caller, raw_string, **kwargs):
     """Base combat menu"""
+
     text = ""
 
 

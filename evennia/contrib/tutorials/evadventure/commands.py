@@ -33,7 +33,7 @@ from evennia import CmdSet, Command, InterruptCommand
 from evennia.utils.evmenu import EvMenu
 from evennia.utils.utils import inherits_from
 
-from .combat_turnbased import CombatFailure, join_combat
+from .combat import CombatFailure, join_combat
 from .enums import WieldLocation
 from .equipment import EquipmentError
 from .npcs import EvAdventureTalkativeNPC
