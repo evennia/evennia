@@ -53,7 +53,7 @@ class TestScriptDBManager(TestCase):
         returned_list = manager_obj.get_all_scripts_on_obj(False)
         self.assertEqual(returned_list, [])
 
-class ListIntervalsScript(DefaultScript):
+class TestingListIntervalScript(DefaultScript):
     """
     A script that does nothing. Used to test listing of script with nonzero intervals.
     """
@@ -79,13 +79,13 @@ class TestScriptHandler(BaseEvenniaTest):
 
     def test_start(self):
         "Check that ScriptHandler start function works correctly"
-        self.obj.scripts.add(ListIntervalsScript)
+        self.obj.scripts.add(TestingListIntervalScript)
         self.num = self.obj.scripts.start(self.obj.scripts.all()[0].key)
         self.assertTrue(self.num == 1)
     
     def test_list_script_intervals(self):
         "Checks that Scripthandler __str__ function lists script intervals correctly"
-        self.obj.scripts.add(ListIntervalsScript)
+        self.obj.scripts.add(TestingListIntervalScript)
         self.str = str(self.obj.scripts)
         self.assertTrue("None/1" in self.str)
         self.assertTrue("1 repeats" in self.str)
