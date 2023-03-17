@@ -732,9 +732,6 @@ myfunc(foo)      # error!
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;win&quot;</span>
 
-<span class="k">def</span> <span class="nf">_try_again</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="kc">None</span>   <span class="c1"># reruns the same node</span>
-
 <span class="n">template_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="s2">## node start</span>
@@ -747,8 +744,8 @@ myfunc(foo)      # error!
 
 <span class="s2">## options</span>
 
-<span class="s2">1. Roll the dice -&gt; gamble()</span>
-<span class="s2">2. Try to talk yourself out of rolling -&gt; ask_again()</span>
+<span class="s2">1: Roll the dice -&gt; gamble()</span>
+<span class="s2">2: Try to talk yourself out of rolling -&gt; start</span>
 
 <span class="s2">## node win</span>
 
@@ -774,7 +771,9 @@ myfunc(foo)      # error!
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">goto_callables</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gamble&quot;</span><span class="p">:</span> <span class="n">_gamble</span><span class="p">,</span> <span class="s2">&quot;ask_again&quot;</span><span class="p">:</span> <span class="n">_ask_again</span><span class="p">}</span>
+<span class="c1"># map the in-template callable-name to real python code</span>
+<span class="n">goto_callables</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gamble&quot;</span><span class="p">:</span> <span class="n">_gamble</span><span class="p">}</span>
+<span class="c1"># this starts the evmenu for the caller</span>
 <span class="n">evmenu</span><span class="o">.</span><span class="n">template2menu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">template_string</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">)</span>
 
 </pre></div>
