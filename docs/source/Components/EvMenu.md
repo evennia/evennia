@@ -645,9 +645,6 @@ def _gamble(caller, raw_string, **kwargs):
     else:
         return "win"
 
-def _try_again(caller, raw_string, **kwargs):
-    return None   # reruns the same node
-
 template_string = """
 
 ## node start
@@ -660,8 +657,8 @@ he says.
 
 ## options
 
-1. Roll the dice -> gamble()
-2. Try to talk yourself out of rolling -> ask_again()
+1: Roll the dice -> gamble()
+2: Try to talk yourself out of rolling -> start
 
 ## node win
 
@@ -687,7 +684,9 @@ says Death.
 
 """
 
-goto_callables = {"gamble": _gamble, "ask_again": _ask_again}
+# map the in-template callable-name to real python code
+goto_callables = {"gamble": _gamble}
+# this starts the evmenu for the caller
 evmenu.template2menu(caller, template_string, goto_callables)
 
 ```
