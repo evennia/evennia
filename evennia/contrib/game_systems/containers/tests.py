@@ -1,13 +1,13 @@
 from evennia import create_object
 from evennia.utils.test_resources import BaseEvenniaTest, BaseEvenniaCommandTest  # noqa
-from .containers import ContainerObject, CmdContainerGet, CmdContainerLook, CmdPut
+from .containers import ContribContainer, CmdContainerGet, CmdContainerLook, CmdPut
 
 
 class TestContainer(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         # create a container to test with
-        self.container = create_object(key="Box", typeclass=ContainerObject, location=self.room1)
+        self.container = create_object(key="Box", typeclass=ContribContainer, location=self.room1)
 
     def test_capacity(self):
         # limit capacity to 1
@@ -22,7 +22,7 @@ class TestContainerCmds(BaseEvenniaCommandTest):
     def setUp(self):
         super().setUp()
         # create a container to test with
-        self.container = create_object(key="Box", typeclass=ContainerObject, location=self.room1)
+        self.container = create_object(key="Box", typeclass=ContribContainer, location=self.room1)
 
     def test_look_in(self):
         # make sure the object is in the container so we can look at it
