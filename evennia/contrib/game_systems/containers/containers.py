@@ -22,10 +22,10 @@ The ContainerCmdSet includes:
  - a modified `get` command to get objects from your location or inside objects
  - a new `put` command to put objects from your inventory into other objects
 
-Create objects with the `ContainerObject` typeclass to easily create containers,
+Create objects with the `ContribContainer` typeclass to easily create containers,
 or implement the same locks/hooks in your own typeclasses.
 
-`ContainerObject` implements the following new methods:
+`ContribContainer` implements the following new methods:
 
     at_pre_get_from(getter, target, **kwargs) - called with the pre-get hooks
     at_pre_put_in(putter, target, **kwargs)   - called with the pre-put hooks
@@ -40,7 +40,7 @@ from evennia.utils import class_from_module
 _BASE_OBJECT_TYPECLASS = class_from_module(settings.BASE_OBJECT_TYPECLASS, DefaultObject)
 
 
-class ContainerObject(_BASE_OBJECT_TYPECLASS):
+class ContribContainer(_BASE_OBJECT_TYPECLASS):
     """
     A type of Object which can be used as a container.
 
@@ -51,10 +51,15 @@ class ContainerObject(_BASE_OBJECT_TYPECLASS):
     capacity = AttributeProperty(default=20)
 
     def at_object_creation(self):
+        """
+        Extends the base object `at_object_creation` method by setting the "get_from" lock to "true",
+        allowing other objects to be put inside and removed from this object.
+
+        By default, a lock type not being explicitly set will fail access checks, so objects without
+        the new "get_from" access lock will fail the access checks and continue behaving as
+        non-container objects.
+        """
         super().at_object_creation()
-        # adds a lock permission to allow items to be put inside or taken out
-        # by default, a lock type not being explicitly set will fail access checks, so normal
-        # objects without the get_from type set will fail get_from access checks
         self.locks.add("get_from:true()")
 
     def at_pre_get_from(self, getter, target, **kwargs):
@@ -65,6 +70,9 @@ class ContainerObject(_BASE_OBJECT_TYPECLASS):
         Args:
             getter (Object): The actor attempting to take something from this object.
             target (Object): The thing this object contains that is being removed.
+
+        Returns:
+            boolean: Whether the object `target` should be gotten or not.
         """
         return True
 
@@ -76,7 +84,10 @@ class ContainerObject(_BASE_OBJECT_TYPECLASS):
             putter (Object): The actor attempting to put something in this object.
             target (Object): The thing being put into this object.
 
-        NOTE:
+        Returns:
+            boolean: Whether the object `target` should be put down or not.
+
+        Note:
             To add more complex capacity checks, modify this method on your child typeclass.
         """
         # check if we're already at capacity

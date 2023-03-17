@@ -1,1 +1,1 @@
-from .containers import ContainerCmdSet, ContainerObject
+from .containers import ContainerCmdSet, ContribContainer  # noqa
