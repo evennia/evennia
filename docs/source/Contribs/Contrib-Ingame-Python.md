@@ -39,7 +39,7 @@ using ingame-python events.
   defines the context in which we would like to call some arbitrary code.  For
 instance, one event is defined on exits and will fire every time a character
 traverses through this exit.  Events are described on a [typeclass](../Components/Typeclasses.md)
-([exits](../Components/Objects.md#exits) in our example).  All objects inheriting from this
+([exits](../Components/Exits.md) in our example).  All objects inheriting from this
 typeclass will have access to this event.
 - **Callbacks** can be set on individual objects, on events defined in code.
   These **callbacks** can contain arbitrary code and describe a specific
