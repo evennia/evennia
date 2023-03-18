@@ -4,6 +4,7 @@
 
 - Feature: Add support for saving `deque` with `maxlen` to Attributes (before
   `maxlen` was ignored).
+- Fix: More unit tests for scripts (Storsorken)
 
 ## Evennia 1.2.1
 
