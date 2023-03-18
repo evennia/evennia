@@ -511,7 +511,8 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
         is_ooc()
 
     This is normally used to lock a Command, so it can be used
-    only when out of character.
+    only when out of character. When not logged in at all, this
+    function will still return True.
     """
     obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
     account = obj.account if hasattr(obj, "account") else obj
@@ -520,9 +521,14 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     try:
         session = accessed_obj.session
     except AttributeError:
-        session = account.sessions.get()[0]  # note-this doesn't work well
+        # note-this doesn't work well
         # for high multisession mode. We may need
         # to change to sessiondb to resolve this
+        sessions = session = account.sessions.get()
+        session = sessions[0] if sessions else None
+    if not session:
+        # this suggests we are not even logged in; treat as ooc.
+        return True
     try:
         return not account.get_puppet(session)
     except TypeError:
