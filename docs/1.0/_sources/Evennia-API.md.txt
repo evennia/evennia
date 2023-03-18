@@ -50,9 +50,9 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 - [evennia.DefaultAccount](evennia.accounts.accounts.DefaultAccount) - player account class ([docs](Components/Accounts.md))
 - [evennia.DefaultGuest](evennia.accounts.accounts.DefaultGuest) - base guest account class
 - [evennia.DefaultObject](evennia.objects.objects.DefaultObject) - base class for all objects ([docs](Components/Objects.md))
-- [evennia.DefaultCharacter](evennia.objects.objects.DefaultCharacter) - base class for in-game characters ([docs](Components/Objects.md#characters))
-- [evennia.DefaultRoom](evennia.objects.objects.DefaultRoom) - base class for rooms ([docs](Components/Objects.md#rooms))
-- [evennia.DefaultExit](evennia.objects.objects.DefaultExit) - base class for exits ([docs](Components/Objects.md#exits))
+- [evennia.DefaultCharacter](evennia.objects.objects.DefaultCharacter) - base class for in-game characters ([docs](Components/Characters.md))
+- [evennia.DefaultRoom](evennia.objects.objects.DefaultRoom) - base class for rooms ([docs](Components/Rooms.md))
+- [evennia.DefaultExit](evennia.objects.objects.DefaultExit) - base class for exits ([docs](Components/Exits.md))
 - [evennia.DefaultScript](evennia.scripts.scripts.DefaultScript) - base class for OOC-objects ([docs](Components/Scripts.md))
 - [evennia.DefaultChannel](evennia.comms.comms.DefaultChannel) - base class for in-game channels ([docs](Components/Channels.md))
 

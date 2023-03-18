@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Characters &#8212; Evennia 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Rooms" href="Rooms.html" />
+    <link rel="prev" title="Objects" href="Objects.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Rooms.html" title="Rooms"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Objects.html" title="Objects"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Characters</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Objects.html"
+                        title="previous chapter">Objects</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Rooms.html"
+                        title="next chapter">Rooms</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/Characters.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Characters.html">1.0 (main branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="characters">
+<h1>Characters<a class="headerlink" href="#characters" title="Permalink to this headline">¶</a></h1>
+<p>**Inheritance Tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────┐
+│DefaultObject│
+└─────▲───────┘
+      │
+┌─────┴──────────┐
+│DefaultCharacter│
+└─────▲──────────┘
+      │           ┌────────────┐
+      │ ┌─────────►ObjectParent│
+      │ │         └────────────┘
+  ┌───┴─┴───┐
+  │Character│
+  └─────────┘
+</pre></div>
+</div>
+<p><em>Characters</em> is an in-game <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> commonly used to represent the player’s in-game avatar. The empty <code class="docutils literal notranslate"><span class="pre">Character</span></code> class is found in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. It inherits from <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><span class="xref myst py py-class">DefaultCharacter</span></a> and the (by default empty) <code class="docutils literal notranslate"><span class="pre">ObjectParent</span></code> class (used if wanting to add share properties between all in-game Objects).</p>
+<p>When a new <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> logs in to Evennia for the first time, a new <code class="docutils literal notranslate"><span class="pre">Character</span></code> object is created and the <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> will be set to <em>puppet</em> it. By default this first Character will get the same name as the Account (but Evennia supports <a class="reference internal" href="../Concepts/Connection-Styles.html"><span class="doc std std-doc">alternative connection-styles</span></a> if so desired).</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Character</span></code> object will usually have a <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Default Commandset</span></a> set on itself at creation, or the account will not be able to issue any in-game commands!</p>
+<p>If you want to change the default character created by the default commands, you can change it in settings:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BASE_CHARACTER_TYPECLASS = &quot;typeclasses.characters.Character&quot;
+</pre></div>
+</div>
+<p>This deafult points at the empty class in  <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> , ready for you to modify as you please.</p>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Rooms.html" title="Rooms"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Objects.html" title="Objects"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Characters</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

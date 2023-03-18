@@ -116,7 +116,7 @@
 </pre></div>
 </div>
 <p>An <em>Account</em> represents a unique game account - one player playing the game. Whereas a player can potentially connect to the game from several Clients/Sessions, they will normally have only one Account.</p>
-<p>The Account object has no in-game representation. In order to actually get on the game the Account must <em>puppet</em> an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> (normally a <a class="reference internal" href="Objects.html#characters"><span class="std std-doc">Character</span></a>).</p>
+<p>The Account object has no in-game representation. In order to actually get on the game the Account must <em>puppet</em> an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> (normally a <span class="xref myst">Character</span>).</p>
 <p>Exactly how many Sessions can interact with an Account and its Puppets at once is determined by
 Evennia’s <span class="xref myst">MULTISESSION_MODE</span></p>
 <p>Apart from storing login information and other account-specific data, the Account object is what is chatting on Evennia’s default <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>.  It is also a good place to store <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Permissions</span></a> to be consistent between different in-game characters. It can also hold player-level configuration options.</p>
