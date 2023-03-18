@@ -13,6 +13,9 @@ Sessions.md
 Typeclasses.md
 Accounts.md
 Objects.md
+Characters.md
+Rooms.md
+Exits.md
 Scripts.md
 Channels.md
 Msg.md
