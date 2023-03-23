@@ -3,7 +3,7 @@
 Contribution by titeuf87, 2017
 
 This contrib provides a wilderness map without actually creating a large number
-of rooms - as you move, you instead end up back in the same room but its description 
+of rooms - as you move, you instead end up back in the same room but its description
 changes. This means you can make huge areas with little database use as
 long as the rooms are relatively similar (e.g. only the names/descs changing).
 
@@ -19,11 +19,11 @@ with their own name. If no name is provided, then a default one is used. Interna
 the wilderness is stored as a Script with the name you specify. If you don't
 specify the name, a script named "default" will be created and used.
 
-    @py from evennia.contrib.grid import wilderness; wilderness.create_wilderness()
+    py from evennia.contrib.grid import wilderness; wilderness.create_wilderness()
 
 Once created, it is possible to move into that wilderness map:
 
-    @py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me)
+    py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me)
 
 All coordinates used by the wilderness map are in the format of `(x, y)`
 tuples. x goes from left to right and y goes from bottom to top. So `(0, 0)`
@@ -102,14 +102,21 @@ class PyramidMapProvider(wilderness.WildernessMapProvider):
         desc = "This is a room in the pyramid."
         if y == 3 :
             desc = "You can see far and wide from the top of the pyramid."
-        room.ndb.desc = desc
+        room.ndb.active_desc = desc
 ```
+
+Note that the currently active description is stored as `.ndb.active_desc`. When
+looking at the room, this is what will be pulled and shown.
+
+> Exits on a room are always present, but locks hide those not used for a
+> location. So make sure to `quell` if you are a superuser (since the superuser ignores
+> locks, those exits will otherwise not be hidden)
 
 Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
 create a new wilderness (with the name "default") but using our new map provider:
 
     py from world import pyramid as p; p.wilderness.create_wilderness(mapprovider=p.PyramidMapProvider())
-    py from evennia.contrib import wilderness; wilderness.enter_wilderness(me, coordinates=(4, 1))
+    py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me, coordinates=(4, 1))
 
 ## Implementation details
 
