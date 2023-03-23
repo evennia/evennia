@@ -170,8 +170,15 @@
 <span class="sd">        desc = &quot;This is a room in the pyramid.&quot;</span>
 <span class="sd">        if y == 3 :</span>
 <span class="sd">            desc = &quot;You can see far and wide from the top of the pyramid.&quot;</span>
-<span class="sd">        room.ndb.desc = desc</span>
+<span class="sd">        room.ndb.active_desc = desc</span>
 <span class="sd">```</span>
+
+<span class="sd">Note that the currently active description is stored as `.ndb.active_desc`. When</span>
+<span class="sd">looking at the room, this is what will be pulled and shown.</span>
+
+<span class="sd">&gt; Exits on a room are always present, but locks hide those not used for a</span>
+<span class="sd">&gt; location. So make sure to `quell` if you are a superuser (since the superuser ignores</span>
+<span class="sd">&gt; locks, those exits will otherwise not be hidden)</span>
 
 <span class="sd">Now we can use our new pyramid-shaped wilderness map. From inside Evennia we</span>
 <span class="sd">create a new wilderness (with the name &quot;default&quot;) but using our new map provider:</span>
@@ -194,13 +201,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DefaultExit</span><span class="p">,</span>
-    <span class="n">DefaultRoom</span><span class="p">,</span>
-    <span class="n">DefaultScript</span><span class="p">,</span>
-    <span class="n">create_object</span><span class="p">,</span>
-    <span class="n">create_script</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultScript</span><span class="p">,</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">create_script</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
 

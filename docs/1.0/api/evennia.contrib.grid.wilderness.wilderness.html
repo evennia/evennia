@@ -199,9 +199,14 @@ provided as a string: a “.” symbol is a location we can walk on.</p>
         <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a room in the pyramid.&quot;</span>
         <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">:</span>
             <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;You can see far and wide from the top of the pyramid.&quot;</span>
-        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_desc</span> <span class="o">=</span> <span class="n">desc</span>
 </pre></div>
 </div>
+<p>Note that the currently active description is stored as <strong>.ndb.active_desc</strong>. When
+looking at the room, this is what will be pulled and shown.</p>
+<p>&gt; Exits on a room are always present, but locks hide those not used for a
+&gt; location. So make sure to <strong>quell</strong> if you are a superuser (since the superuser ignores
+&gt; locks, those exits will otherwise not be hidden)</p>
 <p>Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
 create a new wilderness (with the name “default”) but using our new map provider:</p>
 <blockquote>

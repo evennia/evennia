@@ -126,11 +126,11 @@ is used to call functions/classes in this contrib directly.</p>
 with their own name. If no name is provided, then a default one is used. Internally,
 the wilderness is stored as a Script with the name you specify. If you don’t
 specify the name, a script named “default” will be created and used.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py from evennia.contrib.grid import wilderness; wilderness.create_wilderness()
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>py from evennia.contrib.grid import wilderness; wilderness.create_wilderness()
 </pre></div>
 </div>
 <p>Once created, it is possible to move into that wilderness map:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me)
 </pre></div>
 </div>
 <p>All coordinates used by the wilderness map are in the format of <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code>
@@ -204,13 +204,20 @@ provided as a string: a “.” symbol is a location we can walk on.</p>
         <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a room in the pyramid.&quot;</span>
         <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">:</span>
             <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;You can see far and wide from the top of the pyramid.&quot;</span>
-        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_desc</span> <span class="o">=</span> <span class="n">desc</span>
 </pre></div>
 </div>
+<p>Note that the currently active description is stored as <code class="docutils literal notranslate"><span class="pre">.ndb.active_desc</span></code>. When
+looking at the room, this is what will be pulled and shown.</p>
+<blockquote>
+<div><p>Exits on a room are always present, but locks hide those not used for a
+location. So make sure to <code class="docutils literal notranslate"><span class="pre">quell</span></code> if you are a superuser (since the superuser ignores
+locks, those exits will otherwise not be hidden)</p>
+</div></blockquote>
 <p>Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
 create a new wilderness (with the name “default”) but using our new map provider:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>py from world import pyramid as p; p.wilderness.create_wilderness(mapprovider=p.PyramidMapProvider())
-py from evennia.contrib import wilderness; wilderness.enter_wilderness(me, coordinates=(4, 1))
+py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me, coordinates=(4, 1))
 </pre></div>
 </div>
 </section>
