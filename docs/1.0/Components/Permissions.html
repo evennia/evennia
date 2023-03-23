@@ -160,7 +160,8 @@ typeclassed entities as the property <code class="docutils literal notranslate">
 <p>Selected permission strings can be organized in a <em>permission hierarchy</em> by editing the tuple
 <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.  Evennia’s default permission hierarchy is as follows
 (in increasing order of power):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> Player           # can chat and send tells (default level) (lowest)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> Guest            # temporary account, only used if GUEST_ENABLED=True (lowest)
+ Player           # can chat and send tells (default level)
  Helper           # can edit help files
  Builder          # can edit the world
  Admin            # can administrate accounts
@@ -168,10 +169,8 @@ typeclassed entities as the property <code class="docutils literal notranslate">
 </pre></div>
 </div>
 <p>(Besides being case-insensitive, hierarchical permissions also understand the plural form, so you could use <code class="docutils literal notranslate"><span class="pre">Developers</span></code> and <code class="docutils literal notranslate"><span class="pre">Developer</span></code> interchangeably).</p>
-<blockquote>
-<div><p>There is also a <code class="docutils literal notranslate"><span class="pre">Guest</span></code> level below <code class="docutils literal notranslate"><span class="pre">Player</span></code> that is only active if <code class="docutils literal notranslate"><span class="pre">settings.GUEST_ENABLED</span></code> is set. The Guest is is never part of <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.</p>
-</div></blockquote>
-<p>When checking a hierarchical permission (using one of the methods to follow), you will pass checks for your level and all <em>below</em> you. That is, even if the check explicitly checks for “Builder” level access, you will actually pass if you have one of “Builder”, “Admin” or “Developer”. By contrast, if you check for a non-hierarchical permission, like “Blacksmith” you <em>must</em> have exactly that permission to pass.</p>
+<p>When checking a hierarchical permission (using one of the methods to follow), you will pass checks for your level <em>and  below</em>. That is, if you have the “Admin” hierarchical permission, you will also pass checks asking for “Builder”, “Helper” and so on.</p>
+<p>By contrast, if you check for a non-hierarchical permission, like “Blacksmith” you must have <em>exactly</em> that permission to pass.</p>
 </section>
 <section id="checking-permissions">
 <h3>Checking permissions<a class="headerlink" href="#checking-permissions" title="Permalink to this headline">¶</a></h3>
