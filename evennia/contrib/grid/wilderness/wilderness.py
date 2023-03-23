@@ -92,8 +92,15 @@ class PyramidMapProvider(wilderness.WildernessMapProvider):
         desc = "This is a room in the pyramid."
         if y == 3 :
             desc = "You can see far and wide from the top of the pyramid."
-        room.ndb.desc = desc
+        room.ndb.active_desc = desc
 ```
+
+Note that the currently active description is stored as `.ndb.active_desc`. When
+looking at the room, this is what will be pulled and shown.
+
+> Exits on a room are always present, but locks hide those not used for a
+> location. So make sure to `quell` if you are a superuser (since the superuser ignores
+> locks, those exits will otherwise not be hidden)
 
 Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
 create a new wilderness (with the name "default") but using our new map provider:
@@ -116,13 +123,7 @@ create a new wilderness (with the name "default") but using our new map provider
 
 """
 
-from evennia import (
-    DefaultExit,
-    DefaultRoom,
-    DefaultScript,
-    create_object,
-    create_script,
-)
+from evennia import DefaultExit, DefaultRoom, DefaultScript, create_object, create_script
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils import inherits_from
 
