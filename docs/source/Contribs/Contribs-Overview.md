@@ -494,7 +494,7 @@ and abort an ongoing traversal, respectively.
 _Contribution by titeuf87, 2017_
 
 This contrib provides a wilderness map without actually creating a large number
-of rooms - as you move, you instead end up back in the same room but its description 
+of rooms - as you move, you instead end up back in the same room but its description
 changes. This means you can make huge areas with little database use as
 long as the rooms are relatively similar (e.g. only the names/descs changing).
 

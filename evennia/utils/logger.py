@@ -38,7 +38,7 @@ def _log(msg, logfunc, prefix="", **kwargs):
     try:
         msg = str(msg)
     except Exception as err:
-        msg = str(e)
+        msg = str(err)
     if kwargs:
         logfunc(msg, **kwargs)
     else:

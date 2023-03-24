@@ -55,7 +55,8 @@ Selected permission strings can be organized in a *permission hierarchy* by edit
 `settings.PERMISSION_HIERARCHY`.  Evennia's default permission hierarchy is as follows
 (in increasing order of power):
 
-     Player           # can chat and send tells (default level) (lowest)
+     Guest            # temporary account, only used if GUEST_ENABLED=True (lowest)
+     Player           # can chat and send tells (default level)
      Helper           # can edit help files
      Builder          # can edit the world
      Admin            # can administrate accounts
@@ -63,9 +64,9 @@ Selected permission strings can be organized in a *permission hierarchy* by edit
 
 (Besides being case-insensitive, hierarchical permissions also understand the plural form, so you could use `Developers` and `Developer` interchangeably).
 
-> There is also a `Guest` level below `Player` that is only active if `settings.GUEST_ENABLED` is set. The Guest is is never part of `settings.PERMISSION_HIERARCHY`.
+When checking a hierarchical permission (using one of the methods to follow), you will pass checks for your level *and  below*. That is, if you have the "Admin" hierarchical permission, you will also pass checks asking for "Builder", "Helper" and so on.
 
-When checking a hierarchical permission (using one of the methods to follow), you will pass checks for your level and all *below* you. That is, even if the check explicitly checks for "Builder" level access, you will actually pass if you have one of "Builder", "Admin" or "Developer". By contrast, if you check for a non-hierarchical permission, like "Blacksmith" you *must* have exactly that permission to pass.
+By contrast, if you check for a non-hierarchical permission, like "Blacksmith" you must have *exactly* that permission to pass.
 
 ### Checking permissions
 
