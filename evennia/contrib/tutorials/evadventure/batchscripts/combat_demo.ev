@@ -1,0 +1,48 @@
+# Evadventure combat demo
+#
+# Set up a combat area for testing combat. Requires developer or superuser perm.
+#
+
+# start from limbo
+
+tel #2
+
+# turn ourselves into a evadventure-character
+
+type self = evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacter
+
+# assign us the twitch combat cmdset (requires superuser/developer perms)
+
+py self.cmdset.add("evennia.contrib.tutorials.evadventure.combat.TwitchAttackCmdSet")
+
+# Create and give us a weapons (this will use defaults on the class)
+
+create sword:evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon
+
+# dig a combat arena
+
+dig arena:evennia.contrib.tutorials.evadventure.rooms.EvAdventureRoom = arena,back
+
+# go to arena
+
+arena
+
+# allow combat in this room
+
+set here/allow_combat = True
+
+# create a dummy enemy to hit on
+
+create/drop dummy puppet;dummy:evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob
+
+# describe the dummy
+
+desc dummy = This is is an ugly training dummy made out of hay and wood.
+
+# make the dummy crazy tough
+
+dummy.hp_max = 1000
+
+#
+
+dummy.hp = 1000
