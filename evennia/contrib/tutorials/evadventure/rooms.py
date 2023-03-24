@@ -11,7 +11,7 @@ just not be able to fight in them).
 
 from copy import deepcopy
 
-from evennia import DefaultCharacter, DefaultRoom
+from evennia import AttributeProperty, DefaultCharacter, DefaultRoom
 from evennia.utils.utils import inherits_from
 
 CHAR_SYMBOL = "|w@|n"
@@ -44,9 +44,9 @@ class EvAdventureRoom(DefaultRoom):
 
     """
 
-    allow_combat = False
-    allow_pvp = False
-    allow_death = False
+    allow_combat = AttributeProperty(False, autocreate=False)
+    allow_pvp = AttributeProperty(False, autocreate=False)
+    allow_death = AttributeProperty(False, autocreate=False)
 
     def format_appearance(self, appearance, looker, **kwargs):
         """Don't left-strip the appearance string"""
@@ -90,12 +90,11 @@ class EvAdventurePvPRoom(EvAdventureRoom):
 
     """
 
-    allow_combat = True
-    allow_pvp = True
+    allow_combat = AttributeProperty(True, autocreate=False)
+    allow_pvp = AttributeProperty(True, autocreate=False)
 
     def get_display_footer(self, looker, **kwargs):
         """
-        Show if the room is 'cleared' or not as part of its description.
-
+        Customize footer of description.
         """
         return "|yNon-lethal PvP combat is allowed here!|n"

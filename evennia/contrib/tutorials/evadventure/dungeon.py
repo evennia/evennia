@@ -88,8 +88,8 @@ class EvAdventureDungeonRoom(EvAdventureRoom):
 
     """
 
-    allow_combat = True
-    allow_death = True
+    allow_combat = AttributeProperty(True, autocreate=False)
+    allow_death = AttributeProperty(True, autocreate=False)
 
     # dungeon generation attributes; set when room is created
     back_exit = AttributeProperty(None, autocreate=False)
