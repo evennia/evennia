@@ -323,7 +323,7 @@ class TBBasicCharacter(DefaultCharacter):
         can be changed at creation and factor into combat calculations.
         """
 
-    def at_pre_move(self, destination):
+    def at_pre_move(self, destination, move_type='move', **kwargs):
         """
         Called just before starting to move this object to
         destination.

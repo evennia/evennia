@@ -4,6 +4,9 @@
 
 - Feature: Add support for saving `deque` with `maxlen` to Attributes (before
   `maxlen` was ignored).
+- Fix: More unit tests for scripts (Storsorken)
+- Docs: Made separate doc pages for Exits, Characters and Rooms. Expanded on how
+  to change the description of an in-game object with templating.
 
 ## Evennia 1.2.1
 
