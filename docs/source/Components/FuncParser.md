@@ -8,7 +8,7 @@ To test it, let's tell Evennia to apply the Funcparser on every outgoing message
 
 After a reload, you can try this in-game 
 
-```{shell}
+```shell
 > say I got $randint(1,5) gold!
 You say "I got 3 gold!"
 ```

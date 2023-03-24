@@ -47,16 +47,13 @@ face you stand where the moor meets the sea along a high, rocky coast ...*
 ### Gameplay hints
 
 - Use the command `tutorial` to get code insight behind the scenes of every room.
-- Look at everything. While a demo, the Tutorial World is not necessarily trivial to solve - it depends 
-on your experience with text-based adventure games. Just remember that everything can be solved or bypassed.
-- Some objects are interactive in more than one way. Use the normal `help` command to get a feel for
-which commands are available at any given time.
+- Look at everything. While a demo, the Tutorial World is not necessarily trivial to solve - it depends  on your experience with text-based adventure games. Just remember that everything can be solved or bypassed.
+- Some objects are interactive in more than one way. Use the normal `help` command to get a feel for which commands are available at any given time.
 - In order to fight, you need to first find some type of weapon.
     - *slash* is a normal attack
     - *stab* launches an attack that makes more damage but has a lower chance to hit.
     - *defend* will lower the chance to taking damage on your enemy's next attack.
-- Some things _cannot_ be hurt by mundane weapons. In that case it's OK to run away. Expect
-  to be chased though.
+- Some things _cannot_ be hurt by mundane weapons. In that case it's OK to run away. Expect to be chased ...
 - Being defeated is a part of the experience. You can't actually die, but getting knocked out
   means being left in the dark ...
 
@@ -84,41 +81,26 @@ Some features exemplified by the tutorial world:
 
 ```{sidebar} Extra Credit
 
-If you have previous programming experience (or after you have gone
-through this Starter tutorial) it may be instructive to dig a little deeper into the Tutorial-world
-code to learn how it achieves what it does. The code is heavily documented.
-You can find all the code in [evennia/contrib/tutorials/tutorial_world](../../../api/evennia.contrib.tutorials.tutorial_world.md).
+If you are already familiar with Python and want an early taste, it can be constructive to dig a little deeper into the Tutorial-world to learn how it achieves what it does. The code is heavily documented. You can find all the code in [evennia/contrib/tutorials/tutorial_world](../../../api/evennia.contrib.tutorials.tutorial_world.md).
 The build-script is [here](github:evennia/contrib/tutorials/tutorial_world/build.ev).
 
 
-When reading the  code, remember that the Tutorial World was designed to install easily and to not permanently modify 
-the rest of the game. It therefore makes sure to only use temporary solutions and to clean up after itself. This is 
-not something you will often need to worry about when making your own game.
+When reading the tutorial-world code, note that the Tutorial World was designed to install easily and to not permanently modify  the rest of the game. It therefore makes sure to only use temporary solutions and to clean up after itself. This is not something you will often need to worry about when making your own game.
 ```
 
 Quite a lot of stuff crammed in such a small area!
 
 ## Uninstall the tutorial world
 
-Once are done playing with the tutorial world, let's uninstall it.
-Uninstalling the tutorial world basically means deleting all the rooms and objects it consists of.
-Make sure you are back in Limbo, then
+Once you are done playing with the tutorial world, let's uninstall it. Uninstalling the tutorial world basically means deleting all the rooms and objects it consists of. Make sure you are back in Limbo, then
 
      find tut#01
      find tut#16
 
-This should locate the first and last rooms created by `build.ev` - *Intro* and *Outro*. If you
-installed normally, everything created between these two numbers should be part of the tutorial.
-Note their #dbref numbers, for example 5 and 80. Next we just delete all objects in that range:
+This should locate the first and last rooms created by `build.ev` - *Intro* and *Outro*. If you installed normally, everything created between these two numbers should be part of the tutorial. Note their #dbref numbers, for example 5 and 80. Next we just delete all objects in that range:
 
      del 5-80
 
-You will see some errors since some objects are auto-deleted and so cannot be found when the delete
-mechanism gets to them. That's fine.  You should have removed the tutorial completely once the
-command finishes.
+You will see some errors since some objects are auto-deleted and so cannot be found when the delete mechanism gets to them. That's fine.  You should have removed the tutorial completely once the command finishes.
 
-Even if the game-style of the Tutorial-world was not similar to the one you are interested in, it
-should  hopefully have given you a little taste of some of the possibilities of Evennia. Now we'll
-move on with how to access this power through code.
-
-
+Even if the game-style of the Tutorial-world was not similar to the one you are interested in, it should  hopefully have given you a little taste of some of the possibilities of Evennia. Now we'll move on with how to access this power through code.
