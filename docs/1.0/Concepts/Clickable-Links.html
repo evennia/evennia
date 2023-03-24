@@ -60,6 +60,15 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Clickable links</a><ul>
+<li><a class="reference internal" href="#mxp-can-be-exploited">MXP can be exploited</a></li>
+<li><a class="reference internal" href="#other-settings">Other settings</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="Colors.html"
                         title="previous chapter">Colors</a></p>
@@ -99,23 +108,42 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="clickable-links">
 <h1>Clickable links<a class="headerlink" href="#clickable-links" title="Permalink to this headline">¶</a></h1>
-<p>Evennia supports clickable links for clients that supports it. This marks certain text so it can be
-clicked by a mouse and either trigger a given Evennia command, or open a URL in an external web
-browser. To support clickable links, Evennia requires the webclient or an third-party telnet client
-with <a class="reference external" href="http://www.zuggsoft.com/zmud/mxp.htm">MXP</a> support (<em>Note: Evennia only supports clickable links, no other MXP features</em>).</p>
+<p>Evennia supports clickable links for clients that supports it. This marks certain text so it can be clicked by a mouse and either trigger a given Evennia command, or open a URL in an external web browser. To support clickable links, Evennia requires the webclient or an third-party telnet client with <a class="reference external" href="http://www.zuggsoft.com/zmud/mxp.htm">MXP</a> support (<em>Note: Evennia only supports clickable links, no other MXP features</em>).</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">|lc</span></code> to start the link, by defining the command to execute.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">|lu</span></code> to start the link, by defining the URL to open.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">|lt</span></code> to continue with the text to show to the user (the link text).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">|le</span></code> to end the link text and the link definition.</p></li>
 </ul>
-<p>All elements must appear in exactly this order to make a valid link. For example,</p>
+<p>All elements must appear in exactly this order to make a valid link. For example, if you have an object with a description</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;If you go |lcnorth|ltto the north|le you will find a cottage.&quot;</span>
 </pre></div>
 </div>
-<p>This will display as “If you go <strong>to the north</strong> you will find a cottage.” where clicking the link
-will execute the command <code class="docutils literal notranslate"><span class="pre">north</span></code>. If the client does not support clickable links, only the link text
-will be shown.</p>
+<p>This will display as “If you go <strong>to the north</strong> you will find a cottage.” where clicking the link will execute the command <code class="docutils literal notranslate"><span class="pre">north</span></code>. If the client does not support clickable links, only the link text will be shown.</p>
+<section id="mxp-can-be-exploited">
+<h2>MXP can be exploited<a class="headerlink" href="#mxp-can-be-exploited" title="Permalink to this headline">¶</a></h2>
+<p>By default MXP links are only available <em>from strings provided in code</em> (or via a <a class="reference internal" href="../Components/Batch-Processors.html"><span class="doc std std-doc">batch script</span></a>). You <em>cannot</em> create MXP links from inside the game - the result will not come out as clickable.</p>
+<p>This is a security measure. Consider if a user were able to enter clickable links in their description, like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>|lc give 1000 gold to Bandit |ltClick here to read my backstory! |le
+</pre></div>
+</div>
+<p>This would be executed by the poor player clicking the link, resulting in them paying 1000 gold to the bandit.</p>
+<p>If you think this risk is acceptable, you can remove this protection by adding the following to your settings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MXP_OUTGOING_ONLY</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+<section id="other-settings">
+<h2>Other settings<a class="headerlink" href="#other-settings" title="Permalink to this headline">¶</a></h2>
+<p>Enable / disable MXP overall (default is shown)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MXP_ENABLED</span> <span class="o">=</span> <span class="kc">True</span> 
+</pre></div>
+</div>
+<p>Make help entries have clickable topics in supported clients</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HELP_CLICKABLE_TOPICS</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
