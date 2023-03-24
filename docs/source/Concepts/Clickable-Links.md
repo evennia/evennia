@@ -31,7 +31,7 @@ This will display as "If you go __to the north__ you will find a cottage." where
 Example: 
 
 ```
-"Omnious |luhttps://mycoolsounds.com/chanting"|ltchanting sounds|le are coming from beyond the door.
+"Omnious |luhttps://mycoolsounds.com/chanting|ltchanting sounds|le are coming from beyond the door."
 ```
 
 This will show as "Omnious **chanting sounds** are coming from beyond the door", where clicking the link will open the url in a browser if the client supports doing so.
