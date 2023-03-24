@@ -125,6 +125,10 @@
 </pre></div>
 </div>
 <p>After a reload, you can try this in-game</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>say<span class="w"> </span>I<span class="w"> </span>got<span class="w"> </span><span class="nv">$randint</span><span class="o">(</span><span class="m">1</span>,5<span class="o">)</span><span class="w"> </span>gold!
+You<span class="w"> </span>say<span class="w"> </span><span class="s2">&quot;I got 3 gold!&quot;</span>
+</pre></div>
+</div>
 <p>To escape the inlinefunc (e.g. to explain to someone how it works, use <code class="docutils literal notranslate"><span class="pre">$$</span></code>)</p>
 <p>While <code class="docutils literal notranslate"><span class="pre">randint</span></code> may look and work just like <code class="docutils literal notranslate"><span class="pre">random.randint</span></code> from the standard Python library, it is <em>not</em>. Instead it’s a <code class="docutils literal notranslate"><span class="pre">inlinefunc</span></code> named <code class="docutils literal notranslate"><span class="pre">randint</span></code> made available to Evennia (which in turn uses the standard library function). For security reasons, only functions explicitly assigned to be used as inlinefuncs are viable.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">FuncParser</span></code>  tool is initialized with the inlinefuncs it’s supposed to recognize. Below is an example of a parser only only understanding a single <code class="docutils literal notranslate"><span class="pre">$pow</span></code> inlinefunc:</p>

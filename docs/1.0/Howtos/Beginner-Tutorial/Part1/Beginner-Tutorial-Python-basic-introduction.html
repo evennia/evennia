@@ -126,15 +126,10 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="intro-to-using-python-with-evennia">
 <h1><span class="section-number">3. </span>Intro to using Python with Evennia<a class="headerlink" href="#intro-to-using-python-with-evennia" title="Permalink to this headline">¶</a></h1>
-<p>Time to dip our toe into some coding! Evennia is written and extended in <a class="reference external" href="https://python.org">Python</a>,
-which is a mature and professional programming language that is very fast to work with.</p>
-<p>That said, even though Python is widely considered easy to learn, we can only cover the most immediately
-important aspects of Python in this series of starting tutorials. Hopefully we can get you started
-but then you’ll need to continue learning from there. See our <a class="reference internal" href="../../../Links.html"><span class="doc std std-doc">link section</span></a> for finding
-more reference material and dedicated Python tutorials.</p>
+<p>Time to dip our toe into some coding! Evennia is written and extended in <a class="reference external" href="https://python.org">Python</a>. Python is a mature and professional programming language that is very fast to work with.</p>
+<p>That said, even though Python is widely considered easy to learn, we can only cover the basics in these lessons. While we will hopefully get you started with the most important bits you need, you may likely need to compliment with some learning on your own. Luckily there’s a vast amount of free online learning resources available for Python. See our <a class="reference internal" href="../../../Links.html"><span class="doc std std-doc">link section</span></a> for some examples.</p>
 <blockquote>
-<div><p>While this will be quite basic if you are an experienced developer, you may want to at least
-stay around for the first few sections where we cover how to run Python from inside Evennia.</p>
+<div><p>While this will be quite basic if you are an experienced developer, you may want to at least stay around for the first few sections where we cover how to run Python from inside Evennia.</p>
 </div></blockquote>
 <p>First, if you were quelling yourself to play the tutorial world, make sure to get your
 superuser powers back:</p>
@@ -157,19 +152,15 @@ expected return from that input.</p>
 Hello World!
 </pre></div>
 </div>
-<p>To understand what is going on: some extra info: The <code class="docutils literal notranslate"><span class="pre">print(...)</span></code> <em>function</em> is the basic, in-built
-way to output text in Python. We are sending “Hello World” as an <em>argument</em> to this function. The quotes <code class="docutils literal notranslate"><span class="pre">&quot;...&quot;</span></code>
-mean that you are inputting a <em>string</em> (i.e. text). You could also have used single-quotes <code class="docutils literal notranslate"><span class="pre">'...'</span></code>,
-Python accepts both. A third variant is triple-quotes (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;...&quot;&quot;&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">'''...'''</span></code>, which work across multiple
-lines and are common for larger text-blocks. The way we use the <code class="docutils literal notranslate"><span class="pre">py</span></code> command right now only supports
-single-line input however.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">print(...)</span></code> <em>function</em> is the basic, in-built way to output text in Python. We are sending “Hello World” as a single <em>argument</em> to this function. If we were to send multiple arguments, they’d be separated by commas.</p>
+<p>The quotes <code class="docutils literal notranslate"><span class="pre">&quot;...&quot;</span></code> mean that you are inputting a <em>string</em> (i.e. text). You could also have used single-quotes <code class="docutils literal notranslate"><span class="pre">'...'</span></code> - Python accepts both.</p>
+<blockquote>
+<div><p>A third way to enter Python strings is to use triple-quotes (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;...&quot;&quot;&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">'''...'''</span></code>. This is used for longer strings stretching across multiple lines. When we insert code directly to <code class="docutils literal notranslate"><span class="pre">py</span></code> like this we can only use one line though.</p>
+</div></blockquote>
 </section>
 <section id="making-some-text-graphics">
 <h2><span class="section-number">3.2. </span>Making some text ‘graphics’<a class="headerlink" href="#making-some-text-graphics" title="Permalink to this headline">¶</a></h2>
-<p>When making a text-game you will, unsurprisingly, be working a lot with text. Even if you have the occational
-button or even graphical element, the normal process is for the user to input commands as
-text and get text back. As we saw above, a piece of text is called a <em>string</em> in Python and is enclosed in
-either single- or double-quotes.</p>
+<p>When making a text-game you will, unsurprisingly, be working a lot with text. Even if you have the occational button or even graphical element, the normal process is for the user to input commands as text and get text back. As we saw above, a piece of text is called a <em>string</em> in Python and is enclosed in either single- or double-quotes.</p>
 <p>Strings can be added together:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a &quot; + &quot;breaking change.&quot;)
 This is a breaking change.
@@ -187,26 +178,21 @@ Aaaaaargh!
 </div>
 <section id="format">
 <h3><span class="section-number">3.2.1. </span>.format()<a class="headerlink" href="#format" title="Permalink to this headline">¶</a></h3>
-<p>While combining different strings is useful, even more powerful is the ability to modify the contents
-of the string in-place. There are several ways to do this in Python and we’ll show two of them here. The first
-is to use the <code class="docutils literal notranslate"><span class="pre">.format</span></code> <em>method</em> of the string:</p>
+<aside class="sidebar">
+<p class="sidebar-title">Functions and Methods</p>
+<ul class="simple">
+<li><p>Function: Something that performs an action when you call it with zero or more <code class="docutils literal notranslate"><span class="pre">arguments</span></code>. A function is stand-alone in a python module, like <code class="docutils literal notranslate"><span class="pre">print()</span></code></p></li>
+<li><p>Method: A function that sits “on” an object. It is accessed via the <code class="docutils literal notranslate"><span class="pre">.</span></code> operator, like <code class="docutils literal notranslate"><span class="pre">obj.msg()</span></code> or, in this case, <code class="docutils literal notranslate"><span class="pre">&lt;string&gt;.format()</span></code>.</p></li>
+</ul>
+</aside>
+<p>While combining different strings is useful, even more powerful is the ability to modify the contents of the string in-place. There are several ways to do this in Python and we’ll show two of them here. The first is to use the <code class="docutils literal notranslate"><span class="pre">.format</span></code> <em>method</em> of the string:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a {} idea!&quot;.format(&quot;good&quot;))
 This is a good idea!
 </pre></div>
 </div>
-<aside class="sidebar">
-<p class="sidebar-title">Functions and Methods</p>
-<ul class="simple">
-<li><p>Function: Something that performs and action when you call it with zero or more <code class="docutils literal notranslate"><span class="pre">arguments</span></code>. A function is stand-alone in a python module, like <code class="docutils literal notranslate"><span class="pre">print()</span></code></p></li>
-<li><p>Method: A function that sits “on” an object, like <code class="docutils literal notranslate"><span class="pre">obj.msg()</span></code>.</p></li>
-</ul>
-</aside>
-<p>A method can be thought of as a resource “on” another object. The method knows on which object it
-sits and can thus affect it in various ways. You access it with the period <code class="docutils literal notranslate"><span class="pre">.</span></code>. In this case, the
-string has a resource <code class="docutils literal notranslate"><span class="pre">format(...)</span></code> that modifies it. More specifically, it replaced the <code class="docutils literal notranslate"><span class="pre">{}</span></code> marker
-inside the string with the value passed to the format. You can do so many times:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a {} idea!&quot;.format(&quot;bad&quot;))
-This is a bad idea!
+<p>A method can be thought of as a resource “on” another object. The method knows on which object it sits and can thus affect it in various ways. You access it with the period <code class="docutils literal notranslate"><span class="pre">.</span></code>. In this case, the string has a resource <code class="docutils literal notranslate"><span class="pre">format(...)</span></code> that modifies it. More specifically, it replaced the <code class="docutils literal notranslate"><span class="pre">{}</span></code> marker inside the string with the value passed to the format. You can do so many times:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a {} idea!&quot;.format(&quot;good&quot;))
+This is a good idea!
 </pre></div>
 </div>
 <p>or</p>
@@ -215,12 +201,9 @@ This is the first and second great idea!
 </pre></div>
 </div>
 <blockquote>
-<div><p>Note the double-parenthesis at the end - the first closes the <code class="docutils literal notranslate"><span class="pre">format(...</span></code> method and the outermost
-closes the <code class="docutils literal notranslate"><span class="pre">print(...</span></code>. Not closing them will give you a scary <code class="docutils literal notranslate"><span class="pre">SyntaxError</span></code>. We will talk a
-little more about errors in the next section, for now just fix until it prints as expected.</p>
+<div><p>Note the double-parenthesis at the end - the first closes the <code class="docutils literal notranslate"><span class="pre">format(...</span></code> method and the outermost closes the <code class="docutils literal notranslate"><span class="pre">print(...</span></code>. Not closing them will give you a scary <code class="docutils literal notranslate"><span class="pre">SyntaxError</span></code>. We will talk a little more about errors in the next section, for now just fix until it prints as expected.</p>
 </div></blockquote>
-<p>Here we passed three comma-separated strings as <em>arguments</em> to the string’s <code class="docutils literal notranslate"><span class="pre">format</span></code> method. These
-replaced the <code class="docutils literal notranslate"><span class="pre">{}</span></code> markers in the same order as they were given.</p>
+<p>Here we passed three comma-separated strings as <em>arguments</em> to the string’s <code class="docutils literal notranslate"><span class="pre">format</span></code> method. These replaced the <code class="docutils literal notranslate"><span class="pre">{}</span></code> markers in the same order as they were given.</p>
 <p>The input does not have to be strings either:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;STR: {}, DEX: {}, INT: {}&quot;.format(12, 14, 8))
 STR: 12, DEX: 14, INT: 8
@@ -235,15 +218,10 @@ This is awesome sauce!
 <p class="admonition-title">Warning</p>
 <p>MUD clients and semi-colon</p>
 <p>Some MUD clients use the semi-colon <code class="docutils literal notranslate"><span class="pre">;</span></code> to split client-inputs
-into separate sends. If so, the above will give an error. Most clients allow you to
-run in ‘verbatim’ mode or to remap to use some other separator than <code class="docutils literal notranslate"><span class="pre">;</span></code>. If you still have
-trouble, use the Evennia web client.</p>
+into separate sends. If so, the above will give an error. Most clients allow you to run in ‘verbatim’ mode or to remap to use some other separator than <code class="docutils literal notranslate"><span class="pre">;</span></code>. If you still have trouble, use the Evennia web client.</p>
 </div>
-<p>What happened here was that we <em>assigned</em> the string <code class="docutils literal notranslate"><span class="pre">&quot;awesome</span> <span class="pre">sauce&quot;</span></code> to a <em>variable</em> we chose
-to name <code class="docutils literal notranslate"><span class="pre">a</span></code>. In the next statement, Python remembered what <code class="docutils literal notranslate"><span class="pre">a</span></code> was and we passed that into <code class="docutils literal notranslate"><span class="pre">format()</span></code>
-to get the output. If you replaced the value of <code class="docutils literal notranslate"><span class="pre">a</span></code> with something else in between, <em>that</em> would be printed instead.</p>
-<p>Here’s the stat-example again, moving the stats to variables (here we just set them, but in a real
-game they may be changed over time, or modified by circumstance):</p>
+<p>What happened here was that we <em>assigned</em> the string <code class="docutils literal notranslate"><span class="pre">&quot;awesome</span> <span class="pre">sauce&quot;</span></code> to a <em>variable</em> we chose to name <code class="docutils literal notranslate"><span class="pre">a</span></code>. In the next statement, Python remembered what <code class="docutils literal notranslate"><span class="pre">a</span></code> was and we passed that into <code class="docutils literal notranslate"><span class="pre">format()</span></code> to get the output. If you replaced the value of <code class="docutils literal notranslate"><span class="pre">a</span></code> with something else in between, <em>that</em> would be printed instead.</p>
+<p>Here’s the stat-example again, moving the stats to variables (here we just set them, but in a real game they may be changed over time, or modified by circumstance):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py stren, dext, intel = 13, 14, 8 ; print(&quot;STR: {}, DEX: {}, INT: {}&quot;.format(stren, dext, intel))
 STR: 13, DEX: 14, INT: 8
 </pre></div>
@@ -258,8 +236,7 @@ STR: 13, DEX: 14, INT: 8
 </section>
 <section id="f-strings">
 <h3><span class="section-number">3.2.2. </span>f-strings<a class="headerlink" href="#f-strings" title="Permalink to this headline">¶</a></h3>
-<p>Using <code class="docutils literal notranslate"><span class="pre">.format()</span></code> is convenient (and there is a <a class="reference external" href="https://www.w3schools.com/python/ref_string_format.asp">lot more</a> you can do with it). But the <em>f-string</em> can be even more convenient. An
-f-string looks like a normal string … except there is an <code class="docutils literal notranslate"><span class="pre">f</span></code> front of it, like this:</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">.format()</span></code> is powerful (and there is a <a class="reference external" href="https://www.w3schools.com/python/ref_string_format.asp">lot more</a> you can do with it). But the <em>f-string</em> can be even more convenient. An f-string looks like a normal string … except there is an <code class="docutils literal notranslate"><span class="pre">f</span></code> front of it, like this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f&quot;this is now an f-string.&quot;
 </pre></div>
 </div>
@@ -269,18 +246,17 @@ This is awesome sauce!
 </pre></div>
 </div>
 <p>We insert that <code class="docutils literal notranslate"><span class="pre">a</span></code> variable directly into the f-string using <code class="docutils literal notranslate"><span class="pre">{a}</span></code>. Fewer parentheses to
-remember and arguable easier to read as well.</p>
+remember and arguable easier to read as well!</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py stren, dext, intel = 13, 14, 8 ; print(f&quot;STR: {stren}, DEX: {dext}, INT: {intel}&quot;)
 STR: 13, DEX: 14, INT: 8
 </pre></div>
 </div>
-<p>We will be exploring more complex string concepts when we get to creating Commands and need to
-parse and understand player input.</p>
+<p>In modern Python code, f-strings are more often used than <code class="docutils literal notranslate"><span class="pre">.format()</span></code> but to read code you need to be aware of both.</p>
+<p>We will be exploring more complex string concepts when we get to creating Commands and need to parse and understand player input.</p>
 </section>
 <section id="colored-text">
 <h3><span class="section-number">3.2.3. </span>Colored text<a class="headerlink" href="#colored-text" title="Permalink to this headline">¶</a></h3>
-<p>Python itself knows nothing about colored text, this is an Evennia thing. Evennia supports the
-standard color schemes of traditional MUDs.</p>
+<p>Python itself knows nothing about colored text, this is an Evennia thing. Evennia supports the standard color schemes of traditional MUDs.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;|rThis is red text!|n This is normal color.&quot;)
 </pre></div>
 </div>
@@ -298,9 +274,7 @@ color at all). Use the Evennia webclient.</p>
 </section>
 <section id="importing-code-from-other-modules">
 <h2><span class="section-number">3.3. </span>Importing code from other modules<a class="headerlink" href="#importing-code-from-other-modules" title="Permalink to this headline">¶</a></h2>
-<p>As we saw in the previous sections, we used <code class="docutils literal notranslate"><span class="pre">.format</span></code> to format strings and <code class="docutils literal notranslate"><span class="pre">me.msg</span></code> to access
-the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method on <code class="docutils literal notranslate"><span class="pre">me</span></code>. This use of the full-stop character is used to access all sorts of resources,
-including that in other Python modules.</p>
+<p>As we saw in the previous sections, we used <code class="docutils literal notranslate"><span class="pre">.format</span></code> to format strings and <code class="docutils literal notranslate"><span class="pre">me.msg</span></code> to access the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method on <code class="docutils literal notranslate"><span class="pre">me</span></code>. This use of the full-stop character is used to access all sorts of resources, including that in other Python modules.</p>
 <p>Keep your game running, then open a text editor of your choice. If your game folder is called
 <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, create a new text file <code class="docutils literal notranslate"><span class="pre">test.py</span></code> in the subfolder <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>. This is how the file
 structure should look:</p>
@@ -325,10 +299,8 @@ To use this in-game we have to <em>import</em> it. Try this:</p>
 Hello World
 </pre></div>
 </div>
-<p>If you make some error (we’ll cover how to handle errors below), fix the error in the module and
-run the <code class="docutils literal notranslate"><span class="pre">reload</span></code> command in-game for your changes to take effect.</p>
-<p>So importing <code class="docutils literal notranslate"><span class="pre">world.test</span></code> actually means importing <code class="docutils literal notranslate"><span class="pre">world/test.py</span></code>. Think of the period <code class="docutils literal notranslate"><span class="pre">.</span></code> as
-replacing <code class="docutils literal notranslate"><span class="pre">/</span></code> (or <code class="docutils literal notranslate"><span class="pre">\</span></code> for Windows) in your path.</p>
+<p>If you make some error (we’ll cover how to handle errors below), make sure the text looks exactly like above and then run the <code class="docutils literal notranslate"><span class="pre">reload</span></code> command in-game for your changes to take effect.</p>
+<p>… So as you can see, importing <code class="docutils literal notranslate"><span class="pre">world.test</span></code> actually means importing <code class="docutils literal notranslate"><span class="pre">world/test.py</span></code>. Think of the period <code class="docutils literal notranslate"><span class="pre">.</span></code> as replacing <code class="docutils literal notranslate"><span class="pre">/</span></code> (or <code class="docutils literal notranslate"><span class="pre">\</span></code> for Windows) in your path.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">.py</span></code> ending of <code class="docutils literal notranslate"><span class="pre">test.py</span></code> is never included in this “Python-path”, but <em>only</em> files with that ending can be imported this way. Where is <code class="docutils literal notranslate"><span class="pre">mygame</span></code> in that Python-path? The answer is that Evennia has already told Python that your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder is a good place to look for imports. So we should not  include <code class="docutils literal notranslate"><span class="pre">mygame</span></code> in the path - Evennia handles this for us.</p>
 <p>When you import the module, the top “level” of it will execute. In this case, it will immediately
 print “Hello World”.</p>
@@ -346,9 +318,7 @@ print “Hello World”.</p>
 Hello World!
 </pre></div>
 </div>
-<p>Now we see it again. The <code class="docutils literal notranslate"><span class="pre">reload</span></code> wiped the server’s memory of what was imported, so it had to
-import it anew. You’d have to do this every time you wanted the print to show though, which is
-not very useful.</p>
+<p>Now we see it again. The <code class="docutils literal notranslate"><span class="pre">reload</span></code> wiped the server’s memory of what was imported, so it had to import it anew. You’d have to do this every time you wanted the hello-world to show, which is not very useful.</p>
 <blockquote>
 <div><p>We’ll get back to more advanced ways to import code in <a class="reference internal" href="Beginner-Tutorial-Python-classes-and-objects.html#importing-things"><span class="std std-doc">a later lesson</span></a> - this is an important topic. But for now, let’s press on and resolve this particular problem.</p>
 </div></blockquote>
@@ -360,47 +330,37 @@ reload. Change your <code class="docutils literal notranslate"><span class="pre"
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<aside class="sidebar">
+<p>If you are coming from some other language like Javascript or C you may be familiar with variables and functions mixing cases in names, like <code class="docutils literal notranslate"><span class="pre">helloWorld()</span></code>. While you <em>could</em> choose to name things this way, it will clash with other Python code - Python standard is to use lower-case and underscores <code class="docutils literal notranslate"><span class="pre">_</span></code> for all variables and methods.</p>
+</aside>
 <p>As we are moving to multi-line Python code, there are some important things to remember:</p>
 <ul class="simple">
-<li><p>Capitalization matters in Python. It must be <code class="docutils literal notranslate"><span class="pre">def</span></code> and not <code class="docutils literal notranslate"><span class="pre">DEF</span></code>, <code class="docutils literal notranslate"><span class="pre">who</span></code> is not the same as <code class="docutils literal notranslate"><span class="pre">Who</span></code>.</p></li>
-<li><p>Indentation matters in Python. The second line must be indented or it’s not valid code. You should
-also use a consistent indentation length. We <em>strongly</em> recommend that you, for your own sanity’s sake,
-set up your editor to always indent <em>4 spaces</em> (<strong>not</strong> a single tab-character) when you press the TAB key.</p></li>
+<li><p>Capitalization matters in Python. It must be <code class="docutils literal notranslate"><span class="pre">def</span></code> and not <code class="docutils literal notranslate"><span class="pre">DEF</span></code>, <code class="docutils literal notranslate"><span class="pre">hello_world()</span></code> is not the same as <code class="docutils literal notranslate"><span class="pre">Hello_World()</span></code>.</p></li>
+<li><p>Indentation matters in Python. The second line must be indented or it’s not valid code. You should also use a consistent indentation length. We <em>strongly</em> recommend that you, for your own sanity’s sake, set up your editor to always indent <em>4 spaces</em> (<strong>not</strong> a single tab-character) when you press the TAB key.</p></li>
 </ul>
 <p>So about that function. Line 1:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">def</span></code> is short for “define” and defines a <em>function</em> (or a <em>method</em>, if sitting on an object).
-This is a <a class="reference external" href="https://docs.python.org/2.5/ref/keywords.html">reserved Python keyword</a>; try not to use
-these words anywhere else.</p></li>
-<li><p>A function name can not have spaces but otherwise we could have called it almost anything. We call it <code class="docutils literal notranslate"><span class="pre">hello_world</span></code>. Evennia follows <span class="xref myst">Python’s standard naming style</span> with lowercase letters and underscores. We recommend you do the same.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">def</span></code> is short for “define” and defines a <em>function</em> (or a <em>method</em>, if sitting on an object). This is a <a class="reference external" href="https://docs.python.org/2.5/ref/keywords.html">reserved Python keyword</a>; try not to use these words anywhere else.</p></li>
+<li><p>A function name can not have spaces but otherwise we could have called it almost anything. We call it <code class="docutils literal notranslate"><span class="pre">hello_world</span></code>. Evennia follows <a class="reference internal" href="../../../Coding/Evennia-Code-Style.html"><span class="doc std std-doc">Python’s standard naming style</span></a> with lowercase letters and underscores. We recommend you do the same.</p></li>
 <li><p>The colon (<code class="docutils literal notranslate"><span class="pre">:</span></code>) at the end of line 1 indicates that the header of the function is complete.</p></li>
 </ul>
 <p>Line 2:</p>
 <ul class="simple">
-<li><p>The indentation marks the beginning of the actual operating code of the function (the function’s
-<em>body</em>). If we wanted more lines to belong to this function those lines would all have to
-start at least at this indentation level.</p></li>
+<li><p>The indentation marks the beginning of the actual operating code of the function (the function’s <em>body</em>). If we wanted more lines to belong to this function those lines would all have to start at least at this indentation level.</p></li>
 </ul>
-<p>Now let’s try this out. First <code class="docutils literal notranslate"><span class="pre">reload</span></code> your game to have it pick up
-our updated Python module, then import it.</p>
+<p>Now let’s try this out. First <code class="docutils literal notranslate"><span class="pre">reload</span></code> your game to have it pick up our updated Python module, then import it.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; py import world.test
 </pre></div>
 </div>
-<p>Nothing happened! That is because the function in our module won’t do anything just by importing it (this
-is what we wanted). It will only act when we <em>call</em> it. So we need to first import the module and then access the
-function within:</p>
+<p>Nothing happened! That is because the function in our module won’t do anything just by importing it (this is what we wanted). It will only act when we <em>call</em> it. So we need to first import the module and then access the function within:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world()
 Hello world!
 </pre></div>
 </div>
-<p>There is our “Hello World”! As mentioned earlier, use use semi-colon to put multiple
-Python-statements on one line. Note also the previous warning about mud-clients using the <code class="docutils literal notranslate"><span class="pre">;</span></code> to their
-own ends.</p>
-<p>So what happened there? First we imported <code class="docutils literal notranslate"><span class="pre">world.test</span></code> as usual. But this time we continued and
-accessed the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function <em>inside</em> the newly imported module.</p>
-<p>By adding <code class="docutils literal notranslate"><span class="pre">()</span></code> to the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function we <em>call</em> it, that is we run the body of the function and
-print our text. We can now redo this as many times as we want without having to <code class="docutils literal notranslate"><span class="pre">reload</span></code> in between:</p>
+<p>There is our “Hello World”! As mentioned earlier, use use semi-colon to put multiple Python-statements on one line. Note also the previous warning about mud-clients using the <code class="docutils literal notranslate"><span class="pre">;</span></code> to their own ends.</p>
+<p>So what happened there? First we imported <code class="docutils literal notranslate"><span class="pre">world.test</span></code> as usual. But this time the ‘top level’ of the module only defined a function. It didn’t actually execute the body of that function.</p>
+<p>By adding <code class="docutils literal notranslate"><span class="pre">()</span></code> to the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function we <em>call</em> it. That is, we execute the body of the function and print our text. We can now redo this as many times as we want without having to <code class="docutils literal notranslate"><span class="pre">reload</span></code> in between:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world()
 Hello world!
 &gt; py import world.test ; world.test.hello_world()
@@ -411,23 +371,15 @@ Hello world!
 </section>
 <section id="sending-text-to-others">
 <h2><span class="section-number">3.4. </span>Sending text to others<a class="headerlink" href="#sending-text-to-others" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">print</span></code> command is a standard Python structure. We can use that here in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command since
-we can se the output. It’s great for debugging and quick testing. But if you need to send a text
-to an actual player, <code class="docutils literal notranslate"><span class="pre">print</span></code> won’t do, because it doesn’t know <em>who</em> to send to. Try this:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">print</span></code> command is a standard Python structure. We can use that here in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command since we can se the output. It’s great for debugging and quick testing. But if you need to send a text to an actual player, <code class="docutils literal notranslate"><span class="pre">print</span></code> won’t do, because it doesn’t know <em>who</em> to send to. Try this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.msg(&quot;Hello world!&quot;)
 Hello world!
 </pre></div>
 </div>
-<p>This looks the same as the <code class="docutils literal notranslate"><span class="pre">print</span></code> result, but we are now actually messaging a specific <em>object</em>,
-<code class="docutils literal notranslate"><span class="pre">me</span></code>. The <code class="docutils literal notranslate"><span class="pre">me</span></code> is a shortcut to ‘us’, the one running the <code class="docutils literal notranslate"><span class="pre">py</span></code> command. It is not some special
-Python thing, but something Evennia just makes available in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command for convenience
-(<code class="docutils literal notranslate"><span class="pre">self</span></code> is an alias).</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">me</span></code> is an example of an <em>Object instance</em>. Objects are fundamental in Python and Evennia.
-The <code class="docutils literal notranslate"><span class="pre">me</span></code> object also contains a lot of useful resources for doing
-things with that object. We access those resources with ‘<code class="docutils literal notranslate"><span class="pre">.</span></code>’.</p>
+<p>This looks the same as the <code class="docutils literal notranslate"><span class="pre">print</span></code> result, but we are now actually messaging a specific <em>object</em>, <code class="docutils literal notranslate"><span class="pre">me</span></code>. The <code class="docutils literal notranslate"><span class="pre">me</span></code> is a shortcut to ‘us’, the one running the <code class="docutils literal notranslate"><span class="pre">py</span></code> command. It is not some special Python thing, but something Evennia just makes available in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command for convenience (<code class="docutils literal notranslate"><span class="pre">self</span></code> is an alias).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">me</span></code> is an example of an <em>Object instance</em>. Objects are fundamental in Python and Evennia. The <code class="docutils literal notranslate"><span class="pre">me</span></code> object also contains a lot of useful resources for doing things with that object. We access those resources with ‘<code class="docutils literal notranslate"><span class="pre">.</span></code>’.</p>
 <p>One such resource is <code class="docutils literal notranslate"><span class="pre">msg</span></code>, which works like <code class="docutils literal notranslate"><span class="pre">print</span></code> except it sends the text to the object it
-is attached to. So if we, for example, had an object <code class="docutils literal notranslate"><span class="pre">you</span></code>, doing <code class="docutils literal notranslate"><span class="pre">you.msg(...)</span></code> would send a message
-to the object <code class="docutils literal notranslate"><span class="pre">you</span></code>.</p>
+is attached to. So if we, for example, had an object <code class="docutils literal notranslate"><span class="pre">you</span></code>, doing <code class="docutils literal notranslate"><span class="pre">you.msg(...)</span></code> would send a message to the object <code class="docutils literal notranslate"><span class="pre">you</span></code>.</p>
 <p>For now, <code class="docutils literal notranslate"><span class="pre">print</span></code> and <code class="docutils literal notranslate"><span class="pre">me.msg</span></code> behaves the same, just remember that <code class="docutils literal notranslate"><span class="pre">print</span></code> is mainly used for
 debugging and <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> will be more useful for you in the future.</p>
 </section>
@@ -444,7 +396,7 @@ then run it like before:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; py import world.test ; world.test.hello_world()
 </pre></div>
 </div>
-<p>No go - this time you get an error!</p>
+<p>No go - this time you get an <em>error</em>!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="s2">&quot;./world/test.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">2</span><span class="p">,</span> <span class="ow">in</span> <span class="n">hello_world</span>
     <span class="n">me</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 <span class="ne">NameError</span><span class="p">:</span> <span class="n">name</span> <span class="s1">&#39;me&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">defined</span>
@@ -457,9 +409,7 @@ in the game. Use <code class="docutils literal notranslate"><span class="pre">ev
 sure to scroll back if you expect an error and don’t see it. Use
 <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (or <code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> on Mac) to exit the log-view.</p>
 </aside>
-<p>This is called a <em>traceback</em>. Python’s errors are very friendly and will most of the time tell you
-exactly what and where things go wrong. It’s important that you learn to parse tracebacks so you
-know how to fix your code.</p>
+<p>This is called a <em>traceback</em>. Python’s errors are very friendly and will most of the time tell you exactly what and where things go wrong. It’s important that you learn to parse tracebacks so you know how to fix your code.</p>
 <p>A traceback is to be read from the <em>bottom up</em>:</p>
 <ul class="simple">
 <li><p>(line 3) An error of type <code class="docutils literal notranslate"><span class="pre">NameError</span></code> is the problem …</p></li>
@@ -470,40 +420,27 @@ know how to fix your code.</p>
 <p>In our case the traceback is short. There may be many more lines above it, tracking just how
 different modules called each other until the program got to the faulty line. That can
 sometimes be useful information, but reading from the bottom is always a good start.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">NameError</span></code> we see here is due to a module being its own isolated thing. It knows nothing about
-the environment into which it is imported. It knew what <code class="docutils literal notranslate"><span class="pre">print</span></code> is because that is a special
-<a class="reference external" href="https://docs.python.org/2.5/ref/keywords.html">reserved Python keyword</a>. But <code class="docutils literal notranslate"><span class="pre">me</span></code> is <em>not</em> such a
-reserved word (as mentioned, it’s just something Evennia came up with for convenience in the <code class="docutils literal notranslate"><span class="pre">py</span></code>
-command). As far as the module is concerned <code class="docutils literal notranslate"><span class="pre">me</span></code> is an unfamiliar name, appearing out of nowhere.
-Hence the <code class="docutils literal notranslate"><span class="pre">NameError</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">NameError</span></code> we see here is due to a module being its own isolated thing. It knows nothing about the environment into which it is imported. It knew what <code class="docutils literal notranslate"><span class="pre">print</span></code> is because that is a special <a class="reference external" href="https://docs.python.org/2.5/ref/keywords.html">reserved Python keyword</a>. But <code class="docutils literal notranslate"><span class="pre">me</span></code> is <em>not</em> such a reserved word (as mentioned, it’s just something Evennia came up with for convenience in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command). As far as the module is concerned <code class="docutils literal notranslate"><span class="pre">me</span></code> is an unfamiliar name, appearing out of nowhere. Hence the <code class="docutils literal notranslate"><span class="pre">NameError</span></code>.</p>
 </section>
 <section id="passing-arguments-to-functions">
 <h2><span class="section-number">3.6. </span>Passing arguments to functions<a class="headerlink" href="#passing-arguments-to-functions" title="Permalink to this headline">¶</a></h2>
-<p>We know that <code class="docutils literal notranslate"><span class="pre">me</span></code> exists at the point when we run the <code class="docutils literal notranslate"><span class="pre">py</span></code> command, because we can do <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">me.msg(&quot;Hello</span> <span class="pre">World!&quot;)</span></code>
-with no problem. So let’s <em>pass</em> that me along to the function so it knows what it should be.
-Go back to your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> and change it to this:</p>
+<p>We know that <code class="docutils literal notranslate"><span class="pre">me</span></code> exists at the point when we run the <code class="docutils literal notranslate"><span class="pre">py</span></code> command, because we can do <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">me.msg(&quot;Hello</span> <span class="pre">World!&quot;)</span></code> with no problem. So let’s <em>pass</em> that me along to the function so it knows what it should be. Go back to your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> and change it to this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
     <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>We now added an <em>argument</em> to the function. We could have named it anything. Whatever <code class="docutils literal notranslate"><span class="pre">who</span></code> is,
-we will call a method <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> on it.</p>
+<p>We now added an <em>argument</em> to the function. We could have named it anything. Whatever <code class="docutils literal notranslate"><span class="pre">who</span></code> is, we will call a method <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> on it.</p>
 <p>As usual, <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server to make sure the new code is available.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world(me)
 Hello World!
 </pre></div>
 </div>
-<p>Now it worked. We <em>passed</em> <code class="docutils literal notranslate"><span class="pre">me</span></code> to our function. It will appear inside the function renamed as <code class="docutils literal notranslate"><span class="pre">who</span></code> and
-now the function works and prints as expected. Note how the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function doesn’t care <em>what</em> you
-pass into it as long as it has a <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> method on it. So you could reuse this function over and over for other
-suitable targets.</p>
+<p>Now it worked. We <em>passed</em> <code class="docutils literal notranslate"><span class="pre">me</span></code> to our function. It will appear inside the function renamed as <code class="docutils literal notranslate"><span class="pre">who</span></code> and now the function works and prints as expected. Note how the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function doesn’t care <em>what</em> you pass into it as long as it has a <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> method on it. So you could reuse this function over and over for other suitable targets.</p>
 <blockquote>
 <div><p><strong>Extra Credit:</strong> As an exercise, try to pass something else into <code class="docutils literal notranslate"><span class="pre">hello_world</span></code>. Try for example
 to pass the number <code class="docutils literal notranslate"><span class="pre">5</span></code> or the string <code class="docutils literal notranslate"><span class="pre">&quot;foo&quot;</span></code>. You’ll get errors telling you that they don’t have
 the attribute <code class="docutils literal notranslate"><span class="pre">msg</span></code>. They don’t care about <code class="docutils literal notranslate"><span class="pre">me</span></code> itself not being a string or a number. If you are
-familiar with other programming languages (especially C/Java) you may be tempted to start <em>validating</em>
-<code class="docutils literal notranslate"><span class="pre">who</span></code> to make sure it’s of the right type before you send it. This is usually not recommended in Python.
-Python philosophy is to <a class="reference external" href="https://docs.python.org/2/tutorial/errors.html">handle</a> the error if it happens
+familiar with other programming languages (especially C/Java) you may be tempted to start <em>validating</em> <code class="docutils literal notranslate"><span class="pre">who</span></code> to make sure it’s of the right type before you send it. This is usually not recommended in Python. Python philosophy is to <a class="reference external" href="https://docs.python.org/2/tutorial/errors.html">handle</a> the error if it happens
 rather than to add a lot of code to prevent it from happening. See <a class="reference external" href="https://en.wikipedia.org/wiki/Duck_typing">duck typing</a>
 and the concept of <em>Leap before you Look</em>.</p>
 </div></blockquote>
