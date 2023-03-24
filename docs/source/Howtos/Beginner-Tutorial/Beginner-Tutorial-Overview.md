@@ -36,37 +36,36 @@ You need to know how to find your Terminal/Console in your OS. The Evennia serve
 
 > Note that we usually only show forward-slashes `/` for file system paths. Windows users should mentally convert this to back-slashes `\` instead.
 
+### A fresh game dir?
+
+You should make sure you have successfully [installed Evennia](../../Setup/Installation.md). If you followed the instructions you will already have created a game-dir. You could re-use that or make a new one only for this tutorial, it's up to you. 
+
+If you already have a game dir and want a separate one for the tutorial, use `evennia stop` to halt the running server and then [Initialize a new game dir](../../Setup/Installation.md#initialize-a-new-game) somewhere else (_not_ inside the previous game dir!). We refer to it everywhere as `mygame`, so you may want to use that name too.
+
 ### A MUD client
 
 You might already have a MUD-client you prefer. Check out the [grid of supported clients](../../Setup/Client-Support-Grid.md).
 If telnet's not your thing, you can also just use Evennia's web client in your browser.
 
+Make sure you know how to connect to and log in to your locally running Evennia server.
+
 > In this documentation we often use the terms 'MUD', 'MU' or 'MU*' interchangeably to represent all the historically different forms of text-based multiplayer game-styles, like MUD, MUX, MUSH, MUCK, MOO and others. Evennia can be used to create all those game-styles and more.
 
 ### A text Editor or IDE
 
-You need a text-editor to edit Python source files. Most everything that can edit and output raw
-text works (so not Word).
+You need a text-editor to edit Python source files. Most everything that can edit and output raw text works (so not Word).
 
 - [Here's a blog post summing up some of the alternatives](https://www.elegantthemes.com/blog/resources/best-code-editors) - these things don't change much from year to year. Popular choices for Python are PyCharm, VSCode, Atom, Sublime Text and Notepad++. Evennia is to a very large degree coded in VIM, but that's not suitable for beginners.
 
 ```{important} Use spaces, not tabs
+Make sure to configure your editor so that pressing TAB inserts _4 spaces_ rather than a Tab-character. Since Python is whitespace-aware, this will make your life a lot easier.
 ```
-> Make sure to configure your editor so that pressing TAB inserts _4 spaces_ rather than a Tab-character. Since Python is whitespace-aware, this will make your life a lot easier.
 
-### A fresh game dir?
-
-You should make sure you have [installed Evennia](../../Setup/Installation.md). If you followed the instructions you will already have created a game-dir. 
-
-You could re-use that or make a new one only for this tutorial, it's up to you. 
-
-If you already have a game dir and want a separate one for the tutorial, use `evennia stop` to halt the running server and then [Initialize a new game dir](../../Setup/Installation.md#initialize-a-new-game) somewhere else (_not_ inside the previous game dir!). We refer to it everywhere as `mygame`, so you may want to do the same. 
-
-You should now be ready to move on to the [first lesson](Part1/Beginner-Tutorial-Part1-Overview.md)
+You should now be ready to move on to the [first part of the tutorial](Part1/Beginner-Tutorial-Part1-Overview.md) (in the future, use the `previous | next` buttons on the top/bottom of the page to progress)!
 
 <details>
 <summary>
-Click here to expand a list of all Beginner-Tutorial sections (all parts).
+Click here to see the full index of all parts and lessons of the Beginner-Tutorial.
 </summary>
 
 ```{toctree}

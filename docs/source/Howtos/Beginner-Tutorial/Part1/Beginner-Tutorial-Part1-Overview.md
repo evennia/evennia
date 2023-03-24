@@ -15,11 +15,7 @@
 <br>Taking our new game online and let players try it out
 ```
 
-In this first part we'll focus on what we get out of the box in Evennia - we'll get used to the tools,
-and how to find things we are looking for. We will also dive into some of things you'll
-need to know to fully utilize the system, including giving you a brief rundown of Python concepts. If you are
-an experienced Python programmer, some sections may feel a bit basic, but you will at least not have seen
-these concepts in the context of Evennia before.
+In this first part we'll focus on what we get out of the box in Evennia - we'll get used to the tools and how to find things we are looking for. We will also dive into some of things you'll need to know to fully utilize the system, including giving you a brief rundown of Python concepts. If you are an experienced Python programmer, some sections may feel a bit basic, but seeing things in the context of Evennia will still be worth learning.
 
 ## Lessons
 
