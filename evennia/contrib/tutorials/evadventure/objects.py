@@ -139,12 +139,15 @@ class EvAdventureConsumable(EvAdventureObject):
     size = AttributeProperty(0.25)
     uses = AttributeProperty(1)
 
-    def use(self, user, *args, **kwargs):
+    def use(self, user, target, *args, **kwargs):
         """
         Use the consumable.
 
         """
-        raise NotImplementedError
+        if user.location:
+            user.location.msg_contents(
+                f"$You() $conj(use) {self.get_display_name(user)}.", from_obj=user
+            )
 
     def at_post_use(self, user, *args, **kwargs):
         """
@@ -157,7 +160,7 @@ class EvAdventureConsumable(EvAdventureObject):
         """
         self.uses -= 1
         if self.uses <= 0:
-            user.msg(f"{self.key} was used up.")
+            user.msg(f"|w{self.key} was used up.|n")
             self.delete()
 
 
@@ -235,8 +238,8 @@ class EvAdventureWeapon(EvAdventureObject):
             # a miss
             message = f" $You() $conj(miss) $You({target.key})."
             if quality is Ability.CRITICAL_FAILURE:
-                self.quality -= 1
                 message += ".. it's a |rcritical miss!|n, damaging the weapon."
+                self.quality -= 1
                 location.msg_contents(message, from_obj=attacker, mapping={target.key: target})
 
     def at_post_use(self, user, *args, **kwargs):
