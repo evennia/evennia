@@ -2555,12 +2555,14 @@ def interactive(func):
             elif isinstance(value, str):
                 if not caller:
                     raise ValueError(
-                        "To retrieve input from a @pausable method, that method "
-                        "must be called with a 'caller' argument)"
+                        "To use `result yield('prompt')` in an @interactive method, that "
+                        "method must have an argument named `caller`.)"
                     )
                 get_input(caller, value, _process_input, generator=generator)
             else:
-                raise ValueError("yield(val) in a @pausable method must have an int/float as arg.")
+                raise ValueError(
+                    "yield(val) in an @interactive method must have an int/float as arg."
+                )
 
     def decorator(*args, **kwargs):
         argnames = inspect.getfullargspec(func).args
