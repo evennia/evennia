@@ -272,14 +272,9 @@ class CombatActionStunt(CombatAction):
         attacker = self.combatant
         recipient = self.recipient  # the one to receive the effect of the stunt
         target = self.target  # the affected by the stunt (can be the same as recipient/combatant)
-        is_success = False
         txt = ""
 
-        if target == self.combatant:
-            # can always grant dis/advantage against yourself
-            defender = attacker
-            is_success = True
-        elif recipient == target:
+        if recipient == target:
             # grant another entity dis/advantage against themselves
             defender = recipient
         else:
@@ -287,31 +282,42 @@ class CombatActionStunt(CombatAction):
             # to give.
             defender = target if self.advantage else recipient
 
-        if not is_success:
-            # trying to give advantage to recipient against target. Target defends against caller
-            is_success, _, txt = rules.dice.opposed_saving_throw(
-                attacker,
-                defender,
-                attack_type=self.stunt_type,
-                defense_type=self.defense_type,
-                advantage=self.has_advantage(attacker, defender),
-                disadvantage=self.has_disadvantage(attacker, defender),
-            )
+        # trying to give advantage to recipient against target. Target defends against caller
+        is_success, _, txt = rules.dice.opposed_saving_throw(
+            attacker,
+            defender,
+            attack_type=self.stunt_type,
+            defense_type=self.defense_type,
+            advantage=self.has_advantage(attacker, defender),
+            disadvantage=self.has_disadvantage(attacker, defender),
+        )
+
+        self.msg(f"$You() $conj(attempt) stunt on $You({defender.key}). {txt}")
 
         # deal with results
-        self.msg(f"$You() $conj(attempt) stunt on $You({defender.key}). {txt}")
         if is_success:
             if self.advantage:
                 self.give_advantage(recipient, target)
             else:
                 self.give_disadvantage(recipient, target)
+            if recipient == self.combatant:
+                self.msg(
+                    f"$You() $conj(gain) {'advantage' if self.advantage else 'disadvantage'} "
+                    f"against $You({target.key})!"
+                )
+            else:
+                self.msg(
+                    f"$You() $conj(cause) $You({recipient.key}) "
+                    f"to gain {'advantage' if self.advantage else 'disadvantage'} "
+                    f"against $You({target.key})!"
+                )
             self.msg(
-                f"$You() $conj(cause) $You({recipient.key}) "
-                f"to gain {'advantage' if self.advantage else 'disadvantage'} "
-                f"against $You({target.key})!"
+                "|yHaving succeeded, you hold back to plan your next move.|n [hold]",
+                broadcast=False,
             )
+            self.combathandler.queue_action(attacker, {"key": "hold"})
         else:
-            self.msg(f"$You({target.key}) $conj(resist)! $You() $conj(fail) the stunt.")
+            self.msg(f"$You({defender.key}) $conj(resist)! $You() $conj(fail) the stunt.")
 
 
 class CombatActionUseItem(CombatAction):
@@ -345,6 +351,8 @@ class CombatActionUseItem(CombatAction):
                 disadvantage=self.has_disadvantage(user, target),
             )
             item.at_post_use(user, target)
+        # to back to idle after this
+        self.combathandler.queue_action(self.combatant, {"key": "hold"})
 
 
 class CombatActionWield(CombatAction):
@@ -364,6 +372,7 @@ class CombatActionWield(CombatAction):
 
     def execute(self):
         self.combatant.equipment.move(self.item)
+        self.combathandler.queue_action(self.combatant, {"key": "hold"})
 
 
 class CombatActionFlee(CombatAction):
@@ -847,7 +856,7 @@ class _CmdCombatBase(Command):
         combathandler = getattr(self, "_combathandler", None)
         if not combathandler:
             self._combathandler = combathandler = get_or_create_combathandler(
-                self.caller.location, combat_tick=2
+                self.caller.location, combat_tick=self.combat_tick
             )
         return combathandler
 
@@ -989,17 +998,17 @@ class CmdStunt(_CmdCombatBase):
     foils an enemy, giving them disadvantage against an ally.
 
     Usage:
-        boost [ability] [of] <recipient> vs <target>
-        foil [ability] [of] <recipient> vs <target>
-        boost [ability] [vs] <target>       (same as boost me vs target)
-        foil [ability] [of] <target>        (same as foil <target> vs me)
+        boost [ability] <recipient> <target>
+        foil [ability] <recipient> <target>
+        boost [ability] <target>       (same as boost me <target>)
+        foil [ability] <target>        (same as foil <target> me)
 
     Example:
-        boost STR of me vs Goblin
-        boost DEX vs Goblin
+        boost STR me Goblin
+        boost DEX Goblin
         foil STR Goblin me
         foil INT Goblin
-        boost INT Wizard vs Goblin
+        boost INT Wizard Goblin
 
     """
 
@@ -1014,28 +1023,48 @@ class CmdStunt(_CmdCombatBase):
         super().parse()
         args = self.args
 
-        if not args:
-            self.msg("Usage: [ability] of <recipient> vs <target>")
+        if not args or " " not in args:
+            self.msg("Usage: <ability> [of] <recipient> [vs] <target>")
             raise InterruptCommand()
 
-        if "of" in args:
-            self.stunt_type, args = (part.strip() for part in args.split("of", 1))
-        else:
-            self.stunt_type, args = (part.strip() for part in args.split(None, 1))
+        advantage = self.cmdname != "foil"
 
-        # convert stunt-type to an Ability, like Ability.STR etc
-        if not self.stunt_type in ABILITY_REVERSE_MAP:
+        # extract data from the input
+
+        stunt_type, recipient, target = None, None, None
+
+        stunt_type, *args = args.split(None, 1)
+        args = args[0] if args else ""
+
+        recipient, *args = args.split(None, 1)
+        target = args[0] if args else None
+
+        # validate input and try to guess if not given
+
+        # ability is requried
+        if stunt_type.strip() not in ABILITY_REVERSE_MAP:
             self.msg("That's not a valid ability.")
             raise InterruptCommand()
-        self.stunt_type = ABILITY_REVERSE_MAP[self.stunt_type]
 
-        if " vs " in args:
-            self.recipient, self.target = (part.strip() for part in args.split(" vs "))
-        elif self.cmdname == "foil":
-            self.recipient, self.target = "me", args.strip()
-        else:
-            self.recipient, self.target = args.strip(), "me"
-        self.advantage = self.cmdname != "foil"
+        if not recipient:
+            self.msg("Must give at least a recipient or target.")
+            raise InterruptCommand()
+
+        if not target:
+            # something like `boost str target`
+            target = recipient if advantage else "me"
+            recipient = "me" if advantage else recipient
+
+        # if we still have None:s at this point, we can't continue
+        if None in (stunt_type, recipient, target):
+            self.msg("Both ability, recipient and  target of stunt must be given.")
+            raise InterruptCommand()
+
+        # save what we found so it can be accessed from func()
+        self.advantage = advantage
+        self.stunt_type = ABILITY_REVERSE_MAP[stunt_type.strip()]
+        self.recipient = recipient.strip()
+        self.target = target.strip()
 
     def func(self):
 
@@ -1105,7 +1134,9 @@ class CmdUseItem(_CmdCombatBase):
             if not target:
                 return
 
-        self.combathandler.queue_action(self.caller, {"key": "use", "item": item, "target": target})
+        self.combathandler.queue_action(
+            self.caller, {"key": "use", "item": item, "target": self.target}
+        )
         self.msg(f"You prepare to use {item.get_display_name(self.caller)}!")
 
 
@@ -1225,7 +1256,7 @@ def _step_wizard(caller, raw_string, **kwargs):
             # forward (default)
             if istep >= nsteps - 1:
                 # we are already at end of wizard - queue action!
-                return _queue_action, kwargs
+                return _queue_action(caller, raw_string, **kwargs)
             else:
                 # step forward
                 istep = kwargs["istep"] = min(nsteps - 1, istep + 1)
@@ -1460,7 +1491,19 @@ def node_combat(caller, raw_string, **kwargs):
 # Add this command to the Character cmdset to make turn-based combat available.
 
 
-class CmdTurnAttack(Command):
+class _CmdTurnCombatBase(_CmdCombatBase):
+    """
+    Base combat class for combat. Change the combat-tick to determine
+    how quickly the combat will 'tick'.
+
+    """
+
+    combathandler_name = "combathandler"
+    combat_tick = 30
+    flee_timeout = 2
+
+
+class CmdTurnAttack(_CmdTurnCombatBase):
     """
     Start or join combat.
 
@@ -1478,13 +1521,29 @@ class CmdTurnAttack(Command):
 
     def func(self):
 
-        if self.args:
-            target = self.caller.search(self.args)
-            if not target:
-                return
+        if not self.args:
+            self.msg("What are you attacking?")
+            return
 
-        combathandler = get_or_create_combathandler(self.caller.location, combat_tick=30)
-        combathandler.add_combatant(self.caller)
+        target = self.caller.search(self.args)
+        if not target:
+            return
+
+        if not hasattr(target, "hp"):
+            self.msg(f"You can't attack that.")
+            return
+        elif target.hp <= 0:
+            self.msg(f"{target.get_display_name(self.caller)} is already down.")
+            return
+
+        if target.is_pc and not target.location.allow_pvp:
+            self.msg("PvP combat is not allowed here!")
+            return
+
+        # add combatants to combathandler. this can be done safely over and over
+        self.combathandler.add_combatant(self.caller)
+        self.combathandler.add_combatant(target)
+        self.combathandler.start_combat()
 
         # build and start the menu
         evmenu.EvMenu(
@@ -1493,16 +1552,17 @@ class CmdTurnAttack(Command):
                 "node_choose_enemy_target": node_choose_enemy_target,
                 "node_choose_allied_target": node_choose_allied_target,
                 "node_choose_ability": node_choose_ability,
-                "node_choose_use_item": node_chooose_use_item,
+                "node_choose_use_item": node_choose_use_item,
                 "node_choose_wield_item": node_choose_wield_item,
                 "node_combat": node_combat,
             },
             startnode="node_combat",
-            combathandler=combathandler,
+            combathandler=self.combathandler,
+            cmdset_mergetype="Union",
         )
 
 
-class TurnCombatCmdset(CmdSet):
+class TurnAttackCmdSet(CmdSet):
     """
     CmdSet for the turn-based combat.
     """
