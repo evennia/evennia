@@ -157,13 +157,13 @@ class EvAdventureRollEngine:
         bontxt = f"(+{bonus})"
         modtxt = ""
         if modifier:
-            modtxt = f" + {modifier}" if modifier > 0 else f" - {abs(modifier)}"
+            modtxt = f"+ {modifier}" if modifier > 0 else f" - {abs(modifier)}"
         qualtxt = f" ({quality.value}!)" if quality else ""
 
         txt = (
-            f"rolled {dice_roll} on {rolltxt} "
+            f" rolled {dice_roll} on {rolltxt} "
             f"+ {bonus_type.value}{bontxt}{modtxt} vs "
-            f"{target} -> |w{result}{qualtxt}|n"
+            f"{target} -> |w{'|GSuccess|w' if result else '|RFail|w'}{qualtxt}|n"
         )
 
         return (dice_roll + bonus + modifier) > target, quality, txt
@@ -332,9 +332,11 @@ class EvAdventureRollEngine:
                 setattr(character, abi, current_abi)
 
                 character.msg(
-                    "~" * 78 + "\n|yYou survive your brush with death, "
+                    "~" * 78
+                    + "\n|yYou survive your brush with death, "
                     f"but are |r{result.upper()}|y and permanently |rlose {loss} {abi}|y.|n\n"
-                    f"|GYou recover |g{new_hp}|G health|.\n" + "~" * 78
+                    f"|GYou recover |g{new_hp}|G health|.\n"
+                    + "~" * 78
                 )
 
 

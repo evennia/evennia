@@ -19,6 +19,10 @@ py self.cmdset.add("evennia.contrib.tutorials.evadventure.combat.TwitchAttackCmd
 
 create sword:evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon
 
+# create a consumable to use 
+
+create potion:evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable
+
 # dig a combat arena
 
 dig arena:evennia.contrib.tutorials.evadventure.rooms.EvAdventureRoom = arena,back

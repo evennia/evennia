@@ -6,6 +6,7 @@ from random import choice
 
 from evennia import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
+from evennia.typeclasses.tags import TagProperty
 from evennia.utils.evmenu import EvMenu
 from evennia.utils.utils import make_iter
 
@@ -53,6 +54,9 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
     weapon = AttributeProperty(default=WeaponEmptyHand, autocreate=False)  # instead of inventory
     coins = AttributeProperty(default=1, autocreate=False)  # coin loot
 
+    # if this npc is attacked, everyone with the same tag in the current location will also be pulled into combat.
+    group = TagProperty("npcs")
+
     @property
     def strength(self):
         return self.hit_dice
@@ -88,7 +92,7 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
         """
         self.hp = self.hp_max
 
-    def ai_combat_next_action(self):
+    def ai_combat_next_action(self, **kwargs):
         """
         The combat engine should ask this method in order to
         get the next action the npc should perform in combat.
