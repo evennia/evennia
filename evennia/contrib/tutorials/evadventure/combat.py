@@ -97,7 +97,7 @@ from evennia.commands.command import InterruptCommand
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils import dbserialize, delay, evmenu, evtable, logger
-from evennia.utils.utils import inherits_from, list_to_string
+from evennia.utils.utils import display_len, inherits_from, list_to_string, pad
 
 from . import rules
 from .characters import EvAdventureCharacter
@@ -209,15 +209,15 @@ class CombatAction:
         self.combathandler.fleeing_combatants.pop(self.combatant, None)
 
 
-class CombatActionDoNothing(CombatAction):
+class CombatActionHold(CombatAction):
     """
     Action that does nothing.
 
     Note:
-        Refer to as 'nothing'
+        Refer to as 'hold'
 
     action_dict = {
-            "key": "nothing"
+            "key": "hold"
         }
     """
 
@@ -287,9 +287,6 @@ class CombatActionStunt(CombatAction):
             # to give.
             defender = target if self.advantage else recipient
 
-        self.stunt_type = ABILITY_REVERSE_MAP.get(self.stunt_type, self.stunt_type)
-        self.defense_type = ABILITY_REVERSE_MAP.get(self.defense_type, self.defense_type)
-
         if not is_success:
             # trying to give advantage to recipient against target. Target defends against caller
             is_success, _, txt = rules.dice.opposed_saving_throw(
@@ -302,19 +299,19 @@ class CombatActionStunt(CombatAction):
             )
 
         # deal with results
-        self.msg(f"$You() $conj(attempt) stunt on $You(defender.key). {txt}")
+        self.msg(f"$You() $conj(attempt) stunt on $You({defender.key}). {txt}")
         if is_success:
             if self.advantage:
                 self.give_advantage(recipient, target)
             else:
                 self.give_disadvantage(recipient, target)
             self.msg(
-                f"%You() $conj(cause) $You({recipient.key}) "
+                f"$You() $conj(cause) $You({recipient.key}) "
                 f"to gain {'advantage' if self.advantage else 'disadvantage'} "
                 f"against $You({target.key})!"
             )
         else:
-            self.msg(f"$You({target.key}) resists! $You() $conj(fail) the stunt.")
+            self.msg(f"$You({target.key}) $conj(resist)! $You() $conj(fail) the stunt.")
 
 
 class CombatActionUseItem(CombatAction):
@@ -384,15 +381,23 @@ class CombatActionFlee(CombatAction):
 
     def execute(self):
 
-        if self.combatant not in self.combathandler.fleeing_combatants:
-            # we record the turn on which we started fleeing
-            self.combathandler.fleeing_combatants[self.combatant] = self.combathandler.turn
+        combathandler = self.combathandler
 
-        flee_timeout = self.combathandler.flee_timeout
-        self.msg(
-            "$You() $conj(retreat), leaving yourself exposed while doing so (will escape in "
-            f"{flee_timeout} $pluralize(turn, {flee_timeout}))."
-        )
+        if self.combatant not in combathandler.fleeing_combatants:
+            # we record the turn on which we started fleeing
+            combathandler.fleeing_combatants[self.combatant] = self.combathandler.turn
+
+        # show how many turns until successful flight
+        current_turn = combathandler.turn
+        started_fleeing = combathandler.fleeing_combatants[self.combatant]
+        flee_timeout = combathandler.flee_timeout
+        time_left = flee_timeout - (current_turn - started_fleeing)
+
+        if time_left > 0:
+            self.msg(
+                "$You() $conj(retreat), being exposed to attack while doing so (will escape in "
+                f"{time_left} $pluralize(turn, {time_left}))."
+            )
 
     def post_execute(self):
         """
@@ -410,7 +415,7 @@ class EvAdventureCombatHandler(DefaultScript):
 
     # available actions in combat
     action_classes = {
-        "nothing": CombatActionDoNothing,
+        "hold": CombatActionHold,
         "attack": CombatActionAttack,
         "stunt": CombatActionStunt,
         "use": CombatActionUseItem,
@@ -422,10 +427,10 @@ class EvAdventureCombatHandler(DefaultScript):
     max_action_queue_size = 1
 
     # fallback action if not selecting anything
-    fallback_action_dict = {"key": "nothing"}
+    fallback_action_dict = {"key": "hold"}
 
     # how many turns you must be fleeing before escaping
-    flee_timeout = 1
+    flee_timeout = 5
 
     # persistent storage
 
@@ -440,6 +445,9 @@ class EvAdventureCombatHandler(DefaultScript):
 
     fleeing_combatants = AttributeProperty(dict)
     defeated_combatants = AttributeProperty(list)
+
+    # usable script properties
+    # .is_active - show if timer is running
 
     def msg(self, message, combatant=None, broadcast=True):
         """
@@ -475,11 +483,14 @@ class EvAdventureCombatHandler(DefaultScript):
 
     def add_combatant(self, combatant):
         """
-        Add a new combatant to the battle.
+        Add a new combatant to the battle. Can be called multiple times safely.
 
         Args:
             *combatants (EvAdventureCharacter, EvAdventureNPC): Any number of combatants to add to
                 the combat.
+        Returns:
+            bool: If this combatant was newly added or not (it was already in combat).
+
         """
         if combatant not in self.combatants:
             self.combatants[combatant] = deque((), maxlen=self.max_action_queue_size)
@@ -496,6 +507,18 @@ class EvAdventureCombatHandler(DefaultScript):
 
         """
         self.combatants.pop(combatant, None)
+        # clean up twitch cmdset if it exists
+        combatant.cmdset.remove(TwitchCombatCmdSet)
+        # clean up menu if it exists
+
+    def start_combat(self, **kwargs):
+        """
+        This actually starts the combat. It's safe to run this multiple times
+        since it will only start combat if it isn't already running.
+
+        """
+        if not self.is_active:
+            self.start(**kwargs)
 
     def stop_combat(self):
         """
@@ -543,6 +566,69 @@ class EvAdventureCombatHandler(DefaultScript):
                 enemies = pcs
         return allies, enemies
 
+    def get_combat_summary(self, combatant):
+        """
+        Get a 'battle report' - an overview of the current state of combat from the perspective
+        of one of the sides.
+
+        Args:
+            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant to get.
+
+        Returns:
+            EvTable: A table representing the current state of combat.
+
+        Example:
+        ::
+
+                                        Goblin shaman (Perfect)[attack]
+        Gregor (Hurt)[attack]           Goblin brawler(Hurt)[attack]
+        Bob (Perfect)[stunt]     vs     Goblin grunt 1 (Hurt)[attack]
+                                        Goblin grunt 2 (Perfect)[hold]
+                                        Goblin grunt 3 (Wounded)[flee]
+
+        """
+        allies, enemies = self.get_sides(combatant)
+        # we must include outselves at the top of the list (we are not returned from get_sides)
+        allies.insert(0, combatant)
+        nallies, nenemies = len(allies), len(enemies)
+
+        # prepare colors and hurt-levels
+        allies = [
+            f"{ally} ({ally.hurt_level})[{self.get_next_action_dict(ally)['key']}]"
+            for ally in allies
+        ]
+        enemies = [
+            f"{enemy} ({enemy.hurt_level})[{self.get_next_action_dict(enemy)['key']}]"
+            for enemy in enemies
+        ]
+
+        # the center column with the 'vs'
+        vs_column = ["" for _ in range(max(nallies, nenemies))]
+        vs_column[len(vs_column) // 2] = "|wvs|n"
+
+        # the two allies / enemies columns should be centered vertically
+        diff = abs(nallies - nenemies)
+        top_empty = diff // 2
+        bot_empty = diff - top_empty
+        topfill = ["" for _ in range(top_empty)]
+        botfill = ["" for _ in range(bot_empty)]
+
+        if nallies >= nenemies:
+            enemies = topfill + enemies + botfill
+        else:
+            allies = topfill + allies + botfill
+
+        # make a table with three columns
+        return evtable.EvTable(
+            table=[
+                evtable.EvColumn(*allies, align="l"),
+                evtable.EvColumn(*vs_column, align="c"),
+                evtable.EvColumn(*enemies, align="r"),
+            ],
+            border=None,
+            maxwidth=78,
+        )
+
     def queue_action(self, combatant, action_dict):
         """
         Queue an action by adding the new actiondict to the back of the queue. If the
@@ -568,10 +654,29 @@ class EvAdventureCombatHandler(DefaultScript):
             # everyone has inserted an action. Start next turn without waiting!
             self.force_repeat()
 
+    def get_next_action_dict(self, combatant, rotate_queue=True):
+        """
+        Give the action_dict for the next action that will be executed.
+
+        Args:
+            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant to get the action for.
+            rotate_queue (bool, optional): Rotate the queue after getting the action dict.
+
+        Returns:
+            dict: The next action-dict in the queue.
+
+        """
+        action_queue = self.combatants[combatant]
+        action_dict = action_queue[0] if action_queue else self.fallback_action_dict
+        if rotate_queue:
+            # rotate the queue to the left so that the first element is now the last one
+            action_queue.rotate(-1)
+        return action_dict
+
     def execute_next_action(self, combatant):
         """
         Perform a combatant's next queued action. Note that there is _always_ an action queued,
-        even if this action is 'do nothing'. We don't pop anything from the queue, instead we keep
+        even if this action is 'hold'. We don't pop anything from the queue, instead we keep
         rotating the queue. When the queue has a length of one, this means just repeating the
         same action over and over.
 
@@ -584,10 +689,8 @@ class EvAdventureCombatHandler(DefaultScript):
             queue will be rotated to the left and be `[b, c, a]` (so next time, `b` will be used).
 
         """
-        action_queue = self.combatants[combatant]
-        action_dict = action_queue[0] if action_queue else self.fallback_action_dict
-        # rotate the queue to the left so that the first element is now the last one
-        action_queue.rotate(-1)
+        # this gets the next dict and rotates the queue
+        action_dict = self.get_next_action_dict(combatant)
 
         # use the action-dict to select and create an action from an action class
         action_class = self.action_classes[action_dict["key"]]
@@ -655,82 +758,38 @@ class EvAdventureCombatHandler(DefaultScript):
             self.msg(txt)
             self.stop_combat()
 
-    def get_combat_summary(self, combatant):
+    def at_repeat(self, **kwargs):
         """
-        Get a 'battle report' - an overview of the current state of combat.
-
-        Args:
-            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant to get.
-
-        Returns:
-            EvTable: A table representing the current state of combat.
-
-        Example:
-        ::
-
-                                    Goblin shaman
-        Ally (hurt)                 Goblin brawler
-        Bob               vs        Goblin grunt 1 (hurt)
-                                    Goblin grunt 2
-                                    Goblin grunt 3
-
+        This is called every time the script ticks (how fast depends on if this handler runs a
+        twitch- or turn-based combat).
         """
-        allies, enemies = self.get_sides(combatant)
-        # we must include outselves at the top of the list (we are not returned from get_sides)
-        allies.insert(0, combatant)
-        nallies, nenemies = len(allies), len(enemies)
-
-        # prepare colors and hurt-levels
-        allies = [f"{ally} ({ally.hurt_level})" for ally in allies]
-        enemies = [f"{enemy} ({enemy.hurt_level})" for enemy in enemies]
-
-        # the center column with the 'vs'
-        vs_column = ["" for _ in range(max(nallies, nenemies))]
-        vs_column[len(vs_column) // 2] = "vs"
-
-        # the two allies / enemies columns should be centered vertically
-        diff = abs(nallies - nenemies)
-        top_empty = diff // 2
-        bot_empty = diff - top_empty
-        topfill = ["" for _ in range(top_empty)]
-        botfill = ["" for _ in range(bot_empty)]
-
-        if nallies >= nenemies:
-            enemies = topfill + enemies + botfill
-        else:
-            allies = topfill + allies + botfill
-
-        # make a table with three columns
-        return evtable.EvTable(
-            table=[
-                evtable.EvColumn(*allies, align="l"),
-                evtable.EvColumn(*vs_column, align="c"),
-                evtable.EvColumn(*enemies, align="r"),
-            ],
-            border=None,
-            width=78,
-        )
+        self.execute_full_turn()
 
 
-def get_or_create_combathandler(combatant, combathandler_name="combathandler", combat_tick=5):
+def get_or_create_combathandler(location, combat_tick=3, combathandler_name="combathandler"):
     """
     Joins or continues combat. This is a access function that will either get the
     combathandler on the current room or create a new one.
 
     Args:
-        combatant (EvAdventureCharacter, EvAdventureNPC): The one to
+        location (EvAdventureRoom): Where to start the combat.
+        combat_tick (int): How often (in seconds) the combathandler will perform a tick. The
+            shorter this interval, the more 'twitch-like' the combat will be. E.g.
+        combathandler_name (str): If the combathandler should be stored with a different script
+            name. Changing this could allow multiple combats to coexist in the same location.
 
     Returns:
         CombatHandler: The new or created combathandler.
 
+    Notes:
+        The combathandler starts disabled; one needs to run `.start` on it once all
+        (initial) combatants are added.
+
     """
-
-    location = combatant.location
-
     if not location:
         raise CombatFailure("Cannot start combat without a location.")
 
-    combathandler = location.scripts.get(combathandler_name)
+    combathandler = location.scripts.get(combathandler_name).first()
     if not combathandler:
         combathandler = create_script(
             EvAdventureCombatHandler,
@@ -738,8 +797,8 @@ def get_or_create_combathandler(combatant, combathandler_name="combathandler", c
             obj=location,
             interval=combat_tick,
             persistent=True,
+            autostart=False,
         )
-    combathandler.add_combatant(combatant)
     return combathandler
 
 
@@ -766,9 +825,10 @@ Examples of commands:
     - |yuse <item>|n                             - use/consume an item in your inventory
     - |yuse <item> on <target>|n                 - use an item on an enemy or ally
 
+    - |yhold|n                                   - hold your attack, doing nothing
     - |yflee|n                                   - start to flee or disengage from combat
 
-Use |yhelp <command>|n for more info."""
+Use |yhelp <command>|n for more info. Use |yhelp combat|n to re-show this list."""
 
 
 class _CmdCombatBase(Command):
@@ -779,14 +839,16 @@ class _CmdCombatBase(Command):
     """
 
     combathandler_name = "combathandler"
-    combat_tick = 2
+    combat_tick = 3
     flee_timeout = 5
 
     @property
     def combathandler(self):
-        combathandler = getattr(self, "combathandler", None)
+        combathandler = getattr(self, "_combathandler", None)
         if not combathandler:
-            self.combathandler = combathandler = get_or_create_combathandler(self.caller)
+            self._combathandler = combathandler = get_or_create_combathandler(
+                self.caller.location, combat_tick=2
+            )
         return combathandler
 
     def parse(self):
@@ -805,16 +867,20 @@ class TwitchCombatCmdSet(CmdSet):
 
     """
 
+    name = "Twitchcombat cmdset"
     priority = 1
     mergetype = "Union"  # use Replace to lock down all other commands
     no_exits = True  # don't allow combatants to walk away
 
     def at_cmdset_creation(self):
         self.add(CmdTwitchAttack())
+        self.add(CmdLook())
+        self.add(CmdHelpCombat())
+        self.add(CmdHold())
         self.add(CmdStunt())
         self.add(CmdUseItem())
         self.add(CmdWield())
-        self.add(CmdUseFlee())
+        self.add(CmdFlee())
 
 
 class CmdTwitchAttack(_CmdCombatBase):
@@ -852,45 +918,69 @@ class CmdTwitchAttack(_CmdCombatBase):
             self.msg(f"{target.get_display_name(self.caller)} is already down.")
             return
 
-        # this can be done over and over
+        if target.is_pc and not target.location.allow_pvp:
+            self.msg("PvP combat is not allowed here!")
+            return
+
+        # add combatants to combathandler. this can be done safely over and over
         is_new = self.combathandler.add_combatant(self.caller)
         if is_new:
             # just joined combat - add the combat cmdset
-            self.caller.cmdset.add(CombatCmdSet)
+            self.caller.cmdset.add(TwitchCombatCmdSet, persistent=True)
             self.msg(_COMBAT_HELP)
+
+        is_new = self.combathandler.add_combatant(target)
+        if is_new and target.is_pc:
+            # a pvp battle
+            target.cmdset.add(TwitchCombatCmdSet, persistent=True)
+            target.msg(_COMBAT_HELP)
+
         self.combathandler.queue_action(self.caller, {"key": "attack", "target": target})
-        self.msg("You prepare to attack!")
+        self.combathandler.start_combat()
+        self.msg(f"You attack {target.get_display_name(self.caller)}!")
 
 
 class CmdLook(default_cmds.CmdLook):
-
-    key = "look"
-    aliases = ["l"]
-
-    template = """
-|c{room_name} |r(In Combat!)|n
-{room_desc}
-⚔ ⚔ ⚔ ⚔ ⚔
-{combat_summary}
-    """.strip()
-
     def func(self):
         if not self.args:
-            # when looking around with no argument, show the room description followed by the
-            # current combat state.
-            location = self.caller.location
-            combathandler = get_or_create_combathandler(self.caller)
-
-            self.caller.msg(
-                self.template.format(
-                    room_name=location.get_display_name(self.caller),
-                    room_desc=caller.at_look(location),
-                    combat_summary=combathandler.get_combat_summary(self.caller),
-                )
-            )
+            combathandler = get_or_create_combathandler(self.caller.location)
+            txt = str(combathandler.get_combat_summary(self.caller))
+            maxwidth = max(display_len(line) for line in txt.strip().split("\n"))
+            self.msg(f"|r{pad(' Combat Status ', width=maxwidth, fillchar='-')}|n\n{txt}")
         else:
             # use regular look to look at things
             super().func()
+
+
+class CmdHelpCombat(_CmdCombatBase):
+    """
+    Re-show the combat command summary.
+
+    Usage:
+      help combat
+
+    """
+
+    key = "help combat"
+
+    def func(self):
+        self.msg(_COMBAT_HELP)
+
+
+class CmdHold(_CmdCombatBase):
+    """
+    Hold back your blows, doing nothing.
+
+    Usage:
+        hold
+
+    """
+
+    key = "hold"
+
+    def func(self):
+        self.combathandler.queue_action(self.caller, {"key": "hold"})
+        self.msg("You hold, doing nothing.")
 
 
 class CmdStunt(_CmdCombatBase):
@@ -923,10 +1013,21 @@ class CmdStunt(_CmdCombatBase):
     def parse(self):
         super().parse()
         args = self.args
+
+        if not args:
+            self.msg("Usage: [ability] of <recipient> vs <target>")
+            raise InterruptCommand()
+
         if "of" in args:
             self.stunt_type, args = (part.strip() for part in args.split("of", 1))
         else:
             self.stunt_type, args = (part.strip() for part in args.split(None, 1))
+
+        # convert stunt-type to an Ability, like Ability.STR etc
+        if not self.stunt_type in ABILITY_REVERSE_MAP:
+            self.msg("That's not a valid ability.")
+            raise InterruptCommand()
+        self.stunt_type = ABILITY_REVERSE_MAP[self.stunt_type]
 
         if " vs " in args:
             self.recipient, self.target = (part.strip() for part in args.split(" vs "))
@@ -934,15 +1035,24 @@ class CmdStunt(_CmdCombatBase):
             self.recipient, self.target = "me", args.strip()
         else:
             self.recipient, self.target = args.strip(), "me"
-        self.advantage = self.cmdname == "boost"
+        self.advantage = self.cmdname != "foil"
 
     def func(self):
+
+        combathandler = self.combathandler
+        target = self.caller.search(self.target, candidates=combathandler.combatants.keys())
+        if not target:
+            return
+        recipient = self.caller.search(self.recipient, candidates=combathandler.combatants.keys())
+        if not recipient:
+            return
+
         self.combathandler.queue_action(
             self.caller,
             {
                 "key": "stunt",
-                "recipient": self.recipient,
-                "target": self.target,
+                "recipient": recipient,
+                "target": target,
                 "advantage": self.advantage,
                 "stunt_type": self.stunt_type,
                 "defense_type": self.stunt_type,
@@ -973,7 +1083,10 @@ class CmdUseItem(_CmdCombatBase):
         super().parse()
         args = self.args
 
-        if "on" in args:
+        if not args:
+            self.msg("What do you want to use?")
+            raise InterruptCommand()
+        elif "on" in args:
             self.item, self.target = (part.strip() for part in args.split("on", 1))
         else:
             self.item, *target = args.split(None, 1)
@@ -1016,6 +1129,12 @@ class CmdWield(_CmdCombatBase):
 
     key = "wield"
     help_category = "combat"
+
+    def parse(self):
+        if not self.args:
+            self.msg("What do you want to wield?")
+            raise InterruptCommand()
+        super().parse()
 
     def func(self):
 
@@ -1070,7 +1189,7 @@ class TwitchAttackCmdSet(CmdSet):
 def _get_combathandler(caller):
     evmenu = caller.ndb._evmenu
     if not hasattr(evmenu, "combathandler"):
-        evmenu.combathandler = get_or_create_combathandler(caller)
+        evmenu.combathandler = get_or_create_combathandler(caller.location)
     return evmenu.combathandler
 
 
@@ -1330,8 +1449,8 @@ def node_combat(caller, raw_string, **kwargs):
             "goto": (_queue_action, {"flee": {"key": "flee"}}),
         },
         {
-            "desc": "do nothing",
-            "goto": (_queue_action, {"action_dict": {"key": "nothing"}}),
+            "desc": "hold, doing nothing",
+            "goto": (_queue_action, {"action_dict": {"key": "hold"}}),
         },
     ]
 
@@ -1364,7 +1483,7 @@ class CmdTurnAttack(Command):
             if not target:
                 return
 
-        combathandler = get_or_create_combathandler(self.caller, combat_tick=30)
+        combathandler = get_or_create_combathandler(self.caller.location, combat_tick=30)
         combathandler.add_combatant(self.caller)
 
         # build and start the menu

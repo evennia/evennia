@@ -62,12 +62,12 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         # add target to combat
         self.combathandler.add_combatant(self.target)
 
-    def _get_action(self, action_dict={"key": "nothing"}):
+    def _get_action(self, action_dict={"key": "hold"}):
         action_class = self.combathandler.action_classes[action_dict["key"]]
         return action_class(self.combathandler, self.combatant, action_dict)
 
     def _run_actions(
-        self, action_dict, action_dict2={"key": "nothing"}, combatant_msg=None, target_msg=None
+        self, action_dict, action_dict2={"key": "hold"}, combatant_msg=None, target_msg=None
     ):
         """
         Helper method to run an action and check so combatant saw the expected message.
@@ -90,7 +90,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         self.assertEqual(
             dict(chandler.action_classes),
             {
-                "nothing": combat.CombatActionDoNothing,
+                "hold": combat.CombatActionHold,
                 "attack": combat.CombatActionAttack,
                 "stunt": combat.CombatActionStunt,
                 "use": combat.CombatActionUseItem,
@@ -176,31 +176,31 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
     def test_queue_and_execute_action(self):
         """Queue actions and execute"""
 
-        donothing = {"key": "nothing"}
+        hold = {"key": "hold"}
 
-        self.combathandler.queue_action(self.combatant, donothing)
+        self.combathandler.queue_action(self.combatant, hold)
         self.assertEqual(
             dict(self.combathandler.combatants),
-            {self.combatant: deque([donothing]), self.target: deque()},
+            {self.combatant: deque([hold]), self.target: deque()},
         )
 
         mock_action = Mock()
-        self.combathandler.action_classes["nothing"] = Mock(return_value=mock_action)
+        self.combathandler.action_classes["hold"] = Mock(return_value=mock_action)
 
         self.combathandler.execute_next_action(self.combatant)
 
-        self.combathandler.action_classes["nothing"].assert_called_with(
-            self.combathandler, self.combatant, donothing
+        self.combathandler.action_classes["hold"].assert_called_with(
+            self.combathandler, self.combatant, hold
         )
         mock_action.execute.assert_called_once()
 
     def test_execute_full_turn(self):
         """Run a full (passive) turn"""
 
-        donothing = {"key": "nothing"}
+        hold = {"key": "hold"}
 
-        self.combathandler.queue_action(self.combatant, donothing)
-        self.combathandler.queue_action(self.target, donothing)
+        self.combathandler.queue_action(self.combatant, hold)
+        self.combathandler.queue_action(self.target, hold)
 
         self.combathandler.execute_next_action = Mock()
 
@@ -216,7 +216,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         combatant = self.combatant
         target = self.target
 
-        action = self._get_action({"key": "nothing"})
+        action = self._get_action({"key": "hold"})
 
         self.assertTrue(action.can_use())
 
@@ -235,10 +235,10 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         action.msg(f"$You() attack $You({target.key}).")
         combatant.msg.assert_called_with(text=("You attack testmonster.", {}), from_obj=combatant)
 
-    def test_action__do_nothing(self):
-        """Do nothing"""
+    def test_action__hold(self):
+        """Hold, doing nothing"""
 
-        actiondict = {"key": "nothing"}
+        actiondict = {"key": "hold"}
         self._run_actions(actiondict, actiondict)
         self.assertEqual(self.combathandler.turn, 1)
 
@@ -417,7 +417,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             from_obj=self.combatant,
         )
         # Check that enemies have advantage against you now
-        action = combat.CombatAction(self.combathandler, self.target, {"key": "nothing"})
+        action = combat.CombatAction(self.combathandler, self.target, {"key": "hold"})
         self.assertTrue(action.has_advantage(self.target, self.combatant))
 
         # second flee should remove combatant

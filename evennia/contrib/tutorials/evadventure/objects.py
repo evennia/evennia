@@ -177,8 +177,29 @@ class EvAdventureWeapon(EvAdventureObject):
     defense_type = AttributeProperty(Ability.ARMOR)
     damage_roll = AttributeProperty("1d6")
 
+    def get_display_name(self, looker=None, **kwargs):
+        quality = self.quality
+
+        quality_txt = ""
+        if quality <= 0:
+            quality_txt = "|r(broken!)|n"
+        elif quality < 2:
+            quality_txt = "|y(damaged)|n"
+        elif quality < 3:
+            quality_txt = "|Y(chipped)|n"
+
+        return super().get_display_name(looker=looker, **kwargs) + quality_txt
+
+    def at_pre_use(self, user, *args, **kwargs):
+        if self.quality <= 0:
+            user.msg(f"{self.get_display_name(user)} is broken and can't be used!")
+            return False
+        return super().at_pre_use(user, *args, **kwargs)
+
     def use(self, attacker, target, *args, advantage=False, disadvantage=False, **kwargs):
         """When a weapon is used, it attacks an opponent"""
+
+        location = attacker.location
 
         is_hit, quality, txt = rules.dice.opposed_saving_throw(
             attacker,
@@ -188,7 +209,11 @@ class EvAdventureWeapon(EvAdventureObject):
             advantage=advantage,
             disadvantage=disadvantage,
         )
-        self.msg(f"$You() $conj(attack) $You({target.key}) with {self.key}: {txt}")
+        location.msg_contents(
+            f"$You() $conj(attack) $You({target.key}) with {self.key}: {txt}",
+            from_obj=attacker,
+            mapping={target.key: target},
+        )
         if is_hit:
             # enemy hit, calculate damage
             dmg = rules.dice.roll(self.damage_roll)
@@ -201,8 +226,8 @@ class EvAdventureWeapon(EvAdventureObject):
                 )
             else:
                 message = f" $You() $conj(hit) $You({target.key}) for |r{dmg}|n damage!"
-            self.msg(message)
 
+            location.msg_contents(message, from_obj=attacker, mapping={target.key: target})
             # call hook
             target.at_damage(dmg, attacker=attacker)
 
@@ -212,7 +237,11 @@ class EvAdventureWeapon(EvAdventureObject):
             if quality is Ability.CRITICAL_FAILURE:
                 self.quality -= 1
                 message += ".. it's a |rcritical miss!|n, damaging the weapon."
-            self.msg(message)
+                location.msg_contents(message, from_obj=attacker, mapping={target.key: target})
+
+    def at_post_use(self, user, *args, **kwargs):
+        if self.quality <= 0:
+            user.msg(f"|r{self.get_display_name(user)} breaks and can no longer be used!")
 
 
 class EvAdventureThrowable(EvAdventureWeapon, EvAdventureConsumable):
