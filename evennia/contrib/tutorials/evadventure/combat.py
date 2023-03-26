@@ -436,13 +436,13 @@ class EvAdventureCombatHandler(DefaultScript):
     }
 
     # how many actions can be queued at a time (per combatant)
-    max_action_queue_size = 1
-
-    # fallback action if not selecting anything
-    fallback_action_dict = {"key": "hold"}
+    max_action_queue_size = AttributeProperty(1, autocreate=False)
 
     # how many turns you must be fleeing before escaping
-    flee_timeout = 5
+    flee_timeout = AttributeProperty(3, autocreate=False)
+
+    # fallback action if not selecting anything
+    fallback_action_dict = AttributeProperty({"key": "hold"}, autocreate=False)
 
     # persistent storage
 
@@ -522,6 +522,8 @@ class EvAdventureCombatHandler(DefaultScript):
         # clean up twitch cmdset if it exists
         combatant.cmdset.remove(TwitchCombatCmdSet)
         # clean up menu if it exists
+        if combatant.ndb._evmenu:
+            combatant.ndb._evmenu.close_menu()
 
     def start_combat(self, **kwargs):
         """
@@ -778,7 +780,9 @@ class EvAdventureCombatHandler(DefaultScript):
         self.execute_full_turn()
 
 
-def get_or_create_combathandler(location, combat_tick=3, combathandler_name="combathandler"):
+def get_or_create_combathandler(
+    location, combat_tick=3, flee_timeout=5, combathandler_name="combathandler"
+):
     """
     Joins or continues combat. This is a access function that will either get the
     combathandler on the current room or create a new one.
@@ -811,6 +815,9 @@ def get_or_create_combathandler(location, combat_tick=3, combathandler_name="com
             persistent=True,
             autostart=False,
         )
+        if combathandler.flee_timeout != flee_timeout:
+            combathandler.flee_timeout = flee_timeout
+
     return combathandler
 
 
@@ -859,7 +866,9 @@ class _CmdCombatBase(Command):
         combathandler = getattr(self, "_combathandler", None)
         if not combathandler:
             self._combathandler = combathandler = get_or_create_combathandler(
-                self.caller.location, combat_tick=self.combat_tick
+                self.caller.location,
+                combat_tick=self.combat_tick,
+                flee_timeout=self.flee_timeout,
             )
         return combathandler
 
@@ -1241,9 +1250,10 @@ def _step_wizard(caller, raw_string, **kwargs):
     E.g. Stunt boost -> Choose ability to boost -> Choose recipient -> Choose target -> queue
 
     """
+    caller.msg(f"_step_wizard kwargs: {kwargs}")
     steps = kwargs.get("steps", [])
     nsteps = len(steps)
-    istep = kwargs.get("istep", 0)
+    istep = kwargs.get("istep", -1)
     # one of abort, back, forward
     step_direction = kwargs.get("step", "forward")
 
@@ -1255,16 +1265,16 @@ def _step_wizard(caller, raw_string, **kwargs):
             # step back in wizard
             if istep <= 0:
                 return "node_combat"
-            istep = kwargs["istep"] = max(0, istep - 1)
+            istep = kwargs["istep"] = istep - 1
             return steps[istep], kwargs
         case _:
             # forward (default)
-            if istep >= nsteps:
+            if istep >= nsteps - 1:
                 # we are already at end of wizard - queue action!
                 return _queue_action(caller, raw_string, **kwargs)
             else:
                 # step forward
-                istep = kwargs["istep"] = min(nsteps - 1, istep + 1)
+                istep = kwargs["istep"] = istep + 1
                 return steps[istep], kwargs
 
 
@@ -1285,7 +1295,7 @@ def node_choose_enemy_target(caller, raw_string, **kwargs):
     """
     Choose an enemy as a target for an action
     """
-    text = "Choose a target."
+    text = "Choose an enemy to target."
     action_dict = kwargs["action_dict"]
 
     combathandler = _get_combathandler(caller)
@@ -1294,7 +1304,10 @@ def node_choose_enemy_target(caller, raw_string, **kwargs):
     options = [
         {
             "desc": target.get_display_name(caller),
-            "goto": (_step_wizard, {"action_dict": {**action_dict, **{"target": target}}}),
+            "goto": (
+                _step_wizard,
+                {**kwargs, **{"action_dict": {**action_dict, **{"target": target}}}},
+            ),
         }
         for target in enemies
     ]
@@ -1306,7 +1319,7 @@ def node_choose_allied_target(caller, raw_string, **kwargs):
     """
     Choose an enemy as a target for an action
     """
-    text = "Choose a target."
+    text = "Choose an ally to target."
     action_dict = kwargs["action_dict"]
 
     combathandler = _get_combathandler(caller)
@@ -1318,7 +1331,14 @@ def node_choose_allied_target(caller, raw_string, **kwargs):
             "desc": "Yourself",
             "goto": (
                 _step_wizard,
-                {"action_dict": {**action_dict, **{"target": caller, "recipient": caller}}},
+                {
+                    **kwargs,
+                    **{
+                        "action_dict": {
+                            **{**action_dict, **{"target": caller, "recipient": caller}}
+                        }
+                    },
+                },
             ),
         }
     ]
@@ -1328,7 +1348,15 @@ def node_choose_allied_target(caller, raw_string, **kwargs):
                 "desc": target.get_display_name(caller),
                 "goto": (
                     _step_wizard,
-                    {"action_dict": {**action_dict, **{"target": target, "recipient": target}}},
+                    {
+                        **kwargs,
+                        **{
+                            "action_dict": {
+                                **action_dict,
+                                **{"target": target, "recipient": target},
+                            }
+                        },
+                    },
                 ),
             }
             for target in allies
@@ -1350,10 +1378,15 @@ def node_choose_ability(caller, raw_string, **kwargs):
             "desc": abi.value,
             "goto": (
                 _step_wizard,
-                {"action_dict": {**action_dict, **{"stunt_type": abi, "defense_type": abi}}},
+                {
+                    **kwargs,
+                    **{
+                        "action_dict": {**action_dict, **{"stunt_type": abi, "defense_type": abi}},
+                    },
+                },
             ),
         }
-        for abiname, abi in (
+        for abi in (
             Ability.STR,
             Ability.DEX,
             Ability.CON,
@@ -1378,10 +1411,13 @@ def node_choose_use_item(caller, raw_string, **kwargs):
     options = [
         {
             "desc": item.get_display_name(caller),
-            "goto": (_step_wizard, {**action_dict, **{"item": item}}),
+            "goto": (_step_wizard, {**kwargs, **{**action_dict, **{"item": item}}}),
         }
-        for item in self.caller.equipment.get_usable_objects_from_backpack()
+        for item in caller.equipment.get_usable_objects_from_backpack()
     ]
+    if not options:
+        text = "There are no usable items in your inventory!"
+
     options.extend(_get_default_wizard_options(caller, **kwargs))
     return text, options
 
@@ -1397,10 +1433,13 @@ def node_choose_wield_item(caller, raw_string, **kwargs):
     options = [
         {
             "desc": item.get_display_name(caller),
-            "goto": (_step_wizard, {**action_dict, **{"item": item}}),
+            "goto": (_step_wizard, {**kwargs, **{**action_dict, **{"item": item}}}),
         }
-        for item in self.caller.equipment.get_wieldable_objects_from_backpack()
+        for item in caller.equipment.get_wieldable_objects_from_backpack()
     ]
+    if not options:
+        text = "There are no items in your inventory that you can wield!"
+
     options.extend(_get_default_wizard_options(caller, **kwargs))
     return text, options
 
@@ -1455,7 +1494,7 @@ def node_combat(caller, raw_string, **kwargs):
             "goto": (
                 _step_wizard,
                 {
-                    "steps": ["node_choose_item", "node_choose_allied_target"],
+                    "steps": ["node_choose_use_item", "node_choose_allied_target"],
                     "action_dict": {"key": "use", "item": None, "target": None},
                 },
             ),
@@ -1482,7 +1521,7 @@ def node_combat(caller, raw_string, **kwargs):
         },
         {
             "desc": "flee!",
-            "goto": (_queue_action, {"flee": {"key": "flee"}}),
+            "goto": (_queue_action, {"action_dict": {"key": "flee"}}),
         },
         {
             "desc": "hold, doing nothing",
@@ -1563,7 +1602,7 @@ class CmdTurnAttack(_CmdTurnCombatBase):
             },
             startnode="node_combat",
             combathandler=self.combathandler,
-            cmdset_mergetype="Union",
+            # cmdset_mergetype="Union",
             persistent=True,
         )
 
