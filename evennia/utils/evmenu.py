@@ -362,6 +362,21 @@ class CmdEvMenuNode(Command):
     def get_help(self):
         return "Menu commands are explained within the menu."
 
+    def _update_aliases(self, menu):
+        """Add aliases to make sure to override defaults if we defined we want it."""
+
+        new_aliases = [_CMD_NOMATCH]
+        if menu.auto_quit and "quit" not in self.aliases:
+            new_aliases.extend(["q", "quit"])
+        if menu.auto_look and "look" not in self.aliases:
+            new_aliases.extend(["l", "look"])
+        if menu.auto_help and "help" not in self.aliases:
+            new_aliases.extend(["h", "help"])
+        if len(new_aliases) > 1:
+            self.set_aliases(new_aliases)
+
+        self.msg(f"aliases: {self.aliases}")
+
     def func(self):
         """
         Implement all menu commands.
@@ -382,7 +397,8 @@ class CmdEvMenuNode(Command):
                     saved_options[2]["startnode_input"] = startnode_input
                 MenuClass = saved_options[0]
                 # this will create a completely new menu call
-                MenuClass(caller, *saved_options[1], **saved_options[2])
+                menu = MenuClass(caller, *saved_options[1], **saved_options[2])
+                # self._update_aliases(menu)
                 return True
             return None
 
@@ -408,6 +424,9 @@ class CmdEvMenuNode(Command):
                         err
                     )  # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
+
+        # self._update_aliases(menu)
+
         # we must do this after the caller with the menu has been correctly identified since it
         # can be either Account, Object or Session (in the latter case this info will be
         # superfluous).
