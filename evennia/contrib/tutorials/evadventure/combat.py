@@ -415,6 +415,9 @@ class CombatActionFlee(CombatAction):
         pass
 
 
+# main combathandler
+
+
 class EvAdventureCombatHandler(DefaultScript):
     """
     This script is created when a combat starts. It 'ticks' the combat and tracks
@@ -1227,7 +1230,7 @@ def _get_combathandler(caller):
 def _queue_action(caller, raw_string, **kwargs):
     action_dict = kwargs["action_dict"]
     _get_combathandler(caller).queue_action(caller, action_dict)
-    return "node_wait"
+    return "node_combat"
 
 
 def _step_wizard(caller, raw_string, **kwargs):
@@ -1250,11 +1253,13 @@ def _step_wizard(caller, raw_string, **kwargs):
             return "node_combat"
         case "back":
             # step back in wizard
+            if istep <= 0:
+                return "node_combat"
             istep = kwargs["istep"] = max(0, istep - 1)
             return steps[istep], kwargs
         case _:
             # forward (default)
-            if istep >= nsteps - 1:
+            if istep >= nsteps:
                 # we are already at end of wizard - queue action!
                 return _queue_action(caller, raw_string, **kwargs)
             else:
@@ -1265,8 +1270,8 @@ def _step_wizard(caller, raw_string, **kwargs):
 
 def _get_default_wizard_options(caller, **kwargs):
     """
-    Get the standard wizard options for moving back/forward/abort. This can be extended to the end
-    of other options.
+    Get the standard wizard options for moving back/forward/abort. This can be appended to
+    the end of other options.
 
     """
 
@@ -1280,7 +1285,7 @@ def node_choose_enemy_target(caller, raw_string, **kwargs):
     """
     Choose an enemy as a target for an action
     """
-    texts = "Choose a target."
+    text = "Choose a target."
     action_dict = kwargs["action_dict"]
 
     combathandler = _get_combathandler(caller)
@@ -1301,7 +1306,7 @@ def node_choose_allied_target(caller, raw_string, **kwargs):
     """
     Choose an enemy as a target for an action
     """
-    texts = "Choose a target."
+    text = "Choose a target."
     action_dict = kwargs["action_dict"]
 
     combathandler = _get_combathandler(caller)
@@ -1493,8 +1498,7 @@ def node_combat(caller, raw_string, **kwargs):
 
 class _CmdTurnCombatBase(_CmdCombatBase):
     """
-    Base combat class for combat. Change the combat-tick to determine
-    how quickly the combat will 'tick'.
+    Override parent class to slow down the tick for more clearly turn-based play.
 
     """
 
@@ -1542,6 +1546,7 @@ class CmdTurnAttack(_CmdTurnCombatBase):
 
         # add combatants to combathandler. this can be done safely over and over
         self.combathandler.add_combatant(self.caller)
+        self.combathandler.queue_action(self.caller, {"key": "attack", "target": target})
         self.combathandler.add_combatant(target)
         self.combathandler.start_combat()
 
@@ -1559,6 +1564,7 @@ class CmdTurnAttack(_CmdTurnCombatBase):
             startnode="node_combat",
             combathandler=self.combathandler,
             cmdset_mergetype="Union",
+            persistent=True,
         )
 
 
