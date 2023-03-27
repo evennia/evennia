@@ -112,12 +112,11 @@
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">strip_tags</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">simpleeval</span> <span class="kn">import</span> <span class="n">simple_eval</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">threads</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
-
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">_MULTIMATCH_TEMPLATE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_TEMPLATE</span>
 <span class="n">_EVENNIA_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EVENNIA_DIR</span>
@@ -2634,12 +2633,14 @@
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">caller</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;To retrieve input from a @pausable method, that method &quot;</span>
-                        <span class="s2">&quot;must be called with a &#39;caller&#39; argument)&quot;</span>
+                        <span class="s2">&quot;To use `result yield(&#39;prompt&#39;)` in an @interactive method, that &quot;</span>
+                        <span class="s2">&quot;method must have an argument named `caller`.)&quot;</span>
                     <span class="p">)</span>
                 <span class="n">get_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">_process_input</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;yield(val) in a @pausable method must have an int/float as arg.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;yield(val) in an @interactive method must have an int/float as arg.&quot;</span>
+                <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">argnames</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">args</span>

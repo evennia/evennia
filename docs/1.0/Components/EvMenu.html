@@ -401,27 +401,19 @@ node.</p></li>
 </section>
 <section id="return-values-from-the-node">
 <h3>Return values from the node<a class="headerlink" href="#return-values-from-the-node" title="Permalink to this headline">¶</a></h3>
-<p>Each function must return two variables, <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">options</span></code>.</p>
+<p>Each node function must return two variables, <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">options</span></code>.</p>
 <section id="text">
 <h4>text<a class="headerlink" href="#text" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> variable is a string or tuple. This text is what will be displayed when the user reaches
-this node. If this is a tuple, then the first element of the tuple will be considered the displayed
-text and the second the help-text to display when the user enters the <code class="docutils literal notranslate"><span class="pre">help</span></code> command on this node.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> variable is a string or tuple. This text is what will be displayed when the user reaches this node. If this is a tuple, then the first element of the tuple will be considered the displayed text and the second the help-text to display when the user enters the <code class="docutils literal notranslate"><span class="pre">help</span></code> command on this node.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;This is the text to display&quot;</span><span class="p">,</span> <span class="s2">&quot;This is the help text for this node&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Returning a <code class="docutils literal notranslate"><span class="pre">None</span></code> text is allowed and simply leads to a node with no text and only options.  If the
-help text is not given, the menu will give a generic error message when using <code class="docutils literal notranslate"><span class="pre">help</span></code>.</p>
+<p>Returning a <code class="docutils literal notranslate"><span class="pre">None</span></code> text is allowed and simply leads to a node with no text and only options.  If the help text is not given, the menu will give a generic error message when using <code class="docutils literal notranslate"><span class="pre">help</span></code>.</p>
 </section>
 <section id="options">
 <h4>options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> list describe all the choices available to the user when viewing this node. If
-<code class="docutils literal notranslate"><span class="pre">options</span></code> is
-returned as <code class="docutils literal notranslate"><span class="pre">None</span></code>, it means that this node is an <em>Exit node</em> - any text is displayed and then the
-menu immediately exits, running the <code class="docutils literal notranslate"><span class="pre">exit_cmd</span></code> if given.</p>
-<p>Otherwise, <code class="docutils literal notranslate"><span class="pre">options</span></code> should be a list (or tuple) of dictionaries, one for each option. If only one
-option is
-available, a single dictionary can also be returned. This is how it could look:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> list describe all the choices available to the user when viewing this node. If <code class="docutils literal notranslate"><span class="pre">options</span></code> is returned as <code class="docutils literal notranslate"><span class="pre">None</span></code>, it means that this node is an <em>Exit node</em> - any text is displayed and then the menu immediately exits, running the <code class="docutils literal notranslate"><span class="pre">exit_cmd</span></code> if given.</p>
+<p>Otherwise, <code class="docutils literal notranslate"><span class="pre">options</span></code> should be a list (or tuple) of dictionaries, one for each option. If only one option is available, a single dictionary can also be returned. This is how it could look:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_test</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;A goblin attacks you!&quot;</span>
@@ -449,14 +441,7 @@ Defend: Hold back and defend yourself
 </div>
 <section id="option-key-key">
 <h5>option-key ‘key’<a class="headerlink" href="#option-key-key" title="Permalink to this headline">¶</a></h5>
-<p>The option’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is what the user should enter in order to choose that option. If given as a
-tuple, the
-first string of that tuple will be what is shown on-screen while the rest are aliases for picking
-that option. In the above example, the user could enter “Attack” (or “attack”, it’s not
-case-sensitive), “a” or “att” in order to attack the goblin. Aliasing is useful for adding custom
-coloring to the choice. The first element of the aliasing tuple should then be the colored version,
-followed by a version without color - since otherwise the user would have to enter the color codes
-to select that choice.</p>
+<p>The option’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is what the user should enter in order to choose that option. If given as a tuple, the first string of that tuple will be what is shown on-screen while the rest are aliases for picking that option. In the above example, the user could enter “Attack” (or “attack”, it’s not case-sensitive), “a” or “att” in order to attack the goblin. Aliasing is useful for adding custom coloring to the choice. The first element of the aliasing tuple should then be the colored version, followed by a version without color - since otherwise the user would have to enter the color codes to select that choice.</p>
 <p>Note that the <code class="docutils literal notranslate"><span class="pre">key</span></code> is <em>optional</em>. If no key is given, it will instead automatically be replaced
 with a running number starting from <code class="docutils literal notranslate"><span class="pre">1</span></code>. If removing the <code class="docutils literal notranslate"><span class="pre">key</span></code> part of each option, the resulting
 menu node would look like this instead:</p>
@@ -468,11 +453,8 @@ ________________________________
 
 </pre></div>
 </div>
-<p>Whether you want to use a key or rely on numbers is mostly
-a matter of style and the type of menu.</p>
-<p>EvMenu accepts one important special <code class="docutils literal notranslate"><span class="pre">key</span></code> given only as <code class="docutils literal notranslate"><span class="pre">&quot;_default&quot;</span></code>. This key is used when a user
-enters something that does not match any other fixed keys. It is particularly useful for getting
-user input:</p>
+<p>Whether you want to use a key or rely on numbers is mostly a matter of style and the type of menu.</p>
+<p>EvMenu accepts one important special <code class="docutils literal notranslate"><span class="pre">key</span></code> given only as <code class="docutils literal notranslate"><span class="pre">&quot;_default&quot;</span></code>. This key is used when a user enters something that does not match any other fixed keys. It is particularly useful for getting user input:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_readuser</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Please enter your name&quot;</span>
 
@@ -489,14 +471,11 @@ user input:</p>
 </section>
 <section id="option-key-desc">
 <h4>option-key ‘desc’<a class="headerlink" href="#option-key-desc" title="Permalink to this headline">¶</a></h4>
-<p>This simply contains the description as to what happens when selecting the menu option. For
-<code class="docutils literal notranslate"><span class="pre">&quot;_default&quot;</span></code> options or if the <code class="docutils literal notranslate"><span class="pre">key</span></code> is already long or descriptive, it is not strictly needed. But
-usually it’s better to keep the <code class="docutils literal notranslate"><span class="pre">key</span></code> short and put more detail in <code class="docutils literal notranslate"><span class="pre">desc</span></code>.</p>
+<p>This simply contains the description as to what happens when selecting the menu option. For <code class="docutils literal notranslate"><span class="pre">&quot;_default&quot;</span></code> options or if the <code class="docutils literal notranslate"><span class="pre">key</span></code> is already long or descriptive, it is not strictly needed. But usually it’s better to keep the <code class="docutils literal notranslate"><span class="pre">key</span></code> short and put more detail in <code class="docutils literal notranslate"><span class="pre">desc</span></code>.</p>
 </section>
 <section id="option-key-goto">
 <h4>option-key ‘goto’<a class="headerlink" href="#option-key-goto" title="Permalink to this headline">¶</a></h4>
-<p>This is the operational part of the option and fires only when the user chooses said option. Here
-are three ways to write it</p>
+<p>This is the operational part of the option and fires only when the user chooses said option. Here are three ways to write it</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">def</span> <span class="nf">_action_two</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># do things ...</span>
@@ -523,54 +502,25 @@ are three ways to write it</p>
 
 </pre></div>
 </div>
-<p>As seen above, <code class="docutils literal notranslate"><span class="pre">goto</span></code> could just be pointing to a single <code class="docutils literal notranslate"><span class="pre">nodename</span></code> string - the name of the node to
-go to. When given like this, EvMenu will look for a node named like this and call its associated
-function as</p>
+<p>As seen above, <code class="docutils literal notranslate"><span class="pre">goto</span></code> could just be pointing to a single <code class="docutils literal notranslate"><span class="pre">nodename</span></code> string - the name of the node to go to. When given like this, EvMenu will look for a node named like this and call its associated function as</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">nodename</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here, <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is always the input the user entered to make that choice and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are the
-same as those <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> that already entered the <em>current</em> node (they are passed on).</p>
-<p>Alternatively the <code class="docutils literal notranslate"><span class="pre">goto</span></code> could point to a “goto-callable”. Such callables are usually defined in the
-same
-module as the menu nodes and given names starting with <code class="docutils literal notranslate"><span class="pre">_</span></code> (to avoid being parsed as nodes
-themselves). These callables will be called the same as a node function - <code class="docutils literal notranslate"><span class="pre">callable(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs)</span></code>, where <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is what the user entered on this node and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> is
-forwarded from the node’s own input.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">goto</span></code> option key could also point to a tuple <code class="docutils literal notranslate"><span class="pre">(callable,</span> <span class="pre">kwargs)</span></code> - this allows for customizing
-the kwargs passed into the goto-callable, for example you could use the same callable but change the
-kwargs passed into it depending on which option was actually chosen.</p>
-<p>The “goto callable” must either return a string <code class="docutils literal notranslate"><span class="pre">&quot;nodename&quot;</span></code> or a tuple <code class="docutils literal notranslate"><span class="pre">(&quot;nodename&quot;,</span> <span class="pre">mykwargs)</span></code>.
-This will lead to the next node being called as either <code class="docutils literal notranslate"><span class="pre">nodename(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs)</span></code> or
-<code class="docutils literal notranslate"><span class="pre">nodename(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**mykwargs)</span></code> - so this allows changing (or replacing) the options
-going
-into the next node depending on what option was chosen.</p>
-<p>There is one important case - if the goto-callable returns <code class="docutils literal notranslate"><span class="pre">None</span></code> for a <code class="docutils literal notranslate"><span class="pre">nodename</span></code>, <em>the current
-node will run again</em>, possibly with different kwargs. This makes it very easy to re-use a node over
-and over, for example allowing different options to update some text form being passed and
-manipulated for every iteration.</p>
-<blockquote>
-<div><p>The EvMenu also supports the <code class="docutils literal notranslate"><span class="pre">exec</span></code> option key. This allows for running a callable <em>before</em> the
-goto-callable. This functionality comes from a time before goto could be a callable and is
-<em>deprecated</em> as of Evennia 0.8. Use <code class="docutils literal notranslate"><span class="pre">goto</span></code> for all functionality where you’d before use <code class="docutils literal notranslate"><span class="pre">exec</span></code>.</p>
-</div></blockquote>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is always the input the user entered to make that choice and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are the same as those <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> that already entered the <em>current</em> node (they are passed on).</p>
+<p>Alternatively the <code class="docutils literal notranslate"><span class="pre">goto</span></code> could point to a “goto-callable”. Such callables are usually defined in the same module as the menu nodes and given names starting with <code class="docutils literal notranslate"><span class="pre">_</span></code> (to avoid being parsed as nodes themselves). These callables will be called the same as a node function - <code class="docutils literal notranslate"><span class="pre">callable(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs)</span></code>, where <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is what the user entered on this node and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> is forwarded from the node’s own input.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">goto</span></code> option key could also point to a tuple <code class="docutils literal notranslate"><span class="pre">(callable,</span> <span class="pre">kwargs)</span></code> - this allows for customizing the kwargs passed into the goto-callable, for example you could use the same callable but change the kwargs passed into it depending on which option was actually chosen.</p>
+<p>The “goto callable” must either return a string <code class="docutils literal notranslate"><span class="pre">&quot;nodename&quot;</span></code> or a tuple <code class="docutils literal notranslate"><span class="pre">(&quot;nodename&quot;,</span> <span class="pre">mykwargs)</span></code>. This will lead to the next node being called as either <code class="docutils literal notranslate"><span class="pre">nodename(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs)</span></code> or <code class="docutils literal notranslate"><span class="pre">nodename(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**mykwargs)</span></code> - so this allows changing (or replacing) the options going into the next node depending on what option was chosen.</p>
+<p>There is one important case - if the goto-callable returns <code class="docutils literal notranslate"><span class="pre">None</span></code> for a <code class="docutils literal notranslate"><span class="pre">nodename</span></code>, <em>the current node will run again</em>, possibly with different kwargs. This makes it very easy to re-use a node over and over, for example allowing different options to update some text form being passed and manipulated for every iteration.</p>
 </section>
 </section>
 <section id="temporary-storage">
 <h3>Temporary storage<a class="headerlink" href="#temporary-storage" title="Permalink to this headline">¶</a></h3>
-<p>When the menu starts, the EvMenu instance is stored on the caller as <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code>. Through
-this object you can in principle reach the menu’s internal state if you know what you are doing.
-This is also a good place to store temporary, more global variables that may be cumbersome to keep
-passing from node to node via the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. The <code class="docutils literal notranslate"><span class="pre">_evmnenu</span></code> will be deleted automatically when the
-menu closes, meaning you don’t need to worry about cleaning anything up.</p>
-<p>If you want <em>permanent</em> state storage, it’s instead better to use an Attribute on <code class="docutils literal notranslate"><span class="pre">caller</span></code>. Remember
-that this will remain after the menu closes though, so you need to handle any needed cleanup
-yourself.</p>
+<p>When the menu starts, the EvMenu instance is stored on the caller as <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code>. Through this object you can in principle reach the menu’s internal state if you know what you are doing. This is also a good place to store temporary, more global variables that may be cumbersome to keep passing from node to node via the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. The <code class="docutils literal notranslate"><span class="pre">_evmnenu</span></code> will be deleted automatically when the menu closes, meaning you don’t need to worry about cleaning anything up.</p>
+<p>If you want <em>permanent</em> state storage, it’s instead better to use an Attribute on <code class="docutils literal notranslate"><span class="pre">caller</span></code>. Remember that this will remain after the menu closes though, so you need to handle any needed cleanup yourself.</p>
 </section>
 <section id="customizing-menu-formatting">
 <h3>Customizing Menu formatting<a class="headerlink" href="#customizing-menu-formatting" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> display of nodes, options etc are controlled by a series of formatting methods on the
-<code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> class. To customize these, simply create a new child class of <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> and override as
-needed. Here is an example:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> display of nodes, options etc are controlled by a series of formatting methods on the <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> class. To customize these, simply create a new child class of <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> and override as needed. Here is an example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
 
 <span class="k">class</span> <span class="nc">MyEvMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
@@ -634,8 +584,7 @@ needed. Here is an example:</p>
 </section>
 <section id="evmenu-templating-language">
 <h2>EvMenu templating language<a class="headerlink" href="#evmenu-templating-language" title="Permalink to this headline">¶</a></h2>
-<p>In <a class="reference external" href="http://evmenu.py">evmenu.py</a> are two helper functions <code class="docutils literal notranslate"><span class="pre">parse_menu_template</span></code> and <code class="docutils literal notranslate"><span class="pre">template2menu</span></code>
-that is used to parse a <em>menu template</em> string into an EvMenu:</p>
+<p>In <a class="reference external" href="http://evmenu.py">evmenu.py</a> are two helper functions <code class="docutils literal notranslate"><span class="pre">parse_menu_template</span></code> and <code class="docutils literal notranslate"><span class="pre">template2menu</span></code> that is used to parse a <em>menu template</em> string into an EvMenu:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evmenu.template2menu(caller, menu_template, goto_callables)
 </pre></div>
 </div>
@@ -945,6 +894,62 @@ auto-created by the <code class="docutils literal notranslate"><span class="pre"
 </section>
 <section id="example-menus">
 <h2>Example Menus<a class="headerlink" href="#example-menus" title="Permalink to this headline">¶</a></h2>
+<p>Here is a diagram to help visualize the flow of data from node to node, including goto-callables in-between:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        ┌─
+        │  def nodeA(caller, raw_string, **kwargs):
+        │      text = &quot;Choose how to operate on 2 and 3.&quot;
+        │      options = (
+        │          {
+        │              &quot;key&quot;: &quot;A&quot;,
+        │              &quot;desc&quot;: &quot;Multiply 2 with 3&quot;,
+        │              &quot;goto&quot;: (_callback, {&quot;type&quot;: &quot;mult&quot;, &quot;a&quot;: 2, &quot;b&quot;: 3})
+        │          },                      ───────────────────┬────────────
+        │          {                                          │
+        │              &quot;key&quot;: &quot;B&quot;,                            └───────────────┐
+        │              &quot;desc&quot;: &quot;Add 2 and 3&quot;,                                 │
+  Node A│              &quot;goto&quot;: (_callback, {&quot;type&quot;: &quot;add&quot;, &quot;a&quot;: 2, &quot;b&quot;: 3})   │
+        │          },                      ─────────────────┬─────────────    │
+        │          {                                        │                 │
+        │              &quot;key&quot;: &quot;C&quot;,                          │                 │
+        │              &quot;desc&quot;: &quot;Show the value 5&quot;,          │                 │
+        │              &quot;goto&quot;: (&quot;node_B&quot;, {&quot;c&quot;: 5})         │                 │
+        │          }                      ───────┐          │                 │
+        │      )                                 └──────────┼─────────────────┼───┐
+        │      return text, options                         │                 │   │
+        └─                                       ┌──────────┘                 │   │
+                                                 │                            │   │
+                                                 │ ┌──────────────────────────┘   │
+        ┌─                                       ▼ ▼                              │
+        │  def _callback(caller, raw_string, **kwargs):                           │
+        │      if kwargs[&quot;type&quot;] == &quot;mult&quot;:                                       │
+        │          return &quot;node_B&quot;, {&quot;c&quot;: kwargs[&quot;a&quot;] * kwargs[&quot;b&quot;]}              │
+Goto-   │                           ───────────────┬────────────────              │
+callable│                                          │                              │
+        │                                          └───────────────────┐          │
+        │                                                              │          │
+        │      elif kwargs[&quot;type&quot;] == &quot;add&quot;:                           │          │
+        │          return &quot;node_B&quot;, {&quot;c&quot;: kwargs[&quot;a&quot;] + kwargs[&quot;b&quot;]}   │          │
+        └─                          ────────┬───────────────────────   │          │
+                                            │                          │          │
+                                            │ ┌────────────────────────┼──────────┘
+                                            │ │                        │
+                                            │ │ ┌──────────────────────┘
+        ┌─                                  ▼ ▼ ▼
+        │  def nodeB(caller, raw_string, **kwargs):
+  Node B│      text = &quot;Result of operation: &quot; + kwargs[&quot;c&quot;]
+        │      return text, {}
+        └─
+
+        ┌─
+   Menu │  EvMenu(caller, {&quot;node_A&quot;: nodeA, &quot;node_B&quot;: nodeB}, startnode=&quot;node_A&quot;)
+   Start│
+        └─
+</pre></div>
+</div>
+<p>Above we create a very simple/stupid menu (in the <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> call at the end) where we map the node identifier <code class="docutils literal notranslate"><span class="pre">&quot;node_A&quot;</span></code> to the Python function <code class="docutils literal notranslate"><span class="pre">nodeA</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;node_B&quot;</span></code> to the function <code class="docutils literal notranslate"><span class="pre">nodeB</span></code>.</p>
+<p>We start the menu in <code class="docutils literal notranslate"><span class="pre">&quot;node_A&quot;</span></code> where we get three options A, B and C.  Options A and B will route via a a goto-callable <code class="docutils literal notranslate"><span class="pre">_callback</span></code> that either multiples or adds the numbers 2 and 3 together before continuing to <code class="docutils literal notranslate"><span class="pre">&quot;node_B&quot;</span></code>. Option C routes directly to <code class="docutils literal notranslate"><span class="pre">&quot;node_B&quot;</span></code>, passing the number 5.</p>
+<p>In every step, we pass a dict which becomes the ingoing <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the next step. If we didn’t pass anything (it’s optional), the next step’s <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> would just be empty.</p>
+<p>More examples:</p>
 <ul class="simple">
 <li><p><strong><a class="reference internal" href="#example-simple-branching-menu"><span class="std std-doc">Simple branching menu</span></a></strong> - choose from options</p></li>
 <li><p><strong><a class="reference internal" href="#example-dynamic-goto"><span class="std std-doc">Dynamic goto</span></a></strong> - jumping to different nodes based on response</p></li>
