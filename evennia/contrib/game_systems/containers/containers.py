@@ -73,6 +73,9 @@ class ContribContainer(_BASE_OBJECT_TYPECLASS):
 
         Returns:
             boolean: Whether the object `target` should be gotten or not.
+
+        Notes:
+            If this method returns False/None, the getting is cancelled before it is even started.
         """
         return True
 
@@ -87,7 +90,8 @@ class ContribContainer(_BASE_OBJECT_TYPECLASS):
         Returns:
             boolean: Whether the object `target` should be put down or not.
 
-        Note:
+        Notes:
+            If this method returns False/None, the putting is cancelled before it is even started.
             To add more complex capacity checks, modify this method on your child typeclass.
         """
         # check if we're already at capacity
@@ -261,7 +265,7 @@ class CmdPut(CmdDrop):
             if container.db.put_err_msg:
                 self.msg(container.db.put_err_msg)
             else:
-                self.msg("You can't get things from that.")
+                self.msg("You can't put things in that.")
             return
 
         # Call the object script's at_pre_drop() method.
