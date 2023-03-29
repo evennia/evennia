@@ -36,3 +36,16 @@ class TestContainerCmds(BaseEvenniaCommandTest):
         self.call(CmdPut(), "obj in box", "You put an Obj in a Box.")
         # get from the container
         self.call(CmdContainerGet(), "obj from box", "You get an Obj from a Box.")
+
+    def test_locked_get_put(self):
+        # lock container
+        self.container.locks.add("get_from:false()")
+        # move object to container to try getting
+        self.obj1.location = self.container
+        self.call(CmdContainerGet(), "obj from box", "You can't get things from that.")
+        # move object to character to try putting
+        self.obj1.location = self.char1
+        self.call(CmdPut(), "obj in box", "You can't put things in that.")
+        
+        
+        
