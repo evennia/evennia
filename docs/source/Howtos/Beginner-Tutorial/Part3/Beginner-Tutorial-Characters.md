@@ -293,7 +293,7 @@ the `Character` class in `mygame/typeclasses/characters.py`).
 
 There are thus two ways to weave your new Character class into Evennia: 
 
-1. Change `mygame/server/conf/settings.py` and add `BASE_CHARACTER_CLASS = "evadventure.characters.EvAdventureCharacter"`.
+1. Change `mygame/server/conf/settings.py` and add `BASE_CHARACTER_TYPECLASS = "evadventure.characters.EvAdventureCharacter"`.
 2. Or, change `typeclasses.characters.Character` to inherit from `EvAdventureCharacter`. 
 
 You must always reload the server for changes like this to take effect.
