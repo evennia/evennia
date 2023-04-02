@@ -36,9 +36,11 @@ class ComponentProperty:
         raise Exception("Cannot set a class property")
 
     def __set_name__(self, owner, name):
-        class_components = getattr(owner, "_class_components", None)
+        # Retrieve the class_components set on the direct class only
+        class_components = owner.__dict__.get("_class_components")
         if not class_components:
-            class_components = []
+            # Create a new list, including inherited class components
+            class_components = list(getattr(owner, "_class_components", []))
             setattr(owner, "_class_components", class_components)
 
         class_components.append((self.component_name, self.values))
