@@ -286,6 +286,43 @@ to any instance of this typeclass.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.InheritedTCWithComponents">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">InheritedTCWithComponents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">db_key</span></em>, <em class="sig-param"><span class="n">db_typeclass_path</span></em>, <em class="sig-param"><span class="n">db_date_created</span></em>, <em class="sig-param"><span class="n">db_lock_storage</span></em>, <em class="sig-param"><span class="n">db_account</span></em>, <em class="sig-param"><span class="n">db_sessid</span></em>, <em class="sig-param"><span class="n">db_location</span></em>, <em class="sig-param"><span class="n">db_home</span></em>, <em class="sig-param"><span class="n">db_destination</span></em>, <em class="sig-param"><span class="n">db_cmdset_storage</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#InheritedTCWithComponents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.InheritedTCWithComponents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents" title="evennia.contrib.base_systems.components.tests.CharacterWithComponents"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.tests.CharacterWithComponents</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.test_c">
+<code class="sig-name descname">test_c</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.test_c" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows you to register a component on a typeclass.
+Components registered with this property are automatically added
+to any instance of this typeclass.</p>
+<p>Defaults can be overridden for this typeclass by passing kwargs</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents.DoesNotExist" title="evennia.contrib.base_systems.components.tests.CharacterWithComponents.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.tests.CharacterWithComponents.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents.MultipleObjectsReturned" title="evennia.contrib.base_systems.components.tests.CharacterWithComponents.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.tests.CharacterWithComponents.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.base_systems.components.tests.InheritedTCWithComponents'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'InheritedTCWithComponents'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.InheritedTCWithComponents.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.contrib.base_systems.components.tests.TestComponents">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">TestComponents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a></p>
@@ -298,6 +335,11 @@ to any instance of this typeclass.</p>
 <dl class="py method">
 <dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_character_has_class_components">
 <code class="sig-name descname">test_character_has_class_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_character_has_class_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_character_has_class_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_inherited_typeclass_does_not_include_child_class_components">
+<code class="sig-name descname">test_inherited_typeclass_does_not_include_child_class_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_inherited_typeclass_does_not_include_child_class_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_inherited_typeclass_does_not_include_child_class_components" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
