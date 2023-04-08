@@ -390,7 +390,7 @@ Characters (when logging in, for example). This defaults to <code class="docutil
 the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>).</p>
 <p>There are thus two ways to weave your new Character class into Evennia:</p>
 <ol class="simple">
-<li><p>Change <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and add <code class="docutils literal notranslate"><span class="pre">BASE_CHARACTER_CLASS</span> <span class="pre">=</span> <span class="pre">&quot;evadventure.characters.EvAdventureCharacter&quot;</span></code>.</p></li>
+<li><p>Change <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and add <code class="docutils literal notranslate"><span class="pre">BASE_CHARACTER_TYPECLASS</span> <span class="pre">=</span> <span class="pre">&quot;evadventure.characters.EvAdventureCharacter&quot;</span></code>.</p></li>
 <li><p>Or, change <code class="docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code> to inherit from <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>.</p></li>
 </ol>
 <p>You must always reload the server for changes like this to take effect.</p>
