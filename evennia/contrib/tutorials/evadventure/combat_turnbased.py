@@ -3,98 +3,35 @@ EvAdventure Turn-based combat
 
 This implements a turn-based (Final Fantasy, etc) style of MUD combat.
 
-choose their next action. If they don't react before a timer runs out, the previous action
-will be repeated. This means that a 'twitch' style combat can be created using the same
-mechanism, by just speeding up each 'turn'.
+In this variation, all combatants are sharing the same combat handler, sitting on the current room.
+The user will receive a menu of combat options and each combatat has a certain time time (e.g. 30s)
+to select their next action or do nothing. To speed up play, as soon as everyone in combat selected
+their next action, the next turn runs immediately, regardless of the timeout.
 
-The combat is handled with a `Script` shared between all combatants; this tracks the state
-of combat and handles all timing elements.
+With this example, all chosen combat actions are considered to happen at the same time (so you are
+able to kill and be killed in the same turn).
 
-Unlike in base _Knave_, the MUD version's combat is simultaneous; everyone plans and executes
-their turns simultaneously with minimum downtime.
+Unlike in twitch-like combat, there is no movement while in turn-based combat. Fleeing is a select
+action that takes several vulnerable turns to complete.
 
-This version is simplified to not worry about things like optimal range etc. So a bow can be used
-the same as a sword in battle. One could add a 1D range mechanism to add more strategy by requiring
-optimizal positioning.
-
-The combat is controlled through a menu:
-
-------------------- main menu
-Combat
-
-You have 30 seconds to choose your next action. If you don't decide, you will hesitate and do
-nothing. Available actions:
-
-1. [A]ttack/[C]ast spell at <target> using your equipped weapon/spell
-3. Make [S]tunt <target/yourself> (gain/give advantage/disadvantage for future attacks)
-4. S[W]ap weapon / spell rune
-5. [U]se <item>
-6. [F]lee/disengage (takes one turn, during which attacks have advantage against you)
-8. [H]esitate/Do nothing
-
-You can also use say/emote between rounds.
-As soon as all combatants have made their choice (or time out), the round will be resolved
-simultaneusly.
-
--------------------- attack/cast spell submenu
-
-Choose the target of your attack/spell:
-0: Yourself              3: <enemy 3> (wounded)
-1: <enemy 1> (hurt)
-2: <enemy 2> (unharmed)
-
-------------------- make stunt submenu
-
-Stunts are special actions that don't cause damage but grant advantage for you or
-an ally for future attacks - or grant disadvantage to your enemy's future attacks.
-The effects of stunts start to apply *next* round. The effect does not stack, can only
-be used once and must be taken advantage of within 5 rounds.
-
-Choose stunt:
-1: Trip <target> (give disadvantage DEX)
-2: Feint <target> (get advantage DEX against target)
-3: ...
-
--------------------- make stunt target submenu
-
-Choose the target of your stunt:
-0: Yourself                  3: <combatant 3> (wounded)
-1: <combatant 1> (hurt)
-2: <combatant 2> (unharmed)
-
--------------------  swap weapon or spell run
-
-Choose the item to wield.
-1: <item1>
-2: <item2> (two hands)
-3: <item3>
-4: ...
-
-------------------- use item
-
-Choose item to use.
-1: Healing potion (+1d6 HP)
-2: Magic pebble (gain advantage, 1 use)
-3: Potion of glue (give disadvantage to target)
-
-------------------- Hesitate/Do nothing
-
-You hang back, passively defending.
-
-------------------- Disengage
-
-You retreat, getting ready to get out of combat. Use two times in a row to
-leave combat. You flee last in a round.
 """
 
 
+import random
+from collections import defaultdict
+
+from evennia import AttributeProperty, CmdSet, Command, EvMenu
+from evennia.utils import inherits_from, list_to_string
+
+from .characters import EvAdventureCharacter
 from .combat_base import (
     CombatAction,
+    CombatActionAttack,
     CombatActionHold,
     CombatActionStunt,
-    CombatActionUserItem,
+    CombatActionUseItem,
     CombatActionWield,
-    EvAdventureCombatHandler,
+    EvAdventureCombatHandlerBase,
 )
 from .enums import Ability
 
@@ -133,7 +70,7 @@ class CombatActionFlee(CombatAction):
             )
 
 
-class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandler):
+class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandlerBase):
     """
     A version of the combathandler, handling turn-based combat.
 
@@ -175,31 +112,32 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandler):
     # usable script properties
     # .is_active - show if timer is running
 
-    def give_advantage(self, recipient, target):
+    def give_advantage(self, combatant, target):
         """
         Let a benefiter gain advantage against the target.
 
         Args:
-            recipient (Character or NPC): The one to gain the advantage. This may or may not
+            combatant (Character or NPC): The one to gain the advantage. This may or may not
                 be the same entity that creates the advantage in the first place.
             target (Character or NPC): The one against which the target gains advantage. This
                 could (in principle) be the same as the benefiter (e.g. gaining advantage on
                 some future boost)
 
         """
-        self.advantage_matrix[recipient][target] = True
+        self.advantage_matrix[combatant][target] = True
 
-    def give_disadvantage(self, recipient, target, **kwargs):
+    def give_disadvantage(self, combatant, target, **kwargs):
         """
         Let an affected party gain disadvantage against a target.
 
         Args:
             recipient (Character or NPC): The one to get the disadvantage.
-            target (Character or NPC): The one against which the target gains disadvantage, usually an enemy.
+            target (Character or NPC): The one against which the target gains disadvantage, usually
+                an enemy.
 
         """
-        self.disadvantage_matrix[recipient][target] = True
-        self.combathandler.advantage_matrix[recipient][target] = False
+        self.disadvantage_matrix[combatant][target] = True
+        self.combathandler.advantage_matrix[combatant][target] = False
 
     def has_advantage(self, combatant, target, **kwargs):
         """
@@ -210,7 +148,7 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandler):
             target (Character or NPC): The target to check advantage against.
 
         """
-        return bool(self.combathandler.advantage_matrix[recipient].pop(target, False)) or (
+        return bool(self.combathandler.advantage_matrix[combatant].pop(target, False)) or (
             target in self.combathandler.fleeing_combatants
         )
 
@@ -223,11 +161,9 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandler):
             target (Character or NPC): The target to check disadvantage against.
 
         """
-
-        def has_disadvantage(self, recipient, target):
-            return bool(self.combathandler.disadvantage_matrix[recipient].pop(target, False)) or (
-                recipient in self.combathandler.fleeing_combatants
-            )
+        return bool(self.combathandler.disadvantage_matrix[combatant].pop(target, False)) or (
+            combatant in self.combathandler.fleeing_combatants
+        )
 
     def add_combatant(self, combatant):
         """
@@ -370,7 +306,7 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandler):
 
         """
         # this gets the next dict and rotates the queue
-        action_dict = self.combatants.get(combatants, self.fallback_action_dict)
+        action_dict = self.combatants.get(combatant, self.fallback_action_dict)
 
         # use the action-dict to select and create an action from an action class
         action_class = self.action_classes[action_dict["key"]]
@@ -763,18 +699,7 @@ def node_combat(caller, raw_string, **kwargs):
 # Add this command to the Character cmdset to make turn-based combat available.
 
 
-class _CmdTurnCombatBase(_CmdCombatBase):
-    """
-    Override parent class to slow down the tick for more clearly turn-based play.
-
-    """
-
-    combathandler_name = "combathandler"
-    combat_tick = 30
-    flee_timeout = 2
-
-
-class CmdTurnAttack(_CmdTurnCombatBase):
+class CmdTurnAttack(Command):
     """
     Start or join combat.
 
@@ -800,7 +725,7 @@ class CmdTurnAttack(_CmdTurnCombatBase):
             return
 
         if not hasattr(target, "hp"):
-            self.msg(f"You can't attack that.")
+            self.msg("You can't attack that.")
             return
         elif target.hp <= 0:
             self.msg(f"{target.get_display_name(self.caller)} is already down.")
@@ -810,14 +735,18 @@ class CmdTurnAttack(_CmdTurnCombatBase):
             self.msg("PvP combat is not allowed here!")
             return
 
+        combathandler = EvAdventureTurnbasedCombatHandler.get_or_create_combathandler(
+            self.caller.location
+        )
+
         # add combatants to combathandler. this can be done safely over and over
-        self.combathandler.add_combatant(self.caller)
-        self.combathandler.queue_action(self.caller, {"key": "attack", "target": target})
-        self.combathandler.add_combatant(target)
-        self.combathandler.start_combat()
+        combathandler.add_combatant(self.caller)
+        combathandler.queue_action(self.caller, {"key": "attack", "target": target})
+        combathandler.add_combatant(target)
+        combathandler.start_combat()
 
         # build and start the menu
-        evmenu.EvMenu(
+        EvMenu(
             self.caller,
             {
                 "node_choose_enemy_target": node_choose_enemy_target,

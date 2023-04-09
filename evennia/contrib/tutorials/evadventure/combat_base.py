@@ -12,24 +12,12 @@ This establishes the basic building blocks for combat:
 
 """
 
-import random
-from collections import defaultdict, deque
-
-from evennia import CmdSet, Command, create_script, default_cmds
-from evennia.commands.command import InterruptCommand
+from evennia import create_script
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
-from evennia.utils import dbserialize, delay, evmenu, evtable, logger
-from evennia.utils.utils import display_len, inherits_from, list_to_string, pad
+from evennia.utils import evtable
 
 from . import rules
-from .characters import EvAdventureCharacter
-from .enums import ABILITY_REVERSE_MAP, Ability, ObjType
-from .npcs import EvAdventureNPC
-from .objects import EvAdventureObject
-
-COMBAT_HANDLER_KEY = "evadventure_turnbased_combathandler"
-COMBAT_HANDLER_INTERVAL = 30
 
 
 class CombatFailure(RuntimeError):
@@ -39,7 +27,7 @@ class CombatFailure(RuntimeError):
     """
 
 
-# Combat action classes
+# Combaw action classes
 
 
 class CombatAction:
@@ -149,9 +137,9 @@ class CombatActionAttack(CombatAction):
 class CombatActionStunt(CombatAction):
     """
     Perform a stunt the grants a beneficiary (can be self) advantage on their next action against a
-    target. Whenever performing a stunt that would affect another negatively (giving them disadvantage
-    against an ally, or granting an advantage against them, we need to make a check first. We don't
-    do a check if giving an advantage to an ally or ourselves.
+    target. Whenever performing a stunt that would affect another negatively (giving them
+    disadvantage against an ally, or granting an advantage against them, we need to make a check
+    first. We don't do a check if giving an advantage to an ally or ourselves.
 
     action_dict = {
            "key": "stunt",
@@ -159,8 +147,8 @@ class CombatActionStunt(CombatAction):
            "target": Character/NPC,
            "advantage": bool,  # if False, it's a disadvantage
            "stunt_type": Ability,  # what ability (like STR, DEX etc) to use to perform this stunt.
-           "defense_type": Ability, # what ability to use to defend against (negative) effects of this
-               stunt.
+           "defense_type": Ability, # what ability to use to defend against (negative) effects of
+            this stunt.
         }
 
     Note:
@@ -298,7 +286,7 @@ class EvAdventureCombatHandlerBase(DefaultScript):
     fallback_action_dict = AttributeProperty({"key": "hold"}, autocreate=False)
 
     @classmethod
-    def get_or_create_combathandler(cls, obj, combathandler_key="combathandler", **kwargs):
+    def get_or_create_combathandler(cls, obj, **kwargs):
         """
         Get or create a combathandler on `obj`.
 
@@ -306,23 +294,29 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             obj (any): The Typeclassed entity to store the CombatHandler Script on. This could be
                 a location (for turn-based combat) or a Character (for twitch-based combat).
         Keyword Args:
-            combathandler_key (str): They key name for the script. Will be 'combathandler' by default.
+            combathandler_key (str): They key name for the script. Will be 'combathandler' by
+                default.
             **kwargs: Arguments to the Script, if it is created.
 
         """
         if not obj:
             raise CombatFailure("Cannot start combat without a place to do it!")
 
+        combathandler_key = kwargs.pop("key", "combathandler")
         combathandler = obj.ndb.combathandler
         if not combathandler:
-            combathandler = obj.scripts.get(combathandler_name).first()
+            combathandler = obj.scripts.get(combathandler_key).first()
             if not combathandler:
                 # have to create from scratch
                 persistent = kwargs.pop("persistent", True)
                 combathandler = create_script(
-                    cls, key=combathandler_key, obj=obj, persistent=persistent, **kwargs
+                    cls,
+                    key=combathandler_key,
+                    obj=obj,
+                    persistent=persistent,
+                    **kwargs,
                 )
-            self.caller.ndb.combathandler = combathandler
+            obj.ndb.combathandler = combathandler
         return combathandler
 
     def msg(self, message, combatant=None, broadcast=True):
@@ -438,7 +432,7 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             this with group mechanics).
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def give_advantage(self, recipient, target):
         """
@@ -452,7 +446,7 @@ class EvAdventureCombatHandlerBase(DefaultScript):
                 some future boost)
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def give_disadvantage(self, recipient, target):
         """
@@ -460,10 +454,11 @@ class EvAdventureCombatHandlerBase(DefaultScript):
 
         Args:
             recipient (Character or NPC): The one to get the disadvantage.
-            target (Character or NPC): The one against which the target gains disadvantage, usually an enemy.
+            target (Character or NPC): The one against which the target gains disadvantage, usually
+            an enemy.
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def has_advantage(self, combatant, target):
         """
@@ -474,7 +469,7 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             target (Character or NPC): The target to check advantage against.
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def has_disadvantage(self, combatant, target):
         """
@@ -485,7 +480,7 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             target (Character or NPC): The target to check disadvantage against.
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def queue_action(self, combatant, action_dict):
         """
@@ -503,7 +498,7 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             to make room.
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def execute_next_action(self, combatant):
         """
@@ -514,14 +509,14 @@ class EvAdventureCombatHandlerBase(DefaultScript):
 
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def start_combat(self):
         """
         Start combat.
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def check_stop_combat(self):
         """
@@ -537,10 +532,10 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             bool: If `True`, the `stop_combat` method sho
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def stop_combat(self):
         """
         Stop combat. This should also do all cleanup.
         """
-        raise NotImplemented
+        raise NotImplementedError
