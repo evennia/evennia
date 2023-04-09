@@ -8,37 +8,30 @@ from unittest.mock import Mock, call, patch
 
 from evennia.utils import create
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.utils.test_resources import EvenniaCommandTestMixin, EvenniaTestCase
 
-from .. import combat
+from .. import combat_base, combat_turnbased, combat_twitch
 from ..characters import EvAdventureCharacter
 from ..enums import Ability, WieldLocation
 from ..npcs import EvAdventureMob
 from ..objects import EvAdventureConsumable, EvAdventureRunestone, EvAdventureWeapon
 from ..rooms import EvAdventureRoom
-from .mixins import EvAdventureMixin
 
 
-class EvAdventureCombatHandlerTest(BaseEvenniaTest):
+class _CombatTestBase(EvenniaTestCase):
     """
-    Test methods on the turn-based combat handler
+    Set up common entities for testing combat:
+
+    - `location` (key=testroom)
+    - `combatant` (key=testchar)
+    - `target` (key=testmonster)`
+
+    We also mock the `.msg` method of both `combatant` and `target` so we can
+    see what was sent.
 
     """
 
-    maxDiff = None
-
-    # make sure to mock away all time-keeping elements
-    @patch(
-        "evennia.contrib.tutorials.evadventure.combat.EvAdventureCombatHandler.interval",
-        new=-1,
-    )
-    @patch(
-        "evennia.contrib.tutorials.evadventure.combat.delay",
-        new=Mock(return_value=None),
-    )
     def setUp(self):
-        super().setUp()
-
         self.location = create.create_object(EvAdventureRoom, key="testroom")
         self.combatant = create.create_object(
             EvAdventureCharacter, key="testchar", location=self.location
@@ -58,8 +51,82 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         self.combatant.msg = Mock()
         self.target.msg = Mock()
 
-        self.combathandler = combat.get_or_create_combathandler(self.combatant)
+
+class TestEvAdventureCombatHandlerBase(_CombatTestBase):
+    """
+    Test the base functionality of the base combat handler.
+
+    """
+
+    def setUp(self):
+        """This also tests the `get_or_create_combathandler` classfunc"""
+        super().setUp()
+        self.combathandler = combat_base.EvAdventureCombatHandlerBase.get_or_create_combathandler(
+            self.location, key="combathandler"
+        )
+
+    def test_combathandler_msg(self):
+        """Test sending messages to all in handler"""
+
+        self.location.msg_contents = Mock()
+
+        self.combathandler.msg("test_message")
+
+        self.location.msg_contents.assert_called_with(
+            "test_message",
+            exclude=[],
+            from_obj=None,
+            mapping={"testchar": self.combatant, "testmonster": self.target},
+        )
+
+    def test_get_combat_summary(self):
+        """Test combat summary"""
+
+        self.combathandler.get_sides = Mock(return_value=(self.combatant, self.target))
+
+        # as seen from one side
+        result = str(self.combathandler.get_combat_summary(self.combatant))
+
+        self.assertEqual(
+            strip_ansi(result),
+            " testchar (Perfect)                   vs                testmonster (Perfect) ",
+        )
+
+        # as seen from other side
+        result = str(self.combathandler.get_combat_summary(self.target))
+
+        self.assertEqual(
+            strip_ansi(result),
+            " testmonster (Perfect)                 vs                  testchar (Perfect) ",
+        )
+
+
+class EvAdventureTurnbasedCombatHandlerTest(_CombatTestBase):
+    """
+    Test methods on the turn-based combat handler and actions
+
+    """
+
+    maxDiff = None
+
+    # make sure to mock away all time-keeping elements
+    @patch(
+        "evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.interval",  # noqa
+        new=-1,
+    )
+    @patch(
+        "evennia.contrib.tutorials.evadventure.combat_turnbased.delay",
+        new=Mock(return_value=None),
+    )
+    def setUp(self):
+        super().setUp()
         # add target to combat
+        self.combathandler = (
+            combat_turnbased.EvAdventureTurnebasedCombatHandler.get_or_create_combathandler(
+                self.location, key="combathandler"
+            )
+        )
+        self.combathandler.add_combatant(self.combatant)
         self.combathandler.add_combatant(self.target)
 
     def _get_action(self, action_dict={"key": "hold"}):
@@ -86,16 +153,16 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         """Testing all is set up correctly in the combathandler"""
 
         chandler = self.combathandler
-        self.assertEqual(dict(chandler.combatants), {self.combatant: deque(), self.target: deque()})
+        self.assertEqual(dict(chandler.combatants), {self.combatant: {}, self.target: {}})
         self.assertEqual(
             dict(chandler.action_classes),
             {
-                "hold": combat.CombatActionHold,
-                "attack": combat.CombatActionAttack,
-                "stunt": combat.CombatActionStunt,
-                "use": combat.CombatActionUseItem,
-                "wield": combat.CombatActionWield,
-                "flee": combat.CombatActionFlee,
+                "hold": combat_turnbased.CombatActionHold,
+                "attack": combat_turnbased.CombatActionAttack,
+                "stunt": combat_turnbased.CombatActionStunt,
+                "use": combat_turnbased.CombatActionUseItem,
+                "wield": combat_turnbased.CombatActionWield,
+                "flee": combat_turnbased.CombatActionFlee,
             },
         )
         self.assertEqual(chandler.flee_timeout, 1)
@@ -103,20 +170,6 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         self.assertEqual(dict(chandler.disadvantage_matrix), {})
         self.assertEqual(dict(chandler.fleeing_combatants), {})
         self.assertEqual(dict(chandler.defeated_combatants), {})
-
-    def test_combathandler_msg(self):
-        """Test sending messages to all in handler"""
-
-        self.location.msg_contents = Mock()
-
-        self.combathandler.msg("test_message")
-
-        self.location.msg_contents.assert_called_with(
-            "test_message",
-            exclude=[],
-            from_obj=None,
-            mapping={"testchar": self.combatant, "testmonster": self.target},
-        )
 
     def test_remove_combatant(self):
         """Remove a combatant."""
@@ -153,25 +206,6 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
         # allies to monster
         allies, enemies = self.combathandler.get_sides(self.target)
         self.assertEqual((allies, enemies), ([target2], [self.combatant, combatant2]))
-
-    def test_get_combat_summary(self):
-        """Test combat summary"""
-
-        # as seen from one side
-        result = str(self.combathandler.get_combat_summary(self.combatant))
-
-        self.assertEqual(
-            strip_ansi(result),
-            " testchar (Perfect)                   vs                testmonster (Perfect) ",
-        )
-
-        # as seen from other side
-        result = str(self.combathandler.get_combat_summary(self.target))
-
-        self.assertEqual(
-            strip_ansi(result),
-            " testmonster (Perfect)                 vs                  testchar (Perfect) ",
-        )
 
     def test_queue_and_execute_action(self):
         """Queue actions and execute"""
@@ -210,31 +244,6 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             [call(self.combatant), call(self.target)], any_order=True
         )
 
-    def test_combat_action(self):
-        """General tests of action functionality"""
-
-        combatant = self.combatant
-        target = self.target
-
-        action = self._get_action({"key": "hold"})
-
-        self.assertTrue(action.can_use())
-
-        action.give_advantage(combatant, target)
-        action.give_disadvantage(combatant, target)
-
-        self.assertTrue(action.has_advantage(combatant, target))
-        self.assertTrue(action.has_disadvantage(combatant, target))
-
-        action.lose_advantage(combatant, target)
-        action.lose_disadvantage(combatant, target)
-
-        self.assertFalse(action.has_advantage(combatant, target))
-        self.assertFalse(action.has_disadvantage(combatant, target))
-
-        action.msg(f"$You() attack $You({target.key}).")
-        combatant.msg.assert_called_with(text=("You attack testmonster.", {}), from_obj=combatant)
-
     def test_action__hold(self):
         """Hold, doing nothing"""
 
@@ -246,7 +255,6 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
 
     @patch("evennia.contrib.tutorials.evadventure.combat.rules.randint")
     def test_attack__miss(self, mock_randint):
-
         actiondict = {"key": "attack", "target": self.target}
 
         mock_randint.return_value = 8  # target has default armor 11, so 8+1 str will miss
@@ -298,7 +306,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             "stunt_type": Ability.STR,
             "defense_type": Ability.DEX,
         }
-        mock_randint.return_value = 11  #  11+1 dex vs DEX 11 defence is success
+        mock_randint.return_value = 11  # 11+1 dex vs DEX 11 defence is success
         self._run_actions(action_dict)
         self.assertEqual(
             bool(self.combathandler.advantage_matrix[self.combatant][self.target]), True
@@ -314,7 +322,7 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             "stunt_type": Ability.STR,
             "defense_type": Ability.DEX,
         }
-        mock_randint.return_value = 11  #  11+1 dex vs DEX 11 defence is success
+        mock_randint.return_value = 11  # 11+1 dex vs DEX 11 defence is success
         self._run_actions(action_dict)
         self.assertEqual(
             bool(self.combathandler.disadvantage_matrix[self.target][self.combatant]), True
@@ -417,10 +425,32 @@ class EvAdventureCombatHandlerTest(BaseEvenniaTest):
             from_obj=self.combatant,
         )
         # Check that enemies have advantage against you now
-        action = combat.CombatAction(self.combathandler, self.target, {"key": "hold"})
+        action = combat_turnbased.CombatAction(self.combathandler, self.target, {"key": "hold"})
         self.assertTrue(action.has_advantage(self.target, self.combatant))
 
         # second flee should remove combatant
         self._run_actions(action_dict)
         # this ends combat, so combathandler should be gone
         self.assertIsNone(self.combathandler.pk)
+
+
+class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBase):
+    def setUp(self):
+        super().setUp()
+
+        self.combatant_combathandler = (
+            combat_twitch.EvAdventureCombatTwitchHandler.get_or_create_combathandler(
+                self.combatant, key="combathandler"
+            )
+        )
+        self.target_combathandler = (
+            combat_twitch.EvAdventureCombatTwitchHandler.get_or_create_combathandler(
+                self.target, key="combathandler"
+            )
+        )
+
+    def test_get_sides(self):
+        """ """
+
+    def test_queue_and_execute_action(self):
+        """ """

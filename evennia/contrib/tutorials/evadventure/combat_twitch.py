@@ -4,21 +4,20 @@ EvAdventure Twitch-based combat
 This implements a 'twitch' (aka DIKU or other traditional muds) style of MUD combat.
 
 """
-from evennia import AttributeProperty
+from evennia import AttributeProperty, CmdSet, default_cmds
 from evennia.commands.command import Command, InterruptCommand
-from evennia.scripts.scripts import DefaultScript
-from evennia.utils.create import create_script
-from evennia.utils.utils import repeat, unrepeat
+from evennia.utils.utils import display_len, inherits_from, list_to_string, pad, repeat, unrepeat
 
-from .combat import (
+from .characters import EvAdventureCharacter
+from .combat_base import (
     CombatActionAttack,
     CombatActionHold,
     CombatActionStunt,
-    CombatActionUserItem,
+    CombatActionUseItem,
     CombatActionWield,
     EvAdventureCombatHandlerBase,
 )
-from .enums import ABILITY_REVERSE_MAP, Ability, ObjType
+from .enums import ABILITY_REVERSE_MAP
 
 
 class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
@@ -44,7 +43,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
     disadvantages_against = AttributeProperty(dict)
 
     action_dict = AttributeProperty(dict)
-    fallback_action_dict = AttributePropety({"key": "hold", "dt": 0})
+    fallback_action_dict = AttributeProperty({"key": "hold", "dt": 0})
 
     # stores the current ticker reference, so we can manipulate it later
     current_ticker_ref = AttributeProperty(None)
@@ -107,7 +106,8 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
 
         Args:
             recipient (Character or NPC): The one to get the disadvantage.
-            target (Character or NPC): The one against which the target gains disadvantage, usually an enemy.
+            target (Character or NPC): The one against which the target gains disadvantage, usually
+                an enemy.
 
         """
         self.disadvantages_against[target] = True
@@ -166,6 +166,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
         """
         Triggered after a delay by the command
         """
+        combatant = self.obj
         action_dict = self.action_dict
         action_class = self.action_classes[action_dict["key"]]
         action = action_class(self, combatant, action_dict)
@@ -176,8 +177,8 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
 
         if not action_dict.get("repeat", True):
             # not a repeating action, use the fallback (normally the original attack)
-            self.action_dict = fallback_action_dict
-            self.queue_action(fallback_action_dict.get("dt", 0))
+            self.action_dict = self.fallback_action_dict
+            self.queue_action(self.fallback_action_dict.get("dt", 0))
 
     def check_stop_combat(self):
         # check if one side won the battle.
@@ -243,7 +244,7 @@ class _BaseTwitchCombatCommand(Command):
         Get or create the combathandler assigned to this combatant.
 
         """
-        return EvAdventureCombatHandlerBase.get_or_create_combathandler(self.caller)
+        return EvAdventureCombatTwitchHandler.get_or_create_combathandler(self.caller)
 
 
 class CmdAttack(_BaseTwitchCombatCommand):
@@ -261,7 +262,7 @@ class CmdAttack(_BaseTwitchCombatCommand):
     help_category = "combat"
 
     def func(self):
-        target = self.search(lhs)
+        target = self.search(self.lhs)
         if not target:
             return
 
@@ -448,7 +449,7 @@ class CmdUseItem(_BaseTwitchCombatCommand):
         )
 
 
-class CmdWield(_CmdCombatBase):
+class CmdWield(_BaseTwitchCombatCommand):
     """
     Wield a weapon or spell-rune. You will the wield the item, swapping with any other item(s) you
     were wielded before.
