@@ -6,7 +6,6 @@ added to all game objects. You access it through the property
 
 """
 from django.utils.translation import gettext as _
-
 from evennia.scripts.models import ScriptDB
 from evennia.utils import create, logger
 
@@ -111,6 +110,19 @@ class ScriptHandler(object):
             script.start()
             num += 1
         return num
+
+    def has(self, key):
+        """
+        Determine if a given script exists on this object.
+
+        Args:
+            key (str): Search criterion, the script's key or dbref.
+
+        Returns:
+            bool: If the script exists or not.
+
+        """
+        return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key).exists()
 
     def get(self, key):
         """
