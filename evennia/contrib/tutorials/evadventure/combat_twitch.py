@@ -156,11 +156,11 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             unrepeat(self.current_ticker_ref)
         if dt <= 0:
             # no repeat
-            self.tickerhandler_ref = None
+            self.current_ticker_ref = None
         else:
             # always schedule the task to be repeating, cancel later otherwise. We store
             # the tickerhandler's ref to make sure we can remove it later
-            self.tickerhandler_ref = repeat(dt, self.execute_next_action, id_string="combat")
+            self.current_ticker_ref = repeat(dt, self.execute_next_action, id_string="combat")
 
     def execute_next_action(self):
         """
@@ -178,15 +178,21 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
         if not action_dict.get("repeat", True):
             # not a repeating action, use the fallback (normally the original attack)
             self.action_dict = self.fallback_action_dict
-            self.queue_action(self.fallback_action_dict.get("dt", 0))
+            self.queue_action(self.fallback_action_dict)
 
     def check_stop_combat(self):
         # check if one side won the battle.
+
         allies, enemies = self.get_sides()
+        allies.append(self.obj)
+
+        # remove all dead combatants
+        allies = [comb for comb in allies if comb.hp > 0]
+        enemies = [comb for comb in enemies if comb.hp > 0]
 
         if not allies and not enemies:
-            txt = "Noone stands after the dust settles."
-            self.msg(txt)
+            self.msg("Noone stands after the dust settles.")
+            self.stop_combat()
             return
 
         if not allies or not enemies:
