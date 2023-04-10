@@ -320,7 +320,7 @@ class EvAdventureRollEngine:
         defender_defense = getattr(defender, defense_type.value, 1) + 10 
         result, quality = self.saving_throw(attacker, bonus_type=attack_type,
                                             target=defender_defense, 
-                                            advantage=advantave, disadvantage=disadvantage)
+                                            advantage=advantage, disadvantage=disadvantage)
         
         return result, quality 
 ```
