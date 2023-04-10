@@ -31,7 +31,7 @@ The default exit functionality is all defined on the [DefaultExit](DefaultExit) 
 
 Exits are [locked](./Locks.md) using an `access_type` called *traverse* and also make use of a few hook methods for giving feedback if the traversal fails.  See `evennia.DefaultExit` for more info. 
 
-Exits are normally overridden on a case-by-case basis, but if you want to change the default exit created by rooms like `dig` ,  `tunnel` or `open` you can change it in settings:
+Exits are normally overridden on a case-by-case basis, but if you want to change the default exit created by rooms like `dig`, `tunnel` or `open` you can change it in settings:
 
     BASE_EXIT_TYPECLASS = "typeclasses.exits.Exit"
 
