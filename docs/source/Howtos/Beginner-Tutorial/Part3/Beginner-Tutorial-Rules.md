@@ -585,7 +585,7 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
     def test_roll(self, mock_randint):
         mock_randint.return_value = 4 
         self.assertEqual(self.roll_engine.roll("1d6", 4))     
-        self.assertEqual(self.roll_engine.roll("2d6", 2 * 4)     
+        self.assertEqual(self.roll_engine.roll("2d6"), 2 * 4)     
         
     # test of the other rule methods below ...
 ```
