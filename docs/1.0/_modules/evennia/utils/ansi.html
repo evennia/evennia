@@ -410,7 +410,7 @@
                 <span class="n">colval</span> <span class="o">=</span> <span class="mi">134</span> <span class="o">+</span> <span class="nb">ord</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
 
             <span class="c1"># ansi fallback logic expects r,g,b values in [0..5] range</span>
-            <span class="n">gray</span> <span class="o">=</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span> <span class="o">-</span> <span class="mi">97</span><span class="p">)</span> <span class="o">/</span> <span class="mf">5.0</span>
+            <span class="n">gray</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span> <span class="o">-</span> <span class="mi">97</span><span class="p">)</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">)</span>
             <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span> <span class="o">=</span> <span class="n">gray</span><span class="p">,</span> <span class="n">gray</span><span class="p">,</span> <span class="n">gray</span>
 
         <span class="k">if</span> <span class="n">use_xterm256</span><span class="p">:</span>
@@ -425,62 +425,57 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># xterm256 not supported, convert the rgb value to ansi instead</span>
-            <span class="k">if</span> <span class="n">red</span> <span class="o">==</span> <span class="n">green</span> <span class="o">==</span> <span class="n">blue</span> <span class="ow">and</span> <span class="n">red</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_BACK_BLACK</span>
-                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_BLACK</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_BLACK</span>
-            <span class="k">elif</span> <span class="n">red</span> <span class="o">==</span> <span class="n">green</span> <span class="o">==</span> <span class="n">blue</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_BACK_WHITE</span>
-                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span>
-            <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;</span> <span class="n">green</span> <span class="ow">and</span> <span class="n">red</span> <span class="o">&gt;</span> <span class="n">blue</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_BACK_RED</span>
-                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_RED</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_RED</span>
-            <span class="k">elif</span> <span class="n">red</span> <span class="o">==</span> <span class="n">green</span> <span class="ow">and</span> <span class="n">red</span> <span class="o">&gt;</span> <span class="n">blue</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_BACK_YELLOW</span>
-                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span>
-            <span class="k">elif</span> <span class="n">red</span> <span class="o">==</span> <span class="n">blue</span> <span class="ow">and</span> <span class="n">red</span> <span class="o">&gt;</span> <span class="n">green</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_BACK_MAGENTA</span>
-                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_MAGENTA</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_MAGENTA</span>
-            <span class="k">elif</span> <span class="n">green</span> <span class="o">&gt;</span> <span class="n">blue</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_BACK_GREEN</span>
-                <span class="k">elif</span> <span class="n">green</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span>
-            <span class="k">elif</span> <span class="n">green</span> <span class="o">==</span> <span class="n">blue</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_BACK_CYAN</span>
-                <span class="k">elif</span> <span class="n">green</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_CYAN</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_CYAN</span>
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># mostly blue</span>
-                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_BACK_BLUE</span>
-                <span class="k">elif</span> <span class="n">blue</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span></div>
+            <span class="n">rgb</span> <span class="o">=</span> <span class="p">(</span><span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">)</span>
+	
+            <span class="k">def</span> <span class="nf">_convert_for_ansi</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="n">val</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># greys</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">rgb</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">match</span> <span class="n">rgb</span><span class="p">:</span>
+                    <span class="k">case</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">ANSI_BACK_BLACK</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_BLACK</span>
+                    <span class="k">case</span> <span class="p">((</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">)):</span>
+                        <span class="k">return</span> <span class="n">ANSI_BACK_BLACK</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_BLACK</span>
+                    <span class="k">case</span> <span class="p">((</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">)):</span>
+                        <span class="k">return</span> <span class="n">ANSI_BACK_WHITE</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span>
+                    <span class="k">case</span> <span class="p">((</span><span class="mi">3</span><span class="o">|</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="o">|</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="o">|</span><span class="mi">4</span><span class="p">)):</span>
+                        <span class="k">return</span> <span class="n">ANSI_BACK_WHITE</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span>
+                    <span class="k">case</span> <span class="p">((</span><span class="mi">4</span><span class="o">|</span><span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="o">|</span><span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="o">|</span><span class="mi">5</span><span class="p">)):</span>
+                        <span class="k">return</span> <span class="n">ANSI_BACK_WHITE</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span>
+
+            <span class="k">match</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_convert_for_ansi</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rgb</span><span class="p">):</span>
+                <span class="c1"># red</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_RED</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_RED</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_RED</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_RED</span>
+                <span class="c1"># green</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_GREEN</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">0</span> <span class="o">|</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">green</span> <span class="o">&gt;</span> <span class="n">red</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_GREEN</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span>
+                <span class="c1"># blue</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_BLUE</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span>
+                <span class="k">case</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_BLUE</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span>
+                <span class="c1"># cyan</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">))</span> <span class="k">if</span> <span class="n">red</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">rgb</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_CYAN</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_CYAN</span>
+                <span class="k">case</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_CYAN</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_CYAN</span>
+                <span class="c1"># yellow</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">))</span> <span class="k">if</span> <span class="n">blue</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">rgb</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_YELLOW</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">2</span><span class="o">|</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_YELLOW</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span>
+                <span class="c1"># magenta</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="o">|</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="o">|</span><span class="mi">3</span><span class="p">))</span> <span class="k">if</span> <span class="n">green</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">rgb</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_MAGENTA</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_MAGENTA</span>
+                <span class="k">case</span> <span class="p">((</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">|</span><span class="mi">2</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_MAGENTA</span> <span class="k">if</span> <span class="n">background</span> <span class="k">else</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_MAGENTA</span></div>
+                
 
 <div class="viewcode-block" id="ANSIParser.strip_raw_codes"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.strip_raw_codes">[docs]</a>    <span class="k">def</span> <span class="nf">strip_raw_codes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

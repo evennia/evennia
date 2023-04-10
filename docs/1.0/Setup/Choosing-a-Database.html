@@ -130,14 +130,12 @@
 <li><p>PostgreSQL</p></li>
 <li><p>MySQL / MariaDB</p></li>
 </ul>
-<p>Since Evennia uses <a class="reference external" href="https://djangoproject.com">Django</a>, most of our notes are based off of what we know from the community and their documentation. While the information below may be useful, you can always find the most up-to-date and “correct” information at Django’s <a class="reference external" href="https://docs.djangoproject.com/en/4.1/ref/databases/#ref-databases">Notes about supported
-Databases</a> page.</p>
+<p>Since Evennia uses <a class="reference external" href="https://djangoproject.com">Django</a>, most of our notes are based off of what we know from the community and their documentation. While the information below may be useful, you can always find the most up-to-date and “correct” information at Django’s <a class="reference external" href="https://docs.djangoproject.com/en/4.1/ref/databases/#ref-databases">Notes about supported Databases</a> page.</p>
 <section id="sqlite3-default">
 <h2>SQLite3 (default)<a class="headerlink" href="#sqlite3-default" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://sqlite.org/">SQLite3</a> is a light weight single-file database. It is our default database and Evennia will set this up for you automatically if you give no other options.</p>
 <p>SQLite stores the database in a single file (<code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>). This means it’s very easy to reset this database - just delete (or move) that <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> file and run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> again! No server process is needed and the administrative overhead and resource consumption is tiny. It is also very fast since it’s run in-memory. For the vast majority of Evennia installs it will probably be all that’s ever needed.</p>
-<p>SQLite will generally be much faster than MySQL/PostgreSQL but its performance comes with two
-drawbacks:</p>
+<p>SQLite will generally be much faster than MySQL/PostgreSQL but its performance comes with two drawbacks:</p>
 <ul class="simple">
 <li><p>SQLite <a class="reference external" href="https://www.sqlite.org/faq.html#q9">ignores length constraints by design</a>; it is possible to store very large strings and numbers in fields that technically should not accept them. This is not something you will notice; your game will read and write them and function normally, but this <em>can</em> create some data migration problems requiring careful thought if you do need to change databases later.</p></li>
 <li><p>SQLite can scale well to storage of millions of objects, but if you end up with a thundering herd of users trying to access your MUD and web site at the same time, or you find yourself writing long- running functions to update large numbers of objects on a live game, either will yield errors and interference. SQLite does not work reliably with multiple concurrent threads or processes accessing its records. This has to do with file-locking clashes of the database file. So for a production server making heavy use of process- or thread pools, a proper database is a more appropriate choice.</p></li>
@@ -148,8 +146,7 @@ drawbacks:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia migrate
 </pre></div>
 </div>
-<p>without changing any database options. An optional requirement is the <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> client program - this is required if you want to inspect the database data manually. A shortcut for using it with the
-evennia database is <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">dbshell</span></code>. Linux users should look for the <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> package for their distro while Mac/Windows should get the <a class="reference external" href="https://sqlite.org/download.html">sqlite-tools package from this page</a>.</p>
+<p>without changing any database options. An optional requirement is the <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> client program - this is required if you want to inspect the database data manually. A shortcut for using it with the evennia database is <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">dbshell</span></code>. Linux users should look for the <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> package for their distro while Mac/Windows should get the <a class="reference external" href="https://sqlite.org/download.html">sqlite-tools package from this page</a>.</p>
 <p>To inspect the default Evennia database (once it’s been created), go to your game dir and do</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>sqlite3<span class="w"> </span>server/evennia.db3
 <span class="w">    </span><span class="c1"># or</span>
@@ -166,9 +163,7 @@ See <a class="reference external" href="https://gist.github.com/vincent178/10889
 </section>
 <section id="postgresql">
 <h2>PostgreSQL<a class="headerlink" href="#postgresql" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a> is an open-source database engine, recommended by Django.
-While not as fast as SQLite for normal usage, it will scale better than SQLite, especially if your
-game has an very large database and/or extensive web presence through a separate server process.</p>
+<p><a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a> is an open-source database engine, recommended by Django. While not as fast as SQLite for normal usage, it will scale better than SQLite, especially if your game has an very large database and/or extensive web presence through a separate server process.</p>
 <section id="install-and-initial-setup-of-postgresql">
 <h3>Install and initial setup of PostgreSQL<a class="headerlink" href="#install-and-initial-setup-of-postgresql" title="Permalink to this headline">¶</a></h3>
 <p>First, install the posgresql server. Version <code class="docutils literal notranslate"><span class="pre">9.6</span></code> is tested with Evennia. Packages are readily available for all distributions. You need to also get the <code class="docutils literal notranslate"><span class="pre">psql</span></code> client (this is called <code class="docutils literal notranslate"><span class="pre">postgresql-</span> <span class="pre">client</span></code> on debian-derived systems). Windows/Mac users can <a class="reference external" href="https://www.postgresql.org/download/">find what they need on the postgresql download page</a>. You should be setting up a password for your database-superuser (always called <code class="docutils literal notranslate"><span class="pre">postgres</span></code>) when you install.</p>
@@ -180,9 +175,7 @@ game has an very large database and/or extensive web presence through a separate
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>With the <code class="docutils literal notranslate"><span class="pre">--password</span></code> argument, Postgres should prompt you for a password.
-If it won’t, replace that with <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">yourpassword</span></code> instead. Do not use the <code class="docutils literal notranslate"><span class="pre">-p</span></code> argument unless you
-have to since the resulting command, and your password, will be logged in the shell history.</p>
+<p>With the <code class="docutils literal notranslate"><span class="pre">--password</span></code> argument, Postgres should prompt you for a password. If it won’t, replace that with <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">yourpassword</span></code> instead. Do not use the <code class="docutils literal notranslate"><span class="pre">-p</span></code> argument unless you have to since the resulting command, and your password, will be logged in the shell history.</p>
 </div>
 <p>This will open a console to the postgres service using the psql client.</p>
 <p>On the psql command line:</p>
@@ -196,6 +189,9 @@ have to since the resulting command, and your password, will be logged in the sh
 <span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">evennia</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">timezone</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;UTC&#39;</span><span class="p">;</span>
 
 <span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">evennia</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">evennia</span><span class="p">;</span>
+<span class="c1">-- For Postgres 10+</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">evennia</span><span class="w"> </span><span class="k">owner</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">evennia</span><span class="p">;</span>
+
 <span class="c1">-- Other useful commands:</span>
 <span class="c1">--  \l       (list all databases and permissions)</span>
 <span class="c1">--  \q       (exit)</span>
@@ -230,8 +226,7 @@ have to since the resulting command, and your password, will be logged in the sh
 </pre></div>
 </div>
 <p>as a shortcut to get into the postgres command line for the right database and user.</p>
-<p>With the database setup you should now be able to start start Evennia normally with your new
-database.</p>
+<p>With the database setup you should now be able to start start Evennia normally with your new database.</p>
 </section>
 <section id="resetting-postgresql">
 <h3>Resetting PostgreSQL<a class="headerlink" href="#resetting-postgresql" title="Permalink to this headline">¶</a></h3>
@@ -304,13 +299,12 @@ the PosgreSQL documentation on how to limit this.</p>
 <section id="installing-and-initial-setup-of-mysql-mariadb">
 <h3>Installing and initial setup of MySQL/MariaDB<a class="headerlink" href="#installing-and-initial-setup-of-mysql-mariadb" title="Permalink to this headline">¶</a></h3>
 <p>First, install and setup MariaDB or MySQL for your specific server. Linux users should look for the <code class="docutils literal notranslate"><span class="pre">mysql-server</span></code> or <code class="docutils literal notranslate"><span class="pre">mariadb-server</span></code> packages for their respective distributions. Windows/Mac users will find what they need from the <a class="reference external" href="https://www.mysql.com/downloads/">MySQL downloads</a> or <a class="reference external" href="https://mariadb.org/download/">MariaDB downloads</a> pages. You also need the respective database clients (<code class="docutils literal notranslate"><span class="pre">mysql</span></code>, <code class="docutils literal notranslate"><span class="pre">mariadb-client</span></code>), so you can setup the database itself. When you install the server you should usually be asked to set up the database root user and password.</p>
-<p>You will finally also need a Python interface to allow Evennia to talk to the database. Django recommends the  <code class="docutils literal notranslate"><span class="pre">mysqlclient</span></code> one. Install this into the evennia virtualenv with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">mysqlclient</span></code>.</p>
+<p>Finally, you will also need a Python interface to allow Evennia to talk to the database. Django recommends the  <code class="docutils literal notranslate"><span class="pre">mysqlclient</span></code> one. Install this into the evennia virtualenv with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">mysqlclient</span></code>.</p>
 <p>Start the database client (this is named the same for both mysql and mariadb):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mysql<span class="w"> </span>-u<span class="w"> </span>root<span class="w"> </span>-p
 </pre></div>
 </div>
-<p>You should get to enter your database root password (set this up when you installed the database
-server).</p>
+<p>You should get to enter your database root password (set this up when you installed the database server).</p>
 <p>Inside the database client interface:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="s1">&#39;evennia&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="w"> </span><span class="n">IDENTIFIED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="s1">&#39;somepassword&#39;</span><span class="p">;</span>
 <span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">evennia</span><span class="p">;</span>
