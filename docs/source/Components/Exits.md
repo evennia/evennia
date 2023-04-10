@@ -19,7 +19,7 @@
 
 *Exits* are in-game [Objects](./Objects.md) connecting other objects (usually [Rooms](./Rooms.md)) together. 
 
-> Note that Exits are one-way objects, so in order for two rooms to be linked bi-directionally, there will need to be two exits.
+> Note that Exits are one-way objects, so in order for two Rooms to be linked bi-directionally, there will need to be two exits.
 
 An object named `north` or `in` might be exits, as well as `door`, `portal` or `jump out the window`. 
 
