@@ -87,13 +87,10 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandlerBase):
     }
 
     # how many turns you must be fleeing before escaping
-    flee_timeout = AttributeProperty(3, autocreate=False)
-
-    # how many turns you must be fleeing before escaping
-    flee_timeout = AttributeProperty(3, autocreate=False)
+    flee_timeout = AttributeProperty(1, autocreate=False)
 
     # fallback action if not selecting anything
-    fallback_action_dict = AttributeProperty({"key": "attack"}, autocreate=False)
+    fallback_action_dict = AttributeProperty({"key": "hold"}, autocreate=False)
 
     # persistent storage
 
@@ -137,7 +134,6 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandlerBase):
 
         """
         self.disadvantage_matrix[combatant][target] = True
-        self.combathandler.advantage_matrix[combatant][target] = False
 
     def has_advantage(self, combatant, target, **kwargs):
         """
@@ -148,8 +144,8 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandlerBase):
             target (Character or NPC): The target to check advantage against.
 
         """
-        return bool(self.combathandler.advantage_matrix[combatant].pop(target, False)) or (
-            target in self.combathandler.fleeing_combatants
+        return bool(self.advantage_matrix[combatant].pop(target, False)) or (
+            target in self.fleeing_combatants
         )
 
     def has_disadvantage(self, combatant, target):
@@ -161,8 +157,8 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandlerBase):
             target (Character or NPC): The target to check disadvantage against.
 
         """
-        return bool(self.combathandler.disadvantage_matrix[combatant].pop(target, False)) or (
-            combatant in self.combathandler.fleeing_combatants
+        return bool(self.disadvantage_matrix[combatant].pop(target, False)) or (
+            combatant in self.fleeing_combatants
         )
 
     def add_combatant(self, combatant):

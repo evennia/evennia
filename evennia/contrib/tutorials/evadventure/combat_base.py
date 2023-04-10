@@ -12,7 +12,7 @@ This establishes the basic building blocks for combat:
 
 """
 
-from evennia import create_script
+from evennia import Command, create_script
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils import evtable
@@ -25,9 +25,6 @@ class CombatFailure(RuntimeError):
     Some failure during actions.
 
     """
-
-
-# Combaw action classes
 
 
 class CombatAction:
@@ -130,7 +127,9 @@ class CombatActionAttack(CombatAction):
         target = self.target
 
         if weapon.at_pre_use(attacker, target):
-            weapon.use(attacker, target, advantage=self.has_advantage(attacker, target))
+            weapon.use(
+                attacker, target, advantage=self.combathandler.has_advantage(attacker, target)
+            )
             weapon.at_post_use(attacker, target)
 
 
@@ -204,7 +203,7 @@ class CombatActionStunt(CombatAction):
                 "|yHaving succeeded, you hold back to plan your next move.|n [hold]",
                 broadcast=False,
             )
-            combathandler.queue_action(attacker, combathandler.default_action_dict)
+            combathandler.queue_action(attacker, combathandler.fallback_action_dict)
         else:
             self.msg(f"$You({defender.key}) $conj(resist)! $You() $conj(fail) the stunt.")
 
@@ -235,8 +234,8 @@ class CombatActionUseItem(CombatAction):
             item.use(
                 user,
                 target,
-                advantage=self.has_advantage(user, target),
-                disadvantage=self.has_disadvantage(user, target),
+                advantage=self.combathandler.has_advantage(user, target),
+                disadvantage=self.combathandler.has_disadvantage(user, target),
             )
             item.at_post_use(user, target)
         # to back to idle after this
@@ -365,11 +364,11 @@ class EvAdventureCombatHandlerBase(DefaultScript):
         Example:
         ::
 
-                                        Goblin shaman (Perfect)[attack]
-        Gregor (Hurt)[attack]           Goblin brawler(Hurt)[attack]
-        Bob (Perfect)[stunt]     vs     Goblin grunt 1 (Hurt)[attack]
-                                        Goblin grunt 2 (Perfect)[hold]
-                                        Goblin grunt 3 (Wounded)[flee]
+                                        Goblin shaman (Perfect)
+        Gregor (Hurt)                   Goblin brawler(Hurt)
+        Bob (Perfect)         vs        Goblin grunt 1 (Hurt)
+                                        Goblin grunt 2 (Perfect)
+                                        Goblin grunt 3 (Wounded)
 
         """
         allies, enemies = self.get_sides(combatant)
@@ -378,14 +377,8 @@ class EvAdventureCombatHandlerBase(DefaultScript):
         nallies, nenemies = len(allies), len(enemies)
 
         # prepare colors and hurt-levels
-        allies = [
-            f"{ally} ({ally.hurt_level})[{self.get_next_action_dict(ally)['key']}]"
-            for ally in allies
-        ]
-        enemies = [
-            f"{enemy} ({enemy.hurt_level})[{self.get_next_action_dict(enemy)['key']}]"
-            for enemy in enemies
-        ]
+        allies = [f"{ally} ({ally.hurt_level})" for ally in allies]
+        enemies = [f"{enemy} ({enemy.hurt_level})" for enemy in enemies]
 
         # the center column with the 'vs'
         vs_column = ["" for _ in range(max(nallies, nenemies))]
@@ -523,13 +516,11 @@ class EvAdventureCombatHandlerBase(DefaultScript):
         Check if this combat should be aborted, whatever this means for the particular
         the particular combat type.
 
-        Stop the combat immediately. This should also do all needed  cleanup.
-
         Keyword Args:
             kwargs: Any extra keyword args used.
 
         Returns:
-            bool: If `True`, the `stop_combat` method sho
+            bool: If `True`, the `stop_combat` method should be called.
 
         """
         raise NotImplementedError
