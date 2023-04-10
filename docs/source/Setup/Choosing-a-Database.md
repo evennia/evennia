@@ -7,8 +7,7 @@ This page gives an overview of the supported SQL databases as well as instructio
  - PostgreSQL
  - MySQL / MariaDB
 
-Since Evennia uses [Django](https://djangoproject.com), most of our notes are based off of what we know from the community and their documentation. While the information below may be useful, you can always find the most up-to-date and "correct" information at Django's [Notes about supported
-Databases](https://docs.djangoproject.com/en/4.1/ref/databases/#ref-databases) page.
+Since Evennia uses [Django](https://djangoproject.com), most of our notes are based off of what we know from the community and their documentation. While the information below may be useful, you can always find the most up-to-date and "correct" information at Django's [Notes about supported Databases](https://docs.djangoproject.com/en/4.1/ref/databases/#ref-databases) page.
 
 ## SQLite3 (default)
 
@@ -16,8 +15,7 @@ Databases](https://docs.djangoproject.com/en/4.1/ref/databases/#ref-databases) p
 
 SQLite stores the database in a single file (`mygame/server/evennia.db3`). This means it's very easy to reset this database - just delete (or move) that `evennia.db3` file and run `evennia migrate` again! No server process is needed and the administrative overhead and resource consumption is tiny. It is also very fast since it's run in-memory. For the vast majority of Evennia installs it will probably be all that's ever needed.  
 
-SQLite will generally be much faster than MySQL/PostgreSQL but its performance comes with two
-drawbacks:
+SQLite will generally be much faster than MySQL/PostgreSQL but its performance comes with two drawbacks:
 
 * SQLite [ignores length constraints by design](https://www.sqlite.org/faq.html#q9); it is possible to store very large strings and numbers in fields that technically should not accept them. This is not something you will notice; your game will read and write them and function normally, but this *can* create some data migration problems requiring careful thought if you do need to change databases later.
 * SQLite can scale well to storage of millions of objects, but if you end up with a thundering herd of users trying to access your MUD and web site at the same time, or you find yourself writing long- running functions to update large numbers of objects on a live game, either will yield errors and interference. SQLite does not work reliably with multiple concurrent threads or processes accessing its records. This has to do with file-locking clashes of the database file. So for a production server making heavy use of process- or thread pools, a proper database is a more appropriate choice.
@@ -28,8 +26,7 @@ This is installed and configured as part of Evennia. The database file is create
 
     evennia migrate
 
-without changing any database options. An optional requirement is the `sqlite3` client program - this is required if you want to inspect the database data manually. A shortcut for using it with the
-evennia database is `evennia dbshell`. Linux users should look for the `sqlite3` package for their distro while Mac/Windows should get the [sqlite-tools package from this page](https://sqlite.org/download.html).
+without changing any database options. An optional requirement is the `sqlite3` client program - this is required if you want to inspect the database data manually. A shortcut for using it with the evennia database is `evennia dbshell`. Linux users should look for the `sqlite3` package for their distro while Mac/Windows should get the [sqlite-tools package from this page](https://sqlite.org/download.html).
 
 To inspect the default Evennia database (once it's been created), go to your game dir and do
 
@@ -48,9 +45,7 @@ If you want to reset your SQLite3 database, see [here](./Updating-Evennia.md#sql
 
 ## PostgreSQL
 
-[PostgreSQL](https://www.postgresql.org/) is an open-source database engine, recommended by Django.
-While not as fast as SQLite for normal usage, it will scale better than SQLite, especially if your
-game has an very large database and/or extensive web presence through a separate server process.
+[PostgreSQL](https://www.postgresql.org/) is an open-source database engine, recommended by Django. While not as fast as SQLite for normal usage, it will scale better than SQLite, especially if your game has an very large database and/or extensive web presence through a separate server process.
 
 ### Install and initial setup of PostgreSQL
 
@@ -67,9 +62,7 @@ Next, start the postgres client:
 
 ```{warning}
 
-  With the `--password` argument, Postgres should prompt you for a password.
-  If it won't, replace that with `-p yourpassword` instead. Do not use the `-p` argument unless you
-  have to since the resulting command, and your password, will be logged in the shell history.
+  With the `--password` argument, Postgres should prompt you for a password. If it won't, replace that with `-p yourpassword` instead. Do not use the `-p` argument unless you have to since the resulting command, and your password, will be logged in the shell history.
 ```
 
 This will open a console to the postgres service using the psql client.
@@ -87,6 +80,9 @@ ALTER ROLE evennia SET default_transaction_isolation TO 'read committed';
 ALTER ROLE evennia SET timezone TO 'UTC';
 
 GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;
+-- For Postgres 10+
+ALTER DATABASE evennia owner to evennia;
+
 -- Other useful commands:
 --  \l       (list all databases and permissions)
 --  \q       (exit)
@@ -125,8 +121,7 @@ to populate your database. Should you ever want to inspect the database directly
 
 as a shortcut to get into the postgres command line for the right database and user.
 
-With the database setup you should now be able to start start Evennia normally with your new
-database.
+With the database setup you should now be able to start start Evennia normally with your new database.
 
 ### Resetting PostgreSQL
 
@@ -213,7 +208,7 @@ Now your Evennia installation should be able to connect and talk with a remote s
 
  First, install and setup MariaDB or MySQL for your specific server. Linux users should look for the `mysql-server` or `mariadb-server` packages for their respective distributions. Windows/Mac users will find what they need from the [MySQL downloads](https://www.mysql.com/downloads/) or [MariaDB downloads](https://mariadb.org/download/) pages. You also need the respective database clients (`mysql`, `mariadb-client`), so you can setup the database itself. When you install the server you should usually be asked to set up the database root user and password.
 
-You will finally also need a Python interface to allow Evennia to talk to the database. Django recommends the  `mysqlclient` one. Install this into the evennia virtualenv with `pip install mysqlclient`.
+Finally, you will also need a Python interface to allow Evennia to talk to the database. Django recommends the  `mysqlclient` one. Install this into the evennia virtualenv with `pip install mysqlclient`.
 
 Start the database client (this is named the same for both mysql and mariadb):
 
@@ -221,8 +216,7 @@ Start the database client (this is named the same for both mysql and mariadb):
 mysql -u root -p
 ```
 
-You should get to enter your database root password (set this up when you installed the database
-server).
+You should get to enter your database root password (set this up when you installed the database server).
 
 Inside the database client interface:
 
