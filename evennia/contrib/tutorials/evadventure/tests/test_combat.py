@@ -7,7 +7,7 @@ from unittest.mock import Mock, call, patch
 
 from evennia.utils import create
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.test_resources import EvenniaCommandTestMixin, EvenniaTestCase
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTestMixin, EvenniaTestCase
 
 from .. import combat_base, combat_turnbased, combat_twitch
 from ..characters import EvAdventureCharacter
@@ -531,6 +531,10 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
     def setUp(self):
         super().setUp()
 
+        # in order to use the EvenniaCommandTestMixin we need these variables defined
+        self.char1 = self.combatant
+        self.account = None
+
         self.combatant_combathandler = (
             combat_twitch.EvAdventureCombatTwitchHandler.get_or_create_combathandler(
                 self.combatant, key="combathandler"
@@ -578,17 +582,31 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
 
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
     def test_check_stop_combat(self):
-        """Test if combat should stop"""
+        """Test combat-stop functionality"""
 
         # noone remains
         self.combatant_combathandler.get_sides = Mock(return_value=([], []))
         self.combatant_combathandler.stop_combat = Mock()
 
+        self.combatant.hp = -1
+        self.target.hp = -1
+
         self.combatant_combathandler.check_stop_combat()
         self.combatant.msg.assert_called_with()
         self.combatant_combathandler.stop_combat.assert_called()
 
-        # one side wiped out
+        # only one side wiped out
+        self.combatant = 10
         self.combatant_combathandler.get_sides = Mock(return_value=([], []))
         self.combatant_combathandler.check_stop_combat()
         self.combatant.msg.assert_called_with()
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock())
+    def test_attack(self):
+        """Test attack action in the twitch combathandler"""
+        self.call(combat_twitch.CmdAttack(), f"{self.target.key}", "")
+        self.assertEqual(
+            self.combatant_combathandler.action_dict,
+            {"key": "attack", "target": self.target, "dt": 3},
+        )

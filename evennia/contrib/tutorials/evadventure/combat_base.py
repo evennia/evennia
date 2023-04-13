@@ -3,12 +3,13 @@ EvAdventure Base combat utilities.
 
 This establishes the basic building blocks for combat:
 
-    - `CombatAction` - classes encompassing all the working around an action. They are initialized
-      from 'action-dicts` - dictionaries with all the relevant data for the particular invocation
+    - `CombatFailure` - exception for combat-specific errors.
+    - `CombatAction` (and subclasses) - classes encompassing all the working around an action.
+      They are initialized from 'action-dicts` - dictionaries with all the relevant data for the
+      particular invocation
     - `CombatHandler` - base class for running a combat. Exactly how this is used depends on the
       type of combat intended (twitch- or turn-based) so many details of this will be implemented
       in child classes.
-
 
 """
 
@@ -318,7 +319,7 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             obj.ndb.combathandler = combathandler
         return combathandler
 
-    def msg(self, message, combatant=None, broadcast=True):
+    def msg(self, message, combatant=None, broadcast=True, location=None):
         """
         Central place for sending messages to combatants. This allows
         for adding any combat-specific text-decoration in one place.
@@ -329,6 +330,9 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             broadcast (bool): If `False`, `combatant` must be included and
                 will be the only one to see the message. If `True`, send to
                 everyone in the location.
+            location (Object, optional): If given, use this as the location to
+                send broadcast messages to. If not, use `self.obj` as that
+                location.
 
         Notes:
             If `combatant` is given, use `$You/you()` markup to create
@@ -336,7 +340,9 @@ class EvAdventureCombatHandlerBase(DefaultScript):
             `$You(combatant_key)` to refer to other combatants.
 
         """
-        location = self.obj
+        if not location:
+            location = self.obj
+
         location_objs = location.contents
 
         exclude = []
