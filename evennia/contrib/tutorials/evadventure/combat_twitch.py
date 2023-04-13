@@ -48,6 +48,28 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
     # stores the current ticker reference, so we can manipulate it later
     current_ticker_ref = AttributeProperty(None)
 
+    def msg(self, message, broadcast=True):
+        """
+        Central place for sending messages to combatants. This allows
+        for adding any combat-specific text-decoration in one place.
+
+        Args:
+            message (str): The message to send.
+            combatant (Object): The 'You' in the message, if any.
+            broadcast (bool): If `False`, `combatant` must be included and
+                will be the only one to see the message. If `True`, send to
+                everyone in the location.
+            location (Object, optional): If given, use this as the location to
+                send broadcast messages to. If not, use `self.obj` as that
+                location.
+
+        Notes:
+            If `combatant` is given, use `$You/you()` markup to create
+            a message that looks different depending on who sees it. Use
+            `$You(combatant_key)` to refer to other combatants.
+        """
+        super().msg(message, broadcast=broadcast, location=self.obj.location)
+
     def get_sides(self, combatant):
         """
         Get a listing of the two 'sides' of this combat, from the perspective of the provided
@@ -181,7 +203,9 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             self.queue_action(self.fallback_action_dict)
 
     def check_stop_combat(self):
-        # check if one side won the battle.
+        """
+        Check if the combat is over.
+        """
 
         allies, enemies = self.get_sides()
         allies.append(self.obj)
@@ -191,15 +215,19 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
         enemies = [comb for comb in enemies if comb.hp > 0]
 
         if not allies and not enemies:
-            self.msg("Noone stands after the dust settles.")
+            self.msg("Noone stands after the dust settles.", broadcast=False)
             self.stop_combat()
             return
 
         if not allies or not enemies:
-            still_standing = list_to_string(
-                f"$You({comb.key})" for comb in allies + enemies if comb.hp > 0
+            still_standing = list_to_string(f"$You({comb.key})" for comb in allies + enemies)
+            self.msg(
+                (
+                    f"The combat is over. {still_standing} $pluralize(is, {len(allies + enemies)})"
+                    " are) still standing."
+                ),
+                broadcast=False,
             )
-            self.msg(f"The combat is over. {still_standing} are still standing.")
             self.stop_combat()
 
     def stop_combat(self):
@@ -268,7 +296,7 @@ class CmdAttack(_BaseTwitchCombatCommand):
     help_category = "combat"
 
     def func(self):
-        target = self.search(self.lhs)
+        target = self.caller.search(self.lhs)
         if not target:
             return
 
