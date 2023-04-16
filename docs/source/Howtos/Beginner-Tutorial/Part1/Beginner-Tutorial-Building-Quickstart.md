@@ -100,7 +100,7 @@ If you try the `get` command, we will pick up the box. So far so good, but if we
 
     lock box = get:false()
 
-Locks represent a rather [big topic](../../../Components/Locks.md), but for now that will do what we want. This will lock the box so noone can lift it. The exception is superusers, they override all locks and will pick it
+Locks represent a rather [big topic](../../../Components/Locks.md), but for now that will do what we want. This will lock the box so no one can lift it. The exception is superusers, they override all locks and will pick it
 up anyway. Make sure you are quelling your superuser powers and try to get the box now:
 
     > get box
@@ -142,7 +142,7 @@ You create your own scripts in Python, outside the game; the path you give to `s
 
 ## Pushing Your Buttons
 
-If we get back to the box we made, there is only so much fun you can have with it at this point. It's just a dumb generic object. If you renamed it to `stone` and changed its description, noone would be the wiser. However, with the combined use of custom [Typeclasses](../../../Components/Typeclasses.md), [Scripts](../../../Components/Scripts.md)
+If we get back to the box we made, there is only so much fun you can have with it at this point. It's just a dumb generic object. If you renamed it to `stone` and changed its description, no one would be the wiser. However, with the combined use of custom [Typeclasses](../../../Components/Typeclasses.md), [Scripts](../../../Components/Scripts.md)
 and object-based [Commands](../../../Components/Commands.md), you could expand it and other items to be as unique, complex
 and interactive as you want.
 
@@ -153,7 +153,7 @@ Let's make us one of _those_!
 
     create/drop button:tutorials.red_button.RedButton
 
-The same way we did with the Script Earler, we specify a "Python-path" to the Python code we want Evennia to use for creating the object. There you go - one red button.
+The same way we did with the Script earlier, we specify a "Python-path" to the Python code we want Evennia to use for creating the object. There you go - one red button.
 
 The RedButton is an example object intended to show off a few of Evennia's features. You will find that the [Typeclass](../../../Components/Typeclasses.md) and [Commands](../../../Components/Commands.md) controlling it are inside [evennia/contrib/tutorials/red_button](../../../api/evennia.contrib.tutorials.red_button.md)
 
