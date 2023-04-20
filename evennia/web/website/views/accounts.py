@@ -8,7 +8,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-
 from evennia.utils import class_from_module
 from evennia.web.website import forms
 
@@ -56,22 +55,16 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
         password = form.cleaned_data["password1"]
         email = form.cleaned_data.get("email", "")
 
-        # Create account
+        # Create account. This also runs all validations on the username/password.
         account, errs = self.typeclass.create(username=username, password=password, email=email)
 
-        # If unsuccessful, display error messages to user
         if not account:
-            [messages.error(self.request, err) for err in errs]
-
-            # Call the Django "form failure" hook
+            # password validation happens earlier, only username checks appear here.
+            form.add_error("username", ", ".join(errs))
             return self.form_invalid(form)
-
-        # Inform user of success
-        messages.success(
-            self.request,
-            "Your account '%s' was successfully created! "
-            "You may log in using it now." % account.name,
-        )
-
-        # Redirect the user to the login page
-        return HttpResponseRedirect(self.success_url)
+        else:
+            # Inform user of success
+            messages.success(
+                self.request, f"Your account '{account.name}' was successfully created!"
+            )
+            return HttpResponseRedirect(self.success_url)

@@ -3,7 +3,6 @@ import re
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
-
 from evennia.accounts.models import AccountDB
 
 
@@ -24,7 +23,6 @@ class EvenniaUsernameAvailabilityValidator:
                 raises ValidationError otherwise.
 
         """
-
         # Check guest list
         if settings.GUEST_LIST and username.lower() in (
             guest.lower() for guest in settings.GUEST_LIST
@@ -45,8 +43,7 @@ class EvenniaPasswordValidator:
     def __init__(
         self,
         regex=r"^[\w. @+\-',]+$",
-        policy="Password should contain a mix of letters, "
-        "spaces, digits and @/./+/-/_/'/, only.",
+        policy="Password should contain a mix of letters, spaces, digits and @/./+/-/_/'/, only.",
     ):
         """
         Constructs a standard Django password validator.
