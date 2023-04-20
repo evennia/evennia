@@ -2,7 +2,9 @@
 
 ## Main branch
 
-- Feature: Better ANSI color fallbacks (InspectorCaracal)
+- Fix: The username validator did not display errors correctly in web
+  registration form.
+- Feature: Better ANSI color fallbacks (InspectorCaracal).
 - Feature: Add support for saving `deque` with `maxlen` to Attributes (before
   `maxlen` was ignored).
 - Tools: More unit tests for scripts (Storsorken)
