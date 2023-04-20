@@ -278,33 +278,24 @@ it
 
 ### Return values from the node
 
-Each function must return two variables, `text` and `options`.
+Each node function must return two variables, `text` and `options`.
 
 
 #### text
 
-The `text` variable is a string or tuple. This text is what will be displayed when the user reaches
-this node. If this is a tuple, then the first element of the tuple will be considered the displayed
-text and the second the help-text to display when the user enters the `help` command on this node.
-
+The `text` variable is a string or tuple. This text is what will be displayed when the user reaches this node. If this is a tuple, then the first element of the tuple will be considered the displayed text and the second the help-text to display when the user enters the `help` command on this node.
 ```python
     text = ("This is the text to display", "This is the help text for this node")
 ```
 
-Returning a `None` text is allowed and simply leads to a node with no text and only options.  If the
-help text is not given, the menu will give a generic error message when using `help`.
+Returning a `None` text is allowed and simply leads to a node with no text and only options.  If the help text is not given, the menu will give a generic error message when using `help`.
 
 
 #### options
 
-The `options` list describe all the choices available to the user when viewing this node. If
-`options` is
-returned as `None`, it means that this node is an *Exit node* - any text is displayed and then the
-menu immediately exits, running the `exit_cmd` if given.
+The `options` list describe all the choices available to the user when viewing this node. If `options` is returned as `None`, it means that this node is an *Exit node* - any text is displayed and then the menu immediately exits, running the `exit_cmd` if given.
 
-Otherwise, `options` should be a list (or tuple) of dictionaries, one for each option. If only one
-option is
-available, a single dictionary can also be returned. This is how it could look:
+Otherwise, `options` should be a list (or tuple) of dictionaries, one for each option. If only one option is available, a single dictionary can also be returned. This is how it could look:
 
 
 ```python
@@ -338,14 +329,7 @@ Defend: Hold back and defend yourself
 
 ##### option-key 'key'
 
-The option's `key` is what the user should enter in order to choose that option. If given as a
-tuple, the
-first string of that tuple will be what is shown on-screen while the rest are aliases for picking
-that option. In the above example, the user could enter "Attack" (or "attack", it's not
-case-sensitive), "a" or "att" in order to attack the goblin. Aliasing is useful for adding custom
-coloring to the choice. The first element of the aliasing tuple should then be the colored version,
-followed by a version without color - since otherwise the user would have to enter the color codes
-to select that choice.
+The option's `key` is what the user should enter in order to choose that option. If given as a tuple, the first string of that tuple will be what is shown on-screen while the rest are aliases for picking that option. In the above example, the user could enter "Attack" (or "attack", it's not case-sensitive), "a" or "att" in order to attack the goblin. Aliasing is useful for adding custom coloring to the choice. The first element of the aliasing tuple should then be the colored version, followed by a version without color - since otherwise the user would have to enter the color codes to select that choice.
 
 Note that the `key` is *optional*. If no key is given, it will instead automatically be replaced
 with a running number starting from `1`. If removing the `key` part of each option, the resulting
@@ -361,12 +345,9 @@ ________________________________
 
 ```
 
-Whether you want to use a key or rely on numbers is mostly
-a matter of style and the type of menu.
+Whether you want to use a key or rely on numbers is mostly a matter of style and the type of menu.
 
-EvMenu accepts one important special `key` given only as `"_default"`. This key is used when a user
-enters something that does not match any other fixed keys. It is particularly useful for getting
-user input:
+EvMenu accepts one important special `key` given only as `"_default"`. This key is used when a user enters something that does not match any other fixed keys. It is particularly useful for getting user input:
 
 ```python
 def node_readuser(caller, raw_string, **kwargs):
@@ -385,15 +366,12 @@ A `"_default"` option does not show up in the menu, so the above will just be a 
 
 #### option-key 'desc'
 
-This simply contains the description as to what happens when selecting the menu option. For
-`"_default"` options or if the `key` is already long or descriptive, it is not strictly needed. But
-usually it's better to keep the `key` short and put more detail in `desc`.
+This simply contains the description as to what happens when selecting the menu option. For `"_default"` options or if the `key` is already long or descriptive, it is not strictly needed. But usually it's better to keep the `key` short and put more detail in `desc`.
 
 
 #### option-key 'goto'
 
-This is the operational part of the option and fires only when the user chooses said option. Here
-are three ways to write it
+This is the operational part of the option and fires only when the user chooses said option. Here are three ways to write it
 
 ```python
 
@@ -422,63 +400,33 @@ def node_select(caller, raw_string, **kwargs):
 
 ```
 
-As seen above, `goto` could just be pointing to a single `nodename` string - the name of the node to
-go to. When given like this, EvMenu will look for a node named like this and call its associated
-function as
+As seen above, `goto` could just be pointing to a single `nodename` string - the name of the node to go to. When given like this, EvMenu will look for a node named like this and call its associated function as
 
 ```python
     nodename(caller, raw_string, **kwargs)
 ```
 
-Here, `raw_string` is always the input the user entered to make that choice and `kwargs` are the
-same as those `kwargs` that already entered the *current* node (they are passed on).
+Here, `raw_string` is always the input the user entered to make that choice and `kwargs` are the same as those `kwargs` that already entered the *current* node (they are passed on).
 
-Alternatively the `goto` could point to a "goto-callable". Such callables are usually defined in the
-same
-module as the menu nodes and given names starting with `_` (to avoid being parsed as nodes
-themselves). These callables will be called the same as a node function - `callable(caller,
-raw_string, **kwargs)`, where `raw_string` is what the user entered on this node and `**kwargs` is
-forwarded from the node's own input.
+Alternatively the `goto` could point to a "goto-callable". Such callables are usually defined in the same module as the menu nodes and given names starting with `_` (to avoid being parsed as nodes themselves). These callables will be called the same as a node function - `callable(caller, raw_string, **kwargs)`, where `raw_string` is what the user entered on this node and `**kwargs` is forwarded from the node's own input.
 
-The `goto` option key could also point to a tuple `(callable, kwargs)` - this allows for customizing
-the kwargs passed into the goto-callable, for example you could use the same callable but change the
-kwargs passed into it depending on which option was actually chosen.
+The `goto` option key could also point to a tuple `(callable, kwargs)` - this allows for customizing the kwargs passed into the goto-callable, for example you could use the same callable but change the kwargs passed into it depending on which option was actually chosen.
 
-The "goto callable" must either return a string `"nodename"` or a tuple `("nodename", mykwargs)`.
-This will lead to the next node being called as either `nodename(caller, raw_string, **kwargs)` or
-`nodename(caller, raw_string, **mykwargs)` - so this allows changing (or replacing) the options
-going
-into the next node depending on what option was chosen.
+The "goto callable" must either return a string `"nodename"` or a tuple `("nodename", mykwargs)`. This will lead to the next node being called as either `nodename(caller, raw_string, **kwargs)` or `nodename(caller, raw_string, **mykwargs)` - so this allows changing (or replacing) the options going into the next node depending on what option was chosen.
 
-There is one important case - if the goto-callable returns `None` for a `nodename`, *the current
-node will run again*, possibly with different kwargs. This makes it very easy to re-use a node over
-and over, for example allowing different options to update some text form being passed and
-manipulated for every iteration.
-
-
-> The EvMenu also supports the `exec` option key. This allows for running a callable *before* the
-> goto-callable. This functionality comes from a time before goto could be a callable and is
-> *deprecated* as of Evennia 0.8. Use `goto` for all functionality where you'd before use `exec`.
+There is one important case - if the goto-callable returns `None` for a `nodename`, *the current node will run again*, possibly with different kwargs. This makes it very easy to re-use a node over and over, for example allowing different options to update some text form being passed and manipulated for every iteration.
 
 
 ### Temporary storage
 
-When the menu starts, the EvMenu instance is stored on the caller as `caller.ndb._evmenu`. Through
-this object you can in principle reach the menu's internal state if you know what you are doing.
-This is also a good place to store temporary, more global variables that may be cumbersome to keep
-passing from node to node via the `**kwargs`. The `_evmnenu` will be deleted automatically when the
-menu closes, meaning you don't need to worry about cleaning anything up.
+When the menu starts, the EvMenu instance is stored on the caller as `caller.ndb._evmenu`. Through this object you can in principle reach the menu's internal state if you know what you are doing. This is also a good place to store temporary, more global variables that may be cumbersome to keep passing from node to node via the `**kwargs`. The `_evmnenu` will be deleted automatically when the menu closes, meaning you don't need to worry about cleaning anything up.
 
-If you want *permanent* state storage, it's instead better to use an Attribute on `caller`. Remember
-that this will remain after the menu closes though, so you need to handle any needed cleanup
-yourself.
+If you want *permanent* state storage, it's instead better to use an Attribute on `caller`. Remember that this will remain after the menu closes though, so you need to handle any needed cleanup yourself.
 
 
 ### Customizing Menu formatting
 
-The `EvMenu` display of nodes, options etc are controlled by a series of formatting methods on the
-`EvMenu` class. To customize these, simply create a new child class of `EvMenu` and override as
-needed. Here is an example:
+The `EvMenu` display of nodes, options etc are controlled by a series of formatting methods on the `EvMenu` class. To customize these, simply create a new child class of `EvMenu` and override as needed. Here is an example:
 
 ```python
 from evennia.utils.evmenu import EvMenu
@@ -542,8 +490,7 @@ See `evennia/utils/evmenu.py` for the details of their default implementations.
 
 ## EvMenu templating language
 
-In evmenu.py are two helper functions `parse_menu_template` and `template2menu`
-that is used to parse a _menu template_ string into an EvMenu:
+In evmenu.py are two helper functions `parse_menu_template` and `template2menu` that is used to parse a _menu template_ string into an EvMenu:
 
     evmenu.template2menu(caller, menu_template, goto_callables)
 
@@ -874,6 +821,68 @@ empty dictionary for its options. It returning options, those will supplement th
 auto-created by the `list_node` decorator.
 
 ## Example Menus
+
+Here is a diagram to help visualize the flow of data from node to node, including goto-callables in-between: 
+
+```
+        ┌─
+        │  def nodeA(caller, raw_string, **kwargs):
+        │      text = "Choose how to operate on 2 and 3."
+        │      options = (
+        │          {
+        │              "key": "A",
+        │              "desc": "Multiply 2 with 3",
+        │              "goto": (_callback, {"type": "mult", "a": 2, "b": 3})
+        │          },                      ───────────────────┬────────────
+        │          {                                          │
+        │              "key": "B",                            └───────────────┐
+        │              "desc": "Add 2 and 3",                                 │
+  Node A│              "goto": (_callback, {"type": "add", "a": 2, "b": 3})   │
+        │          },                      ─────────────────┬─────────────    │
+        │          {                                        │                 │
+        │              "key": "C",                          │                 │
+        │              "desc": "Show the value 5",          │                 │
+        │              "goto": ("node_B", {"c": 5})         │                 │
+        │          }                      ───────┐          │                 │
+        │      )                                 └──────────┼─────────────────┼───┐
+        │      return text, options                         │                 │   │
+        └─                                       ┌──────────┘                 │   │
+                                                 │                            │   │
+                                                 │ ┌──────────────────────────┘   │
+        ┌─                                       ▼ ▼                              │
+        │  def _callback(caller, raw_string, **kwargs):                           │
+        │      if kwargs["type"] == "mult":                                       │
+        │          return "node_B", {"c": kwargs["a"] * kwargs["b"]}              │
+Goto-   │                           ───────────────┬────────────────              │
+callable│                                          │                              │
+        │                                          └───────────────────┐          │
+        │                                                              │          │
+        │      elif kwargs["type"] == "add":                           │          │
+        │          return "node_B", {"c": kwargs["a"] + kwargs["b"]}   │          │
+        └─                          ────────┬───────────────────────   │          │
+                                            │                          │          │
+                                            │ ┌────────────────────────┼──────────┘
+                                            │ │                        │
+                                            │ │ ┌──────────────────────┘
+        ┌─                                  ▼ ▼ ▼
+        │  def nodeB(caller, raw_string, **kwargs):
+  Node B│      text = "Result of operation: " + kwargs["c"]
+        │      return text, {}
+        └─
+
+        ┌─
+   Menu │  EvMenu(caller, {"node_A": nodeA, "node_B": nodeB}, startnode="node_A")
+   Start│
+        └─
+```
+
+Above we create a very simple/stupid menu (in the `EvMenu` call at the end) where we map the node identifier `"node_A"` to the Python function `nodeA` and `"node_B"` to the function `nodeB`. 
+
+We start the menu in `"node_A"` where we get three options A, B and C.  Options A and B will route via a a goto-callable `_callback` that either multiples or adds the numbers 2 and 3 together before continuing to `"node_B"`. Option C routes directly to `"node_B"`, passing the number 5. 
+
+In every step, we pass a dict which becomes the ingoing `**kwargs` in the next step. If we didn't pass anything (it's optional), the next step's `**kwargs` would just be empty.
+
+More examples:
 
 - **[Simple branching menu](./EvMenu.md#example-simple-branching-menu)** - choose from options
 - **[Dynamic goto](./EvMenu.md#example-dynamic-goto)** - jumping to different nodes based on response

@@ -42,12 +42,24 @@ class CharacterWithComponents(ComponentHolderMixin, DefaultCharacter):
     test_b = ComponentProperty("test_b", my_int=3, my_list=[1, 2, 3])
 
 
+class InheritedTCWithComponents(CharacterWithComponents):
+    test_c = ComponentProperty("test_c")
+
+
 class TestComponents(EvenniaTest):
     character_typeclass = CharacterWithComponents
 
     def test_character_has_class_components(self):
         assert self.char1.test_a
         assert self.char1.test_b
+
+    def test_inherited_typeclass_does_not_include_child_class_components(self):
+        char_with_c = create.create_object(
+            InheritedTCWithComponents, key="char_with_c", location=self.room1, home=self.room1
+        )
+        assert self.char1.test_a
+        assert not self.char1.cmp.get('test_c')
+        assert char_with_c.test_c
 
     def test_character_instances_components_properly(self):
         assert isinstance(self.char1.test_a, ComponentTestA)
