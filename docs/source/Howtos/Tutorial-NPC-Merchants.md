@@ -54,7 +54,7 @@ class NPCMerchant(Object):
      def open_shop(self, shopper):
          menunodes = {}  # TODO! 
          shopname = self.db.shopname or "The shop"
-         EvMenu(shopper, menunodes, startnode="shop_start", 
+         EvMenu(shopper, menunodes, startnode="shopfront", 
                 shopname=shopname, shopkeeper=self, wares=self.contents)
 
 ```
@@ -215,7 +215,7 @@ class NPCMerchant(Object):
              "inspect_and_buy": node_inspect_and_buy
          }
          shopname = self.db.shopname or "The shop"
-         EvMenu(shopper, menunodes, startnode="shop_start", 
+         EvMenu(shopper, menunodes, startnode="shopfront", 
                 shopname=shopname, shopkeeper=self, wares=self.contents)
 
 ```
