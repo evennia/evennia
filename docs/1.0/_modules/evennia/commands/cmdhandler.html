@@ -757,7 +757,7 @@
         <span class="k">try</span><span class="p">:</span>  <span class="c1"># catch special-type commands</span>
             <span class="k">if</span> <span class="n">cmdobj</span><span class="p">:</span>
                 <span class="c1"># the command object is already given</span>
-                <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="p">()</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmdobj</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="p">()</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmdobj</span>
                 <span class="n">cmdname</span> <span class="o">=</span> <span class="n">cmdobj_key</span> <span class="k">if</span> <span class="n">cmdobj_key</span> <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="n">raw_string</span>
                 <span class="n">unformatted_raw_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>

@@ -1033,7 +1033,7 @@
             <span class="k">def</span> <span class="nf">_default_callable</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">target_path_style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">display_symbol</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">get_display_symbol</span><span class="p">())</span>
 
-            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">target_path_style</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">target_path_style</span><span class="p">):</span>
                 <span class="n">_target_path_style</span> <span class="o">=</span> <span class="n">target_path_style</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">_target_path_style</span> <span class="o">=</span> <span class="n">_default_callable</span>

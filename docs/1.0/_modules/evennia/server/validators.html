@@ -81,7 +81,6 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 
 
@@ -102,7 +101,6 @@
 <span class="sd">                raises ValidationError otherwise.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="c1"># Check guest list</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">GUEST_LIST</span> <span class="ow">and</span> <span class="n">username</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="n">guest</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">guest</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">GUEST_LIST</span>
@@ -123,8 +121,7 @@
 <div class="viewcode-block" id="EvenniaPasswordValidator.__init__"><a class="viewcode-back" href="../../../api/evennia.server.validators.html#evennia.server.validators.EvenniaPasswordValidator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[\w. @+\-&#39;,]+$&quot;</span><span class="p">,</span>
-        <span class="n">policy</span><span class="o">=</span><span class="s2">&quot;Password should contain a mix of letters, &quot;</span>
-        <span class="s2">&quot;spaces, digits and @/./+/-/_/&#39;/, only.&quot;</span><span class="p">,</span>
+        <span class="n">policy</span><span class="o">=</span><span class="s2">&quot;Password should contain a mix of letters, spaces, digits and @/./+/-/_/&#39;/, only.&quot;</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructs a standard Django password validator.</span>

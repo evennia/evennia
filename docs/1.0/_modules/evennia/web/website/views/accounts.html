@@ -86,7 +86,6 @@
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">messages</span>
 <span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
-
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.web.website</span> <span class="kn">import</span> <span class="n">forms</span>
 
@@ -134,25 +133,19 @@
         <span class="n">password</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;password1&quot;</span><span class="p">]</span>
         <span class="n">email</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Create account</span>
+        <span class="c1"># Create account. This also runs all validations on the username/password.</span>
         <span class="n">account</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span>
 
-        <span class="c1"># If unsuccessful, display error messages to user</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
-            <span class="p">[</span><span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">]</span>
-
-            <span class="c1"># Call the Django &quot;form failure&quot; hook</span>
+            <span class="c1"># password validation happens earlier, only username checks appear here.</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errs</span><span class="p">))</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_invalid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
-
-        <span class="c1"># Inform user of success</span>
-        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span>
-            <span class="s2">&quot;Your account &#39;</span><span class="si">%s</span><span class="s2">&#39; was successfully created! &quot;</span>
-            <span class="s2">&quot;You may log in using it now.&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Redirect the user to the login page</span>
-        <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">success_url</span><span class="p">)</span></div></div>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Inform user of success</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Your account &#39;</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; was successfully created!&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">success_url</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

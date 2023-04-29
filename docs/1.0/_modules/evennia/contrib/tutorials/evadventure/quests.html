@@ -221,7 +221,7 @@
             <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;help_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="ow">or</span> <span class="s2">&quot;You need to </span><span class="si">{self.current_step}</span><span class="s2"> ...&quot;</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">help_resource</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">help_resource</span><span class="p">):</span>
             <span class="c1"># the help_&lt;current_step&gt; can be a method to call</span>
             <span class="k">return</span> <span class="n">help_resource</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>

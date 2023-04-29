@@ -234,7 +234,7 @@
                     <span class="k">return</span> <span class="n">dbref_match</span>
 
         <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">):</span>
                 <span class="n">typeclass</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typeclass</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">typeclass</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">typeclass</span>

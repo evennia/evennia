@@ -98,7 +98,6 @@
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.module_loading</span> <span class="kn">import</span> <span class="n">import_string</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.accounts.manager</span> <span class="kn">import</span> <span class="n">AccountManager</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
@@ -116,13 +115,7 @@
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.optionhandler</span> <span class="kn">import</span> <span class="n">OptionHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">is_iter</span><span class="p">,</span>
-    <span class="n">lazy_property</span><span class="p">,</span>
-    <span class="n">make_iter</span><span class="p">,</span>
-    <span class="n">to_str</span><span class="p">,</span>
-    <span class="n">variable_from_module</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">variable_from_module</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DefaultAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;DefaultGuest&quot;</span><span class="p">)</span>
 
@@ -587,7 +580,6 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            validators (list): List of instantiated Validator objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">validator</span> <span class="ow">in</span> <span class="n">validator_config</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
