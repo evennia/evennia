@@ -157,7 +157,7 @@ To enter the shop, you’ll just need to stand in the same room and use the <cod
      <span class="k">def</span> <span class="nf">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shopper</span><span class="p">):</span>
          <span class="n">menunodes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># TODO! </span>
          <span class="n">shopname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">shopname</span> <span class="ow">or</span> <span class="s2">&quot;The shop&quot;</span>
-         <span class="n">EvMenu</span><span class="p">(</span><span class="n">shopper</span><span class="p">,</span> <span class="n">menunodes</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;shop_start&quot;</span><span class="p">,</span> 
+         <span class="n">EvMenu</span><span class="p">(</span><span class="n">shopper</span><span class="p">,</span> <span class="n">menunodes</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;shopfront&quot;</span><span class="p">,</span> 
                 <span class="n">shopname</span><span class="o">=</span><span class="n">shopname</span><span class="p">,</span> <span class="n">shopkeeper</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">wares</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
 
 </pre></div>
@@ -296,7 +296,7 @@ _________________________________________________________
              <span class="s2">&quot;inspect_and_buy&quot;</span><span class="p">:</span> <span class="n">node_inspect_and_buy</span>
          <span class="p">}</span>
          <span class="n">shopname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">shopname</span> <span class="ow">or</span> <span class="s2">&quot;The shop&quot;</span>
-         <span class="n">EvMenu</span><span class="p">(</span><span class="n">shopper</span><span class="p">,</span> <span class="n">menunodes</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;shop_start&quot;</span><span class="p">,</span> 
+         <span class="n">EvMenu</span><span class="p">(</span><span class="n">shopper</span><span class="p">,</span> <span class="n">menunodes</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;shopfront&quot;</span><span class="p">,</span> 
                 <span class="n">shopname</span><span class="o">=</span><span class="n">shopname</span><span class="p">,</span> <span class="n">shopkeeper</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">wares</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
 
 </pre></div>
