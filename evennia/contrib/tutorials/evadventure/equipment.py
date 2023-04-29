@@ -6,7 +6,7 @@ Knave has a system of Slots for its inventory.
 from evennia.utils.utils import inherits_from
 
 from .enums import Ability, WieldLocation
-from .objects import EvAdventureObject, WeaponEmptyHand
+from .objects import BARE_HANDS, EvAdventureObject
 
 
 class EquipmentError(TypeError):
@@ -167,7 +167,7 @@ class EquipmentHandler:
         if not weapon:
             weapon = slots[WieldLocation.WEAPON_HAND]
         if not weapon:
-            weapon = WeaponEmptyHand()
+            weapon = BARE_HANDS
         return weapon
 
     def display_loadout(self):

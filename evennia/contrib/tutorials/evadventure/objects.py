@@ -18,7 +18,7 @@ rune sword (weapon+quest).
 
 """
 
-from evennia import AttributeProperty
+from evennia import AttributeProperty, create_object, search_object
 from evennia.objects.objects import DefaultObject
 from evennia.utils.utils import make_iter
 
@@ -125,7 +125,7 @@ class EvAdventureTreasure(EvAdventureObject):
     """
 
     obj_type = ObjType.TREASURE
-    value = AttributeProperty(100)
+    value = AttributeProperty(100, autocreate=False)
 
 
 class EvAdventureConsumable(EvAdventureObject):
@@ -136,14 +136,26 @@ class EvAdventureConsumable(EvAdventureObject):
     """
 
     obj_type = ObjType.CONSUMABLE
-    size = AttributeProperty(0.25)
-    uses = AttributeProperty(1)
+    size = AttributeProperty(0.25, autocreate=False)
+    uses = AttributeProperty(1, autocreate=False)
 
-    def use(self, user, target, *args, **kwargs):
+    def at_pre_use(self, user, target=None, *args, **kwargs):
+        if target and user.location != target.location:
+            user.msg("You are not close enough to the target!")
+            return False
+
+        if self.uses <= 0:
+            user.msg(f"|w{self.key} is used up.|n")
+            return False
+
+        return super().at_pre_use(user, target=target, *args, **kwargs)
+
+    def use(self, user, target=None, *args, **kwargs):
         """
         Use the consumable.
 
         """
+
         if user.location:
             user.location.msg_contents(
                 f"$You() $conj(use) {self.get_display_name(user)}.", from_obj=user
@@ -193,11 +205,16 @@ class EvAdventureWeapon(EvAdventureObject):
 
         return super().get_display_name(looker=looker, **kwargs) + quality_txt
 
-    def at_pre_use(self, user, *args, **kwargs):
+    def at_pre_use(self, user, target=None, *args, **kwargs):
+        if target and user.location != target.location:
+            # we assume weapons can only be used in the same location
+            user.msg("You are not close enough to the target!")
+            return False
+
         if self.quality <= 0:
             user.msg(f"{self.get_display_name(user)} is broken and can't be used!")
             return False
-        return super().at_pre_use(user, *args, **kwargs)
+        return super().at_pre_use(user, target=target, *args, **kwargs)
 
     def use(self, attacker, target, *args, advantage=False, disadvantage=False, **kwargs):
         """When a weapon is used, it attacks an opponent"""
@@ -239,7 +256,8 @@ class EvAdventureWeapon(EvAdventureObject):
             message = f" $You() $conj(miss) $You({target.key})."
             if quality is Ability.CRITICAL_FAILURE:
                 message += ".. it's a |rcritical miss!|n, damaging the weapon."
-                self.quality -= 1
+                if self.quality is not None:
+                    self.quality -= 1
                 location.msg_contents(message, from_obj=attacker, mapping={target.key: target})
 
     def at_post_use(self, user, *args, **kwargs):
@@ -260,21 +278,6 @@ class EvAdventureThrowable(EvAdventureWeapon, EvAdventureConsumable):
     attack_type = AttributeProperty(Ability.WIS)
     defense_type = AttributeProperty(Ability.DEX)
     damage_roll = AttributeProperty("1d6")
-
-
-class WeaponEmptyHand(EvAdventureWeapon):
-    """
-    This is a dummy-class loaded when you wield no weapons. We won't create any db-object for it.
-
-    """
-
-    obj_type = ObjType.WEAPON
-    key = "Empty Fists"
-    inventory_use_slot = WieldLocation.WEAPON_HAND
-    attack_type = Ability.STR
-    defense_type = Ability.ARMOR
-    damage_roll = "1d4"
-    quality = 100000  # let's assume fists are always available ...
 
 
 class EvAdventureRunestone(EvAdventureWeapon, EvAdventureConsumable):
@@ -335,3 +338,23 @@ class EvAdventureHelmet(EvAdventureArmor):
 
     obj_type = ObjType.HELMET
     inventory_use_slot = WieldLocation.HEAD
+
+
+class WeaponBareHands(EvAdventureWeapon):
+    """
+    This is a dummy-class loaded when you wield no weapons. We won't create any db-object for it.
+
+    """
+
+    obj_type = ObjType.WEAPON
+    key = "Bare hands"
+    inventory_use_slot = WieldLocation.WEAPON_HAND
+    attack_type = Ability.STR
+    defense_type = Ability.ARMOR
+    damage_roll = "1d4"
+    quality = 100000  # let's assume fists are always available ...
+
+
+BARE_HANDS = search_object("Bare hands", typeclass=WeaponBareHands)
+if not BARE_HANDS:
+    BARE_HANDS = create_object(WeaponBareHands, key="Bare hands")
