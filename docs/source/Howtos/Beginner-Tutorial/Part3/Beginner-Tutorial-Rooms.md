@@ -4,7 +4,7 @@ A _room_ describes a specific location in the game world. Being an abstract conc
 
 In EvAdventure, we will have two main types of rooms: 
 - Normal, above-ground rooms. Based on a fixed map, these will be created once and then don't change. We'll cover them in this lesson. 
-- Dungeon rooms - these will be examples of _procedurally generated_ rooms, created on the fly as the players explore the underworld. Being subclasses of the normal room, we'll get to them in the [Dungeon generation lesson](Beginner-Tutorial-Dungeon).
+- Dungeon rooms - these will be examples of _procedurally generated_ rooms, created on the fly as the players explore the underworld. Being subclasses of the normal room, we'll get to them in the [Dungeon generation lesson](./Beginner-Tutorial-Dungeon.md).
 
 ## The base room
 
@@ -60,7 +60,7 @@ class EvAdventurePvPRoom(EvAdventureRoom):
         return "|yNon-lethal PvP combat is allowed here!|n"
 ```
 
-The return of `get_display_footer` will show after the [main room description](Objects#changing-an-objects-appearance), showing that the room is a sparring room. This means that when a player drops to 0 HP, they will lose the combat, but don't stand any risk of dying (weapons wear out normally during sparring though).
+The return of `get_display_footer` will show after the [main room description](../../../Components/Objects.md#changing-an-objects-appearance), showing that the room is a sparring room. This means that when a player drops to 0 HP, they will lose the combat, but don't stand any risk of dying (weapons wear out normally during sparring though).
 
 ## Adding a room map
 
@@ -151,7 +151,7 @@ class EvAdventureRoom(DefaultRoom):
         return "  " + "\n  ".join("".join(line) for line in reversed(map_grid))
 ```
 
-The string returned from `get_display_header` will end up at the top of the [room description](Objects#changing-an-objects-description), a good place to have the map appear! 
+The string returned from `get_display_header` will end up at the top of the [room description](../../../Components/Objects.md#changing-an-objects-description), a good place to have the map appear! 
 
 The map itself consists of the 2D matrix `_MAP_GRID`. This is a 2D area described by a list of Python lists. To find a given place in the list, you first first need to find which of the nested lists to use, and then which element to use in that list. Indices start from 0 in Python. So to draw the `o` symbol for the southermost room, you'd need to do so at `_MAP_GRID[4][2]`. 
 
@@ -209,4 +209,4 @@ class EvAdventureRoomTest(EvenniaTestCase):
 
 ## Conclusion  
 
-In this lesson we manipulated strings and made a map. Changing the description of an object is a big part of changing the 'graphics' of a text-based game, so checking out the [documentation on this](Objects#changing-an-objects-description) is good extra reading.
+In this lesson we manipulated strings and made a map. Changing the description of an object is a big part of changing the 'graphics' of a text-based game, so checking out the [documentation on this](../../../Components/Objects.md#changing-an-objects-description) is good extra reading.

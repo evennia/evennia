@@ -319,7 +319,7 @@ The `quality` is something we need to track in _Knave_. When getting critical fa
 
 The attack/defend type tracks how we resolve attacks with the weapon, like `roll + STR vs ARMOR + 10`.
 
-In the `use` method we make use of the `rules` module we [created earlier](Beginner-Tutorial-Rules) to perform all the dice rolls needed to resolve the attack. 
+In the `use` method we make use of the `rules` module we [created earlier](./Beginner-Tutorial-Rules.md) to perform all the dice rolls needed to resolve the attack. 
 
 This code requires some additional explanation: 
 ```python
@@ -348,7 +348,7 @@ We provide the following string to `msg_contents`:
 f"$You() $conj(attack) $You({target.key}) with {self.key}: {txt}"
 ```
 
-The `{...}` are normal f-string formatting markers like those we have used before. The `$func(...)` bits are [Evennnia FuncParser](FuncParser) function calls. FuncParser calls are executed as functions and the result replaces their position in the string. As this string is parsed by Evennia, this is what happens: 
+The `{...}` are normal f-string formatting markers like those we have used before. The `$func(...)` bits are [Evennnia FuncParser](../../../Components/FuncParser.md) function calls. FuncParser calls are executed as functions and the result replaces their position in the string. As this string is parsed by Evennia, this is what happens: 
 
 First the f-string markers are replaced, so that we get this: 
 
@@ -466,7 +466,7 @@ if not BARE_HANDS:
 
 ```
 
-Since everyone's empty hands are the same (in our game), we create _one_ `Bare hands` weapon object that everyone shares. We do this by searching for the object with `search_object`  (the `.first()` means we grab the first one even if we should by accident have created multiple hands, see [The Django querying tutorial](Beginner-Tutorial-Django-queries) for more info). If we find none, we create it. This way the `BARE_HANDS` object can be used by everyone (we just need to import `objects.BARE_HANDS`). 
+Since everyone's empty hands are the same (in our game), we create _one_ `Bare hands` weapon object that everyone shares. We do this by searching for the object with `search_object`  (the `.first()` means we grab the first one even if we should by accident have created multiple hands, see [The Django querying tutorial](../Part1/Beginner-Tutorial-Django-queries.md) for more info). If we find none, we create it. This way the `BARE_HANDS` object can be used by everyone (we just need to import `objects.BARE_HANDS`). 
 
 
 ## Testing and Extra credits 
