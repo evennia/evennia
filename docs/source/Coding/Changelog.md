@@ -1,13 +1,21 @@
 # Changelog
 
-## Main branch
+## Evennia 1.3.0
 
+Apr 29, 2023
+
+- Feature: Better ANSI color fallbacks (InspectorCaracal).
 - Feature: Add support for saving `deque` with `maxlen` to Attributes (before
   `maxlen` was ignored).
-- Fix: More unit tests for scripts (Storsorken)
+- Fix: The username validator did not display errors correctly in web
+  registration form.
+- Fix: Components contrib had issues with inherited typeclasses (ChrisLR)
+- Fix: f-string fix in clothing contrib (aMiss-aWry)
+- Fix: Have `EvenniaTestCase` properly flush idmapper cache (bradleymarques)
+- Tools: More unit tests for scripts (Storsorken)
 - Docs: Made separate doc pages for Exits, Characters and Rooms. Expanded on how
   to change the description of an in-game object with templating.
-- Docs: Fixed a multitude of doc issues.
+- Docs: A multitude of doc issues and typos fixed.
 
 ## Evennia 1.2.1
 
