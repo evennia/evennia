@@ -63,6 +63,7 @@
   <ul>
 <li><a class="reference internal" href="#">Exits</a><ul>
 <li><a class="reference internal" href="#exit-details">Exit details</a></li>
+<li><a class="reference internal" href="#creating-exits-in-code">Creating Exits in code</a></li>
 </ul>
 </li>
 </ul>
@@ -123,6 +124,9 @@
 </pre></div>
 </div>
 <p><em>Exits</em> are in-game <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a> connecting other objects (usually <a class="reference internal" href="Rooms.html"><span class="doc std std-doc">Rooms</span></a>) together.</p>
+<blockquote>
+<div><p>Note that Exits are one-way objects, so in order for two Rooms to be linked bi-directionally, there will need to be two exits.</p>
+</div></blockquote>
 <p>An object named <code class="docutils literal notranslate"><span class="pre">north</span></code> or <code class="docutils literal notranslate"><span class="pre">in</span></code> might be exits, as well as <code class="docutils literal notranslate"><span class="pre">door</span></code>, <code class="docutils literal notranslate"><span class="pre">portal</span></code> or <code class="docutils literal notranslate"><span class="pre">jump</span> <span class="pre">out</span> <span class="pre">the</span> <span class="pre">window</span></code>.</p>
 <p>An exit has two things that separate them from other objects.</p>
 <ol class="simple">
@@ -131,7 +135,7 @@
 </ol>
 <p>The default exit functionality is all defined on the <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><span class="xref myst py py-class">DefaultExit</span></a> typeclass. You could in principle completely change how exits work in your game by overriding this - it’s not recommended though, unless you really know what you are doing).</p>
 <p>Exits are <a class="reference internal" href="Locks.html"><span class="doc std std-doc">locked</span></a> using an <code class="docutils literal notranslate"><span class="pre">access_type</span></code> called <em>traverse</em> and also make use of a few hook methods for giving feedback if the traversal fails.  See <code class="docutils literal notranslate"><span class="pre">evennia.DefaultExit</span></code> for more info.</p>
-<p>Exits are normally overridden on a case-by-case basis, but if you want to change the default exit createad by rooms like <code class="docutils literal notranslate"><span class="pre">dig</span></code> ,  <code class="docutils literal notranslate"><span class="pre">tunnel</span></code> or <code class="docutils literal notranslate"><span class="pre">open</span></code> you can change it in settings:</p>
+<p>Exits are normally overridden on a case-by-case basis, but if you want to change the default exit created by rooms like <code class="docutils literal notranslate"><span class="pre">dig</span></code>, <code class="docutils literal notranslate"><span class="pre">tunnel</span></code> or <code class="docutils literal notranslate"><span class="pre">open</span></code> you can change it in settings:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BASE_EXIT_TYPECLASS = &quot;typeclasses.exits.Exit&quot;
 </pre></div>
 </div>
@@ -157,6 +161,10 @@
 <li><p>On the Exit object, <code class="docutils literal notranslate"><span class="pre">at_post_traverse(obj,</span> <span class="pre">source)</span></code> is triggered.</p></li>
 </ol>
 <p>If the move fails for whatever reason, the Exit will look for an Attribute <code class="docutils literal notranslate"><span class="pre">err_traverse</span></code> on itself and display this as an error message. If this is not found, the Exit will instead call <code class="docutils literal notranslate"><span class="pre">at_failed_traverse(obj)</span></code> on itself.</p>
+</section>
+<section id="creating-exits-in-code">
+<h2>Creating Exits in code<a class="headerlink" href="#creating-exits-in-code" title="Permalink to this headline">¶</a></h2>
+<p>For an example of how to create Exits programatically please see <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Creating-Things.html#linking-exits-and-rooms-in-code"><span class="std std-doc">this guide</span></a>.</p>
 </section>
 </section>
 

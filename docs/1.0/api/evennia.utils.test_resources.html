@@ -378,6 +378,21 @@ the proper order:</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaTestCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
 <p>For use with gamedir settings; Just like the normal test case, only for naming consistency.</p>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>Inheriting from this class will bypass EvenniaTestMixin, and therefore
+not setup some default objects. This can result in faster tests.</p></li>
+<li><p>If you do inherit from this class for your unit tests, and have
+overridden the tearDown() method, please also call flush_cache(). Not
+doing so will result in flakey and order-dependent tests due to the
+Django ID cache not being flushed.</p></li>
+</ul>
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestCase.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestCase.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestCase.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">

@@ -139,8 +139,8 @@ it to every other subscriber.</p>
 <li><p>Private guild channels for planning and organization (IC/OOC depending on game)</p></li>
 <li><p>Cyberpunk-style retro chat rooms (IC)</p></li>
 <li><p>In-game radio channels (IC)</p></li>
-<li><p>Group telephathy (IC)</p></li>
-<li><p>Walkie talkies (IC)</p></li>
+<li><p>Group telepathy (IC)</p></li>
+<li><p>Walkie-talkies (IC)</p></li>
 </ul>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.0: </span>Channel system changed to use a central ‘channel’ command and nicks instead of
@@ -265,7 +265,7 @@ channel/destroy channelname
 <p>Aliases are optional but can be good for obvious shortcuts everyone may want to
 use. The description is used in channel-listings. You will automatically join a
 channel you created and will be controlling it. You can also use <code class="docutils literal notranslate"><span class="pre">channel/desc</span></code> to
-change the description on a channel you wnn later.</p>
+change the description on a channel you own later.</p>
 <p>If you control a channel you can also kick people off it:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/boot mychannel = annoyinguser123 : stop spamming!
 </pre></div>
@@ -331,7 +331,7 @@ channels you could override the <code class="docutils literal notranslate"><span
 
 </pre></div>
 </div>
-<p>Add this custom command to your default cmdset and regular users wil now get an
+<p>Add this custom command to your default cmdset and regular users will now get an
 access-denied error when trying to use use these switches.</p>
 </section>
 </section>
@@ -373,7 +373,7 @@ recipient is skipped.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">channel.at_post_channel_msg(message,</span> <span class="pre">**kwargs)</span></code></p></li>
 </ol>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">Accounts</span></code> and <code class="docutils literal notranslate"><span class="pre">Objects</span></code> both have their have separate sets of hooks.
-So make sure you modify the set actually used by your subcribers (or both).
+So make sure you modify the set actually used by your subscribers (or both).
 Default channels all use <code class="docutils literal notranslate"><span class="pre">Account</span></code> subscribers.</p>
 </section>
 <section id="channel-class">
@@ -480,7 +480,7 @@ what maps e.g. <code class="docutils literal notranslate"><span class="pre">alia
 a class-method that will happily remove found channel-aliases from the user linked to <em>any</em>
 channel, not only from the channel the method is called on.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pre_join_channel(subscriber)</span></code> - if this returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, connection will be refused.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">post_join_channel(subscriber)</span></code> - by default this sets up a users’s channel-nicks/aliases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_join_channel(subscriber)</span></code> - by default this sets up a users’ channel-nicks/aliases.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pre_leave_channel(subscriber)</span></code> - if this returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, the user is not allowed to leave.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">post_leave_channel(subscriber)</span></code> - this will clean up any channel aliases/nicks of the user.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">delete</span></code> the standard typeclass-delete mechanism will also automatically un-subscribe all

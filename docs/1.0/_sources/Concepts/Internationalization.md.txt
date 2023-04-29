@@ -84,11 +84,11 @@ Translations are found in the core `evennia/` library, under
 `evennia/evennia/locale/`. You must make sure to have cloned this repository
 from [Evennia's github](github:evennia) before you can proceed.
 
-If you cannot find your language in `evennia/evennia/locale/` it's because noone
+If you cannot find your language in `evennia/evennia/locale/` it's because no one
 has translated it yet.  Alternatively you might have the language but find the
 translation bad ... You are welcome to help improve the situation!
 
-To start a new translation you need to first have cloned the Evennia repositry
+To start a new translation you need to first have cloned the Evennia repository
 with GIT and activated a python virtualenv as described on the
 [Setup Quickstart](../Setup/Installation.md) page.
 

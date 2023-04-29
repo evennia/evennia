@@ -19,6 +19,8 @@
 
 *Exits* are in-game [Objects](./Objects.md) connecting other objects (usually [Rooms](./Rooms.md)) together. 
 
+> Note that Exits are one-way objects, so in order for two Rooms to be linked bi-directionally, there will need to be two exits.
+
 An object named `north` or `in` might be exits, as well as `door`, `portal` or `jump out the window`. 
 
 An exit has two things that separate them from other objects. 
@@ -29,7 +31,7 @@ The default exit functionality is all defined on the [DefaultExit](DefaultExit) 
 
 Exits are [locked](./Locks.md) using an `access_type` called *traverse* and also make use of a few hook methods for giving feedback if the traversal fails.  See `evennia.DefaultExit` for more info. 
 
-Exits are normally overridden on a case-by-case basis, but if you want to change the default exit createad by rooms like `dig` ,  `tunnel` or `open` you can change it in settings:
+Exits are normally overridden on a case-by-case basis, but if you want to change the default exit created by rooms like `dig`, `tunnel` or `open` you can change it in settings:
 
     BASE_EXIT_TYPECLASS = "typeclasses.exits.Exit"
 
@@ -53,3 +55,7 @@ The process of traversing an exit is as follows:
 1. On the Exit object, `at_post_traverse(obj, source)` is triggered.
 
 If the move fails for whatever reason, the Exit will look for an Attribute `err_traverse` on itself and display this as an error message. If this is not found, the Exit will instead call `at_failed_traverse(obj)` on itself. 
+
+### Creating Exits in code
+
+For an example of how to create Exits programatically please see [this guide](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Creating-Things.md#linking-exits-and-rooms-in-code).

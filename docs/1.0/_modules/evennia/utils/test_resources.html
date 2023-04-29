@@ -636,9 +636,19 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For use with gamedir settings; Just like the normal test case, only for naming consistency.</span>
 
+<span class="sd">    Notes:</span>
+
+<span class="sd">    -   Inheriting from this class will bypass EvenniaTestMixin, and therefore</span>
+<span class="sd">        not setup some default objects. This can result in faster tests.</span>
+
+<span class="sd">    -   If you do inherit from this class for your unit tests, and have</span>
+<span class="sd">        overridden the tearDown() method, please also call flush_cache(). Not</span>
+<span class="sd">        doing so will result in flakey and order-dependent tests due to the</span>
+<span class="sd">        Django ID cache not being flushed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">pass</span></div>
+<div class="viewcode-block" id="EvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flush_cache</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="BaseEvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>

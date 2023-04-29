@@ -211,7 +211,7 @@ You see nothing special.
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>lock box = get:false()
 </pre></div>
 </div>
-<p>Locks represent a rather <a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">big topic</span></a>, but for now that will do what we want. This will lock the box so noone can lift it. The exception is superusers, they override all locks and will pick it
+<p>Locks represent a rather <a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">big topic</span></a>, but for now that will do what we want. This will lock the box so no one can lift it. The exception is superusers, they override all locks and will pick it
 up anyway. Make sure you are quelling your superuser powers and try to get the box now:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; get box
 You can&#39;t get that.
@@ -251,7 +251,7 @@ You can&#39;t get that.
 </section>
 <section id="pushing-your-buttons">
 <h2><span class="section-number">1.6. </span>Pushing Your Buttons<a class="headerlink" href="#pushing-your-buttons" title="Permalink to this headline">¶</a></h2>
-<p>If we get back to the box we made, there is only so much fun you can have with it at this point. It’s just a dumb generic object. If you renamed it to <code class="docutils literal notranslate"><span class="pre">stone</span></code> and changed its description, noone would be the wiser. However, with the combined use of custom <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>, <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a>
+<p>If we get back to the box we made, there is only so much fun you can have with it at this point. It’s just a dumb generic object. If you renamed it to <code class="docutils literal notranslate"><span class="pre">stone</span></code> and changed its description, no one would be the wiser. However, with the combined use of custom <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>, <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a>
 and object-based <a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">Commands</span></a>, you could expand it and other items to be as unique, complex
 and interactive as you want.</p>
 <p>Let’s take an example. So far we have only created objects that use the default object typeclass named simply <code class="docutils literal notranslate"><span class="pre">Object</span></code>. Let’s create an object that is a little more interesting. Under
@@ -260,7 +260,7 @@ and interactive as you want.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop button:tutorials.red_button.RedButton
 </pre></div>
 </div>
-<p>The same way we did with the Script Earler, we specify a “Python-path” to the Python code we want Evennia to use for creating the object. There you go - one red button.</p>
+<p>The same way we did with the Script earlier, we specify a “Python-path” to the Python code we want Evennia to use for creating the object. There you go - one red button.</p>
 <p>The RedButton is an example object intended to show off a few of Evennia’s features. You will find that the <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc">Typeclass</span></a> and <a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">Commands</span></a> controlling it are inside <a class="reference internal" href="../../../api/evennia.contrib.tutorials.red_button.html"><span class="doc std std-doc">evennia/contrib/tutorials/red_button</span></a></p>
 <p>If you wait for a while (make sure you dropped it!) the button will blink invitingly.</p>
 <p>Why don’t you try to push it …?</p>
