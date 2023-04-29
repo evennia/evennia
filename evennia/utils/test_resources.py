@@ -558,9 +558,19 @@ class EvenniaTestCase(TestCase):
     """
     For use with gamedir settings; Just like the normal test case, only for naming consistency.
 
+    Notes:
+
+    -   Inheriting from this class will bypass EvenniaTestMixin, and therefore
+        not setup some default objects. This can result in faster tests.
+
+    -   If you do inherit from this class for your unit tests, and have
+        overridden the tearDown() method, please also call flush_cache(). Not
+        doing so will result in flakey and order-dependent tests due to the
+        Django ID cache not being flushed.
     """
 
-    pass
+    def tearDown(self) -> None:
+        flush_cache()
 
 
 @override_settings(**DEFAULT_SETTINGS)

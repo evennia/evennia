@@ -1,24 +1,26 @@
 # Components
 
-_Contrib by ChrisLR 2021_
+Contrib by ChrisLR, 2021
 
-# The Components Contrib
+Expand typeclasses using a components/composition approach.
+
+## The Components Contrib
 
 This contrib introduces Components and Composition to Evennia.
 Each 'Component' class represents a feature that will be 'enabled' on a typeclass instance.
 You can register these components on an entire typeclass or a single object at runtime.
 It supports both persisted attributes and in-memory attributes by using Evennia's AttributeHandler.
 
-# Pros
+## Pros
 - You can reuse a feature across multiple typeclasses without inheritance
 - You can cleanly organize each feature into a self-contained class.
 - You can check if your object supports a feature without checking its instance.
 
-# Cons
+## Cons
 - It introduces additional complexity.
 - A host typeclass instance is required.
 
-# How to install
+## How to install
 
 To enable component support for a typeclass,
 import and inherit the ComponentHolderMixin, similar to this
@@ -126,7 +128,7 @@ from typeclasses.components import health
 ```
 Both of the above examples will work.
 
-# Full Example
+## Full Example
 ```python
 from evennia.contrib.base_systems import components
 
@@ -134,7 +136,7 @@ from evennia.contrib.base_systems import components
 # This is the Component class
 class Health(components.Component):
     name = "health"
-    
+
     # Stores the current and max values as Attributes on the host, defaulting to 100
     current = components.DBField(default=100)
     max = components.DBField(default=100)
@@ -185,7 +187,7 @@ class Attack(Command):
             # Attempt to retrieve the component, None is obtained if it does not exist.
             if target.components.health:
                 valid_target = target
-        
+
         if not valid_target:
             caller.msg("You can't attack that!")
             return True

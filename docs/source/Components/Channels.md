@@ -17,8 +17,8 @@ Channels can be used both for chats between [Accounts](./Accounts.md) and betwee
 - Private guild channels for planning and organization (IC/OOC depending on game)
 - Cyberpunk-style retro chat rooms (IC)
 - In-game radio channels (IC)
-- Group telephathy (IC)
-- Walkie talkies (IC)
+- Group telepathy (IC)
+- Walkie-talkies (IC)
 
 ```{versionchanged} 1.0
 
@@ -150,7 +150,7 @@ To create/destroy a new channel on the fly you can do
 Aliases are optional but can be good for obvious shortcuts everyone may want to
 use. The description is used in channel-listings. You will automatically join a
 channel you created and will be controlling it. You can also use `channel/desc` to
-change the description on a channel you wnn later.
+change the description on a channel you own later.
 
 If you control a channel you can also kick people off it:
 
@@ -223,7 +223,7 @@ channels you could override the `help` command and change the lockstring to:
 
 ```
 
-Add this custom command to your default cmdset and regular users wil now get an
+Add this custom command to your default cmdset and regular users will now get an
 access-denied error when trying to use use these switches.
 
 ## Using channels in code
@@ -263,7 +263,7 @@ below:
   3. `channel.at_post_channel_msg(message, **kwargs)`
 
 Note that `Accounts` and `Objects` both have their have separate sets of hooks.
-So make sure you modify the set actually used by your subcribers (or both).
+So make sure you modify the set actually used by your subscribers (or both).
 Default channels all use `Account` subscribers.
 
 ### Channel class
@@ -379,7 +379,7 @@ Notable `Channel` hooks:
   a class-method that will happily remove found channel-aliases from the user linked to _any_
   channel, not only from the channel the method is called on.
 - `pre_join_channel(subscriber)` - if this returns `False`, connection will be refused.
-- `post_join_channel(subscriber)` - by default this sets up a users's channel-nicks/aliases.
+- `post_join_channel(subscriber)` - by default this sets up a users' channel-nicks/aliases.
 - `pre_leave_channel(subscriber)` - if this returns `False`, the user is not allowed to leave.
 - `post_leave_channel(subscriber)` - this will clean up any channel aliases/nicks of the user.
 - `delete` the standard typeclass-delete mechanism will also automatically un-subscribe all
