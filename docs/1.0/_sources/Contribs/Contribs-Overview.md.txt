@@ -113,7 +113,7 @@ Additional color markup styles for Evennia (extending or replacing the default
 
 __Contrib by ChrisLR 2021__
 
-# The Components Contrib
+## The Components Contrib
 
 [Read the documentation](./Contrib-Components.md) - [Browse the Code](evennia.contrib.base_systems.components)
 

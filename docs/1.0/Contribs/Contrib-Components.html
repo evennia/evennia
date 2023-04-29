@@ -61,12 +61,14 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Components</a></li>
+<li><a class="reference internal" href="#">Components</a><ul>
 <li><a class="reference internal" href="#the-components-contrib">The Components Contrib</a></li>
 <li><a class="reference internal" href="#pros">Pros</a></li>
 <li><a class="reference internal" href="#cons">Cons</a></li>
 <li><a class="reference internal" href="#how-to-install">How to install</a></li>
 <li><a class="reference internal" href="#full-example">Full Example</a></li>
+</ul>
+</li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -109,31 +111,30 @@
   <section class="tex2jax_ignore mathjax_ignore" id="components">
 <h1>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h1>
 <p><em>Contrib by ChrisLR 2021</em></p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="the-components-contrib">
-<h1>The Components Contrib<a class="headerlink" href="#the-components-contrib" title="Permalink to this headline">¶</a></h1>
+<section id="the-components-contrib">
+<h2>The Components Contrib<a class="headerlink" href="#the-components-contrib" title="Permalink to this headline">¶</a></h2>
 <p>This contrib introduces Components and Composition to Evennia.
 Each ‘Component’ class represents a feature that will be ‘enabled’ on a typeclass instance.
 You can register these components on an entire typeclass or a single object at runtime.
 It supports both persisted attributes and in-memory attributes by using Evennia’s AttributeHandler.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="pros">
-<h1>Pros<a class="headerlink" href="#pros" title="Permalink to this headline">¶</a></h1>
+<section id="pros">
+<h2>Pros<a class="headerlink" href="#pros" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>You can reuse a feature across multiple typeclasses without inheritance</p></li>
 <li><p>You can cleanly organize each feature into a self-contained class.</p></li>
 <li><p>You can check if your object supports a feature without checking its instance.</p></li>
 </ul>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="cons">
-<h1>Cons<a class="headerlink" href="#cons" title="Permalink to this headline">¶</a></h1>
+<section id="cons">
+<h2>Cons<a class="headerlink" href="#cons" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>It introduces additional complexity.</p></li>
 <li><p>A host typeclass instance is required.</p></li>
 </ul>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="how-to-install">
-<h1>How to install<a class="headerlink" href="#how-to-install" title="Permalink to this headline">¶</a></h1>
+<section id="how-to-install">
+<h2>How to install<a class="headerlink" href="#how-to-install" title="Permalink to this headline">¶</a></h2>
 <p>To enable component support for a typeclass,
 import and inherit the ComponentHolderMixin, similar to this</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">ComponentHolderMixin</span>
@@ -225,8 +226,8 @@ You only need to import each module/file from there but importing the right clas
 </div>
 <p>Both of the above examples will work.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="full-example">
-<h1>Full Example<a class="headerlink" href="#full-example" title="Permalink to this headline">¶</a></h1>
+<section id="full-example">
+<h2>Full Example<a class="headerlink" href="#full-example" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems</span> <span class="kn">import</span> <span class="n">components</span>
 
 
@@ -293,6 +294,7 @@ You only need to import each module/file from there but importing the right clas
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/components/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
 </section>
 
 
