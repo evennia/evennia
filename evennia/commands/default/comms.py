@@ -8,7 +8,6 @@ Communication commands:
 """
 
 from django.conf import settings
-
 from evennia.accounts import bots
 from evennia.accounts.models import AccountDB
 from evennia.comms.comms import DefaultChannel
@@ -777,7 +776,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             maxwidth=_DEFAULT_WIDTH,
         )
         for chan in subscribed:
-
             locks = "-"
             chanid = "-"
             if chan.access(self.caller, "control"):
@@ -1158,7 +1156,6 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             reason = reason[0].strip() if reason else ""
 
             for chan in channels:
-
                 if not chan.access(caller, "control"):
                     self.msg(f"You need 'control'-access to boot a user from {chan.key}.")
                     return
@@ -1245,9 +1242,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             )
             ask_yes_no(
                 caller,
-                f"Are you sure you want to ban user {target.key} from "
-                f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}) "
-                "{options}?",
+                (
+                    f"Are you sure you want to ban user {target.key} from "
+                    f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}) "
+                    "{options}?"
+                ),
                 _ban_user,
                 "Aborted.",
             )
@@ -1360,7 +1359,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                     targets.append(target_obj)
                 message = self.rhs.strip()
             else:
-                target, *message = self.args.split(" ", 4)
+                target, *message = self.args.split(" ", 1)
                 if target and target.isnumeric():
                     # a number to specify a historic page
                     number = int(target)
@@ -1970,7 +1969,8 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
 
         if not discord_bot.is_typeclass(settings.DISCORD_BOT_CLASS, exact=True):
             self.msg(
-                f"WARNING: The Discord bot's typeclass is '{discord_bot.typeclass_path}'. This does not match {settings.DISCORD_BOT_CLASS} in settings!"
+                f"WARNING: The Discord bot's typeclass is '{discord_bot.typeclass_path}'. This does"
+                f" not match {settings.DISCORD_BOT_CLASS} in settings!"
             )
 
         if "start" in self.switches:
@@ -1984,13 +1984,15 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
         if "guild" in self.switches:
             discord_bot.db.tag_guild = not discord_bot.db.tag_guild
             self.msg(
-                f"Messages to Evennia |wwill {'' if discord_bot.db.tag_guild else 'not '}|ninclude the Discord server."
+                f"Messages to Evennia |wwill {'' if discord_bot.db.tag_guild else 'not '}|ninclude"
+                " the Discord server."
             )
             return
         if "channel" in self.switches:
             discord_bot.db.tag_channel = not discord_bot.db.tag_channel
             self.msg(
-                f"Relayed messages |wwill {'' if discord_bot.db.tag_channel else 'not '}|ninclude the originating channel."
+                f"Relayed messages |wwill {'' if discord_bot.db.tag_channel else 'not '}|ninclude"
+                " the originating channel."
             )
             return
 
@@ -2029,7 +2031,8 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
                     dc_chan_names = discord_bot.attributes.get("discord_channels", {})
                     dc_info = dc_chan_names.get(dc_chan, {"name": "unknown", "guild": "unknown"})
                     self.msg(
-                        f"Removed link between {ev_chan} and #{dc_info.get('name','?')}@{dc_info.get('guild','?')}"
+                        f"Removed link between {ev_chan} and"
+                        f" #{dc_info.get('name','?')}@{dc_info.get('guild','?')}"
                     )
                     return
             else:
