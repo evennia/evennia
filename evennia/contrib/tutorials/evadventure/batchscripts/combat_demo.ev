@@ -2,6 +2,8 @@
 #
 # Set up a combat area for testing combat. Requires developer or superuser perm.
 #
+# Run from in-game as batchcmd contrib.tutorials.evadventure.batchscripts.combat_demo
+#
 
 # start from limbo
 
@@ -13,13 +15,13 @@ type self = evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacte
 
 # assign us the twitch combat cmdset (requires superuser/developer perms)
 
-py self.cmdset.add("evennia.contrib.tutorials.evadventure.combat.TwitchAttackCmdSet")
+py self.cmdset.add("evennia.contrib.tutorials.evadventure.combat_twitch.TwitchAttackCmdSet", persistent=True)
 
 # Create and give us a weapons (this will use defaults on the class)
 
 create sword:evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon
 
-# create a consumable to use 
+# create a consumable to use
 
 create potion:evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable
 
@@ -45,8 +47,8 @@ desc dummy = This is is an ugly training dummy made out of hay and wood.
 
 # make the dummy crazy tough
 
-dummy.hp_max = 1000
+set dummy/hp_max = 1000
 
 #
 
-dummy.hp = 1000
+set dummy/hp = 1000

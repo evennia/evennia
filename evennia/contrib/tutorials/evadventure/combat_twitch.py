@@ -89,8 +89,9 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             for comb in self.obj.location.contents
             if hasattr(comb, "scripts") and comb.scripts.has(self.key)
         ]
+        location = self.obj.location
 
-        if self.obj.location.allow_pvp:
+        if hasattr(location, "allow_pvp") and location.allow_pvp:
             # in pvp, everyone else is an enemy
             allies = [combatant]
             enemies = [comb for comb in combatants if comb != combatant]
@@ -202,17 +203,21 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             self.action_dict = self.fallback_action_dict
             self.queue_action(self.fallback_action_dict)
 
+        self.check_stop_combat()
+
     def check_stop_combat(self):
         """
         Check if the combat is over.
         """
 
-        allies, enemies = self.get_sides()
+        allies, enemies = self.get_sides(self.obj)
         allies.append(self.obj)
 
-        # remove all dead combatants
-        allies = [comb for comb in allies if comb.hp > 0]
-        enemies = [comb for comb in enemies if comb.hp > 0]
+        location = self.obj.location
+
+        # only keep combatants that are alive and still in the same room
+        allies = [comb for comb in allies if comb.hp > 0 and comb.location == location]
+        enemies = [comb for comb in enemies if comb.hp > 0 and comb.location == location]
 
         if not allies and not enemies:
             self.msg("Noone stands after the dust settles.", broadcast=False)
@@ -220,11 +225,14 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             return
 
         if not allies or not enemies:
-            still_standing = list_to_string(f"$You({comb.key})" for comb in allies + enemies)
-            self.msg(
-                f"The combat is over. Still standing: {still_standing}.",
-                broadcast=False,
-            )
+            if allies + enemies == [self.obj]:
+                self.msg("The combat is over.")
+            else:
+                still_standing = list_to_string(f"$You({comb.key})" for comb in allies + enemies)
+                self.msg(
+                    f"The combat is over. Still standing: {still_standing}.",
+                    broadcast=False,
+                )
             self.stop_combat()
 
     def stop_combat(self):
@@ -274,11 +282,18 @@ class _BaseTwitchCombatCommand(Command):
             rhs = " ".join(rhs)
         self.lhs, self.rhs = lhs.strip(), rhs.strip()
 
-    def get_or_create_combathandler(self, combathandler_name="combathandler"):
+    def get_or_create_combathandler(self, target=None, combathandler_name="combathandler"):
         """
         Get or create the combathandler assigned to this combatant.
 
         """
+        if target:
+            # add/check combathandler to the target
+            if target.hp_max is None:
+                self.msg("You can't attack that!")
+                raise InterruptCommand()
+
+            EvAdventureCombatTwitchHandler.get_or_create_combathandler(target)
         return EvAdventureCombatTwitchHandler.get_or_create_combathandler(self.caller)
 
 
@@ -301,19 +316,19 @@ class CmdAttack(_BaseTwitchCombatCommand):
         if not target:
             return
 
-        combathandler = self.get_or_create_combathandler()
+        combathandler = self.get_or_create_combathandler(target)
         # we use a fixed dt of 3 here, to mimic Diku style; one could also picture
         # attacking at a different rate, depending on skills/weapon etc.
         combathandler.queue_action({"key": "attack", "target": target, "dt": 3})
         combathandler.msg(f"$You() $conj(attack) $You({target.key})!", self.caller)
 
 
-class CmdLook(default_cmds.CmdLook):
+class CmdLook(default_cmds.CmdLook, _BaseTwitchCombatCommand):
     def func(self):
         # get regular look, followed by a combat summary
         super().func()
         if not self.args:
-            combathandler = self.get_or_create_combathandler(self.caller.location)
+            combathandler = self.get_or_create_combathandler()
             txt = str(combathandler.get_combat_summary(self.caller))
             maxwidth = max(display_len(line) for line in txt.strip().split("\n"))
             self.msg(f"|r{pad(' Combat Status ', width=maxwidth, fillchar='-')}|n\n{txt}")
@@ -416,7 +431,7 @@ class CmdStunt(_BaseTwitchCombatCommand):
         self.target = target.strip()
 
     def func(self):
-        combathandler = self.get_or_create_combathandler()
+        combathandler = self.get_or_create_combathandler(self.target)
 
         target = self.caller.search(self.target)
         if not target:
@@ -478,7 +493,7 @@ class CmdUseItem(_BaseTwitchCombatCommand):
             if not target:
                 return
 
-        combathandler = self.get_or_create_combathandler()
+        combathandler = self.get_or_create_combathandler(self.target)
         combathandler.queue_action({"key": "use", "item": item, "target": target})
         combathandler.msg(
             f"$You() prepare to use {item.get_display_name(self.caller)}!", self.caller
