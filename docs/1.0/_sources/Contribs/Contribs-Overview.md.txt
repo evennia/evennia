@@ -111,9 +111,9 @@ Additional color markup styles for Evennia (extending or replacing the default
 
 ### `components`
 
-__Contrib by ChrisLR 2021__
+_Contrib by ChrisLR, 2021_
 
-## The Components Contrib
+Expand typeclasses using a components/composition approach.
 
 [Read the documentation](./Contrib-Components.md) - [Browse the Code](evennia.contrib.base_systems.components)
 

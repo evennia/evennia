@@ -86,7 +86,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">from</span> <span class="nn">evennia.accounts</span> <span class="kn">import</span> <span class="n">bots</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>
@@ -855,7 +854,6 @@
             <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">subscribed</span><span class="p">:</span>
-
             <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
             <span class="n">chanid</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
             <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
@@ -1236,7 +1234,6 @@
             <span class="n">reason</span> <span class="o">=</span> <span class="n">reason</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">reason</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
             <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
-
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">chan</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You need &#39;control&#39;-access to boot a user from </span><span class="si">{</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
@@ -1323,9 +1320,11 @@
             <span class="p">)</span>
             <span class="n">ask_yes_no</span><span class="p">(</span>
                 <span class="n">caller</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;Are you sure you want to ban user </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> from &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;channel(s) </span><span class="si">{</span><span class="n">channames</span><span class="si">}</span><span class="s2"> (make sure name/channels are correct</span><span class="si">{</span><span class="n">reasonwarn</span><span class="si">}</span><span class="s2">) &quot;</span>
-                <span class="s2">&quot;</span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Are you sure you want to ban user </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> from &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;channel(s) </span><span class="si">{</span><span class="n">channames</span><span class="si">}</span><span class="s2"> (make sure name/channels are correct</span><span class="si">{</span><span class="n">reasonwarn</span><span class="si">}</span><span class="s2">) &quot;</span>
+                    <span class="s2">&quot;</span><span class="si">{options}</span><span class="s2">?&quot;</span>
+                <span class="p">),</span>
                 <span class="n">_ban_user</span><span class="p">,</span>
                 <span class="s2">&quot;Aborted.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1438,7 +1437,7 @@
                     <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_obj</span><span class="p">)</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
                     <span class="c1"># a number to specify a historic page</span>
                     <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
@@ -2048,7 +2047,8 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_CLASS</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;WARNING: The Discord bot&#39;s typeclass is &#39;</span><span class="si">{</span><span class="n">discord_bot</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">&#39;. This does not match </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_CLASS</span><span class="si">}</span><span class="s2"> in settings!&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;WARNING: The Discord bot&#39;s typeclass is &#39;</span><span class="si">{</span><span class="n">discord_bot</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">&#39;. This does&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; not match </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_BOT_CLASS</span><span class="si">}</span><span class="s2"> in settings!&quot;</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;start&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
@@ -2062,13 +2062,15 @@
         <span class="k">if</span> <span class="s2">&quot;guild&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Messages to Evennia |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude the Discord server.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Messages to Evennia |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_guild</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude&quot;</span>
+                <span class="s2">&quot; the Discord server.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="s2">&quot;channel&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Relayed messages |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude the originating channel.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Relayed messages |wwill </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">discord_bot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tag_channel</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;not &#39;</span><span class="si">}</span><span class="s2">|ninclude&quot;</span>
+                <span class="s2">&quot; the originating channel.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
@@ -2107,7 +2109,8 @@
                     <span class="n">dc_chan_names</span> <span class="o">=</span> <span class="n">discord_bot</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;discord_channels&quot;</span><span class="p">,</span> <span class="p">{})</span>
                     <span class="n">dc_info</span> <span class="o">=</span> <span class="n">dc_chan_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dc_chan</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span> <span class="s2">&quot;guild&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">})</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Removed link between </span><span class="si">{</span><span class="n">ev_chan</span><span class="si">}</span><span class="s2"> and #</span><span class="si">{</span><span class="n">dc_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">dc_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;guild&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Removed link between </span><span class="si">{</span><span class="n">ev_chan</span><span class="si">}</span><span class="s2"> and&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot; #</span><span class="si">{</span><span class="n">dc_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">dc_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;guild&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
                     <span class="k">return</span>
             <span class="k">else</span><span class="p">:</span>

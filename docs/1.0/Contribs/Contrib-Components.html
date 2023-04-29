@@ -110,7 +110,8 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="components">
 <h1>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h1>
-<p><em>Contrib by ChrisLR 2021</em></p>
+<p>Contrib by ChrisLR, 2021</p>
+<p>Expand typeclasses using a components/composition approach.</p>
 <section id="the-components-contrib">
 <h2>The Components Contrib<a class="headerlink" href="#the-components-contrib" title="Permalink to this headline">¶</a></h2>
 <p>This contrib introduces Components and Composition to Evennia.
@@ -234,7 +235,7 @@ You only need to import each module/file from there but importing the right clas
 <span class="c1"># This is the Component class</span>
 <span class="k">class</span> <span class="nc">Health</span><span class="p">(</span><span class="n">components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;health&quot;</span>
-    
+
     <span class="c1"># Stores the current and max values as Attributes on the host, defaulting to 100</span>
     <span class="n">current</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">DBField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     <span class="nb">max</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">DBField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -285,7 +286,7 @@ You only need to import each module/file from there but importing the right clas
             <span class="c1"># Attempt to retrieve the component, None is obtained if it does not exist.</span>
             <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">health</span><span class="p">:</span>
                 <span class="n">valid_target</span> <span class="o">=</span> <span class="n">target</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_target</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t attack that!&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
