@@ -106,7 +106,7 @@ To test this, run
 
 to run the entire test module
 
-    evennia test --settings setings.py world.tests
+    evennia test --settings settings.py world.tests
 
 or a specific class:
 
