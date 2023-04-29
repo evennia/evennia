@@ -550,6 +550,14 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
         sides = self.combatant_combathandler.get_sides(self.combatant)
         self.assertEqual(sides, ([], [self.target]))
 
+    def test_give_advantage(self):
+        self.combatant_combathandler.give_advantage(self.combatant, self.target)
+        self.assertTrue(self.combatant_combathandler.advantages_against[self.target])
+
+    def test_give_disadvantage(self):
+        self.combatant_combathandler.give_disadvantage(self.combatant, self.target)
+        self.assertTrue(self.combatant_combathandler.disadvantages_against[self.target])
+
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock(return_value=999))
     def test_queue_action(self):
@@ -584,7 +592,8 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
     def test_check_stop_combat(self):
         """Test combat-stop functionality"""
 
-        # noone remains
+        # noone remains (both combatant/target <0 hp
+        # get_sides does not include the caller
         self.combatant_combathandler.get_sides = Mock(return_value=([], []))
         self.combatant_combathandler.stop_combat = Mock()
 
@@ -592,21 +601,123 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
         self.target.hp = -1
 
         self.combatant_combathandler.check_stop_combat()
-        self.combatant.msg.assert_called_with()
+        self.combatant.msg.assert_called_with(
+            text=("Noone stands after the dust settles.", {}), from_obj=self.combatant
+        )
         self.combatant_combathandler.stop_combat.assert_called()
 
         # only one side wiped out
-        self.combatant = 10
+        self.combatant.hp = 10
+        self.target.hp = -1
         self.combatant_combathandler.get_sides = Mock(return_value=([], []))
         self.combatant_combathandler.check_stop_combat()
-        self.combatant.msg.assert_called_with()
+        self.combatant.msg.assert_called_with(
+            text=("The combat is over. Still standing: You.", {}), from_obj=self.combatant
+        )
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock())
+    def test_hold(self):
+        self.call(combat_twitch.CmdHold(), "", "You hold back, doing nothing")
+        self.assertEqual(self.combatant_combathandler.action_dict, {"key": "hold"})
 
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock())
     def test_attack(self):
         """Test attack action in the twitch combathandler"""
-        self.call(combat_twitch.CmdAttack(), f"{self.target.key}", "")
+        self.call(combat_twitch.CmdAttack(), self.target.key, "You attack testmonster!")
         self.assertEqual(
             self.combatant_combathandler.action_dict,
             {"key": "attack", "target": self.target, "dt": 3},
+        )
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock())
+    def test_stunt(self):
+        boost_result = {
+            "key": "stunt",
+            "recipient": self.combatant,
+            "target": self.target,
+            "advantage": True,
+            "stunt_type": Ability.STR,
+            "defense_type": Ability.STR,
+        }
+        foil_result = {
+            "key": "stunt",
+            "recipient": self.target,
+            "target": self.combatant,
+            "advantage": False,
+            "stunt_type": Ability.STR,
+            "defense_type": Ability.STR,
+        }
+
+        self.call(
+            combat_twitch.CmdStunt(),
+            f"STR {self.target.key}",
+            "You prepare a stunt!",
+            cmdstring="boost",
+        )
+        self.assertEqual(self.combatant_combathandler.action_dict, boost_result)
+
+        self.call(
+            combat_twitch.CmdStunt(),
+            f"STR me {self.target.key}",
+            "You prepare a stunt!",
+            cmdstring="boost",
+        )
+        self.assertEqual(self.combatant_combathandler.action_dict, boost_result)
+
+        self.call(
+            combat_twitch.CmdStunt(),
+            f"STR {self.target.key}",
+            "You prepare a stunt!",
+            cmdstring="foil",
+        )
+        self.assertEqual(self.combatant_combathandler.action_dict, foil_result)
+
+        self.call(
+            combat_twitch.CmdStunt(),
+            f"STR {self.target.key} me",
+            "You prepare a stunt!",
+            cmdstring="foil",
+        )
+        self.assertEqual(self.combatant_combathandler.action_dict, foil_result)
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock())
+    def test_useitem(self):
+        item = create.create_object(
+            EvAdventureConsumable, key="potion", attributes=[("uses", 2)], location=self.combatant
+        )
+
+        self.call(combat_twitch.CmdUseItem(), "potion", "You prepare to use potion!")
+        self.assertEqual(
+            self.combatant_combathandler.action_dict,
+            {"key": "use", "item": item, "target": self.combatant},
+        )
+
+        self.call(
+            combat_twitch.CmdUseItem(),
+            f"potion on {self.target.key}",
+            "You prepare to use potion!",
+        )
+        self.assertEqual(
+            self.combatant_combathandler.action_dict,
+            {"key": "use", "item": item, "target": self.target},
+        )
+
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
+    @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock())
+    def test_wield(self):
+        sword = create.create_object(EvAdventureWeapon, key="sword", location=self.combatant)
+        runestone = create.create_object(
+            EvAdventureWeapon, key="runestone", location=self.combatant
+        )
+
+        self.call(combat_twitch.CmdWield(), "sword", "You reach for sword!")
+        self.assertEqual(self.combatant_combathandler.action_dict, {"key": "wield", "item": sword})
+
+        self.call(combat_twitch.CmdWield(), "runestone", "You reach for runestone!")
+        self.assertEqual(
+            self.combatant_combathandler.action_dict, {"key": "wield", "item": runestone}
         )

@@ -68,7 +68,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             a message that looks different depending on who sees it. Use
             `$You(combatant_key)` to refer to other combatants.
         """
-        super().msg(message, broadcast=broadcast, location=self.obj.location)
+        super().msg(message, combatant=self.obj, broadcast=broadcast, location=self.obj.location)
 
     def get_sides(self, combatant):
         """
@@ -222,10 +222,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
         if not allies or not enemies:
             still_standing = list_to_string(f"$You({comb.key})" for comb in allies + enemies)
             self.msg(
-                (
-                    f"The combat is over. {still_standing} $pluralize(is, {len(allies + enemies)})"
-                    " are) still standing."
-                ),
+                f"The combat is over. Still standing: {still_standing}.",
                 broadcast=False,
             )
             self.stop_combat()
@@ -255,7 +252,7 @@ class _BaseTwitchCombatCommand(Command):
 
     def parse(self):
         """
-        Handle parsing of all supported combat syntaxes.
+        Handle parsing of most supported combat syntaxes (except stunts).
 
         <action> [<target>|<item>]
         or
@@ -264,7 +261,11 @@ class _BaseTwitchCombatCommand(Command):
         Use 'on' to differentiate if names/items have spaces in the name.
 
         """
-        args = self.args.strip()
+        self.args = args = self.args.strip()
+        self.lhs, self.rhs = "", ""
+
+        if not args:
+            return
 
         if " on " in args:
             lhs, rhs = args.split(" on ", 1)
@@ -304,7 +305,7 @@ class CmdAttack(_BaseTwitchCombatCommand):
         # we use a fixed dt of 3 here, to mimic Diku style; one could also picture
         # attacking at a different rate, depending on skills/weapon etc.
         combathandler.queue_action({"key": "attack", "target": target, "dt": 3})
-        combathandler.msg("$You() attacks $You(target.key)!", self.caller)
+        combathandler.msg(f"$You() $conj(attack) $You({target.key})!", self.caller)
 
 
 class CmdLook(default_cmds.CmdLook):
@@ -363,7 +364,6 @@ class CmdStunt(_BaseTwitchCombatCommand):
     help_category = "combat"
 
     def parse(self):
-        super().parse()
         args = self.args
 
         if not args or " " not in args:
@@ -377,6 +377,9 @@ class CmdStunt(_BaseTwitchCombatCommand):
         stunt_type, recipient, target = None, None, None
 
         stunt_type, *args = args.split(None, 1)
+        if stunt_type:
+            stunt_type = stunt_type.strip().lower()
+
         args = args[0] if args else ""
 
         recipient, *args = args.split(None, 1)
@@ -385,8 +388,11 @@ class CmdStunt(_BaseTwitchCombatCommand):
         # validate input and try to guess if not given
 
         # ability is requried
-        if stunt_type.strip() not in ABILITY_REVERSE_MAP:
-            self.msg("That's not a valid ability.")
+        if not stunt_type or stunt_type not in ABILITY_REVERSE_MAP:
+            self.msg(
+                f"'{stunt_type}' is not a valid ability. Pick one of"
+                f" {', '.join(ABILITY_REVERSE_MAP.keys())}."
+            )
             raise InterruptCommand()
 
         if not recipient:
@@ -405,22 +411,21 @@ class CmdStunt(_BaseTwitchCombatCommand):
 
         # save what we found so it can be accessed from func()
         self.advantage = advantage
-        self.stunt_type = ABILITY_REVERSE_MAP[stunt_type.strip()]
+        self.stunt_type = ABILITY_REVERSE_MAP[stunt_type]
         self.recipient = recipient.strip()
         self.target = target.strip()
 
     def func(self):
         combathandler = self.get_or_create_combathandler()
 
-        target = self.caller.search(self.target, candidates=combathandler.combatants.keys())
+        target = self.caller.search(self.target)
         if not target:
             return
-        recipient = self.caller.search(self.recipient, candidates=combathandler.combatants.keys())
+        recipient = self.caller.search(self.recipient)
         if not recipient:
             return
 
         combathandler.queue_action(
-            self.caller,
             {
                 "key": "stunt",
                 "recipient": recipient,
@@ -453,16 +458,13 @@ class CmdUseItem(_BaseTwitchCombatCommand):
 
     def parse(self):
         super().parse()
-        args = self.args
 
-        if not args:
+        if not self.args:
             self.msg("What do you want to use?")
             raise InterruptCommand()
-        elif "on" in args:
-            self.item, self.target = (part.strip() for part in args.split("on", 1))
-        else:
-            self.item, *target = args.split(None, 1)
-            self.target = target[0] if target else "me"
+
+        self.item = self.lhs
+        self.target = self.rhs or "me"
 
     def func(self):
         item = self.caller.search(
@@ -477,7 +479,7 @@ class CmdUseItem(_BaseTwitchCombatCommand):
                 return
 
         combathandler = self.get_or_create_combathandler()
-        combathandler.queue_action(self.caller, {"key": "use", "item": item, "target": self.target})
+        combathandler.queue_action({"key": "use", "item": item, "target": target})
         combathandler.msg(
             f"$You() prepare to use {item.get_display_name(self.caller)}!", self.caller
         )
@@ -518,10 +520,8 @@ class CmdWield(_BaseTwitchCombatCommand):
             self.msg("(You must carry the item to wield it.)")
             return
         combathandler = self.get_or_create_combathandler()
-        combathandler.queue_action(self.caller, {"key": "wield", "item": item})
-        combathandler.msg(
-            f"$You() start wielding {item.get_display_name(self.caller)}!", self.caller
-        )
+        combathandler.queue_action({"key": "wield", "item": item})
+        combathandler.msg(f"$You() reach for {item.get_display_name(self.caller)}!", self.caller)
 
 
 class TwitchAttackCmdSet(CmdSet):
