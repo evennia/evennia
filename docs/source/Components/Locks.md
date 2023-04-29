@@ -104,7 +104,7 @@ Below are the access_types checked by the default commandset.
    - `search` - this controls if the object can be found with the
     `DefaultObject.search` method (usually referred to with `caller.search`
     in Commands). This is how to create entirely 'undetectable' in-game objects.
-    If not setting this lock excplicitly, all objects are assumed searchable.
+    If not setting this lock explicitly, all objects are assumed searchable.
     Note that if you are aiming to make some _permanently invisible game system,
     using a [Script](./Scripts.md) is a better bet.
    - `get`- who may pick up the object and carry it around.
@@ -330,7 +330,7 @@ error message. Sounds good! Let's start by setting that on the box:
 Next we need to craft a Lock of type *get* on our box. We want it to only be passed if the accessing
 object has the attribute *strength* of the right value. For this we would need to create a lock
 function that checks if attributes have a value greater than a given value. Luckily there is already
-such a one included in evennia (see `evennia/locks/lockfuncs.py`), called `attr_gt`.
+such a one included in Evennia (see `evennia/locks/lockfuncs.py`), called `attr_gt`.
 
 So the lock string will look like this: `get:attr_gt(strength, 50)`.  We put this on the box now:
 

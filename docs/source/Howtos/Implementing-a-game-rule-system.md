@@ -11,7 +11,7 @@ are very dedicated.
 Many games, even the most roleplay-dedicated, thus tend to allow for players to mediate themselves
 to some extent. A common way to do this is to introduce *coded systems* - that is, to let the
 computer do some of the heavy lifting. A basic thing is to add an online dice-roller so everyone can
-make rolls and make sure noone is cheating. Somewhere at this level you find the most bare-bones
+make rolls and make sure no one is cheating. Somewhere at this level you find the most bare-bones
 roleplaying MUSHes.
 
 The advantage of a coded system is that as long as the rules are fair the computer is too - it makes

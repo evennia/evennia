@@ -58,10 +58,10 @@ _multiversion-check-env:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) bash -e checkenv.sh multiversion
 
 _clean_api_index:
-	rm source/api/*
+	rm -f source/api/*
 
 _clean_api_rsts:
-	rm source/api/*.rst
+	rm -f source/api/*.rst
 
 # remove superfluos 'module' and 'package' text from api headers
 _reformat_apidoc_headers:
