@@ -320,7 +320,7 @@ class EvAdventureRollEngine:
         defender_defense = getattr(defender, defense_type.value, 1) + 10 
         result, quality = self.saving_throw(attacker, bonus_type=attack_type,
                                             target=defender_defense, 
-                                            advantage=advantave, disadvantage=disadvantage)
+                                            advantage=advantage, disadvantage=disadvantage)
         
         return result, quality 
 ```
@@ -584,8 +584,8 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
     @patch("evadventure.rules.randint")
     def test_roll(self, mock_randint):
         mock_randint.return_value = 4 
-        self.assertEqual(self.roll_engine.roll("1d6", 4)     
-        self.assertEqual(self.roll_engine.roll("2d6", 2 * 4)     
+        self.assertEqual(self.roll_engine.roll("1d6", 4))     
+        self.assertEqual(self.roll_engine.roll("2d6"), 2 * 4)     
         
     # test of the other rule methods below ...
 ```
