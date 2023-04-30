@@ -8,10 +8,6 @@ In EvAdventure, we will have two main types of rooms:
 
 ## The base room
 
-Our Evadventure-rooms need some extra functionality 
-- We need to know if we can do combat in them, if PvP is ok and if you can die in the room. 
-- We want to show a little _map_ as part of the room description. For this to work we need to remember to always use cardinal directions to connect rooms (north, east etc). 
-
 > Create a new module `evadventure/rooms.py`.
 
 ```python
@@ -31,10 +27,13 @@ class EvAdventureRoom(DefaultRoom):
 
 ``` 
 
-Our EvadventureRoom is very simple. We create three Attributes that defines if combat is allowed in the room, and if so if pvp is allowed and finally if death is allowed. Later on we must make sure our combat systems honors these values. This allows us to create 'safe' training rooms and the like. 
+Our `EvadventureRoom` is very simple. We use Evennia's `DefaultRoom` as a base and just add three additional Attributes that defines 
 
-That's really all there we _really_ need for the basic room. It'd make for a very short lesson though, so let's add a map too.
+- If combat is allowed to start in the room at all. 
+- If combat is allowed, if PvP (player vs player) combat is allowed.
+- If combat is allowed, if any side is allowed to die from it.
 
+Later on we must make sure our combat systems honors these values.
 
 ## PvP room 
 
@@ -66,7 +65,7 @@ The return of `get_display_footer` will show after the [main room description](.
 
 We want a dynamic map that visualizes the exits you can use at any moment. Here's how our room will display: 
 
-```{shell}
+```shell
   o o o
    \|/
   o-@-o
@@ -74,14 +73,17 @@ We want a dynamic map that visualizes the exits you can use at any moment. Here'
     o
 The crossroads 
 A place where many roads meet. 
-Exits: north, norteast, south, west, and nortwest
+Exits: north, northeast, south, west, and northwest
 ```
 
 > Documentation does not show ansi colors.
 
 Let's expand the base `EvAdventureRoom` with the map.
 
-```python
+```{code-block} python
+:linenos: 
+:emphasize-lines: 12,19,51,52,58,67
+
 # in evadventyre/rooms.py
 
 from copy import deepcopy
@@ -153,21 +155,12 @@ class EvAdventureRoom(DefaultRoom):
 
 The string returned from `get_display_header` will end up at the top of the [room description](../../../Components/Objects.md#changing-an-objects-description), a good place to have the map appear! 
 
-The map itself consists of the 2D matrix `_MAP_GRID`. This is a 2D area described by a list of Python lists. To find a given place in the list, you first first need to find which of the nested lists to use, and then which element to use in that list. Indices start from 0 in Python. So to draw the `o` symbol for the southermost room, you'd need to do so at `_MAP_GRID[4][2]`. 
-
-The `_EXIT_GRID_SHIFT` indicates the direction to go for each cardinal exit, along with the map symbol to draw at that point. So `"east": (1, 0, "-")` means the east exit will be drawn one step in the positive x direction (to the right), using the "-" symbol. For symbols like `|` and "\\" we need to escape with a double-symbol since these would otherwise be interpreted as part of other formatting. 
-
-We start by making a `deepcopy` of the `_MAP_GRID`. This is so that we don't modify the original but always have an empty template to work from. 
-
-We use `@` to indicate the location of the player (at coordinate `(2, 2)`). We then take the actual exits from the room use their names to figure out what symbols to draw out from the center. Once we have placed all the exit- and room-symbols in the grid, we merge it all together into a single string on the last line: 
-
-```python
-return "  " + "\n  ".join("".join(line) for line in reversed(map_grid))
-```
-
-At the end we use Python's standard [join](https://www.w3schools.com/python/ref_string_join.asp) to convert the grid into a single string. In doing so we must flip the grid upside down (reverse the outermost list). Why is this? If you think about how a MUD game displays its data - by printing at the bottom and then scrolling upwards - you'll realize that Evennia has to send out the top of your map _first_ and the bottom of it _last_ for it to show correctly to the user. 
-
-We want to be able to get on/off the grid if so needed. So if a room has a non-cardinal exit in it (like 'back' or up/down), we'll indicate this by showing the `>` symbol instead of the `@` in your current room.
+- **Line 12**:  The map itself consists of the 2D matrix `_MAP_GRID`. This is a 2D area described by a list of Python lists. To find a given place in the list, you first first need to find which of the nested lists to use, and then which element to use in that list. Indices start from 0 in Python. So to draw the `o` symbol for the southermost room, you'd need to do so at `_MAP_GRID[4][2]`. 
+- **Line 19**: The `_EXIT_GRID_SHIFT` indicates the direction to go for each cardinal exit, along with the map symbol to draw at that point. So `"east": (1, 0, "-")` means the east exit will be drawn one step in the positive x direction (to the right), using the "-" symbol. For symbols like `|` and "\\" we need to escape with a double-symbol since these would otherwise be interpreted as part of other formatting. 
+- **Line 51**: We start by making a `deepcopy` of the `_MAP_GRID`. This is so that we don't modify the original but always have an empty template to work from. 
+- **Line 52**: We use `@` to indicate the location of the player (at coordinate `(2, 2)`). We then take the actual exits from the room use their names to figure out what symbols to draw out from the center. 
+- **Line 58**: We want to be able to get on/off the grid if so needed. So if a room has a non-cardinal exit in it (like 'back' or up/down), we'll indicate this by showing the `>` symbol instead of the `@` in your current room.
+- **Line 67**: Once we have placed all the exit- and room-symbols in the grid, we merge it all together into a single string. At the end we use Python's standard [join](https://www.w3schools.com/python/ref_string_join.asp) to convert the grid into a single string. In doing so we must flip the grid upside down (reverse the outermost list). Why is this? If you think about how a MUD game displays its data - by printing at the bottom and then scrolling upwards - you'll realize that Evennia has to send out the top of your map _first_ and the bottom of it _last_ for it to show correctly to the user. 
 
 ## Testing 
 
@@ -207,6 +200,9 @@ class EvAdventureRoomTest(EvenniaTestCase):
 
 ```
 
+
+So we create a bunch of rooms, link them to one centr room and then make sure the map in that room looks like we'd expect.
+
 ## Conclusion  
 
-In this lesson we manipulated strings and made a map. Changing the description of an object is a big part of changing the 'graphics' of a text-based game, so checking out the [documentation on this](../../../Components/Objects.md#changing-an-objects-description) is good extra reading.
+In this lesson we manipulated strings and made a map. Changing the description of an object is a big part of changing the 'graphics' of a text-based game, so checking out the [parts making up an object description](../../../Components/Objects.md#changing-an-objects-description) is good extra reading.

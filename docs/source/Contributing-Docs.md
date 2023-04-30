@@ -14,29 +14,20 @@ The sources are organized into several rough categories, with only a few adminis
 at the root of `evennia/docs/source/`. 
 
 - `source/Components/` are docs describing separate Evennia building blocks, that is, things
-  that you can import and use. This extends and elaborates on what can be found out by reading
-  the api docs themselves. Example are documentation for `Accounts`, `Objects` and `Commands`.
-- `source/Concepts/` describes how larger-scale features of Evennia hang together - things that
-  can't easily be broken down into one isolated component. This can be general descriptions of
-  how Models and Typeclasses interact to the path a message takes from the client to the server
-  and back.
-- `source/Setup/` holds detailed docs on installing, running and maintaining the Evennia server and
-  the infrastructure around it.
-- `source/Coding/` has help on how to interact with, use and navigate the Evennia codebase itself.
-  This also has non-Evennia-specific help on general development concepts and how to set up a sane development environment.
+  that you can import and use. This extends and elaborates on what can be found out by reading the api docs themselves. Example are documentation for `Accounts`, `Objects` and `Commands`.
+- `source/Concepts/` describes how larger-scale features of Evennia hang together - things that can't easily be broken down into one isolated component. This can be general descriptions of how Models and Typeclasses interact to the path a message takes from the client to the server and back.
+- `source/Setup/` holds detailed docs on installing, running and maintaining the Evennia server and the infrastructure around it.
+- `source/Coding/` has help on how to interact with, use and navigate the Evennia codebase itself. This also has non-Evennia-specific help on general development concepts and how to set up a sane development environment.
 - `source/Contribs/` holds documentation specifically for packages in the `evennia/contribs/` folder. Any contrib-specific tutorials will be found here instead of in `Howtos`
 - `source/Howtos/` holds docs that describe how to achieve a specific goal, effect or
-  result in Evennia. This is often on a tutorial or FAQ form and will refer to the rest of the
-  documentation for further reading.
-  - `source/Howtos/Beginner-Tutorial/` holds all documents part of the initial tutorial sequence.
+  result in Evennia. This is often on a tutorial or FAQ form and will refer to the rest of the documentation for further reading.
+- `source/Howtos/Beginner-Tutorial/` holds all documents part of the initial tutorial sequence.
 
 
  Other files and folders:
-  - `source/api/` contains the auto-generated API documentation as `.html` files. Don't edit these
-    files manually, they are auto-generated from sources.
+  - `source/api/` contains the auto-generated API documentation as `.html` files. Don't edit these files manually, they are auto-generated from sources.
   - `source/_templates` and `source/_static` hold files for the doc itself. They should only be modified if wanting to change the look and structure of the documentation generation itself. 
-  - `conf.py` holds the Sphinx configuration. It should usually not be modified except to update
-    the Evennia version on a new branch.
+  - `conf.py` holds the Sphinx configuration. It should usually not be modified except to update the Evennia version on a new branch.
 
 
 ## Editing syntax

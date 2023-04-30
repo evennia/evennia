@@ -46,8 +46,10 @@ Beginner-Tutorial-Objects
 Beginner-Tutorial-Equipment
 Beginner-Tutorial-Chargen
 Beginner-Tutorial-Rooms
+Beginner-Tutorial-Combat-Base
+Beginner-Tutorial-Combat-Twitch
+Beginner-Tutorial-Combat-Turnbased
 Beginner-Tutorial-NPCs
-Beginner-Tutorial-Combat
 Beginner-Tutorial-Quests
 Beginner-Tutorial-Shops
 Beginner-Tutorial-Dungeon
