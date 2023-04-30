@@ -483,18 +483,11 @@ class EvAdventureCombatHandlerBase(DefaultScript):
 
     def queue_action(self, combatant, action_dict):
         """
-        Queue an action by adding the new actiondict to the back of the queue. If the
-        queue was alrady at max-size, the front of the queue will be discarded.
+        Queue an action by adding the new actiondict.
 
         Args:
             combatant (EvAdventureCharacter, EvAdventureNPC): A combatant queueing the action.
             action_dict (dict): A dict describing the action class by name along with properties.
-
-        Example:
-            If the queue max-size is 3 and was `[a, b, c]` (where each element is an action-dict),
-            then using this method to add the new action-dict `d` will lead to a queue `[b, c, d]` -
-            that is, adding the new action will discard the one currently at the front of the queue
-            to make room.
 
         """
         raise NotImplementedError
