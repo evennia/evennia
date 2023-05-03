@@ -70,6 +70,9 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
         """
         super().msg(message, combatant=self.obj, broadcast=broadcast, location=self.obj.location)
 
+    def at_init(self):
+        self.obj.cmdset.add(TwitchLookCmdSet, persistent=False)
+
     def get_sides(self, combatant):
         """
         Get a listing of the two 'sides' of this combat, from the perspective of the provided
@@ -165,7 +168,6 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             action_dict (dict): The new action-dict to initialize.
 
         """
-
         if action_dict["key"] not in self.action_classes:
             self.obj.msg("This is an unkown action!")
             return
@@ -240,6 +242,8 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
         Stop combat immediately.
         """
         self.queue_action({"key": "hold", "dt": 0})  # make sure ticker is killed
+        del self.obj.ndb.combathandler
+        self.obj.cmdset.remove(TwitchLookCmdSet)
         self.delete()
 
 
@@ -546,8 +550,16 @@ class TwitchAttackCmdSet(CmdSet):
 
     def at_cmdset_creation(self):
         self.add(CmdAttack())
-        self.add(CmdLook())
         self.add(CmdHold())
         self.add(CmdStunt())
         self.add(CmdUseItem())
         self.add(CmdWield())
+
+
+class TwitchLookCmdSet(CmdSet):
+    """
+    This will be added/removed dynamically when in combat.
+    """
+
+    def at_cmdset_creation(self):
+        self.add(CmdLook())
