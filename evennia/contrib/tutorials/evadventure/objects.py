@@ -355,6 +355,6 @@ class WeaponBareHands(EvAdventureWeapon):
     quality = 100000  # let's assume fists are always available ...
 
 
-BARE_HANDS = search_object("Bare hands", typeclass=WeaponBareHands)
+BARE_HANDS = search_object("Bare hands", typeclass=WeaponBareHands).first()
 if not BARE_HANDS:
     BARE_HANDS = create_object(WeaponBareHands, key="Bare hands")
