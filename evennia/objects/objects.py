@@ -2548,8 +2548,9 @@ class DefaultCharacter(DefaultObject):
         try:
             # Check to make sure account does not have too many chars
             if account:
-                if len(account.characters) >= settings.MAX_NR_CHARACTERS:
-                    errors.append(_("There are too many characters associated with this account."))
+                avail = account.check_available_slots()
+                if avail:
+                    errors.append(avail)
                     return obj, errors
 
             # Create the Character
@@ -2604,7 +2605,8 @@ class DefaultCharacter(DefaultObject):
 
     @classmethod
     def validate_name(cls, name):
-        """Validate the character name prior to creating. Overload this function to add custom validators
+        """
+        Validate the character name prior to creating. Overload this function to add custom validators
 
         Args:
             name (str) : The name of the character
