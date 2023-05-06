@@ -28,6 +28,9 @@ class TestContainerCmds(BaseEvenniaCommandTest):
         # make sure the object is in the container so we can look at it
         self.obj1.location = self.container
         self.call(CmdContainerLook(), "obj in box", "Obj")
+        # move it into a non-container object and look at it there too
+        self.obj1.location = self.obj2
+        self.call(CmdContainerLook(), "obj in obj2", "Obj")
 
     def test_get_and_put(self):
         # get normally
@@ -47,5 +50,13 @@ class TestContainerCmds(BaseEvenniaCommandTest):
         self.obj1.location = self.char1
         self.call(CmdPut(), "obj in box", "You can't put things in that.")
         
-        
+    def test_at_capacity_put(self):
+        # set container capacity
+        self.container.capacity = 1
+        # move object to container to fill capacity
+        self.obj2.location = self.container
+        # move object to character to try putting
+        self.obj1.location = self.char1
+        self.call(CmdPut(), "obj in box", "You can't fit anything else in a Box.")
+
         

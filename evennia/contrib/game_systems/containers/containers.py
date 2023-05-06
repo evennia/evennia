@@ -190,7 +190,9 @@ class CmdContainerGet(CmdGet):
         if caller == obj:
             self.msg("You can't get yourself.")
             return
-        if not obj.access(caller, "get"):
+
+        # check if this object can be gotten
+        if not obj.access(caller, "get") or not obj.at_pre_get(caller):
             if obj.db.get_err_msg:
                 self.msg(obj.db.get_err_msg)
             else:
@@ -199,9 +201,7 @@ class CmdContainerGet(CmdGet):
 
         # calling possible at_pre_get_from hook on location
         if hasattr(location, "at_pre_get_from") and not location.at_pre_get_from(caller, obj):
-            return
-        # calling at_pre_get hook method
-        if not obj.at_pre_get(caller):
+            self.msg("You can't get that.")
             return
 
         success = obj.move_to(caller, quiet=True, move_type="get")
@@ -270,10 +270,12 @@ class CmdPut(CmdDrop):
 
         # Call the object script's at_pre_drop() method.
         if not obj.at_pre_drop(caller):
+            self.msg("You can't put that down.")
             return
 
         # Call the container's possible at_pre_put_in method.
         if hasattr(container, "at_pre_put_in") and not container.at_pre_put_in(caller, obj):
+            self.msg("You can't put that there.")
             return
 
         success = obj.move_to(container, quiet=True, move_type="drop")
