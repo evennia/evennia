@@ -1149,10 +1149,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # sever the connection (important!)
         if self.account:
             # Remove the object from playable characters list
-            if self in self.account.db._playable_characters:
-                self.account.db._playable_characters = [
-                    x for x in self.account.db._playable_characters if x != self
-                ]
+            self.account.remove_character(self)
             for session in self.sessions.all():
                 self.account.unpuppet_object(session)
 
@@ -2562,8 +2559,7 @@ class DefaultCharacter(DefaultObject):
                 obj.db.creator_ip = ip
             if account:
                 obj.db.creator_id = account.id
-                if obj not in account.characters:
-                    account.db._playable_characters.append(obj)
+                account.add_character(obj)
 
             # Add locks
             if not locks and account:

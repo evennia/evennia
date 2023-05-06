@@ -236,6 +236,39 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         return objs
 
+    def add_character(self, character: "DefaultCharacter"):
+        """
+        Add a character to this account's list of playable characters.
+        """
+        if character not in self.db._playable_characters:
+            self.db._playable_characters.append(character)
+            self.at_post_add_character(character)
+
+    def at_post_add_character(self, character: "DefaultCharacter"):
+        """
+        Called after a character is added to this account's list of playable characters.
+
+        Use it to easily implement custom logic when a character is added to an account.
+        """
+        pass
+
+    def remove_character(self, character):
+        """
+        Remove a character from this account's list of playable characters.
+        """
+        if character in self.db._playable_characters:
+            self.db._playable_characters.remove(character)
+            self.at_post_remove_character(character)
+
+    def at_post_remove_character(self, character):
+        """
+        Called after a character is removed from this account's list of playable characters.
+
+        Use it to easily implement custom logic when a character is removed from an account.
+        """
+        pass
+
+
     def uses_screenreader(self, session=None):
         """
         Shortcut to determine if a session uses a screenreader. If no session given,
@@ -743,8 +776,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         )
         if character:
             # Update playable character list
-            if character not in self.characters:
-                self.db._playable_characters.append(character)
+            self.add_character(character)
 
             # We need to set this to have @ic auto-connect to this character
             self.db._last_puppet = character
@@ -1483,11 +1515,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         else:
             # In this mode we don't auto-connect but by default end up at a character selection
             # screen. We execute look on the account.
-            # we make sure to clean up the _playable_characters list in case
-            # any was deleted in the interim.
-            self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(
-                self.at_look(target=self.db._playable_characters, session=session), session=session
+                self.at_look(target=self.characters, session=session), session=session
             )
 
     def at_failed_login(self, session, **kwargs):
@@ -1825,11 +1854,8 @@ class DefaultGuest(DefaultAccount):
         be on the safe side.
         """
         super().at_server_shutdown()
-        characters = self.db._playable_characters
-        if characters:
-            for character in characters:
-                if character:
-                    character.delete()
+        for character in self.characters:
+            character.delete()
 
     def at_post_disconnect(self, **kwargs):
         """
@@ -1841,8 +1867,6 @@ class DefaultGuest(DefaultAccount):
 
         """
         super().at_post_disconnect()
-        characters = self.db._playable_characters
-        for character in characters:
-            if character:
-                character.delete()
+        for character in self.characters:
+            character.delete()
         self.delete()

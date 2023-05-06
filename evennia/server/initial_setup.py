@@ -98,16 +98,15 @@ def create_objects():
 
     # Create the in-game god-character for account #1 and set
     # it to exist in Limbo.
-    character_typeclass = settings.BASE_CHARACTER_TYPECLASS
     try:
         superuser_character = ObjectDB.objects.get(id=1)
     except ObjectDB.DoesNotExist:
-        superuser_character = create.create_object(
-            character_typeclass, key=superuser.username, nohome=True
+        superuser_character, errors = superuser.create_character(
+            key=superuser.username, nohome=True, description=_("This is User #1.")
         )
+        if errors:
+            raise Exception(str(errors))
 
-    superuser_character.db_typeclass_path = character_typeclass
-    superuser_character.db.desc = _("This is User #1.")
     superuser_character.locks.add(
         "examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()"
     )
@@ -117,11 +116,6 @@ def create_objects():
 
     superuser.attributes.add("_first_login", True)
     superuser.attributes.add("_last_puppet", superuser_character)
-
-    try:
-        superuser.db._playable_characters.append(superuser_character)
-    except AttributeError:
-        superuser.db_playable_characters = [superuser_character]
 
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     try:

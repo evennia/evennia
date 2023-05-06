@@ -465,3 +465,64 @@ class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
                 utils.get_evennia_version(),
             )
         )
+
+
+def _create_account(session, accountname, password, permissions, typeclass=None, email=None):
+    """
+    Helper function, creates an account of the specified typeclass.
+    """
+    try:
+        new_account = create.create_account(
+            accountname, email, password, permissions=permissions, typeclass=typeclass
+        )
+
+    except Exception as e:
+        session.msg(
+            "There was an error creating the Account:\n%s\n If this problem persists, contact an"
+            " admin." % e
+        )
+        logger.log_trace()
+        return False
+
+    # This needs to be set so the engine knows this account is
+    # logging in for the first time. (so it knows to call the right
+    # hooks during login later)
+    new_account.db.FIRST_LOGIN = True
+
+    # join the new account to the public channel
+    pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
+    if not pchannel or not pchannel.connect(new_account):
+        string = "New account '%s' could not connect to public channel!" % new_account.key
+        logger.log_err(string)
+    return new_account
+
+
+def _create_character(session, new_account, typeclass, home, permissions):
+    """
+    Helper function, creates a character based on an account's name.
+    This is meant for Guest and AUTO_CREATRE_CHARACTER_WITH_ACCOUNT=True situations.
+    """
+    try:
+        new_character = create.create_object(
+            typeclass, key=new_account.key, home=home, permissions=permissions
+        )
+        # set playable character list
+        new_account.add_character(new_character)
+
+        # allow only the character itself and the account to puppet this character (and Developers).
+        new_character.locks.add(
+            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)"
+            % (new_character.id, new_account.id)
+        )
+
+        # If no description is set, set a default description
+        if not new_character.db.desc:
+            new_character.db.desc = "This is a character."
+        # We need to set this to have ic auto-connect to this character
+        new_account.db._last_puppet = new_character
+    except Exception as e:
+        session.msg(
+            "There was an error creating the Character:\n%s\n If this problem persists, contact an"
+            " admin." % e
+        )
+        logger.log_trace()

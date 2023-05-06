@@ -60,12 +60,7 @@ class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
 
         super().parse()
 
-        playable = self.account.db._playable_characters
-        if playable is not None:
-            # clean up list if character object was deleted in between
-            if None in playable:
-                playable = [character for character in playable if character]
-                self.account.db._playable_characters = playable
+        playable = self.account.characters
         # store playable property
         if self.args:
             self.playable = dict((utils.to_str(char.key.lower()), char) for char in playable).get(
@@ -155,8 +150,8 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
             if (
                 not account.is_superuser
                 and not account.check_permstring("Developer")
-                and account.db._playable_characters
-                and len(account.db._playable_characters) >= _MAX_NR_CHARACTERS
+                and account.characters
+                and len(account.characters) >= _MAX_NR_CHARACTERS
             ):
                 plural = "" if _MAX_NR_CHARACTERS == 1 else "s"
                 self.msg(f"You may only have a maximum of {_MAX_NR_CHARACTERS} character{plural}.")
@@ -184,7 +179,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
             "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"
             " perm(Admin)" % (new_character.id, account.id, account.id)
         )
-        account.db._playable_characters.append(new_character)
+        account.add_character(new_character)
         if desc:
             new_character.db.desc = desc
         elif not new_character.db.desc:
@@ -223,7 +218,7 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
         # use the playable_characters list to search
         match = [
             char
-            for char in utils.make_iter(account.db._playable_characters)
+            for char in utils.make_iter(account.characters)
             if char.key.lower() == self.args.lower()
         ]
         if not match:
@@ -243,9 +238,7 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                     # only take action
                     delobj = caller.ndb._char_to_delete
                     key = delobj.key
-                    caller.db._playable_characters = [
-                        pc for pc in caller.db._playable_characters if pc != delobj
-                    ]
+                    caller.remove_character(delobj)
                     delobj.delete()
                     self.msg(f"Character '{key}' was permanently deleted.")
                     logger.log_sec(
@@ -314,13 +307,13 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
         else:
             # argument given
 
-            if account.db._playable_characters:
+            if (playables := account.characters):
                 # look at the playable_characters list first
                 character_candidates.extend(
                     utils.make_iter(
                         account.search(
                             self.args,
-                            candidates=account.db._playable_characters,
+                            candidates=playables,
                             search_object=True,
                             quiet=True,
                         )
