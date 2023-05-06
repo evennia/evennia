@@ -144,6 +144,10 @@ class LivingMixin:
         self.coins -= amount
         return amount
         
+    def at_attacked(self, attacker, **kwargs): 
+		"""Called when being attacked and combat starts."""
+		pass
+    
     def at_damage(self, damage, attacker=None):
         """Called when attacked and taking damage."""
         self.hp -= damage  
@@ -171,6 +175,8 @@ class LivingMixin:
 
 ```
 Most of these are empty since they will behave differently for characters and npcs. But having them in the mixin means we can expect these methods to be available for all living things.
+
+Once we create more of our game, we will need to remember to actually call these hook methods so they serve a purpose. For example, once we implement combat, we must remember to call `at_attacked` as well as the other methods involving taking damage, getting defeated or dying. 
 
 
 ## Character class 

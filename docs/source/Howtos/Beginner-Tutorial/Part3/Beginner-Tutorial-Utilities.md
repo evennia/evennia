@@ -122,11 +122,24 @@ class Ability(Enum):
     ALLEGIANCE_HOSTILE = "hostile"
     ALLEGIANCE_NEUTRAL = "neutral"
     ALLEGIANCE_FRIENDLY = "friendly"
-    
+
+
+ABILITY_REVERSE_MAP =  {
+    "str": Ability.STR, 
+    "dex": Ability.DEX,
+    "con": Ability.CON,
+    "int": Ability.INT,
+    "wis": Ability.WIS,
+    "cha": Ability.CHA 
+}
 
 ```
 
 Here the `Ability` class holds basic properties of a character sheet. 
+
+The `ABILITY_REVERSE_MAP` is a convenient map to go the other way - if you in some command were to enter the string 'cha', we could use this mapping to directly convert your input to the correct `Ability`:
+
+    ability = ABILITY_REVERSE_MAP.get(your_input)
 
 
 ## Utility module

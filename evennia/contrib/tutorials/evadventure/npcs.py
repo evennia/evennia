@@ -54,7 +54,8 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
     weapon = AttributeProperty(default=BARE_HANDS, autocreate=False)  # instead of inventory
     coins = AttributeProperty(default=1, autocreate=False)  # coin loot
 
-    # if this npc is attacked, everyone with the same tag in the current location will also be pulled into combat.
+    # if this npc is attacked, everyone with the same tag in the current location will also be
+    # pulled into combat.
     group = TagProperty("npcs")
 
     @property
@@ -91,8 +92,16 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
 
         """
         self.hp = self.hp_max
+        self.tags.add("npcs", category="group")
 
-    def ai_combat_next_action(self, **kwargs):
+    def at_attacked(self, attacker, **kwargs):
+        """
+        Called when being attacked and combat starts.
+
+        """
+        pass
+
+    def ai_next_action(self, **kwargs):
         """
         The combat engine should ask this method in order to
         get the next action the npc should perform in combat.
@@ -247,7 +256,7 @@ class EvAdventureMob(EvAdventureNPC):
     # chance (%) that this enemy will loot you when defeating you
     loot_chance = AttributeProperty(75, autocreate=False)
 
-    def ai_combat_next_action(self, combathandler):
+    def ai_next_action(self, **kwargs):
         """
         Called to get the next action in combat.
 

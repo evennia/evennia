@@ -15,12 +15,12 @@ from .combat_base import (
     CombatActionStunt,
     CombatActionUseItem,
     CombatActionWield,
-    EvAdventureCombatHandlerBase,
+    EvAdventureCombatBaseHandler,
 )
 from .enums import ABILITY_REVERSE_MAP
 
 
-class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
+class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
     """
     This is created on the combatant when combat starts. It tracks only the combatants
     side of the combat and handles when the next action will happen.
@@ -39,8 +39,8 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
 
     # dynamic properties
 
-    advantages_against = AttributeProperty(dict)
-    disadvantages_against = AttributeProperty(dict)
+    advantage_against = AttributeProperty(dict)
+    disadvantage_against = AttributeProperty(dict)
 
     action_dict = AttributeProperty(dict)
     fallback_action_dict = AttributeProperty({"key": "hold", "dt": 0})
@@ -48,7 +48,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
     # stores the current ticker reference, so we can manipulate it later
     current_ticker_ref = AttributeProperty(None)
 
-    def msg(self, message, broadcast=True):
+    def msg(self, message, broadcast=True, **kwargs):
         """
         Central place for sending messages to combatants. This allows
         for adding any combat-specific text-decoration in one place.
@@ -124,7 +124,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
                 some future boost)
 
         """
-        self.advantages_against[target] = True
+        self.advantage_against[target] = True
 
     def give_disadvantage(self, recipient, target):
         """
@@ -136,7 +136,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
                 an enemy.
 
         """
-        self.disadvantages_against[target] = True
+        self.disadvantage_against[target] = True
 
     def has_advantage(self, combatant, target):
         """
@@ -147,7 +147,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             target (Character or NPC): The target to check advantage against.
 
         """
-        return self.advantages_against.get(target, False)
+        return self.advantage_against.get(target, False)
 
     def has_disadvantage(self, combatant, target):
         """
@@ -158,14 +158,15 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatHandlerBase):
             target (Character or NPC): The target to check disadvantage against.
 
         """
-        return self.disadvantages_against.get(target, False)
+        return self.disadvantage_against.get(target, False)
 
-    def queue_action(self, action_dict):
+    def queue_action(self, action_dict, combatant=None):
         """
         Schedule the next action to fire.
 
         Args:
             action_dict (dict): The new action-dict to initialize.
+            combatant: Unused.
 
         """
         if action_dict["key"] not in self.action_classes:
@@ -323,7 +324,7 @@ class CmdAttack(_BaseTwitchCombatCommand):
         combathandler = self.get_or_create_combathandler(target)
         # we use a fixed dt of 3 here, to mimic Diku style; one could also picture
         # attacking at a different rate, depending on skills/weapon etc.
-        combathandler.queue_action({"key": "attack", "target": target, "dt": 3})
+        combathandler.queue_action({"key": "attack", "target": target, "dt": 3, "repeat": True})
         combathandler.msg(f"$You() $conj(attack) $You({target.key})!", self.caller)
 
 
@@ -435,14 +436,14 @@ class CmdStunt(_BaseTwitchCombatCommand):
         self.target = target.strip()
 
     def func(self):
-        combathandler = self.get_or_create_combathandler(self.target)
-
         target = self.caller.search(self.target)
         if not target:
             return
         recipient = self.caller.search(self.recipient)
         if not recipient:
             return
+
+        combathandler = self.get_or_create_combathandler(target)
 
         combathandler.queue_action(
             {
@@ -452,6 +453,7 @@ class CmdStunt(_BaseTwitchCombatCommand):
                 "advantage": self.advantage,
                 "stunt_type": self.stunt_type,
                 "defense_type": self.stunt_type,
+                "dt": 3,
             },
         )
         combathandler.msg("$You() prepare a stunt!", self.caller)
@@ -498,7 +500,7 @@ class CmdUseItem(_BaseTwitchCombatCommand):
                 return
 
         combathandler = self.get_or_create_combathandler(self.target)
-        combathandler.queue_action({"key": "use", "item": item, "target": target})
+        combathandler.queue_action({"key": "use", "item": item, "target": target, "dt": 3})
         combathandler.msg(
             f"$You() prepare to use {item.get_display_name(self.caller)}!", self.caller
         )
@@ -539,11 +541,11 @@ class CmdWield(_BaseTwitchCombatCommand):
             self.msg("(You must carry the item to wield it.)")
             return
         combathandler = self.get_or_create_combathandler()
-        combathandler.queue_action({"key": "wield", "item": item})
+        combathandler.queue_action({"key": "wield", "item": item, "dt": 3})
         combathandler.msg(f"$You() reach for {item.get_display_name(self.caller)}!", self.caller)
 
 
-class TwitchAttackCmdSet(CmdSet):
+class TwitchCombatCmdSet(CmdSet):
     """
     Add to character, to be able to attack others in a twitch-style way.
     """
