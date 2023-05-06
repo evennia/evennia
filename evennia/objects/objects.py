@@ -1598,6 +1598,38 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         pass
 
+    def can_build_object(self):
+        """
+        This hook is called by the build command to determine if
+        self can build a new object. This is called before the
+        object is created. As it receives no arguments, it
+        can only be used to determine if self is allowed to build
+        anything in the current context.
+
+        For instance, a room may want to limit its number of exits,
+        or the builder might have an enforced quota limit for rooms
+        they can add to their custom dungeon.
+
+        Returns:
+            can_build (str or None): If self is allowed to build objects.
+                return a string as the error if there is a problem. If
+                this returns True, the build will abort.
+        """
+        pass
+
+    def at_object_constructed(self, builder):
+        """
+        Called when the object is constructed by a builder.
+        This is used to implement custom logic for building,
+        such as quota tracking systems, auto-tagging of rooms,
+        creation of logical groups of rooms like Zones or
+        dungeons, etc.
+
+        Args:
+            builder (Object): The object that constructed this object.
+        """
+        pass
+
     def at_pre_puppet(self, account, session=None, **kwargs):
         """
         Called just before an Account connects to this object to puppet
@@ -1663,6 +1695,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         pass
+
 
     def at_server_reload(self):
         """
