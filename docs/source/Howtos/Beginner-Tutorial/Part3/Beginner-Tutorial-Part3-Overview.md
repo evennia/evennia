@@ -46,12 +46,13 @@ Beginner-Tutorial-Objects
 Beginner-Tutorial-Equipment
 Beginner-Tutorial-Chargen
 Beginner-Tutorial-Rooms
+Beginner-Tutorial-NPCs
 Beginner-Tutorial-Combat-Base
 Beginner-Tutorial-Combat-Twitch
 Beginner-Tutorial-Combat-Turnbased
-Beginner-Tutorial-NPCs
+Beginner-Tutorial-Dungeon
+Beginner-Tutorial-Monsters
 Beginner-Tutorial-Quests
 Beginner-Tutorial-Shops
-Beginner-Tutorial-Dungeon
 Beginner-Tutorial-Commands
 ```

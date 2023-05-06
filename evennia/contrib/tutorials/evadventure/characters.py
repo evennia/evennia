@@ -64,6 +64,13 @@ class LivingMixin:
         else:
             self.msg(f"You are healed for {healed} health.")
 
+    def at_attacked(self, attacker, **kwargs):
+        """
+        Called when being attacked / combat starts.
+
+        """
+        pass
+
     def at_damage(self, damage, attacker=None):
         """
         Called when attacked and taking damage.

@@ -204,7 +204,6 @@ class CombatActionStunt(CombatAction):
                 "|yHaving succeeded, you hold back to plan your next move.|n [hold]",
                 broadcast=False,
             )
-            combathandler.queue_action(attacker, combathandler.fallback_action_dict)
         else:
             self.msg(f"$You({defender.key}) $conj(resist)! $You() $conj(fail) the stunt.")
 
@@ -240,7 +239,6 @@ class CombatActionUseItem(CombatAction):
             )
             item.at_post_use(user, target)
         # to back to idle after this
-        self.combathandler.queue_action(self.combatant, self.combathandler.fallback_action_dict)
 
 
 class CombatActionWield(CombatAction):
@@ -260,13 +258,12 @@ class CombatActionWield(CombatAction):
 
     def execute(self):
         self.combatant.equipment.move(self.item)
-        self.combathandler.queue_action(self.combatant, self.combathandler.fallback_action_dict)
 
 
 # main combathandler
 
 
-class EvAdventureCombatHandlerBase(DefaultScript):
+class EvAdventureCombatBaseHandler(DefaultScript):
     """
     This script is created when a combat starts. It 'ticks' the combat and tracks
     all sides of it.
@@ -481,13 +478,14 @@ class EvAdventureCombatHandlerBase(DefaultScript):
         """
         raise NotImplementedError
 
-    def queue_action(self, combatant, action_dict):
+    def queue_action(self, action_dict, combatant=None):
         """
         Queue an action by adding the new actiondict.
 
         Args:
-            combatant (EvAdventureCharacter, EvAdventureNPC): A combatant queueing the action.
             action_dict (dict): A dict describing the action class by name along with properties.
+            combatant (EvAdventureCharacter, EvAdventureNPC, optional): A combatant queueing the
+                action.
 
         """
         raise NotImplementedError

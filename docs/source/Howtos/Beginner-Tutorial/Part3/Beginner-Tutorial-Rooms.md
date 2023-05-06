@@ -40,8 +40,9 @@ Later on we must make sure our combat systems honors these values.
 Here's a room that allows non-lethal PvP (sparring):
 
 ```python
-
 # in evadventure/rooms.py
+
+# ... 
 
 class EvAdventurePvPRoom(EvAdventureRoom):
     """
@@ -85,6 +86,8 @@ Let's expand the base `EvAdventureRoom` with the map.
 :emphasize-lines: 12,19,51,52,58,67
 
 # in evadventyre/rooms.py
+
+# ... 
 
 from copy import deepcopy
 from evennia import DefaultCharacter
@@ -161,6 +164,64 @@ The string returned from `get_display_header` will end up at the top of the [roo
 - **Line 52**: We use `@` to indicate the location of the player (at coordinate `(2, 2)`). We then take the actual exits from the room use their names to figure out what symbols to draw out from the center. 
 - **Line 58**: We want to be able to get on/off the grid if so needed. So if a room has a non-cardinal exit in it (like 'back' or up/down), we'll indicate this by showing the `>` symbol instead of the `@` in your current room.
 - **Line 67**: Once we have placed all the exit- and room-symbols in the grid, we merge it all together into a single string. At the end we use Python's standard [join](https://www.w3schools.com/python/ref_string_join.asp) to convert the grid into a single string. In doing so we must flip the grid upside down (reverse the outermost list). Why is this? If you think about how a MUD game displays its data - by printing at the bottom and then scrolling upwards - you'll realize that Evennia has to send out the top of your map _first_ and the bottom of it _last_ for it to show correctly to the user. 
+
+## Adding life to a room 
+
+Normally the room is static until you do something in it. But let's say you are in a room described to be a bustling market. Would it not be nice to occasionally get some random messages like 
+
+	"You hear a merchant calling out his wares."
+	"The sound of music drifts over the square from an open tavern door."
+	"The sound of commerse rises and fall in a steady rythm."
+
+Here's an example of how to accomplish this: 
+
+```{code-block} python 
+:linenos:
+:emphasize-lines: 22,25
+
+# in evadventure/rooms.py 
+
+# ... 
+
+from random import choice, random
+from evennia import TICKER_HANDLER
+
+# ... 
+
+class EchoingRoom(EvAdventureRoom):
+    """A room that randomly echoes messages to everyone inside it"""
+
+    echoes = AttributeProperty(list, autocreate=False)
+	echo_rate = AttributeProperty(60 * 2, autocreate=False)
+	echo_chance = AttributeProperty(0.1, autocreate=False)
+
+	def send_echo(self): 
+		if self.echoes and random() < self.echo_chance: 
+			self.msg_contents(choice(self.echoes))
+
+	def start_echo(self): 
+		TICKER_HANDLER.add(self.echo_rate, self.send_echo)
+
+	def stop_echo(self): 
+		TICKER_HANDLER.remove(self.echo_rate, self.send_echo)
+```
+
+The [TickerHandler](../../../Components/TickerHandler.md). This is acts as a 'please tick me - subscription service'. In **Line 22** we tell add our `.send_echo` method to the handler and tell the TickerHandler to call that method every `.echo_rate` seconds. 
+
+When the `.send_echo` method is called, it will use `random.random()` to check if we should _actually_ do anything. In our example we only show a message 10% of the time. In that case we use  Python's `random.choice()` to grab a random text string from the `.echoes` list to send to everyone inside this room. 
+
+Here's how you'd use this room in-game: 
+
+    > dig market:evadventure.EchoingRoom = market,back 
+    > market 
+    > set here/echoes = ["You hear a merchant shouting", "You hear the clatter of coins"]
+    > py here.start_echo() 
+
+If you wait a while you'll eventually see one of the two echoes show up. Use `py here.stop_echo()` if you want. 
+
+It's a good idea to be able to turn on/off the echoes at will, if nothing else because you'd be surprised how annoying they can be if they show too often. 
+
+In this example we had to resort to `py` to activate/deactivate the echoes, but you could very easily make little utility [Commands](../Part1/Beginner-Tutorial-Adding-Commands.md) `startecho` and `stopecho` to do it for you. This we leave as a bonus exercise.
 
 ## Testing 
 

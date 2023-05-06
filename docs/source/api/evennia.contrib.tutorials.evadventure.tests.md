@@ -19,6 +19,7 @@ evennia.contrib.tutorials.evadventure.tests
    evennia.contrib.tutorials.evadventure.tests.test_commands
    evennia.contrib.tutorials.evadventure.tests.test_dungeon
    evennia.contrib.tutorials.evadventure.tests.test_equipment
+   evennia.contrib.tutorials.evadventure.tests.test_npcs
    evennia.contrib.tutorials.evadventure.tests.test_quests
    evennia.contrib.tutorials.evadventure.tests.test_rooms
    evennia.contrib.tutorials.evadventure.tests.test_rules

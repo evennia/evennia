@@ -15,7 +15,7 @@ type self = evennia.contrib.tutorials.evadventure.characters.EvAdventureCharacte
 
 # assign us the twitch combat cmdset (requires superuser/developer perms)
 
-py self.cmdset.add("evennia.contrib.tutorials.evadventure.combat_twitch.TwitchAttackCmdSet", persistent=True)
+py self.cmdset.add("evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet", persistent=True)
 
 # Create and give us a weapons (this will use defaults on the class)
 

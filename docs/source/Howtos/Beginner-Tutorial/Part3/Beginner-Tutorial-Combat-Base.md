@@ -35,7 +35,7 @@ class CombatFailure(RuntimeError):
     pass
 
 
-class EvAdventureCombatHandlerBase(DefaultSCript): 
+class EvAdventureCombatBaseHandler(DefaultSCript): 
     """ 
 	This should be created when combat starts. It 'ticks' the combat 
 	and tracks all sides of it.
@@ -161,7 +161,7 @@ from evennia import create_script
 
 # ... 
 
-class EvAdventureCombatHandlerBase(DefaultScript): 
+class EvAdventureCombatBaseHandler(DefaultScript): 
 
 	# ... 
 
@@ -209,7 +209,7 @@ This is a `classmethod`, meaning it should be used on the handler class directly
 As a class method we'll need to call this directly on the class, like this: 
 
 ```python
-combathandler = EvAdventureCombatHandlerBase.get_or_create_combathandler(combatant)
+combathandler = EvAdventureCombatBaseHandler.get_or_create_combathandler(combatant)
 ```
 
 The result will be a new handler _or_ one that was already defined.
@@ -222,7 +222,7 @@ The result will be a new handler _or_ one that was already defined.
 
 # ... 
 
-class EvAdventureCombatHandlerBase(DefaultScript): 
+class EvAdventureCombatBaseHandler(DefaultScript): 
 	# ... 
 
 	def msg(self, message, combatant=None, broadcast=True, location=None):
@@ -321,7 +321,7 @@ from evennia import EvTable
 
 # ... 
 
-class EvAdventureCombatHandlerBase(DefaultScript):
+class EvAdventureCombatBaseHandler(DefaultScript):
 
 	# ... 
 
@@ -709,19 +709,20 @@ For example, consider this following test of the `CombatHandler.get_combat_summa
 
 ```{code-block} python 
 :linenos:
-:emphasize-lines: 24,31
+:emphasize-lines: 25,32
 
 # in evadventure/tests/test_combat.py 
 
 from unittest.mock import Mock
 
+from evennia.utils.test_resources import EvenniaTestCase
 from evennia import create_object
 from .. import combat_base
 from ..rooms import EvAdventureRoom
 from ..characters import EvAdventureCharacter
 
 
-class TestEvAdventureCombatHandlerBase(CombatHandlerBase):
+class TestEvAdventureCombatBaseHandler(EvenniaTestCase):
 
     def setUp(self): 
 
@@ -751,7 +752,7 @@ class TestEvAdventureCombatHandlerBase(CombatHandlerBase):
 
 The interesting places are where we apply the mocks: 
 
-- **Line 24** and **Line 31**: While `get_sides` is not implemented yet, we know what it is _supposed_ to return - a tuple of lists. So for the sake of the test, we _replace_ the `get_sides` method with a mock that when called will return something useful. 
+- **Line 25** and **Line 32**: While `get_sides` is not implemented yet, we know what it is _supposed_ to return - a tuple of lists. So for the sake of the test, we _replace_ the `get_sides` method with a mock that when called will return something useful. 
 
 With this kind of approach it's possible to fully test a system also when it's not 'complete' yet.
 

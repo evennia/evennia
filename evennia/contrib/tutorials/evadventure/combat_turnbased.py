@@ -31,7 +31,7 @@ from .combat_base import (
     CombatActionStunt,
     CombatActionUseItem,
     CombatActionWield,
-    EvAdventureCombatHandlerBase,
+    EvAdventureCombatBaseHandler,
 )
 from .enums import Ability
 
@@ -70,7 +70,7 @@ class CombatActionFlee(CombatAction):
             )
 
 
-class EvAdventureTurnbasedCombatHandler(EvAdventureCombatHandlerBase):
+class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
     """
     A version of the combathandler, handling turn-based combat.
 

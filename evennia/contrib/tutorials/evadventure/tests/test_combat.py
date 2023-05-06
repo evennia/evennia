@@ -51,7 +51,7 @@ class _CombatTestBase(EvenniaTestCase):
         self.target.msg = Mock()
 
 
-class TestEvAdventureCombatHandlerBase(_CombatTestBase):
+class TestEvAdventureCombatBaseHandler(_CombatTestBase):
     """
     Test the base functionality of the base combat handler.
 
@@ -60,7 +60,7 @@ class TestEvAdventureCombatHandlerBase(_CombatTestBase):
     def setUp(self):
         """This also tests the `get_or_create_combathandler` classfunc"""
         super().setUp()
-        self.combathandler = combat_base.EvAdventureCombatHandlerBase.get_or_create_combathandler(
+        self.combathandler = combat_base.EvAdventureCombatBaseHandler.get_or_create_combathandler(
             self.location, key="combathandler"
         )
 
@@ -109,7 +109,7 @@ class TestCombatActionsBase(_CombatTestBase):
 
     def setUp(self):
         super().setUp()
-        self.combathandler = combat_base.EvAdventureCombatHandlerBase.get_or_create_combathandler(
+        self.combathandler = combat_base.EvAdventureCombatBaseHandler.get_or_create_combathandler(
             self.location, key="combathandler"
         )
         # we need to mock all NotImplemented methods
@@ -552,11 +552,11 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
 
     def test_give_advantage(self):
         self.combatant_combathandler.give_advantage(self.combatant, self.target)
-        self.assertTrue(self.combatant_combathandler.advantages_against[self.target])
+        self.assertTrue(self.combatant_combathandler.advantage_against[self.target])
 
     def test_give_disadvantage(self):
         self.combatant_combathandler.give_disadvantage(self.combatant, self.target)
-        self.assertTrue(self.combatant_combathandler.disadvantages_against[self.target])
+        self.assertTrue(self.combatant_combathandler.disadvantage_against[self.target])
 
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock(return_value=999))
