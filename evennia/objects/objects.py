@@ -672,6 +672,55 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         for obj in contents:
             func(obj, **kwargs)
 
+    def receive_action_msg(self, from_obj, message, mapping, raise_funcparse_errors=False, **kwargs):
+        """
+        Receive and process an action message from another object. Refer to msg_contents for the docs.
+
+        This is a hook so that it can be overridden for customization of receiving action messages.
+
+        An example, would be if you want to relay the action message to a different object and format it
+        differently for them.
+        """
+        if is_iter(message):
+            text, outkwargs = message
+        else:
+            text = message
+            outkwargs = {}
+
+        outmessage = _MSG_CONTENTS_PARSER.parse(
+            text,
+            raise_errors=raise_funcparse_errors,
+            return_string=True,
+            caller=from_obj,
+            receiver=self,
+            mapping=mapping,
+        )
+
+        # director-stance replacements
+        outmessage = outmessage.format_map(
+            {
+                key: obj.get_display_name(looker=self)
+                if hasattr(obj, "get_display_name")
+                else str(obj)
+                for key, obj in mapping.items()
+            }
+        )
+
+        self.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
+
+    def send_action_msg(self, message, receiver, mapping=None, raise_funcparse_errors=False, **kwargs):
+        """
+        Convenience wrapper for sending a message as "you" to a receiver.
+
+        Or many receivers.
+        """
+        for recv in make_iter(receiver):
+            # copy the dictionary to not pollute others.
+            mapping = dict(mapping) if mapping else {}
+            if "you" not in mapping:
+                mapping[self] = self
+            recv.receive_action_msg(self, message, mapping, raise_funcparse_errors=raise_funcparse_errors, **kwargs)
+
     def msg_contents(
         self,
         text=None,
@@ -754,12 +803,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         # we also accept an outcommand on the form (message, {kwargs})
-        is_outcmd = text and is_iter(text)
-        inmessage = text[0] if is_outcmd else text
-        outkwargs = text[1] if is_outcmd and len(text) > 1 else {}
-        mapping = mapping or {}
+        mapping = dict(mapping) if mapping else {}
         you = from_obj or self
-
         if "you" not in mapping:
             mapping[you] = you
 
@@ -768,29 +813,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             exclude = make_iter(exclude)
             contents = [obj for obj in contents if obj not in exclude]
 
-        for receiver in contents:
-
-            # actor-stance replacements
-            outmessage = _MSG_CONTENTS_PARSER.parse(
-                inmessage,
-                raise_errors=raise_funcparse_errors,
-                return_string=True,
-                caller=you,
-                receiver=receiver,
-                mapping=mapping,
-            )
-
-            # director-stance replacements
-            outmessage = outmessage.format_map(
-                {
-                    key: obj.get_display_name(looker=receiver)
-                    if hasattr(obj, "get_display_name")
-                    else str(obj)
-                    for key, obj in mapping.items()
-                }
-            )
-
-            receiver.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
+        you.send_action_msg(text, contents, mapping=mapping, raise_funcparse_errors=raise_funcparse_errors, **kwargs)
 
     def move_to(
         self,
