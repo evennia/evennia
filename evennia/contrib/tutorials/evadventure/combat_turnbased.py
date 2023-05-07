@@ -759,7 +759,7 @@ class CmdTurnAttack(Command):
         )
 
 
-class TurnAttackCmdSet(CmdSet):
+class TurnCombatCmdSet(CmdSet):
     """
     CmdSet for the turn-based combat.
     """
