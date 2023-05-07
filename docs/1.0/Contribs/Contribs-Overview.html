@@ -83,6 +83,10 @@
 <li><a class="reference internal" href="#game-systems">game_systems</a><ul>
 <li><a class="reference internal" href="#barter"><code class="docutils literal notranslate"><span class="pre">barter</span></code></a></li>
 <li><a class="reference internal" href="#clothing"><code class="docutils literal notranslate"><span class="pre">clothing</span></code></a></li>
+<li><a class="reference internal" href="#containers"><code class="docutils literal notranslate"><span class="pre">containers</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
 <li><a class="reference internal" href="#cooldowns"><code class="docutils literal notranslate"><span class="pre">cooldowns</span></code></a></li>
 <li><a class="reference internal" href="#crafting"><code class="docutils literal notranslate"><span class="pre">crafting</span></code></a></li>
 <li><a class="reference internal" href="#gendersub"><code class="docutils literal notranslate"><span class="pre">gendersub</span></code></a></li>
@@ -181,7 +185,7 @@ in the <a class="reference external" href="https://github.com/evennia/evennia/di
 <p><em>Contribs</em> are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than ‘core’ Evennia.
-This page is auto-generated and summarizes all <strong>47</strong> contribs currently included
+This page is auto-generated and summarizes all <strong>48</strong> contribs currently included
 with the Evennia distribution.</p>
 <p>All contrib categories are imported from <code class="docutils literal notranslate"><span class="pre">evennia.contrib</span></code>, such as</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from evennia.contrib.base_systems import building_menu
@@ -238,50 +242,50 @@ copy its entire folder to your game directory and modify/use it from there.</p>
 <td><p><a class="reference internal" href="#color-markups"><span class="std std-doc">color_markups</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#components"><span class="std std-doc">components</span></a></p></td>
+<td><p><a class="reference internal" href="#containers"><span class="std std-doc">containers</span></a></p></td>
 <td><p><a class="reference internal" href="#cooldowns"><span class="std std-doc">cooldowns</span></a></p></td>
 <td><p><a class="reference internal" href="#crafting"><span class="std std-doc">crafting</span></a></p></td>
 <td><p><a class="reference internal" href="#custom-gametime"><span class="std std-doc">custom_gametime</span></a></p></td>
-<td><p><a class="reference internal" href="#dice"><span class="std std-doc">dice</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#email-login"><span class="std std-doc">email_login</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dice"><span class="std std-doc">dice</span></a></p></td>
+<td><p><a class="reference internal" href="#email-login"><span class="std std-doc">email_login</span></a></p></td>
 <td><p><a class="reference internal" href="#evadventure"><span class="std std-doc">evadventure</span></a></p></td>
 <td><p><a class="reference internal" href="#evscaperoom"><span class="std std-doc">evscaperoom</span></a></p></td>
 <td><p><a class="reference internal" href="#extended-room"><span class="std std-doc">extended_room</span></a></p></td>
-<td><p><a class="reference internal" href="#fieldfill"><span class="std std-doc">fieldfill</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gendersub"><span class="std std-doc">gendersub</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#fieldfill"><span class="std std-doc">fieldfill</span></a></p></td>
+<td><p><a class="reference internal" href="#gendersub"><span class="std std-doc">gendersub</span></a></p></td>
 <td><p><a class="reference internal" href="#git-integration"><span class="std std-doc">git_integration</span></a></p></td>
 <td><p><a class="reference internal" href="#godotwebsocket"><span class="std std-doc">godotwebsocket</span></a></p></td>
 <td><p><a class="reference internal" href="#health-bar"><span class="std std-doc">health_bar</span></a></p></td>
-<td><p><a class="reference internal" href="#ingame-map-display"><span class="std std-doc">ingame_map_display</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ingame-python"><span class="std std-doc">ingame_python</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ingame-map-display"><span class="std std-doc">ingame_map_display</span></a></p></td>
+<td><p><a class="reference internal" href="#ingame-python"><span class="std std-doc">ingame_python</span></a></p></td>
 <td><p><a class="reference internal" href="#mail"><span class="std std-doc">mail</span></a></p></td>
 <td><p><a class="reference internal" href="#mapbuilder"><span class="std std-doc">mapbuilder</span></a></p></td>
 <td><p><a class="reference internal" href="#menu-login"><span class="std std-doc">menu_login</span></a></p></td>
-<td><p><a class="reference internal" href="#mirror"><span class="std std-doc">mirror</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#multidescer"><span class="std std-doc">multidescer</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mirror"><span class="std std-doc">mirror</span></a></p></td>
+<td><p><a class="reference internal" href="#multidescer"><span class="std std-doc">multidescer</span></a></p></td>
 <td><p><a class="reference internal" href="#mux-comms-cmds"><span class="std std-doc">mux_comms_cmds</span></a></p></td>
 <td><p><a class="reference internal" href="#name-generator"><span class="std std-doc">name_generator</span></a></p></td>
 <td><p><a class="reference internal" href="#puzzles"><span class="std std-doc">puzzles</span></a></p></td>
-<td><p><a class="reference internal" href="#random-string-generator"><span class="std std-doc">random_string_generator</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#red-button"><span class="std std-doc">red_button</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#random-string-generator"><span class="std std-doc">random_string_generator</span></a></p></td>
+<td><p><a class="reference internal" href="#red-button"><span class="std std-doc">red_button</span></a></p></td>
 <td><p><a class="reference internal" href="#rpsystem"><span class="std std-doc">rpsystem</span></a></p></td>
 <td><p><a class="reference internal" href="#simpledoor"><span class="std std-doc">simpledoor</span></a></p></td>
 <td><p><a class="reference internal" href="#slow-exit"><span class="std std-doc">slow_exit</span></a></p></td>
-<td><p><a class="reference internal" href="#talking-npc"><span class="std std-doc">talking_npc</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#traits"><span class="std std-doc">traits</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#talking-npc"><span class="std std-doc">talking_npc</span></a></p></td>
+<td><p><a class="reference internal" href="#traits"><span class="std std-doc">traits</span></a></p></td>
 <td><p><a class="reference internal" href="#tree-select"><span class="std std-doc">tree_select</span></a></p></td>
 <td><p><a class="reference internal" href="#turnbattle"><span class="std std-doc">turnbattle</span></a></p></td>
 <td><p><a class="reference internal" href="#tutorial-world"><span class="std std-doc">tutorial_world</span></a></p></td>
-<td><p><a class="reference internal" href="#unixcommand"><span class="std std-doc">unixcommand</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#wilderness"><span class="std std-doc">wilderness</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#unixcommand"><span class="std std-doc">unixcommand</span></a></p></td>
+<td><p><a class="reference internal" href="#wilderness"><span class="std std-doc">wilderness</span></a></p></td>
 <td><p><a class="reference internal" href="#xyzgrid"><span class="std std-doc">xyzgrid</span></a></p></td>
-<td><p></p></td>
 <td><p></p></td>
 <td><p></p></td>
 </tr>
@@ -445,6 +449,7 @@ the <code class="docutils literal notranslate"><span class="pre">rpg</span></cod
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Barter.html">Barter system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Clothing.html">Clothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Containers.html">Containers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Cooldowns.html">Cooldowns</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Crafting.html">Crafting system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Gendersub.html">Gendersub</a></li>
@@ -473,6 +478,14 @@ transactions.</p>
 look of these clothes are appended to the character’s description when worn.</p>
 <p><a class="reference internal" href="Contrib-Clothing.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.clothing.html#evennia-contrib-game-systems-clothing"><span class="std std-ref">Browse the Code</span></a></p>
 </section>
+<section id="containers">
+<h3><code class="docutils literal notranslate"><span class="pre">containers</span></code><a class="headerlink" href="#containers" title="Permalink to this headline">¶</a></h3>
+<p><em>Adds the ability to put objects into other container objects by providing a container typeclass and extending certain base commands.</em></p>
+</section>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="Contrib-Containers.html"><span class="doc std std-doc">Read the documentation</span></a> - <span class="xref myst">Browse the Code</span></p>
 <section id="cooldowns">
 <h3><code class="docutils literal notranslate"><span class="pre">cooldowns</span></code><a class="headerlink" href="#cooldowns" title="Permalink to this headline">¶</a></h3>
 <p><em>Contribution by owllex, 2021</em></p>
