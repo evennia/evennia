@@ -1,5 +1,10 @@
 # Changelog
 
+## Main branch
+
+- Contrib: Container typeclass with new commands for storing and retrieving
+  things inside them (InspectorCaracal)
+
 ## Evennia 1.3.0
 
 Apr 29, 2023
