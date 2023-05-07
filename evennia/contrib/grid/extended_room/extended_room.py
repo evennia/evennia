@@ -88,7 +88,6 @@ import datetime
 import re
 
 from django.conf import settings
-
 from evennia import CmdSet, DefaultRoom, default_cmds, gametime, utils
 
 # error return function, needed by Extended Look command
@@ -361,7 +360,9 @@ class CmdExtendedRoomLook(default_cmds.CmdLook):
                     if detail:
                         # we found a detail
                         # tell all the objects in the room we're looking closely at something
-                        caller.location.msg_contents(f"$You() $conj(look) closely at {args}.\n", from_obj=caller)
+                        caller.location.msg_contents(
+                            f"$You() $conj(look) closely at {args}.\n", from_obj=caller
+                        )
                         # show the detail to the player
                         caller.msg(detail)
                         return

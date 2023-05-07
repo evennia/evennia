@@ -1,8 +1,8 @@
-# Evadventure combat demo
+# Evadventure (Twitch) combat demo - using a batchcommand file.
 #
-# Set up a combat area for testing combat. Requires developer or superuser perm.
+# Sets up a combat area for testing twitch combat. Requires developer or superuser perm.
 #
-# Run from in-game as batchcmd contrib.tutorials.evadventure.batchscripts.combat_demo
+# Run from in-game as batchcmd evadventure.batchscripts.combat_demo
 #
 
 # start from limbo
