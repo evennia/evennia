@@ -220,7 +220,7 @@ class CharacterCreateView(EvenniaWebTest):
     @override_settings(MAX_NR_CHARACTERS=1)
     def test_valid_access_multisession_0(self):
         "Account1 with no characters should be able to create a new one"
-        self.assertFalse(self.account.characters, "Account1 has characters but shouldn't!")
+        self.account.remove_character_from_playable_list(self.char1)
 
         # Login account
         self.login()
