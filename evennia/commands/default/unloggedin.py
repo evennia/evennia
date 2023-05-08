@@ -507,7 +507,7 @@ def _create_character(session, new_account, typeclass, home, permissions):
             typeclass, key=new_account.key, home=home, permissions=permissions
         )
         # set playable character list
-        new_account.add_character(new_character)
+        new_account.add_character_to_playable_list(new_character)
 
         # allow only the character itself and the account to puppet this character (and Developers).
         new_character.locks.add(

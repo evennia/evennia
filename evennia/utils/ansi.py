@@ -72,6 +72,9 @@ from evennia.utils.utils import to_str
 
 MXP_ENABLED = settings.MXP_ENABLED
 
+from rich.ansi import AnsiDecoder
+from .evrich import MudText
+
 
 # ANSI definitions
 
@@ -1053,6 +1056,13 @@ class ANSIString(str, metaclass=ANSIMeta):
             if index in self._code_indexes:
                 result += self._raw_string[index]
         return ANSIString(result + clean + append_tail, decoded=True)
+
+    def __rich_console__(self, console, options):
+        """
+        Implements the Rich console API, allowing AnsiStrings to be
+        converted to MudText instances.
+        """
+        yield MudText("\n").join(AnsiDecoder().decode(self))
 
     def clean(self):
         """

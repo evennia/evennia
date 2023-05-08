@@ -35,8 +35,8 @@ class EvenniaWebTest(BaseEvenniaTest):
         super().setUp()
 
         # Add chars to account rosters
-        self.account.db._playable_characters = [self.char1]
-        self.account2.db._playable_characters = [self.char2]
+        self.account.add_character_to_playable_list(self.char1)
+        self.account2.add_character_to_playable_list(self.char2)
 
         for account in (self.account, self.account2):
             # Demote accounts to Player permissions
@@ -44,15 +44,15 @@ class EvenniaWebTest(BaseEvenniaTest):
             account.permissions.remove("Developer")
 
             # Grant permissions to chars
-            for char in account.db._playable_characters:
+            for char in account.characters:
                 char.locks.add("edit:id(%s) or perm(Admin)" % account.pk)
                 char.locks.add("delete:id(%s) or perm(Admin)" % account.pk)
                 char.locks.add("view:all()")
 
     def test_valid_chars(self):
         "Make sure account has playable characters"
-        self.assertTrue(self.char1 in self.account.db._playable_characters)
-        self.assertTrue(self.char2 in self.account2.db._playable_characters)
+        self.assertTrue(self.char1 in self.account.characters)
+        self.assertTrue(self.char2 in self.account2.characters)
 
     def get_kwargs(self):
         return {}
@@ -220,7 +220,7 @@ class CharacterCreateView(EvenniaWebTest):
     @override_settings(MAX_NR_CHARACTERS=1)
     def test_valid_access_multisession_0(self):
         "Account1 with no characters should be able to create a new one"
-        self.account.db._playable_characters = []
+        self.assertFalse(self.account.characters, "Account1 has characters but shouldn't!")
 
         # Login account
         self.login()
@@ -233,9 +233,9 @@ class CharacterCreateView(EvenniaWebTest):
 
         # Make sure the character was actually created
         self.assertTrue(
-            len(self.account.db._playable_characters) == 1,
+            len(self.account.characters) == 1,
             "Account only has the following characters attributed to it: %s"
-            % self.account.db._playable_characters,
+            % self.account.characters,
         )
 
     @override_settings(MAX_NR_CHARACTERS=5)
@@ -252,9 +252,9 @@ class CharacterCreateView(EvenniaWebTest):
 
         # Make sure the character was actually created
         self.assertTrue(
-            len(self.account.db._playable_characters) > 1,
+            len(self.account.characters) > 1,
             "Account only has the following characters attributed to it: %s"
-            % self.account.db._playable_characters,
+            % self.account.characters,
         )
 
 
@@ -352,7 +352,7 @@ class CharacterDeleteView(EvenniaWebTest):
 
         # Make sure it deleted
         self.assertFalse(
-            self.char1 in self.account.db._playable_characters,
+            self.char1 in self.account.characters,
             "Char1 is still in Account playable characters list.",
         )
 

@@ -16,6 +16,8 @@ from evennia.scripts.monitorhandler import MONITOR_HANDLER
 from evennia.typeclasses.attributes import AttributeHandler, DbHolder, InMemoryAttributeBackend
 from evennia.utils import logger
 from evennia.utils.utils import class_from_module, lazy_property, make_iter
+from evennia.utils.evrich import MudConsole, MudConsoleOptions
+from rich.color import ColorSystem
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -50,6 +52,57 @@ class ServerSession(_BASE_SESSION_CLASS):
         self.account = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
+
+    @lazy_property
+    def console(self):
+        from mudrich import MudConsole
+        if "SCREENWIDTH" in self.protocol_flags:
+            width = self.protocol_flags["SCREENWIDTH"][0]
+        else:
+            width = 78
+        return MudConsole(color_system=self.rich_color_system(), width=width,
+                          file=self, record=True)
+
+    def rich_color_system(self):
+        if self.protocol_flags.get("NOCOLOR", False):
+            return None
+        if self.protocol_flags.get("XTERM256", False):
+            return "256"
+        if self.protocol_flags.get("ANSI", False):
+            return "standard"
+        return None
+
+    def update_rich(self):
+        check = self.console
+        if "SCREENWIDTH" in self.protocol_flags:
+            self.console._width = self.protocol_flags["SCREENWIDTH"][0]
+        else:
+            self.console._width = 80
+        if self.protocol_flags.get("NOCOLOR", False):
+            self.console._color_system = None
+        elif self.protocol_flags.get("XTERM256", False):
+            self.console._color_system = ColorSystem.EIGHT_BIT
+        elif self.protocol_flags.get("ANSI", False):
+            self.console._color_system = ColorSystem.STANDARD
+
+    def write(self, b: str):
+        """
+        When self.console.print() is called, it writes output to here.
+        Not necessarily useful, but it ensures console print doesn't end up sent out stdout or etc.
+        """
+
+    def flush(self):
+        """
+        Do not remove this method. It's needed to trick Console into treating this object
+        as a file.
+        """
+
+    def print(self, *args, **kwargs) -> str:
+        """
+        A thin wrapper around Rich.Console's print. Returns the exported data.
+        """
+        self.console.print(*args, highlight=False, **kwargs)
+        return self.console.export_text(clear=True, styles=True)
 
     def __cmdset_storage_get(self):
         return [path.strip() for path in self.cmdset_storage_string.split(",")]
@@ -257,6 +310,9 @@ class ServerSession(_BASE_SESSION_CLASS):
                 for the protocol(s).
 
         """
+        if (t := kwargs.get("text", None)):
+            if hasattr(t, "__rich_console__"):
+                kwargs["text"] = self.print(t)
         self.sessionhandler.data_out(self, **kwargs)
 
     def data_in(self, **kwargs):
@@ -293,6 +349,8 @@ class ServerSession(_BASE_SESSION_CLASS):
         kwargs.pop("session", None)
         kwargs.pop("from_obj", None)
         if text is not None:
+            if hasattr(text, "__rich_console__"):
+                text = self.print(text)
             self.data_out(text=text, **kwargs)
         else:
             self.data_out(**kwargs)
@@ -444,3 +502,7 @@ class ServerSession(_BASE_SESSION_CLASS):
             return self.account.get_display_name(*args, **kwargs)
         else:
             return f"{self.protocol_key}({self.address})"
+
+    def load_sync_data(self, sessdata):
+        super().load_sync_data(sessdata)
+        self.update_rich()

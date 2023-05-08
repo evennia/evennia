@@ -311,11 +311,11 @@ Our rock-paper-scissor setup works like this:
 - `defend` does nothing but has a chance to beat `hit`.
 - `flee/disengage` must succeed two times in a row (i.e. not beaten by a `hit` once during the turn). If so the character leaves combat.
 
-
 ```python
 # mygame/world/rules.py
 
 import random
+
 
 # messages 
 
@@ -326,7 +326,7 @@ def resolve_combat(combat_handler, actiondict):
     for each character:
     {char.id:[(action1, char, target), (action2, char, target)], ...}
     """
-    flee = {} # track number of flee commands per character
+    flee = {}  # track number of flee commands per character
     for isub in range(2):
         # loop over sub-turns
         messages = []
@@ -389,7 +389,7 @@ def resolve_combat(combat_handler, actiondict):
     for (char, fleevalue) in flee.items():
         if fleevalue == 2:
             combat_handler.msg_all(f"{char} withdraws from combat.")
-            combat_handler.remove_character(char)
+            combat_handler.remove_character_from_playable_list(char)
 ```
 
 To make it simple (and to save space), this example rule module actually resolves each interchange twice - first when it gets to each character and then again when handling the target. Also, since we use the combat handler's `msg_all` method here, the system will get pretty spammy. To clean it up, one could imagine tracking all the possible interactions to make sure each pair is only handled and reported once.
@@ -402,6 +402,7 @@ This is the last component we need, a command to initiate combat. This will tie 
 # mygame/commands/combat.py
 
 from evennia import create_script
+
 
 class CmdAttack(Command):
     """
@@ -419,7 +420,7 @@ class CmdAttack(Command):
     def func(self):
         "Handle command"
         if not self.args:
-            self.caller.msg("Usage: attack <target>")            
+            self.caller.msg("Usage: attack <target>")
             return
         target = self.caller.search(self.args)
         if not target:
@@ -427,13 +428,13 @@ class CmdAttack(Command):
         # set up combat
         if target.ndb.combat_handler:
             # target is already in combat - join it            
-            target.ndb.combat_handler.add_character(self.caller)
+            target.ndb.combat_handler.add_character_to_playable_list(self.caller)
             target.ndb.combat_handler.msg_all(f"{self.caller} joins combat!")
         else:
             # create a new combat handler
             chandler = create_script("combat_handler.CombatHandler")
-            chandler.add_character(self.caller)
-            chandler.add_character(target)
+            chandler.add_character_to_playable_list(self.caller)
+            chandler.add_character_to_playable_list(target)
             self.caller.msg(f"You attack {target}! You are in combat.")
             target.msg(f"{self.caller} attacks you! You are in combat.")       
 ```

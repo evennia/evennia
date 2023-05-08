@@ -589,7 +589,7 @@ class TestAccount(BaseEvenniaCommandTest):
         ]
     )
     def test_ooc_look(self, multisession_mode, auto_puppet, max_nr_chars, expected_result):
-        self.account.db._playable_characters = [self.char1]
+        self.account.add_character_to_playable_list(self.char1)
         self.account.unpuppet_all()
 
         with self.settings(MULTISESSION=multisession_mode):
@@ -609,14 +609,14 @@ class TestAccount(BaseEvenniaCommandTest):
         self.call(account.CmdOOC(), "", "You go OOC.", caller=self.account)
 
     def test_ic(self):
-        self.account.db._playable_characters = [self.char1]
+        self.account.add_character_to_playable_list(self.char1)
         self.account.unpuppet_object(self.session)
         self.call(
             account.CmdIC(), "Char", "You become Char.", caller=self.account, receiver=self.char1
         )
 
     def test_ic__other_object(self):
-        self.account.db._playable_characters = [self.obj1]
+        self.account.add_character_to_playable_list(self.obj1)
         self.account.unpuppet_object(self.session)
         self.call(
             account.CmdIC(), "Obj", "You become Obj.", caller=self.account, receiver=self.obj1
@@ -670,7 +670,7 @@ class TestAccount(BaseEvenniaCommandTest):
         # whether permissions are being checked
 
         # Add char to account playable characters
-        self.account.db._playable_characters.append(self.char1)
+        self.account.add_character_to_playable_list(self.char1)
 
         # Try deleting as Developer
         self.call(

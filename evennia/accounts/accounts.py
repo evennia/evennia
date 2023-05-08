@@ -236,15 +236,15 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         return objs
 
-    def add_character(self, character: "DefaultCharacter"):
+    def add_character_to_playable_list(self, character: "DefaultCharacter"):
         """
         Add a character to this account's list of playable characters.
         """
         if character not in self.db._playable_characters:
             self.db._playable_characters.append(character)
-            self.at_post_add_character(character)
+            self.at_post_add_character_to_playable_list(character)
 
-    def at_post_add_character(self, character: "DefaultCharacter"):
+    def at_post_add_character_to_playable_list(self, character: "DefaultCharacter"):
         """
         Called after a character is added to this account's list of playable characters.
 
@@ -252,15 +252,15 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         pass
 
-    def remove_character(self, character):
+    def remove_character_from_playable_list(self, character):
         """
         Remove a character from this account's list of playable characters.
         """
         if character in self.db._playable_characters:
             self.db._playable_characters.remove(character)
-            self.at_post_remove_character(character)
+            self.at_post_remove_character_from_playable_list(character)
 
-    def at_post_remove_character(self, character):
+    def at_post_remove_character_from_playable_list(self, character):
         """
         Called after a character is removed from this account's list of playable characters.
 
@@ -776,7 +776,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         )
         if character:
             # Update playable character list
-            self.add_character(character)
+            self.add_character_to_playable_list(character)
 
             # We need to set this to have @ic auto-connect to this character
             self.db._last_puppet = character

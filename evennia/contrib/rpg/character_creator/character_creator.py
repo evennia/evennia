@@ -90,7 +90,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
             )
             # initalize the new character to the beginning of the chargen menu
             new_character.db.chargen_step = "menunode_welcome"
-            account.add_character(new_character)
+            account.add_character_to_playable_list(new_character)
 
         # set the menu node to start at to the character's last saved step
         startnode = new_character.db.chargen_step

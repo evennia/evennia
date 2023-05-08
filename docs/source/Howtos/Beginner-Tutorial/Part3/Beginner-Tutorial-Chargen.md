@@ -622,7 +622,7 @@ node_apply_character(caller, raw_string, **kwargs):
     tmp_character = kwargs["tmp_character"]
     new_character = tmp_character.apply(caller)      
     
-    caller.account.db._playable_characters = [new_character] 
+    caller.account.add_character_to_playable_list(new_character) 
     
     text = "Character created!"
     
