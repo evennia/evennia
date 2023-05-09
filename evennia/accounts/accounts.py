@@ -273,7 +273,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     objects = AccountManager()
 
     # Used by account.create_character() to choose default typeclass for characters.
-    player_character_typeclass = settings.BASE_CHARACTER_TYPECLASS
+    default_character_typeclass = settings.BASE_CHARACTER_TYPECLASS
 
     # properties
     @lazy_property
@@ -795,18 +795,26 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     def get_character_slots(self) -> typing.Optional[int]:
         """
-        Returns the number of character slots this account has.
+        Returns the number of character slots this account has, or
+        None if there are no limits.
 
         By default, that's settings.MAX_NR_CHARACTERS but this makes it easy to override.
         Maybe for your game, players can be rewarded with more slots, somehow.
 
-        If it returns None, then there are no limits on character slots.
+        Returns:
+            int (optional): The number of character slots this account has, or None
+                if there are no limits.
         """
         return settings.MAX_NR_CHARACTERS
 
     def get_available_character_slots(self) -> typing.Optional[int]:
         """
-        Returns the number of character slots this account has available.
+        Returns the number of character slots this account has available, or None if
+        there are no limits.
+
+        Returns:
+            int (optional): The number of open character slots this account has, or None
+                if there are no limits.
         """
         if (slots := self.get_character_slots()) is None:
             return None
@@ -834,7 +842,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         Args:
             key (str, optional): If not given, use the same name as the account.
             typeclass (str, optional): Typeclass to use for this character. If
-                not given, use settings.BASE_CHARACTER_TYPECLASS.
+                not given, use self.default_character_class.
             permissions (list, optional): If not given, use the account's permissions.
             ip (str, optional): The client IP creating this character. Will fall back to the
                 one stored for the account if not given.
@@ -854,7 +862,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         character_permissions = kwargs.pop("permissions", self.permissions)
 
         # Load the appropriate Character class
-        character_typeclass = kwargs.pop("typeclass", self.player_character_typeclass)
+        character_typeclass = kwargs.pop("typeclass", self.default_character_typeclass)
         Character = class_from_module(character_typeclass)
 
         if "location" not in kwargs:
@@ -1015,10 +1023,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
             if account and _AUTO_CREATE_CHARACTER_WITH_ACCOUNT:
                 # Auto-create a character to go with this account
-                call_kwargs = {}
-                if "character_typeclass" in kwargs:
-                    call_kwargs["character_typeclass"] = kwargs["character_typeclass"]
-                character, errs = account.create_character(**call_kwargs)
+
+                character, errs = account.create_character(
+                    typeclass=kwargs.get("character_typeclass", account.default_character_typeclass)
+                )
                 if errs:
                     errors.extend(errs)
 
