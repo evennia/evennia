@@ -411,25 +411,21 @@ class TickerHandler(object):
                 for interval, ticker in self.ticker_pool.tickers.items()
             )
 
-            # remove any subscriptions that lost its object in the interim
-            to_save = {
-                store_key: (args, kwargs)
-                for store_key, (args, kwargs) in self.ticker_storage.items()
-                if (
-                    (
-                        store_key[1]
-                        and ("_obj" in kwargs and kwargs["_obj"].pk)
-                        and hasattr(kwargs["_obj"], store_key[1])
-                    )
-                    or store_key[2]  # a valid method with existing obj
-                )
-            }  # a path given
+            to_save = {}
 
-            # update the timers for the tickers
-            for store_key, (args, kwargs) in to_save.items():
-                interval = store_key[1]
-                # this is a mutable, so it's updated in-place in ticker_storage
-                kwargs["_start_delay"] = start_delays.get(interval, None)
+            # remove any subscription that lost its object and update the timers for the tickers
+            for store_key, (args, kwargs) in self.ticker_storage.items():
+                # unpack the store_key to reference its parts
+                packedobj, callfunc, path, interval, idstring, persistent = store_key
+                # verify that there's a valid obj+method or function path
+                if (
+                    callfunc
+                    and ("_obj" in kwargs and kwargs["_obj"].pk)
+                    and hasattr(kwargs["_obj"], callfunc)
+                ) or path:
+                    # this is a mutable, so it's updated in-place in ticker_storage
+                    kwargs["_start_delay"] = start_delays.get(interval, None)
+                    to_save[store_key] = (args, kwargs)
             ServerConfig.objects.conf(key=self.save_name, value=dbserialize(to_save))
         else:
             # make sure we have nothing lingering in the database
