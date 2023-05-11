@@ -56,7 +56,7 @@ class TestDedent(TestCase):
 
 class TestListToString(TestCase):
     """
-    Default function header from utils.py:
+    Default function header from time.py:
     list_to_string(inlist, sep=",", endsep=", and", addquote=False)
 
     Examples:
@@ -175,7 +175,7 @@ class TestANSIString(TestCase):
 
 class TestTimeformat(TestCase):
     """
-    Default function header from utils.py:
+    Default function header from time.py:
     time_format(seconds, style=0)
 
     """
