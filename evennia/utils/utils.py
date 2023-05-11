@@ -221,7 +221,6 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     full justification (default) this will be done by padding between
     words with extra whitespace where necessary. Paragraphs will
     be retained.
-
     Args:
         text (str): Text to justify.
         width (int, optional): The length of each line, in characters.
@@ -231,18 +230,10 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         indent (int, optional): Number of characters indentation of
             entire justified text block.
         fillchar (str): The character to use to fill. Defaults to empty space.
-
     Returns:
         justified (str): The justified and indented block of text.
-
     """
-    # we need to retain ansitrings
-    global _ANSISTRING
-    if not _ANSISTRING:
-        from evennia.utils.ansi import ANSIString as _ANSISTRING
-
-    is_ansi = isinstance(text, _ANSISTRING)
-    lb = _ANSISTRING("\n") if is_ansi else "\n"
+    lb = "\n"
 
     def _process_line(line):
         """
@@ -252,7 +243,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         """
         line_rest = width - (wlen + ngaps)
 
-        gap = _ANSISTRING(" ") if is_ansi else " "
+        gap = " "
 
         if line_rest > 0:
             if align == "l":
@@ -287,8 +278,8 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         # absolute mode - just crop or fill to width
         abs_lines = []
         for line in text.split("\n"):
-            nlen = m_len(line)
-            if m_len(line) < width:
+            nlen = display_len(line)
+            if display_len(line) < width:
                 line += sp * (width - nlen)
             else:
                 line = crop(line, width=width, suffix="")
@@ -298,12 +289,12 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     # all other aligns requires splitting into paragraphs and words
 
     # split into paragraphs and words
-    paragraphs = [text]  # re.split("\n\s*?\n", text, re.MULTILINE)
+    paragraphs = text.split("\n")  # re.split("\n\s*?\n", text, re.MULTILINE)
     words = []
     for ip, paragraph in enumerate(paragraphs):
         if ip > 0:
-            words.append(("\n", 0))
-        words.extend((word, m_len(word)) for word in paragraph.split())
+            words.append((lb, 0))
+        words.extend((word, display_len(word)) for word in paragraph.split())
 
     if not words:
         # Just whitespace!

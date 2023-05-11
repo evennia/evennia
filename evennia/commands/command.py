@@ -644,21 +644,21 @@ Command {self} has no defined `func()` - showing on-command variables:
         colornames = ["|%s%s|n" % (column_color, col) for col in args]
 
         h_line_char = kwargs.pop("header_line_char", "~")
-        header_line_char = ANSIString(f"|{border_color}{h_line_char}|n")
+        header_line_char = f"|{border_color}{h_line_char}|n"
         c_char = kwargs.pop("corner_char", "+")
-        corner_char = ANSIString(f"|{border_color}{c_char}|n")
+        corner_char = f"|{border_color}{c_char}|n"
 
         b_left_char = kwargs.pop("border_left_char", "||")
-        border_left_char = ANSIString(f"|{border_color}{b_left_char}|n")
+        border_left_char = f"|{border_color}{b_left_char}|n"
 
         b_right_char = kwargs.pop("border_right_char", "||")
-        border_right_char = ANSIString(f"|{border_color}{b_right_char}|n")
+        border_right_char = f"|{border_color}{b_right_char}|n"
 
         b_bottom_char = kwargs.pop("border_bottom_char", "-")
-        border_bottom_char = ANSIString(f"|{border_color}{b_bottom_char}|n")
+        border_bottom_char = f"|{border_color}{b_bottom_char}|n"
 
         b_top_char = kwargs.pop("border_top_char", "-")
-        border_top_char = ANSIString(f"|{border_color}{b_top_char}|n")
+        border_top_char = f"|{border_color}{b_top_char}|n"
 
         table = EvTable(
             *colornames,
@@ -700,8 +700,8 @@ Command {self} has no defined `func()` - showing on-command variables:
 
         colors = dict()
         colors["border"] = self.account.options.get("border_color")
-        colors["headertext"] = self.account.options.get("%s_text_color" % mode)
-        colors["headerstar"] = self.account.options.get("%s_star_color" % mode)
+        colors["headertext"] = self.account.options.get(f"{mode}_text_color")
+        colors["headerstar"] = self.account.options.get(f"{mode}_star_color")
 
         width = width or self.client_width()
         if edge_character:
@@ -709,20 +709,17 @@ Command {self} has no defined `func()` - showing on-command variables:
 
         if header_text:
             if color_header:
-                header_text = ANSIString(header_text).clean()
-                header_text = ANSIString("|n|%s%s|n" % (colors["headertext"], header_text))
+                header_text = "|n|{}{}|n".format(colors["headertext"], header_text)
             if mode == "header":
-                begin_center = ANSIString(
-                    "|n|%s<|%s* |n" % (colors["border"], colors["headerstar"])
-                )
-                end_center = ANSIString("|n |%s*|%s>|n" % (colors["headerstar"], colors["border"]))
-                center_string = ANSIString(begin_center + header_text + end_center)
+                begin_center = "|n|{}<|{}* |n".format(colors["border"], colors["headerstar"])
+                end_center = "|n |{}*|{}>|n".format(colors["headerstar"], colors["border"])
+                center_string = begin_center + header_text + end_center
             else:
-                center_string = ANSIString("|n |%s%s |n" % (colors["headertext"], header_text))
+                center_string = "|n |{}{} |n".format(colors["headertext"], header_text)
         else:
             center_string = ""
 
-        fill_character = self.account.options.get("%s_fill" % mode)
+        fill_character = self.account.options.get(f"{mode}_fill")
 
         remain_fill = width - len(center_string)
         if remain_fill % 2 == 0:
@@ -732,17 +729,15 @@ Command {self} has no defined `func()` - showing on-command variables:
             right_width = math.floor(remain_fill / 2)
             left_width = math.ceil(remain_fill / 2)
 
-        right_fill = ANSIString("|n|%s%s|n" % (colors["border"], fill_character * int(right_width)))
-        left_fill = ANSIString("|n|%s%s|n" % (colors["border"], fill_character * int(left_width)))
+        right_fill = "|n|{}{}|n".format(colors["border"], fill_character * int(right_width))
+        left_fill = "|n|{}{}|n".format(colors["border"], fill_character * int(left_width))
 
         if edge_character:
-            edge_fill = ANSIString("|n|%s%s|n" % (colors["border"], edge_character))
-            main_string = ANSIString(center_string)
-            final_send = (
-                ANSIString(edge_fill) + left_fill + main_string + right_fill + ANSIString(edge_fill)
-            )
+            edge_fill = "|n|{}{}|n".format(colors["border"], edge_character)
+            main_string = center_string
+            final_send = edge_fill + left_fill + main_string + right_fill + edge_fill
         else:
-            final_send = left_fill + ANSIString(center_string) + right_fill
+            final_send = left_fill + center_string + right_fill
         return final_send
 
     def styled_header(self, *args, **kwargs):

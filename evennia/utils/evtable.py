@@ -1,3 +1,13 @@
+from copy import copy, deepcopy
+from textwrap import TextWrapper
+
+from django.conf import settings
+from evennia.utils.utils import display_len as d_len
+from evennia.utils.utils import is_iter, justify
+
+_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
+
+
 class EvTextWrapper(TextWrapper):
     """
     This is a wrapper work class for handling strings with ANSI tags

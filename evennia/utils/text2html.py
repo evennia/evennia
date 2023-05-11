@@ -20,7 +20,7 @@ class TextToHTMLparser(object):
     """
 
     tabstop = 4
-		
+
     # TODO: discuss class names
     ansi_color_map = {
         "r": "red1",
@@ -81,14 +81,14 @@ class TextToHTMLparser(object):
         if tag[0] == "=":
             # greyscale
             hex = grey_hex(tag[1])
-            message = message[:start] + flag + hex * 3 + message[end:]
+            text = text[:start] + flag + hex * 3 + text[end:]
 
         else:
             r, g, b = tag
             htag = flag + "{}{}{}".format(hue_hex(r), hue_hex(g), hue_hex(b))
-            message = message[:start] + htag + message[end:]
+            text = text[:start] + htag + text[end:]
 
-        return message
+        return text
 
     def xterm_bg_to_hex(match):
         return self.xterm_to_hex(match, bg=True)
@@ -180,7 +180,7 @@ class TextToHTMLparser(object):
         """
 
         # split out the style codes and clean out any empty items
-        str_list = [substr for substr in message.split("|") if substr]
+        str_list = [substr for substr in text.split("|") if substr]
         output = []
         # initialize all the flags and classes
         color = ""
@@ -190,7 +190,7 @@ class TextToHTMLparser(object):
         inverse = False
 
         # special handling in case the first item is formatted
-        if not message.startswith("|"):
+        if not text.startswith("|"):
             output.append(str_list[0])
             str_list = str_list[1:]
 
