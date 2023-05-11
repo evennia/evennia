@@ -287,7 +287,7 @@ class _BaseTwitchCombatCommand(Command):
             rhs = " ".join(rhs)
         self.lhs, self.rhs = lhs.strip(), rhs.strip()
 
-    def get_or_create_combathandler(self, target=None, combathandler_name="combathandler"):
+    def get_or_create_combathandler(self, target=None, combathandler_key="combathandler"):
         """
         Get or create the combathandler assigned to this combatant.
 
@@ -298,7 +298,9 @@ class _BaseTwitchCombatCommand(Command):
                 self.msg("You can't attack that!")
                 raise InterruptCommand()
 
-            EvAdventureCombatTwitchHandler.get_or_create_combathandler(target)
+            EvAdventureCombatTwitchHandler.get_or_create_combathandler(
+                target, combathandler_key=combathandler_key
+            )
         return EvAdventureCombatTwitchHandler.get_or_create_combathandler(self.caller)
 
 

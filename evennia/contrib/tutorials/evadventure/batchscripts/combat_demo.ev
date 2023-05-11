@@ -2,7 +2,11 @@
 #
 # Sets up a combat area for testing twitch combat. Requires developer or superuser perm.
 #
-# Run from in-game as batchcmd evadventure.batchscripts.combat_demo
+# To use, first add the batchscripts/ folder to your settings file:
+#
+#    BASE_BATCH_PROCESS_PATHS += ["evadventure.batchscripts"]
+#
+# Run from in-game as batchcmd combat_demo
 #
 
 # start from limbo
