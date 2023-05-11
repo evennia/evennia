@@ -1,148 +1,4 @@
-"""
-This is an advanced ASCII table creator. It was inspired by Prettytable
-(https://code.google.com/p/prettytable/) but shares no code and is considerably
-more advanced, supporting auto-balancing of incomplete tables and ANSI colors among
-other things.
-
-Example usage:
-
-```python
-  from evennia.utils import evtable
-
-  table = evtable.EvTable("Heading1", "Heading2",
-                  table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
-  table.add_column("This is long data", "This is even longer data")
-  table.add_row("This is a single row")
-  print table
-```
-
-Result:
-
-::
-
-    +----------------------+----------+---+--------------------------+
-    |       Heading1       | Heading2 |   |                          |
-    +~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
-    |           1          |     4    | 7 |     This is long data    |
-    +----------------------+----------+---+--------------------------+
-    |           2          |     5    | 8 | This is even longer data |
-    +----------------------+----------+---+--------------------------+
-    |           3          |     6    | 9 |                          |
-    +----------------------+----------+---+--------------------------+
-    | This is a single row |          |   |                          |
-    +----------------------+----------+---+--------------------------+
-
-As seen, the table will automatically expand with empty cells to make
-the table symmetric. Tables can be restricted to a given width:
-
-```python
-  table.reformat(width=50, align="l")
-```
-
-(We could just have added these keywords to the table creation call)
-
-This yields the following result:
-
-::
-
-    +-----------+------------+-----------+-----------+
-    | Heading1  | Heading2   |           |           |
-    +~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
-    | 1         | 4          | 7         | This is   |
-    |           |            |           | long data |
-    +-----------+------------+-----------+-----------+
-    |           |            |           | This is   |
-    | 2         | 5          | 8         | even      |
-    |           |            |           | longer    |
-    |           |            |           | data      |
-    +-----------+------------+-----------+-----------+
-    | 3         | 6          | 9         |           |
-    +-----------+------------+-----------+-----------+
-    | This is a |            |           |           |
-    |  single   |            |           |           |
-    | row       |            |           |           |
-    +-----------+------------+-----------+-----------+
-
-
-Table-columns can be individually formatted. Note that if an
-individual column is set with a specific width, table auto-balancing
-will not affect this column (this may lead to the full table being too
-wide, so be careful mixing fixed-width columns with auto- balancing).
-Here we change the width and alignment of the column at index 3
-(Python starts from 0):
-
-```python
-
-table.reformat_column(3, width=30, align="r")
-print table
-```
-
-::
-
-    +-----------+-------+-----+-----------------------------+---------+
-    | Heading1  | Headi |     |                             |         |
-    |           | ng2   |     |                             |         |
-    +~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+
-    | 1         | 4     | 7   |           This is long data | Test1   |
-    +-----------+-------+-----+-----------------------------+---------+
-    | 2         | 5     | 8   |    This is even longer data | Test3   |
-    +-----------+-------+-----+-----------------------------+---------+
-    | 3         | 6     | 9   |                             | Test4   |
-    +-----------+-------+-----+-----------------------------+---------+
-    | This is a |       |     |                             |         |
-    |  single   |       |     |                             |         |
-    | row       |       |     |                             |         |
-    +-----------+-------+-----+-----------------------------+---------+
-
-When adding new rows/columns their data can have its own alignments
-(left/center/right, top/center/bottom).
-
-If the height is restricted, cells will be restricted from expanding
-vertically. This will lead to text contents being cropped. Each cell
-can only shrink to a minimum width and height of 1.
-
-`EvTable` is intended to be used with `ANSIString` for supporting ANSI-coloured
-string types.
-
-When a cell is auto-wrapped across multiple lines, ANSI-reset sequences will be
-put at the end of each wrapped line. This means that the colour of a wrapped
-cell will not "bleed", but it also means that eventual colour outside the table
-will not transfer "across" a table, you need to re-set the color to have it
-appear on both sides of the table string.
-
-----
-
-"""
-
-from copy import copy, deepcopy
-from textwrap import TextWrapper
-
-from django.conf import settings
-from evennia.utils.ansi import ANSIString
-from evennia.utils.utils import display_len as d_len
-from evennia.utils.utils import is_iter, justify
-
-_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
-
-
-def _to_ansi(obj):
-    """
-    convert to ANSIString.
-
-    Args:
-        obj (str): Convert incoming text to
-            be ANSI aware ANSIStrings.
-    """
-    if is_iter(obj):
-        return [_to_ansi(o) for o in obj]
-    else:
-        return ANSIString(obj)
-
-
-_whitespace = "\t\n\x0b\x0c\r "
-
-
-class ANSITextWrapper(TextWrapper):
+class EvTextWrapper(TextWrapper):
     """
     This is a wrapper work class for handling strings with ANSI tags
     in it.  It overloads the standard library `TextWrapper` class and
@@ -155,48 +11,18 @@ class ANSITextWrapper(TextWrapper):
 
         Munge whitespace in text: expand tabs and convert all other
         whitespace characters to spaces.  Eg. " foo\tbar\n\nbaz"
-        becomes " foo    bar  baz".
+        becomes " foo	bar  baz".
         """
         return text
 
     # TODO: Ignore expand_tabs/replace_whitespace until ANSIString handles them.
     # - don't remove this code. /Griatch
-    #        if self.expand_tabs:
-    #            text = text.expandtabs()
-    #        if self.replace_whitespace:
-    #            if isinstance(text, str):
-    #                text = text.translate(self.whitespace_trans)
-    #        return text
-
-    def _split(self, text):
-        """_split(text : string) -> [string]
-
-        Split the text to wrap into indivisible chunks.  Chunks are
-        not quite the same as words; see _wrap_chunks() for full
-        details.  As an example, the text
-          Look, goof-ball -- use the -b option!
-        breaks into the following chunks:
-          'Look,', ' ', 'goof-', 'ball', ' ', '--', ' ',
-          'use', ' ', 'the', ' ', '-b', ' ', 'option!'
-        if break_on_hyphens is True, or in:
-          'Look,', ' ', 'goof-ball', ' ', '--', ' ',
-          'use', ' ', 'the', ' ', '-b', ' ', option!'
-        otherwise.
-        """
-        # NOTE-PYTHON3: The following code only roughly approximates what this
-        #               function used to do. Regex splitting on ANSIStrings is
-        #               dropping ANSI codes, so we're using ANSIString.split
-        #               for the time being.
-        #
-        #               A less hackier solution would be appreciated.
-        chunks = _to_ansi(text).split()
-
-        chunks = [chunk + " " for chunk in chunks if chunk]  # remove empty chunks
-
-        if len(chunks) > 1:
-            chunks[-1] = chunks[-1][0:-1]
-
-        return chunks
+    # 		if self.expand_tabs:
+    # 			text = text.expandtabs()
+    # 		if self.replace_whitespace:
+    # 			if isinstance(text, str):
+    # 				text = text.translate(self.whitespace_trans)
+    # 		return text
 
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]
@@ -220,7 +46,6 @@ class ANSITextWrapper(TextWrapper):
         chunks.reverse()
 
         while chunks:
-
             # Start the list of chunks that will make up the current line.
             # cur_len is just the length of all the chunks in cur_line.
             cur_line = []
@@ -242,11 +67,10 @@ class ANSITextWrapper(TextWrapper):
 
             while chunks:
                 ln = d_len(chunks[-1])
-
+                cur_len = d_len("".join(cur_line))
                 # Can at least squeeze this chunk onto the current line.
                 if cur_len + ln <= width:
                     cur_line.append(chunks.pop())
-                    cur_len += ln
 
                 # Nope, this line is full.
                 else:
@@ -258,17 +82,57 @@ class ANSITextWrapper(TextWrapper):
                 self._handle_long_word(chunks, cur_line, cur_len, width)
 
             # If the last chunk on this line is all whitespace, drop it.
-            if self.drop_whitespace and cur_line and cur_line[-1].strip() == "":
+            if self.drop_whitespace and cur_line and d_len(cur_line[-1].strip()) == 0:
                 del cur_line[-1]
 
             # Convert current line back to a string and store it in list
             # of all lines (return value).
             if cur_line:
-                ln = ""
-                for w in cur_line:  # ANSI fix
-                    ln += w  #
+                ln = "".join(cur_line)
+                # for w in cur_line:  # ANSI fix
+                # ln += w  #
                 lines.append(indent + ln)
         return lines
+
+    def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
+        """_handle_long_word(chunks : [string],
+                             cur_line : [string],
+                             cur_len : int, width : int)
+        Handle a chunk of text (most likely a word, not whitespace) that
+        is too long to fit in any line.
+        """
+        # Figure out when indent is larger than the specified width, and make
+        # sure at least one character is stripped off on every pass
+        if width < 1:
+            space_left = 1
+        else:
+            space_left = width - cur_len
+
+        # If we're allowed to break long words, then do so: put as much
+        # of the next chunk onto the current line as will fit.
+        if self.break_long_words:
+            end = space_left
+            chunk = reversed_chunks[-1]
+            if self.break_on_hyphens and d_len(chunk) > space_left:
+                # break after last hyphen, but only if there are
+                # non-hyphens before it
+                hyphen = chunk.rfind("-", 0, space_left)
+                if hyphen > 0 and any(c != "-" for c in chunk[:hyphen]):
+                    end = hyphen + 1
+            cur_line.append(chunk[:end])
+            reversed_chunks[-1] = chunk[end:]
+
+        # Otherwise, we have to preserve the long word intact.  Only add
+        # it to the current line if there's nothing already there --
+        # that minimizes how much we violate the width constraint.
+        elif not cur_line:
+            cur_line.append(reversed_chunks.pop())
+
+        # If we're not allowed to break long words, and there's already
+        # text on the current line, do nothing.  Next time through the
+        # main loop of _wrap_chunks(), we'll wind up here again, but
+        # cur_len will be zero, so the next line will be entirely
+        # devoted to the long word that we can't handle right now.
 
 
 # -- Convenience interface ---------------------------------------------
@@ -284,15 +148,15 @@ def wrap(text, width=_DEFAULT_WIDTH, **kwargs):
     all other whitespace characters (including newline) are converted to
 
     Args:
-        text (str): Text to wrap.
-        width (int, optional): Width to wrap `text` to.
+            text (str): Text to wrap.
+            width (int, optional): Width to wrap `text` to.
 
     Keyword Args:
-        See TextWrapper class for available keyword args to customize
-        wrapping behaviour.
+            See TextWrapper class for available keyword args to customize
+            wrapping behaviour.
 
     """
-    w = ANSITextWrapper(width=width, **kwargs)
+    w = EvTextWrapper(width=width, **kwargs)
     return w.wrap(text)
 
 
@@ -305,16 +169,16 @@ def fill(text, width=_DEFAULT_WIDTH, **kwargs):
     whitespace characters converted to space.
 
     Args:
-        text (str): Text to fill.
-        width (int, optional): Width of fill area.
+            text (str): Text to fill.
+            width (int, optional): Width of fill area.
 
     Keyword Args:
-        See TextWrapper class for available keyword args to customize
-        filling behaviour.
+            See TextWrapper class for available keyword args to customize
+            filling behaviour.
 
     """
-    w = ANSITextWrapper(width=width, **kwargs)
-    return w.fill(text)
+    w = EvTextWrapper(width=width, **kwargs)
+    return "\n".join(w.wrap(text))
 
 
 # EvCell class (see further down for the EvTable itself)
@@ -331,64 +195,65 @@ class EvCell:
     def __init__(self, data, **kwargs):
         """
         Args:
-            data (str): The un-padded data of the entry.
+                data (str): The un-padded data of the entry.
 
         Keyword Args:
-            width (int): Desired width of cell. It will pad
-                to this size.
-            height (int): Desired height of cell. it will pad
-                to this size.
-            pad_width (int): General padding width. This can be overruled
-                by individual settings below.
-            pad_left (int): Number of extra pad characters on the left.
-            pad_right (int): Number of extra pad characters on the right.
-            pad_top (int):  Number of extra pad lines top (will pad with `vpad_char`).
-            pad_bottom (int): Number of extra pad lines bottom (will pad with `vpad_char`).
-            pad_char (str)- pad character to use for padding. This is overruled
-                by individual settings below (default `" "`).
-            hpad_char (str): Pad character to use both for extra horizontal
-                padding (default `" "`).
-            vpad_char (str): Pad character to use for extra vertical padding
-                and for vertical fill (default `" "`).
-            fill_char (str): Character used to filling (expanding cells to
-                desired size). This can be overruled by individual settings below.
-            hfill_char (str): Character used for horizontal fill (default `" "`).
-            vfill_char (str): Character used for vertical fill (default `" "`).
-            align (str): Should be one of "l", "r", "c", "f" or "a" for left-, right-, center-,
-                full-justified (with space between words) or absolute (keep as much original
-                whitespace as possible). Default is left-aligned.
-            valign (str): Should be one of "t", "b" or "c" for top-, bottom and center
-                vertical alignment respectively. Default is centered.
-            border_width (int): General border width. This is overruled
-                by individual settings below.
-            border_left (int): Left border width.
-            border_right (int): Right border width.
-            border_top (int): Top border width.
-            border_bottom (int): Bottom border width.
-            border_char (str): This will use a single border char for all borders.
-                  overruled by individual settings below.
-            border_left_char (str): Char used for left border.
-            border_right_char (str): Char used for right border.
-            border_top_char (str): Char used for top border.
-            border_bottom_char (str): Char user for bottom border.
-            corner_char (str): Character used when two borders cross.  (default is "").
-                This is overruled by individual settings below.
-            corner_top_left_char (str): Char used for "nw" corner.
-            corner_top_right_char (str):  Char used for "ne" corner.
-            corner_bottom_left_char (str): Char used for "sw" corner.
-            corner_bottom_right_char (str): Char used for "se" corner.
-            crop_string (str): String to use when cropping sideways, default is `'[...]'`.
-            crop (bool): Crop contentof cell rather than expand vertically, default=`False`.
-            enforce_size (bool): If true, the width/height of the cell is
-                strictly enforced and extra text will be cropped rather than the
-                cell growing vertically.
+                width (int): Desired width of cell. It will pad
+                        to this size.
+                height (int): Desired height of cell. it will pad
+                        to this size.
+                pad_width (int): General padding width. This can be overruled
+                        by individual settings below.
+                pad_left (int): Number of extra pad characters on the left.
+                pad_right (int): Number of extra pad characters on the right.
+                pad_top (int):  Number of extra pad lines top (will pad with `vpad_char`).
+                pad_bottom (int): Number of extra pad lines bottom (will pad with `vpad_char`).
+                pad_char (str)- pad character to use for padding. This is overruled
+                        by individual settings below (default `" "`).
+                hpad_char (str): Pad character to use both for extra horizontal
+                        padding (default `" "`).
+                vpad_char (str): Pad character to use for extra vertical padding
+                        and for vertical fill (default `" "`).
+                fill_char (str): Character used to filling (expanding cells to
+                        desired size). This can be overruled by individual settings below.
+                hfill_char (str): Character used for horizontal fill (default `" "`).
+                vfill_char (str): Character used for vertical fill (default `" "`).
+                align (str): Should be one of "l", "r", "c", "f" or "a" for left-, right-, center-,
+                        full-justified (with space between words) or absolute (keep as much original
+                        whitespace as possible). Default is left-aligned.
+                valign (str): Should be one of "t", "b" or "c" for top-, bottom and center
+                        vertical alignment respectively. Default is centered.
+                border_width (int): General border width. This is overruled
+                        by individual settings below.
+                border_left (int): Left border width.
+                border_right (int): Right border width.
+                border_top (int): Top border width.
+                border_bottom (int): Bottom border width.
+                border_char (str): This will use a single border char for all borders.
+                          overruled by individual settings below.
+                border_left_char (str): Char used for left border.
+                border_right_char (str): Char used for right border.
+                border_top_char (str): Char used for top border.
+                border_bottom_char (str): Char user for bottom border.
+                corner_char (str): Character used when two borders cross.  (default is "").
+                        This is overruled by individual settings below.
+                corner_top_left_char (str): Char used for "nw" corner.
+                corner_top_right_char (str):  Char used for "ne" corner.
+                corner_bottom_left_char (str): Char used for "sw" corner.
+                corner_bottom_right_char (str): Char used for "se" corner.
+                crop_string (str): String to use when cropping sideways, default is `'[...]'`.
+                crop (bool): Crop contentof cell rather than expand vertically, default=`False`.
+                enforce_size (bool): If true, the width/height of the cell is
+                        strictly enforced and extra text will be cropped rather than the
+                        cell growing vertically.
 
         Raises:
-            Exception: for impossible cell size requirements where the
-                border width or height cannot fit, or the content is too
-                small.
+                Exception: for impossible cell size requirements where the
+                        border width or height cannot fit, or the content is too
+                        small.
 
         """
+        data = str(data)  # enforce str type
         self.formatted = None
         padwidth = kwargs.get("pad_width", None)
         padwidth = int(padwidth) if padwidth is not None else None
@@ -424,7 +289,7 @@ class EvCell:
         self.border_bottom = kwargs.get("border_bottom", borderwidth)
 
         borderchar = kwargs.get("border_char", None)
-        self.border_left_char = kwargs.get("border_left_char", borderchar if borderchar else "|")
+        self.border_left_char = kwargs.get("border_left_char", borderchar if borderchar else "||")
         self.border_right_char = kwargs.get(
             "border_right_char", borderchar if borderchar else self.border_left_char
         )
@@ -443,7 +308,7 @@ class EvCell:
         self.align = kwargs.get("align", "l")
         self.valign = kwargs.get("valign", "c")
 
-        self.data = self._split_lines(_to_ansi(data))
+        self.data = self._split_lines(data)
         self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
 
@@ -484,10 +349,10 @@ class EvCell:
         Simply split by linebreaks
 
         Args:
-            text (str): text to split.
+                text (str): text to split.
 
         Returns:
-            split (list): split text.
+                split (list): split text.
         """
         return text.split("\n")
 
@@ -496,13 +361,13 @@ class EvCell:
         Split too-long lines to fit the desired width of the Cell.
 
         Args:
-            data (str): Text to adjust to the cell's width.
+                data (str): Text to adjust to the cell's width.
 
         Returns:
-            adjusted data (str): The adjusted text.
+                adjusted data (str): The adjusted text.
 
         Notes:
-            This also updates `raw_width`.
+                This also updates `raw_width`.
 
 
         """
@@ -514,7 +379,7 @@ class EvCell:
                 # fix for ANSIString not supporting expand_tabs/translate
                 adjusted_data.extend(
                     [
-                        ANSIString(part + ANSIString("|n"))
+                        part + "|n" if part else ""
                         for part in wrap(line, width=width, drop_whitespace=False)
                     ]
                 )
@@ -527,8 +392,8 @@ class EvCell:
                 # too many lines. Crop and mark last line with crop_string
                 crop_string = self.crop_string
                 adjusted_data = adjusted_data[:-excess]
-                adjusted_data_length = len(adjusted_data[-1])
-                crop_string_length = len(crop_string)
+                adjusted_data_length = d_len(adjusted_data[-1])
+                crop_string_length = d_len(crop_string)
                 if adjusted_data_length >= crop_string_length:
                     # replace with data[...]
                     # (note that if adjusted data is shorter than the crop-string,
@@ -548,10 +413,10 @@ class EvCell:
         the caller may be trying some manual formatting in the text.
 
         Args:
-            data (str): Text to align.
+                data (str): Text to align.
 
         Returns:
-            text (str): Aligned result.
+                text (str): Aligned result.
 
         """
         align = self.align
@@ -564,10 +429,10 @@ class EvCell:
         Align cell vertically
 
         Args:
-            data (str): Text to align.
+                data (str): Text to align.
 
         Returns:
-            text (str): Vertically aligned text.
+                text (str): Vertically aligned text.
 
         """
         valign = self.valign
@@ -601,10 +466,10 @@ class EvCell:
         Pad data with extra characters on all sides.
 
         Args:
-            data (str): Text to pad.
+                data (str): Text to pad.
 
         Returns:
-            text (str): Padded text.
+                text (str): Padded text.
 
         """
         left = self.hpad_char * self.pad_left
@@ -619,15 +484,15 @@ class EvCell:
         Add borders to the cell.
 
         Args:
-            data (str): Text to surround with borders.
+                data (str): Text to surround with borders.
 
         Return:
-            text (str): Text with borders.
+                text (str): Text with borders.
 
         """
 
-        left = self.border_left_char * self.border_left + ANSIString("|n")
-        right = ANSIString("|n") + self.border_right_char * self.border_right
+        left = self.border_left_char * self.border_left
+        right = self.border_right_char * self.border_right
 
         cwidth = (
             self.width
@@ -637,14 +502,14 @@ class EvCell:
             + max(0, self.border_right - 1)
         )
 
-        vfill = self.corner_top_left_char if left else ""
+        vfill = (self.corner_top_left_char + "|n") if left else ""
         vfill += cwidth * self.border_top_char
-        vfill += self.corner_top_right_char if right else ""
+        vfill += ("|n" + self.corner_top_right_char) if right else ""
         top = [vfill for _ in range(self.border_top)]
 
-        vfill = self.corner_bottom_left_char if left else ""
+        vfill = (self.corner_bottom_left_char + "|n") if left else ""
         vfill += cwidth * self.border_bottom_char
-        vfill += self.corner_bottom_right_char if right else ""
+        vfill += ("|n" + self.corner_bottom_right_char) if right else ""
         bottom = [vfill for _ in range(self.border_bottom)]
 
         return top + [left + line + right for line in data] + bottom
@@ -655,7 +520,7 @@ class EvCell:
         one line for data.
 
         Returns:
-            min_height (int): The mininum height of cell.
+                min_height (int): The mininum height of cell.
 
         """
         return self.pad_top + self.pad_bottom + self.border_bottom + self.border_top + 1
@@ -666,7 +531,7 @@ class EvCell:
         character-width for data.
 
         Returns:
-            min_width (int): The minimum width of cell.
+                min_width (int): The minimum width of cell.
 
         """
         return self.pad_left + self.pad_right + self.border_left + self.border_right + 1
@@ -676,7 +541,7 @@ class EvCell:
         Get natural height of cell, including padding.
 
         Returns:
-            natural_height (int): Height of cell.
+                natural_height (int): Height of cell.
 
         """
         return len(self.formatted)  # if self.formatted else 0
@@ -686,7 +551,7 @@ class EvCell:
         Get natural width of cell, including padding.
 
         Returns:
-            natural_width (int): Width of cell.
+                natural_width (int): Width of cell.
 
         """
         return d_len(self.formatted[0])  # if self.formatted else 0
@@ -696,14 +561,14 @@ class EvCell:
         Replace cell data. This causes a full reformat of the cell.
 
         Args:
-            data (str): Cell data.
+                data (str): Cell data.
 
         Notes:
-            The available keyword arguments are the same as for
-            `EvCell.__init__`.
+                The available keyword arguments are the same as for
+                `EvCell.__init__`.
 
         """
-        self.data = self._split_lines(_to_ansi(data))
+        self.data = self._split_lines(data)
         self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
         self.reformat(**kwargs)
@@ -713,11 +578,11 @@ class EvCell:
         Reformat the EvCell with new options
 
         Keyword Args:
-            The available keyword arguments are the same as for `EvCell.__init__`.
+                The available keyword arguments are the same as for `EvCell.__init__`.
 
         Raises:
-            Exception: If the cells cannot shrink enough to accomodate
-                the options or the data given.
+                Exception: If the cells cannot shrink enough to accomodate
+                        the options or the data given.
 
         """
         # keywords that require manipulation
@@ -846,13 +711,13 @@ class EvCell:
     def __repr__(self):
         if not self.formatted:
             self.formatted = self._reformat()
-        return str(ANSIString("<EvCel %s>" % self.formatted))
+        return f"<EvCel {self.formatted}>"
 
     def __str__(self):
         "returns cell contents on string form"
         if not self.formatted:
             self.formatted = self._reformat()
-        return str(ANSIString("\n").join(self.formatted))
+        return "\n".join(self.formatted)
 
 
 # EvColumn class
@@ -872,12 +737,12 @@ class EvColumn:
     def __init__(self, *args, **kwargs):
         """
         Args:
-            Text for each row in the column
+                Text for each row in the column
 
         Keyword Args:
-            All `EvCell.__init_` keywords are available, these
-            settings will be persistently applied to every Cell in the
-            column.
+                All `EvCell.__init_` keywords are available, these
+                settings will be persistently applied to every Cell in the
+                column.
 
         """
         self.options = kwargs  # column-specific options
@@ -890,8 +755,8 @@ class EvColumn:
         options to cells.
 
         Keyword Args:
-            Extra keywords to modify the column setting. Same keywords
-            as in `EvCell.__init__`.
+                Extra keywords to modify the column setting. Same keywords
+                as in `EvCell.__init__`.
 
         """
         col = self.column
@@ -915,14 +780,14 @@ class EvColumn:
         options).
 
         Args:
-            Texts for the new cells
-            ypos (int, optional): Index position in table before which to insert the
-                new column. Uses Python indexing, so to insert at the top,
-                use `ypos=0`. If not given, data will be inserted at the end
-                of the column.
+                Texts for the new cells
+                ypos (int, optional): Index position in table before which to insert the
+                        new column. Uses Python indexing, so to insert at the top,
+                        use `ypos=0`. If not given, data will be inserted at the end
+                        of the column.
 
         Keyword Args:
-            Available keywods as per `EvCell.__init__`.
+                Available keywods as per `EvCell.__init__`.
 
         """
         # column-level options override those in kwargs
@@ -944,7 +809,7 @@ class EvColumn:
         Change the options for the column.
 
         Keyword Args:
-            Keywords as per `EvCell.__init__`.
+                Keywords as per `EvCell.__init__`.
 
         """
         self._balance(**kwargs)
@@ -955,11 +820,11 @@ class EvColumn:
         necessary.
 
         Args:
-            index (int): Index location of the cell in the column,
-                starting from 0 for the first row to Nrows-1.
+                index (int): Index location of the cell in the column,
+                        starting from 0 for the first row to Nrows-1.
 
         Keyword Args:
-            Keywords as per `EvCell.__init__`.
+                Keywords as per `EvCell.__init__`.
 
         """
         # column-level options take precedence here
@@ -997,66 +862,66 @@ class EvTable:
     def __init__(self, *args, **kwargs):
         """
         Args:
-            Header texts for the table.
+                Header texts for the table.
 
         Keyword Args:
-            table (list of lists or list of `EvColumns`, optional):
-                This is used to build the table in a quick way.  If not
-                given, the table will start out empty and `add_` methods
-                need to be used to add rows/columns.
-            header (bool, optional): `True`/`False` - turn off the
-                header texts (`*args`) being treated as a header (such as
-                not adding extra underlining)
-            pad_width (int, optional): How much empty space to pad your cells with
-                (default is 1)
-            border (str, optional)): The border style to use. This is one of
-                    - `None` - No border drawing at all.
-                    - "table" - only a border around the whole table.
-                    - "tablecols" - table and column borders. (default)
-                    - "header" - only border under header.
-                    - "cols" - only vertical borders.
-                    - "incols" - vertical borders, no outer edges.
-                    - "rows" - only borders between rows.
-                    - "cells" - border around all cells.
-            border_width (int, optional): Width of table borders, if border is active.
-                Note that widths wider than 1 may give artifacts in the corners. Default is 1.
-            corner_char (str, optional): Character to use in corners when border is active.
-                Default is `+`.
-            corner_top_left_char (str, optional): Character used for "nw" corner of table.
-                Defaults to `corner_char`.
-            corner_top_right_char (str, optional): Character used for "ne" corner of table.
-                Defaults to `corner_char`.
-            corner_bottom_left_char (str, optional): Character used for "sw" corner of table.
-                Defaults to `corner_char`.
-            corner_bottom_right_char (str, optional): Character used for "se" corner of table.
-                Defaults to `corner_char`.
-            pretty_corners (bool, optional): Use custom characters to
-                make the table corners look "rounded". Uses UTF-8
-                characters. Defaults to `False` for maximum compatibility with various displays
-                that may occationally have issues with UTF-8 characters.
-            header_line_char (str, optional): Character to use for underlining
-                the header row (default is '~'). Requires `border` to not be `None`.
-            width (int, optional): Fixed width of table. If not set,
-                width is set by the total width of each column.  This will
-                resize individual columns in the vertical direction to fit.
-            height (int, optional): Fixed height of table. Defaults to being unset. Width is
-                still given precedence. If given, table cells will crop text rather
-                than expand vertically.
-            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as
-                even width as possible. This often looks best also for mixed-length tables. Default
-                is `False`.
-            maxwidth (int, optional):  This will set a maximum width
-                of the table while allowing it to be smaller. Only if it grows wider than this
-                size will it be resized by expanding horizontally (or crop `height` is given).
-                This keyword has no meaning if `width` is set.
+                table (list of lists or list of `EvColumns`, optional):
+                        This is used to build the table in a quick way.  If not
+                        given, the table will start out empty and `add_` methods
+                        need to be used to add rows/columns.
+                header (bool, optional): `True`/`False` - turn off the
+                        header texts (`*args`) being treated as a header (such as
+                        not adding extra underlining)
+                pad_width (int, optional): How much empty space to pad your cells with
+                        (default is 1)
+                border (str, optional)): The border style to use. This is one of
+                                - `None` - No border drawing at all.
+                                - "table" - only a border around the whole table.
+                                - "tablecols" - table and column borders. (default)
+                                - "header" - only border under header.
+                                - "cols" - only vertical borders.
+                                - "incols" - vertical borders, no outer edges.
+                                - "rows" - only borders between rows.
+                                - "cells" - border around all cells.
+                border_width (int, optional): Width of table borders, if border is active.
+                        Note that widths wider than 1 may give artifacts in the corners. Default is 1.
+                corner_char (str, optional): Character to use in corners when border is active.
+                        Default is `+`.
+                corner_top_left_char (str, optional): Character used for "nw" corner of table.
+                        Defaults to `corner_char`.
+                corner_top_right_char (str, optional): Character used for "ne" corner of table.
+                        Defaults to `corner_char`.
+                corner_bottom_left_char (str, optional): Character used for "sw" corner of table.
+                        Defaults to `corner_char`.
+                corner_bottom_right_char (str, optional): Character used for "se" corner of table.
+                        Defaults to `corner_char`.
+                pretty_corners (bool, optional): Use custom characters to
+                        make the table corners look "rounded". Uses UTF-8
+                        characters. Defaults to `False` for maximum compatibility with various displays
+                        that may occationally have issues with UTF-8 characters.
+                header_line_char (str, optional): Character to use for underlining
+                        the header row (default is '~'). Requires `border` to not be `None`.
+                width (int, optional): Fixed width of table. If not set,
+                        width is set by the total width of each column.  This will
+                        resize individual columns in the vertical direction to fit.
+                height (int, optional): Fixed height of table. Defaults to being unset. Width is
+                        still given precedence. If given, table cells will crop text rather
+                        than expand vertically.
+                evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as
+                        even width as possible. This often looks best also for mixed-length tables. Default
+                        is `False`.
+                maxwidth (int, optional):  This will set a maximum width
+                        of the table while allowing it to be smaller. Only if it grows wider than this
+                        size will it be resized by expanding horizontally (or crop `height` is given).
+                        This keyword has no meaning if `width` is set.
 
         Raises:
-            Exception: If given erroneous input or width settings for the data.
+                Exception: If given erroneous input or width settings for the data.
 
         Notes:
-            Beyond those table-specific keywords, the non-overlapping keywords
-            of `EvCell.__init__` are also available. These will be passed down
-            to every cell in the table.
+                Beyond those table-specific keywords, the non-overlapping keywords
+                of `EvCell.__init__` are also available. These will be passed down
+                to every cell in the table.
 
         """
         # at this point table is a 2D grid - a list of columns
@@ -1064,7 +929,7 @@ class EvTable:
         table = kwargs.pop("table", [])
 
         # header is a list of texts. We merge it to the table's top
-        header = [_to_ansi(head) for head in args]
+        header = [head for head in args]
         self.header = header != []
         if self.header:
             if table:
@@ -1074,7 +939,7 @@ class EvTable:
                     table.extend([] for _ in range(excess))
                 elif excess < 0:
                     # too short header
-                    header.extend(_to_ansi(["" for _ in range(abs(excess))]))
+                    header.extend(["" for _ in range(abs(excess))])
                 for ix, heading in enumerate(header):
                     table[ix].insert(0, heading)
             else:
@@ -1106,17 +971,17 @@ class EvTable:
         self.border_width = kwargs.get("border_width", 1)
         self.corner_char = kwargs.get("corner_char", "+")
         pcorners = kwargs.pop("pretty_corners", False)
-        self.corner_top_left_char = _to_ansi(
-            kwargs.pop("corner_top_left_char", "." if pcorners else self.corner_char)
+        self.corner_top_left_char = kwargs.pop(
+            "corner_top_left_char", "." if pcorners else self.corner_char
         )
-        self.corner_top_right_char = _to_ansi(
-            kwargs.pop("corner_top_right_char", "." if pcorners else self.corner_char)
+        self.corner_top_right_char = kwargs.pop(
+            "corner_top_right_char", "." if pcorners else self.corner_char
         )
-        self.corner_bottom_left_char = _to_ansi(
-            kwargs.pop("corner_bottom_left_char", " " if pcorners else self.corner_char)
+        self.corner_bottom_left_char = kwargs.pop(
+            "corner_bottom_left_char", " " if pcorners else self.corner_char
         )
-        self.corner_bottom_right_char = _to_ansi(
-            kwargs.pop("corner_bottom_right_char", " " if pcorners else self.corner_char)
+        self.corner_bottom_right_char = kwargs.pop(
+            "corner_bottom_right_char", " " if pcorners else self.corner_char
         )
 
         self.width = kwargs.pop("width", None)
@@ -1161,20 +1026,20 @@ class EvTable:
         instruct cells to build a border in the right positions.
 
         Args:
-            ix (int): x index positions in table.
-            iy (int): y index positions in table.
-            nx (int): x size of table.
-            ny (int): y size of table.
+                ix (int): x index positions in table.
+                iy (int): y index positions in table.
+                nx (int): x size of table.
+                ny (int): y size of table.
 
         Keyword Args:
-            Keywords as per `EvTable.__init__`.
+                Keywords as per `EvTable.__init__`.
 
         Returns:
-            table (str): string with the correct borders.
+                table (str): string with the correct borders.
 
         Notes:
-            A copy of the kwarg is returned to the cell. This is method
-            is called by self._borders.
+                A copy of the kwarg is returned to the cell. This is method
+                is called by self._borders.
 
         """
 
@@ -1285,8 +1150,8 @@ class EvTable:
         # actual table. This allows us to add columns/rows
         # and re-balance over and over without issue.
         self.worktable = deepcopy(self.table)
-        #        self._borders()
-        #        return
+        # 		self._borders()
+        # 		return
         options = copy(self.options)
 
         # balance number of rows to make a rectangular table
@@ -1401,7 +1266,6 @@ class EvTable:
         if self.height:
             # if we are fixing the table height, it means cells must crop text instead of resizing.
             if nrowmax:
-
                 # get minimum possible cell heights for each column
                 cheights_min = [
                     max(cell.get_min_height() for cell in (col[iy] for col in self.worktable))
@@ -1467,7 +1331,7 @@ class EvTable:
             cell_data = [cell.get() for cell in cell_row]
             cell_height = min(len(lines) for lines in cell_data)
             for iline in range(cell_height):
-                yield ANSIString("").join(_to_ansi(celldata[iline] for celldata in cell_data))
+                yield "".join((celldata[iline] for celldata in cell_data))
 
     def add_header(self, *args, **kwargs):
         """
@@ -1475,11 +1339,11 @@ class EvTable:
         the top of the table. They will replace an existing header.
 
         Args:
-            args (str): These strings will be used as the header texts.
+                args (str): These strings will be used as the header texts.
 
         Keyword Args:
-            Same keywords as per `EvTable.__init__`. Will be applied
-            to the new header's cells.
+                Same keywords as per `EvTable.__init__`. Will be applied
+                to the new header's cells.
 
         """
         self.header = True
@@ -1494,15 +1358,15 @@ class EvTable:
         to the end.
 
         Args:
-            args (`EvColumn` or multiple strings): Either a single EvColumn instance or
-                a number of data string arguments to be used to create a new column.
-            header (str, optional): The header text for the column
-            xpos (int, optional): Index position in table *before* which
-               to input new column. If not given, column will be added to the end
-               of the table. Uses Python indexing (so first column is `xpos=0`)
+                args (`EvColumn` or multiple strings): Either a single EvColumn instance or
+                        a number of data string arguments to be used to create a new column.
+                header (str, optional): The header text for the column
+                xpos (int, optional): Index position in table *before* which
+                   to input new column. If not given, column will be added to the end
+                   of the table. Uses Python indexing (so first column is `xpos=0`)
 
         Keyword Args:
-            Other keywords as per `Cell.__init__`.
+                Other keywords as per `Cell.__init__`.
 
         """
         # this will replace default options with new ones without changing default
@@ -1542,6 +1406,7 @@ class EvTable:
             # we need to add new rows to new column
             empty_rows = ["" for _ in range(abs(excess))]
             column.add_rows(*empty_rows, **options)
+            self.nrows -= excess
 
         if xpos is None or xpos > wtable - 1:
             # add to the end
@@ -1562,14 +1427,14 @@ class EvTable:
         padded.
 
         Args:
-            args (str): Any number of string argumnets to use as the
-                data in the row (one cell per argument).
-            ypos (int, optional): Index position in table before which to
-                 input new row. If not given, will be added to the end of the table.
-                 Uses Python indexing (so first row is `ypos=0`)
+                args (str): Any number of string argumnets to use as the
+                        data in the row (one cell per argument).
+                ypos (int, optional): Index position in table before which to
+                         input new row. If not given, will be added to the end of the table.
+                         Uses Python indexing (so first row is `ypos=0`)
 
         Keyword Args:
-            Other keywords are as per `EvCell.__init__`.
+                Other keywords are as per `EvCell.__init__`.
 
         """
         # this will replace default options with new ones without changing default
@@ -1607,7 +1472,7 @@ class EvTable:
         Force a re-shape of the entire table.
 
         Keyword Args:
-            Table options as per `EvTable.__init__`.
+                Table options as per `EvTable.__init__`.
 
         """
         self.width = kwargs.pop("width", self.width)
@@ -1623,14 +1488,10 @@ class EvTable:
         self.corner_char = kwargs.get("corner_char", self.corner_char)
         self.header_line_char = kwargs.get("header_line_char", self.header_line_char)
 
-        self.corner_top_left_char = _to_ansi(kwargs.pop("corner_top_left_char", self.corner_char))
-        self.corner_top_right_char = _to_ansi(kwargs.pop("corner_top_right_char", self.corner_char))
-        self.corner_bottom_left_char = _to_ansi(
-            kwargs.pop("corner_bottom_left_char", self.corner_char)
-        )
-        self.corner_bottom_right_char = _to_ansi(
-            kwargs.pop("corner_bottom_right_char", self.corner_char)
-        )
+        self.corner_top_left_char = kwargs.pop("corner_top_left_char", self.corner_char)
+        self.corner_top_right_char = kwargs.pop("corner_top_right_char", self.corner_char)
+        self.corner_bottom_left_char = kwargs.pop("corner_bottom_left_char", self.corner_char)
+        self.corner_bottom_right_char = kwargs.pop("corner_bottom_right_char", self.corner_char)
 
         self.options.update(kwargs)
 
@@ -1639,14 +1500,14 @@ class EvTable:
         Sends custom options to a specific column in the table.
 
         Args:
-            index (int): Which column to reformat. The column index is
-                given from 0 to Ncolumns-1.
+                index (int): Which column to reformat. The column index is
+                        given from 0 to Ncolumns-1.
 
         Keyword Args:
-            Column options as per `EvCell.__init__`.
+                Column options as per `EvCell.__init__`.
 
         Raises:
-            Exception: if an invalid index is found.
+                Exception: if an invalid index is found.
 
         """
         if index > len(self.table):
@@ -1661,7 +1522,7 @@ class EvTable:
         Return lines of table as a list.
 
         Returns:
-            table_lines (list): The lines of the table, in order.
+                table_lines (list): The lines of the table, in order.
 
         """
         return [line for line in self._generate_lines()]
@@ -1669,4 +1530,4 @@ class EvTable:
     def __str__(self):
         """print table (this also balances it)"""
         # h = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
-        return str(str(ANSIString("\n").join([line for line in self._generate_lines()])))
+        return "\n".join([line for line in self._generate_lines()])
