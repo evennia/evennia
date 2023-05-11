@@ -2,7 +2,11 @@
 #
 # Sets up a combat area for testing turnbased combat.
 #
-# Run from in-game as `batchcode evadventure.batchscripts.combat_demo`
+# First add mygame/server/conf/settings.py:
+#
+#    BASE_BATCH_PROCESS_PATHS += ["evadventure.batchscripts"]
+#
+# Run from in-game as `batchcode combat_demo`
 #
 
 # HEADER
@@ -17,7 +21,7 @@ from evennia.contrib.tutorials.evadventure.rooms import EvAdventureRoom
 
 # Make the player an EvAdventureCharacter
 player = caller  # caller is injected by the batchcode runner, it's the one running this script
-player.swap_typeclass(EvAdventureCharacter, clean_attributes=True)
+player.swap_typeclass(EvAdventureCharacter)
 
 # add the Turnbased cmdset
 player.cmdset.add(TurnCombatCmdSet, persistent=True)

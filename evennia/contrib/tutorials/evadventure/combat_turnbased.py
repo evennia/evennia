@@ -387,16 +387,30 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 # -----------------------------------------------------------------------------------
 
 
-def _get_combathandler(caller):
-    turn_length = 30
-    flee_timeout = 3
+def _get_combathandler(caller, turn_timeout=30, flee_time=3, combathandler_key="combathandler"):
+    """
+    Get the combat handler for the caller's location. If it doesn't exist, create it.
+
+    Args:
+        caller (EvAdventureCharacter or EvAdventureNPC): The character/NPC to get the
+            combat handler for.
+        turn_timeout (int): After this time, the turn will roll around.
+        flee_time (int): How many turns it takes to flee.
+
+    """
     return EvAdventureTurnbasedCombatHandler.get_or_create_combathandler(
         caller.location,
-        attributes=[("turn_length", turn_length), ("flee_timeout", flee_timeout)],
+        interval=turn_timeout,
+        attributes=[("flee_time", flee_time)],
+        combathandler_key=combathandler_key,
     )
 
 
 def _queue_action(caller, raw_string, **kwargs):
+    """
+    Goto-function that queue the action with the CombatHandler. This always returns
+    to the top-level combat menu "node_combat"
+    """
     action_dict = kwargs["action_dict"]
     _get_combathandler(caller).queue_action(caller, action_dict)
     return "node_combat"
@@ -707,6 +721,9 @@ class CmdTurnAttack(Command):
     key = "attack"
     aliases = ["hit", "turnbased combat"]
 
+    turn_timeout = 30  # seconds
+    flee_time = 3  # rounds
+
     def parse(self):
         super().parse()
         self.args = self.args.strip()
@@ -731,14 +748,13 @@ class CmdTurnAttack(Command):
             self.msg("PvP combat is not allowed here!")
             return
 
-        combathandler = EvAdventureTurnbasedCombatHandler.get_or_create_combathandler(
-            self.caller.location
-        )
+        combathandler = _get_combathandler(self.caller, self.turn_timeout, self.flee_time)
 
         # add combatants to combathandler. this can be done safely over and over
         combathandler.add_combatant(self.caller)
         combathandler.queue_action(self.caller, {"key": "attack", "target": target})
         combathandler.add_combatant(target)
+        target.msg("|rYou are attacked by {self.caller.get_display_name(self.caller)}!|n")
         combathandler.start_combat()
 
         # build and start the menu
@@ -753,7 +769,7 @@ class CmdTurnAttack(Command):
                 "node_combat": node_combat,
             },
             startnode="node_combat",
-            combathandler=self.combathandler,
+            combathandler=combathandler,
             # cmdset_mergetype="Union",
             persistent=True,
         )

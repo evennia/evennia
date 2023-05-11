@@ -1428,6 +1428,7 @@ class CmdOpen(ObjManipCommand):
     help_category = "Building"
 
     new_obj_lockstring = "control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)"
+
     # a custom member method to chug out exits and do checks
     def create_exit(self, exit_name, location, destination, exit_aliases=None, typeclass=None):
         """
@@ -2054,7 +2055,6 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def _generic_search(self, query, typeclass_path):
-
         caller = self.caller
         if typeclass_path:
             # make sure we search the right database table
@@ -3267,7 +3267,6 @@ class ScriptEvMore(EvMore):
         )
 
         for script in scripts:
-
             nextrep = script.time_until_next_repeat()
             if nextrep is None:
                 nextrep = script.db._paused_time
@@ -3738,7 +3737,6 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             use_destination="intoexit" not in self.switches,
             move_type="teleport",
         ):
-
             if obj_to_teleport == caller:
                 caller.msg(f"Teleported to {destination}.")
             else:
