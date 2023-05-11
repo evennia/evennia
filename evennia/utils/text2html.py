@@ -20,6 +20,8 @@ class TextToHTMLparser(object):
     """
 
     tabstop = 4
+		
+    # TODO: discuss class names
     ansi_color_map = {
         "r": "red1",
         "R": "red2",
@@ -65,7 +67,7 @@ class TextToHTMLparser(object):
     Returns:
         text (str): Processed text.
     """
-
+    # TODO: discuss hex tags
     def xterm_to_hex(match, bg=False):
         def hue_hex(text):
             return format(int(text) * 40 + 25, "02x")
@@ -96,6 +98,7 @@ class TextToHTMLparser(object):
         Helper method to be passed to re.sub,
         replaces MXP links with HTML code.
         """
+        # TODO: revert this back to the baked-in webclient function call
         cmd, text = [grp.replace('"', "\\&quot;") for grp in match.groups()]
         val = rf'<span class="mxplink" data-command="{cmd}">{text}</span>'
         return val
