@@ -179,7 +179,6 @@ def _run_code_snippet(
 
     """
     # Try to retrieve the session
-    session = caller
     if hasattr(caller, "sessions"):
         sessions = caller.sessions.all()
 
@@ -187,7 +186,7 @@ def _run_code_snippet(
 
     if show_input:
         for session in sessions:
-            data = {"text": (f">>> {pycode}", {"type": "py_input"}), "options": {"raw": True}}
+            data = {"text": (f">>> {pycode}", {"type": "py_input"}), "options": {"raw": True, "highlight": True}}
             try:
                 caller.msg(session=session, **data)
             except TypeError:
@@ -244,9 +243,10 @@ def _run_code_snippet(
 
     for session in sessions:
         try:
-            caller.msg((ret, {"type": "py_output"}), session=session, options={"raw": True, "client_raw": client_raw})
+            caller.msg((ret, {"type": "py_output"}), session=session, options={"raw": True, "client_raw": client_raw,
+                                                                               "highlight": True})
         except TypeError:
-            caller.msg((ret, {"type": "py_output"}), options={"raw": True, "client_raw": client_raw})
+            caller.msg((ret, {"type": "py_output"}), options={"raw": True, "client_raw": client_raw, "highlight": True})
 
 
 def evennia_local_vars(caller):
