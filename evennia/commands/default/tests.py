@@ -17,6 +17,7 @@ from unittest.mock import MagicMock, Mock, patch
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
+import evennia
 from evennia import (
     DefaultCharacter,
     DefaultExit,
@@ -34,7 +35,6 @@ from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.prototypes import prototypes as protlib
-from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import create, gametime, utils
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
@@ -2113,7 +2113,7 @@ class TestUnconnectedCommand(BaseEvenniaCommandTest):
             % (
                 settings.SERVERNAME,
                 datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
-                SESSIONS.account_count(),
+                evennia.SESSION_HANDLER.account_count(),
                 utils.get_evennia_version(),
             )
         )

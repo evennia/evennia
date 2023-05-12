@@ -30,6 +30,7 @@ except ImportError:
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import SafeString
+import evennia
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
 
@@ -71,7 +72,6 @@ _SA = object.__setattr__
 _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
 _IGNORE_DATETIME_MODELS = None
-_SESSION_HANDLER = None
 
 
 def _IS_PACKED_DBOBJ(o):
@@ -114,7 +114,7 @@ def _TO_DATESTRING(obj):
 
 def _init_globals():
     """Lazy importing to avoid circular import issues"""
-    global _FROM_MODEL_MAP, _TO_MODEL_MAP, _SESSION_HANDLER, _IGNORE_DATETIME_MODELS
+    global _FROM_MODEL_MAP, _TO_MODEL_MAP, _IGNORE_DATETIME_MODELS
     if not _FROM_MODEL_MAP:
         _FROM_MODEL_MAP = defaultdict(str)
         _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
@@ -129,9 +129,6 @@ def _init_globals():
         for src_key, dst_key in settings.ATTRIBUTE_STORED_MODEL_RENAME:
             _TO_MODEL_MAP[src_key] = _TO_MODEL_MAP.get(dst_key, None)
             _IGNORE_DATETIME_MODELS.append(src_key)
-    if not _SESSION_HANDLER:
-        from evennia.server.sessionhandler import SESSION_HANDLER as _SESSION_HANDLER
-
 
 #
 # SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions
@@ -609,7 +606,7 @@ def pack_session(item):
 
     """
     _init_globals()
-    session = _SESSION_HANDLER.get(item.sessid)
+    session = evennia.SESSION_HANDLER.get(item.sessid)
     if session and session.conn_time == item.conn_time:
         # we require connection times to be identical for the Session
         # to be accepted as actually being a session (sessids gets
@@ -636,7 +633,7 @@ def unpack_session(item):
             exists, None will be returned.
     """
     _init_globals()
-    session = _SESSION_HANDLER.get(item[1])
+    session = evennia.SESSION_HANDLER.get(item[1])
     if session and session.conn_time == item[2]:
         # we require connection times to be identical for the Session
         # to be accepted as the same as the one stored (sessids gets

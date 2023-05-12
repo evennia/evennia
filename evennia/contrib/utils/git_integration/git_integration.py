@@ -3,9 +3,9 @@ import datetime
 import git
 from django.conf import settings
 
+import evennia
 from evennia import CmdSet, InterruptCommand
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.server.sessionhandler import SESSIONS
 from evennia.utils.utils import list_to_string
 
 
@@ -147,10 +147,10 @@ class GitCommand(MuxCommand):
             caller.msg(self.get_branches())
         elif self.action == "checkout":
             if self.checkout():
-                SESSIONS.portal_restart_server()
+                evennia.SESSION_HANDLER.portal_restart_server()
         elif self.action == "pull":
             if self.pull():
-                SESSIONS.portal_restart_server()
+                evennia.SESSION_HANDLER.portal_restart_server()
         else:
             caller.msg("You can only git status, git branch, git checkout, or git pull.")
             return

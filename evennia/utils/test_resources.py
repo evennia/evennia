@@ -31,6 +31,7 @@ from django.test import TestCase, override_settings
 from mock import MagicMock, Mock, patch
 from twisted.internet.defer import Deferred
 
+import evennia
 from evennia import settings_default
 from evennia.accounts.accounts import DefaultAccount
 from evennia.commands.command import InterruptCommand
@@ -43,7 +44,6 @@ from evennia.objects.objects import (
 )
 from evennia.scripts.scripts import DefaultScript
 from evennia.server.serversession import ServerSession
-from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import ansi, create
 from evennia.utils.idmapper.models import flush_cache
 from evennia.utils.utils import all_from_module, to_str
@@ -234,18 +234,18 @@ class EvenniaTestMixin:
 
     def setup_session(self):
         dummysession = ServerSession()
-        dummysession.init_session("telnet", ("localhost", "testmode"), SESSIONS)
+        dummysession.init_session("telnet", ("localhost", "testmode"), evennia.SESSION_HANDLER)
         dummysession.sessid = 1
-        SESSIONS.portal_connect(
+        evennia.SESSION_HANDLER.portal_connect(
             dummysession.get_sync_data()
         )  # note that this creates a new Session!
-        session = SESSIONS.session_from_sessid(1)  # the real session
-        SESSIONS.login(session, self.account, testmode=True)
+        session = evennia.SESSION_HANDLER.session_from_sessid(1)  # the real session
+        evennia.SESSION_HANDLER.login(session, self.account, testmode=True)
         self.session = session
 
     def teardown_session(self):
         if hasattr(self, "sessions"):
-            del SESSIONS[self.session.sessid]
+            del evennia.SESSION_HANDLER[self.session.sessid]
 
     @patch("evennia.scripts.taskhandler.deferLater", _mock_deferlater)
     def setUp(self):
@@ -253,13 +253,13 @@ class EvenniaTestMixin:
         Sets up testing environment
         """
         self.backups = (
-            SESSIONS.data_out,
-            SESSIONS.disconnect,
+            evennia.SESSION_HANDLER.data_out,
+            evennia.SESSION_HANDLER.disconnect,
             settings.DEFAULT_HOME,
             settings.PROTOTYPE_MODULES,
         )
-        SESSIONS.data_out = Mock()
-        SESSIONS.disconnect = Mock()
+        evennia.SESSION_HANDLER.data_out = Mock()
+        evennia.SESSION_HANDLER.disconnect = Mock()
 
         self.create_accounts()
         self.create_rooms()
@@ -271,8 +271,8 @@ class EvenniaTestMixin:
     def tearDown(self):
         flush_cache()
         try:
-            SESSIONS.data_out = self.backups[0]
-            SESSIONS.disconnect = self.backups[1]
+            evennia.SESSION_HANDLER.data_out = self.backups[0]
+            evennia.SESSION_HANDLER.disconnect = self.backups[1]
             settings.DEFAULT_HOME = self.backups[2]
             settings.PROTOTYPE_MODULES = self.backups[3]
         except AttributeError as err:
@@ -281,7 +281,7 @@ class EvenniaTestMixin:
                 "in your test, make sure you also added `super().setUp()`!"
             )
 
-        del SESSIONS[self.session.sessid]
+        del evennia.SESSION_HANDLER[self.session.sessid]
         self.teardown_accounts()
         super().tearDown()
 
@@ -422,7 +422,7 @@ class EvenniaCommandTestMixin:
         cmdobj.cmdstring = cmdobj.cmdname  # deprecated
         cmdobj.args = input_args
         cmdobj.cmdset = cmdset
-        cmdobj.session = SESSIONS.session_from_sessid(1)
+        cmdobj.session = evennia.SESSION_HANDLER.session_from_sessid(1)
         cmdobj.account = self.account
         cmdobj.raw_string = raw_string if raw_string is not None else cmdobj.key + " " + input_args
         cmdobj.obj = obj or (caller if caller else self.char1)

@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.db.utils import OperationalError
 
+import evennia
 from evennia import DefaultScript
 from evennia.server.models import ServerConfig
 from evennia.utils.create import create_script
@@ -125,9 +126,8 @@ def portal_uptime():
     Returns:
         time (float): The uptime of the portal.
     """
-    from evennia.server.sessionhandler import SESSIONS
 
-    return time.time() - SESSIONS.portal_start_time
+    return time.time() - evennia.SESSION_HANDLER.portal_start_time
 
 
 def game_epoch():

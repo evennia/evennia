@@ -9,7 +9,7 @@ from anything import Anything
 from django.test import override_settings
 from mock import patch
 
-from evennia.server.sessionhandler import SESSIONS
+import evennia
 from evennia.utils.test_resources import BaseEvenniaTest
 
 from .server import AuditedServerSession
@@ -21,13 +21,13 @@ class AuditingTest(BaseEvenniaTest):
     def setup_session(self):
         """Overrides default one in EvenniaTest"""
         dummysession = AuditedServerSession()
-        dummysession.init_session("telnet", ("localhost", "testmode"), SESSIONS)
+        dummysession.init_session("telnet", ("localhost", "testmode"), evennia.SESSION_HANDLER)
         dummysession.sessid = 1
-        SESSIONS.portal_connect(
+        evennia.SESSION_HANDLER.portal_connect(
             dummysession.get_sync_data()
         )  # note that this creates a new Session!
-        session = SESSIONS.session_from_sessid(1)  # the real session
-        SESSIONS.login(session, self.account, testmode=True)
+        session = evennia.SESSION_HANDLER.session_from_sessid(1)  # the real session
+        evennia.SESSION_HANDLER.login(session, self.account, testmode=True)
         self.session = session
 
     @patch(
