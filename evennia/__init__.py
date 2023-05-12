@@ -136,7 +136,7 @@ __version__ = _create_version()
 del _create_version
 
 
-def _init():
+def _init(portal_mode=False):
     """
     This function is called automatically by the launcher only after
     Evennia has fully initialized all its models. It sets up the API
@@ -185,7 +185,6 @@ def _init():
     from .scripts.taskhandler import TASK_HANDLER
     from .scripts.tickerhandler import TICKER_HANDLER
     from .server import signals
-    from .server.sessionhandler import SESSION_HANDLER
     from .typeclasses.attributes import AttributeProperty
     from .typeclasses.tags import TagProperty
     from .utils import ansi, gametime, logger
@@ -219,6 +218,21 @@ def _init():
         search_script,
         search_tag,
     )
+
+    from .utils.utils import class_from_module
+    if portal_mode:
+        # Set up the PortalSessionHandler
+        from evennia.server.portal import portalsessionhandler
+        portal_sess_handler_class = class_from_module(settings.PORTAL_SESSION_HANDLER_CLASS)
+        portalsessionhandler.PORTAL_SESSIONS = portal_sess_handler_class()
+    else:
+        # Create the ServerSesssionHandler
+        from evennia.server import sessionhandler
+        sess_handler_class = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
+        sessionhandler.SESSIONS = sess_handler_class()
+        sessionhandler.SESSION_HANDLER = sessionhandler.SESSIONS
+        SESSION_HANDLER = sessionhandler.SESSIONS
+
 
     # API containers
 

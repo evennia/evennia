@@ -8,9 +8,9 @@ from codecs import lookup as codecs_lookup
 
 from django.conf import settings
 
+import evennia
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.comms.models import ChannelDB
-from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import class_from_module, create, gametime, logger, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -462,7 +462,7 @@ class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
             % (
                 settings.SERVERNAME,
                 datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
-                SESSIONS.account_count(),
+                evennia.SESSION_HANDLER.account_count(),
                 utils.get_evennia_version(),
             )
         )

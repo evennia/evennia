@@ -874,9 +874,6 @@ class ServerSessionHandler(SessionHandler):
                     log_trace()
 
 
-# import class from settings
-_SESSION_HANDLER_CLASS = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
-
-# Instantiate class. These globals are used to provide singleton-like behavior.
-SESSION_HANDLER = _SESSION_HANDLER_CLASS()
-SESSIONS = SESSION_HANDLER  # legacy
+# These are filled in during server boot.
+SESSION_HANDLER = None
+SESSIONS = None  # legacy

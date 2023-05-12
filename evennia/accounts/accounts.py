@@ -20,6 +20,7 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+import evennia
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -40,8 +41,6 @@ from evennia.utils.optionhandler import OptionHandler
 from evennia.utils.utils import is_iter, lazy_property, make_iter, to_str, variable_from_module
 
 __all__ = ("DefaultAccount", "DefaultGuest")
-
-_SESSIONS = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -95,13 +94,10 @@ class AccountSessionHandler(object):
                 is given, this is a list with one (or zero) elements.
 
         """
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         if sessid:
-            return make_iter(_SESSIONS.session_from_account(self.account, sessid))
+            return make_iter(evennia.SESSION_HANDLER.session_from_account(self.account, sessid))
         else:
-            return _SESSIONS.sessions_from_account(self.account)
+            return evennia.SESSION_HANDLER.sessions_from_account(self.account)
 
     def all(self):
         """
@@ -284,10 +280,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             reason (str, optional): Eventual reason for the disconnect.
 
         """
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-        _SESSIONS.disconnect(session, reason)
+        evennia.SESSION_HANDLER.disconnect(session, reason)
 
     # puppeting operations
 

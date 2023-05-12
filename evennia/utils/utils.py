@@ -34,6 +34,8 @@ from django.core.validators import validate_email as django_validate_email
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.utils import logger
 from simpleeval import simple_eval
 from twisted.internet import reactor, threads
@@ -1061,14 +1063,13 @@ def server_services():
         services (dict): A dict of available services.
 
     """
-    from evennia.server.sessionhandler import SESSIONS
 
-    if hasattr(SESSIONS, "server") and hasattr(SESSIONS.server, "services"):
-        server = SESSIONS.server.services.namedServices
+    if hasattr(evennia.SESSION_HANDLER, "server") and hasattr(evennia.SESSION_HANDLER.server, "services"):
+        server = evennia.SESSION_HANDLER.server.services.namedServices
     else:
         # This function must be called from inside the evennia process.
         server = {}
-    del SESSIONS
+    del evennia.SESSION_HANDLER
     return server
 
 
