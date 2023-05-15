@@ -49,6 +49,9 @@ class EquipmentHandler:
                 WieldLocation.BACKPACK: [],
             },
         )
+        self.slots[WieldLocation.BACKPACK] = [
+            obj for obj in self.slots[WieldLocation.BACKPACK] if obj and obj.id
+        ]
 
     def _save(self):
         """
@@ -358,6 +361,7 @@ class EquipmentHandler:
             obj
             for obj in self.slots[WieldLocation.BACKPACK]
             if obj
+            and obj.id
             and obj.inventory_use_slot
             in (WieldLocation.WEAPON_HAND, WieldLocation.TWO_HANDS, WieldLocation.SHIELD_HAND)
         ]
@@ -376,7 +380,7 @@ class EquipmentHandler:
         return [
             obj
             for obj in self.slots[WieldLocation.BACKPACK]
-            if obj and obj.inventory_use_slot in (WieldLocation.BODY, WieldLocation.HEAD)
+            if obj and obj.id and obj.inventory_use_slot in (WieldLocation.BODY, WieldLocation.HEAD)
         ]
 
     def get_usable_objects_from_backpack(self):

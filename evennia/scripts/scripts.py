@@ -128,6 +128,7 @@ class ExtendedLoopingCall(LoopingCall):
         if self.running and self.interval > 0:
             total_runtime = self.clock.seconds() - self.starttime
             interval = self.start_delay or self.interval
+            print("next_call_time:", total_runtime, interval, self.clock.seconds(), self.starttime)
             return max(0, interval - (total_runtime % self.interval))
 
 

@@ -200,10 +200,6 @@ class CombatActionStunt(CombatAction):
                     f"to gain {'advantage' if self.advantage else 'disadvantage'} "
                     f"against $You({target.key})!"
                 )
-            self.msg(
-                "|yHaving succeeded, you hold back to plan your next move.|n [hold]",
-                broadcast=False,
-            )
         else:
             self.msg(f"$You({defender.key}) $conj(resist)! $You() $conj(fail) the stunt.")
 
@@ -258,6 +254,7 @@ class CombatActionWield(CombatAction):
 
     def execute(self):
         self.combatant.equipment.move(self.item)
+        self.msg(f"$You() $conj(wield) $You({self.item.key}).")
 
 
 # main combathandler
@@ -311,6 +308,7 @@ class EvAdventureCombatBaseHandler(DefaultScript):
                     key=combathandler_key,
                     obj=obj,
                     persistent=persistent,
+                    autostart=False,
                     **kwargs,
                 )
             obj.ndb.combathandler = combathandler
