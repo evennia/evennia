@@ -2,13 +2,9 @@
 
 *Note: This is considered an advanced topic.*
 
-Evennia offers many convenient ways to store object data, such as via Attributes or Scripts. This is
-sufficient for most use cases. But if you aim to build a large stand-alone system, trying to squeeze
-your storage requirements into those may be more complex than you bargain for. Examples may be to
-store guild data for guild members to be able to change, tracking the flow of money across a game-
-wide economic system or implement other custom game systems that requires the storage of custom data
-in a quickly accessible way. Whereas [Tags](../Components/Tags.md) or [Scripts](../Components/Scripts.md) can handle many situations,
-sometimes things may be easier to handle by adding your own database model.
+Evennia offers many convenient ways to store object data, such as via Attributes or Scripts. This is sufficient for most use cases. But if you aim to build a large stand-alone system, trying to squeeze your storage requirements into those may be more complex than you bargain for. Examples may be to store guild data for guild members to be able to change, tracking the flow of money across a game-wide economic system or implement other custom game systems that requires the storage of custom data in a quickly accessible way.
+
+Whereas [Tags](../Components/Tags.md) or [Scripts](../Components/Scripts.md) can handle many situations, sometimes things may be easier to handle by adding your own _database model_.
 
 ## Overview of database tables
 
@@ -22,9 +18,7 @@ retrieving text stored in tables. A table may look like this
      2  |  Rock     | evennia.DefaultObject      | None            ...
 ```
 
-Each line is considerably longer in your database. Each column is referred to as a "field" and every
-row is a separate object. You can check this out for yourself. If you use the default sqlite3
-database, go to your game folder and run
+Each line is considerably longer in your database. Each column is referred to as a "field" and every row is a separate object. You can check this out for yourself. If you use the default sqlite3 database, go to your game folder and run
 
      evennia dbshell
 
@@ -42,34 +36,19 @@ You will drop into the database shell. While there, try:
 
      sqlite> .exit
 
-Evennia uses [Django](https://docs.djangoproject.com), which abstracts away the database SQL
-manipulation and allows you to search and manipulate your database entirely in Python. Each database
-table is in Django represented by a class commonly called a *model* since it describes the look of
-the table. In Evennia, Objects, Scripts, Channels etc are examples of Django models that we then
-extend and build on.
+Evennia uses [Django](https://docs.djangoproject.com), which abstracts away the database SQL manipulation and allows you to search and manipulate your database entirely in Python. Each database table is in Django represented by a class commonly called a *model* since it describes the look of the table. In Evennia, Objects, Scripts, Channels etc are examples of Django models that we then extend and build on.
 
 ## Adding a new database table
 
 Here is how you add your own database table/models:
 
-1. In Django lingo, we will create a new "application" - a subsystem under the main Evennia program.
-For this example we'll call it "myapp". Run the following (you need to have a working Evennia
-running before you do this, so make sure you have run the steps in [Setup Quickstart](Getting-
-Started) first):
+1. In Django lingo, we will create a new "application" - a subsystem under the main Evennia program. For this example we'll call it "myapp". Run the following (you need to have a working Evennia running before you do this, so make sure you have run the steps in [Setup Quickstart](Getting- Started) first):
 
         cd mygame/world
         evennia startapp myapp
 
-1. A new folder `myapp` is created. "myapp" will also be the name (the "app label") from now on. We
-chose to put it in the `world/` subfolder here, but you could put it in the root of your `mygame` if
-that makes more sense.
-1. The `myapp` folder contains a few empty default files. What we are
-interested in for now is `models.py`. In `models.py` you define your model(s). Each model will be a
-table in the database. See the next section and don't continue until you have added the models you
-want.
-1. You now need to tell Evennia that the models of your app should be a part of your database
-scheme. Add this line to your `mygame/server/conf/settings.py`file (make sure to use the path where
-you put `myapp` and don't forget the comma at the end of the tuple):
+1. A new folder `myapp` is created. "myapp" will also be the name (the "app label") from now on. We chose to put it in the `world/` subfolder here, but you could put it in the root of your `mygame` if that makes more sense. 1. The `myapp` folder contains a few empty default files. What we are interested in for now is `models.py`. In `models.py` you define your model(s). Each model will be a table in the database. See the next section and don't continue until you have added the models you want.
+1. You now need to tell Evennia that the models of your app should be a part of your database scheme. Add this line to your `mygame/server/conf/settings.py`file (make sure to use the path where you put `myapp` and don't forget the comma at the end of the tuple):
 
     ```
     INSTALLED_APPS = INSTALLED_APPS + ("world.myapp", )
@@ -78,19 +57,16 @@ you put `myapp` and don't forget the comma at the end of the tuple):
 1. From `mygame/`, run
 
         evennia makemigrations myapp
-        evennia migrate
+        evennia migrate myapp
 
-This will add your new database table to the database. If you have put your game under version
-control (if not, [you should](../Coding/Version-Control.md)), don't forget to `git add myapp/*` to add all items
+This will add your new database table to the database. If you have put your game under version control (if not, [you should](../Coding/Version-Control.md)), don't forget to `git add myapp/*` to add all items
 to version control.
 
 ## Defining your models
 
 A Django *model* is the Python representation of a database table. It can be handled like any other Python class. It defines *fields* on itself, objects of a special type. These become the "columns" of the database table. Finally, you create new instances of the model to add new rows to the database.
 
-We won't describe all aspects of Django models here, for that we refer to the vast [Django
-documentation](https://docs.djangoproject.com/en/4.1/topics/db/models/) on the subject. Here is a
-(very) brief example:
+We won't describe all aspects of Django models here, for that we refer to the vast [Django documentation](https://docs.djangoproject.com/en/4.1/topics/db/models/) on the subject. Here is a (very) brief example:
 
 ```python
 from django.db import models
@@ -182,7 +158,7 @@ Evennia's normal models don't need to explicitly save, since they are based on `
 
 ## Using the `SharedMemoryModel` parent
 
-Evennia doesn't base most of its models on the raw `django.db.models` but on the Evennia base model `evennia.utils.idmapper.models.SharedMemoryModel`. There are two main reasons for this:
+Evennia doesn't base most of its models on the raw `django.db.models.Model` but on the Evennia base model `evennia.utils.idmapper.models.SharedMemoryModel`. There are two main reasons for this:
 
 1. Ease of updating fields without having to explicitly call `save()`
 2. On-object memory persistence and database caching
@@ -202,7 +178,7 @@ To explain the second and more important point, consider the following example u
     shield.cracked = True # where cracked is not a database field
 ```
 
-And then later:
+And then in another function you do
 
 ```python
     shield = MyDataStore.objects.get(db_key="SmallShield")
@@ -249,4 +225,4 @@ To search your new custom database table you need to use its database *manager* 
         self.caller.msg(match.db_text)
 ```
 
-See the [Django query documentation](https://docs.djangoproject.com/en/4.1/topics/db/queries/) for a lot more information about querying the database.
+See the [Beginner Tutorial lesson on Django querying](Beginner-Tutorial-Django-queries) for a lot more information about querying the database.

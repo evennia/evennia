@@ -210,6 +210,18 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         self.stop()
         self.delete()
 
+    def get_combat_summary(self, combatant):
+        """Add your next queued action to summary"""
+        summary = super().get_combat_summary(combatant)
+        next_action = self.get_next_action_dict(combatant) or {"key": "hold"}
+        next_repeat = self.time_until_next_repeat()
+
+        summary = (
+            f"{summary}\n Your queued action: [|b{next_action['key']}|n] (|b{next_repeat}s|n until"
+            " next round,\n or until all combatants have chosen their next action)."
+        )
+        return summary
+
     def get_sides(self, combatant):
         """
         Get a listing of the two 'sides' of this combat, from the perspective of the provided
@@ -265,19 +277,18 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         self.combatants[combatant] = action_dict
 
         # track who inserted actions this turn (non-persistent)
-        did_action = set(self.ndb.did_action or ())
+        did_action = set(self.ndb.did_action or set())
         did_action.add(combatant)
         if len(did_action) >= len(self.combatants):
             # everyone has inserted an action. Start next turn without waiting!
             self.force_repeat()
 
-    def get_next_action_dict(self, combatant, rotate_queue=True):
+    def get_next_action_dict(self, combatant):
         """
         Give the action_dict for the next action that will be executed.
 
         Args:
             combatant (EvAdventureCharacter, EvAdventureNPC): The combatant to get the action for.
-            rotate_queue (bool, optional): Rotate the queue after getting the action dict.
 
         Returns:
             dict: The next action-dict in the queue.
@@ -355,6 +366,8 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         for combatant in combatants:
             self.execute_next_action(combatant)
 
+        self.ndb.did_action = set()
+
         # check if anyone is defeated
         for combatant in list(self.combatants.keys()):
             if combatant.hp <= 0:
@@ -364,6 +377,8 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
                 self.combatants.pop(combatant)
                 self.defeated_combatants.append(combatant)
                 self.msg("|r$You() $conj(fall) to the ground, defeated.|n", combatant=combatant)
+            else:
+                self.combatants[combatant] = self.fallback_action_dict
 
         # check if anyone managed to flee
         flee_timeout = self.flee_timeout
@@ -402,8 +417,12 @@ def _get_combathandler(caller, turn_timeout=30, flee_time=3, combathandler_key="
         caller.location,
         interval=turn_timeout,
         attributes=[("flee_time", flee_time)],
-        combathandler_key=combathandler_key,
+        key=combathandler_key,
     )
+
+
+def _rerun_current_node(caller, raw_string, **kwargs):
+    return None, kwargs
 
 
 def _queue_action(caller, raw_string, **kwargs):
@@ -462,6 +481,10 @@ def _get_default_wizard_options(caller, **kwargs):
     return [
         {"key": ("back", "b"), "goto": (_step_wizard, {**kwargs, **{"step": "back"}})},
         {"key": ("abort", "a"), "goto": (_step_wizard, {**kwargs, **{"step": "abort"}})},
+        {
+            "key": "_default",
+            "goto": (_rerun_current_node, kwargs),
+        },
     ]
 
 
@@ -473,6 +496,7 @@ def node_choose_enemy_target(caller, raw_string, **kwargs):
     action_dict = kwargs["action_dict"]
 
     combathandler = _get_combathandler(caller)
+
     _, enemies = combathandler.get_sides(caller)
 
     options = [
@@ -481,6 +505,30 @@ def node_choose_enemy_target(caller, raw_string, **kwargs):
             "goto": (
                 _step_wizard,
                 {**kwargs, **{"action_dict": {**action_dict, **{"target": target}}}},
+            ),
+        }
+        for target in enemies
+    ]
+    options.extend(_get_default_wizard_options(caller, **kwargs))
+    return text, options
+
+
+def node_choose_enemy_recipient(caller, raw_string, **kwargs):
+    """
+    Choose an enemy as a 'recipient' for an action.
+    """
+    text = "Choose an enemy as a recipient."
+    action_dict = kwargs["action_dict"]
+
+    combathandler = _get_combathandler(caller)
+    _, enemies = combathandler.get_sides(caller)
+
+    options = [
+        {
+            "desc": target.get_display_name(caller),
+            "goto": (
+                _step_wizard,
+                {**kwargs, **{"action_dict": {**action_dict, **{"recipient": target}}}},
             ),
         }
         for target in enemies
@@ -507,11 +555,49 @@ def node_choose_allied_target(caller, raw_string, **kwargs):
                 _step_wizard,
                 {
                     **kwargs,
-                    **{
-                        "action_dict": {
-                            **{**action_dict, **{"target": caller, "recipient": caller}}
-                        }
+                    **{"action_dict": {**action_dict, **{"target": caller}}},
+                },
+            ),
+        }
+    ]
+    options.extend(
+        [
+            {
+                "desc": target.get_display_name(caller),
+                "goto": (
+                    _step_wizard,
+                    {
+                        **kwargs,
+                        **{"action_dict": {**action_dict, **{"target": target}}},
                     },
+                ),
+            }
+            for target in allies
+        ]
+    )
+    options.extend(_get_default_wizard_options(caller, **kwargs))
+    return text, options
+
+
+def node_choose_allied_recipient(caller, raw_string, **kwargs):
+    """
+    Choose an allied recipient for an action
+    """
+    text = "Choose an ally as a recipient."
+    action_dict = kwargs["action_dict"]
+
+    combathandler = _get_combathandler(caller)
+    allies, _ = combathandler.get_sides(caller)
+
+    # can choose yourself
+    options = [
+        {
+            "desc": "Yourself",
+            "goto": (
+                _step_wizard,
+                {
+                    **kwargs,
+                    **{"action_dict": {**action_dict, **{"recipient": caller}}},
                 },
             ),
         }
@@ -527,7 +613,7 @@ def node_choose_allied_target(caller, raw_string, **kwargs):
                         **{
                             "action_dict": {
                                 **action_dict,
-                                **{"target": target, "recipient": target},
+                                **{"recipient": target},
                             }
                         },
                     },
@@ -585,7 +671,10 @@ def node_choose_use_item(caller, raw_string, **kwargs):
     options = [
         {
             "desc": item.get_display_name(caller),
-            "goto": (_step_wizard, {**kwargs, **{**action_dict, **{"item": item}}}),
+            "goto": (
+                _step_wizard,
+                {**kwargs, **{"action_dict": {**action_dict, **{"item": item}}}},
+            ),
         }
         for item in caller.equipment.get_usable_objects_from_backpack()
     ]
@@ -607,7 +696,10 @@ def node_choose_wield_item(caller, raw_string, **kwargs):
     options = [
         {
             "desc": item.get_display_name(caller),
-            "goto": (_step_wizard, {**kwargs, **{**action_dict, **{"item": item}}}),
+            "goto": (
+                _step_wizard,
+                {**kwargs, **{"action_dict": {**action_dict, **{"item": item}}}},
+            ),
         }
         for item in caller.equipment.get_wieldable_objects_from_backpack()
     ]
@@ -622,6 +714,8 @@ def node_combat(caller, raw_string, **kwargs):
     """Base combat menu"""
 
     combathandler = _get_combathandler(caller)
+
+    caller.msg(f"combathandler.combatants: {combathandler.combatants}")
 
     text = combathandler.get_combat_summary(caller)
     options = [
@@ -642,8 +736,8 @@ def node_combat(caller, raw_string, **kwargs):
                 {
                     "steps": [
                         "node_choose_ability",
-                        "node_choose_allied_target",
                         "node_choose_enemy_target",
+                        "node_choose_allied_recipient",
                     ],
                     "action_dict": {"key": "stunt", "advantage": True},
                 },
@@ -656,7 +750,7 @@ def node_combat(caller, raw_string, **kwargs):
                 {
                     "steps": [
                         "node_choose_ability",
-                        "node_choose_enemy_target",
+                        "node_choose_enemy_recipient",
                         "node_choose_allied_target",
                     ],
                     "action_dict": {"key": "stunt", "advantage": False},
@@ -700,6 +794,10 @@ def node_combat(caller, raw_string, **kwargs):
         {
             "desc": "hold, doing nothing",
             "goto": (_queue_action, {"action_dict": {"key": "hold"}}),
+        },
+        {
+            "key": "_default",
+            "goto": "node_combat",
         },
     ]
 
@@ -763,6 +861,8 @@ class CmdTurnAttack(Command):
             {
                 "node_choose_enemy_target": node_choose_enemy_target,
                 "node_choose_allied_target": node_choose_allied_target,
+                "node_choose_enemy_recipient": node_choose_enemy_recipient,
+                "node_choose_allied_recipient": node_choose_allied_recipient,
                 "node_choose_ability": node_choose_ability,
                 "node_choose_use_item": node_choose_use_item,
                 "node_choose_wield_item": node_choose_wield_item,
@@ -770,6 +870,7 @@ class CmdTurnAttack(Command):
             },
             startnode="node_combat",
             combathandler=combathandler,
+            auto_look=False,
             # cmdset_mergetype="Union",
             persistent=True,
         )

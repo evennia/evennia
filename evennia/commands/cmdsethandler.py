@@ -71,7 +71,6 @@ from traceback import format_exc
 
 from django.conf import settings
 from django.utils.translation import gettext as _
-
 from evennia.commands.cmdset import CmdSet
 from evennia.server.models import ServerConfig
 from evennia.utils import logger, utils
@@ -166,7 +165,6 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     ]
     errstring = ""
     for python_path in python_paths:
-
         if "." in path:
             modpath, classname = python_path.rsplit(".", 1)
         else:

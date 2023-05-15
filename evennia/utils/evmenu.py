@@ -889,6 +889,9 @@ class EvMenu:
             if not nodename:
                 # no nodename return. Re-run current node
                 nodename = self.nodename
+        elif nodename_or_callable is None:
+            # repeat current node
+            nodename = self.nodename
         else:
             # the nodename given directly
             nodename = nodename_or_callable
@@ -934,7 +937,6 @@ class EvMenu:
         if options:
             options = [options] if isinstance(options, dict) else options
             for inum, dic in enumerate(options):
-
                 # homogenize the options dict
                 keys = make_iter(dic.get("key"))
                 desc = dic.get("desc", dic.get("text", None))
@@ -1326,7 +1328,6 @@ def list_node(option_generator, select=None, pagesize=10):
             return None, kwargs
 
         def _list_node(caller, raw_string, **kwargs):
-
             option_list = (
                 option_generator(caller) if callable(option_generator) else option_generator
             )
