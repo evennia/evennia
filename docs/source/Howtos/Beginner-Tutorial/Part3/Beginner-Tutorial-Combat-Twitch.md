@@ -1,7 +1,6 @@
 # Twitch Combat 
 
-In this lesson we will build upon the basic combat framework we devised [in the previous lesson](./Beginner-Tutorial-Combat-Base.md).  
-
+In this lesson we will build upon the basic combat framework we devised [in the previous lesson](./Beginner-Tutorial-Combat-Base.md) to create a 'twitch-like' combat system. 
 ```shell
 > attack troll 
   You attack the Troll! 
@@ -48,7 +47,7 @@ You attack the troll with Sword: Roll vs armor(11):
  
 The battle is over. You are still standing. 
 ```
-> Documentation doesn't show colors.
+> Note that this documentation doesn't show in-game colors. If you are interested in an alternative, see  the [next lesson](./Beginner-Tutorial-Combat-Turnbased.md), where we'll make a turnbased, menu-based system instead.
 
 With "Twitch" combat, we refer to a type of combat system that runs without any clear divisions of 'turns' (the opposite of [Turn-based combat](./Beginner-Tutorial-Combat-Turnbased.md)). It is inspired by the way combat worked in the old  [DikuMUD](https://en.wikipedia.org/wiki/DikuMUD) codebase, but is more flexible. 
 
@@ -942,11 +941,11 @@ This is what we need for a minimal test:
  - An item (like a potion) we can `use`. 
 
 ```{sidebar}
-You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/combat_demo.ev](evennia.contrib.tutorials.evadventure.batchscript)
+You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev](evennia.contrib.tutorials.evadventure.batchscripts)
 ```
 While you can create these manually in-game, it can be convenient to create a [batch-command script](../../../Components/Batch-Command-Processor.md) to set up your testing environment. 
 
-> create a new subfolder `evadventure/batchscripts/`  (if it doesn't exist)
+> create a new subfolder `evadventure/batchscripts/`  (if it doesn't already exist)
 
 
 > create a new file `evadventure/combat_demo.ev`  (note, it's `.ev` not `.py`!) 
@@ -1007,7 +1006,7 @@ set dummy/hp = 1000
 
 Log into the game with a developer/superuser account and run
 
-    > batchcmd evadventure.batchscripts.combat_demo 
+    > batchcmd evadventure.batchscripts.twitch_combat_demo 
     
 This should place you in the arena with the dummy (if not, check for errors in the output! Use `objects` and `delete` commands to list and delete objects if you need to start over. )
 

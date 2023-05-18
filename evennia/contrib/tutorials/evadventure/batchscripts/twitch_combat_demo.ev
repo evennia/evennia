@@ -6,7 +6,7 @@
 #
 #    BASE_BATCH_PROCESS_PATHS += ["evadventure.batchscripts"]
 #
-# Run from in-game as batchcmd combat_demo
+# Run from in-game as `batchcmd twitch_combat_demo`
 #
 
 # start from limbo

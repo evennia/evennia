@@ -101,12 +101,12 @@ You may want to use `ForeignKey` or `ManyToManyField` to relate your new model t
 
 To do this we need to specify the app-path for the root object type we want to store as a string (we must use a string rather than the class directly or you'll run into problems with models not having been initialized yet).
 
-- `"objects.ObjectDB"` for all [Objects](Objects) (like exits, rooms, characters etc)
-- `"accounts.AccountDB"` for [Accounts](Accounts). 
-- `"scripts.ScriptDB"` for [Scripts](Scripts).
-- `"comms.ChannelDB"` for [Channels](Channels).
-- `"comms.Msg"` for [Msg](Msg) objects. 
-- `"help.HelpEntry"` for [Help Entries](Help-System).
+- `"objects.ObjectDB"` for all [Objects](../Components/Objects.md) (like exits, rooms, characters etc)
+- `"accounts.AccountDB"` for [Accounts](../Components/Accounts.md). 
+- `"scripts.ScriptDB"` for [Scripts](../Components/Scripts.md).
+- `"comms.ChannelDB"` for [Channels](../Components/Channels.md).
+- `"comms.Msg"` for [Msg](../Components/Msg.md) objects. 
+- `"help.HelpEntry"` for [Help Entries](../Components/Help-System.md).
 
 Here's an example:
 
@@ -225,4 +225,4 @@ To search your new custom database table you need to use its database *manager* 
         self.caller.msg(match.db_text)
 ```
 
-See the [Beginner Tutorial lesson on Django querying](Beginner-Tutorial-Django-queries) for a lot more information about querying the database.
+See the [Beginner Tutorial lesson on Django querying](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Django-queries.md) for a lot more information about querying the database.
