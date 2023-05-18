@@ -5,7 +5,6 @@ are in additional to normal Evennia commands and should be added
 to the CharacterCmdSet
 
 New commands:
-    attack/hit <target>[,...]
     inventory
     wield/wear <item>
     unwield/remove <item>
@@ -33,7 +32,6 @@ from evennia import CmdSet, Command, InterruptCommand
 from evennia.utils.evmenu import EvMenu
 from evennia.utils.utils import inherits_from
 
-from .combat import CombatFailure, join_combat
 from .enums import WieldLocation
 from .equipment import EquipmentError
 from .npcs import EvAdventureTalkativeNPC
@@ -52,51 +50,6 @@ class EvAdventureCommand(Command):
 
     def parse(self):
         self.args = self.args.strip()
-
-
-class CmdAttackTurnBased(EvAdventureCommand):
-    """
-    Attack a target or join an existing combat.
-
-    Usage:
-      attack <target>
-      attack <target>, <target>, ...
-
-    If the target is involved in combat already, you'll join combat with
-    the first target you specify. Attacking multiple will draw them all into
-    combat.
-
-    This will start/join turn-based, combat, where you have a limited
-    time to decide on your next action from a menu of options.
-
-    """
-
-    key = "attack"
-    aliases = ("hit",)
-
-    def parse(self):
-        super().parse()
-        self.targets = [name.strip() for name in self.args.split(",")]
-
-    def func(self):
-
-        # find if
-
-        target_objs = []
-        for target in self.targets:
-            target_obj = self.caller.search(target)
-            if not target_obj:
-                # show a warning but don't abort
-                continue
-            target_objs.append(target_obj)
-
-        if target_objs:
-            try:
-                join_combat(self.caller, *target_objs, session=self.session)
-            except CombatFailure as err:
-                self.caller.msg(f"|r{err}|n")
-        else:
-            self.caller.msg("|rFound noone to attack.|n")
 
 
 class CmdInventory(EvAdventureCommand):
@@ -269,15 +222,19 @@ def _accept_or_reject_gift(caller, raw_string, **kwargs):
                 item.move_to(caller, quiet=True, move_type="give")
             except EquipmentError:
                 caller.location.msg_contents(
-                    f"$You({giver.key.key}) $conj(try) to give "
-                    f"{item.key} to $You({caller.key}), but they can't accept it since their "
-                    "inventory is full.",
+                    (
+                        f"$You({giver.key.key}) $conj(try) to give "
+                        f"{item.key} to $You({caller.key}), but they can't accept it since their "
+                        "inventory is full."
+                    ),
                     mapping={giver.key: giver, caller.key: caller},
                 )
             else:
                 caller.location.msg_contents(
-                    f"$You({giver.key}) $conj(give) {item.key} to $You({caller.key}), "
-                    "and they accepted the offer.",
+                    (
+                        f"$You({giver.key}) $conj(give) {item.key} to $You({caller.key}), "
+                        "and they accepted the offer."
+                    ),
                     mapping={giver.key: giver, caller.key: caller},
                 )
         giver.ndb._evmenu.close_menu()
@@ -455,7 +412,6 @@ class EvAdventureCmdSet(CmdSet):
     key = "evadventure"
 
     def at_cmdset_creation(self):
-        self.add(CmdAttackTurnBased())
         self.add(CmdInventory())
         self.add(CmdWieldOrWear())
         self.add(CmdRemove())

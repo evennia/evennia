@@ -6,7 +6,6 @@ Test the EvAdventure commands.
 from unittest.mock import call, patch
 
 from anything import Something
-
 from evennia.utils.create import create_object
 from evennia.utils.test_resources import BaseEvenniaCommandTest
 
@@ -33,18 +32,6 @@ Backpack is empty.
 You use 0/11 equipment slots.
 """.strip(),
         )
-
-    @patch("evennia.contrib.tutorials.evadventure.commands.join_combat")
-    def test_attack(self, mock_join_combat):
-        self.location.allow_combat = True
-
-        target = create_object(EvAdventureMob, key="Ogre", location=self.location)
-
-        self.call(commands.CmdAttackTurnBased(), "ogre", "")
-
-        mock_join_combat.assert_called_with(self.char1, target, session=Something)
-
-        target.delete()
 
     def test_wield_or_wear(self):
         self.char1.equipment.add(self.helmet)
@@ -85,7 +72,6 @@ You use 0/11 equipment slots.
 
     @patch("evennia.contrib.tutorials.evadventure.commands.EvMenu")
     def test_give__item(self, mock_EvMenu):
-
         self.char1.equipment.add(self.helmet)
         recipient = create_object(EvAdventureCharacter, key="Friend", location=self.location)
 

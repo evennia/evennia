@@ -236,7 +236,7 @@ class TestCombatActionsBase(_CombatTestBase):
         runestone = create.create_object(EvAdventureRunestone, key="ice rune")
 
         # check hands are empty
-        self.assertEqual(self.combatant.weapon.key, "Empty Fists")
+        self.assertEqual(self.combatant.weapon.key, "Bare hands")
         self.assertEqual(self.combatant.equipment.slots[WieldLocation.WEAPON_HAND], None)
         self.assertEqual(self.combatant.equipment.slots[WieldLocation.TWO_HANDS], None)
 
@@ -505,8 +505,8 @@ class EvAdventureTurnbasedCombatHandlerTest(_CombatTestBase):
         action_dict = {"key": "flee"}
 
         # first flee records the fleeing state
+        self.combathandler.flee_timeout = 2  # to make sure
         self._run_actions(action_dict)
-        self.combathandler.flee_timeout = 1  # to make sure
         self.assertEqual(self.combathandler.turn, 1)
         self.assertEqual(self.combathandler.fleeing_combatants[self.combatant], 1)
 
@@ -612,7 +612,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
         self.combatant_combathandler.get_sides = Mock(return_value=([], []))
         self.combatant_combathandler.check_stop_combat()
         self.combatant.msg.assert_called_with(
-            text=("The combat is over. Still standing: You.", {}), from_obj=self.combatant
+            text=("The combat is over.", {}), from_obj=self.combatant
         )
 
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
@@ -628,7 +628,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
         self.call(combat_twitch.CmdAttack(), self.target.key, "You attack testmonster!")
         self.assertEqual(
             self.combatant_combathandler.action_dict,
-            {"key": "attack", "target": self.target, "dt": 3},
+            {"key": "attack", "target": self.target, "dt": 3, "repeat": True},
         )
 
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
@@ -641,6 +641,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
             "advantage": True,
             "stunt_type": Ability.STR,
             "defense_type": Ability.STR,
+            "dt": 3,
         }
         foil_result = {
             "key": "stunt",
@@ -649,6 +650,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
             "advantage": False,
             "stunt_type": Ability.STR,
             "defense_type": Ability.STR,
+            "dt": 3,
         }
 
         self.call(
@@ -693,7 +695,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
         self.call(combat_twitch.CmdUseItem(), "potion", "You prepare to use potion!")
         self.assertEqual(
             self.combatant_combathandler.action_dict,
-            {"key": "use", "item": item, "target": self.combatant},
+            {"key": "use", "item": item, "target": self.combatant, "dt": 3},
         )
 
         self.call(
@@ -703,7 +705,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
         )
         self.assertEqual(
             self.combatant_combathandler.action_dict,
-            {"key": "use", "item": item, "target": self.target},
+            {"key": "use", "item": item, "target": self.target, "dt": 3},
         )
 
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.unrepeat", new=Mock())
@@ -715,9 +717,11 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
         )
 
         self.call(combat_twitch.CmdWield(), "sword", "You reach for sword!")
-        self.assertEqual(self.combatant_combathandler.action_dict, {"key": "wield", "item": sword})
+        self.assertEqual(
+            self.combatant_combathandler.action_dict, {"key": "wield", "item": sword, "dt": 3}
+        )
 
         self.call(combat_twitch.CmdWield(), "runestone", "You reach for runestone!")
         self.assertEqual(
-            self.combatant_combathandler.action_dict, {"key": "wield", "item": runestone}
+            self.combatant_combathandler.action_dict, {"key": "wield", "item": runestone, "dt": 3}
         )

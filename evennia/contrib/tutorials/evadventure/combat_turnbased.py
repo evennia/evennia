@@ -61,7 +61,7 @@ class CombatActionFlee(CombatAction):
         current_turn = combathandler.turn
         started_fleeing = combathandler.fleeing_combatants[self.combatant]
         flee_timeout = combathandler.flee_timeout
-        time_left = flee_timeout - (current_turn - started_fleeing)
+        time_left = flee_timeout - (current_turn - started_fleeing) - 1
 
         if time_left > 0:
             self.msg(
@@ -306,7 +306,6 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 
         action.execute()
         action.post_execute()
-        self.check_stop_combat()
 
     def check_stop_combat(self):
         """Check if it's time to stop combat"""
@@ -326,7 +325,7 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         # check if anyone managed to flee
         flee_timeout = self.flee_timeout
         for combatant, started_fleeing in self.fleeing_combatants.items():
-            if self.turn - started_fleeing >= flee_timeout:
+            if self.turn - started_fleeing >= flee_timeout - 1:
                 # if they are still alive/fleeing and have been fleeing long enough, escape
                 self.msg("|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
                 self.remove_combatant(combatant)

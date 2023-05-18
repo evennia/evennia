@@ -18,6 +18,6 @@ class TestNPCBase(EvenniaTest):
         )
 
         self.assertEqual(npc.hp_multiplier, 4)
-        self.assertEqual(npc.hp, 16)
+        self.assertEqual(npc.hp_max, 16)
         self.assertEqual(npc.strength, 4)
         self.assertEqual(npc.charisma, 4)
