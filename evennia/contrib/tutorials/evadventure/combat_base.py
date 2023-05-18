@@ -300,7 +300,7 @@ class EvAdventureCombatBaseHandler(DefaultScript):
         combathandler = obj.ndb.combathandler
         if not combathandler:
             combathandler = obj.scripts.get(combathandler_key).first()
-            if not combathandler:
+            if not combathandler or not combathandler.id:
                 # have to create from scratch
                 persistent = kwargs.pop("persistent", True)
                 combathandler = create_script(

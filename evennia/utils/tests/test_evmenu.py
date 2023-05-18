@@ -21,10 +21,9 @@ import copy
 
 from anything import Anything
 from django.test import TestCase
-from mock import MagicMock
-
 from evennia.utils import ansi, evmenu
 from evennia.utils.test_resources import BaseEvenniaTest
+from mock import MagicMock
 
 
 class TestEvMenu(TestCase):
@@ -70,7 +69,6 @@ class TestEvMenu(TestCase):
         """
 
         def _depth_first(menu, tree, visited, indent):
-
             # we are in a given node here
             nodename = menu.nodename
             options = menu.test_options
@@ -120,7 +118,6 @@ class TestEvMenu(TestCase):
                 subtree = nodename
             else:
                 for inum, optdict in enumerate(options):
-
                     key, desc, execute, goto = (
                         optdict.get("key", ""),
                         optdict.get("desc", None),
@@ -231,7 +228,6 @@ class TestEvMenu(TestCase):
 
 
 class TestEvMenuExample(TestEvMenu):
-
     menutree = "evennia.utils.tests.data.evmenu_example"
     startnode = "test_start_node"
     kwargs = {"testval": "val", "testval2": "val2"}

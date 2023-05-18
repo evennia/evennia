@@ -6,7 +6,7 @@
 #
 #    BASE_BATCH_PROCESS_PATHS += ["evadventure.batchscripts"]
 #
-# Run from in-game as `batchcode combat_demo`
+# Run from in-game as `batchcode turnbased_combat_demo`
 #
 
 # HEADER

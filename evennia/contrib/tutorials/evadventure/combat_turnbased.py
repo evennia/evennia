@@ -144,8 +144,8 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
             target (Character or NPC): The target to check advantage against.
 
         """
-        return bool(self.advantage_matrix[combatant].pop(target, False)) or (
-            target in self.fleeing_combatants
+        return target in self.fleeing_combatants or bool(
+            self.advantage_matrix[combatant].pop(target, False)
         )
 
     def has_disadvantage(self, combatant, target):
@@ -157,16 +157,14 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
             target (Character or NPC): The target to check disadvantage against.
 
         """
-        return bool(self.disadvantage_matrix[combatant].pop(target, False)) or (
-            combatant in self.fleeing_combatants
-        )
+        return bool(self.disadvantage_matrix[combatant].pop(target, False))
 
     def add_combatant(self, combatant):
         """
         Add a new combatant to the battle. Can be called multiple times safely.
 
         Args:
-            *combatants (EvAdventureCharacter, EvAdventureNPC): Any number of combatants to add to
+            combatant (EvAdventureCharacter, EvAdventureNPC): Any number of combatants to add to
                 the combat.
         Returns:
             bool: If this combatant was newly added or not (it was already in combat).
@@ -260,18 +258,11 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 
     def queue_action(self, combatant, action_dict):
         """
-        Queue an action by adding the new actiondict to the back of the queue. If the
-        queue was alrady at max-size, the front of the queue will be discarded.
+        Queue an action by adding the new actiondict.
 
         Args:
             combatant (EvAdventureCharacter, EvAdventureNPC): A combatant queueing the action.
             action_dict (dict): A dict describing the action class by name along with properties.
-
-        Example:
-            If the queue max-size is 3 and was `[a, b, c]` (where each element is an action-dict),
-            then using this method to add the new action-dict `d` will lead to a queue `[b, c, d]` -
-            that is, adding the new action will discard the one currently at the front of the queue
-            to make room.
 
         """
         self.combatants[combatant] = action_dict
@@ -299,17 +290,11 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
     def execute_next_action(self, combatant):
         """
         Perform a combatant's next queued action. Note that there is _always_ an action queued,
-        even if this action is 'hold'. We don't pop anything from the queue, instead we keep
-        rotating the queue. When the queue has a length of one, this means just repeating the
-        same action over and over.
+        even if this action is 'hold', which means the combatant will do nothing.
 
         Args:
             combatant (EvAdventureCharacter, EvAdventureNPC): The combatant performing and action.
 
-        Example:
-            If the combatant's action queue is `[a, b, c]` (where each element is an action-dict),
-            then calling this method will lead to action `a` being performed. After this method, the
-            queue will be rotated to the left and be `[b, c, a]` (so next time, `b` will be used).
 
         """
         # this gets the next dict and rotates the queue
@@ -324,6 +309,28 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         self.check_stop_combat()
 
     def check_stop_combat(self):
+        """Check if it's time to stop combat"""
+
+        # check if anyone is defeated
+        for combatant in list(self.combatants.keys()):
+            if combatant.hp <= 0:
+                # PCs roll on the death table here, NPCs die. Even if PCs survive, they
+                # are still out of the fight.
+                combatant.at_defeat()
+                self.combatants.pop(combatant)
+                self.defeated_combatants.append(combatant)
+                self.msg("|r$You() $conj(fall) to the ground, defeated.|n", combatant=combatant)
+            else:
+                self.combatants[combatant] = self.fallback_action_dict
+
+        # check if anyone managed to flee
+        flee_timeout = self.flee_timeout
+        for combatant, started_fleeing in self.fleeing_combatants.items():
+            if self.turn - started_fleeing >= flee_timeout:
+                # if they are still alive/fleeing and have been fleeing long enough, escape
+                self.msg("|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
+                self.remove_combatant(combatant)
+
         # check if one side won the battle
         if not self.combatants:
             # noone left in combat - maybe they killed each other or all fled
@@ -368,26 +375,6 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 
         self.ndb.did_action = set()
 
-        # check if anyone is defeated
-        for combatant in list(self.combatants.keys()):
-            if combatant.hp <= 0:
-                # PCs roll on the death table here, NPCs die. Even if PCs survive, they
-                # are still out of the fight.
-                combatant.at_defeat()
-                self.combatants.pop(combatant)
-                self.defeated_combatants.append(combatant)
-                self.msg("|r$You() $conj(fall) to the ground, defeated.|n", combatant=combatant)
-            else:
-                self.combatants[combatant] = self.fallback_action_dict
-
-        # check if anyone managed to flee
-        flee_timeout = self.flee_timeout
-        for combatant, started_fleeing in self.fleeing_combatants.items():
-            if self.turn - started_fleeing >= flee_timeout:
-                # if they are still alive/fleeing and have been fleeing long enough, escape
-                self.msg("|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
-                self.remove_combatant(combatant)
-
         # check if one side won the battle
         self.check_stop_combat()
 
@@ -421,10 +408,6 @@ def _get_combathandler(caller, turn_timeout=30, flee_time=3, combathandler_key="
     )
 
 
-def _rerun_current_node(caller, raw_string, **kwargs):
-    return None, kwargs
-
-
 def _queue_action(caller, raw_string, **kwargs):
     """
     Goto-function that queue the action with the CombatHandler. This always returns
@@ -435,40 +418,8 @@ def _queue_action(caller, raw_string, **kwargs):
     return "node_combat"
 
 
-def _step_wizard(caller, raw_string, **kwargs):
-    """
-    Many options requires stepping through several steps, wizard style. This
-    will redirect back/forth in the sequence.
-
-    E.g. Stunt boost -> Choose ability to boost -> Choose recipient -> Choose target -> queue
-
-    """
-    caller.msg(f"_step_wizard kwargs: {kwargs}")
-    steps = kwargs.get("steps", [])
-    nsteps = len(steps)
-    istep = kwargs.get("istep", -1)
-    # one of abort, back, forward
-    step_direction = kwargs.get("step", "forward")
-
-    match step_direction:
-        case "abort":
-            # abort this wizard, back to top-level combat menu, dropping changes
-            return "node_combat"
-        case "back":
-            # step back in wizard
-            if istep <= 0:
-                return "node_combat"
-            istep = kwargs["istep"] = istep - 1
-            return steps[istep], kwargs
-        case _:
-            # forward (default)
-            if istep >= nsteps - 1:
-                # we are already at end of wizard - queue action!
-                return _queue_action(caller, raw_string, **kwargs)
-            else:
-                # step forward
-                istep = kwargs["istep"] = istep + 1
-                return steps[istep], kwargs
+def _rerun_current_node(caller, raw_string, **kwargs):
+    return None, kwargs
 
 
 def _get_default_wizard_options(caller, **kwargs):
@@ -480,12 +431,43 @@ def _get_default_wizard_options(caller, **kwargs):
 
     return [
         {"key": ("back", "b"), "goto": (_step_wizard, {**kwargs, **{"step": "back"}})},
-        {"key": ("abort", "a"), "goto": (_step_wizard, {**kwargs, **{"step": "abort"}})},
+        {"key": ("abort", "a"), "goto": "node_combat"},
         {
             "key": "_default",
             "goto": (_rerun_current_node, kwargs),
         },
     ]
+
+
+def _step_wizard(caller, raw_string, **kwargs):
+    """
+    Many options requires stepping through several steps, wizard style. This
+    will redirect back/forth in the sequence.
+
+    E.g. Stunt boost -> Choose ability to boost -> Choose recipient -> Choose target -> queue
+
+    """
+    steps = kwargs.get("steps", [])
+    nsteps = len(steps)
+    istep = kwargs.get("istep", -1)
+    # one of abort, back, forward
+    step_direction = kwargs.get("step", "forward")
+
+    if step_direction == "back":
+        # step back in wizard
+        if istep <= 0:
+            return "node_combat"
+        istep = kwargs["istep"] = istep - 1
+        return steps[istep], kwargs
+    else:
+        # step to the next step in wizard
+        if istep >= nsteps - 1:
+            # we are already at end of wizard - queue action!
+            return _queue_action(caller, raw_string, **kwargs)
+        else:
+            # step forward
+            istep = kwargs["istep"] = istep + 1
+            return steps[istep], kwargs
 
 
 def node_choose_enemy_target(caller, raw_string, **kwargs):
@@ -714,8 +696,6 @@ def node_combat(caller, raw_string, **kwargs):
     """Base combat menu"""
 
     combathandler = _get_combathandler(caller)
-
-    caller.msg(f"combathandler.combatants: {combathandler.combatants}")
 
     text = combathandler.get_combat_summary(caller)
     options = [
