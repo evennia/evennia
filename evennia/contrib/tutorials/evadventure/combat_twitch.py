@@ -501,7 +501,7 @@ class CmdUseItem(_BaseTwitchCombatCommand):
             if not target:
                 return
 
-        combathandler = self.get_or_create_combathandler(self.target)
+        combathandler = self.get_or_create_combathandler(target)
         combathandler.queue_action({"key": "use", "item": item, "target": target, "dt": 3})
         combathandler.msg(
             f"$You() prepare to use {item.get_display_name(self.caller)}!", self.caller

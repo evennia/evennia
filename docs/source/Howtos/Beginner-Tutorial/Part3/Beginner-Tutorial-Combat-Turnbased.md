@@ -292,7 +292,7 @@ class CombatActionFlee(CombatAction):
         current_turn = combathandler.turn
         started_fleeing = combathandler.fleeing_combatants[self.combatant]
         flee_timeout = combathandler.flee_timeout
-        time_left = flee_timeout - (current_turn - started_fleeing)
+        time_left = flee_timeout - (current_turn - started_fleeing) - 1
 
         if time_left > 0:
             self.msg(
@@ -372,7 +372,6 @@ class EvadventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 
         action.execute()
         action.post_execute()
-        self.check_stop_combat()
 
    def at_repeat(self):
         """
@@ -406,8 +405,8 @@ For `execute_next_action` :
 
 The `at_repeat` is called repeatedly every `interval` seconds that the Script fires. This is what we use to track when each round ends. 
 
-- **Lines 29-34**: In this example, we have no internal order between actions. So we simply randomize in which order they fire. 
-- **Line 36**: We set this `set` in the `queue_action` to know when everyone submitted a new action. We must make sure to unset it here before the next round. 
+- **Lines 28-33**: In this example, we have no internal order between actions. So we simply randomize in which order they fire. 
+- **Line 35**: We set this `set` in the `queue_action` to know when everyone submitted a new action. We must make sure to unset it here before the next round. 
 
 ### Check and stop combat
 
@@ -457,7 +456,7 @@ class EvadventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         # check if anyone managed to flee
         flee_timeout = self.flee_timeout
         for combatant, started_fleeing in self.fleeing_combatants.items():
-            if self.turn - started_fleeing >= flee_timeout:
+            if self.turn - started_fleeing >= flee_timeout - 1:
                 # if they are still alive/fleeing and have been fleeing long enough, escape
                 self.msg("|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
                 self.remove_combatant(combatant)
