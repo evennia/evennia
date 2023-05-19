@@ -1,12 +1,14 @@
 # Non-Player-Characters
 
-NPCs are all active agents that are not player characters. NPCs could be anything from merchants and quest givers, to monsters and bosses.  They could also be 'flavor' - townsfolk doing their chores, farmers tending their fields - there to make the world feel "more alive". 
-
 ```{sidebar} vNPCs
 You should usually avoid creating hundreds of NPC objects to populate your 'busy town' - in a text game so many NPCs will just spam the screen and annoy your players. Since this is a text game, you can usually get away with using _vNPcs_ - virtual NPCs. vNPCs are only described in text - a room could be described as a bustling street, farmers can be described shouting to each other. Using room descriptions for this works well, but the tutorial lesson about [EvAdventure Rooms](./Beginner-Tutorial-Rooms.md) has a section called [adding life to a room](./Beginner-Tutorial-Rooms.md#adding-life-to-a-room) that can be used for making vNPCs appear to do things in the background.
 ```
 
-In this lesson we will create the base class of _Knave_ NPCs. According to the _Knave_ rules, NPCs have some simplified stats compared to the [PC characters](./Beginner-Tutorial-Characters.md) we designed earlier: 
+NPCs are all active agents that are _not_ player characters. NPCs could be anything from merchants and quest givers, to monsters and bosses.  They could also be 'flavor' - townsfolk doing their chores, farmers tending their fields - there to make the world feel "more alive". 
+
+In this lesson we will create the base class of _EvAdventure_ NPCs based on the _Knave_ ruleset. According to the _Knave_ rules, NPCs have some simplified stats compared to the [PC characters](./Beginner-Tutorial-Characters.md) we designed earlier. 
+
+<div style="clear: right;"></div>
 
 ## The NPC base class
 
