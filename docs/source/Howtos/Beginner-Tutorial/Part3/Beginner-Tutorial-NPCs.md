@@ -12,6 +12,9 @@ In this lesson we will create the base class of _EvAdventure_ NPCs based on the 
 
 ## The NPC base class
 
+```{sidebar}
+See [evennia/contrib/tutorials/evadventure/npcs.py](evennia.contrib.tutorials.evadventure.npcs) for a ready-made example of an npc module.
+```
 > Create a new module `evadventure/npcs.py`.
 
 ```{code-block} python
