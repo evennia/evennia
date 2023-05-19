@@ -13,9 +13,10 @@ SPHINXAPIDOC ?= sphinx-apidoc
 SPHINXAPIDOCOPTS = --tocfile evennia-api  --module-first --force -d 6 --separate --templatedir=$(SOURCEDIR)/_templates/
 SPHINXAPIDOCOPTSQUICK = --tocfile evennia-api  --module-first -d 6 --separate --templatedir=$(SOURCEDIR)/_templates/
 SPHINXAPIDOCENV = members,undoc-members,show-inheritance
-SPHINXAPIDOCEXCLUDE = ../*/migrations/* ../evennia/game_template/* ../evennia/*/tests.py ../evennia/accounts/tests/* ../evennia/commands/tests/* ../evennia/comms/tests/* ../evennia/help/tests/* ../evennia/locks/tests/* ../evennia/objects/tests/* ../evennia/prototypes/tests/* ../evennia/scripts/tests/* ../evennia/server/tests/* ../evennia/typeclasses/tests/* ../evennia/utils/tests/* ../evennia/web/tests/*  # don't exclude contrib tests for tutorial purposes
+SPHINXAPIDOCEXCLUDE = ../*/migrations/* ../evennia/game_template/* ../evennia/*/tests/* ../evennia/*/tests.py
 
-# ../evennia/*/tests/* ../evennia/*/tests.py
+# ../evennia/*/tests.py ../evennia/accounts/tests/* ../evennia/commands/tests/* ../evennia/comms/tests/* ../evennia/help/tests/* ../evennia/locks/tests/* ../evennia/objects/tests/* ../evennia/prototypes/tests/* ../evennia/scripts/tests/* ../evennia/server/tests/* ../evennia/typeclasses/tests/* ../evennia/utils/tests/* ../evennia/web/tests/*  # don't exclude contrib tests for tutorial purposes
+
 
 EVDIR ?= $(realpath ../evennia)
 EVGAMEDIR ?= $(realpath ../../gamedir)

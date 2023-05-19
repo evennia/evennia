@@ -68,7 +68,7 @@ Here is the general design of the Twitch-based combat handler:
 
 - The twitch-version of the CombatHandler will be stored on each combatant whenever combat starts. When combat is over, or they leave the room with combat, the handler will be deleted. 
 - The handler will queue each action independently, starting a timer until they fire.
-- All input are handled via Commands.
+- All input are handled via Evennia [Commands](../../../Components/Commands.md).
 
 ## Twitch combat handler
 
@@ -281,10 +281,12 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
 
 ```
 
-- The `queue_action` (**Line 30**) method takes an "Action dict" representing an action the combatant wants to perform next. It must be one of the keyed Actions added to the handler in the `action_classes` property (**Line 17**). We make no use of the `combatant` keyword argument since we already know that the combatant is `self.obj`. 
+- **Line 30**: The `queue_action` method takes an "Action dict" representing an action the combatant wants to perform next. It must be one of the keyed Actions added to the handler in the `action_classes` property (**Line 17**). We make no use of the `combatant` keyword argument since we already know that the combatant is `self.obj`. 
 - **Line 43**: We simply store the given action dict in the Attribute `action_dict` on the handler. Simple and effective!
-- **Line 44**: When you enter e.g. `attack`, you expect in this type of combat to see the `attack` command repeat automatically even if you don't enter anything more. To this end we are looking for a new key in action dicts, indicating that this action should _repeat_ with a certain rate (dt, given in seconds).  We make this compatible with all action dicts by simply assuming it's zero if not specified. 
-- [evennia.utils.utils.repeat](evennia.utils.utils.repeat) and [evennia.utils.utils.unrepeat](evennia.utils.utils.unrepeat) are convenient shortcuts to the [TickerHandler](../../../Components/TickerHandler.md). You tell `repeat` to call a given method/function at a certain rate. What you get back is a reference that you can then later use to 'un-repeat' (stop the repeating) later.  We make sure to store this reference (we don't care exactly how it looks, just that we need to store it) in `the current_ticket_ref` Attribute.
+- **Line 44**: When you enter e.g. `attack`, you expect in this type of combat to see the `attack` command repeat automatically even if you don't enter anything more. To this end we are looking for a new key in action dicts, indicating that this action should _repeat_ with a certain rate (`dt`, given in seconds).  We make this compatible with all action dicts by simply assuming it's zero if not specified. 
+
+ [evennia.utils.utils.repeat](evennia.utils.utils.repeat) and [evennia.utils.utils.unrepeat](evennia.utils.utils.unrepeat) are convenient shortcuts to the [TickerHandler](../../../Components/TickerHandler.md). You tell `repeat` to call a given method/function at a certain rate. What you get back is a reference that you can then later use to 'un-repeat' (stop the repeating) later.  We make sure to store this reference (we don't care exactly how it looks, just that we need to store it) in `the current_ticket_ref` Attribute (**Line 26**).
+ 
 - **Line 48**: Whenever we queue a new action (it may replace an existing one) we must make sure to kill (un-repeat) any old repeats that are ongoing. Otherwise we would get old actions firing over and over and new ones starting alongside them.
 - **Line 49**: If `dt` is set, we call `repeat` to set up a new repeat action at the given rate. We store this new reference. After `dt` seconds, the `.execute_next_action` method will fire (we'll create that in the next section).
 
@@ -328,6 +330,11 @@ This is the method called after `dt` seconds in `queue_action`.
 - **Line 5**: We defined a 'fallback action'. This is used after a one-time action (one that should not repeat) has completed.
 - **Line 15**: We take the `'key'` from the `action-dict` and use the `action_classes` mapping to get an action class (e.g. `ACtionAttack` we defined [here](./Beginner-Tutorial-Combat-Base.md#attack-action)). 
 - **Line 16**: Here we initialize the action class with the actual current data - the combatant and the `action_dict`. This calls the `__init__` method on the class and makes the action ready to use.
+```{sidebar} New action-dict keys 
+To summarize, for twitch-combat use we have now introduced two new keys to action-dicts:
+- `dt`: How long to wait (in seconds) from queueing the action until it fires. 
+- `repeat`: Boolean determining if action should automatically be queued again after it fires.
+```
 - **Line 18**: Here we run through the usage methods of the action - where we perform the action. We let the action itself handle all the logics.
 - **Line 22**: We check for another optional flag on the action-dict: `repeat`. Unless it's set, we use the fallback-action defined on **Line 5**. Many actions should not repeat - for example, it would not make sense to do `wield` for the same weapon over and over.
 - **Line 27**: It's important that we know how to stop combat. We will write this method next.
@@ -375,10 +382,10 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
 
 We must make sure to check if combat is over. 
 
-- **Line 12**: With our `.get_sides()` method we can easily get the two sides of the conflict.
+- **Line 12**: With our `.get_sides()` method we can easily get the two sides of the conflict. Note that `combatant` is not included among the allies, so we need to add it back in on the following line.
 - **Lines 18, 19**: We get everyone still alive _and still in the same room_. The latter condition is important in case we move away from the battle - you can't hit your enemy from another room. 
 
-In the `stop_method` we'll need to do a bunch of cleanup. We'll hold off on implementing this until we have the Commands we'll need to wrap up the Twitch combat. Read on.
+In the `stop_method` we'll need to do a bunch of cleanup. We'll hold off on implementing this until we have the Commands written out. Read on.
 
 ## Commands 
 
@@ -397,7 +404,7 @@ We'll override the first two for our parent.
 
 ```{code-block} python
 :linenos: 
-:emphasize-lines: 22,48
+:emphasize-lines: 23,49
 
 # in evadventure/combat_twitch.py
 
@@ -787,8 +794,7 @@ class CmdWield(_BaseTwitchCombatCommand):
 
 ```
 
-Wield follows the same pattern. 
-
+The Wield command follows the same pattern as other commands.
 
 ## Grouping Commands for use 
 
@@ -827,24 +833,7 @@ class TwitchLookCmdSet(CmdSet):
 
 ```
 
-The first cmdset, `TwitchCombatCmdSet` is intended to be added to the Character. We can do so permanently by adding the cmdset to the default character cmdset (as outlined in the [Beginner Command lesson](../Part1/Beginner-Tutorial-Adding-Commands.md)). We can also add it more explicitly to our Character class over in `characters.py`: 
-
-```python 
-# in evadventure/characters.py 
-
-# ... 
-
-class EvAdventureCharacter(LivingMixin, DefaultCharacter): 
-
-    # ... 
-
-    def at_object_creation
-        from .combat_twitch import TwitchCombatCmdSet 
-        self.cmdset.add(TwitchCombatCmdSet, persistent=True)
-
-```
-
-For quick testing we will also explore another option in the next section. 
+The first cmdset, `TwitchCombatCmdSet` is intended to be added to the Character. We can do so permanently by adding the cmdset to the default character cmdset (as outlined in the [Beginner Command lesson](../Part1/Beginner-Tutorial-Adding-Commands.md)). In the testing section below, we'll do this in another way.
 
 What about that `TwitchLookCmdSet`? We can't add it to our character permanently, because we only want this particular version of `look` to operate while we are in combat. 
 
@@ -931,6 +920,9 @@ Inside the test, we use the `self.call()` method to explicitly fire the Command 
 
 ## A small combat test
 
+```{sidebar}
+You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev](github:evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.ev)
+```
 Showing that the individual pieces of code works (unit testing) is not enough to be sure that your combat system is actually working. We need to test all the pieces _together_. This is often called _functional testing_. While functional testing can also be automated, wouldn't it be fun to be able to actually see our code in action? 
 
 This is what we need for a minimal test: 
@@ -940,9 +932,6 @@ This is what we need for a minimal test:
  - A weapon we can `wield` 
  - An item (like a potion) we can `use`. 
 
-```{sidebar}
-You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev](github:evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.ev)
-```
 While you can create these manually in-game, it can be convenient to create a [batch-command script](../../../Components/Batch-Command-Processor.md) to set up your testing environment. 
 
 > create a new subfolder `evadventure/batchscripts/`  (if it doesn't already exist)
