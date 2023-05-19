@@ -159,18 +159,7 @@ class InMemoryAttribute(IAttribute):
 
 class AttributeProperty:
     """
-    Attribute property descriptor. Allows for specifying Attributes as Django-like 'fields'
-    on the class level. Note that while one can set a lock on the Attribute,
-    there is no way to *check* said lock when accessing via the property - use
-    the full `AttributeHandler` if you need to do access checks. Note however that if you use the
-    full `AttributeHandler` to access this Attribute, the `at_get/at_set` methods on this class will
-    _not_ fire (because you are bypassing the `AttributeProperty` entirely in that case).
-
-    Example:
-    ::
-
-        class Character(DefaultCharacter):
-            foo = AttributeProperty(default="Bar")
+    AttributeProperty.
 
     """
 
@@ -178,6 +167,13 @@ class AttributeProperty:
 
     def __init__(self, default=None, category=None, strattr=False, lockstring="", autocreate=True):
         """
+        Allows for specifying Attributes as Django-like 'fields' on the class level. Note that while
+        one can set a lock on the Attribute, there is no way to *check* said lock when accessing via
+        the property - use the full `AttributeHandler` if you need to do access checks. Note however
+        that if you use the full `AttributeHandler` to access this Attribute, the `at_get/at_set`
+        methods on this class will _not_ fire (because you are bypassing the `AttributeProperty`
+        entirely in that case).
+
         Initialize an Attribute as a property descriptor.
 
         Keyword Args:
@@ -194,6 +190,11 @@ class AttributeProperty:
                 is explicitly assigned a value. This makes it more efficient while it retains
                 its default (there's no db access), but without an actual Attribute generated,
                 one cannot access it via .db, the AttributeHandler or see it with `examine`.
+        Example:
+        ::
+
+            class Character(DefaultCharacter):
+                foo = AttributeProperty(default="Bar")
 
         """
         self._default = default

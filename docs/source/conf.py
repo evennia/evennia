@@ -179,7 +179,7 @@ def url_resolver(app, docname, source):
     Convert urls by catching special markers.
 
     Supported replacements (used e.g. as [txt](github:...)
-        github:master/<url>  - add path to Evennia github master branch
+        github:main/<url>  - add path to Evennia github master branch
         github:develop/<url> - add path to Evennia github develop branch
         github:issue - add link to the Evennia github issue-create page
         src:foo.bar#Foo - add link to source doc in _modules
@@ -189,7 +189,6 @@ def url_resolver(app, docname, source):
     """
 
     def _url_remap(url):
-
         # determine depth in tree of current document
         docdepth = docname.count("/") + 1
         relative_path = "../".join("" for _ in range(docdepth))
@@ -294,7 +293,6 @@ def autodoc_post_process_docstring(app, what, name, obj, options, lines):
     Post-process docstring in various ways. Must modify lines-list in-place.
     """
     try:
-
         # clean out ANSI colors
 
         if ansi_clean:

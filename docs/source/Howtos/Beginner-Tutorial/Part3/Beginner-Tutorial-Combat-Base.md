@@ -1,11 +1,11 @@
 # Combat base framework
 
-Combat is core to many games. Exactly how it works is very game-dependent. For EvAdventure we will show off two common flavors: 
+Combat is core to many games. Exactly how it works is very game-dependent. In this lesson we will build a framework to implement two common flavors: 
 
-- "Twitch-based" combat means that you perform a combat action by entering a command, and after some delay (which may depend on your skills etc), the action happens. It's called 'twitch' because actions often happen fast enough that changing your strategy may involve some element of quick thinking and a 'twitchy trigger finger'. 
-- "Turn-based" combat means that players input actions in clear turns. Timeout for entering/queuing your actions is often much longer than twitch-based style. Once everyone made their choice (or the timeout is reached), everyone's action happens all at once, after which the next turn starts. This style of combat requires less reflexes. 
+- "Twitch-based" combat ([specific lesson here](./Beginner-Tutorial-Combat-Twitch.md)) means that you perform a combat action by entering a command, and after some delay (which may depend on your skills etc), the action happens. It's called 'twitch' because actions often happen fast enough that changing your strategy may involve some element of quick thinking and a 'twitchy trigger finger'. 
+- "Turn-based" combat ([specific lesson here](./Beginner-Tutorial-Combat-Turnbased.md)) means that players input actions in clear turns. Timeout for entering/queuing your actions is often much longer than twitch-based style. Once everyone made their choice (or the timeout is reached), everyone's action happens all at once, after which the next turn starts. This style of combat requires less player reflexes. 
 
-We will design a common combat system that supports both styles. 
+We will design a base combat system that supports both styles. 
 
 - We need a `CombatHandler` to track the progress of combat. This will be a [Script](../../../Components/Scripts.md). Exactly how this works (and where it is stored) will be a bit different between Twitch- and Turnbased combat. We will create its common framework in this lesson.
 - Combat are divided into _actions_. We want to be able to easily extend our combat with more possible actions. An action needs Python code to show what actually happens when the action is performed. We will define such code in `Action` classes. 
@@ -20,9 +20,9 @@ In [evennia/contrib/tutorials/evadventure/combat_base.py](evennia.contrib.tutori
 ```
 Our "Combat Handler" will handle the administration around combat. It needs to be _persistent_ (even is we reload the server your combat should keep going). 
 
-Creating the CombatHandler is a little of a catch-22 - how it works depends on how actions and action-dicts look. But without having the CombatHandler, it's hard to know how to design Actions and Action-dicts. So we'll start with its general structure and fill out the details later in this lesson. 
+Creating the CombatHandler is a little of a catch-22 - how it works depends on how Actions and Action-dicts look. But without having the CombatHandler, it's hard to know how to design Actions and Action-dicts. So we'll start with its general structure and fill out the details later in this lesson. 
 
-Below, methods with `pass` will be filled out this lesson while those raising `NotImplementedError` will be different for Twitch/Turnbased combat and will be implemented in their respective lessons.
+Below, methods with `pass` will be filled out this lesson while those raising `NotImplementedError` will be different for Twitch/Turnbased combat and will be implemented in their respective lessons following this one.
 
 ```python 
 # in evadventure/combat_base.py 
@@ -41,15 +41,15 @@ class EvAdventureCombatBaseHandler(DefaultSCript):
 	and tracks all sides of it.
 	
     """
-	# common for all types of combat
+    # common for all types of combat
 
     action_classes = {}          # to fill in later 
     fallback_action_dict = {}
 
-	@classmethod 
-	def get_or_create_combathandler(cls, obj, **kwargs): 
-	    """ Get or create combathandler on `obj`.""" 
-		pass
+    @classmethod 
+    def get_or_create_combathandler(cls, obj, **kwargs): 
+        """ Get or create combathandler on `obj`.""" 
+        pass
 
     def msg(self, message, combatant=None, broadcast=True, location=True): 
         """ 
@@ -58,13 +58,13 @@ class EvAdventureCombatBaseHandler(DefaultSCript):
         """
         pass  # TODO
      
-	def get_combat_summary(self, combatant):
-	    """ 
-	    Get a nicely formatted 'battle report' of combat, from the 
-	    perspective of the combatant.
-	    
-		""" 
-		pass  # TODO
+    def get_combat_summary(self, combatant):
+        """ 
+        Get a nicely formatted 'battle report' of combat, from the 
+        perspective of the combatant.
+        
+    	""" 
+        pass  # TODO
 
 	# implemented differently by Twitch- and Turnbased combat
 
@@ -75,28 +75,28 @@ class EvAdventureCombatBaseHandler(DefaultSCript):
 	        (who is _not_ included in the `allies` list.
         
         """
-	    raise NotImplementedError 
+        raise NotImplementedError 
 
     def give_advantage(self, recipient, target): 
         """ 
         Give advantage to recipient against target.
         
         """
-		raise NotImplementedError 
+        raise NotImplementedError 
 
     def give_disadvantage(self, recipient, target): 
         """
         Give disadvantage to recipient against target. 
 
-		"""
+        """
         raise NotImplementedError
 
-	def has_advantage(self, combatant, target): 
-	    """ 
-	    Does combatant have advantage against target?
-	    
-	    """ 
-	    raise NotImplementedError 
+    def has_advantage(self, combatant, target): 
+        """ 
+        Does combatant have advantage against target?
+        
+        """ 
+        raise NotImplementedError 
 
     def has_disadvantage(self, combatant, target): 
         """ 
@@ -105,13 +105,13 @@ class EvAdventureCombatBaseHandler(DefaultSCript):
         """ 
         raise NotImplementedError
 
-	def queue_action(self, combatant, action_dict):
-	    """ 
-	    Queue an action for the combatant by providing 
-		an action dict.
-  
-	    """ 
-	    raise NotImplementedError
+    def queue_action(self, combatant, action_dict):
+        """ 
+        Queue an action for the combatant by providing 
+        action dict.
+        
+        """ 
+        raise NotImplementedError
 
     def execute_next_action(self, combatant): 
         """ 
@@ -120,26 +120,26 @@ class EvAdventureCombatBaseHandler(DefaultSCript):
         """ 
         raise NotImplementedError
 
-	def start_combat(self): 
-	    """ 
-	    Start combat.
-	    
-		""" 
-		raise NotImplementedError
-
-	def check_stop_combat(self): 
-		"""
-		Check if the combat is over and if it should be stopped.
-		 
-		"""
-		raise NotImplementedError 
-
-	def stop_combat(self): 
-		""" 
-		Stop combat and do cleanup.
-		
-		"""
-		raise NotImplementedError
+    def start_combat(self): 
+        """ 
+        Start combat.
+        
+    	""" 
+    	raise NotImplementedError
+    
+    def check_stop_combat(self): 
+        """
+        Check if the combat is over and if it should be stopped.
+         
+        """
+        raise NotImplementedError 
+        
+    def stop_combat(self): 
+        """ 
+        Stop combat and do cleanup.
+        
+        """
+        raise NotImplementedError
 
 
 ```
@@ -163,7 +163,7 @@ from evennia import create_script
 
 class EvAdventureCombatBaseHandler(DefaultScript): 
 
-	# ... 
+    # ... 
 
     @classmethod
     def get_or_create_combathandler(cls, obj, **kwargs):
@@ -204,9 +204,11 @@ class EvAdventureCombatBaseHandler(DefaultScript):
 
 This helper method uses `obj.scripts.get()` to find if the combat script already exists 'on' the provided `obj`. If not, it will create it using Evennia's [create_script](evennia.utils.create.create_script) function. For some extra speed we cache the handler as `obj.ndb.combathandler` The `.ndb.` (non-db) means that handler is cached only in memory. 
 
-To know if the cache is out of date, we make sure to also check if the combathandler we got has an `id` that is not `None` . If it's `None`, this means the database entity was deleted and we just got its cached python representation from memory - we need to recreate it.
+```{sidebar} Checking .id (or .pk)
+When getting it from cache, we make sure to also check if the combathandler we got has a database `.id` that is not `None` (we could also check `.pk`, stands for "primary key") . If it's `None`, this means the database entity was deleted and we just got its cached python representation from memory - we need to recreate it.
+```
 
-This is a `classmethod`, meaning it should be used on the handler class directly (rather than on an _instance_ of said class). This makes sense because this method actually should return the new instance. 
+`get_or_create_combathandler` is decorated to be a [classmethod](https://docs.python.org/3/library/functions.html#classmethod), meaning it should be used on the handler class directly (rather than on an _instance_ of said class). This makes sense because this method actually should return the new instance. 
 
 As a class method we'll need to call this directly on the class, like this: 
 
@@ -392,7 +394,7 @@ In EvAdventure we will only support a few common combat actions, mapping to the 
 
 To pass around the details of an attack (the second point above), we will use a `dict`. A `dict` is simple and also easy to save in an `Attribute`. We'll call this the `action_dict` and here's what we need for each action. 
 
-> You don't need to type these out anywhere, we will use them when calling `combathandler.queue_action(combatant, action_dict)`.
+> You don't need to type these out anywhere, it's listed here for reference. We will use these dicts when calling `combathandler.queue_action(combatant, action_dict)`.
 
 ```python 
 hold_action_dict = {
@@ -408,7 +410,8 @@ stunt_action_dict = {
 	"target": <Character/NPC>,  # who the recipient gainst adv/dis against
 	"advantage": bool,  # grant advantage or disadvantage?
 	"stunt_type": Ability,   # Ability to use for the challenge
-	"defense_type": Ability, # what Ability for recipient to defend against dis 
+	"defense_type": Ability, # what Ability for recipient to defend with if we
+                    	     # are trying to give disadvantage 
 }
 use_item_action_dict = { 
     "key": "use", 
@@ -418,6 +421,11 @@ use_item_action_dict = {
 wield_action_dict = { 
     "key": "wield",
     "item": <Object>					
+}
+
+# used only for the turnbased combat, so its Action will be defined there
+flee_action_dict = { 
+    "key": "flee"                   
 }
 ```
 
@@ -432,7 +440,7 @@ attack_action_dict = {
 }
 ```
 
-Let's make the `Stunt` dict a little clearer too. In this example, The `Trickster` is performing a _Stunt_ in order to help his friend `Paladin` to gain an INT- _advantage_ against the `Goblin` (maybe the paladin is preparing to cast a spell of something). Since `Trickster` is doing the action, he's not showing up in the dict:
+Let's explain the longest action dict, the `Stunt` action dict in more detail as well. In this example, The `Trickster` is performing a _Stunt_ in order to help his friend `Paladin` to gain an INT- _advantage_ against the `Goblin` (maybe the paladin is preparing to cast a spell of something). Since `Trickster` is doing the action, he's not showing up in the dict:
 
 ```python 
 stunt_action_dict - { 
@@ -440,11 +448,15 @@ stunt_action_dict - {
     "recipient": Paladin,
     "target": Goblin,
     "advantage": True,
-    "stunt_type": Ability.DEX,
+    "stunt_type": Ability.INT,
     "defense_type": Ability.INT,
 }
 ```
-This should result in a DEX vs INT based check between the `Trickster` and the `Goblin` (maybe the trickster is trying to trick the goblin with some sleight-of-hand?). If the `Trickster` wins, the `Paladin` gains advantage against the Goblin on the `Paladin`'s next action.
+```{sidebar}
+In EvAdventure, we'll always set `stunt_type == defense_type` for simplicity. But you could also consider mixing things up so you could use DEX to confuse someone  and give them INT disadvantage, for example.
+```
+This should result in an INT vs INT based check between the `Trickster` and the `Goblin` (maybe the trickster is trying to confuse the goblin with some clever word play). If the `Trickster` wins, the `Paladin` gains advantage against the Goblin on the `Paladin`'s next action . 
+
 
 ## Action classes 
 
@@ -509,6 +521,8 @@ if action.can_use():
 ```python
 # in evadventure/combat_base.py 
 
+# ... 
+
 class CombatActionHold(CombatAction): 
     """ 
     Action that does nothing 
@@ -526,6 +540,8 @@ Holding does nothing but it's cleaner to nevertheless have a separate class for 
 
 ```python
 # in evadventure/combat_base.py
+
+# ... 
 
 class CombatActionAttack(CombatAction):
      """
@@ -555,6 +571,10 @@ Refer to how we [designed Evadventure weapons](./Beginner-Tutorial-Objects.md#we
 ### Stunt Action
 
 ```python
+# in evadventure/combat_base.py 
+
+# ... 
+
 class CombatActionStunt(CombatAction):
     """
     Perform a stunt the grants a beneficiary (can be self) advantage on their next action against a 
@@ -622,8 +642,6 @@ class CombatActionStunt(CombatAction):
                 "|yHaving succeeded, you hold back to plan your next move.|n [hold]",
                 broadcast=False,
             )
-            combathandler.queue_action(
-	            attacker, combathandler.fallback_action_dict)
         else:
             self.msg(f"$You({defender.key}) $conj(resist)! $You() $conj(fail) the stunt.")
 
@@ -638,6 +656,10 @@ After we have performed a successful stunt, we queue the `combathandler.fallback
 ### Use Item Action 
 
 ```python
+# in evadventure/combat_base.py 
+
+# ... 
+
 class CombatActionUseItem(CombatAction):
     """
     Use an item in combat. This is meant for one-off or limited-use items (so things like scrolls and potions, not swords and shields). If this is some sort of weapon or spell rune, we refer to the item to determine what to use for attack/defense rolls.
@@ -663,11 +685,6 @@ class CombatActionUseItem(CombatAction):
                 disadvantage=self.combathandler.has_disadvantage(user, target),
             )
             item.at_post_use(user, target)
-        # to back to idle after this
-        self.combathandler.queue_action(
-            self.combatant,     i
-            self.combathandler.fallback_action_dict
-	    )
 ```
 
 See the [Consumable items in the Object lesson](./Beginner-Tutorial-Objects.md) to see how consumables work. Like with weapons, we offload all the logic to the item we use.
@@ -675,6 +692,10 @@ See the [Consumable items in the Object lesson](./Beginner-Tutorial-Objects.md) 
 ### Wield Action 
 
 ```python
+# in evadventure/combat_base.py 
+
+# ... 
+
 class CombatActionWield(CombatAction):
     """
     Wield a new weapon (or spell) from your inventory. This will 
@@ -689,9 +710,6 @@ class CombatActionWield(CombatAction):
 
     def execute(self):
         self.combatant.equipment.move(self.item)
-        self.combathandler.queue_action(
-	        self.combatant, self.combathandler.fallback_action_dict
-	    )
 
 ```
 

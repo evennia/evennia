@@ -36,6 +36,7 @@ evennia.contrib.tutorials.evadventure
 .. toctree::
    :maxdepth: 6
 
+   evennia.contrib.tutorials.evadventure.batchscripts
    evennia.contrib.tutorials.evadventure.tests
 
 ```

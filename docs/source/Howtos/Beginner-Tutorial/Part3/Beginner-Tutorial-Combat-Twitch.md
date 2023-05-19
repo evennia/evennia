@@ -67,14 +67,14 @@ An example of an implemented Twitch combat system can be found in [evennia/contr
 Here is the general design of the Twitch-based combat handler: 
 
 - The twitch-version of the CombatHandler will be stored on each combatant whenever combat starts. When combat is over, or they leave the room with combat, the handler will be deleted. 
-- The handler will start queue each action independently, starting a timer until they fire.
+- The handler will queue each action independently, starting a timer until they fire.
 - All input are handled via Commands.
 
 ## Twitch combat handler
 
 > Create a new module `evadventure/combat_twitch.py`.
 
-We will make use of the _Combat Actions_, _Combat dicts_ and the parent `EvAdventureCombatBaseHandler` [we created previously](./Beginner-Tutorial-Combat-Base.md). 
+We will make use of the _Combat Actions_, _Action dicts_ and the parent `EvAdventureCombatBaseHandler` [we created previously](./Beginner-Tutorial-Combat-Base.md). 
 
 ```python 
 # in evadventure/combat_twitch.py
@@ -941,7 +941,7 @@ This is what we need for a minimal test:
  - An item (like a potion) we can `use`. 
 
 ```{sidebar}
-You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev](evennia.contrib.tutorials.evadventure.batchscripts)
+You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev](github:evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.ev)
 ```
 While you can create these manually in-game, it can be convenient to create a [batch-command script](../../../Components/Batch-Command-Processor.md) to set up your testing environment. 
 
