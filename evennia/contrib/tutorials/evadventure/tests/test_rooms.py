@@ -48,7 +48,7 @@ Exits: north, northeast, east, southeast, south, southwest, west, and northwest"
 
         result = "\n".join(part.rstrip() for part in strip_ansi(desc).split("\n"))
         expected = "\n".join(part.rstrip() for part in expected.split("\n"))
-        print(result)
-        print(expected)
+        # print(result)
+        # print(expected)
 
         self.assertEqual(result, expected)
