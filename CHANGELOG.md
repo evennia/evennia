@@ -1,5 +1,13 @@
 # Changelog
 
+## Main branch
+
+- Contrib: Container typeclass with new commands for storing and retrieving
+  things inside them (InspectorCaracal)
+- Fix: The `AttributeHandler.all()` now actually accepts `category=` as
+  keyword arg, like our docs already claimed it should (Volund)
+
+
 ## Evennia 1.3.0
 
 Apr 29, 2023

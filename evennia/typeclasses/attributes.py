@@ -1392,11 +1392,12 @@ class AttributeHandler:
         """
         self.backend.clear_attributes(category, accessing_obj, default_access)
 
-    def all(self, accessing_obj=None, default_access=True):
+    def all(self, category=None, accessing_obj=None, default_access=True):
         """
         Return all Attribute objects on this object, regardless of category.
 
         Args:
+            category (str, optional): A given category to limit results to.
             accessing_obj (object, optional): Check the `attrread`
                 lock on each attribute before returning them. If not
                 given, this check is skipped.
@@ -1410,6 +1411,8 @@ class AttributeHandler:
 
         """
         attrs = self.backend.get_all_attributes()
+        if category:
+            attrs = [attr for attr in attrs if attr.category == category]
 
         if accessing_obj:
             return [
