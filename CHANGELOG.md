@@ -6,6 +6,8 @@
   things inside them (InspectorCaracal)
 - Fix: The `AttributeHandler.all()` now actually accepts `category=` as
   keyword arg, like our docs already claimed it should (Volund)
+- Docs: New Beginner-Tutorial lessons for NPCs, Base-Combat Twitch-Combat and
+  Turnbased-combat (note that the Beginner tutorial is still WIP).
 
 
 ## Evennia 1.3.0
