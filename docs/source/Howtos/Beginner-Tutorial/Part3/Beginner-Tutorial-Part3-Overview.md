@@ -22,15 +22,21 @@ The tutorial game is under development and is not yet complete, nor tested. Use 
 In part three of the Evennia Beginner tutorial we will go through the actual creation of 
 our tutorial game _EvAdventure_, based on the [Knave](https://www.drivethrurpg.com/product/250888/Knave) RPG ruleset. 
 
-Even if this is not the game-style you are interested in, following along will give you a lot 
-of experience using Evennia and be really helpful for doing your own thing later!
-
-This is a big part. You'll be seeing a lot of code and there are plenty of lessons to go through.  Take your time!
-
 If you followed the previous parts of this tutorial series you will have some notions about Python and where to  find and make use of things in Evennia. We also have a good idea of the type of game we will create.
 
-Fully coded examples of all code we make in this part can be found in the 
-[evennia/contrib/tutorials/evadventure](../../../api/evennia.contrib.tutorials.evadventure.md) package.
+Even if this is not the game-style you are interested in, following along will give you a lot 
+of experience using Evennia and be really helpful for doing your own thing later! The EvAdventure game code is also built to easily be expanded upon. 
+
+Fully coded examples of all code we make in this part can be found in the
+[evennia/contrib/tutorials/evadventure](../../../api/evennia.contrib.tutorials.evadventure.md) package. There are three common ways to learn from this:  
+
+1. Follow the tutorial lessons in sequence and use it to write your own code, referring to the ready-made code as extra help, context, or as a 'facit' to check yourself. 
+2. Read through the code in the package and refer to the tutorial lesson for each part for more information on what you see. 
+3. Some mix of the two.
+
+Which approach you choose is individual - we all learn in different ways. 
+
+Either way, this is a big part. You'll be seeing a lot of code and there are plenty of lessons to go through. We are making a whole game from scratch after all. Take your time!
 
 ## Lessons 
 

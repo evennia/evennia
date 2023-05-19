@@ -3,13 +3,15 @@ EvAdventure Base combat utilities.
 
 This establishes the basic building blocks for combat:
 
-    - `CombatFailure` - exception for combat-specific errors.
-    - `CombatAction` (and subclasses) - classes encompassing all the working around an action.
-      They are initialized from 'action-dicts` - dictionaries with all the relevant data for the
-      particular invocation
-    - `CombatHandler` - base class for running a combat. Exactly how this is used depends on the
-      type of combat intended (twitch- or turn-based) so many details of this will be implemented
-      in child classes.
+- `CombatFailure` - exception for combat-specific errors.
+- `CombatAction` (and subclasses) - classes encompassing all the working around an action.
+  They are initialized from 'action-dicts` - dictionaries with all the relevant data for the
+  particular invocation
+- `CombatHandler` - base class for running a combat. Exactly how this is used depends on the
+  type of combat intended (twitch- or turn-based) so many details of this will be implemented
+  in child classes.
+
+----
 
 """
 
@@ -23,7 +25,7 @@ from . import rules
 
 class CombatFailure(RuntimeError):
     """
-    Some failure during actions.
+    Some failure during combat actions.
 
     """
 
@@ -98,28 +100,21 @@ class CombatAction:
 class CombatActionHold(CombatAction):
     """
     Action that does nothing.
-
-    Note:
-        Refer to as 'hold'
-
-    action_dict = {
-            "key": "hold"
-        }
+    ::
+        action_dict = {
+                "key": "hold"
+            }
     """
 
 
 class CombatActionAttack(CombatAction):
     """
     A regular attack, using a wielded weapon.
-
-    action-dict = {
-            "key": "attack",
-            "target": Character/Object
-        }
-
-    Note:
-        Refer to as 'attack'
-
+    ::
+        action-dict = {
+                "key": "attack",
+                "target": Character/Object
+            }
     """
 
     def execute(self):
@@ -140,19 +135,16 @@ class CombatActionStunt(CombatAction):
     target. Whenever performing a stunt that would affect another negatively (giving them
     disadvantage against an ally, or granting an advantage against them, we need to make a check
     first. We don't do a check if giving an advantage to an ally or ourselves.
-
-    action_dict = {
-           "key": "stunt",
-           "recipient": Character/NPC,
-           "target": Character/NPC,
-           "advantage": bool,  # if False, it's a disadvantage
-           "stunt_type": Ability,  # what ability (like STR, DEX etc) to use to perform this stunt.
-           "defense_type": Ability, # what ability to use to defend against (negative) effects of
-            this stunt.
-        }
-
-    Note:
-        refer to as 'stunt'.
+    ::
+        action_dict = {
+               "key": "stunt",
+               "recipient": Character/NPC,
+               "target": Character/NPC,
+               "advantage": bool,  # if False, it's a disadvantage
+               "stunt_type": Ability,  # what ability (like STR, DEX etc) to use to perform this stunt.
+               "defense_type": Ability, # what ability to use to defend against (negative) effects of
+                this stunt.
+            }
 
     """
 
@@ -209,16 +201,12 @@ class CombatActionUseItem(CombatAction):
     Use an item in combat. This is meant for one-off or limited-use items (so things like
     scrolls and potions, not swords and shields). If this is some sort of weapon or spell rune,
     we refer to the item to determine what to use for attack/defense rolls.
-
-    action_dict = {
-            "key": "use",
-            "item": Object
-            "target": Character/NPC/Object/None
-        }
-
-    Note:
-        Refer to as 'use'
-
+    ::
+        action_dict = {
+                "key": "use",
+                "item": Object
+                "target": Character/NPC/Object/None
+            }
     """
 
     def execute(self):
@@ -234,22 +222,17 @@ class CombatActionUseItem(CombatAction):
                 disadvantage=self.combathandler.has_disadvantage(user, target),
             )
             item.at_post_use(user, target)
-        # to back to idle after this
 
 
 class CombatActionWield(CombatAction):
     """
     Wield a new weapon (or spell) from your inventory. This will swap out the one you are currently
     wielding, if any.
-
-    action_dict = {
-            "key": "wield",
-            "item": Object
-        }
-
-    Note:
-        Refer to as 'wield'.
-
+    ::
+        action_dict = {
+                "key": "wield",
+                "item": Object
+            }
     """
 
     def execute(self):
