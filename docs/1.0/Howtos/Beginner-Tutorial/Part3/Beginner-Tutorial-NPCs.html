@@ -114,11 +114,14 @@
 <p class="sidebar-title">vNPCs</p>
 <p>You should usually avoid creating hundreds of NPC objects to populate your ‘busy town’ - in a text game so many NPCs will just spam the screen and annoy your players. Since this is a text game, you can usually get away with using <em>vNPcs</em> - virtual NPCs. vNPCs are only described in text - a room could be described as a bustling street, farmers can be described shouting to each other. Using room descriptions for this works well, but the tutorial lesson about <a class="reference internal" href="Beginner-Tutorial-Rooms.html"><span class="doc std std-doc">EvAdventure Rooms</span></a> has a section called <a class="reference internal" href="Beginner-Tutorial-Rooms.html#adding-life-to-a-room"><span class="std std-doc">adding life to a room</span></a> that can be used for making vNPCs appear to do things in the background.</p>
 </aside>
-<p>NPCs are all active agents that are <em>not</em> player characters. NPCs could be anything from merchants and quest givers, to monsters and bosses.  They could also be ‘flavor’ - townsfolk doing their chores, farmers tending their fields - there to make the world feel “more alive”.</p>
+<p><em>Non-Player-Characters</em>, or NPCs, is the common term for all active agents that are <em>not</em> controlled by players. NPCs could be anything from merchants and quest givers, to monsters and bosses.  They could also be ‘flavor’ - townsfolk doing their chores, farmers tending their fields - there to make the world feel “more alive”.</p>
 <p>In this lesson we will create the base class of <em>EvAdventure</em> NPCs based on the <em>Knave</em> ruleset. According to the <em>Knave</em> rules, NPCs have some simplified stats compared to the <a class="reference internal" href="Beginner-Tutorial-Characters.html"><span class="doc std std-doc">PC characters</span></a> we designed earlier.</p>
 <div style="clear: right;"></div>
 <section id="the-npc-base-class">
 <h2><span class="section-number">8.1. </span>The NPC base class<a class="headerlink" href="#the-npc-base-class" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>See <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia-contrib-tutorials-evadventure-npcs"><span class="std std-ref">evennia/contrib/tutorials/evadventure/npcs.py</span></a> for a ready-made example of an npc module.</p>
+</aside>
 <blockquote>
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">evadventure/npcs.py</span></code>.</p>
 </div></blockquote>
