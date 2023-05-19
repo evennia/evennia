@@ -56,6 +56,7 @@ Beginner-Tutorial-NPCs
 Beginner-Tutorial-Combat-Base
 Beginner-Tutorial-Combat-Twitch
 Beginner-Tutorial-Combat-Turnbased
+Beginner-Tutorial-AI
 Beginner-Tutorial-Dungeon
 Beginner-Tutorial-Monsters
 Beginner-Tutorial-Quests

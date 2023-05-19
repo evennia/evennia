@@ -350,7 +350,7 @@ We use a Python `set()` to track who has queued an action this turn. If all comb
 
 ```{code-block} python
 :linenos: 
-:emphasize-lines: 13,17,31
+:emphasize-lines: 13,16,17,22,43,49
 
 # in evadventure/combat_turnbased.py 
 
@@ -372,6 +372,18 @@ class EvadventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 
         action.execute()
         action.post_execute()
+        
+        if action_dict.get("repeat", False):
+            # queue the action again *without updating the 
+            # *.ndb.did_action list* (otherwise
+            # we'd always auto-end the turn if everyone used 
+            # repeating actions and there'd be
+            # no time to change it before the next round)
+            self.combatants[combatant] = action_dict
+        else:
+            # if not a repeat, set the fallback action
+            self.combatants[combatant] = self.fallback_action_dict
+
 
    def at_repeat(self):
         """
@@ -399,22 +411,21 @@ Our action-execution consists of two parts - the `execute_next_action` (which wa
 
 For `execute_next_action` :
 
-- **Line 11**: We get the `action_dict` from the `combatants` Attribute. We return the `fallback_action_dict` if nothing was queued (this defaults to `hold`).
-- **Line 14**: We use the `key` of the `action_dict` (which would be something like "attack", "use", "wield" etc) to get the class of the matching Action from the `action_classes` dictionary.
-- **Line 15**: Here the action class is instantiated with the combatant and action dict, making it ready to execute. This is then on the following lines. 
+- **Line 13**: We get the `action_dict` from the `combatants` Attribute. We return the `fallback_action_dict` if nothing was queued (this defaults to `hold`).
+- **Line 16**: We use the `key` of the `action_dict` (which would be something like "attack", "use", "wield" etc) to get the class of the matching Action from the `action_classes` dictionary.
+- **Line 17**: Here the action class is instantiated with the combatant and action dict, making it ready to execute. This is then executed on the following lines. 
+- **Line 22**: We introduce a new optional `action-dict` here, the boolean `repeat` key. This allows us to re-queue the action. If not the fallback action will be used. 
 
 The `at_repeat` is called repeatedly every `interval` seconds that the Script fires. This is what we use to track when each round ends. 
 
-- **Lines 28-33**: In this example, we have no internal order between actions. So we simply randomize in which order they fire. 
-- **Line 35**: We set this `set` in the `queue_action` to know when everyone submitted a new action. We must make sure to unset it here before the next round. 
+- **Lines 43**: In this example, we have no internal order between actions. So we simply randomize in which order they fire. 
+- **Line 49**: This `set` was assigned to in the `queue_action` method to know when everyone submitted a new action. We must make sure to unset it here before the next round. 
 
 ### Check and stop combat
 
 ```{code-block} python
 :linenos: 
 :emphasize-lines: 28,41,49,60
-
-from evennia.utils.utils import list_to_string
 
 # in evadventure/combat_turnbased.py 
 
@@ -527,9 +538,9 @@ The `start(**kwargs)` method is a method on the Script, and will make it start t
 
 ## Using EvMenu for the combat menu
 
-The [EvMenu](../../../Components/EvMenu.md) is used to create in-game menues in Evennia. We used a simple EvMenu already in the [Character Generation Lesson](./Beginner-Tutorial-Chargen.md). This time we'll need to be a bit more advanced.  While EvMenu is described in detail on its own page, we will give a quick overview of how it works here. 
+The _EvMenu_ used to create in-game menues in Evennia. We used a simple EvMenu already in the [Character Generation Lesson](./Beginner-Tutorial-Chargen.md). This time we'll need to be a bit more advanced.  While [The EvMenu documentation](../../../Components/EvMenu.md) describe its functionality in more detail, we will give a quick overview of how it works here.
 
-An EvMenu is made up of _nodes_, which are regular functions on this form: 
+An EvMenu is made up of _nodes_, which are regular functions on this form (somewhat simplified here, there are more options): 
 
 ```python 
 def node_somenodename(caller, raw_string, **kwargs): 
@@ -545,7 +556,6 @@ def node_somenodename(caller, raw_string, **kwargs):
     ]
     return text, options
 ```
-> There are more possibilities, described in the main [EvMenu docs](../../../Components/EvMenu.md),
 
 So basically each node takes the arguments of `caller` (the one using the menu), `raw_string` (the empty string or what the user input on the _previous node_) and `**kwargs` which can be used to pass data from node to node. It returns `text` and `options`. 
 
@@ -575,13 +585,14 @@ def _goto_when_choosing_option1(caller, raw_string, **kwargs):
     return nodename  # also nodename, dict works 
 ```
 
+```{sidebar} Separating node-functions from goto callables
+To make node-functions clearly separate from goto-callables, Evennia docs always prefix node-functions with `node_` and menu goto-functions with an underscore `_` (which is also making goto-functions 'private' in Python lingo). 
+```
 Here, `caller` is still the one using the menu and `raw_string` is the actual string you entered to choose this option. `**kwargs` is the keywords you added to the `(callable, {keywords})` tuple. 
 
 The goto-callable must return the name of the next node. Optionally, you can return both  `nodename, {kwargs}`. If you do the next node will get those kwargs as ingoing `**kwargs`. This way you can pass information from one node to the next. A special feature is that if `nodename` is returned as `None`, then the _current_ node will be _rerun_ again. 
 
-> To make node functions clearly separate from goto-callables, Evennia docs prefix the first with `node_...` and the latter with `_`. 
-
-Here's an example of how the goto-callable and node-function hang together: 
+Here's a (somewhat contrived) example of how the goto-callable and node-function hang together: 
 
 ```
 # goto-callable
@@ -611,26 +622,26 @@ def node_somenodename(caller, raw_string, **kwargs):
 ## Menu for Turnbased combat 
 
 
-Our combat menu will be pretty simple. We will have one central menu node with options indicating all the different actions of combat. When choosing an option, the player should be asked a series of question, each specifying one piece of information needed for that action. The last step will be the build this information into an `action-dict` we can queue with the combathandler. 
+Our combat menu will be pretty simple. We will have one central menu node with options indicating all the different actions of combat. When choosing an action in the menu, the player should be asked a series of question, each specifying one piece of information needed for that action. The last step will be the build this information into an `action-dict` we can queue with the combathandler. 
 
-To understand the process, here's how the action selection will work: 
+To understand the process, here's how the action selection will work (read left to right): 
 
-| start node | step 1 | step 2 | step 3 | step 4 |
+| In base node | step 1 | step 2 | step 3 | step 4 |
 | --- | --- | --- | --- | --- | 
 | select `attack` | select `target` | queue action-dict | - | - |  
-| select `stunt - give advantage` | select `Ability to boost`| select `allied recipient` | select `enemy target` | queue action-dict | 
-| select `stunt - give disadvantage` | select `Ability to foil` | select `enemy recipient` | select `allied target` | queue action-dict |
-| select `use item on yourself or ally` | select `item` to use from inventory | select `allied target` | queue action-dict | - |
-| select `use item on enemy` | select `item` to use from inventory | select `enemy target` | queue action-dict | - |
-| select `wield/swap item from inventory` | select `item from inventory` | queue action-dict | - | - |
+| select `stunt - give advantage` | select `Ability`| select `allied recipient` | select `enemy target` | queue action-dict | 
+| select `stunt - give disadvantage` | select `Ability` | select `enemy recipient` | select `allied target` | queue action-dict |
+| select `use item on yourself or ally` | select `item` from inventory | select `allied target` | queue action-dict | - |
+| select `use item on enemy` | select `item` from inventory | select `enemy target` | queue action-dict | - |
+| select `wield/swap item from inventory` | select `item` from inventory` | queue action-dict | - | - |
 | select `flee` | queue action-dict | - | - | - | 
 | select `hold, doing nothing` | queue action-dict | - | - | - |
 
-Looking at the above table we can see that we have a lot of re-use. The selection of allied/enemy/target/recipient/item are represent nodes that are reused between different actions. 
+Looking at the above table we can see that we have _a lot_ of re-use. The selection of allied/enemy/target/recipient/item represent nodes that can be shared by different actions. 
 
 Each of these actions also follow a linear sequence, like the step-by step 'wizard' you see in some software. We want to be able to step back and forth in each sequence, and also abort the action if you change your mind along the way. 
 
-After queueing the action, we should always go back to the start node where we will wait until the round ends and all actions are executed.
+After queueing the action, we should always go back to the base node where we will wait until the round ends and all actions are executed.
 
 We will create a few helpers to make our particular menu easy to work with. 
 
@@ -677,7 +688,7 @@ We only add this to not have to write as much when calling this later. We pass `
 
 ### Queue an action 
 
-This is our first "goto function", the function that when execute when we select the last option in the 'wizard' of each Action. This should queue the action-dict and return us to the `combat_node`. 
+This is our first "goto function". This will be called to actually queue our finished action-dict with the combat handler. After doing that, it should return us to the base  `node_combat`. 
 
 ```python 
 # in evadventure/combat_turnbased.py 
@@ -690,7 +701,7 @@ def _queue_action(caller, raw_string, **kwargs):
     return "node_combat"
 ```
 
-We make one assumption here - that `kwargs` contains the `action-dict` key with the action-dict built up by previous steps. We get the combathandler and queues it. 
+We make one assumption here - that `kwargs` contains the `action_dict` key with the action-dict ready to go. 
 
 Since this is a goto-callable, we must return the next node to go to. Since this is the last step, we will always go back to the `node_combat` base node, so that's what we return.
 
@@ -729,7 +740,9 @@ options = [
 ]
 ```
 
-When the user chooses to use an item on an enemy, will call `_step_wizard` with two keywords `steps` and `action_dict`. The first is the names of the menu nodes we will step through for this action. The latter is the `action_dict` that will eventually end up in the [`_queue_action`](#queue-an-action) goto function we defined earlier. 
+When the user chooses to use an item on an enemy, we will call `_step_wizard` with two keywords `steps` and `action_dict`. The first is the _sequence_ of menu nodes we need to guide the player through in order to build up our action-dict. 
+
+The latter is the `action_dict` itself. Each node will gradually fill in the `None` places in this dict until we have a complete dict and can send it to the [`_queue_action`](#queue-an-action) goto function we defined earlier. 
 
 Furthermore, we want the ability to go "back" to the previous node like this: 
 
@@ -752,7 +765,7 @@ def some_node(caller, raw_string, **kwargs):
     # ... 
 ```
 
-Note the use of `**` here - `{**dict1, **dict2}` is a powerful one-liner way to combine two dicts into one. This preserves (and passes on) the incoming `kwargs` and just adds a new key "step" to it. 
+Note the use of `**` here. `{**dict1, **dict2}` is a powerful one-liner syntax to combine two dicts into one. This preserves (and passes on) the incoming `kwargs` and just adds a new key "step" to it. The end effect is similar to if we had done `kwargs["step"] = "back"` on a separate line (except we end up with a _new_ `dict` when using the `**`-approach).
 
 So let's implement a `_step_wizard` goto-function to handle this! 
 
@@ -990,7 +1003,7 @@ def node_combat(caller, raw_string, **kwargs):
                 _step_wizard,
                 {
                     "steps": ["node_choose_enemy_target"],
-                    "action_dict": {"key": "attack", "target": None},
+                    "action_dict": {"key": "attack", "target": None, "repeat": True},
                 },
             ),
         },
@@ -1054,7 +1067,7 @@ def node_combat(caller, raw_string, **kwargs):
         },
         {
             "desc": "flee!",
-            "goto": (_queue_action, {"action_dict": {"key": "flee"}}),
+            "goto": (_queue_action, {"action_dict": {"key": "flee", "repeat": True}}),
         },
         {
             "desc": "hold, doing nothing",
@@ -1070,6 +1083,8 @@ def node_combat(caller, raw_string, **kwargs):
 ```
 
 This starts off the `_step_wizard` for each action choice. It also lays out the `action_dict` for every action, leaving `None` values for the fields that will be set by the following nodes. 
+
+Note how we add the `"repeat"` key to some actions. Having them automatically repeat means the player don't have to insert the same action every time.
 
 ## Attack Command
 

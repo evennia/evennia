@@ -13,7 +13,6 @@ import evennia
 roses = evennia.search_object(key="rose")
 accts = evennia.search_account(key="MyAccountName", email="foo@bar.com")
 ```
-```
 
 ```{sidebar} Querysets
 
@@ -73,7 +72,7 @@ class CmdQuickFind(Command):
         result = self.caller.search(query)
         if not result
             return
-		self.caller.msg(f"Found match for {query}: {foo}")
+        self.caller.msg(f"Found match for {query}: {foo}")
 ```
 
 Remember, `self.caller` is the one calling the command. This is usually a Character, which
