@@ -259,7 +259,7 @@ def at_pre_use(self, user, target=None, *args, **kwargs):
            user.msg("You are not close enough to the target!")
            return False
 
-       if self.quality <= 0:
+       if self.quality is not None and self.quality <= 0:
            user.msg(f"{self.get_display_name(user)} is broken and can't be used!")
            return False
        return super().at_pre_use(user, target=target, *args, **kwargs)
@@ -309,13 +309,13 @@ def at_pre_use(self, user, target=None, *args, **kwargs):
                location.msg_contents(message, from_obj=attacker, mapping={target.key: target})
 
    def at_post_use(self, user, *args, **kwargs):
-       if self.quality <= 0:
+       if self.quality is not None and self.quality <= 0:
            user.msg(f"|r{self.get_display_name(user)} breaks and can no longer be used!")
 ```
 
 In EvAdventure, we will assume all weapons (including bows etc) are used in the same location as the target. Weapons also have a `quality` attribute that gets worn down if the user rolls a critical failure. Once quality is down to 0, the weapon is broken and needs to be repaired. 
 
-The `quality` is something we need to track in _Knave_. When getting critical failures on attacks,  a weapon's quality will go down. When it reaches 0, it will break. 
+The `quality` is something we need to track in _Knave_. When getting critical failures on attacks,  a weapon's quality will go down. When it reaches 0, it will break. We assume that a `quality` of `None` means that quality doesn't apply (that is, the item is unbreakable), so we must consider that when checking.
 
 The attack/defend type tracks how we resolve attacks with the weapon, like `roll + STR vs ARMOR + 10`.
 

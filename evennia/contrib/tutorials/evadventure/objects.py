@@ -213,7 +213,7 @@ class EvAdventureWeapon(EvAdventureObject):
             user.msg("You are not close enough to the target!")
             return False
 
-        if self.quality <= 0:
+        if self.quality is not None and self.quality <= 0:
             user.msg(f"{self.get_display_name(user)} is broken and can't be used!")
             return False
         return super().at_pre_use(user, target=target, *args, **kwargs)
@@ -263,7 +263,7 @@ class EvAdventureWeapon(EvAdventureObject):
                 location.msg_contents(message, from_obj=attacker, mapping={target.key: target})
 
     def at_post_use(self, user, *args, **kwargs):
-        if self.quality <= 0:
+        if self.quality is not None and self.quality <= 0:
             user.msg(f"|r{self.get_display_name(user)} breaks and can no longer be used!")
 
 
