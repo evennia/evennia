@@ -3,6 +3,8 @@ EvAdventure Twitch-based combat
 
 This implements a 'twitch' (aka DIKU or other traditional muds) style of MUD combat.
 
+----
+
 """
 from evennia import AttributeProperty, CmdSet, default_cmds
 from evennia.commands.command import Command, InterruptCommand

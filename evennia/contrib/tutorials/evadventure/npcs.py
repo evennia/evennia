@@ -12,7 +12,7 @@ from evennia.utils.utils import make_iter
 
 from .characters import LivingMixin
 from .enums import Ability, WieldLocation
-from .objects import BARE_HANDS
+from .objects import get_bare_hands
 from .rules import dice
 
 
@@ -51,7 +51,7 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
 
     is_idle = AttributeProperty(default=False, autocreate=False)
 
-    weapon = AttributeProperty(default=BARE_HANDS, autocreate=False)  # instead of inventory
+    weapon = AttributeProperty(default=get_bare_hands, autocreate=False)  # instead of inventory
     coins = AttributeProperty(default=1, autocreate=False)  # coin loot
 
     # if this npc is attacked, everyone with the same tag in the current location will also be

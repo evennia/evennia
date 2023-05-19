@@ -1,25 +1,10 @@
 """
 MUD ruleset based on the _Knave_ OSR tabletop RPG by Ben Milton (modified for MUD use).
 
-The rules are divided into a set of classes. While each class (except chargen) could
-also have been stand-alone functions, having them as classes makes it a little easier
-to use them as the base for your own variation (tweaking values etc).
+The center of the rule system is the "RollEngine", which handles all rolling of dice
+and determining what the outcome is.
 
-- Roll-engine: Class with methods for making all dice rolls needed by the rules. Knave only
-  has a few resolution rolls, but we define helper methods for different actions the
-  character will be able to do in-code.
-- Character generation - this is a container used for holding, tweaking and setting
-  all character data during character generation. At the end it will save itself
-  onto the Character for permanent storage.
-- Improvement - this container holds rules used with experience to improve the
-  character over time.
-- Charsheet - a container with tools for visually displaying the character sheet in-game.
-
-This module presents several singletons to import
-
-- `dice` - the `EvAdventureRollEngine` for all random resolution and table-rolling.
-- `character_sheet` - the `EvAdventureCharacterSheet` visualizer.
-- `improvement` - the EvAdventureImprovement` class for handling char xp and leveling.
+----
 
 """
 from random import randint
@@ -245,8 +230,7 @@ class EvAdventureRollEngine:
             # tuple with range conditional, like ('1-5', "Blue") or ('10', "Purple")
             max_range = -1
             min_range = 10**6
-            for (valrange, choice) in table_choices:
-
+            for valrange, choice in table_choices:
                 minval, *maxval = valrange.split("-", 1)
                 minval = abs(int(minval))
                 maxval = abs(int(maxval[0]) if maxval else minval)

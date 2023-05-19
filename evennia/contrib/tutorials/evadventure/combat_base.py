@@ -15,10 +15,10 @@ This establishes the basic building blocks for combat:
 
 """
 
-from evennia import Command, create_script
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils import evtable
+from evennia.utils.create import create_script
 
 from . import rules
 

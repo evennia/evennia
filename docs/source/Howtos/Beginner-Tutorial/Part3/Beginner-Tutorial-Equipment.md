@@ -439,6 +439,7 @@ It's convenient to have the `EquipmentHandler` easily tell you what weapon is cu
 # mygame/evadventure/equipment.py 
 
 from .enums import WieldLocation, Ability
+from .objects import get_empty_hand
 
 # ... 
 
@@ -469,16 +470,15 @@ class EquipmentHandler:
         if not weapon:
             weapon = slots[WieldLocation.WEAPON_HAND]
         # if we still don't have a weapon, we return None here
+        if not weapon:
+ ~          weapon = get_bare_hands()
         return weapon
 
 ```
 
 In the `.armor()` method we get the item (if any) out of each relevant wield-slot (body, shield, head), and grab their `armor` Attribute. We then `sum()` them all up. 
 
-In `.weapon()`, we simply check which of the possible weapon slots (weapon-hand or two-hands) have 
-something in them. If not we fall back to the 'fake' weapon `WeaponEmptyHand` which is just a 'dummy' 
-object that represents your bare hands with damage and all.
-(created in [The Object tutorial](./Beginner-Tutorial-Objects.md#your-bare-hands) earlier).
+In `.weapon()`, we simply check which of the possible weapon slots (weapon-hand or two-hands) have  something in them. If not we fall back to the 'Bare Hands' object we created in the [Object tutorial lesson](./Beginner-Tutorial-Objects.md#your-bare-hands) earlier.
 
 
 ## Extra credits 

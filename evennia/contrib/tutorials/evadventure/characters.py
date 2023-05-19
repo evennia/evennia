@@ -6,7 +6,6 @@ Character class.
 from evennia.objects.objects import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.evform import EvForm
-from evennia.utils.evmenu import EvMenu, ask_yes_no
 from evennia.utils.evtable import EvTable
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import lazy_property
@@ -14,7 +13,6 @@ from evennia.utils.utils import lazy_property
 from . import rules
 from .equipment import EquipmentError, EquipmentHandler
 from .quests import EvAdventureQuestHandler
-from .utils import get_obj_stats
 
 
 class LivingMixin:
