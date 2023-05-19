@@ -26,6 +26,8 @@ from . import rules
 from .enums import Ability, ObjType, WieldLocation
 from .utils import get_obj_stats
 
+_BARE_HANDS = None
+
 
 class EvAdventureObject(DefaultObject):
     """
@@ -352,9 +354,20 @@ class WeaponBareHands(EvAdventureWeapon):
     attack_type = Ability.STR
     defense_type = Ability.ARMOR
     damage_roll = "1d4"
-    quality = 100000  # let's assume fists are always available ...
+    quality = None  # let's assume fists are always available ...
 
 
-BARE_HANDS = search_object("Bare hands", typeclass=WeaponBareHands).first()
-if not BARE_HANDS:
-    BARE_HANDS = create_object(WeaponBareHands, key="Bare hands")
+def get_bare_hands():
+    """
+    Get the bare-hands singleton object.
+
+    Returns:
+        WeaponBareHands
+    """
+    global _BARE_HANDS
+
+    if not _BARE_HANDS:
+        _BARE_HANDS = search_object("Bare hands", typeclass=WeaponBareHands).first()
+    if not _BARE_HANDS:
+        _BARE_HANDS = create_object(WeaponBareHands, key="Bare hands")
+    return _BARE_HANDS

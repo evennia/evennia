@@ -177,7 +177,8 @@ class AttributeProperty:
         Initialize an Attribute as a property descriptor.
 
         Keyword Args:
-            default (any): A default value if the attr is not set.
+            default (any): A default value if the attr is not set. If a callable, this will be
+                run without any arguments and is expected to return the default value.
             category (str): The attribute's category. If unset, use class default.
             strattr (bool): If set, this Attribute *must* be a simple string, and will be
                 stored more efficiently.

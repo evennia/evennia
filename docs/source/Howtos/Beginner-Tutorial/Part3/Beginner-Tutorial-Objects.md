@@ -448,6 +448,8 @@ We will use this in the upcoming  [Equipment tutorial lesson](./Beginner-Tutoria
 
 from evennia import search_object, create_object
 
+_BARE_HANDS = None 
+
 # ... 
 
 class WeaponBareHands(EvAdventureWeapon)
@@ -459,15 +461,24 @@ class WeaponBareHands(EvAdventureWeapon)
      quality = None  # let's assume fists are indestructible ...
 
 
-# common to put this at the bottom of module
-BARE_HANDS = search_object("Bare hands", typeclass=WeaponBareHands).first()
-if not BARE_HANDS:
-	BARE_HANDS = create_object(WeaponBareHands, key="Bare hands")
-
+def get_bare_hands(): 
+    """Get the bare hands""" 
+    global _BARE_HANDS
+    if not _BARE_HANDS: 
+        _BARE_HANDS = search_object("Bare hands", typeclass=WeaponBareHands).first()
+    if not _BARE_HANDS:
+    	_BARE_HANDS = create_object(WeaponBareHands, key="Bare hands")
+    return _BARE_HANDS
 ```
 
-Since everyone's empty hands are the same (in our game), we create _one_ `Bare hands` weapon object that everyone shares. We do this by searching for the object with `search_object`  (the `.first()` means we grab the first one even if we should by accident have created multiple hands, see [The Django querying tutorial](../Part1/Beginner-Tutorial-Django-queries.md) for more info). If we find none, we create it. This way the `BARE_HANDS` object can be used by everyone (we just need to import `objects.BARE_HANDS`). 
+```{sidebar}
+Creating a single instance of something that is used everywhere is called to create a _Singleton_. 
+```
+Since everyone's empty hands are the same (in our game), we create _one_ `Bare hands` weapon object that everyone shares. We do this by searching for the object with `search_object`  (the `.first()` means we grab the first one even if we should by accident have created multiple hands, see [The Django querying tutorial](../Part1/Beginner-Tutorial-Django-queries.md) for more info). If we find none, we create it. 
 
+By use of the `global` Python keyword, we cache the bare hands object get/create in a module level property `_BARE_HANDS`. So this acts as a cache to not have to search the database more than necessary. 
+
+From now on, other modules can just import and run this function to get the bare hands.
 
 ## Testing and Extra credits 
 
