@@ -84,7 +84,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
 
 <span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">EvAdventureObject</span><span class="p">,</span> <span class="n">WeaponEmptyHand</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">EvAdventureObject</span><span class="p">,</span> <span class="n">get_bare_hands</span>
 
 
 <div class="viewcode-block" id="EquipmentError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentError">[docs]</a><span class="k">class</span> <span class="nc">EquipmentError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
@@ -127,6 +127,9 @@
                 <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">:</span> <span class="p">[],</span>
             <span class="p">},</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -245,7 +248,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
             <span class="n">weapon</span> <span class="o">=</span> <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
-            <span class="n">weapon</span> <span class="o">=</span> <span class="n">WeaponEmptyHand</span><span class="p">()</span>
+            <span class="n">weapon</span> <span class="o">=</span> <span class="n">get_bare_hands</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">weapon</span>
 
 <div class="viewcode-block" id="EquipmentHandler.display_loadout"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.display_loadout">[docs]</a>    <span class="k">def</span> <span class="nf">display_loadout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -435,7 +438,9 @@
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">obj</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">inventory_use_slot</span>
+            <span class="k">if</span> <span class="n">obj</span>
+            <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
+            <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">inventory_use_slot</span>
             <span class="ow">in</span> <span class="p">(</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">)</span>
         <span class="p">]</span></div>
 
@@ -453,7 +458,7 @@
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">obj</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">inventory_use_slot</span> <span class="ow">in</span> <span class="p">(</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">inventory_use_slot</span> <span class="ow">in</span> <span class="p">(</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span><span class="p">)</span>
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="EquipmentHandler.get_usable_objects_from_backpack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.get_usable_objects_from_backpack">[docs]</a>    <span class="k">def</span> <span class="nf">get_usable_objects_from_backpack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -466,7 +471,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">character</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">character</span><span class="p">)]</span></div>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+        <span class="p">]</span></div>
 
 <div class="viewcode-block" id="EquipmentHandler.all"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.equipment.html#evennia.contrib.tutorials.evadventure.equipment.EquipmentHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">only_objs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

@@ -216,11 +216,24 @@ folders into packages Python understands to import from.</p>
     <span class="n">ALLEGIANCE_HOSTILE</span> <span class="o">=</span> <span class="s2">&quot;hostile&quot;</span>
     <span class="n">ALLEGIANCE_NEUTRAL</span> <span class="o">=</span> <span class="s2">&quot;neutral&quot;</span>
     <span class="n">ALLEGIANCE_FRIENDLY</span> <span class="o">=</span> <span class="s2">&quot;friendly&quot;</span>
-    
+
+
+<span class="n">ABILITY_REVERSE_MAP</span> <span class="o">=</span>  <span class="p">{</span>
+    <span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> 
+    <span class="s2">&quot;dex&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">DEX</span><span class="p">,</span>
+    <span class="s2">&quot;con&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CON</span><span class="p">,</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+    <span class="s2">&quot;wis&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">WIS</span><span class="p">,</span>
+    <span class="s2">&quot;cha&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CHA</span> 
+<span class="p">}</span>
 
 </pre></div>
 </div>
 <p>Here the <code class="docutils literal notranslate"><span class="pre">Ability</span></code> class holds basic properties of a character sheet.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ABILITY_REVERSE_MAP</span></code> is a convenient map to go the other way - if you in some command were to enter the string ‘cha’, we could use this mapping to directly convert your input to the correct <code class="docutils literal notranslate"><span class="pre">Ability</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ability = ABILITY_REVERSE_MAP.get(your_input)
+</pre></div>
+</div>
 </section>
 <section id="utility-module">
 <h2><span class="section-number">1.3. </span>Utility module<a class="headerlink" href="#utility-module" title="Permalink to this headline">¶</a></h2>

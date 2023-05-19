@@ -104,26 +104,9 @@
   <section id="module-evennia.contrib.tutorials.evadventure.rules">
 <span id="evennia-contrib-tutorials-evadventure-rules"></span><h1>evennia.contrib.tutorials.evadventure.rules<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.rules" title="Permalink to this headline">¶</a></h1>
 <p>MUD ruleset based on the _Knave_ OSR tabletop RPG by Ben Milton (modified for MUD use).</p>
-<p>The rules are divided into a set of classes. While each class (except chargen) could
-also have been stand-alone functions, having them as classes makes it a little easier
-to use them as the base for your own variation (tweaking values etc).</p>
-<ul class="simple">
-<li><p>Roll-engine: Class with methods for making all dice rolls needed by the rules. Knave only
-has a few resolution rolls, but we define helper methods for different actions the
-character will be able to do in-code.</p></li>
-<li><p>Character generation - this is a container used for holding, tweaking and setting
-all character data during character generation. At the end it will save itself
-onto the Character for permanent storage.</p></li>
-<li><p>Improvement - this container holds rules used with experience to improve the
-character over time.</p></li>
-<li><p>Charsheet - a container with tools for visually displaying the character sheet in-game.</p></li>
-</ul>
-<p>This module presents several singletons to import</p>
-<ul class="simple">
-<li><p><strong>dice</strong> - the <strong>EvAdventureRollEngine</strong> for all random resolution and table-rolling.</p></li>
-<li><p><strong>character_sheet</strong> - the <strong>EvAdventureCharacterSheet</strong> visualizer.</p></li>
-<li><p><strong>improvement</strong> - the EvAdventureImprovement** class for handling char xp and leveling.</p></li>
-</ul>
+<p>The center of the rule system is the “RollEngine”, which handles all rolling of dice
+and determining what the outcome is.</p>
+<hr class="docutils" />
 <dl class="py class">
 <dt id="evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.rules.</code><code class="sig-name descname">EvAdventureRollEngine</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/rules.html#EvAdventureRollEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.rules.EvAdventureRollEngine" title="Permalink to this definition">¶</a></dt>

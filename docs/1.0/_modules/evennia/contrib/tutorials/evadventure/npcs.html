@@ -84,12 +84,13 @@
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">TagProperty</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
 
 <span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">LivingMixin</span>
 <span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">WieldLocation</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">WeaponEmptyHand</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">get_bare_hands</span>
 <span class="kn">from</span> <span class="nn">.rules</span> <span class="kn">import</span> <span class="n">dice</span>
 
 
@@ -128,8 +129,12 @@
 
     <span class="n">is_idle</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">weapon</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">WeaponEmptyHand</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># instead of inventory</span>
+    <span class="n">weapon</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">get_bare_hands</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># instead of inventory</span>
     <span class="n">coins</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># coin loot</span>
+
+    <span class="c1"># if this npc is attacked, everyone with the same tag in the current location will also be</span>
+    <span class="c1"># pulled into combat.</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="s2">&quot;npcs&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">strength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -164,9 +169,17 @@
 <span class="sd">        Start with max health.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;npcs&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvAdventureNPC.ai_combat_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.ai_combat_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">ai_combat_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureNPC.at_attacked"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.at_attacked">[docs]</a>    <span class="k">def</span> <span class="nf">at_attacked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when being attacked and combat starts.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EvAdventureNPC.ai_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.ai_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">ai_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The combat engine should ask this method in order to</span>
 <span class="sd">        get the next action the npc should perform in combat.</span>
@@ -321,7 +334,7 @@
     <span class="c1"># chance (%) that this enemy will loot you when defeating you</span>
     <span class="n">loot_chance</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">75</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventureMob.ai_combat_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_combat_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">ai_combat_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combathandler</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureMob.ai_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">ai_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called to get the next action in combat.</span>
 
@@ -334,7 +347,7 @@
 <span class="sd">            combatant in the current combat handler.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.combat_turnbased</span> <span class="kn">import</span> <span class="n">CombatActionAttack</span><span class="p">,</span> <span class="n">CombatActionDoNothing</span>
+        <span class="kn">from</span> <span class="nn">.combat</span> <span class="kn">import</span> <span class="n">CombatActionAttack</span><span class="p">,</span> <span class="n">CombatActionDoNothing</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_idle</span><span class="p">:</span>
             <span class="c1"># mob just stands around</span>

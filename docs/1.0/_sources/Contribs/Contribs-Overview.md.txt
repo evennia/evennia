@@ -685,13 +685,12 @@ character make small verbal observations at irregular intervals.
 
 ### `evadventure`
 
-_Contrib by Griatch 2022_
+_Contrib by Griatch 2023-_
 
 
 ```{warning}
-NOTE - this tutorial is WIP and NOT complete! It was put on hold to focus on
-releasing Evennia 1.0. You will still learn things from it, but don't expect
-perfection.
+NOTE - this tutorial is WIP and NOT complete yet! You will still learn
+things from it, but don't expect perfection.
 ```
 
 [Read the documentation](./Contrib-Evadventure.md) - [Browse the Code](evennia.contrib.tutorials.evadventure)

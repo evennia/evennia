@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="evennia.contrib.tutorials.evadventure.dungeon" href="evennia.contrib.tutorials.evadventure.dungeon.html" />
-    <link rel="prev" title="evennia.contrib.tutorials.evadventure.combat_turnbased" href="evennia.contrib.tutorials.evadventure.combat_turnbased.html" /> 
+    <link rel="prev" title="evennia.contrib.tutorials.evadventure.combat_twitch" href="evennia.contrib.tutorials.evadventure.combat_twitch.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -33,7 +33,7 @@
           <a href="evennia.contrib.tutorials.evadventure.dungeon.html" title="evennia.contrib.tutorials.evadventure.dungeon"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.tutorials.evadventure.combat_turnbased.html" title="evennia.contrib.tutorials.evadventure.combat_turnbased"
+          <a href="evennia.contrib.tutorials.evadventure.combat_twitch.html" title="evennia.contrib.tutorials.evadventure.combat_twitch"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
@@ -65,8 +65,8 @@
 </div>
 <script>$('#searchbox').show(0);</script>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.combat_turnbased.html"
-                        title="previous chapter">evennia.contrib.tutorials.evadventure.combat_turnbased</a></p>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.combat_twitch.html"
+                        title="previous chapter">evennia.contrib.tutorials.evadventure.combat_twitch</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="evennia.contrib.tutorials.evadventure.dungeon.html"
                         title="next chapter">evennia.contrib.tutorials.evadventure.dungeon</a></p>
@@ -108,8 +108,7 @@ commands since a lot of functionality is managed in menus. These commands
 are in additional to normal Evennia commands and should be added
 to the CharacterCmdSet</p>
 <dl class="simple">
-<dt>New commands:</dt><dd><p>attack/hit &lt;target&gt;[,…]
-inventory
+<dt>New commands:</dt><dd><p>inventory
 wield/wear &lt;item&gt;
 unwield/remove &lt;item&gt;
 give &lt;item or coin&gt; to &lt;character&gt;
@@ -178,69 +177,6 @@ self.args).</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.commands.</code><code class="sig-name descname">CmdAttackTurnBased</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/commands.html#CmdAttackTurnBased"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.commands.EvAdventureCommand" title="evennia.contrib.tutorials.evadventure.commands.EvAdventureCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.commands.EvAdventureCommand</span></code></a></p>
-<p>Attack a target or join an existing combat.</p>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>attack &lt;target&gt;
-attack &lt;target&gt;, &lt;target&gt;, …</p>
-</dd>
-</dl>
-<p>If the target is involved in combat already, you’ll join combat with
-the first target you specify. Attacking multiple will draw them all into
-combat.</p>
-<p>This will start/join turn-based, combat, where you have a limited
-time to decide on your next action from a menu of options.</p>
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.key">
-<code class="sig-name descname">key</code><em class="property"> = 'attack'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['hit']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.parse">
-<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/commands.html#CmdAttackTurnBased.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Once the cmdhandler has identified this as the command we
-want, this function is run. If many of your commands have a
-similar syntax (for example ‘cmd arg1 = arg2’) you should
-simply define this once and just let other commands of the
-same form inherit from this. See the docstring of this module
-for which object properties are available to use (notably
-self.args).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.func">
-<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/commands.html#CmdAttackTurnBased.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.func" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the actual executing part of the command.  It is
-called directly after self.parse(). See the docstring of this
-module for which object properties are available (beyond those
-set in self.parse())</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.help_category">
-<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.help_category" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hit', 'category': 'general', 'key': 'attack', 'no_prefix': ' hit', 'tags': '', 'text': &quot;\n    Attack a target or join an existing combat.\n\n    Usage:\n      attack &lt;target&gt;\n      attack &lt;target&gt;, &lt;target&gt;, ...\n\n    If the target is involved in combat already, you'll join combat with\n    the first target you specify. Attacking multiple will draw them all into\n    combat.\n\n    This will start/join turn-based, combat, where you have a limited\n    time to decide on your next action from a menu of options.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="evennia.contrib.tutorials.evadventure.commands.CmdInventory">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.commands.</code><code class="sig-name descname">CmdInventory</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/commands.html#CmdInventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdInventory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.commands.EvAdventureCommand" title="evennia.contrib.tutorials.evadventure.commands.EvAdventureCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.commands.EvAdventureCommand</span></code></a></p>
@@ -256,7 +192,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.commands.CmdInventory.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['i', 'inv']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdInventory.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['inv', 'i']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdInventory.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -280,7 +216,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.commands.CmdInventory.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'i inv', 'category': 'general', 'key': 'inventory', 'no_prefix': ' i inv', 'tags': '', 'text': '\n    View your inventory\n\n    Usage:\n      inventory\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdInventory.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'inv i', 'category': 'general', 'key': 'inventory', 'no_prefix': ' inv i', 'tags': '', 'text': '\n    View your inventory\n\n    Usage:\n      inventory\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdInventory.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -357,7 +293,7 @@ unwear &lt;item&gt;</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.commands.CmdRemove.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['unwear', 'unwield']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdRemove.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['unwield', 'unwear']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdRemove.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -381,7 +317,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.commands.CmdRemove.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unwear unwield', 'category': 'general', 'key': 'remove', 'no_prefix': ' unwear unwield', 'tags': '', 'text': '\n    Remove a remove a weapon/shield, armor or helmet.\n\n    Usage:\n      remove &lt;item&gt;\n      unwield &lt;item&gt;\n      unwear &lt;item&gt;\n\n    To remove an item from the backpack, use |wdrop|n instead.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdRemove.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unwield unwear', 'category': 'general', 'key': 'remove', 'no_prefix': ' unwield unwear', 'tags': '', 'text': '\n    Remove a remove a weapon/shield, armor or helmet.\n\n    Usage:\n      remove &lt;item&gt;\n      unwield &lt;item&gt;\n      unwear &lt;item&gt;\n\n    To remove an item from the backpack, use |wdrop|n instead.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.commands.CmdRemove.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -560,7 +496,7 @@ self.add().</p>
           <a href="evennia.contrib.tutorials.evadventure.dungeon.html" title="evennia.contrib.tutorials.evadventure.dungeon"
              >next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.tutorials.evadventure.combat_turnbased.html" title="evennia.contrib.tutorials.evadventure.combat_turnbased"
+          <a href="evennia.contrib.tutorials.evadventure.combat_twitch.html" title="evennia.contrib.tutorials.evadventure.combat_twitch"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>

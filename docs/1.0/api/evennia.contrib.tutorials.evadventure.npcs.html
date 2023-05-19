@@ -130,143 +130,72 @@ non-combat purposes (or for loot to get when killing an enemy).</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.hit_dice">
 <code class="sig-name descname">hit_dice</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.hit_dice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.armor">
 <code class="sig-name descname">armor</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.armor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.morale">
 <code class="sig-name descname">morale</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.morale" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.hp_multiplier">
 <code class="sig-name descname">hp_multiplier</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.hp_multiplier" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.hp">
 <code class="sig-name descname">hp</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.hp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.allegiance">
 <code class="sig-name descname">allegiance</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.allegiance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.is_idle">
 <code class="sig-name descname">is_idle</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.is_idle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.weapon">
 <code class="sig-name descname">weapon</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.weapon" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.coins">
 <code class="sig-name descname">coins</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.coins" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.group">
+<code class="sig-name descname">group</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag property descriptor. Allows for setting tags on an object as Django-like ‘fields’
+on the class level. Since Tags are almost always used for querying, Tags are always
+created/assigned along with the object. Make sure the property/tagname does not collide
+with an existing method/property on the class. If it does, you must use tags.add()
+instead.</p>
+<p>Note that while you _can_ check e.g. <strong>obj.tagname,this will give an AttributeError
+if the Tag is not set. Most often you want to use **obj.tags.get(“tagname”)</strong> to check
+if a tag is set on an object.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+    <span class="n">mytag</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">()</span>  <span class="c1"># category=None</span>
+    <span class="n">mytag2</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;tagcategory&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -313,8 +242,14 @@ _not_ fire (because you are bypassing the <strong>AttributeProperty</strong> ent
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.ai_combat_next_action">
-<code class="sig-name descname">ai_combat_next_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureNPC.ai_combat_next_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.ai_combat_next_action" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.at_attacked">
+<code class="sig-name descname">at_attacked</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureNPC.at_attacked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.at_attacked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when being attacked and combat starts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.ai_next_action">
+<code class="sig-name descname">ai_next_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureNPC.ai_next_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureNPC.ai_next_action" title="Permalink to this definition">¶</a></dt>
 <dd><p>The combat engine should ask this method in order to
 get the next action the npc should perform in combat.</p>
 </dd></dl>
@@ -353,49 +288,19 @@ to allow passing in the menu nodes.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.menudata">
 <code class="sig-name descname">menudata</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.menudata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.menu_kwargs">
 <code class="sig-name descname">menu_kwargs</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.menu_kwargs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.hi_text">
 <code class="sig-name descname">hi_text</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureTalkativeNPC.hi_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -526,49 +431,19 @@ based on nodes named <strong>node_start_*</strong> are available in the node tre
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper.upsell_factor">
 <code class="sig-name descname">upsell_factor</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper.upsell_factor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper.miser_factor">
 <code class="sig-name descname">miser_factor</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper.miser_factor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper.common_ware_prototypes">
 <code class="sig-name descname">common_ware_prototypes</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper.common_ware_prototypes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -609,26 +484,16 @@ _not_ fire (because you are bypassing the <strong>AttributeProperty</strong> ent
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.loot_chance">
 <code class="sig-name descname">loot_chance</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.loot_chance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_combat_next_action">
-<code class="sig-name descname">ai_combat_next_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.ai_combat_next_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_combat_next_action" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_next_action">
+<code class="sig-name descname">ai_next_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/npcs.html#EvAdventureMob.ai_next_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.npcs.EvAdventureMob.ai_next_action" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called to get the next action in combat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>combathandler</strong> (<a class="reference internal" href="evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler" title="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler"><em>EvAdventureCombatHandler</em></a>) – The currently active combathandler.</p>
+<dd class="field-odd"><p><strong>combathandler</strong> (<em>EvAdventureCombatHandler</em>) – The currently active combathandler.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>tuple</em> – A tuple <strong>(str, tuple, dict)</strong>, being the <strong>action_key</strong>, and the <strong>*args</strong> and

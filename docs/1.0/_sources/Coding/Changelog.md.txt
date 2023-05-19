@@ -1,5 +1,15 @@
 # Changelog
 
+## Main branch
+
+- Contrib: Container typeclass with new commands for storing and retrieving
+  things inside them (InspectorCaracal)
+- Fix: The `AttributeHandler.all()` now actually accepts `category=` as
+  keyword arg, like our docs already claimed it should (Volund)
+- Docs: New Beginner-Tutorial lessons for NPCs, Base-Combat Twitch-Combat and
+  Turnbased-combat (note that the Beginner tutorial is still WIP).
+
+
 ## Evennia 1.3.0
 
 Apr 29, 2023

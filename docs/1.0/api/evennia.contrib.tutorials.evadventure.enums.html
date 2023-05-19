@@ -107,15 +107,15 @@
 of using an Enum over, say, a string is that if you make a typo using an unknown
 enum, Python will give you an error while a typo in a string may go through silently.</p>
 <p>It’s used as a direct reference:</p>
-<blockquote>
-<div><p>from enums import Ability</p>
-<dl class="simple">
-<dt>if abi is Ability.STR:</dt><dd><p># …</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+
+<span class="k">if</span> <span class="n">abi</span> <span class="ow">is</span> <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">:</span>
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
 <p>To get the <strong>value</strong> of an enum (must always be hashable, useful for Attribute lookups), use
 <strong>Ability.STR.value</strong> (which would return ‘strength’ in our case).</p>
+<hr class="docutils" />
 <dl class="py class">
 <dt id="evennia.contrib.tutorials.evadventure.enums.Ability">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.enums.</code><code class="sig-name descname">Ability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/enums.html#Ability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.enums.Ability" title="Permalink to this definition">¶</a></dt>
@@ -253,6 +253,11 @@ enum, Python will give you an error while a typo in a string may go through sile
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.enums.ObjType.GEAR">
 <code class="sig-name descname">GEAR</code><em class="property"> = 'gear'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.enums.ObjType.GEAR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.enums.ObjType.THROWABLE">
+<code class="sig-name descname">THROWABLE</code><em class="property"> = 'throwable'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.enums.ObjType.THROWABLE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

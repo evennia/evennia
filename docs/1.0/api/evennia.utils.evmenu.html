@@ -558,7 +558,7 @@ menu will <em>not</em> be using this same session anymore after a reload.</p></l
 by default in all nodes of the menu. This will print out the current state of
 the menu. Deactivate for production use! When the debug flag is active, the
 <strong>persistent</strong> flag is deactivated.</p></li>
-<li><p><strong>**kwargs</strong> – All kwargs will become initialization variables on <strong>caller.ndb._menutree</strong>,
+<li><p><strong>**kwargs</strong> – All kwargs will become initialization variables on <strong>caller.ndb._evmenu</strong>,
 to be available at run.</p></li>
 </ul>
 </dd>
@@ -931,7 +931,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['yes', 'n', 'abort', '__nomatch_command', 'y', 'no', 'a']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['y', 'abort', 'no', 'n', 'yes', '__nomatch_command', 'a']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -957,7 +957,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'yes n abort __nomatch_command y no a', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' yes n abort __nomatch_command y no a', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'y abort no n yes __nomatch_command a', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' y abort no n yes __nomatch_command a', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

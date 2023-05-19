@@ -166,8 +166,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">allow_combat</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">allow_death</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">allow_combat</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">allow_death</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># dungeon generation attributes; set when room is created</span>
     <span class="n">back_exit</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

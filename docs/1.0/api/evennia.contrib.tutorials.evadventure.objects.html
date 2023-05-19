@@ -125,49 +125,19 @@ rune sword (weapon+quest).</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.inventory_use_slot">
 <code class="sig-name descname">inventory_use_slot</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.size">
 <code class="sig-name descname">size</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.value">
 <code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -234,6 +204,24 @@ normal hook to overload for most object types.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.at_pre_use">
+<code class="sig-name descname">at_pre_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject.at_pre_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.at_pre_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called before use. If returning False, usage should be aborted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this object, whatever that may mean.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.at_post_use">
+<code class="sig-name descname">at_post_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject.at_post_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.at_post_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after use happened.</p>
+</dd></dl>
+
 <dl class="py exception">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
@@ -277,17 +265,7 @@ meaning it’s unusable.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.quality">
 <code class="sig-name descname">quality</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.quality" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -327,17 +305,7 @@ _not_ fire (because you are bypassing the <strong>AttributeProperty</strong> ent
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.value">
 <code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -377,17 +345,7 @@ _not_ fire (because you are bypassing the <strong>AttributeProperty</strong> ent
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.value">
 <code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -428,50 +386,25 @@ have a limited usage in this way.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.size">
 <code class="sig-name descname">size</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.uses">
 <code class="sig-name descname">uses</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.uses" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_use">
-<code class="sig-name descname">at_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureConsumable.at_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_use" title="Permalink to this definition">¶</a></dt>
-<dd><p>Consume a ‘use’ of this item. Once it reaches 0 uses, it should normally
-not be usable anymore and probably be deleted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>user</strong> (<em>Object</em>) – The one using the item.</p></li>
-<li><p><strong>*args</strong> – Extra arguments depending on the usage and item.</p></li>
-<li><p><strong>**kwargs</strong> – <p>Extra arguments depending on the usage and item.</p>
-</p></li>
-</ul>
-</dd>
-</dl>
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_pre_use">
+<code class="sig-name descname">at_pre_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureConsumable.at_pre_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_pre_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called before use. If returning False, usage should be aborted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureConsumable.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the consumable.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -515,48 +448,6 @@ not be usable anymore and probably be deleted.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">WeaponEmptyHand</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#WeaponEmptyHand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This is a dummy-class loaded when you wield no weapons. We won’t create any db-object for it.</p>
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.obj_type">
-<code class="sig-name descname">obj_type</code><em class="property"> = 'weapon'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.obj_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.key">
-<code class="sig-name descname">key</code><em class="property"> = 'Empty Fists'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.inventory_use_slot">
-<code class="sig-name descname">inventory_use_slot</code><em class="property"> = 'weapon_hand'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.attack_type">
-<code class="sig-name descname">attack_type</code><em class="property"> = 'strength'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.attack_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.defense_type">
-<code class="sig-name descname">defense_type</code><em class="property"> = 'armor'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.defense_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.damage_roll">
-<code class="sig-name descname">damage_roll</code><em class="property"> = '1d4'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.damage_roll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.quality">
-<code class="sig-name descname">quality</code><em class="property"> = 100000</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.quality" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureWeapon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureWeapon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject</span></code></a></p>
@@ -569,81 +460,75 @@ not be usable anymore and probably be deleted.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.inventory_use_slot">
 <code class="sig-name descname">inventory_use_slot</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.quality">
 <code class="sig-name descname">quality</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.quality" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.attack_type">
 <code class="sig-name descname">attack_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.attack_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.defense_type">
 <code class="sig-name descname">defense_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.defense_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.damage_roll">
 <code class="sig-name descname">damage_roll</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.damage_roll" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.get_display_name">
+<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureWeapon.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.get_display_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the name of the object in a viewer-aware manner.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>looker</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – The object or account that is looking
+at/getting inforamtion for this object. If not given, <strong>.name</strong> will be
+returned, which can in turn be used to display colored data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>A name to display for this object. This can contain color codes and may</dt><dd><p>be customized based on <strong>looker</strong>. By default this contains the <strong>.key</strong> of the object,
+followed by the DBREF if this user is privileged to control said object.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function could be extended to change how object names appear to users in character,
+but be wary. This function does not change an object’s keys or aliases when searching,
+and is expected to produce something useful for builders.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.at_pre_use">
+<code class="sig-name descname">at_pre_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureWeapon.at_pre_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.at_pre_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called before use. If returning False, usage should be aborted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">advantage</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">disadvantage</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureWeapon.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>When a weapon is used, it attacks an opponent</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.at_post_use">
+<code class="sig-name descname">at_post_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureWeapon.at_post_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.at_post_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after use happened.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -671,6 +556,59 @@ _not_ fire (because you are bypassing the <strong>AttributeProperty</strong> ent
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureThrowable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureThrowable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable</span></code></a></p>
+<p>Something you can throw at an enemy to harm them once, like a knife or exploding potion/grenade.</p>
+<p>Note: In Knave, ranged attacks are done with WIS (representing the stillness of your mind?)</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = (&lt;ObjType.THROWABLE: 'throwable'&gt;, &lt;ObjType.WEAPON: 'weapon'&gt;, &lt;ObjType.CONSUMABLE: 'consumable'&gt;)</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.attack_type">
+<code class="sig-name descname">attack_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.attack_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.defense_type">
+<code class="sig-name descname">defense_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.defense_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.damage_roll">
+<code class="sig-name descname">damage_roll</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.damage_roll" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureThrowable'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureRunestone</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureRunestone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable</span></code></a></p>
@@ -691,65 +629,25 @@ they are quite powerful (and scales with caster level).</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.quality">
 <code class="sig-name descname">quality</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.quality" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.attack_type">
 <code class="sig-name descname">attack_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.attack_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.defense_type">
 <code class="sig-name descname">defense_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.defense_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.damage_roll">
 <code class="sig-name descname">damage_roll</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.damage_roll" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -805,33 +703,13 @@ _not_ fire (because you are bypassing the <strong>AttributeProperty</strong> ent
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.armor">
 <code class="sig-name descname">armor</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.armor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.quality">
 <code class="sig-name descname">quality</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.quality" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>AttributeProperty.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -934,6 +812,81 @@ _not_ fire (because you are bypassing the <strong>AttributeProperty</strong> ent
 <code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureHelmet'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">WeaponBareHands</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#WeaponBareHands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon</span></code></a></p>
+<p>This is a dummy-class loaded when you wield no weapons. We won’t create any db-object for it.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'weapon'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Bare hands'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.inventory_use_slot">
+<code class="sig-name descname">inventory_use_slot</code><em class="property"> = 'weapon_hand'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.attack_type">
+<code class="sig-name descname">attack_type</code><em class="property"> = 'strength'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.attack_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.defense_type">
+<code class="sig-name descname">defense_type</code><em class="property"> = 'armor'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.defense_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.damage_roll">
+<code class="sig-name descname">damage_roll</code><em class="property"> = '1d4'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.damage_roll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.quality">
+<code class="sig-name descname">quality</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.quality" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.WeaponBareHands'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'WeaponBareHands'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.objects.get_bare_hands">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">get_bare_hands</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#get_bare_hands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.get_bare_hands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the bare-hands singleton object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>WeaponBareHands</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

@@ -16,12 +16,7 @@ We do this by editing `mygame/server/conf/settings.py` and adding the line
 
     AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False 
 
-When doing this, connecting with the game with a new account will land you in "OOC" mode. The 
-ooc-version of `look` (sitting in the Account cmdset) will show a list of available characters 
-if you have any. You can also enter `charcreate` to make a new character. The `charcreate` is a 
-simple command coming with Evennia that just lets you make a new character with a given name and 
-description. We will later modify that to kick off our chargen. For now we'll just keep in mind 
-that's how we'll start off the menu.
+When doing this, connecting with the game with a new account will land you in "OOC" mode. The  ooc-version of `look` (sitting in the Account cmdset) will show a list of available characters  if you have any. You can also enter `charcreate` to make a new character. The `charcreate` is a  simple command coming with Evennia that just lets you make a new character with a given name and  description. We will later modify that to kick off our chargen. For now we'll just keep in mind  that's how we'll start off the menu.
 
 In _Knave_, most of the character-generation is random. This means this tutorial can be pretty
 compact while still showing the basic idea. What we will create is a menu looking like this:
@@ -202,12 +197,9 @@ class TemporaryCharacterSheet:
         ]
 ```
 
-Here we have followed the _Knave_ rulebook to randomize abilities, description and equipment. 
-The `dice.roll()` and `dice.roll_random_table` methods now become very useful! Everything here 
-should be easy to follow. 
+Here we have followed the _Knave_ rulebook to randomize abilities, description and equipment.  The `dice.roll()` and `dice.roll_random_table` methods now become very useful! Everything here  should be easy to follow. 
 
-The main difference from baseline _Knave_ is that we make a table of "starting weapon" (in Knave 
-you can pick whatever you like). 
+The main difference from baseline _Knave_ is that we make a table of "starting weapon" (in Knave  you can pick whatever you like). 
 
 We also initialize `.ability_changes = 0`. Knave only allows us to swap the values of two 
 Abilities _once_. We will use this to know if it has been done or not.
@@ -260,9 +252,7 @@ class TemporaryCharacterSheet:
 
 ```
 
-The new `show_sheet` method collect the data from the temporary sheet and return it in a pretty 
-form. Making a 'template' string like `_TEMP_SHEET` makes it easier to change things later if you want 
-to change how things look.
+The new `show_sheet` method collect the data from the temporary sheet and return it in a pretty  form. Making a 'template' string like `_TEMP_SHEET` makes it easier to change things later if you want  to change how things look.
 
 ### Apply character
 
@@ -321,8 +311,7 @@ class TemporaryCharacterSheet:
         return new_character  
 ```
 
-We use `create_object` to create a new `EvAdventureCharacter`. We feed it with all relevant data 
-from the temporary character sheet. This is when these become an actual character. 
+We use `create_object` to create a new `EvAdventureCharacter`. We feed it with all relevant data  from the temporary character sheet. This is when these become an actual character. 
 
 ```{sidebar}
 A prototype is basically a `dict` describing how the object should be created. Since 
@@ -334,9 +323,7 @@ Each piece of equipment is an object in in its own right. We will here assume th
 items are defined as [Prototypes](../../../Components/Prototypes.md) keyed to its name, such as "sword", "brigandine 
 armor" etc. 
 
-We haven't actually created those prototypes yet, so for now we'll need to assume they are there.
-Once a piece of equipment has been spawned, we make sure to move it into the `EquipmentHandler` we 
-created in the [Equipment lesson](./Beginner-Tutorial-Equipment.md).
+We haven't actually created those prototypes yet, so for now we'll need to assume they are there. Once a piece of equipment has been spawned, we make sure to move it into the `EquipmentHandler` we  created in the [Equipment lesson](./Beginner-Tutorial-Equipment.md).
 
 
 ## Initializing EvMenu 
@@ -374,12 +361,9 @@ def start_chargen(caller, session=None):
 This first function is what we will call from elsewhere (for example from a custom `charcreate` 
 command) to kick the menu into gear.
 
-It takes the `caller` (the one to want to start the menu) and a `session` argument. The latter will help 
-track just which client-connection we are using (depending on Evennia settings, you could be 
-connecting with multiple clients).
+It takes the `caller` (the one to want to start the menu) and a `session` argument. The latter will help  track just which client-connection we are using (depending on Evennia settings, you could be  connecting with multiple clients).
 
-We create a `TemporaryCharacterSheet` and call `.generate()` to make a random character. We then 
-feed all this into `EvMenu`. 
+We create a `TemporaryCharacterSheet` and call `.generate()` to make a random character. We then  feed all this into `EvMenu`. 
 
 The moment this happens, the user will be in the menu, there are no further steps needed. 
 
@@ -432,12 +416,7 @@ def node_chargen(caller, raw_string, **kwargs):
 A lot to unpack here! In Evennia, it's convention to name your node-functions `node_*`. While 
 not required, it helps you track what is a node and not. 
 
-Every menu-node, should accept `caller, raw_string, **kwargs` as arguments. Here `caller` is the 
-`caller` you passed into the `EvMenu` call. `raw_string` is the input given by the user in order 
-to _get to this node_, so currently empty. The `**kwargs` are all extra keyword arguments passed 
-into `EvMenu`. They can also be passed between nodes. In this case, we passed the 
-keyword `tmp_character` to `EvMenu`. We now have the temporary character sheet available in the 
-node! 
+Every menu-node, should accept `caller, raw_string, **kwargs` as arguments. Here `caller` is the  `caller` you passed into the `EvMenu` call. `raw_string` is the input given by the user in order  to _get to this node_, so currently empty. The `**kwargs` are all extra keyword arguments passed  into `EvMenu`. They can also be passed between nodes. In this case, we passed the  keyword `tmp_character` to `EvMenu`. We now have the temporary character sheet available in the  node! 
 
 An `EvMenu` node must always return two things - `text` and `options`. The `text` is what will 
 show to the user when looking at this node. The `options` are, well, what options should be 
@@ -465,8 +444,7 @@ In our `node_chargen` node, we point to three nodes by name: `node_change_name`,
 `node_swap_abilities`, and `node_apply_character`. We also make sure to pass along `kwargs`
 to each node, since that contains our temporary character sheet.
 
-The middle of these options only appear if we haven't already switched two abilities around - to 
-know this, we check the `.ability_changes` property to make sure it's still 0.
+The middle of these options only appear if we haven't already switched two abilities around - to  know this, we check the `.ability_changes` property to make sure it's still 0.
 
 
 ## Node: Changing your name 
@@ -518,8 +496,7 @@ helper _goto_function_ (`_update_name`) to handle the user's input.
 
 For the (single) option, we use a special `key` named `_default`. This makes this option 
 a catch-all: If the user enters something that does not match any other option, this is 
-the option that will be used.
-Since we have no other options here, we will always use this option no matter what the user enters.
+the option that will be used. Since we have no other options here, we will always use this option no matter what the user enters.
 
 Also note that the `goto` part of the option points to the `_update_name` callable rather than to 
 the name of a node. It's important we keep passing `kwargs` along to it! 
@@ -528,9 +505,7 @@ When a user writes anything at this node, the `_update_name` callable will be ca
 the same arguments as a node, but it is _not_ a node - we will only use it to _figure out_ which 
 node to go to next. 
 
-In `_update_name` we now have a use for the `raw_string` argument - this is what was written by 
-the user on the previous node, remember? This is now either an empty string (meaning to ignore 
-it) or the new name of the character. 
+In `_update_name` we now have a use for the `raw_string` argument - this is what was written by  the user on the previous node, remember? This is now either an empty string (meaning to ignore  it) or the new name of the character. 
 
 A goto-function like `_update_name` must return the name of the next node to use. It can also 
 optionally return the `kwargs` to pass into that node - we want to always do this, so we don't 
@@ -628,14 +603,9 @@ In `_swap_abilities`, we need to analyze the `raw_string` from the user to see w
 want to do.
 
 Most code in the helper is validating the user didn't enter nonsense. If they did, 
-we use `caller.msg()` to tell them and then return `None, kwargs`, which re-runs the same node (the 
-name-selection) all over again. 
+we use `caller.msg()` to tell them and then return `None, kwargs`, which re-runs the same node (the  name-selection) all over again. 
 
-Since we want users to be able to write "CON" instead of the longer "constitution", we need a 
-mapping `_ABILITIES` to easily convert between the two (it's stored as `consitution` on the 
-temporary character sheet). Once we know which abilities they want to swap, we do so and tick up 
-the `.ability_changes` counter. This means this option will no longer be available from the main 
-node. 
+Since we want users to be able to write "CON" instead of the longer "constitution", we need a  mapping `_ABILITIES` to easily convert between the two (it's stored as `consitution` on the  temporary character sheet). Once we know which abilities they want to swap, we do so and tick up  the `.ability_changes` counter. This means this option will no longer be available from the main  node. 
 
 Finally, we return to `node_chargen` again.
 
@@ -658,13 +628,9 @@ node_apply_character(caller, raw_string, **kwargs):
     
     return text, None 
 ```
-When entering the node, we will take the Temporary character sheet and use its `.appy` method to
-create a new Character with all equipment. 
+When entering the node, we will take the Temporary character sheet and use its `.appy` method to create a new Character with all equipment. 
 
-This is what is called an _end node_, because it returns `None` instead of options. After this, 
-the menu will exit. We will be back to the default character selection screen. The characters 
-found on that screen are the ones listed in the `_playable_characters` Attribute, so we need to 
-also the new character to it.
+This is what is called an _end node_, because it returns `None` instead of options. After this,  the menu will exit. We will be back to the default character selection screen. The characters  found on that screen are the ones listed in the `_playable_characters` Attribute, so we need to also the new character to it.
 
 
 ## Tying the nodes together 
@@ -692,18 +658,13 @@ This is a start point for spinning up the chargen from a command later.
           
 ```
 
-Now that we have all the nodes, we add them to the `menutree` we left empty before. We only add 
-the nodes, _not_ the goto-helpers! The keys we set in the `menutree` dictionary are the names we 
-should use to point to nodes from inside the menu (and we did). 
+Now that we have all the nodes, we add them to the `menutree` we left empty before. We only add  the nodes, _not_ the goto-helpers! The keys we set in the `menutree` dictionary are the names we  should use to point to nodes from inside the menu (and we did). 
 
-We also add a keyword argument `startnode` pointing to the `node_chargen` node. This tells EvMenu 
-to first jump into that node when the menu is starting up.
+We also add a keyword argument `startnode` pointing to the `node_chargen` node. This tells EvMenu  to first jump into that node when the menu is starting up.
 
 ## Conclusions 
 
-This lesson taught us how to use `EvMenu` to make an interactive character generator. In an RPG 
-more complex than _Knave_, the menu would be bigger and more intricate, but the same principles 
-apply. 
+This lesson taught us how to use `EvMenu` to make an interactive character generator. In an RPG  more complex than _Knave_, the menu would be bigger and more intricate, but the same principles  apply. 
 
 Together with the previous lessons we have now fished most of the basics around player 
 characters - how they store their stats, handle their equipment and how to create them. 

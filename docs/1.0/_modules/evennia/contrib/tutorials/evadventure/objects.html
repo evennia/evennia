@@ -96,12 +96,15 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
 
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rules</span>
 <span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span><span class="p">,</span> <span class="n">ObjType</span><span class="p">,</span> <span class="n">WieldLocation</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_obj_stats</span>
+
+<span class="n">_BARE_HANDS</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="EvAdventureObject"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
@@ -146,7 +149,26 @@
 <span class="sd">            str: The help text, by default taken from the `.help_text` property.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;No help for this item.&quot;</span></div></div>
+        <span class="k">return</span> <span class="s2">&quot;No help for this item.&quot;</span></div>
+
+<div class="viewcode-block" id="EvAdventureObject.at_pre_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.at_pre_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called before use. If returning False, usage should be aborted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="EvAdventureObject.use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.use">[docs]</a>    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this object, whatever that may mean.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureObject.at_post_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.at_post_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called after use happened.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
 
 
 <div class="viewcode-block" id="EvAdventureObjectFiller"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureObjectFiller</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
@@ -183,7 +205,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">TREASURE</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span></div>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="EvAdventureConsumable"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureConsumable</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
@@ -194,20 +216,30 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">CONSUMABLE</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
-    <span class="n">uses</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">uses</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EvAdventureConsumable.at_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvAdventureConsumable.at_pre_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_pre_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not close enough to the target!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is used up.|n&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureConsumable.use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.use">[docs]</a>    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Consume a &#39;use&#39; of this item. Once it reaches 0 uses, it should normally</span>
-<span class="sd">        not be usable anymore and probably be deleted.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            user (Object): The one using the item.</span>
-<span class="sd">            *args, **kwargs: Extra arguments depending on the usage and item.</span>
+<span class="sd">        Use the consumable.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+
+        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;$You() $conj(use) </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">user</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvAdventureConsumable.at_post_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_post_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -220,26 +252,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> was used up.&quot;</span><span class="p">)</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> was used up.|n&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div></div>
-
-
-<div class="viewcode-block" id="WeaponEmptyHand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand">[docs]</a><span class="k">class</span> <span class="nc">WeaponEmptyHand</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is a dummy-class loaded when you wield no weapons. We won&#39;t create any db-object for it.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Empty Fists&quot;</span>
-    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span>
-    <span class="n">attack_type</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span>
-    <span class="n">defense_type</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">ARMOR</span>
-    <span class="n">damage_roll</span> <span class="o">=</span> <span class="s2">&quot;1d4&quot;</span>
-    <span class="n">quality</span> <span class="o">=</span> <span class="mi">100000</span>  <span class="c1"># let&#39;s assume fists are always available ...</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;WeaponEmptyHand&gt;&quot;</span></div>
 
 
 <div class="viewcode-block" id="EvAdventureWeapon"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureWeapon</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
@@ -256,6 +270,93 @@
     <span class="n">attack_type</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">)</span>
     <span class="c1"># what defense stat of the enemy it must defeat</span>
     <span class="n">defense_type</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">Ability</span><span class="o">.</span><span class="n">ARMOR</span><span class="p">)</span>
+    <span class="n">damage_roll</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EvAdventureWeapon.get_display_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">quality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span>
+
+        <span class="n">quality_txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">quality</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">quality_txt</span> <span class="o">=</span> <span class="s2">&quot;|r(broken!)|n&quot;</span>
+        <span class="k">elif</span> <span class="n">quality</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">quality_txt</span> <span class="o">=</span> <span class="s2">&quot;|y(damaged)|n&quot;</span>
+        <span class="k">elif</span> <span class="n">quality</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">quality_txt</span> <span class="o">=</span> <span class="s2">&quot;|Y(chipped)|n&quot;</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">+</span> <span class="n">quality_txt</span></div>
+
+<div class="viewcode-block" id="EvAdventureWeapon.at_pre_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.at_pre_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="c1"># we assume weapons can only be used in the same location</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not close enough to the target!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2"> is broken and can&#39;t be used!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureWeapon.use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.use">[docs]</a>    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;When a weapon is used, it attacks an opponent&quot;&quot;&quot;</span>
+
+        <span class="n">location</span> <span class="o">=</span> <span class="n">attacker</span><span class="o">.</span><span class="n">location</span>
+
+        <span class="n">is_hit</span><span class="p">,</span> <span class="n">quality</span><span class="p">,</span> <span class="n">txt</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">opposed_saving_throw</span><span class="p">(</span>
+            <span class="n">attacker</span><span class="p">,</span>
+            <span class="n">target</span><span class="p">,</span>
+            <span class="n">attack_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attack_type</span><span class="p">,</span>
+            <span class="n">defense_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">defense_type</span><span class="p">,</span>
+            <span class="n">advantage</span><span class="o">=</span><span class="n">advantage</span><span class="p">,</span>
+            <span class="n">disadvantage</span><span class="o">=</span><span class="n">disadvantage</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;$You() $conj(attack) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">from_obj</span><span class="o">=</span><span class="n">attacker</span><span class="p">,</span>
+            <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_hit</span><span class="p">:</span>
+            <span class="c1"># enemy hit, calculate damage</span>
+            <span class="n">dmg</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">damage_roll</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">quality</span> <span class="ow">is</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_SUCCESS</span><span class="p">:</span>
+                <span class="c1"># doble damage roll for critical success</span>
+                <span class="n">dmg</span> <span class="o">+=</span> <span class="n">rules</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">damage_roll</span><span class="p">)</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot; $You() |ycritically|n $conj(hit) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) for |r</span><span class="si">{</span><span class="n">dmg</span><span class="si">}</span><span class="s2">|n damage!&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; $You() $conj(hit) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) for |r</span><span class="si">{</span><span class="n">dmg</span><span class="si">}</span><span class="s2">|n damage!&quot;</span>
+
+            <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">attacker</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span>
+            <span class="c1"># call hook</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">at_damage</span><span class="p">(</span><span class="n">dmg</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="n">attacker</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># a miss</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; $You() $conj(miss) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="k">if</span> <span class="n">quality</span> <span class="ow">is</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_FAILURE</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;.. it&#39;s a |rcritical miss!|n, damaging the weapon.&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">attacker</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="EvAdventureWeapon.at_post_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.at_post_use">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|r</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2"> breaks and can no longer be used!&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="EvAdventureThrowable"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureThrowable">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureThrowable</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">EvAdventureConsumable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Something you can throw at an enemy to harm them once, like a knife or exploding potion/grenade.</span>
+
+<span class="sd">    Note: In Knave, ranged attacks are done with WIS (representing the stillness of your mind?)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">ObjType</span><span class="o">.</span><span class="n">THROWABLE</span><span class="p">,</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span><span class="p">,</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">CONSUMABLE</span><span class="p">)</span>
+
+    <span class="n">attack_type</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">Ability</span><span class="o">.</span><span class="n">WIS</span><span class="p">)</span>
+    <span class="n">defense_type</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">Ability</span><span class="o">.</span><span class="n">DEX</span><span class="p">)</span>
     <span class="n">damage_roll</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">)</span></div>
 
 
@@ -317,6 +418,37 @@
 
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">HELMET</span>
     <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span></div>
+
+
+<div class="viewcode-block" id="WeaponBareHands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.WeaponBareHands">[docs]</a><span class="k">class</span> <span class="nc">WeaponBareHands</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a dummy-class loaded when you wield no weapons. We won&#39;t create any db-object for it.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Bare hands&quot;</span>
+    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span>
+    <span class="n">attack_type</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span>
+    <span class="n">defense_type</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">ARMOR</span>
+    <span class="n">damage_roll</span> <span class="o">=</span> <span class="s2">&quot;1d4&quot;</span>
+    <span class="n">quality</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># let&#39;s assume fists are always available ...</span></div>
+
+
+<div class="viewcode-block" id="get_bare_hands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.get_bare_hands">[docs]</a><span class="k">def</span> <span class="nf">get_bare_hands</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the bare-hands singleton object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        WeaponBareHands</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_BARE_HANDS</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_BARE_HANDS</span><span class="p">:</span>
+        <span class="n">_BARE_HANDS</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;Bare hands&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">WeaponBareHands</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_BARE_HANDS</span><span class="p">:</span>
+        <span class="n">_BARE_HANDS</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">WeaponBareHands</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Bare hands&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_BARE_HANDS</span></div>
 </pre></div>
 
           </div>

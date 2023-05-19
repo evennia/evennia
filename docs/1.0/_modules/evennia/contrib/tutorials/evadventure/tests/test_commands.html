@@ -84,7 +84,6 @@
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">call</span><span class="p">,</span> <span class="n">patch</span>
 
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Something</span>
-
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 
@@ -111,18 +110,6 @@
 <span class="sd">You use 0/11 equipment slots.</span>
 <span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
         <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestEvAdventureCommands.test_attack"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_attack">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.commands.join_combat&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_join_combat</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">allow_combat</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="n">target</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureMob</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Ogre&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdAttackTurnBased</span><span class="p">(),</span> <span class="s2">&quot;ogre&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-
-        <span class="n">mock_join_combat</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">Something</span><span class="p">)</span>
-
-        <span class="n">target</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestEvAdventureCommands.test_wield_or_wear"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_wield_or_wear">[docs]</a>    <span class="k">def</span> <span class="nf">test_wield_or_wear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
@@ -163,7 +150,6 @@
 
 <div class="viewcode-block" id="TestEvAdventureCommands.test_give__item"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_give__item">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.commands.EvMenu&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_give__item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_EvMenu</span><span class="p">):</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
         <span class="n">recipient</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Friend&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
 

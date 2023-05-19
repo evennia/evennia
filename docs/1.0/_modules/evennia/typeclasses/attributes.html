@@ -237,18 +237,7 @@
 
 <div class="viewcode-block" id="AttributeProperty"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty">[docs]</a><span class="k">class</span> <span class="nc">AttributeProperty</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Attribute property descriptor. Allows for specifying Attributes as Django-like &#39;fields&#39;</span>
-<span class="sd">    on the class level. Note that while one can set a lock on the Attribute,</span>
-<span class="sd">    there is no way to *check* said lock when accessing via the property - use</span>
-<span class="sd">    the full `AttributeHandler` if you need to do access checks. Note however that if you use the</span>
-<span class="sd">    full `AttributeHandler` to access this Attribute, the `at_get/at_set` methods on this class will</span>
-<span class="sd">    _not_ fire (because you are bypassing the `AttributeProperty` entirely in that case).</span>
-
-<span class="sd">    Example:</span>
-<span class="sd">    ::</span>
-
-<span class="sd">        class Character(DefaultCharacter):</span>
-<span class="sd">            foo = AttributeProperty(default=&quot;Bar&quot;)</span>
+<span class="sd">    AttributeProperty.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -256,10 +245,18 @@
 
 <div class="viewcode-block" id="AttributeProperty.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strattr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lockstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allows for specifying Attributes as Django-like &#39;fields&#39; on the class level. Note that while</span>
+<span class="sd">        one can set a lock on the Attribute, there is no way to *check* said lock when accessing via</span>
+<span class="sd">        the property - use the full `AttributeHandler` if you need to do access checks. Note however</span>
+<span class="sd">        that if you use the full `AttributeHandler` to access this Attribute, the `at_get/at_set`</span>
+<span class="sd">        methods on this class will _not_ fire (because you are bypassing the `AttributeProperty`</span>
+<span class="sd">        entirely in that case).</span>
+
 <span class="sd">        Initialize an Attribute as a property descriptor.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            default (any): A default value if the attr is not set.</span>
+<span class="sd">            default (any): A default value if the attr is not set. If a callable, this will be</span>
+<span class="sd">                run without any arguments and is expected to return the default value.</span>
 <span class="sd">            category (str): The attribute&#39;s category. If unset, use class default.</span>
 <span class="sd">            strattr (bool): If set, this Attribute *must* be a simple string, and will be</span>
 <span class="sd">                stored more efficiently.</span>
@@ -272,6 +269,11 @@
 <span class="sd">                is explicitly assigned a value. This makes it more efficient while it retains</span>
 <span class="sd">                its default (there&#39;s no db access), but without an actual Attribute generated,</span>
 <span class="sd">                one cannot access it via .db, the AttributeHandler or see it with `examine`.</span>
+<span class="sd">        Example:</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            class Character(DefaultCharacter):</span>
+<span class="sd">                foo = AttributeProperty(default=&quot;Bar&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="n">default</span>
@@ -1468,11 +1470,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">clear_attributes</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">default_access</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AttributeHandler.all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeHandler.all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all Attribute objects on this object, regardless of category.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            category (str, optional): A given category to limit results to.</span>
 <span class="sd">            accessing_obj (object, optional): Check the `attrread`</span>
 <span class="sd">                lock on each attribute before returning them. If not</span>
 <span class="sd">                given, this check is skipped.</span>
@@ -1486,6 +1489,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_all_attributes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span> <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="n">category</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">accessing_obj</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span>

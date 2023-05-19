@@ -134,12 +134,7 @@ using a menu when they log in.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False 
 </pre></div>
 </div>
-<p>When doing this, connecting with the game with a new account will land you in “OOC” mode. The
-ooc-version of <code class="docutils literal notranslate"><span class="pre">look</span></code> (sitting in the Account cmdset) will show a list of available characters
-if you have any. You can also enter <code class="docutils literal notranslate"><span class="pre">charcreate</span></code> to make a new character. The <code class="docutils literal notranslate"><span class="pre">charcreate</span></code> is a
-simple command coming with Evennia that just lets you make a new character with a given name and
-description. We will later modify that to kick off our chargen. For now we’ll just keep in mind
-that’s how we’ll start off the menu.</p>
+<p>When doing this, connecting with the game with a new account will land you in “OOC” mode. The  ooc-version of <code class="docutils literal notranslate"><span class="pre">look</span></code> (sitting in the Account cmdset) will show a list of available characters  if you have any. You can also enter <code class="docutils literal notranslate"><span class="pre">charcreate</span></code> to make a new character. The <code class="docutils literal notranslate"><span class="pre">charcreate</span></code> is a  simple command coming with Evennia that just lets you make a new character with a given name and  description. We will later modify that to kick off our chargen. For now we’ll just keep in mind  that’s how we’ll start off the menu.</p>
 <p>In <em>Knave</em>, most of the character-generation is random. This means this tutorial can be pretty
 compact while still showing the basic idea. What we will create is a menu looking like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Silas</span> 
@@ -309,11 +304,8 @@ keep in here.</p>
         <span class="p">]</span>
 </pre></div>
 </div>
-<p>Here we have followed the <em>Knave</em> rulebook to randomize abilities, description and equipment.
-The <code class="docutils literal notranslate"><span class="pre">dice.roll()</span></code> and <code class="docutils literal notranslate"><span class="pre">dice.roll_random_table</span></code> methods now become very useful! Everything here
-should be easy to follow.</p>
-<p>The main difference from baseline <em>Knave</em> is that we make a table of “starting weapon” (in Knave
-you can pick whatever you like).</p>
+<p>Here we have followed the <em>Knave</em> rulebook to randomize abilities, description and equipment.  The <code class="docutils literal notranslate"><span class="pre">dice.roll()</span></code> and <code class="docutils literal notranslate"><span class="pre">dice.roll_random_table</span></code> methods now become very useful! Everything here  should be easy to follow.</p>
+<p>The main difference from baseline <em>Knave</em> is that we make a table of “starting weapon” (in Knave  you can pick whatever you like).</p>
 <p>We also initialize <code class="docutils literal notranslate"><span class="pre">.ability_changes</span> <span class="pre">=</span> <span class="pre">0</span></code>. Knave only allows us to swap the values of two
 Abilities <em>once</em>. We will use this to know if it has been done or not.</p>
 <section id="showing-the-sheet">
@@ -362,9 +354,7 @@ Abilities <em>once</em>. We will use this to know if it has been done or not.</p
 
 </pre></div>
 </div>
-<p>The new <code class="docutils literal notranslate"><span class="pre">show_sheet</span></code> method collect the data from the temporary sheet and return it in a pretty
-form. Making a ‘template’ string like <code class="docutils literal notranslate"><span class="pre">_TEMP_SHEET</span></code> makes it easier to change things later if you want
-to change how things look.</p>
+<p>The new <code class="docutils literal notranslate"><span class="pre">show_sheet</span></code> method collect the data from the temporary sheet and return it in a pretty  form. Making a ‘template’ string like <code class="docutils literal notranslate"><span class="pre">_TEMP_SHEET</span></code> makes it easier to change things later if you want  to change how things look.</p>
 </section>
 <section id="apply-character">
 <h3><span class="section-number">6.3.2. </span>Apply character<a class="headerlink" href="#apply-character" title="Permalink to this headline">¶</a></h3>
@@ -421,8 +411,7 @@ This is a bit more involved.</p>
         <span class="k">return</span> <span class="n">new_character</span>  
 </pre></div>
 </div>
-<p>We use <code class="docutils literal notranslate"><span class="pre">create_object</span></code> to create a new <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>. We feed it with all relevant data
-from the temporary character sheet. This is when these become an actual character.</p>
+<p>We use <code class="docutils literal notranslate"><span class="pre">create_object</span></code> to create a new <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>. We feed it with all relevant data  from the temporary character sheet. This is when these become an actual character.</p>
 <aside class="sidebar">
 <p>A prototype is basically a <code class="docutils literal notranslate"><span class="pre">dict</span></code> describing how the object should be created. Since
 it’s just a piece of code, it can stored in a Python module and used to quickly <em>spawn</em> (create)
@@ -431,9 +420,7 @@ things from those prototypes.</p>
 <p>Each piece of equipment is an object in in its own right. We will here assume that all game
 items are defined as <a class="reference internal" href="../../../Components/Prototypes.html"><span class="doc std std-doc">Prototypes</span></a> keyed to its name, such as “sword”, “brigandine
 armor” etc.</p>
-<p>We haven’t actually created those prototypes yet, so for now we’ll need to assume they are there.
-Once a piece of equipment has been spawned, we make sure to move it into the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> we
-created in the <a class="reference internal" href="Beginner-Tutorial-Equipment.html"><span class="doc std std-doc">Equipment lesson</span></a>.</p>
+<p>We haven’t actually created those prototypes yet, so for now we’ll need to assume they are there. Once a piece of equipment has been spawned, we make sure to move it into the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> we  created in the <a class="reference internal" href="Beginner-Tutorial-Equipment.html"><span class="doc std std-doc">Equipment lesson</span></a>.</p>
 </section>
 </section>
 <section id="initializing-evmenu">
@@ -468,11 +455,8 @@ created in the <a class="reference internal" href="Beginner-Tutorial-Equipment.h
 </div>
 <p>This first function is what we will call from elsewhere (for example from a custom <code class="docutils literal notranslate"><span class="pre">charcreate</span></code>
 command) to kick the menu into gear.</p>
-<p>It takes the <code class="docutils literal notranslate"><span class="pre">caller</span></code> (the one to want to start the menu) and a <code class="docutils literal notranslate"><span class="pre">session</span></code> argument. The latter will help
-track just which client-connection we are using (depending on Evennia settings, you could be
-connecting with multiple clients).</p>
-<p>We create a <code class="docutils literal notranslate"><span class="pre">TemporaryCharacterSheet</span></code> and call <code class="docutils literal notranslate"><span class="pre">.generate()</span></code> to make a random character. We then
-feed all this into <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>.</p>
+<p>It takes the <code class="docutils literal notranslate"><span class="pre">caller</span></code> (the one to want to start the menu) and a <code class="docutils literal notranslate"><span class="pre">session</span></code> argument. The latter will help  track just which client-connection we are using (depending on Evennia settings, you could be  connecting with multiple clients).</p>
+<p>We create a <code class="docutils literal notranslate"><span class="pre">TemporaryCharacterSheet</span></code> and call <code class="docutils literal notranslate"><span class="pre">.generate()</span></code> to make a random character. We then  feed all this into <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>.</p>
 <p>The moment this happens, the user will be in the menu, there are no further steps needed.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">menutree</span></code> is what we’ll create next. It describes which menu ‘nodes’ are available to jump
 between.</p>
@@ -520,12 +504,7 @@ actions.</p>
 </div>
 <p>A lot to unpack here! In Evennia, it’s convention to name your node-functions <code class="docutils literal notranslate"><span class="pre">node_*</span></code>. While
 not required, it helps you track what is a node and not.</p>
-<p>Every menu-node, should accept <code class="docutils literal notranslate"><span class="pre">caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs</span></code> as arguments. Here <code class="docutils literal notranslate"><span class="pre">caller</span></code> is the
-<code class="docutils literal notranslate"><span class="pre">caller</span></code> you passed into the <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> call. <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is the input given by the user in order
-to <em>get to this node</em>, so currently empty. The <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> are all extra keyword arguments passed
-into <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>. They can also be passed between nodes. In this case, we passed the
-keyword <code class="docutils literal notranslate"><span class="pre">tmp_character</span></code> to <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>. We now have the temporary character sheet available in the
-node!</p>
+<p>Every menu-node, should accept <code class="docutils literal notranslate"><span class="pre">caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs</span></code> as arguments. Here <code class="docutils literal notranslate"><span class="pre">caller</span></code> is the  <code class="docutils literal notranslate"><span class="pre">caller</span></code> you passed into the <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> call. <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is the input given by the user in order  to <em>get to this node</em>, so currently empty. The <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> are all extra keyword arguments passed  into <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>. They can also be passed between nodes. In this case, we passed the  keyword <code class="docutils literal notranslate"><span class="pre">tmp_character</span></code> to <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>. We now have the temporary character sheet available in the  node!</p>
 <p>An <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> node must always return two things - <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">options</span></code>. The <code class="docutils literal notranslate"><span class="pre">text</span></code> is what will
 show to the user when looking at this node. The <code class="docutils literal notranslate"><span class="pre">options</span></code> are, well, what options should be
 presented to move on from here to some other place.</p>
@@ -546,8 +525,7 @@ pass kwargs (as a dict). This will be made available as <code class="docutils li
 <p>In our <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> node, we point to three nodes by name: <code class="docutils literal notranslate"><span class="pre">node_change_name</span></code>,
 <code class="docutils literal notranslate"><span class="pre">node_swap_abilities</span></code>, and <code class="docutils literal notranslate"><span class="pre">node_apply_character</span></code>. We also make sure to pass along <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>
 to each node, since that contains our temporary character sheet.</p>
-<p>The middle of these options only appear if we haven’t already switched two abilities around - to
-know this, we check the <code class="docutils literal notranslate"><span class="pre">.ability_changes</span></code> property to make sure it’s still 0.</p>
+<p>The middle of these options only appear if we haven’t already switched two abilities around - to  know this, we check the <code class="docutils literal notranslate"><span class="pre">.ability_changes</span></code> property to make sure it’s still 0.</p>
 </section>
 <section id="node-changing-your-name">
 <h2><span class="section-number">6.6. </span>Node: Changing your name<a class="headerlink" href="#node-changing-your-name" title="Permalink to this headline">¶</a></h2>
@@ -595,16 +573,13 @@ know this, we check the <code class="docutils literal notranslate"><span class="
 helper <em>goto_function</em> (<code class="docutils literal notranslate"><span class="pre">_update_name</span></code>) to handle the user’s input.</p>
 <p>For the (single) option, we use a special <code class="docutils literal notranslate"><span class="pre">key</span></code> named <code class="docutils literal notranslate"><span class="pre">_default</span></code>. This makes this option
 a catch-all: If the user enters something that does not match any other option, this is
-the option that will be used.
-Since we have no other options here, we will always use this option no matter what the user enters.</p>
+the option that will be used. Since we have no other options here, we will always use this option no matter what the user enters.</p>
 <p>Also note that the <code class="docutils literal notranslate"><span class="pre">goto</span></code> part of the option points to the <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> callable rather than to
 the name of a node. It’s important we keep passing <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> along to it!</p>
 <p>When a user writes anything at this node, the <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> callable will be called. This has
 the same arguments as a node, but it is <em>not</em> a node - we will only use it to <em>figure out</em> which
 node to go to next.</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> we now have a use for the <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> argument - this is what was written by
-the user on the previous node, remember? This is now either an empty string (meaning to ignore
-it) or the new name of the character.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> we now have a use for the <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> argument - this is what was written by  the user on the previous node, remember? This is now either an empty string (meaning to ignore  it) or the new name of the character.</p>
 <p>A goto-function like <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> must return the name of the next node to use. It can also
 optionally return the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> to pass into that node - we want to always do this, so we don’t
 loose our temporary character sheet. Here we will always go back to the <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code>.</p>
@@ -698,13 +673,8 @@ node (such as <code class="docutils literal notranslate"><span class="pre">WIS</
 <p>In <code class="docutils literal notranslate"><span class="pre">_swap_abilities</span></code>, we need to analyze the <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> from the user to see what they
 want to do.</p>
 <p>Most code in the helper is validating the user didn’t enter nonsense. If they did,
-we use <code class="docutils literal notranslate"><span class="pre">caller.msg()</span></code> to tell them and then return <code class="docutils literal notranslate"><span class="pre">None,</span> <span class="pre">kwargs</span></code>, which re-runs the same node (the
-name-selection) all over again.</p>
-<p>Since we want users to be able to write “CON” instead of the longer “constitution”, we need a
-mapping <code class="docutils literal notranslate"><span class="pre">_ABILITIES</span></code> to easily convert between the two (it’s stored as <code class="docutils literal notranslate"><span class="pre">consitution</span></code> on the
-temporary character sheet). Once we know which abilities they want to swap, we do so and tick up
-the <code class="docutils literal notranslate"><span class="pre">.ability_changes</span></code> counter. This means this option will no longer be available from the main
-node.</p>
+we use <code class="docutils literal notranslate"><span class="pre">caller.msg()</span></code> to tell them and then return <code class="docutils literal notranslate"><span class="pre">None,</span> <span class="pre">kwargs</span></code>, which re-runs the same node (the  name-selection) all over again.</p>
+<p>Since we want users to be able to write “CON” instead of the longer “constitution”, we need a  mapping <code class="docutils literal notranslate"><span class="pre">_ABILITIES</span></code> to easily convert between the two (it’s stored as <code class="docutils literal notranslate"><span class="pre">consitution</span></code> on the  temporary character sheet). Once we know which abilities they want to swap, we do so and tick up  the <code class="docutils literal notranslate"><span class="pre">.ability_changes</span></code> counter. This means this option will no longer be available from the main  node.</p>
 <p>Finally, we return to <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> again.</p>
 </section>
 <section id="node-creating-the-character">
@@ -725,12 +695,8 @@ node.</p>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="kc">None</span> 
 </pre></div>
 </div>
-<p>When entering the node, we will take the Temporary character sheet and use its <code class="docutils literal notranslate"><span class="pre">.appy</span></code> method to
-create a new Character with all equipment.</p>
-<p>This is what is called an <em>end node</em>, because it returns <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of options. After this,
-the menu will exit. We will be back to the default character selection screen. The characters
-found on that screen are the ones listed in the <code class="docutils literal notranslate"><span class="pre">_playable_characters</span></code> Attribute, so we need to
-also the new character to it.</p>
+<p>When entering the node, we will take the Temporary character sheet and use its <code class="docutils literal notranslate"><span class="pre">.appy</span></code> method to create a new Character with all equipment.</p>
+<p>This is what is called an <em>end node</em>, because it returns <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of options. After this,  the menu will exit. We will be back to the default character selection screen. The characters  found on that screen are the ones listed in the <code class="docutils literal notranslate"><span class="pre">_playable_characters</span></code> Attribute, so we need to also the new character to it.</p>
 </section>
 <section id="tying-the-nodes-together">
 <h2><span class="section-number">6.9. </span>Tying the nodes together<a class="headerlink" href="#tying-the-nodes-together" title="Permalink to this headline">¶</a></h2>
@@ -756,17 +722,12 @@ also the new character to it.</p>
           
 </pre></div>
 </div>
-<p>Now that we have all the nodes, we add them to the <code class="docutils literal notranslate"><span class="pre">menutree</span></code> we left empty before. We only add
-the nodes, <em>not</em> the goto-helpers! The keys we set in the <code class="docutils literal notranslate"><span class="pre">menutree</span></code> dictionary are the names we
-should use to point to nodes from inside the menu (and we did).</p>
-<p>We also add a keyword argument <code class="docutils literal notranslate"><span class="pre">startnode</span></code> pointing to the <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> node. This tells EvMenu
-to first jump into that node when the menu is starting up.</p>
+<p>Now that we have all the nodes, we add them to the <code class="docutils literal notranslate"><span class="pre">menutree</span></code> we left empty before. We only add  the nodes, <em>not</em> the goto-helpers! The keys we set in the <code class="docutils literal notranslate"><span class="pre">menutree</span></code> dictionary are the names we  should use to point to nodes from inside the menu (and we did).</p>
+<p>We also add a keyword argument <code class="docutils literal notranslate"><span class="pre">startnode</span></code> pointing to the <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> node. This tells EvMenu  to first jump into that node when the menu is starting up.</p>
 </section>
 <section id="conclusions">
 <h2><span class="section-number">6.10. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
-<p>This lesson taught us how to use <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> to make an interactive character generator. In an RPG
-more complex than <em>Knave</em>, the menu would be bigger and more intricate, but the same principles
-apply.</p>
+<p>This lesson taught us how to use <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> to make an interactive character generator. In an RPG  more complex than <em>Knave</em>, the menu would be bigger and more intricate, but the same principles  apply.</p>
 <p>Together with the previous lessons we have now fished most of the basics around player
 characters - how they store their stats, handle their equipment and how to create them.</p>
 <p>In the next lesson we’ll address how EvAdventure <em>Rooms</em> work.</p>

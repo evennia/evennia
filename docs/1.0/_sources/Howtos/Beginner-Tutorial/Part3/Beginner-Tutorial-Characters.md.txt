@@ -104,6 +104,29 @@ class LivingMixin:
     # makes it easy for mobs to know to attack PCs
     is_pc = False  
 
+	@property
+    def hurt_level(self):
+        """
+        String describing how hurt this character is.
+        """
+        percent = max(0, min(100, 100 * (self.hp / self.hp_max)))
+        if 95 < percent <= 100:
+            return "|gPerfect|n"
+        elif 80 < percent <= 95:
+            return "|gScraped|n"
+        elif 60 < percent <= 80:
+            return "|GBruised|n"
+        elif 45 < percent <= 60:
+            return "|yHurt|n"
+        elif 30 < percent <= 45:
+            return "|yWounded|n"
+        elif 15 < percent <= 30:
+            return "|rBadly wounded|n"
+        elif 1 < percent <= 15:
+            return "|rBarely hanging on|n"
+        elif percent == 0:
+            return "|RCollapsed!|n"
+
     def heal(self, hp): 
         """ 
         Heal hp amount of health, not allowing to exceed our max hp
@@ -121,6 +144,10 @@ class LivingMixin:
         self.coins -= amount
         return amount
         
+    def at_attacked(self, attacker, **kwargs): 
+		"""Called when being attacked and combat starts."""
+		pass
+    
     def at_damage(self, damage, attacker=None):
         """Called when attacked and taking damage."""
         self.hp -= damage  
@@ -147,8 +174,9 @@ class LivingMixin:
         looter.coins += stolen
 
 ```
-Most of these are empty since they will behave differently for characters and npcs. But having them 
-in the mixin means we can expect these methods to be available for all living things.
+Most of these are empty since they will behave differently for characters and npcs. But having them in the mixin means we can expect these methods to be available for all living things.
+
+Once we create more of our game, we will need to remember to actually call these hook methods so they serve a purpose. For example, once we implement combat, we must remember to call `at_attacked` as well as the other methods involving taking damage, getting defeated or dying. 
 
 
 ## Character class 
@@ -204,12 +232,10 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         # TODO - go back into chargen to make a new character!            
 ```
 
-We make an assumption about our rooms here - that they have a property `.allow_death`. We need 
-to make a note to actually add such a property to rooms later!
+We make an assumption about our rooms here - that they have a property `.allow_death`. We need  to make a note to actually add such a property to rooms later!
 
 In our `Character` class we implement all attributes we want to simulate from the _Knave_ ruleset.
-The `AttributeProperty` is one way to add an Attribute in a field-like way; these will be accessible 
-on every character in several ways: 
+The `AttributeProperty` is one way to add an Attribute in a field-like way; these will be accessible on every character in several ways: 
 
 - As `character.strength`
 - As `character.db.strength`
@@ -217,11 +243,9 @@ on every character in several ways:
 
 See [Attributes](../../../Components/Attributes.md) for seeing how Attributes work.
 
-Unlike in base _Knave_, we store `coins` as a separate Attribute rather than as items in the inventory,
-this makes it easier to handle barter and trading later.
+Unlike in base _Knave_, we store `coins` as a separate Attribute rather than as items in the inventory, this makes it easier to handle barter and trading later.
 
-We implement the Player Character versions of `at_defeat` and `at_death`. We also make use of `.heal()` 
-from the `LivingMixin` class. 
+We implement the Player Character versions of `at_defeat` and `at_death`. We also make use of `.heal()`  from the `LivingMixin` class. 
 
 ### Funcparser inlines
 
@@ -233,15 +257,10 @@ self.location.msg_contents(
     from_obj=self)
 ```
 
-Remember that `self` is the Character instance here. So `self.location.msg_contents` means "send a 
-message to everything inside my current location". In other words, send a message to everyone 
-in the same place as the character.
+Remember that `self` is the Character instance here. So `self.location.msg_contents` means "send a  message to everything inside my current location". In other words, send a message to everyone  in the same place as the character.
 
 The `$You() $conj(collapse)` are [FuncParser inlines](../../../Components/FuncParser.md). These are functions that 
-execute 
-in the string. The resulting string may look different for different audiences. The `$You()` inline 
-function will use `from_obj` to figure out who 'you' are and either show your name or 'You'. 
-The `$conj()` (verb conjugator) will tweak the (English) verb to match.
+execute  in the string. The resulting string may look different for different audiences. The `$You()` inline  function will use `from_obj` to figure out who 'you' are and either show your name or 'You'.  The `$conj()` (verb conjugator) will tweak the (English) verb to match.
 
 - You will see: `"You collapse in a heap, alive but beaten."`
 - Others in the room will see: `"Thomas collapses in a heap, alive but beaten."`
@@ -250,9 +269,7 @@ Note how `$conj()` chose `collapse/collapses` to make the sentences grammaticall
 
 ### Backtracking
 
-We make our first use of the `rules.dice` roller to roll on the death table! As you may recall, in the
-previous lesson, we didn't know just what to do when rolling 'dead' on this table. Now we know - we
-should be calling `at_death` on the character. So let's add that where we had TODOs before:
+We make our first use of the `rules.dice` roller to roll on the death table! As you may recall, in the previous lesson, we didn't know just what to do when rolling 'dead' on this table. Now we know - we should be calling `at_death` on the character. So let's add that where we had TODOs before:
 
 ```python 
 # mygame/evadventure/rules.py 

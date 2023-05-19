@@ -84,7 +84,6 @@
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evform</span> <span class="kn">import</span> <span class="n">EvForm</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span><span class="p">,</span> <span class="n">ask_yes_no</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
@@ -92,7 +91,6 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rules</span>
 <span class="kn">from</span> <span class="nn">.equipment</span> <span class="kn">import</span> <span class="n">EquipmentError</span><span class="p">,</span> <span class="n">EquipmentHandler</span>
 <span class="kn">from</span> <span class="nn">.quests</span> <span class="kn">import</span> <span class="n">EvAdventureQuestHandler</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_obj_stats</span>
 
 
 <div class="viewcode-block" id="LivingMixin"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin">[docs]</a><span class="k">class</span> <span class="nc">LivingMixin</span><span class="p">:</span>
@@ -141,6 +139,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|g</span><span class="si">{</span><span class="n">healer</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> heals you for </span><span class="si">{</span><span class="n">healed</span><span class="si">}</span><span class="s2"> health.|n&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are healed for </span><span class="si">{</span><span class="n">healed</span><span class="si">}</span><span class="s2"> health.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LivingMixin.at_attacked"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_attacked">[docs]</a>    <span class="k">def</span> <span class="nf">at_attacked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when being attacked / combat starts.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="LivingMixin.at_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.characters.html#evennia.contrib.tutorials.evadventure.characters.LivingMixin.at_damage">[docs]</a>    <span class="k">def</span> <span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

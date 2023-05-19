@@ -212,6 +212,29 @@ since it can also get confusing to follow the code.</p>
     <span class="c1"># makes it easy for mobs to know to attack PCs</span>
     <span class="n">is_pc</span> <span class="o">=</span> <span class="kc">False</span>  
 
+	<span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hurt_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        String describing how hurt this character is.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">percent</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="mi">95</span> <span class="o">&lt;</span> <span class="n">percent</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|gPerfect|n&quot;</span>
+        <span class="k">elif</span> <span class="mi">80</span> <span class="o">&lt;</span> <span class="n">percent</span> <span class="o">&lt;=</span> <span class="mi">95</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|gScraped|n&quot;</span>
+        <span class="k">elif</span> <span class="mi">60</span> <span class="o">&lt;</span> <span class="n">percent</span> <span class="o">&lt;=</span> <span class="mi">80</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|GBruised|n&quot;</span>
+        <span class="k">elif</span> <span class="mi">45</span> <span class="o">&lt;</span> <span class="n">percent</span> <span class="o">&lt;=</span> <span class="mi">60</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|yHurt|n&quot;</span>
+        <span class="k">elif</span> <span class="mi">30</span> <span class="o">&lt;</span> <span class="n">percent</span> <span class="o">&lt;=</span> <span class="mi">45</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|yWounded|n&quot;</span>
+        <span class="k">elif</span> <span class="mi">15</span> <span class="o">&lt;</span> <span class="n">percent</span> <span class="o">&lt;=</span> <span class="mi">30</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|rBadly wounded|n&quot;</span>
+        <span class="k">elif</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">percent</span> <span class="o">&lt;=</span> <span class="mi">15</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|rBarely hanging on|n&quot;</span>
+        <span class="k">elif</span> <span class="n">percent</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|RCollapsed!|n&quot;</span>
+
     <span class="k">def</span> <span class="nf">heal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hp</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Heal hp amount of health, not allowing to exceed our max hp</span>
@@ -229,6 +252,10 @@ since it can also get confusing to follow the code.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">coins</span> <span class="o">-=</span> <span class="n">amount</span>
         <span class="k">return</span> <span class="n">amount</span>
         
+    <span class="k">def</span> <span class="nf">at_attacked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Called when being attacked and combat starts.&quot;&quot;&quot;</span>
+		<span class="k">pass</span>
+    
     <span class="k">def</span> <span class="nf">at_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damage</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when attacked and taking damage.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">-=</span> <span class="n">damage</span>  
@@ -256,8 +283,8 @@ since it can also get confusing to follow the code.</p>
 
 </pre></div>
 </div>
-<p>Most of these are empty since they will behave differently for characters and npcs. But having them
-in the mixin means we can expect these methods to be available for all living things.</p>
+<p>Most of these are empty since they will behave differently for characters and npcs. But having them in the mixin means we can expect these methods to be available for all living things.</p>
+<p>Once we create more of our game, we will need to remember to actually call these hook methods so they serve a purpose. For example, once we implement combat, we must remember to call <code class="docutils literal notranslate"><span class="pre">at_attacked</span></code> as well as the other methods involving taking damage, getting defeated or dying.</p>
 </section>
 <section id="character-class">
 <h2><span class="section-number">3.3. </span>Character class<a class="headerlink" href="#character-class" title="Permalink to this headline">¶</a></h2>
@@ -310,21 +337,17 @@ in the mixin means we can expect these methods to be available for all living th
         <span class="c1"># TODO - go back into chargen to make a new character!            </span>
 </pre></div>
 </div>
-<p>We make an assumption about our rooms here - that they have a property <code class="docutils literal notranslate"><span class="pre">.allow_death</span></code>. We need
-to make a note to actually add such a property to rooms later!</p>
+<p>We make an assumption about our rooms here - that they have a property <code class="docutils literal notranslate"><span class="pre">.allow_death</span></code>. We need  to make a note to actually add such a property to rooms later!</p>
 <p>In our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class we implement all attributes we want to simulate from the <em>Knave</em> ruleset.
-The <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> is one way to add an Attribute in a field-like way; these will be accessible
-on every character in several ways:</p>
+The <code class="docutils literal notranslate"><span class="pre">AttributeProperty</span></code> is one way to add an Attribute in a field-like way; these will be accessible on every character in several ways:</p>
 <ul class="simple">
 <li><p>As <code class="docutils literal notranslate"><span class="pre">character.strength</span></code></p></li>
 <li><p>As <code class="docutils literal notranslate"><span class="pre">character.db.strength</span></code></p></li>
 <li><p>As <code class="docutils literal notranslate"><span class="pre">character.attributes.get(&quot;strength&quot;)</span></code></p></li>
 </ul>
 <p>See <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a> for seeing how Attributes work.</p>
-<p>Unlike in base <em>Knave</em>, we store <code class="docutils literal notranslate"><span class="pre">coins</span></code> as a separate Attribute rather than as items in the inventory,
-this makes it easier to handle barter and trading later.</p>
-<p>We implement the Player Character versions of <code class="docutils literal notranslate"><span class="pre">at_defeat</span></code> and <code class="docutils literal notranslate"><span class="pre">at_death</span></code>. We also make use of <code class="docutils literal notranslate"><span class="pre">.heal()</span></code>
-from the <code class="docutils literal notranslate"><span class="pre">LivingMixin</span></code> class.</p>
+<p>Unlike in base <em>Knave</em>, we store <code class="docutils literal notranslate"><span class="pre">coins</span></code> as a separate Attribute rather than as items in the inventory, this makes it easier to handle barter and trading later.</p>
+<p>We implement the Player Character versions of <code class="docutils literal notranslate"><span class="pre">at_defeat</span></code> and <code class="docutils literal notranslate"><span class="pre">at_death</span></code>. We also make use of <code class="docutils literal notranslate"><span class="pre">.heal()</span></code>  from the <code class="docutils literal notranslate"><span class="pre">LivingMixin</span></code> class.</p>
 <section id="funcparser-inlines">
 <h3><span class="section-number">3.3.1. </span>Funcparser inlines<a class="headerlink" href="#funcparser-inlines" title="Permalink to this headline">¶</a></h3>
 <p>This piece of code is worth some more explanation:</p>
@@ -333,14 +356,9 @@ from the <code class="docutils literal notranslate"><span class="pre">LivingMixi
     <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Remember that <code class="docutils literal notranslate"><span class="pre">self</span></code> is the Character instance here. So <code class="docutils literal notranslate"><span class="pre">self.location.msg_contents</span></code> means “send a
-message to everything inside my current location”. In other words, send a message to everyone
-in the same place as the character.</p>
+<p>Remember that <code class="docutils literal notranslate"><span class="pre">self</span></code> is the Character instance here. So <code class="docutils literal notranslate"><span class="pre">self.location.msg_contents</span></code> means “send a  message to everything inside my current location”. In other words, send a message to everyone  in the same place as the character.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">$You()</span> <span class="pre">$conj(collapse)</span></code> are <a class="reference internal" href="../../../Components/FuncParser.html"><span class="doc std std-doc">FuncParser inlines</span></a>. These are functions that
-execute
-in the string. The resulting string may look different for different audiences. The <code class="docutils literal notranslate"><span class="pre">$You()</span></code> inline
-function will use <code class="docutils literal notranslate"><span class="pre">from_obj</span></code> to figure out who ‘you’ are and either show your name or ‘You’.
-The <code class="docutils literal notranslate"><span class="pre">$conj()</span></code> (verb conjugator) will tweak the (English) verb to match.</p>
+execute  in the string. The resulting string may look different for different audiences. The <code class="docutils literal notranslate"><span class="pre">$You()</span></code> inline  function will use <code class="docutils literal notranslate"><span class="pre">from_obj</span></code> to figure out who ‘you’ are and either show your name or ‘You’.  The <code class="docutils literal notranslate"><span class="pre">$conj()</span></code> (verb conjugator) will tweak the (English) verb to match.</p>
 <ul class="simple">
 <li><p>You will see: <code class="docutils literal notranslate"><span class="pre">&quot;You</span> <span class="pre">collapse</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">heap,</span> <span class="pre">alive</span> <span class="pre">but</span> <span class="pre">beaten.&quot;</span></code></p></li>
 <li><p>Others in the room will see: <code class="docutils literal notranslate"><span class="pre">&quot;Thomas</span> <span class="pre">collapses</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">heap,</span> <span class="pre">alive</span> <span class="pre">but</span> <span class="pre">beaten.&quot;</span></code></p></li>
@@ -349,9 +367,7 @@ The <code class="docutils literal notranslate"><span class="pre">$conj()</span><
 </section>
 <section id="backtracking">
 <h3><span class="section-number">3.3.2. </span>Backtracking<a class="headerlink" href="#backtracking" title="Permalink to this headline">¶</a></h3>
-<p>We make our first use of the <code class="docutils literal notranslate"><span class="pre">rules.dice</span></code> roller to roll on the death table! As you may recall, in the
-previous lesson, we didn’t know just what to do when rolling ‘dead’ on this table. Now we know - we
-should be calling <code class="docutils literal notranslate"><span class="pre">at_death</span></code> on the character. So let’s add that where we had TODOs before:</p>
+<p>We make our first use of the <code class="docutils literal notranslate"><span class="pre">rules.dice</span></code> roller to roll on the death table! As you may recall, in the previous lesson, we didn’t know just what to do when rolling ‘dead’ on this table. Now we know - we should be calling <code class="docutils literal notranslate"><span class="pre">at_death</span></code> on the character. So let’s add that where we had TODOs before:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/rules.py </span>
 
 <span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>

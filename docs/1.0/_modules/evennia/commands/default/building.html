@@ -1506,6 +1506,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
     <span class="n">new_obj_lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin);delete:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin)&quot;</span>
+
     <span class="c1"># a custom member method to chug out exits and do checks</span>
 <div class="viewcode-block" id="CmdOpen.create_exit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen.create_exit">[docs]</a>    <span class="k">def</span> <span class="nf">create_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">exit_aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2132,7 +2133,6 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
     <span class="k">def</span> <span class="nf">_generic_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">typeclass_path</span><span class="p">):</span>
-
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="n">typeclass_path</span><span class="p">:</span>
             <span class="c1"># make sure we search the right database table</span>
@@ -3345,7 +3345,6 @@
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">scripts</span><span class="p">:</span>
-
             <span class="n">nextrep</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">time_until_next_repeat</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">nextrep</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">nextrep</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span>
@@ -3816,7 +3815,6 @@
             <span class="n">use_destination</span><span class="o">=</span><span class="s2">&quot;intoexit&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">,</span>
             <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;teleport&quot;</span><span class="p">,</span>
         <span class="p">):</span>
-
             <span class="k">if</span> <span class="n">obj_to_teleport</span> <span class="o">==</span> <span class="n">caller</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Teleported to </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>

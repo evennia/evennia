@@ -132,12 +132,10 @@ if we cannot find and use it afterwards.</p>
 <span class="n">accts</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyAccountName&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;foo@bar.com&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-```{sidebar} Querysets
-
-What is returned from the main search functions is actually a `queryset`. They can be treated like lists except that they can&#39;t modified in-place. We&#39;ll discuss querysets in the `next lesson` &lt;Django-queries&gt;`_.
-</pre></div>
-</div>
+<aside class="sidebar">
+<p class="sidebar-title">Querysets</p>
+<p>What is returned from the main search functions is actually a <code class="docutils literal notranslate"><span class="pre">queryset</span></code>. They can be treated like lists except that they can’t modified in-place. We’ll discuss querysets in the <code class="docutils literal notranslate"><span class="pre">next</span> <span class="pre">lesson</span></code> <Django-queries>`_.</p>
+</aside>
 <p>Strings are always case-insensitive, so searching for <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Rose&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;rOsE&quot;</span></code> give the same results. It’s important to remember that what is returned from these search methods is a <em>listing</em> of zero, one or more elements - all the matches to your search. To get the first match:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rose = roses[0]
 </pre></div>
@@ -187,7 +185,7 @@ What is returned from the main search functions is actually a `queryset`. They c
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span>
             <span class="k">return</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found match for </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">foo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found match for </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">foo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Remember, <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> is the one calling the command. This is usually a Character, which

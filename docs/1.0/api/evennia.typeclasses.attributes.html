@@ -243,17 +243,7 @@ of a .pk field as a sign that the Attribute was deleted.</p></li>
 <dt id="evennia.typeclasses.attributes.AttributeProperty">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">AttributeProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
-on the class level. Note that while one can set a lock on the Attribute,
-there is no way to <em>check</em> said lock when accessing via the property - use
-the full <strong>AttributeHandler</strong> if you need to do access checks. Note however that if you use the
-full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong> methods on this class will
-_not_ fire (because you are bypassing the <strong>AttributeProperty</strong> entirely in that case).</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
-    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>AttributeProperty.</p>
 <dl class="py attribute">
 <dt id="evennia.typeclasses.attributes.AttributeProperty.attrhandler_name">
 <code class="sig-name descname">attrhandler_name</code><em class="property"> = 'attributes'</em><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.attrhandler_name" title="Permalink to this definition">¶</a></dt>
@@ -262,11 +252,18 @@ _not_ fire (because you are bypassing the <strong>AttributeProperty</strong> ent
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.AttributeProperty.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize an Attribute as a property descriptor.</p>
+<dd><p>Allows for specifying Attributes as Django-like ‘fields’ on the class level. Note that while
+one can set a lock on the Attribute, there is no way to <em>check</em> said lock when accessing via
+the property - use the full <strong>AttributeHandler</strong> if you need to do access checks. Note however
+that if you use the full <strong>AttributeHandler</strong> to access this Attribute, the <strong>at_get/at_set</strong>
+methods on this class will _not_ fire (because you are bypassing the <strong>AttributeProperty</strong>
+entirely in that case).</p>
+<p>Initialize an Attribute as a property descriptor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>default</strong> (<em>any</em>) – A default value if the attr is not set.</p></li>
+<li><p><strong>default</strong> (<em>any</em>) – A default value if the attr is not set. If a callable, this will be
+run without any arguments and is expected to return the default value.</p></li>
 <li><p><strong>category</strong> (<em>str</em>) – The attribute’s category. If unset, use class default.</p></li>
 <li><p><strong>strattr</strong> (<em>bool</em>) – If set, this Attribute <em>must</em> be a simple string, and will be
 stored more efficiently.</p></li>
@@ -282,6 +279,11 @@ one cannot access it via .db, the AttributeHandler or see it with <strong>examin
 </ul>
 </dd>
 </dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1305,11 +1307,12 @@ type <strong>attredit</strong> on the Attribute in question.</p></li>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.AttributeHandler.all">
-<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_access</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler.all" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">accessing_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_access</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all Attribute objects on this object, regardless of category.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – A given category to limit results to.</p></li>
 <li><p><strong>accessing_obj</strong> (<em>object</em><em>, </em><em>optional</em>) – Check the <strong>attrread</strong>
 lock on each attribute before returning them. If not
 given, this check is skipped.</p></li>

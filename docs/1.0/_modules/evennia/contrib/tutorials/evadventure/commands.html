@@ -83,7 +83,6 @@
 <span class="sd">to the CharacterCmdSet</span>
 
 <span class="sd">New commands:</span>
-<span class="sd">    attack/hit &lt;target&gt;[,...]</span>
 <span class="sd">    inventory</span>
 <span class="sd">    wield/wear &lt;item&gt;</span>
 <span class="sd">    unwield/remove &lt;item&gt;</span>
@@ -111,7 +110,6 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
 
-<span class="kn">from</span> <span class="nn">.combat_turnbased</span> <span class="kn">import</span> <span class="n">CombatFailure</span><span class="p">,</span> <span class="n">join_combat</span>
 <span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span>
 <span class="kn">from</span> <span class="nn">.equipment</span> <span class="kn">import</span> <span class="n">EquipmentError</span>
 <span class="kn">from</span> <span class="nn">.npcs</span> <span class="kn">import</span> <span class="n">EvAdventureTalkativeNPC</span>
@@ -130,51 +128,6 @@
 
 <div class="viewcode-block" id="EvAdventureCommand.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.EvAdventureCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div></div>
-
-
-<div class="viewcode-block" id="CmdAttackTurnBased"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased">[docs]</a><span class="k">class</span> <span class="nc">CmdAttackTurnBased</span><span class="p">(</span><span class="n">EvAdventureCommand</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Attack a target or join an existing combat.</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      attack &lt;target&gt;</span>
-<span class="sd">      attack &lt;target&gt;, &lt;target&gt;, ...</span>
-
-<span class="sd">    If the target is involved in combat already, you&#39;ll join combat with</span>
-<span class="sd">    the first target you specify. Attacking multiple will draw them all into</span>
-<span class="sd">    combat.</span>
-
-<span class="sd">    This will start/join turn-based, combat, where you have a limited</span>
-<span class="sd">    time to decide on your next action from a menu of options.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;hit&quot;</span><span class="p">,)</span>
-
-<div class="viewcode-block" id="CmdAttackTurnBased.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span></div>
-
-<div class="viewcode-block" id="CmdAttackTurnBased.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdAttackTurnBased.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="c1"># find if</span>
-
-        <span class="n">target_objs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">:</span>
-            <span class="n">target_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">target_obj</span><span class="p">:</span>
-                <span class="c1"># show a warning but don&#39;t abort</span>
-                <span class="k">continue</span>
-            <span class="n">target_objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_obj</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">target_objs</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">join_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">target_objs</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">CombatFailure</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|r</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rFound noone to attack.|n&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdInventory"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.CmdInventory">[docs]</a><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">EvAdventureCommand</span><span class="p">):</span>
@@ -347,15 +300,19 @@
                 <span class="n">item</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;give&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">EquipmentError</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;$You(</span><span class="si">{</span><span class="n">giver</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) $conj(try) to give &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> to $You(</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">), but they can&#39;t accept it since their &quot;</span>
-                    <span class="s2">&quot;inventory is full.&quot;</span><span class="p">,</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;$You(</span><span class="si">{</span><span class="n">giver</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) $conj(try) to give &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> to $You(</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">), but they can&#39;t accept it since their &quot;</span>
+                        <span class="s2">&quot;inventory is full.&quot;</span>
+                    <span class="p">),</span>
                     <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">giver</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">giver</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">caller</span><span class="p">},</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;$You(</span><span class="si">{</span><span class="n">giver</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) $conj(give) </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> to $You(</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">), &quot;</span>
-                    <span class="s2">&quot;and they accepted the offer.&quot;</span><span class="p">,</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;$You(</span><span class="si">{</span><span class="n">giver</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) $conj(give) </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> to $You(</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">), &quot;</span>
+                        <span class="s2">&quot;and they accepted the offer.&quot;</span>
+                    <span class="p">),</span>
                     <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">giver</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">giver</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">caller</span><span class="p">},</span>
                 <span class="p">)</span>
         <span class="n">giver</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span>
@@ -533,7 +490,6 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure&quot;</span>
 
 <div class="viewcode-block" id="EvAdventureCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.commands.html#evennia.contrib.tutorials.evadventure.commands.EvAdventureCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdAttackTurnBased</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdInventory</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdWieldOrWear</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdRemove</span><span class="p">())</span>

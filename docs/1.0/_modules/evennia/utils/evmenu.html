@@ -440,6 +440,21 @@
 <div class="viewcode-block" id="CmdEvMenuNode.get_help"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Menu commands are explained within the menu.&quot;</span></div>
 
+    <span class="k">def</span> <span class="nf">_update_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add aliases to make sure to override defaults if we defined we want it.&quot;&quot;&quot;</span>
+
+        <span class="n">new_aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">_CMD_NOMATCH</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">menu</span><span class="o">.</span><span class="n">auto_quit</span> <span class="ow">and</span> <span class="s2">&quot;quit&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+            <span class="n">new_aliases</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;quit&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">menu</span><span class="o">.</span><span class="n">auto_look</span> <span class="ow">and</span> <span class="s2">&quot;look&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+            <span class="n">new_aliases</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;look&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">menu</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="s2">&quot;help&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+            <span class="n">new_aliases</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;help&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_aliases</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_aliases</span><span class="p">(</span><span class="n">new_aliases</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;aliases: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="CmdEvMenuNode.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implement all menu commands.</span>
@@ -460,7 +475,8 @@
                     <span class="n">saved_options</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s2">&quot;startnode_input&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">startnode_input</span>
                 <span class="n">MenuClass</span> <span class="o">=</span> <span class="n">saved_options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="c1"># this will create a completely new menu call</span>
-                <span class="n">MenuClass</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">saved_options</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">saved_options</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">menu</span> <span class="o">=</span> <span class="n">MenuClass</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">saved_options</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">saved_options</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="c1"># self._update_aliases(menu)</span>
                 <span class="k">return</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="kc">None</span>
 
@@ -486,6 +502,9 @@
                         <span class="n">err</span>
                     <span class="p">)</span>  <span class="c1"># don&#39;t give the session as a kwarg here, direct to original</span>
                     <span class="k">raise</span> <span class="n">EvMenuError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+        <span class="c1"># self._update_aliases(menu)</span>
+
         <span class="c1"># we must do this after the caller with the menu has been correctly identified since it</span>
         <span class="c1"># can be either Account, Object or Session (in the latter case this info will be</span>
         <span class="c1"># superfluous).</span>
@@ -615,7 +634,7 @@
 <span class="sd">                by default in all nodes of the menu. This will print out the current state of</span>
 <span class="sd">                the menu. Deactivate for production use! When the debug flag is active, the</span>
 <span class="sd">                `persistent` flag is deactivated.</span>
-<span class="sd">            **kwargs: All kwargs will become initialization variables on `caller.ndb._menutree`,</span>
+<span class="sd">            **kwargs: All kwargs will become initialization variables on `caller.ndb._evmenu`,</span>
 <span class="sd">                to be available at run.</span>
 
 <span class="sd">        Raises:</span>
@@ -709,7 +728,7 @@
         <span class="c1"># store ourself on the object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span> <span class="o">=</span> <span class="bp">self</span>
 
-        <span class="c1"># DEPRECATED - for backwards-compatibility. Use `.ndb._evmenu` instead</span>
+        <span class="c1"># TODO DEPRECATED - for backwards-compatibility. Use `.ndb._evmenu` instead</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="k">if</span> <span class="n">persistent</span><span class="p">:</span>
@@ -948,6 +967,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">nodename</span><span class="p">:</span>
                 <span class="c1"># no nodename return. Re-run current node</span>
                 <span class="n">nodename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodename</span>
+        <span class="k">elif</span> <span class="n">nodename_or_callable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># repeat current node</span>
+            <span class="n">nodename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodename</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># the nodename given directly</span>
             <span class="n">nodename</span> <span class="o">=</span> <span class="n">nodename_or_callable</span>
@@ -993,7 +1015,6 @@
         <span class="k">if</span> <span class="n">options</span><span class="p">:</span>
             <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">options</span>
             <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">dic</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
-
                 <span class="c1"># homogenize the options dict</span>
                 <span class="n">keys</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">))</span>
                 <span class="n">desc</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -1031,6 +1052,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_quitting</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">EvMenuCmdSet</span><span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span>  <span class="c1"># TODO Deprecated</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;_menutree_saved&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;_menutree_saved_startnode&quot;</span><span class="p">)</span>
@@ -1385,7 +1407,6 @@
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
 
         <span class="k">def</span> <span class="nf">_list_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
             <span class="n">option_list</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">option_generator</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">option_generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">option_generator</span>
             <span class="p">)</span>

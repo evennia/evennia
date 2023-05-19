@@ -250,10 +250,22 @@ div.highlight {
     border-radius: 5px;
 }
 
-div.highlight-shell.notranslate > div.highlight .nb { 
-    color: #79ecff !important;
+/* Shell code style (for in-game blocks) */
+div.highlight-shell.notranslate > div.highlight .nb{ 
+    color: white !important;
 }
-
+div.highlight-shell.notranslate > div.highlight .m{ 
+    color: white !important;
+    font-weight: normal !important;
+}
+div.highlight-shell.notranslate > div.highlight .k{ 
+    color: white !important;
+    font-weight: normal !important;
+}
+div.highlight-shell.notranslate > div.highlight .o{ 
+    color: white !important;
+    font-weight: normal !important;
+}
 
 div.note {
     background-color: #eee;
@@ -352,7 +364,7 @@ code {
     /* padding: 1px 2px; */
     font-size: 0.9em;
 	  font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    font-weight: bold;
+    font-weight: normal;
     background-color: #f7f7f7;
 }
 

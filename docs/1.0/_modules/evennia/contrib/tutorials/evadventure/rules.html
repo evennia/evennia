@@ -79,25 +79,10 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">MUD ruleset based on the _Knave_ OSR tabletop RPG by Ben Milton (modified for MUD use).</span>
 
-<span class="sd">The rules are divided into a set of classes. While each class (except chargen) could</span>
-<span class="sd">also have been stand-alone functions, having them as classes makes it a little easier</span>
-<span class="sd">to use them as the base for your own variation (tweaking values etc).</span>
+<span class="sd">The center of the rule system is the &quot;RollEngine&quot;, which handles all rolling of dice</span>
+<span class="sd">and determining what the outcome is.</span>
 
-<span class="sd">- Roll-engine: Class with methods for making all dice rolls needed by the rules. Knave only</span>
-<span class="sd">  has a few resolution rolls, but we define helper methods for different actions the</span>
-<span class="sd">  character will be able to do in-code.</span>
-<span class="sd">- Character generation - this is a container used for holding, tweaking and setting</span>
-<span class="sd">  all character data during character generation. At the end it will save itself</span>
-<span class="sd">  onto the Character for permanent storage.</span>
-<span class="sd">- Improvement - this container holds rules used with experience to improve the</span>
-<span class="sd">  character over time.</span>
-<span class="sd">- Charsheet - a container with tools for visually displaying the character sheet in-game.</span>
-
-<span class="sd">This module presents several singletons to import</span>
-
-<span class="sd">- `dice` - the `EvAdventureRollEngine` for all random resolution and table-rolling.</span>
-<span class="sd">- `character_sheet` - the `EvAdventureCharacterSheet` visualizer.</span>
-<span class="sd">- `improvement` - the EvAdventureImprovement` class for handling char xp and leveling.</span>
+<span class="sd">----</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
@@ -235,13 +220,13 @@
         <span class="n">bontxt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(+</span><span class="si">{</span><span class="n">bonus</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="n">modtxt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">modifier</span><span class="p">:</span>
-            <span class="n">modtxt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; + </span><span class="si">{</span><span class="n">modifier</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">modifier</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">modtxt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;+ </span><span class="si">{</span><span class="n">modifier</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">modifier</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">qualtxt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">quality</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">!)&quot;</span> <span class="k">if</span> <span class="n">quality</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
         <span class="n">txt</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;rolled </span><span class="si">{</span><span class="n">dice_roll</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">rolltxt</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; rolled </span><span class="si">{</span><span class="n">dice_roll</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">rolltxt</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;+ </span><span class="si">{</span><span class="n">bonus_type</span><span class="o">.</span><span class="n">value</span><span class="si">}{</span><span class="n">bontxt</span><span class="si">}{</span><span class="n">modtxt</span><span class="si">}</span><span class="s2"> vs &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> -&gt; |w</span><span class="si">{</span><span class="n">result</span><span class="si">}{</span><span class="n">qualtxt</span><span class="si">}</span><span class="s2">|n&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> -&gt; |w</span><span class="si">{</span><span class="s1">&#39;|GSuccess|w&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;|RFail|w&#39;</span><span class="si">}{</span><span class="n">qualtxt</span><span class="si">}</span><span class="s2">|n&quot;</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">dice_roll</span> <span class="o">+</span> <span class="n">bonus</span> <span class="o">+</span> <span class="n">modifier</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">,</span> <span class="n">quality</span><span class="p">,</span> <span class="n">txt</span></div>
@@ -323,8 +308,7 @@
             <span class="c1"># tuple with range conditional, like (&#39;1-5&#39;, &quot;Blue&quot;) or (&#39;10&#39;, &quot;Purple&quot;)</span>
             <span class="n">max_range</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
             <span class="n">min_range</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">valrange</span><span class="p">,</span> <span class="n">choice</span><span class="p">)</span> <span class="ow">in</span> <span class="n">table_choices</span><span class="p">:</span>
-
+            <span class="k">for</span> <span class="n">valrange</span><span class="p">,</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">table_choices</span><span class="p">:</span>
                 <span class="n">minval</span><span class="p">,</span> <span class="o">*</span><span class="n">maxval</span> <span class="o">=</span> <span class="n">valrange</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">minval</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">minval</span><span class="p">))</span>
                 <span class="n">maxval</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">maxval</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">maxval</span> <span class="k">else</span> <span class="n">minval</span><span class="p">)</span>
@@ -410,9 +394,11 @@
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="n">current_abi</span><span class="p">)</span>
 
                 <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;~&quot;</span> <span class="o">*</span> <span class="mi">78</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|yYou survive your brush with death, &quot;</span>
+                    <span class="s2">&quot;~&quot;</span> <span class="o">*</span> <span class="mi">78</span>
+                    <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|yYou survive your brush with death, &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;but are |r</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">|y and permanently |rlose </span><span class="si">{</span><span class="n">loss</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">abi</span><span class="si">}</span><span class="s2">|y.|n</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;|GYou recover |g</span><span class="si">{</span><span class="n">new_hp</span><span class="si">}</span><span class="s2">|G health|.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span> <span class="o">*</span> <span class="mi">78</span>
+                    <span class="sa">f</span><span class="s2">&quot;|GYou recover |g</span><span class="si">{</span><span class="n">new_hp</span><span class="si">}</span><span class="s2">|G health|.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;~&quot;</span> <span class="o">*</span> <span class="mi">78</span>
                 <span class="p">)</span></div></div>
 
 
