@@ -556,7 +556,7 @@ class EvMenu:
                 by default in all nodes of the menu. This will print out the current state of
                 the menu. Deactivate for production use! When the debug flag is active, the
                 `persistent` flag is deactivated.
-            **kwargs: All kwargs will become initialization variables on `caller.ndb._menutree`,
+            **kwargs: All kwargs will become initialization variables on `caller.ndb._evmenu`,
                 to be available at run.
 
         Raises:
@@ -650,7 +650,7 @@ class EvMenu:
         # store ourself on the object
         self.caller.ndb._evmenu = self
 
-        # DEPRECATED - for backwards-compatibility. Use `.ndb._evmenu` instead
+        # TODO DEPRECATED - for backwards-compatibility. Use `.ndb._evmenu` instead
         self.caller.ndb._menutree = self
 
         if persistent:
@@ -974,6 +974,7 @@ class EvMenu:
             self._quitting = True
             self.caller.cmdset.remove(EvMenuCmdSet)
             del self.caller.ndb._evmenu
+            del self.caller.ndb._menutree  # TODO Deprecated
             if self._persistent:
                 self.caller.attributes.remove("_menutree_saved")
                 self.caller.attributes.remove("_menutree_saved_startnode")

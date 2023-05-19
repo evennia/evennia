@@ -204,6 +204,8 @@ class EvAdventureCombatBaseHandler(DefaultScript):
 
 This helper method uses `obj.scripts.get()` to find if the combat script already exists 'on' the provided `obj`. If not, it will create it using Evennia's [create_script](evennia.utils.create.create_script) function. For some extra speed we cache the handler as `obj.ndb.combathandler` The `.ndb.` (non-db) means that handler is cached only in memory. 
 
+To know if the cache is out of date, we make sure to also check if the combathandler we got has an `id` that is not `None` . If it's `None`, this means the database entity was deleted and we just got its cached python representation from memory - we need to recreate it.
+
 This is a `classmethod`, meaning it should be used on the handler class directly (rather than on an _instance_ of said class). This makes sense because this method actually should return the new instance. 
 
 As a class method we'll need to call this directly on the class, like this: 
