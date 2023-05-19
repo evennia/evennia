@@ -307,6 +307,15 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
         action.execute()
         action.post_execute()
 
+        if action_dict.get("repeat", False):
+            # queue the action again *without updating the *.ndb.did_action list* (otherwise
+            # we'd always auto-end the turn if everyone used repeating actions and there'd be
+            # no time to change it before the next round)
+            self.combatants[combatant] = action_dict
+        else:
+            # if not a repeat, set the fallback action
+            self.combatants[combatant] = self.fallback_action_dict
+
     def check_stop_combat(self):
         """Check if it's time to stop combat"""
 
@@ -319,8 +328,6 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
                 self.combatants.pop(combatant)
                 self.defeated_combatants.append(combatant)
                 self.msg("|r$You() $conj(fall) to the ground, defeated.|n", combatant=combatant)
-            else:
-                self.combatants[combatant] = self.fallback_action_dict
 
         # check if anyone managed to flee
         flee_timeout = self.flee_timeout
@@ -704,7 +711,7 @@ def node_combat(caller, raw_string, **kwargs):
                 _step_wizard,
                 {
                     "steps": ["node_choose_enemy_target"],
-                    "action_dict": {"key": "attack", "target": None},
+                    "action_dict": {"key": "attack", "target": None, "repeat": True},
                 },
             ),
         },
@@ -768,7 +775,7 @@ def node_combat(caller, raw_string, **kwargs):
         },
         {
             "desc": "flee!",
-            "goto": (_queue_action, {"action_dict": {"key": "flee"}}),
+            "goto": (_queue_action, {"action_dict": {"key": "flee", "repeat": True}}),
         },
         {
             "desc": "hold, doing nothing",

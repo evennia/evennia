@@ -502,13 +502,16 @@ class EvAdventureTurnbasedCombatHandlerTest(_CombatTestBase):
         """
 
         self.assertEqual(self.combathandler.turn, 0)
-        action_dict = {"key": "flee"}
+        action_dict = {"key": "flee", "repeat": True}
 
         # first flee records the fleeing state
         self.combathandler.flee_timeout = 2  # to make sure
         self._run_actions(action_dict)
         self.assertEqual(self.combathandler.turn, 1)
         self.assertEqual(self.combathandler.fleeing_combatants[self.combatant], 1)
+
+        # action_dict should still be in place due to repeat
+        self.assertEqual(self.combathandler.combatants[self.combatant], action_dict)
 
         self.combatant.msg.assert_called_with(
             text=(
