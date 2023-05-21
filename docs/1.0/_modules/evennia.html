@@ -128,6 +128,7 @@
 <span class="c1"># Properties</span>
 <span class="n">AttributeProperty</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">TagProperty</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">TagCategoryProperty</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># commands</span>
 <span class="n">Command</span> <span class="o">=</span> <span class="kc">None</span>
@@ -234,7 +235,7 @@
     <span class="k">global</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
     <span class="k">global</span> <span class="n">EvMenu</span><span class="p">,</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvMore</span><span class="p">,</span> <span class="n">EvEditor</span>
     <span class="k">global</span> <span class="n">ANSIString</span>
-    <span class="k">global</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">TagProperty</span>
+    <span class="k">global</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">TagProperty</span><span class="p">,</span> <span class="n">TagCategoryProperty</span>
 
     <span class="c1"># Parent typeclasses</span>
     <span class="c1"># utilities</span>
@@ -249,12 +250,7 @@
     <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
     <span class="kn">from</span> <span class="nn">.locks</span> <span class="kn">import</span> <span class="n">lockfuncs</span>
     <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">DefaultCharacter</span><span class="p">,</span>
-        <span class="n">DefaultExit</span><span class="p">,</span>
-        <span class="n">DefaultObject</span><span class="p">,</span>
-        <span class="n">DefaultRoom</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span>
     <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
     <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
     <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
@@ -263,7 +259,7 @@
     <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
     <span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">signals</span>
     <span class="kn">from</span> <span class="nn">.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
-    <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="kn">import</span> <span class="n">TagProperty</span>
+    <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="kn">import</span> <span class="n">TagCategoryProperty</span><span class="p">,</span> <span class="n">TagProperty</span>
     <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span>
     <span class="kn">from</span> <span class="nn">.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 
@@ -295,21 +291,22 @@
         <span class="n">search_script</span><span class="p">,</span>
         <span class="n">search_tag</span><span class="p">,</span>
     <span class="p">)</span>
-
     <span class="kn">from</span> <span class="nn">.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+
     <span class="k">if</span> <span class="n">portal_mode</span><span class="p">:</span>
         <span class="c1"># Set up the PortalSessionHandler</span>
         <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">portalsessionhandler</span>
+
         <span class="n">portal_sess_handler_class</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER_CLASS</span><span class="p">)</span>
         <span class="n">portalsessionhandler</span><span class="o">.</span><span class="n">PORTAL_SESSIONS</span> <span class="o">=</span> <span class="n">portal_sess_handler_class</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Create the ServerSesssionHandler</span>
         <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">sessionhandler</span>
+
         <span class="n">sess_handler_class</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER_CLASS</span><span class="p">)</span>
         <span class="n">sessionhandler</span><span class="o">.</span><span class="n">SESSIONS</span> <span class="o">=</span> <span class="n">sess_handler_class</span><span class="p">()</span>
         <span class="n">sessionhandler</span><span class="o">.</span><span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="n">sessionhandler</span><span class="o">.</span><span class="n">SESSIONS</span>
         <span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="n">sessionhandler</span><span class="o">.</span><span class="n">SESSIONS</span>
-
 
     <span class="c1"># API containers</span>
 

@@ -290,7 +290,16 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 <dt id="evennia.typeclasses.tags.TagProperty">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">TagProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Tag property descriptor. Allows for setting tags on an object as Django-like ‘fields’
+<p>Tag Property.</p>
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.TagProperty.taghandler_name">
+<code class="sig-name descname">taghandler_name</code><em class="property"> = 'tags'</em><a class="headerlink" href="#evennia.typeclasses.tags.TagProperty.taghandler_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagProperty.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagProperty.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag property descriptor. Allows for setting tags on an object as Django-like ‘fields’
 on the class level. Since Tags are almost always used for querying, Tags are always
 created/assigned along with the object. Make sure the property/tagname does not collide
 with an existing method/property on the class. If it does, you must use tags.add()
@@ -304,15 +313,45 @@ if a tag is set on an object.</p>
     <span class="n">mytag2</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;tagcategory&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.tags.TagCategoryProperty">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">TagCategoryProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagCategoryProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagCategoryProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Tag Category Property.</p>
 <dl class="py attribute">
-<dt id="evennia.typeclasses.tags.TagProperty.taghandler_name">
-<code class="sig-name descname">taghandler_name</code><em class="property"> = 'tags'</em><a class="headerlink" href="#evennia.typeclasses.tags.TagProperty.taghandler_name" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.typeclasses.tags.TagCategoryProperty.taghandler_name">
+<code class="sig-name descname">taghandler_name</code><em class="property"> = 'tags'</em><a class="headerlink" href="#evennia.typeclasses.tags.TagCategoryProperty.taghandler_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.typeclasses.tags.TagProperty.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagProperty.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dt id="evennia.typeclasses.tags.TagCategoryProperty.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagCategoryProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagCategoryProperty.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign a property for a Tag Category, with any number of Tag keys.
+This is often more useful than the <strong>TagProperty</strong> since it’s common to want to check which
+tags of a particular category the object is a member of.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>str</em><em> or </em><em>callable</em>) – Tag keys to assign to this property, using the category given
+by the name of the property. If a callable, it will be called without arguments
+to return the tag key. It is not possible to set tag <strong>data</strong> this way (use the
+Taghandler directly for that). Tag keys are not case sensitive.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the input is not a valid tag key or tuple.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>It is not possible to set Tags with a <strong>None</strong> category using a <strong>TagCategoryProperty</strong> -
+use <strong>obj.tags.add()</strong> instead.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RogueCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">guild</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="s2">&quot;thieves_guild&quot;</span><span class="p">,</span> <span class="s2">&quot;merchant_guild&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>

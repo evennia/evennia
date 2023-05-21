@@ -91,10 +91,9 @@
 <span class="kn">import</span> <span class="nn">traceback</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">import</span> <span class="nn">twisted</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TaskHandlerTask</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
@@ -264,7 +263,11 @@
 
     <span class="k">if</span> <span class="n">show_input</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt;&gt;&gt; </span><span class="si">{</span><span class="n">pycode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;py_input&quot;</span><span class="p">}),</span> <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="c1"># TODO: &#39;highlight&#39; is not used yet</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt;&gt;&gt; </span><span class="si">{</span><span class="n">pycode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;py_input&quot;</span><span class="p">}),</span>
+                <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+            <span class="p">}</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
@@ -321,10 +324,16 @@
 
     <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">((</span><span class="n">ret</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;py_output&quot;</span><span class="p">}),</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;client_raw&quot;</span><span class="p">:</span> <span class="n">client_raw</span><span class="p">,</span>
-                                                                               <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;py_output&quot;</span><span class="p">}),</span>
+                <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;client_raw&quot;</span><span class="p">:</span> <span class="n">client_raw</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">((</span><span class="n">ret</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;py_output&quot;</span><span class="p">}),</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;client_raw&quot;</span><span class="p">:</span> <span class="n">client_raw</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;py_output&quot;</span><span class="p">}),</span>
+                <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;client_raw&quot;</span><span class="p">:</span> <span class="n">client_raw</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+            <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">evennia_local_vars</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
@@ -1108,7 +1117,6 @@
 
         <span class="c1"># handle caller&#39;s request to manipulate a task(s)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
-
             <span class="c1"># find if the argument is a task id or function name</span>
             <span class="n">action_request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
@@ -1118,7 +1126,6 @@
 
             <span class="c1"># if the argument is a task id, proccess the action on a single task</span>
             <span class="k">if</span> <span class="n">arg_is_id</span><span class="p">:</span>
-
                 <span class="n">err_arg_msg</span> <span class="o">=</span> <span class="s2">&quot;Switch and task ID are required when manipulating a task.&quot;</span>
                 <span class="n">task_comp_msg</span> <span class="o">=</span> <span class="s2">&quot;Task completed while processing request.&quot;</span>
 
@@ -1183,7 +1190,6 @@
             <span class="c1"># the argument is not a task id, process the action on all task deferring the function</span>
             <span class="c1"># specified as an argument</span>
             <span class="k">else</span><span class="p">:</span>
-
                 <span class="n">name_match_found</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">arg_func_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhslist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
