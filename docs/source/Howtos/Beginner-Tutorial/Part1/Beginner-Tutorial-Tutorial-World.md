@@ -9,7 +9,7 @@ Stand in the Limbo room and install it with
     batchcommand tutorial_world.build
 
 What this does is to run the build script
-[evennia/contrib/tutorial_world/build.ev](github:evennia/contrib/tutorial_world/build.ev).
+[evennia/contrib/tutorials/tutorial_world/build.ev](github:evennia/contrib/tutorials/tutorial_world/build.ev).
 This is pretty much just a list of build-commands executed in sequence by the `batchcommand` command.
 Wait for the building to complete and don't run it twice.
 
