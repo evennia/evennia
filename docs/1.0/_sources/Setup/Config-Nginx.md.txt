@@ -31,7 +31,7 @@ server {
 		proxy_set_header Host $host;
 	}
 
-	lo[[Settings]]cation / {
+	location / {
 		# The main website
 		proxy_pass http://localhost:4001;
 		proxy_http_version 1.1;
@@ -46,9 +46,9 @@ server {
 
 This proxies the websocket connection through the `/ws` location, and the root location to the website.
 
-Following that example, you then need the following in your `server/conf/secret_settings.py`
+For Evennia, here is an example settings configuration that would go with the above nginx configuration, to go in your production server's `server/conf/secret_settings.py`
 
-> The `secret_settings.py` file is not included in `git` commits and is to be used for secret stuff. This also means you can continue using default access points for local development, making your life easier.
+> The `secret_settings.py` file is not included in `git` commits and is to be used for secret stuff. Putting your production-only settings in this file allows you to continue using default access points for local development, making your life easier.
 
 ```python
 SERVER_HOSTNAME = "example.com"
@@ -63,9 +63,9 @@ This makes sure that evennia uses the correct URI for websocket connections. Set
 
 > This will proxy ALL telnet access through nginx! If you want players to connect directly to Evennia's telnet ports instead of going through nginx, leave `LOCKDOWN_MODE` off and use a different SSL implementation, such as activating Evennia's internal telnet SSL port (see `settings.SSL_ENABLED` and `settings.SSL_PORTS` in  [default settings file](./Settings-Default.md)). 
 
-If you've only used nginx for websites, telnet is slightly more complicated. You need to set up stream parameters in your primary configuration file, e.g. `/etc/nginx/nginx.conf` - which, at least in my case, was not there by default.
+If you've only used nginx for websites, telnet is slightly more complicated. You need to set up stream parameters in your primary configuration file - e.g. `/etc/nginx/nginx.conf` - which default installations typically will not include.
 
-We chose to parallel the `http` structure, so to have `streams-available` conf files symlinked in `streams-enabled` the same as other sites.
+We chose to parallel the `http` structure for `stream`, adding conf files to `streams-available` and having them symlinked in `streams-enabled`, the same as other sites.
 
 ```
 stream {
@@ -73,7 +73,7 @@ stream {
 	include /etc/nginx/streams-enabled/*;
 }
 ```
-Then of course you need to create the required folders in the same folder:
+Then of course you need to create the required folders in the same location as your other nginx configurations:
 
     $ sudo mkdir conf.streams.d streams-available streams-enabled
 
