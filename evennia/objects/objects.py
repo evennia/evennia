@@ -13,6 +13,7 @@ from collections import defaultdict
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
+import evennia
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -36,7 +37,6 @@ _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 _ScriptDB = None
-_SESSIONS = None
 _CMDHANDLER = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
@@ -67,15 +67,12 @@ class ObjectSessionHandler:
         self._recache()
 
     def _recache(self):
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         self._sessid_cache = list(
             set(int(val) for val in (self.obj.db_sessid or "").split(",") if val)
         )
-        if any(sessid for sessid in self._sessid_cache if sessid not in _SESSIONS):
+        if any(sessid for sessid in self._sessid_cache if sessid not in evennia.SESSION_HANDLER):
             # cache is out of sync with sessionhandler! Only retain the ones in the handler.
-            self._sessid_cache = [sessid for sessid in self._sessid_cache if sessid in _SESSIONS]
+            self._sessid_cache = [sessid for sessid in self._sessid_cache if sessid in evennia.SESSION_HANDLER]
             self.obj.db_sessid = ",".join(str(val) for val in self._sessid_cache)
             self.obj.save(update_fields=["db_sessid"])
 
@@ -94,18 +91,16 @@ class ObjectSessionHandler:
             Aliased to `self.all()`.
 
         """
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
+
         if sessid:
             sessions = (
-                [_SESSIONS[sessid] if sessid in _SESSIONS else None]
+                [evennia.SESSION_HANDLER[sessid] if sessid in evennia.SESSION_HANDLER else None]
                 if sessid in self._sessid_cache
                 else []
             )
         else:
             sessions = [
-                _SESSIONS[ssid] if ssid in _SESSIONS else None for ssid in self._sessid_cache
+                evennia.SESSION_HANDLER[ssid] if ssid in evennia.SESSION_HANDLER else None for ssid in self._sessid_cache
             ]
         if None in sessions:
             # this happens only if our cache has gone out of sync with the SessionHandler.
@@ -135,16 +130,13 @@ class ObjectSessionHandler:
             in the the core sessionhandler.
 
         """
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         try:
             sessid = session.sessid
         except AttributeError:
             sessid = session
 
         sessid_cache = self._sessid_cache
-        if sessid in _SESSIONS and sessid not in sessid_cache:
+        if sessid in evennia.SESSION_HANDLER and sessid not in sessid_cache:
             if len(sessid_cache) >= _SESSID_MAX:
                 return
             sessid_cache.append(sessid)

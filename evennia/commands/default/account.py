@@ -22,7 +22,7 @@ import time
 from codecs import lookup as codecs_lookup
 
 from django.conf import settings
-from evennia.server.sessionhandler import SESSIONS
+import evennia
 from evennia.utils import create, logger, search, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -495,9 +495,8 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         """
         Get all connected accounts by polling session.
         """
-
         account = self.account
-        session_list = SESSIONS.get_sessions()
+        session_list = evennia.SESSION_HANDLER.get_sessions()
 
         session_list = sorted(session_list, key=lambda o: o.account.key)
 
@@ -508,7 +507,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                 "Admins"
             )
 
-        naccounts = SESSIONS.account_count()
+        naccounts = evennia.SESSION_HANDLER.account_count()
         if show_session_data:
             # privileged info
             table = self.styled_table(

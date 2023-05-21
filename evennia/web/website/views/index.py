@@ -6,7 +6,7 @@ The main index page, including the game stats
 from django.conf import settings
 from django.views.generic import TemplateView
 
-from evennia import SESSION_HANDLER
+import evennia
 from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.utils import class_from_module
@@ -25,7 +25,7 @@ def _gamestats():
     nplyrs_conn_recent = len(recent_users) or "none"
     nplyrs = AccountDB.objects.num_total_accounts() or "none"
     nplyrs_reg_recent = len(AccountDB.objects.get_recently_created_accounts()) or "none"
-    nsess = SESSION_HANDLER.account_count()
+    nsess = evennia.SESSION_HANDLER.account_count()
     # nsess = len(AccountDB.objects.get_connected_accounts()) or "no one"
 
     nobjs = ObjectDB.objects.count()

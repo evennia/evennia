@@ -12,7 +12,6 @@ from twisted.application import internet
 from evennia import settings
 from evennia.contrib.base_systems.godotwebsocket.text2bbcode import parse_to_bbcode
 from evennia.server.portal import webclient
-from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 from evennia.settings_default import LOCKDOWN_MODE
 
 
@@ -70,6 +69,7 @@ def start_plugin_services(portal):
     factory = GodotWebsocket()
     factory.noisy = False
     factory.protocol = GodotWebSocketClient
+    from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
     factory.sessionhandler = PORTAL_SESSIONS
 
     interface = "127.0.0.1" if LOCKDOWN_MODE else settings.GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE

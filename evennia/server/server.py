@@ -27,6 +27,8 @@ import evennia
 
 evennia._init()
 
+from evennia.server.sessionhandler import SESSIONS
+
 from django.conf import settings
 from django.db import connection
 from django.db.utils import OperationalError
@@ -35,9 +37,11 @@ from django.utils.translation import gettext as _
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
 from evennia.server.models import ServerConfig
-from evennia.server.sessionhandler import SESSIONS
+
 from evennia.utils import logger
 from evennia.utils.utils import get_evennia_version, make_iter, mod_import
+
+
 
 _SA = object.__setattr__
 

@@ -16,8 +16,8 @@ from twisted.web.http_headers import Headers
 from twisted.web.iweb import IBodyProducer
 from zope.interface import implementer
 
+import evennia
 from evennia.accounts.models import AccountDB
-from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import get_evennia_version, logger
 
 _EGI_HOST = "http://evennia-game-index.appspot.com"
@@ -98,7 +98,7 @@ class EvenniaGameIndexClient(object):
                 "telnet_port": egi_config.get("telnet_port", ""),
                 "web_client_url": egi_config.get("web_client_url", ""),
                 # Game stats
-                "connected_account_count": SESSIONS.account_count(),
+                "connected_account_count": evennia.SESSION_HANDLER.account_count(),
                 "total_account_count": AccountDB.objects.num_total_accounts() or 0,
                 # System info
                 "evennia_version": get_evennia_version(),

@@ -16,9 +16,9 @@ import django
 import twisted
 from django.conf import settings
 
+import evennia
 from evennia.accounts.models import AccountDB
 from evennia.scripts.taskhandler import TaskHandlerTask
-from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import gametime, logger, search, utils
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmenu import ask_yes_no
@@ -74,8 +74,8 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
         if _BROADCAST_SERVER_RESTART_MESSAGES:
-            SESSIONS.announce_all(f" Server restart initiated {reason}...")
-        SESSIONS.portal_restart_server()
+            evennia.SESSION_HANDLER.announce_all(f" Server restart initiated {reason}...")
+        evennia.SESSION_HANDLER.portal_restart_server()
 
 
 class CmdReset(COMMAND_DEFAULT_CLASS):
@@ -108,8 +108,8 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
         """
         Reload the system.
         """
-        SESSIONS.announce_all(" Server resetting/restarting ...")
-        SESSIONS.portal_reset_server()
+        evennia.SESSION_HANDLER.announce_all(" Server resetting/restarting ...")
+        evennia.SESSION_HANDLER.portal_reset_server()
 
 
 class CmdShutdown(COMMAND_DEFAULT_CLASS):
@@ -137,8 +137,8 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
         if self.args:
             announcement += "%s\n" % self.args
         logger.log_info(f"Server shutdown by {self.caller.name}.")
-        SESSIONS.announce_all(announcement)
-        SESSIONS.portal_shutdown()
+        evennia.SESSION_HANDLER.announce_all(announcement)
+        evennia.SESSION_HANDLER.portal_shutdown()
 
 
 def _py_load(caller):
@@ -562,7 +562,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             return
 
         # get all services
-        service_collection = SESSIONS.server.services
+        service_collection = evennia.SESSION_HANDLER.server.services
 
         if not switches or switches[0] == "list":
             # Just display the list of installed services and their

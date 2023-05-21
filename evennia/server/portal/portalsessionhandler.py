@@ -489,5 +489,5 @@ class PortalSessionHandler(SessionHandler):
                         log_trace()
 
 
-_PORTAL_SESSION_HANDLER_CLASS = class_from_module(settings.PORTAL_SESSION_HANDLER_CLASS)
-PORTAL_SESSIONS = _PORTAL_SESSION_HANDLER_CLASS()
+# This will be filled in when the portal boots.
+PORTAL_SESSIONS = None
