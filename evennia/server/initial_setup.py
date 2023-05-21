@@ -12,6 +12,7 @@ import time
 from django.conf import settings
 from django.utils.translation import gettext as _
 
+import evennia
 from evennia.accounts.models import AccountDB
 from evennia.server.models import ServerConfig
 from evennia.utils import create, logger
@@ -180,10 +181,9 @@ def reset_server():
 
     """
     ServerConfig.objects.conf("server_epoch", time.time())
-    from evennia.server.sessionhandler import SESSIONS
 
     logger.log_info("Initial setup complete. Restarting Server once.")
-    SESSIONS.portal_reset_server()
+    evennia.SESSION_HANDLER.portal_reset_server()
 
 
 def handle_setup(last_step=None):

@@ -24,9 +24,9 @@ from django.db import connection
 
 import evennia
 
-evennia._init()
-
+evennia._init(portal_mode=True)
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
+
 from evennia.server.webserver import EvenniaReverseProxyResource
 from evennia.utils import logger
 from evennia.utils.utils import (

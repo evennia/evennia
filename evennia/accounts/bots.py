@@ -9,6 +9,7 @@ import time
 from django.conf import settings
 from django.utils.translation import gettext as _
 
+import evennia
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import logger, search, utils
@@ -20,8 +21,6 @@ _IRC_ENABLED = settings.IRC_ENABLED
 _RSS_ENABLED = settings.RSS_ENABLED
 _GRAPEVINE_ENABLED = settings.GRAPEVINE_ENABLED
 _DISCORD_ENABLED = settings.DISCORD_ENABLED and hasattr(settings, "DISCORD_BOT_TOKEN")
-
-_SESSIONS = None
 
 
 class BotStarter(DefaultScript):
@@ -61,10 +60,7 @@ class BotStarter(DefaultScript):
         instead. This keeps the bot getting hit by IDLE_TIMEOUT.
 
         """
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-        for session in _SESSIONS.sessions_from_account(self.account):
+        for session in evennia.SESSION_HANDLER.sessions_from_account(self.account):
             session.update_session_counters(idle=True)
 
 
@@ -170,10 +166,6 @@ class IRCBot(Bot):
             self.delete()
             return
 
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-
         # if keywords are given, store (the BotStarter script
         # will not give any keywords, so this should normally only
         # happen at initialization)
@@ -208,7 +200,7 @@ class IRCBot(Bot):
             "port": self.db.irc_port,
             "ssl": self.db.irc_ssl,
         }
-        _SESSIONS.start_bot_session(self.factory_path, configdict)
+        evennia.SESSION_HANDLER.start_bot_session(self.factory_path, configdict)
 
     def at_msg_send(self, **kwargs):
         "Shortcut here or we can end up in infinite loop"
@@ -336,12 +328,9 @@ class IRCBot(Bot):
 
             if txt.lower().startswith("who"):
                 # return server WHO list (abbreviated for IRC)
-                global _SESSIONS
-                if not _SESSIONS:
-                    from evennia.server.sessionhandler import SESSIONS as _SESSIONS
                 whos = []
                 t0 = time.time()
-                for sess in _SESSIONS.get_sessions():
+                for sess in evennia.SESSION_HANDLER.get_sessions():
                     delta_cmd = t0 - sess.cmd_last_visible
                     delta_conn = t0 - session.conn_time
                     account = sess.get_account()
@@ -407,10 +396,6 @@ class RSSBot(Bot):
             self.delete()
             return
 
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-
         if ev_channel:
             # connect to Evennia channel
             channel = search.channel_search(ev_channel)
@@ -425,7 +410,7 @@ class RSSBot(Bot):
         # instruct the server and portal to create a new session with
         # the stored configuration
         configdict = {"uid": self.dbid, "url": self.db.rss_url, "rate": self.db.rss_rate}
-        _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
+        evennia.SESSION_HANDLER.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
 
     def execute_cmd(self, txt=None, session=None, **kwargs):
         """
@@ -468,10 +453,6 @@ class GrapevineBot(Bot):
             self.delete()
             return
 
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-
         # connect to Evennia channel
         if ev_channel:
             # connect to Evennia channel
@@ -488,7 +469,7 @@ class GrapevineBot(Bot):
         # these will be made available as properties on the protocol factory
         configdict = {"uid": self.dbid, "grapevine_channel": self.db.grapevine_channel}
 
-        _SESSIONS.start_bot_session(self.factory_path, configdict)
+        evennia.SESSION_HANDLER.start_bot_session(self.factory_path, configdict)
 
     def at_msg_send(self, **kwargs):
         "Shortcut here or we can end up in infinite loop"
@@ -619,12 +600,9 @@ class DiscordBot(Bot):
                 channel.connect(self)
 
         # connect
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSION_HANDLER as _SESSIONS
         # these will be made available as properties on the protocol factory
         configdict = {"uid": self.dbid}
-        _SESSIONS.start_bot_session(self.factory_path, configdict)
+        evennia.SESSION_HANDLER.start_bot_session(self.factory_path, configdict)
 
     def at_pre_channel_msg(self, message, channel, senders=None, **kwargs):
         """
