@@ -102,9 +102,9 @@
 
 <span class="kn">import</span> <span class="nn">evennia</span>
 
-<span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
-
+<span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="n">portal_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal.portalsessionhandler</span> <span class="kn">import</span> <span class="n">PORTAL_SESSIONS</span>
+
 <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="n">EvenniaReverseProxyResource</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>

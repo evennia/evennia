@@ -87,6 +87,7 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
@@ -98,8 +99,6 @@
 <span class="n">_RSS_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">RSS_ENABLED</span>
 <span class="n">_GRAPEVINE_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GRAPEVINE_ENABLED</span>
 <span class="n">_DISCORD_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DISCORD_ENABLED</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;DISCORD_BOT_TOKEN&quot;</span><span class="p">)</span>
-
-<span class="n">_SESSIONS</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="BotStarter"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.BotStarter">[docs]</a><span class="k">class</span> <span class="nc">BotStarter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
@@ -139,10 +138,7 @@
 <span class="sd">        instead. This keeps the bot getting hit by IDLE_TIMEOUT.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">_SESSIONS</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
-        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">sessions_from_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">sessions_from_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">):</span>
             <span class="n">session</span><span class="o">.</span><span class="n">update_session_counters</span><span class="p">(</span><span class="n">idle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
@@ -248,10 +244,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="k">return</span>
 
-        <span class="k">global</span> <span class="n">_SESSIONS</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
-
         <span class="c1"># if keywords are given, store (the BotStarter script</span>
         <span class="c1"># will not give any keywords, so this should normally only</span>
         <span class="c1"># happen at initialization)</span>
@@ -286,7 +278,7 @@
             <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_port</span><span class="p">,</span>
             <span class="s2">&quot;ssl&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_ssl</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.at_msg_send"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot.at_msg_send">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="s2">&quot;Shortcut here or we can end up in infinite loop&quot;</span>
@@ -414,12 +406,9 @@
 
             <span class="k">if</span> <span class="n">txt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;who&quot;</span><span class="p">):</span>
                 <span class="c1"># return server WHO list (abbreviated for IRC)</span>
-                <span class="k">global</span> <span class="n">_SESSIONS</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
                 <span class="n">whos</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">():</span>
                     <span class="n">delta_cmd</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">-</span> <span class="n">sess</span><span class="o">.</span><span class="n">cmd_last_visible</span>
                     <span class="n">delta_conn</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">-</span> <span class="n">session</span><span class="o">.</span><span class="n">conn_time</span>
                     <span class="n">account</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">get_account</span><span class="p">()</span>
@@ -485,10 +474,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="k">return</span>
 
-        <span class="k">global</span> <span class="n">_SESSIONS</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
-
         <span class="k">if</span> <span class="n">ev_channel</span><span class="p">:</span>
             <span class="c1"># connect to Evennia channel</span>
             <span class="n">channel</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">channel_search</span><span class="p">(</span><span class="n">ev_channel</span><span class="p">)</span>
@@ -503,7 +488,7 @@
         <span class="c1"># instruct the server and portal to create a new session with</span>
         <span class="c1"># the stored configuration</span>
         <span class="n">configdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rss_url</span><span class="p">,</span> <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rss_rate</span><span class="p">}</span>
-        <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.rss.RSSBotFactory&quot;</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.rss.RSSBotFactory&quot;</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RSSBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.RSSBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -546,10 +531,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="k">return</span>
 
-        <span class="k">global</span> <span class="n">_SESSIONS</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
-
         <span class="c1"># connect to Evennia channel</span>
         <span class="k">if</span> <span class="n">ev_channel</span><span class="p">:</span>
             <span class="c1"># connect to Evennia channel</span>
@@ -566,7 +547,7 @@
         <span class="c1"># these will be made available as properties on the protocol factory</span>
         <span class="n">configdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">,</span> <span class="s2">&quot;grapevine_channel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">grapevine_channel</span><span class="p">}</span>
 
-        <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GrapevineBot.at_msg_send"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.GrapevineBot.at_msg_send">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="s2">&quot;Shortcut here or we can end up in infinite loop&quot;</span>
@@ -697,12 +678,9 @@
                 <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="c1"># connect</span>
-        <span class="k">global</span> <span class="n">_SESSIONS</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSION_HANDLER</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
         <span class="c1"># these will be made available as properties on the protocol factory</span>
         <span class="n">configdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">}</span>
-        <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscordBot.at_pre_channel_msg"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.at_pre_channel_msg">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_channel_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

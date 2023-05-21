@@ -489,25 +489,21 @@
                 <span class="k">for</span> <span class="n">interval</span><span class="p">,</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">tickers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">)</span>
 
-            <span class="c1"># remove any subscriptions that lost its object in the interim</span>
-            <span class="n">to_save</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">store_key</span><span class="p">:</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="p">(</span>
-                        <span class="n">store_key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                        <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;_obj&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
-                        <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">],</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                    <span class="p">)</span>
-                    <span class="ow">or</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># a valid method with existing obj</span>
-                <span class="p">)</span>
-            <span class="p">}</span>  <span class="c1"># a path given</span>
+            <span class="n">to_save</span> <span class="o">=</span> <span class="p">{}</span>
 
-            <span class="c1"># update the timers for the tickers</span>
-            <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="n">to_save</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">interval</span> <span class="o">=</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="c1"># this is a mutable, so it&#39;s updated in-place in ticker_storage</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_start_delay&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_delays</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="c1"># remove any subscription that lost its object and update the timers for the tickers</span>
+            <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># unpack the store_key to reference its parts</span>
+                <span class="n">packedobj</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span> <span class="o">=</span> <span class="n">store_key</span>
+                <span class="c1"># verify that there&#39;s a valid obj+method or function path</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">callfunc</span>
+                    <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;_obj&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">],</span> <span class="n">callfunc</span><span class="p">)</span>
+                <span class="p">)</span> <span class="ow">or</span> <span class="n">path</span><span class="p">:</span>
+                    <span class="c1"># this is a mutable, so it&#39;s updated in-place in ticker_storage</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_start_delay&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_delays</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">to_save</span><span class="p">[</span><span class="n">store_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
             <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">save_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">dbserialize</span><span class="p">(</span><span class="n">to_save</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># make sure we have nothing lingering in the database</span>

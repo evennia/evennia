@@ -952,12 +952,9 @@
                     <span class="n">log_trace</span><span class="p">()</span></div></div>
 
 
-<span class="c1"># import class from settings</span>
-<span class="n">_SESSION_HANDLER_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER_CLASS</span><span class="p">)</span>
-
-<span class="c1"># Instantiate class. These globals are used to provide singleton-like behavior.</span>
-<span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="n">_SESSION_HANDLER_CLASS</span><span class="p">()</span>
-<span class="n">SESSIONS</span> <span class="o">=</span> <span class="n">SESSION_HANDLER</span>  <span class="c1"># legacy</span>
+<span class="c1"># These are filled in during server boot.</span>
+<span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">SESSIONS</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># legacy</span>
 </pre></div>
 
           </div>

@@ -216,9 +216,8 @@
 <span class="sd">        object dbrefs). For boolean fields, return &#39;0&#39; or &#39;1&#39; to set</span>
 <span class="sd">        the field to False or True.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">delay</span><span class="p">,</span> <span class="n">evmenu</span><span class="p">,</span> <span class="n">evtable</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">logger</span>
 
 
@@ -651,7 +650,7 @@
 <span class="sd">            made.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get a list of sessions</span>
-    <span class="n">session_list</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">()</span>
+    <span class="n">session_list</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">()</span>
     <span class="n">char_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">matched_character</span> <span class="o">=</span> <span class="kc">None</span>
 

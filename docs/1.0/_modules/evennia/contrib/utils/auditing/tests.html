@@ -87,7 +87,7 @@
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
 
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
 <span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">AuditedServerSession</span>
@@ -99,13 +99,13 @@
     <span class="k">def</span> <span class="nf">setup_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Overrides default one in EvenniaTest&quot;&quot;&quot;</span>
         <span class="n">dummysession</span> <span class="o">=</span> <span class="n">AuditedServerSession</span><span class="p">()</span>
-        <span class="n">dummysession</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;telnet&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;testmode&quot;</span><span class="p">),</span> <span class="n">SESSIONS</span><span class="p">)</span>
+        <span class="n">dummysession</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;telnet&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;testmode&quot;</span><span class="p">),</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">)</span>
         <span class="n">dummysession</span><span class="o">.</span><span class="n">sessid</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_connect</span><span class="p">(</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_connect</span><span class="p">(</span>
             <span class="n">dummysession</span><span class="o">.</span><span class="n">get_sync_data</span><span class="p">()</span>
         <span class="p">)</span>  <span class="c1"># note that this creates a new Session!</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">session_from_sessid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># the real session</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">session_from_sessid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># the real session</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span></div>
 
 <div class="viewcode-block" id="AuditingTest.test_mask"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest.test_mask">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span>

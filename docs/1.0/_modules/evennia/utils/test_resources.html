@@ -109,6 +109,7 @@
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">settings_default</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
@@ -121,7 +122,6 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.server.serversession</span> <span class="kn">import</span> <span class="n">ServerSession</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">flush_cache</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">to_str</span>
@@ -312,18 +312,18 @@
 
 <div class="viewcode-block" id="EvenniaTestMixin.setup_session"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.setup_session">[docs]</a>    <span class="k">def</span> <span class="nf">setup_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">dummysession</span> <span class="o">=</span> <span class="n">ServerSession</span><span class="p">()</span>
-        <span class="n">dummysession</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;telnet&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;testmode&quot;</span><span class="p">),</span> <span class="n">SESSIONS</span><span class="p">)</span>
+        <span class="n">dummysession</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;telnet&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;testmode&quot;</span><span class="p">),</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">)</span>
         <span class="n">dummysession</span><span class="o">.</span><span class="n">sessid</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_connect</span><span class="p">(</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_connect</span><span class="p">(</span>
             <span class="n">dummysession</span><span class="o">.</span><span class="n">get_sync_data</span><span class="p">()</span>
         <span class="p">)</span>  <span class="c1"># note that this creates a new Session!</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">session_from_sessid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># the real session</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">session_from_sessid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># the real session</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span></div>
 
 <div class="viewcode-block" id="EvenniaTestMixin.teardown_session"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.teardown_session">[docs]</a>    <span class="k">def</span> <span class="nf">teardown_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;sessions&quot;</span><span class="p">):</span>
-            <span class="k">del</span> <span class="n">SESSIONS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span></div>
+            <span class="k">del</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="EvenniaTestMixin.setUp"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.setUp">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.scripts.taskhandler.deferLater&quot;</span><span class="p">,</span> <span class="n">_mock_deferlater</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -331,13 +331,13 @@
 <span class="sd">        Sets up testing environment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backups</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">data_out</span><span class="p">,</span>
-            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">disconnect</span><span class="p">,</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">data_out</span><span class="p">,</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">disconnect</span><span class="p">,</span>
             <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span>
             <span class="n">settings</span><span class="o">.</span><span class="n">PROTOTYPE_MODULES</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">data_out</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">disconnect</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">data_out</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">disconnect</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">create_accounts</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_rooms</span><span class="p">()</span>
@@ -349,8 +349,8 @@
 <div class="viewcode-block" id="EvenniaTestMixin.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">flush_cache</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">data_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">disconnect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">data_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">disconnect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
             <span class="n">settings</span><span class="o">.</span><span class="n">PROTOTYPE_MODULES</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -359,7 +359,7 @@
                 <span class="s2">&quot;in your test, make sure you also added `super().setUp()`!&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">del</span> <span class="n">SESSIONS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">teardown_accounts</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div></div>
 
@@ -500,7 +500,7 @@
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdname</span>  <span class="c1"># deprecated</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">input_args</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmdset</span>
-        <span class="n">cmdobj</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">session_from_sessid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">session_from_sessid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span> <span class="k">if</span> <span class="n">raw_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">input_args</span>
         <span class="n">cmdobj</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="p">(</span><span class="n">caller</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>

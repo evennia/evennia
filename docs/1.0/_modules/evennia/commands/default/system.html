@@ -94,9 +94,9 @@
 <span class="kn">import</span> <span class="nn">twisted</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TaskHandlerTask</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">ask_yes_no</span>
@@ -152,8 +152,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;(Reason: </span><span class="si">%s</span><span class="s2">) &quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_BROADCAST_SERVER_RESTART_MESSAGES</span><span class="p">:</span>
-            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Server restart initiated </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_restart_server</span><span class="p">()</span></div></div>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Server restart initiated </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_restart_server</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="CmdReset"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdReset">[docs]</a><span class="k">class</span> <span class="nc">CmdReset</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -186,8 +186,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reload the system.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="s2">&quot; Server resetting/restarting ...&quot;</span><span class="p">)</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_reset_server</span><span class="p">()</span></div></div>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="s2">&quot; Server resetting/restarting ...&quot;</span><span class="p">)</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_reset_server</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="CmdShutdown"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdShutdown">[docs]</a><span class="k">class</span> <span class="nc">CmdShutdown</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -215,8 +215,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">announcement</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Server shutdown by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="n">announcement</span><span class="p">)</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_shutdown</span><span class="p">()</span></div></div>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="n">announcement</span><span class="p">)</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_shutdown</span><span class="p">()</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_py_load</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
@@ -640,7 +640,7 @@
             <span class="k">return</span>
 
         <span class="c1"># get all services</span>
-        <span class="n">service_collection</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">services</span>
+        <span class="n">service_collection</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">services</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">switches</span> <span class="ow">or</span> <span class="n">switches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;list&quot;</span><span class="p">:</span>
             <span class="c1"># Just display the list of installed services and their</span>

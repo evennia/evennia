@@ -94,8 +94,8 @@
 <span class="kn">from</span> <span class="nn">twisted.web.iweb</span> <span class="kn">import</span> <span class="n">IBodyProducer</span>
 <span class="kn">from</span> <span class="nn">zope.interface</span> <span class="kn">import</span> <span class="n">implementer</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">logger</span>
 
 <span class="n">_EGI_HOST</span> <span class="o">=</span> <span class="s2">&quot;http://evennia-game-index.appspot.com&quot;</span>
@@ -176,7 +176,7 @@
                 <span class="s2">&quot;telnet_port&quot;</span><span class="p">:</span> <span class="n">egi_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;telnet_port&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
                 <span class="s2">&quot;web_client_url&quot;</span><span class="p">:</span> <span class="n">egi_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;web_client_url&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
                 <span class="c1"># Game stats</span>
-                <span class="s2">&quot;connected_account_count&quot;</span><span class="p">:</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">account_count</span><span class="p">(),</span>
+                <span class="s2">&quot;connected_account_count&quot;</span><span class="p">:</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">account_count</span><span class="p">(),</span>
                 <span class="s2">&quot;total_account_count&quot;</span><span class="p">:</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">num_total_accounts</span><span class="p">()</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="c1"># System info</span>
                 <span class="s2">&quot;evennia_version&quot;</span><span class="p">:</span> <span class="n">get_evennia_version</span><span class="p">(),</span>

@@ -91,6 +91,7 @@
 <span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectManager</span>
@@ -114,7 +115,6 @@
 <span class="n">_MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
 
 <span class="n">_ScriptDB</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_SESSIONS</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_CMDHANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="n">_AT_SEARCH_RESULT</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -145,15 +145,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_recache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">global</span> <span class="n">_SESSIONS</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
             <span class="nb">set</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_sessid</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">val</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">sessid</span> <span class="k">for</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="k">if</span> <span class="n">sessid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_SESSIONS</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">sessid</span> <span class="k">for</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="k">if</span> <span class="n">sessid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">):</span>
             <span class="c1"># cache is out of sync with sessionhandler! Only retain the ones in the handler.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sessid</span> <span class="k">for</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="k">if</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="n">_SESSIONS</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sessid</span> <span class="k">for</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="k">if</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_sessid</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sessid&quot;</span><span class="p">])</span>
 
@@ -172,18 +169,16 @@
 <span class="sd">            Aliased to `self.all()`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">_SESSIONS</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
+
         <span class="k">if</span> <span class="n">sessid</span><span class="p">:</span>
             <span class="n">sessions</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">[</span><span class="n">_SESSIONS</span><span class="p">[</span><span class="n">sessid</span><span class="p">]</span> <span class="k">if</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="n">_SESSIONS</span> <span class="k">else</span> <span class="kc">None</span><span class="p">]</span>
+                <span class="p">[</span><span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">[</span><span class="n">sessid</span><span class="p">]</span> <span class="k">if</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span> <span class="k">else</span> <span class="kc">None</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span>
                 <span class="k">else</span> <span class="p">[]</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sessions</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">_SESSIONS</span><span class="p">[</span><span class="n">ssid</span><span class="p">]</span> <span class="k">if</span> <span class="n">ssid</span> <span class="ow">in</span> <span class="n">_SESSIONS</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ssid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span>
+                <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">[</span><span class="n">ssid</span><span class="p">]</span> <span class="k">if</span> <span class="n">ssid</span> <span class="ow">in</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ssid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span>
             <span class="p">]</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
             <span class="c1"># this happens only if our cache has gone out of sync with the SessionHandler.</span>
@@ -213,16 +208,13 @@
 <span class="sd">            in the the core sessionhandler.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">_SESSIONS</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">sessid</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">sessid</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">sessid</span> <span class="o">=</span> <span class="n">session</span>
 
         <span class="n">sessid_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span>
-        <span class="k">if</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="n">_SESSIONS</span> <span class="ow">and</span> <span class="n">sessid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sessid_cache</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span> <span class="ow">and</span> <span class="n">sessid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sessid_cache</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessid_cache</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_SESSID_MAX</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="n">sessid_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sessid</span><span class="p">)</span>

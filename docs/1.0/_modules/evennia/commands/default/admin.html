@@ -88,7 +88,8 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
+
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">evtable</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
@@ -146,7 +147,7 @@
 
         <span class="k">if</span> <span class="s2">&quot;sid&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="c1"># Boot a particular session id.</span>
-            <span class="n">sessions</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">sessions</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
                 <span class="c1"># Find the session with the matching session id.</span>
                 <span class="k">if</span> <span class="n">sess</span><span class="o">.</span><span class="n">sessid</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
@@ -163,7 +164,7 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have the permission to boot </span><span class="si">{</span><span class="n">pobj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="c1"># we have a bootable object with a connected user</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">sessions_from_account</span><span class="p">(</span><span class="n">pobj</span><span class="p">)</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">sessions_from_account</span><span class="p">(</span><span class="n">pobj</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
                 <span class="n">boot_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
 
@@ -642,7 +643,7 @@
             <span class="k">return</span>
         <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> shouts &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Announcing to all connected sessions ...&quot;</span><span class="p">)</span>
-        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdForce"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdForce">[docs]</a><span class="k">class</span> <span class="nc">CmdForce</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
