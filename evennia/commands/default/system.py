@@ -13,10 +13,9 @@ import time
 import traceback
 
 import django
+import evennia
 import twisted
 from django.conf import settings
-
-import evennia
 from evennia.accounts.models import AccountDB
 from evennia.scripts.taskhandler import TaskHandlerTask
 from evennia.utils import gametime, logger, search, utils
@@ -186,7 +185,11 @@ def _run_code_snippet(
 
     if show_input:
         for session in sessions:
-            data = {"text": (f">>> {pycode}", {"type": "py_input"}), "options": {"raw": True, "highlight": True}}
+            data = {
+                # TODO: 'highlight' is not used yet
+                "text": (f">>> {pycode}", {"type": "py_input"}),
+                "options": {"raw": True, "highlight": True},
+            }
             try:
                 caller.msg(session=session, **data)
             except TypeError:
@@ -243,10 +246,16 @@ def _run_code_snippet(
 
     for session in sessions:
         try:
-            caller.msg((ret, {"type": "py_output"}), session=session, options={"raw": True, "client_raw": client_raw,
-                                                                               "highlight": True})
+            caller.msg(
+                (ret, {"type": "py_output"}),
+                session=session,
+                options={"raw": True, "client_raw": client_raw, "highlight": True},
+            )
         except TypeError:
-            caller.msg((ret, {"type": "py_output"}), options={"raw": True, "client_raw": client_raw, "highlight": True})
+            caller.msg(
+                (ret, {"type": "py_output"}),
+                options={"raw": True, "client_raw": client_raw, "highlight": True},
+            )
 
 
 def evennia_local_vars(caller):
@@ -1030,7 +1039,6 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
 
         # handle caller's request to manipulate a task(s)
         if self.switches and self.lhs:
-
             # find if the argument is a task id or function name
             action_request = self.switches[0]
             try:
@@ -1040,7 +1048,6 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
 
             # if the argument is a task id, proccess the action on a single task
             if arg_is_id:
-
                 err_arg_msg = "Switch and task ID are required when manipulating a task."
                 task_comp_msg = "Task completed while processing request."
 
@@ -1105,7 +1112,6 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
             # the argument is not a task id, process the action on all task deferring the function
             # specified as an argument
             else:
-
                 name_match_found = False
                 arg_func_name = self.lhslist[0].lower()
 
