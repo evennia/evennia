@@ -13,6 +13,7 @@ evennia.contrib.game\_systems
 
    evennia.contrib.game_systems.barter
    evennia.contrib.game_systems.clothing
+   evennia.contrib.game_systems.containers
    evennia.contrib.game_systems.cooldowns
    evennia.contrib.game_systems.crafting
    evennia.contrib.game_systems.gendersub

@@ -4,6 +4,8 @@
 
 - New Contrib: `Container` typeclass with new commands for storing and retrieving
   things inside them (InspectorCaracal)
+- Feature: Add `TagCategoryProperty` for setting categories with multiple tags
+  as properties directly on objects. Complements `TagProperty`.
 - Feature: Attribute-support for saving/loading `deques` with `maxlen=` set.
 - Feature: Refactor to provide `evennia.SESSION_HANDLER` for easier overloading
   and less risks of circular import problems (Volund)

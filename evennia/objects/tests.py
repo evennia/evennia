@@ -1,14 +1,17 @@
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
-from evennia.objects.objects import DefaultObject
 from evennia.typeclasses.attributes import AttributeProperty
-from evennia.typeclasses.tags import AliasProperty, PermissionProperty, TagProperty
+from evennia.typeclasses.tags import (
+    AliasProperty,
+    PermissionProperty,
+    TagCategoryProperty,
+    TagProperty,
+)
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 
 
 class DefaultObjectTest(BaseEvenniaTest):
-
     ip = "212.216.139.14"
 
     def test_object_create(self):
@@ -60,7 +63,10 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertEqual(obj.db.creator_ip, self.ip)
 
     def test_exit_create(self):
-        description = "The steaming depths of the dumpster, ripe with refuse in various states of decomposition."
+        description = (
+            "The steaming depths of the dumpster, ripe with refuse in various states of"
+            " decomposition."
+        )
         obj, errors = DefaultExit.create(
             "in", self.room1, self.room2, account=self.account, description=description, ip=self.ip
         )
@@ -279,6 +285,8 @@ class TestObjectPropertiesClass(DefaultObject):
     testperm = PermissionProperty()
     awaretest = 5
     settest = 0
+    tagcategory1 = TagCategoryProperty("category_tag1")
+    tagcategory2 = TagCategoryProperty("category_tag1", "category_tag2", "category_tag3")
 
     @property
     def base_property(self):
@@ -299,10 +307,7 @@ class TestProperties(EvenniaTestCase):
     def tearDown(self):
         self.obj.delete()
 
-    def test_properties(self):
-        """
-        Test all properties assigned at class level.
-        """
+    def test_attribute_properties(self):
         obj = self.obj
 
         self.assertEqual(obj.db.attr1, "attr1")
@@ -326,6 +331,9 @@ class TestProperties(EvenniaTestCase):
         self.assertEqual(obj.db.attr3, "attr3b")
         self.assertTrue(obj.attributes.has("attr3"))
 
+    def test_tag_properties(self):
+        obj = self.obj
+
         self.assertTrue(obj.tags.has("tag1"))
         self.assertTrue(obj.tags.has("tag2", category="tagcategory"))
         self.assertTrue(obj.tags.has("tag3"))
@@ -336,6 +344,15 @@ class TestProperties(EvenniaTestCase):
         # Verify that regular properties do not get fetched in init_evennia_properties,
         # only Attribute or TagProperties.
         self.assertFalse(hasattr(obj, "property_initialized"))
+
+    def test_tag_category_properties(self):
+        obj = self.obj
+
+        self.assertFalse(obj.tags.has("category_tag1"))  # no category
+        self.assertTrue(obj.tags.has("category_tag1", category="tagcategory1"))
+        self.assertTrue(obj.tags.has("category_tag1", category="tagcategory2"))
+        self.assertTrue(obj.tags.has("category_tag2", category="tagcategory2"))
+        self.assertTrue(obj.tags.has("category_tag3", category="tagcategory2"))
 
     def test_object_awareness(self):
         """Test the "object-awareness" of customized AttributeProperty getter/setters"""

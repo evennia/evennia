@@ -51,6 +51,7 @@ Msg = None
 # Properties
 AttributeProperty = None
 TagProperty = None
+TagCategoryProperty = None
 
 # commands
 Command = None
@@ -157,7 +158,7 @@ def _init(portal_mode=False):
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
-    global AttributeProperty, TagProperty
+    global AttributeProperty, TagProperty, TagCategoryProperty
 
     # Parent typeclasses
     # utilities
@@ -172,12 +173,7 @@ def _init(portal_mode=False):
     from .comms.models import ChannelDB, Msg
     from .locks import lockfuncs
     from .objects.models import ObjectDB
-    from .objects.objects import (
-        DefaultCharacter,
-        DefaultExit,
-        DefaultObject,
-        DefaultRoom,
-    )
+    from .objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
     from .prototypes.spawner import spawn
     from .scripts.models import ScriptDB
     from .scripts.monitorhandler import MONITOR_HANDLER
@@ -186,7 +182,7 @@ def _init(portal_mode=False):
     from .scripts.tickerhandler import TICKER_HANDLER
     from .server import signals
     from .typeclasses.attributes import AttributeProperty
-    from .typeclasses.tags import TagProperty
+    from .typeclasses.tags import TagCategoryProperty, TagProperty
     from .utils import ansi, gametime, logger
     from .utils.ansi import ANSIString
 
@@ -218,21 +214,22 @@ def _init(portal_mode=False):
         search_script,
         search_tag,
     )
-
     from .utils.utils import class_from_module
+
     if portal_mode:
         # Set up the PortalSessionHandler
         from evennia.server.portal import portalsessionhandler
+
         portal_sess_handler_class = class_from_module(settings.PORTAL_SESSION_HANDLER_CLASS)
         portalsessionhandler.PORTAL_SESSIONS = portal_sess_handler_class()
     else:
         # Create the ServerSesssionHandler
         from evennia.server import sessionhandler
+
         sess_handler_class = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
         sessionhandler.SESSIONS = sess_handler_class()
         sessionhandler.SESSION_HANDLER = sessionhandler.SESSIONS
         SESSION_HANDLER = sessionhandler.SESSIONS
-
 
     # API containers
 
