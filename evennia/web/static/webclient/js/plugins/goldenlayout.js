@@ -635,7 +635,7 @@ let goldenlayout = (function () {
     // Add new HTML message to an existing Div pane, while
     // honoring the pane's updateMethod and scroll state, etc.
     //
-    var addMessageToPaneDiv = function (textDiv, message) {
+    var addMessageToPaneDiv = function (textDiv, message, kwargs) {
         let atBottom = false;
         let updateMethod = textDiv.attr("updateMethod");
 
@@ -644,7 +644,8 @@ let goldenlayout = (function () {
         } else if ( updateMethod === "append" ) {
             textDiv.append(message);
         } else {  // line feed
-            textDiv.append("<div class='out'>" + message + "</div>");
+            var cls = (kwargs === undefined) || (kwargs['cls'] === undefined) ? 'out' : kwargs['cls'];
+            textDiv.append("<div class='" + cls + "'>" + message + "</div>");
         }
 
         // Calculate the scrollback state.
@@ -779,7 +780,7 @@ let goldenlayout = (function () {
         divs.forEach( function (div) {
             let txt = args[0];
             // yes, so add this text message to the target div
-            addMessageToPaneDiv( div, txt );
+            addMessageToPaneDiv( div, txt, kwargs );
             msgHandled = true;
         });
 
