@@ -2,11 +2,19 @@
 
 ## Main branch
 
-- Feature: Attribute-support for saving/loading `deques` with `maxlen=` set.
-- Contrib: Container typeclass with new commands for storing and retrieving
+- New Contrib: `Container` typeclass with new commands for storing and retrieving
   things inside them (InspectorCaracal)
+- Feature: Add `TagCategoryProperty` for setting categories with multiple tags
+  as properties directly on objects. Complements `TagProperty`.
+- Feature: Attribute-support for saving/loading `deques` with `maxlen=` set.
+- Feature: Refactor to provide `evennia.SESSION_HANDLER` for easier overloading
+  and less risks of circular import problems (Volund)
+- Fix: Allow webclient's goldenlayout UI (default) to understand `msg`
+  `cls` kwarg for customizing the CSS class for every resulting `div` (friarzen)
 - Fix: The `AttributeHandler.all()` now actually accepts `category=` as
   keyword arg, like our docs already claimed it should (Volund)
+- Fix: `TickerHandler` store key updating was refactored, fixing an issue with
+  updating intervals (InspectorCaracal)
 - Docs: New Beginner-Tutorial lessons for NPCs, Base-Combat Twitch-Combat and
   Turnbased-combat (note that the Beginner tutorial is still WIP).
 

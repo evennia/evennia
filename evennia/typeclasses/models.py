@@ -34,7 +34,6 @@ from django.db.models.base import ModelBase
 from django.urls import reverse
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
-
 from evennia.locks.lockhandler import LockHandler
 from evennia.server.signals import SIGNAL_TYPED_OBJECT_POST_RENAME
 from evennia.typeclasses import managers
@@ -50,6 +49,7 @@ from evennia.typeclasses.tags import (
     AliasHandler,
     PermissionHandler,
     Tag,
+    TagCategoryProperty,
     TagHandler,
     TagProperty,
 )
@@ -343,7 +343,7 @@ class TypedObject(SharedMemoryModel):
         by fetching them once.
         """
         for propkey, prop in self.__class__.__dict__.items():
-            if isinstance(prop, (AttributeProperty, TagProperty)):
+            if isinstance(prop, (AttributeProperty, TagProperty, TagCategoryProperty)):
                 try:
                     getattr(self, propkey)
                 except Exception:
@@ -626,7 +626,8 @@ class TypedObject(SharedMemoryModel):
                 raise RuntimeError(
                     "Cannot use swap_typeclass on time-dependent "
                     "Script '%s'.\nStop and start a new Script of the "
-                    "right type instead." % self.key
+                    "right type instead."
+                    % self.key
                 )
 
         self.typeclass_path = new_typeclass.path
