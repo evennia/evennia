@@ -171,7 +171,7 @@ Damage roll: 1d6
 Here's the start of how the function could look:
 
 ```python
-# in mygame/evadventure/utils.py
+# in mygame/evadventure/time.py
 
 _OBJ_STATS = """
 |c{key}|n

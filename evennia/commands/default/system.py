@@ -179,7 +179,6 @@ def _run_code_snippet(
 
     """
     # Try to retrieve the session
-    session = caller
     if hasattr(caller, "sessions"):
         sessions = caller.sessions.all()
 
@@ -187,10 +186,11 @@ def _run_code_snippet(
 
     if show_input:
         for session in sessions:
+            data = {"text": (f">>> {pycode}", {"type": "py_input"}), "options": {"raw": True, "highlight": True}}
             try:
-                caller.msg(">>> %s" % pycode, session=session, options={"raw": True})
+                caller.msg(session=session, **data)
             except TypeError:
-                caller.msg(">>> %s" % pycode, options={"raw": True})
+                caller.msg(**data)
 
     try:
         # reroute standard output to game client console
@@ -202,10 +202,7 @@ def _run_code_snippet(
                 self.caller = caller
 
             def write(self, string):
-                if string.endswith("\n"):
-                    self.caller.msg(string[:-1])
-                else:
-                    self.caller.msg(string)
+                self.caller.msg(text=(string.rstrip("\n"), {"type": "py_output"}))
 
         fake_std = FakeStd(caller)
         sys.stdout = fake_std
@@ -222,7 +219,7 @@ def _run_code_snippet(
             t0 = time.time()
             ret = eval(pycode_compiled, {}, available_vars)
             t1 = time.time()
-            duration = " (runtime ~ %.4f ms)" % ((t1 - t0) * 1000)
+            duration = f" (runtime ~ {(t1 - t0) * 1000:.4f} ms)"
             caller.msg(duration)
         else:
             ret = eval(pycode_compiled, {}, available_vars)
@@ -246,9 +243,10 @@ def _run_code_snippet(
 
     for session in sessions:
         try:
-            caller.msg(ret, session=session, options={"raw": True, "client_raw": client_raw})
+            caller.msg((ret, {"type": "py_output"}), session=session, options={"raw": True, "client_raw": client_raw,
+                                                                               "highlight": True})
         except TypeError:
-            caller.msg(ret, options={"raw": True, "client_raw": client_raw})
+            caller.msg((ret, {"type": "py_output"}), options={"raw": True, "client_raw": client_raw, "highlight": True})
 
 
 def evennia_local_vars(caller):
