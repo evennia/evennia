@@ -187,8 +187,9 @@ def _init(portal_mode=False):
     from .utils import ansi, gametime, logger
     from .utils.ansi import ANSIString
 
-    # containers
-    from .utils.containers import GLOBAL_SCRIPTS, OPTION_CLASSES
+    if not portal_mode:
+        # containers
+        from .utils.containers import GLOBAL_SCRIPTS, OPTION_CLASSES
 
     # create functions
     from .utils.create import (
@@ -227,6 +228,7 @@ def _init(portal_mode=False):
     else:
         # Create the ServerSesssionHandler
         from evennia.server import sessionhandler
+
         sess_handler_class = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
         sessionhandler.SESSIONS = sess_handler_class()
         sessionhandler.SESSION_HANDLER = sessionhandler.SESSIONS

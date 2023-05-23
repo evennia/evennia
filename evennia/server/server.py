@@ -453,6 +453,10 @@ class Evennia:
         # always call this regardless of start type
         self.at_server_start()
 
+        # Moved here from evennia._init() to ensure it only runs after
+        # setup is complete and only in server mode.
+        evennia.GLOBAL_SCRIPTS.start()
+
     @defer.inlineCallbacks
     def shutdown(self, mode="reload", _reactor_stopping=False):
         """
