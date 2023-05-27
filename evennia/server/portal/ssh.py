@@ -127,6 +127,10 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
         self.width = width
         self.height = height
 
+        # Set color defaults
+        for color in ("ANSI", "XTERM256", "TRUECOLOR"):
+            self.protocol_flags[color] = True
+
         # initialize the session
         client_address = self.getClientAddress()
         client_address = client_address.host if client_address else None

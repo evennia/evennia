@@ -19,6 +19,10 @@ SEND = bytes([1])  # b"\x01"
 
 # terminal capabilities and their codes
 MTTS = [
+    (2048, "SSL"),
+    (1024, "MSLP"),
+    (512, "MNES"),
+    (256, "TRUECOLOR"),
     (128, "PROXY"),
     (64, "SCREENREADER"),
     (32, "OSC_COLOR_PALETTE"),
