@@ -2,7 +2,7 @@
 
 In this lesson we will make use of what we have learned to create a new game object: a chair you can sit on. 
 
-Out goals are:
+Our goals are:
 
 - We want a new 'sittable' object, a `Chair` in particular.
 - We want to be able to use a command to sit in the chair.
@@ -185,7 +185,7 @@ class Sittable(DefaultObject):
             stander.msg(f"You stand up from {self.key}")
 ```
 
-- **Line 15**: We grab the `adjective` Attribute. Using `seld.db.adjective or "on"` here means that if the Attribute is not set (is `None`/falsy) the default "on" string will be assumed.
+- **Line 15**: We grab the `adjective` Attribute. Using `self.db.adjective or "on"` here means that if the Attribute is not set (is `None`/falsy) the default "on" string will be assumed.
 - **Lines 22 and 43**: We use this adjective to modify the return text we see.  
 
 `reload`  the server. An advantage of using Attributes like this is that they can be modified on the fly, in-game. Let's look at a builder could use this by normal building commands (no need for `py`): 
@@ -210,6 +210,7 @@ What if we want some more dramatic flair when you sit down in certain chairs?
 You can make this happen by tweaking your `Sittable` class having the return messages be replaceable by `Attributes` that you can set on the object you create. You want something like this: 
 
 ```
+> py
 > chair = evennia.create_object("typeclasses.sittables.Sittable", key="pallet")
 > chair.do_sit(me)
 You sit down on pallet.
