@@ -146,7 +146,7 @@ What we didn't mention  before is that by default those commands are _also avail
 
 To show how this could work, let's put our 'hit' Command on our simple `sword` object from the previous section.
 
-    > self.search("sword").cmdset.add("commands.mycommands.MyCmdSet", persistent=True)
+    > py self.search("sword").cmdset.add("commands.mycommands.MyCmdSet", persistent=True)
 
 We find the sword (it's still in our inventory so `self.search` should be able to find it), then
 add `MyCmdSet` to it. This actually adds both `hit` and `echo` to the sword, which is fine.
@@ -172,7 +172,7 @@ Woah, that didn't go as planned. Evennia actually found _two_ `hit` commands and
 
 In this case we don't need both command-sets, so let's just keep the one on the sword:
 
-    > self.cmdset.remove("commands.mycommands.MyCmdSet")
+    > py self.cmdset.remove("commands.mycommands.MyCmdSet")
     > hit
     Who do you want to hit?
 
@@ -197,7 +197,7 @@ The `hit` command is only available if you hold _or_ are in the same room as the
 Evennia Locks are defined as a mini-language defined in `lockstrings`. The lockstring is on a form `<situation>:<lockfuncs>`, where `situation` determines when this lock applies and the `lockfuncs` (there can be more than one) are run to determine if the lock-check passes or not depending on circumstance.
 ```
 
-Let's get a little ahead of ourselves and make it so you have to _hold_ the sword for the `hit` command to be available. This involves a [Lock](../../../Components/Locks.md). We've cover locks in more detail later, just know that they are useful for limiting the kind of things you can do with an object, including limiting just when you can call commands on it.
+Let's get a little ahead of ourselves and make it so you have to _hold_ the sword for the `hit` command to be available. This involves a [Lock](../../../Components/Locks.md). We'll cover locks in more detail later, just know that they are useful for limiting the kind of things you can do with an object, including limiting just when you can call commands on it.
 
     > py self.search("sword").locks.add("call:holds()")
 

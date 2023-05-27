@@ -120,7 +120,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="building-a-chair-you-can-sit-on">
 <h1><span class="section-number">13. </span>Building a chair you can sit on<a class="headerlink" href="#building-a-chair-you-can-sit-on" title="Permalink to this headline">¶</a></h1>
 <p>In this lesson we will make use of what we have learned to create a new game object: a chair you can sit on.</p>
-<p>Out goals are:</p>
+<p>Our goals are:</p>
 <ul class="simple">
 <li><p>We want a new ‘sittable’ object, a <code class="docutils literal notranslate"><span class="pre">Chair</span></code> in particular.</p></li>
 <li><p>We want to be able to use a command to sit in the chair.</p></li>
@@ -363,7 +363,7 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 </span></pre></div></td></tr></table></div>
 </div>
 <ul class="simple">
-<li><p><strong>Line 15</strong>: We grab the <code class="docutils literal notranslate"><span class="pre">adjective</span></code> Attribute. Using <code class="docutils literal notranslate"><span class="pre">seld.db.adjective</span> <span class="pre">or</span> <span class="pre">&quot;on&quot;</span></code> here means that if the Attribute is not set (is <code class="docutils literal notranslate"><span class="pre">None</span></code>/falsy) the default “on” string will be assumed.</p></li>
+<li><p><strong>Line 15</strong>: We grab the <code class="docutils literal notranslate"><span class="pre">adjective</span></code> Attribute. Using <code class="docutils literal notranslate"><span class="pre">self.db.adjective</span> <span class="pre">or</span> <span class="pre">&quot;on&quot;</span></code> here means that if the Attribute is not set (is <code class="docutils literal notranslate"><span class="pre">None</span></code>/falsy) the default “on” string will be assumed.</p></li>
 <li><p><strong>Lines 22 and 43</strong>: We use this adjective to modify the return text we see.</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">reload</span></code>  the server. An advantage of using Attributes like this is that they can be modified on the fly, in-game. Let’s look at a builder could use this by normal building commands (no need for <code class="docutils literal notranslate"><span class="pre">py</span></code>):</p>
@@ -383,7 +383,8 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 </pre></div>
 </div>
 <p>You can make this happen by tweaking your <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> class having the return messages be replaceable by <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> that you can set on the object you create. You want something like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; chair = evennia.create_object(&quot;typeclasses.sittables.Sittable&quot;, key=&quot;pallet&quot;)
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py
+&gt; chair = evennia.create_object(&quot;typeclasses.sittables.Sittable&quot;, key=&quot;pallet&quot;)
 &gt; chair.do_sit(me)
 You sit down on pallet.
 &gt; chair.do_stand(me)

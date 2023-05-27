@@ -205,6 +205,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
 
+        <span class="c1"># Set color defaults</span>
+        <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ANSI&quot;</span><span class="p">,</span> <span class="s2">&quot;XTERM256&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUECOLOR&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="c1"># initialize the session</span>
         <span class="n">client_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getClientAddress</span><span class="p">()</span>
         <span class="n">client_address</span> <span class="o">=</span> <span class="n">client_address</span><span class="o">.</span><span class="n">host</span> <span class="k">if</span> <span class="n">client_address</span> <span class="k">else</span> <span class="kc">None</span>

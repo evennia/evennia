@@ -306,7 +306,7 @@ You hit smaug with sword!
 <p>As we learned in the lesson about <a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">Adding commands</span></a>, Commands are are grouped in Command Sets. Such Command Sets are attached to an object with <code class="docutils literal notranslate"><span class="pre">obj.cmdset.add()</span></code> and will then be available for that object to use.</p>
 <p>What we didn’t mention  before is that by default those commands are <em>also available to those in the same location as that object</em>. If you did the <a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html"><span class="doc std std-doc">Building quickstart lesson</span></a> you’ve seen an example of this with the “Red Button” object. The <a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html"><span class="doc std std-doc">Tutorial world</span></a> also has many examples of objects with commands on them.</p>
 <p>To show how this could work, let’s put our ‘hit’ Command on our simple <code class="docutils literal notranslate"><span class="pre">sword</span></code> object from the previous section.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.search(&quot;sword&quot;).cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;, persistent=True)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.search(&quot;sword&quot;).cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;, persistent=True)
 </pre></div>
 </div>
 <p>We find the sword (it’s still in our inventory so <code class="docutils literal notranslate"><span class="pre">self.search</span></code> should be able to find it), then
@@ -330,7 +330,7 @@ Who do you want to hit?
 </pre></div>
 </div>
 <p>In this case we don’t need both command-sets, so let’s just keep the one on the sword:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)
 &gt; hit
 Who do you want to hit?
 </pre></div>
@@ -354,7 +354,7 @@ Who do you want to hit?
 <p class="sidebar-title">Locks</p>
 <p>Evennia Locks are defined as a mini-language defined in <code class="docutils literal notranslate"><span class="pre">lockstrings</span></code>. The lockstring is on a form <code class="docutils literal notranslate"><span class="pre">&lt;situation&gt;:&lt;lockfuncs&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">situation</span></code> determines when this lock applies and the <code class="docutils literal notranslate"><span class="pre">lockfuncs</span></code> (there can be more than one) are run to determine if the lock-check passes or not depending on circumstance.</p>
 </aside>
-<p>Let’s get a little ahead of ourselves and make it so you have to <em>hold</em> the sword for the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command to be available. This involves a <a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">Lock</span></a>. We’ve cover locks in more detail later, just know that they are useful for limiting the kind of things you can do with an object, including limiting just when you can call commands on it.</p>
+<p>Let’s get a little ahead of ourselves and make it so you have to <em>hold</em> the sword for the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command to be available. This involves a <a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">Lock</span></a>. We’ll cover locks in more detail later, just know that they are useful for limiting the kind of things you can do with an object, including limiting just when you can call commands on it.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.search(&quot;sword&quot;).locks.add(&quot;call:holds()&quot;)
 </pre></div>
 </div>
