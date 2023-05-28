@@ -12,7 +12,6 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils.translation import gettext as _
-
 from evennia.locks.lockhandler import check_lockstring, validate_lockstring
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripts import DefaultScript
@@ -131,7 +130,7 @@ def homogenize_prototype(prototype, custom_keys=None):
                 for attr in attrs:
                     # attrs must be on form [(key, value, category, lockstr)]
                     if not is_iter(attr):
-                        logger.log_error(
+                        logger.log_err(
                             f"Prototype's 'attr' field must be a list of tuples: {prototype}"
                         )
                     elif attr:
@@ -296,7 +295,6 @@ def load_module_prototypes(*mod_or_prototypes, override=True):
         mod_or_prototypes = settings.PROTOTYPE_MODULES
 
     for mod_or_dict in mod_or_prototypes:
-
         if isinstance(mod_or_dict, dict):
             # a single prototype; we must make sure it has its key
             prototype_key = mod_or_dict.get("prototype_key")
@@ -1087,7 +1085,7 @@ def prototype_to_str(prototype):
     if "attrs" in prototype:
         attrs = prototype["attrs"]
         out = []
-        for (attrkey, value, category, locks) in attrs:
+        for attrkey, value, category, locks in attrs:
             locks = locks if isinstance(locks, str) else ", ".join(lock for lock in locks if lock)
             category = "|ccategory:|n {}".format(category) if category else ""
             cat_locks = ""
@@ -1107,7 +1105,7 @@ def prototype_to_str(prototype):
     if "tags" in prototype:
         tags = prototype["tags"]
         out = []
-        for (tagkey, category, data) in tags:
+        for tagkey, category, data in tags:
             out.append(
                 "{tagkey} (category: {category}{dat})".format(
                     tagkey=tagkey, category=category, dat=", data: {}".format(data) if data else ""
