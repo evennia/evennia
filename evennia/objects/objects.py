@@ -10,10 +10,10 @@ This is the v1.0 develop version (for ref in doc building).
 import time
 from collections import defaultdict
 
+import evennia
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
-import evennia
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -72,7 +72,9 @@ class ObjectSessionHandler:
         )
         if any(sessid for sessid in self._sessid_cache if sessid not in evennia.SESSION_HANDLER):
             # cache is out of sync with sessionhandler! Only retain the ones in the handler.
-            self._sessid_cache = [sessid for sessid in self._sessid_cache if sessid in evennia.SESSION_HANDLER]
+            self._sessid_cache = [
+                sessid for sessid in self._sessid_cache if sessid in evennia.SESSION_HANDLER
+            ]
             self.obj.db_sessid = ",".join(str(val) for val in self._sessid_cache)
             self.obj.save(update_fields=["db_sessid"])
 
@@ -100,7 +102,8 @@ class ObjectSessionHandler:
             )
         else:
             sessions = [
-                evennia.SESSION_HANDLER[ssid] if ssid in evennia.SESSION_HANDLER else None for ssid in self._sessid_cache
+                evennia.SESSION_HANDLER[ssid] if ssid in evennia.SESSION_HANDLER else None
+                for ssid in self._sessid_cache
             ]
         if None in sessions:
             # this happens only if our cache has gone out of sync with the SessionHandler.
@@ -761,7 +764,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             contents = [obj for obj in contents if obj not in exclude]
 
         for receiver in contents:
-
             # actor-stance replacements
             outmessage = _MSG_CONTENTS_PARSER.parse(
                 inmessage,
@@ -1290,7 +1292,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             looker (Object): Object doing the looking.
             **kwargs: Arbitrary data for use when overriding.
         Returns:
-            str: The desc display string..
+            str: The desc display string.
 
         """
         return self.db.desc or "You see nothing special."

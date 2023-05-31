@@ -6,118 +6,392 @@ Testing of ExtendedRoom contrib
 import datetime
 
 from django.conf import settings
+from evennia import create_object
+from evennia.utils.test_resources import BaseEvenniaCommandTest, EvenniaTestCase
 from mock import Mock, patch
-
-from evennia.commands.default.tests import BaseEvenniaCommandTest
-from evennia.objects.objects import DefaultRoom
+from parameterized import parameterized
 
 from . import extended_room
 
 
-class ForceUTCDatetime(datetime.datetime):
+def _get_timestamp(season, time_of_day):
+    """
+    Utility to get a timestamp for a given season and time of day.
 
-    """Force UTC datetime."""
+    """
+    # grab a month / time given a season and time of day
+    seasons = {"spring": 3, "summer": 6, "autumn": 9, "winter": 12}
+    times_of_day = {"morning": 6, "afternoon": 12, "evening": 18, "night": 0}
+    # return a datetime object for the 1st of the month at the given hour
+    return datetime.datetime(2064, seasons[season], 1, times_of_day[time_of_day]).timestamp()
 
-    @classmethod
-    def fromtimestamp(cls, timestamp):
-        """Force fromtimestamp to run with naive datetimes."""
-        return datetime.datetime.utcfromtimestamp(timestamp)
+
+class TestExtendedRoom(EvenniaTestCase):
+    """
+    Test Extended Room typeclass.
+
+    """
+
+    base_room_desc = "Base room description."
+
+    def setUp(self):
+        self.room = create_object(extended_room.ExtendedRoom, key="Test Room")
+        self.room.desc = self.base_room_desc
+
+    def test_room_description(self):
+        """
+        Test that the vanilla room description is returned as expected.
+        """
+        room_desc = self.room.get_display_desc(None)
+        self.assertEqual(room_desc, self.base_room_desc)
+
+    @parameterized.expand(
+        [
+            ("spring", "Spring room description."),
+            ("summer", "Summer room description."),
+            ("autumn", "Autumn room description."),
+            ("winter", "Winter room description."),
+        ]
+    )
+    @patch("evennia.utils.gametime.gametime")
+    def test_seasonal_room_descriptions(self, season, desc, mock_gametime):
+        """
+        Test that the room description changes with the season.
+        """
+        mock_gametime.return_value = _get_timestamp(season, "morning")
+        self.room.add_desc(desc, room_state=season)
+
+        room_desc = self.room.get_display_desc(None)
+        self.assertEqual(room_desc, desc)
+
+    @parameterized.expand(
+        [
+            ("morning", "Morning room description."),
+            ("afternoon", "Afternoon room description."),
+            ("evening", "Evening room description."),
+            ("night", "Night room description."),
+        ]
+    )
+    @patch("evennia.utils.gametime.gametime")
+    def test_get_time_of_day_tags(self, time_of_day, desc, mock_gametime):
+        """
+        Test room with $
+        """
+        mock_gametime.return_value = _get_timestamp("spring", time_of_day)
+        room_time_of_day = self.room.get_time_of_day()
+        self.assertEqual(room_time_of_day, time_of_day)
+
+        self.room.add_desc(
+            "$state(morning, Morning room description.)"
+            "$state(afternoon, Afternoon room description.)"
+            "$state(evening, Evening room description.)"
+            "$state(night, Night room description.)"
+            " What a great day!"
+        )
+        room_desc = self.room.get_display_desc(None)
+        self.assertEqual(room_desc, f"{desc} What a great day!")
+
+    def test_room_states(self):
+        """
+        Test rooms with custom game states.
+
+        """
+        self.room.add_desc(
+            "$state(under_construction, This room is under construction.)"
+            " $state(under_repair, This room is under repair.)"
+        )
+        self.room.add_room_state("under_construction")
+        self.assertEqual(self.room.room_states, ["under_construction"])
+        self.assertEqual(self.room.get_display_desc(None), "This room is under construction. ")
+
+        self.room.add_room_state("under_repair")
+        self.assertEqual(self.room.room_states, ["under_construction", "under_repair"])
+        self.assertEqual(
+            self.room.get_display_desc(None),
+            "This room is under construction. This room is under repair.",
+        )
+
+        self.room.remove_room_state("under_construction")
+        self.assertEqual(
+            self.room.get_display_desc(None),
+            " This room is under repair.",
+        )
+
+    def test_alternative_descs(self):
+        """
+        Test rooms with alternate descriptions.
+
+        """
+        self.room.add_desc("The room is burning!", room_state="burning")
+        self.room.add_desc("The room is flooding!", room_state="flooding")
+        self.assertEqual(self.room.get_display_desc(None), self.base_room_desc)
+
+        self.room.add_room_state("burning")
+        self.assertEqual(self.room.get_display_desc(None), "The room is burning!")
+
+        self.room.add_room_state("flooding")
+        self.room.remove_room_state("burning")
+        self.assertEqual(self.room.get_display_desc(None), "The room is flooding!")
+
+        self.room.clear_room_state()
+        self.assertEqual(self.room.get_display_desc(None), self.base_room_desc)
+
+    def test_details(self):
+        """
+        Test room details.
+
+        """
+        self.room.add_detail("test", "Test detail.")
+        self.room.add_detail("test2", "Test detail 2.")
+        self.room.add_detail("window", "Window detail.")
+        self.room.add_detail("window pane", "Window Pane detail.")
+
+        self.assertEqual(self.room.get_detail("test"), "Test detail.")
+        self.assertEqual(self.room.get_detail("test2"), "Test detail 2.")
+        self.assertEqual(self.room.get_detail("window"), "Window detail.")
+        self.assertEqual(self.room.get_detail("window pane"), "Window Pane detail.")
+        self.assertEqual(self.room.get_detail("win"), "Window detail.")
+        self.assertEqual(self.room.get_detail("window p"), "Window Pane detail.")
+
+        self.room.remove_detail("test")
+        self.assertEqual(self.room.get_detail("test"), "Test detail 2.")  # finding nearest
+        self.room.remove_detail("test2")
+        self.assertEqual(self.room.get_detail("test"), None)  # all test* gone
 
 
-@patch("evennia.contrib.grid.extended_room.extended_room.datetime.datetime", ForceUTCDatetime)
-# mock gametime to return April 9, 2064, at 21:06 (spring evening)
-@patch("evennia.utils.gametime.gametime", new=Mock(return_value=2975000766))
-class TestExtendedRoom(BaseEvenniaCommandTest):
-    room_typeclass = extended_room.ExtendedRoom
-    DETAIL_DESC = "A test detail."
-    SPRING_DESC = "A spring description."
-    OLD_DESC = "Old description."
-    settings.TIME_ZONE = "UTC"
+class TestExtendedRoomCommands(BaseEvenniaCommandTest):
+    """
+    Test the ExtendedRoom commands.
+
+    """
+
+    base_room_desc = "Base room description."
 
     def setUp(self):
         super().setUp()
-        self.room1.ndb.last_timeslot = "afternoon"
-        self.room1.ndb.last_season = "winter"
-        self.room1.db.details = {"testdetail": self.DETAIL_DESC}
-        self.room1.db.spring_desc = self.SPRING_DESC
-        self.room1.db.desc = self.OLD_DESC
+        self.room1.swap_typeclass("evennia.contrib.grid.extended_room.ExtendedRoom")
+        self.room1.desc = self.base_room_desc
 
-    def test_return_appearance(self):
-        # get the appearance of a non-extended room for contrast purposes
-        old_desc = DefaultRoom.return_appearance(self.room1, self.char1)
-        # the new appearance should be the old one, but with the desc switched
-        self.assertEqual(
-            old_desc.replace(self.OLD_DESC, self.SPRING_DESC),
-            self.room1.return_appearance(self.char1),
+    @patch("evennia.utils.gametime.gametime")
+    def test_cmd_desc(self, mock_gametime):
+        """Test new desc command"""
+
+        mock_gametime.return_value = _get_timestamp("autumn", "afternoon")
+
+        # view base desc
+        self.call(
+            extended_room.CmdExtendedRoomDesc(),
+            "",
+            f"""
+Room Room(#{self.room1.id}) Season: autumn. Time: afternoon. States: None
+
+Room state (default) (active):
+Base room description.
+                  """.strip(),
         )
-        self.assertEqual("spring", self.room1.ndb.last_season)
-        self.assertEqual("evening", self.room1.ndb.last_timeslot)
 
-    def test_return_detail(self):
-        self.assertEqual(self.DETAIL_DESC, self.room1.return_detail("testdetail"))
+        # add spring desc
+        self.call(
+            extended_room.CmdExtendedRoomDesc(),
+            "/spring Spring description.",
+            "The spring-description was set on Room",
+        )
+        self.call(
+            extended_room.CmdExtendedRoomDesc(),
+            "/burning Burning description.",
+            "The burning-description was set on Room",
+        )
 
-    def test_cmdextendedlook(self):
-        rid = self.room1.id
+        self.call(
+            extended_room.CmdExtendedRoomDesc(),
+            "",
+            """
+Room Room(#1) Season: autumn. Time: afternoon. States: None
+
+Room state spring:
+Spring description.
+
+Room state burning:
+Burning description.
+
+Room state (default) (active):
+Base room description.
+                 """.strip(),
+        )
+
+        # remove a desc
+        self.call(
+            extended_room.CmdExtendedRoomDesc(),
+            "/del/burning/spring",
+            (
+                "The burning-description was deleted, if it existed.|The spring-description was"
+                " deleted, if it existed"
+            ),
+        )
+        # add autumn, which should be active
+        self.call(
+            extended_room.CmdExtendedRoomDesc(),
+            "/autumn Autumn description.",
+            "The autumn-description was set on Room",
+        )
+        self.call(
+            extended_room.CmdExtendedRoomDesc(),
+            "",
+            """
+Room Room(#1) Season: autumn. Time: afternoon. States: None
+
+Room state autumn (active):
+Autumn description.
+
+Room state (default):
+Base room description.
+                  """.strip(),
+        )
+
+    def test_cmd_detail(self):
+        """Test adding details"""
+        self.call(
+            extended_room.CmdExtendedRoomDetail(),
+            "test=Test detail.",
+            "Set detail 'test': 'Test detail.'",
+        )
+
+        self.call(
+            extended_room.CmdExtendedRoomDetail(),
+            "",
+            """
+Details on Room:
+test: Test detail.
+            """.strip(),
+        )
+
+        # remove a detail
+        self.call(
+            extended_room.CmdExtendedRoomDetail(),
+            "/del test",
+            "Deleted detail 'test', if it existed.",
+        )
+
+        self.call(
+            extended_room.CmdExtendedRoomDetail(),
+            "",
+            f"""
+The room Room(#{self.room1.id}) doesn't have any details.
+            """.strip(),
+        )
+
+    @patch("evennia.utils.gametime.gametime")
+    def test_cmd_roomstate(self, mock_gametime):
+        """
+        Test the roomstate command
+
+        """
+
+        mock_gametime.return_value = _get_timestamp("autumn", "afternoon")
+
+        # show existing room states (season/time doesn't count)
+
+        self.assertEqual(self.room1.room_states, [])
+
+        self.call(
+            extended_room.CmdExtendedRoomState(),
+            "",
+            f"Room states (not counting automatic time/season) on Room(#{self.room1.id}):\n None",
+        )
+
+        # add room states
+        self.call(
+            extended_room.CmdExtendedRoomState(),
+            "burning",
+            "Added room state 'burning' to this room.",
+        )
+        self.call(
+            extended_room.CmdExtendedRoomState(),
+            "windy",
+            "Added room state 'windy' to this room.",
+        )
+        self.call(
+            extended_room.CmdExtendedRoomState(),
+            "",
+            (
+                f"Room states (not counting automatic time/season) on Room(#{self.room1.id}):\n "
+                "'burning' and 'windy'"
+            ),
+        )
+        # toggle windy
+        self.call(
+            extended_room.CmdExtendedRoomState(),
+            "windy",
+            "Cleared room state 'windy' from this room.",
+        )
+        self.call(
+            extended_room.CmdExtendedRoomState(),
+            "",
+            (
+                f"Room states (not counting automatic time/season) on Room(#{self.room1.id}):\n "
+                "'burning'"
+            ),
+        )
+        # add a autumn state and make sure we override it
+        self.room1.add_desc("Autumn description.", room_state="autumn")
+        self.room1.add_desc("Spring description.", room_state="spring")
+
+        self.assertEqual(self.room1.get_stateful_desc(), "Autumn description.")
+        self.call(
+            extended_room.CmdExtendedRoomState(),
+            "spring",
+            "Added room state 'spring' to this room.",
+        )
+        self.assertEqual(self.room1.get_stateful_desc(), "Spring description.")
+
+    @patch("evennia.utils.gametime.gametime")
+    def test_cmd_roomtime(self, mock_gametime):
+        """
+        Test the time command
+        """
+
+        mock_gametime.return_value = _get_timestamp("autumn", "afternoon")
+
+        self.call(
+            extended_room.CmdExtendedRoomGameTime(), "", "It's a autumn day, in the afternoon."
+        )
+
+    @patch("evennia.utils.gametime.gametime")
+    def test_cmd_look(self, mock_gametime):
+        """
+        Test the look command.
+        """
+        mock_gametime.return_value = _get_timestamp("autumn", "afternoon")
+
+        autumn_desc = (
+            "This is a nice autumnal forest."
+            "$state(morning,|_The morning sun is just rising)"
+            "$state(afternoon,|_The afternoon sun is shining through the trees)"
+            "$state(burning,|_and this place is on fire!)"
+            "$state(afternoon, .)"
+            "$state(flooded, and it's raining heavily!)"
+        )
+        self.room1.add_desc(autumn_desc, room_state="autumn")
+
         self.call(
             extended_room.CmdExtendedRoomLook(),
-            "here",
-            "Room(#{})\n{}".format(rid, self.SPRING_DESC),
+            "",
+            f"Room(#{self.room1.id})\nThis is a nice autumnal forest.",
         )
         self.call(
-            extended_room.CmdExtendedRoomLook(), 
-            "testdetail", 
-            "You look closely at {}.\n|{}".format("testdetail", self.DETAIL_DESC)
+            extended_room.CmdExtendedRoomLook(),
+            "",
+            (
+                f"Room(#{self.room1.id})\nThis is a nice autumnal forest. The afternoon sun is"
+                " shining through the trees."
+            ),
         )
+        self.room1.add_room_state("burning")
         self.call(
-            extended_room.CmdExtendedRoomLook(), "nonexistent", "Could not find 'nonexistent'."
+            extended_room.CmdExtendedRoomLook(),
+            "",
+            (
+                f"Room(#{self.room1.id})\nThis is a nice autumnal forest. The afternoon sun is"
+                " shining through the trees and this place is on fire!"
+            ),
         )
-        
-    def test_cmdextendedlook_second_person(self):
-        # char2 is already in the same room. 
-        # replace char2.msg with a Mock; this disables it and will catch what it is called with
-        self.char2.msg = Mock() 
-
-        self.call(
-            extended_room.CmdExtendedRoomLook(), 
-            "testdetail"
-        )
-     
-        # check what char2 saw.
-        self.char2.msg.assert_called_with(text=('Char looks closely at testdetail.\n', {}), from_obj=self.char1)
-
-    def test_cmdsetdetail(self):
-        self.call(extended_room.CmdExtendedRoomDetail(), "", "Details on Room")
-        self.call(
-            extended_room.CmdExtendedRoomDetail(),
-            "thingie = newdetail with spaces",
-            "Detail set 'thingie': 'newdetail with spaces'",
-        )
-        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' on Room:\n")
-        self.call(
-            extended_room.CmdExtendedRoomDetail(),
-            "/del thingie",
-            "Detail thingie deleted, if it existed.",
-            cmdstring="detail",
-        )
-        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' not found.")
-
-        # Test with aliases
-        self.call(extended_room.CmdExtendedRoomDetail(), "", "Details on Room")
-        self.call(
-            extended_room.CmdExtendedRoomDetail(),
-            "thingie;other;stuff = newdetail with spaces",
-            "Detail set 'thingie;other;stuff': 'newdetail with spaces'",
-        )
-        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' on Room:\n")
-        self.call(extended_room.CmdExtendedRoomDetail(), "other", "Detail 'other' on Room:\n")
-        self.call(extended_room.CmdExtendedRoomDetail(), "stuff", "Detail 'stuff' on Room:\n")
-        self.call(
-            extended_room.CmdExtendedRoomDetail(),
-            "/del other;stuff",
-            "Detail other;stuff deleted, if it existed.",
-        )
-        self.call(extended_room.CmdExtendedRoomDetail(), "other", "Detail 'other' not found.")
-        self.call(extended_room.CmdExtendedRoomDetail(), "stuff", "Detail 'stuff' not found.")
-
-    def test_cmdgametime(self):
-        self.call(extended_room.CmdExtendedRoomGameTime(), "", "It's a spring day, in the evening.")

@@ -94,6 +94,7 @@ EvEditor = None
 EvMore = None
 ANSIString = None
 signals = None
+FuncParser = None
 
 # Handlers
 SESSION_HANDLER = None
@@ -157,7 +158,7 @@ def _init(portal_mode=False):
     global TASK_HANDLER
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
-    global ANSIString
+    global ANSIString, FuncParser
     global AttributeProperty, TagProperty, TagCategoryProperty
 
     # Parent typeclasses
@@ -203,6 +204,7 @@ def _init(portal_mode=False):
     from .utils.evmenu import EvMenu
     from .utils.evmore import EvMore
     from .utils.evtable import EvTable
+    from .utils.funcparser import FuncParser
 
     # search functions
     from .utils.search import (
