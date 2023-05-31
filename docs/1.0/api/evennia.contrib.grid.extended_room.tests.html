@@ -105,78 +105,150 @@
 <span id="evennia-contrib-grid-extended-room-tests"></span><h1>evennia.contrib.grid.extended_room.tests<a class="headerlink" href="#module-evennia.contrib.grid.extended_room.tests" title="Permalink to this headline">¶</a></h1>
 <p>Testing of ExtendedRoom contrib</p>
 <dl class="py class">
-<dt id="evennia.contrib.grid.extended_room.tests.ForceUTCDatetime">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.extended_room.tests.</code><code class="sig-name descname">ForceUTCDatetime</code><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#ForceUTCDatetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.ForceUTCDatetime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></p>
-<p>Force UTC datetime.</p>
-<dl class="py method">
-<dt id="evennia.contrib.grid.extended_room.tests.ForceUTCDatetime.fromtimestamp">
-<em class="property">classmethod </em><code class="sig-name descname">fromtimestamp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timestamp</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#ForceUTCDatetime.fromtimestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.ForceUTCDatetime.fromtimestamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Force fromtimestamp to run with naive datetimes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.extended_room.tests.</code><code class="sig-name descname">TestExtendedRoom</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaCommandTest" title="evennia.utils.test_resources.BaseEvenniaCommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaCommandTest</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase" title="evennia.utils.test_resources.EvenniaTestCase"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTestCase</span></code></a></p>
+<p>Test Extended Room typeclass.</p>
 <dl class="py attribute">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.room_typeclass">
-<code class="sig-name descname">room_typeclass</code><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.room_typeclass" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="evennia.contrib.grid.extended_room.extended_room.html#evennia.contrib.grid.extended_room.extended_room.ExtendedRoom" title="evennia.contrib.grid.extended_room.extended_room.ExtendedRoom"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.grid.extended_room.extended_room.ExtendedRoom</span></code></a></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.DETAIL_DESC">
-<code class="sig-name descname">DETAIL_DESC</code><em class="property"> = 'A test detail.'</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.DETAIL_DESC" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.SPRING_DESC">
-<code class="sig-name descname">SPRING_DESC</code><em class="property"> = 'A spring description.'</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.SPRING_DESC" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.OLD_DESC">
-<code class="sig-name descname">OLD_DESC</code><em class="property"> = 'Old description.'</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.OLD_DESC" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.base_room_desc">
+<code class="sig-name descname">base_room_desc</code><em class="property"> = 'Base room description.'</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.base_room_desc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.setUp">
 <code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_description">
+<code class="sig-name descname">test_room_description</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_room_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the vanilla room description is returned as expected.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions">
+<code class="sig-name descname">test_seasonal_room_descriptions</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags">
+<code class="sig-name descname">test_get_time_of_day_tags</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_states">
+<code class="sig-name descname">test_room_states</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_room_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test rooms with custom game states.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_alternative_descs">
+<code class="sig-name descname">test_alternative_descs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_alternative_descs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_alternative_descs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test rooms with alternate descriptions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_details">
+<code class="sig-name descname">test_details</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test room details.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags_0_morning">
+<code class="sig-name descname">test_get_time_of_day_tags_0_morning</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags_0_morning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test room with $ [with <a href="#id1"><span class="problematic" id="id2">*</span></a>args=(‘morning’, ‘Morning room description.’)]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags_1_afternoon">
+<code class="sig-name descname">test_get_time_of_day_tags_1_afternoon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags_1_afternoon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test room with $ [with <a href="#id3"><span class="problematic" id="id4">*</span></a>args=(‘afternoon’, ‘Afternoon room description.’)]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags_2_evening">
+<code class="sig-name descname">test_get_time_of_day_tags_2_evening</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags_2_evening" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test room with $ [with <a href="#id5"><span class="problematic" id="id6">*</span></a>args=(‘evening’, ‘Evening room description.’)]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags_3_night">
+<code class="sig-name descname">test_get_time_of_day_tags_3_night</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_get_time_of_day_tags_3_night" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test room with $ [with <a href="#id7"><span class="problematic" id="id8">*</span></a>args=(‘night’, ‘Night room description.’)]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions_0_spring">
+<code class="sig-name descname">test_seasonal_room_descriptions_0_spring</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions_0_spring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the room description changes with the season [with <a href="#id9"><span class="problematic" id="id10">*</span></a>args=(‘spring’, ‘Spring room description.’)].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions_1_summer">
+<code class="sig-name descname">test_seasonal_room_descriptions_1_summer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions_1_summer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the room description changes with the season [with <a href="#id11"><span class="problematic" id="id12">*</span></a>args=(‘summer’, ‘Summer room description.’)].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions_2_autumn">
+<code class="sig-name descname">test_seasonal_room_descriptions_2_autumn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions_2_autumn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the room description changes with the season [with <a href="#id13"><span class="problematic" id="id14">*</span></a>args=(‘autumn’, ‘Autumn room description.’)].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions_3_winter">
+<code class="sig-name descname">test_seasonal_room_descriptions_3_winter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_seasonal_room_descriptions_3_winter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the room description changes with the season [with <a href="#id15"><span class="problematic" id="id16">*</span></a>args=(‘winter’, ‘Winter room description.’)].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.extended_room.tests.</code><code class="sig-name descname">TestExtendedRoomCommands</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoomCommands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaCommandTest" title="evennia.utils.test_resources.BaseEvenniaCommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaCommandTest</span></code></a></p>
+<p>Test the ExtendedRoom commands.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.base_room_desc">
+<code class="sig-name descname">base_room_desc</code><em class="property"> = 'Base room description.'</em><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.base_room_desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoomCommands.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up testing environment</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_return_appearance">
-<code class="sig-name descname">test_return_appearance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_return_appearance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_desc">
+<code class="sig-name descname">test_cmd_desc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_gametime</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoomCommands.test_cmd_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_desc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test new desc command</p>
+</dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_return_detail">
-<code class="sig-name descname">test_return_detail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_return_detail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_return_detail" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_detail">
+<code class="sig-name descname">test_cmd_detail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoomCommands.test_cmd_detail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test adding details</p>
+</dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdextendedlook">
-<code class="sig-name descname">test_cmdextendedlook</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_cmdextendedlook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdextendedlook" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_roomstate">
+<code class="sig-name descname">test_cmd_roomstate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_gametime</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoomCommands.test_cmd_roomstate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_roomstate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the roomstate command</p>
+</dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdextendedlook_second_person">
-<code class="sig-name descname">test_cmdextendedlook_second_person</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_cmdextendedlook_second_person"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdextendedlook_second_person" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_roomtime">
+<code class="sig-name descname">test_cmd_roomtime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_gametime</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoomCommands.test_cmd_roomtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_roomtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the time command</p>
+</dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdsetdetail">
-<code class="sig-name descname">test_cmdsetdetail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_cmdsetdetail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdsetdetail" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdgametime">
-<code class="sig-name descname">test_cmdgametime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoom.test_cmdgametime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdgametime" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_look">
+<code class="sig-name descname">test_cmd_look</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_gametime</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/extended_room/tests.html#TestExtendedRoomCommands.test_cmd_look"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.extended_room.tests.TestExtendedRoomCommands.test_cmd_look" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the look command.</p>
+</dd></dl>
 
 </dd></dl>
 
