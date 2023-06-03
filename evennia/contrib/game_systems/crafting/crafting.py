@@ -604,8 +604,12 @@ class CraftingRecipe(CraftingRecipeBase):
         else:
             self.tool_names = self.tool_tags
 
+        assert isinstance(
+            self.output_prototypes, (list, tuple)
+        ), "Crafting {self.__class__}.output_prototypes must be a list or tuple."
+
         if self.output_names:
-            assert len(self.consumable_names) == len(self.consumable_tags), (
+            assert len(self.output_names) == len(self.output_prototypes), (
                 f"Crafting {self.__class__}.output_names list must "
                 "have the same length as .output_prototypes."
             )
@@ -616,10 +620,6 @@ class CraftingRecipe(CraftingRecipeBase):
                 else str(prot)
                 for prot in self.output_prototypes
             ]
-
-        assert isinstance(
-            self.output_prototypes, (list, tuple)
-        ), "Crafting {self.__class__}.output_prototypes must be a list or tuple."
 
         # don't allow reuse if we have consumables. If only tools we can reuse
         # over and over since nothing changes.
