@@ -441,12 +441,16 @@ Contrib-XYZGrid.md
 
 ### `extended_room`
 
-_Contribution - Griatch 2012, vincent-lg 2019_
+_Contribution - Griatch 2012, vincent-lg 2019, Griatch 2023_
 
-This extends the normal `Room` typeclass to allow its description to change 
-with time-of-day and/or season. It also adds 'details' for the player to look at 
-in the room (without having to create a new in-game object for each). The room is 
-supported by new `look` and `desc` commands.
+This extends the normal `Room` typeclass to allow its description to change with
+time-of-day and/or season as well as any other state (like flooded or dark).
+Embedding `$state(burning, This place is on fire!)` in the description will
+allow for changing the description based on room state. The room also supports
+`details` for the player to look at in the room (without having to create a new
+in-game object for each), as well as support for random echoes. The room
+comes with a set of alternate commands for `look` and `@desc`, as well as new
+commands `detail`, `roomstate` and `time`.
 
 [Read the documentation](./Contrib-Extended-Room.md) - [Browse the Code](evennia.contrib.grid.extended_room)
 

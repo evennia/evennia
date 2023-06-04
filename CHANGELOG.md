@@ -4,6 +4,8 @@
 
 - New Contrib: `Container` typeclass with new commands for storing and retrieving
   things inside them (InspectorCaracal)
+- Updated Contrib: `ExtendedRoom` now supports arbitrary room-states,
+  state-based descriptions, embedded funcparser tags, details and random messages.
 - Feature: Add `TagCategoryProperty` for setting categories with multiple tags
   as properties directly on objects. Complements `TagProperty`.
 - Feature: Attribute-support for saving/loading `deques` with `maxlen=` set.

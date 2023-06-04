@@ -35,8 +35,13 @@ class TestExtendedRoom(EvenniaTestCase):
     base_room_desc = "Base room description."
 
     def setUp(self):
+        super().setUp()
         self.room = create_object(extended_room.ExtendedRoom, key="Test Room")
         self.room.desc = self.base_room_desc
+
+    def tearDown(self):
+        super().tearDown()
+        self.room.delete()
 
     def test_room_description(self):
         """
@@ -88,7 +93,8 @@ class TestExtendedRoom(EvenniaTestCase):
             "$state(night, Night room description.)"
             " What a great day!"
         )
-        room_desc = self.room.get_display_desc(None)
+        char = Mock()
+        room_desc = self.room.get_display_desc(char)
         self.assertEqual(room_desc, f"{desc} What a great day!")
 
     def test_room_states(self):
@@ -102,18 +108,19 @@ class TestExtendedRoom(EvenniaTestCase):
         )
         self.room.add_room_state("under_construction")
         self.assertEqual(self.room.room_states, ["under_construction"])
-        self.assertEqual(self.room.get_display_desc(None), "This room is under construction. ")
+        char = Mock()
+        self.assertEqual(self.room.get_display_desc(char), "This room is under construction. ")
 
         self.room.add_room_state("under_repair")
         self.assertEqual(self.room.room_states, ["under_construction", "under_repair"])
         self.assertEqual(
-            self.room.get_display_desc(None),
+            self.room.get_display_desc(char),
             "This room is under construction. This room is under repair.",
         )
 
         self.room.remove_room_state("under_construction")
         self.assertEqual(
-            self.room.get_display_desc(None),
+            self.room.get_display_desc(char),
             " This room is under repair.",
         )
 
@@ -122,6 +129,10 @@ class TestExtendedRoom(EvenniaTestCase):
         Test rooms with alternate descriptions.
 
         """
+        from evennia import ObjectDB
+
+        ObjectDB.objects.all()  # TODO - fixes an issue with home FK missing
+
         self.room.add_desc("The room is burning!", room_state="burning")
         self.room.add_desc("The room is flooding!", room_state="flooding")
         self.assertEqual(self.room.get_display_desc(None), self.base_room_desc)
