@@ -255,7 +255,7 @@
 
     <span class="n">taghandler_name</span> <span class="o">=</span> <span class="s2">&quot;tags&quot;</span>
 
-<div class="viewcode-block" id="TagCategoryProperty.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagCategoryProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="TagCategoryProperty.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagCategoryProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">default_tags</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign a property for a Tag Category, with any number of Tag keys.</span>
 <span class="sd">        This is often more useful than the `TagProperty` since it&#39;s common to want to check which</span>
@@ -263,8 +263,12 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            *args (str or callable): Tag keys to assign to this property, using the category given</span>
-<span class="sd">                by the name of the property. If a callable, it will be called without arguments</span>
-<span class="sd">                to return the tag key. It is not possible to set tag `data` this way (use the</span>
+<span class="sd">                by the name of the property. Note that, if these tags are always set on the object,</span>
+<span class="sd">                if they are removed by some other means, they will be re-added when this property</span>
+<span class="sd">                is accessed. Furthermore, changing this list after the object was created, will</span>
+<span class="sd">                not remove any old tags (there is no way for the property to know if the</span>
+<span class="sd">                new list is new or not).  If a callable, it will be called without arguments to</span>
+<span class="sd">                return the tag key. It is not possible to set tag `data` this way (use the</span>
 <span class="sd">                Taghandler directly for that). Tag keys are not case sensitive.</span>
 
 <span class="sd">        Raises:</span>
@@ -282,7 +286,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_category</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tag_input</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tag_input</span><span class="p">(</span><span class="o">*</span><span class="n">default_tags</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_parse_tag_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -318,56 +322,43 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">taghandler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span>
 
-        <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">add_new</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">tagkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">tag</span> <span class="o">=</span> <span class="n">taghandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="n">key</span><span class="o">=</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span>
-                <span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="n">add_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tagkey</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">add_new</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">new_tag</span> <span class="ow">in</span> <span class="n">add_new</span><span class="p">:</span>
-                <span class="c1"># we must remove this from the internal store or system will think it already</span>
-                <span class="c1"># existed when determining the sets in __set__</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_tag</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">add_new</span><span class="p">)</span>
+        <span class="n">default_tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_tags</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">taghandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">missing_default_tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">default_tags</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">missing_default_tags</span><span class="p">:</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span>
+                <span class="o">*</span><span class="p">[(</span><span class="n">tag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">missing_default_tags</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="n">tags</span> <span class="o">+=</span> <span class="n">missing_default_tags</span>  <span class="c1"># to avoid a second db call</span>
 
         <span class="k">return</span> <span class="n">tags</span>
 
     <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Assign a new set of tags to the category. This replaces the previous set of tags.</span>
+<span class="sd">        Assign a new set of tags to the category. Note that we can&#39;t know if previous</span>
+<span class="sd">        tags were assigned from this property or from TagHandler, so we don&#39;t</span>
+<span class="sd">        remove old tags. To refresh to only have the tags in this constructor, first</span>
+<span class="sd">        use `del` on this property and re-access the property with the changed default list.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">taghandler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span>
-
-        <span class="n">old_tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="p">)</span>
-        <span class="n">new_tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_tag_input</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span>
-
-        <span class="c1"># new_tags could be a sub/superset of old tags</span>
-        <span class="n">removed_tags</span> <span class="o">=</span> <span class="n">old_tags</span> <span class="o">-</span> <span class="n">new_tags</span>
-        <span class="n">added_tags</span> <span class="o">=</span> <span class="n">new_tags</span> <span class="o">-</span> <span class="n">old_tags</span>
-
-        <span class="c1"># remove tags</span>
-        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">removed_tags</span><span class="p">:</span>
-            <span class="n">taghandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span>
-
-        <span class="c1"># add new tags (won&#39;t re-add if obj already had it)</span>
-        <span class="n">taghandler</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">tag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">added_tags</span><span class="p">])</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">tag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when running `del` on the property. Will remove all tags of this</span>
-<span class="sd">        category from the object. Note that the tags will be readded on next fetch</span>
-<span class="sd">        unless the TagCategoryProperty is also removed in code!</span>
+<span class="sd">        category from the object. Note that next time this desriptor is accessed, the</span>
+<span class="sd">        default ones will be re-added!</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This will remove _all_ tags of this category from the object. This is necessary</span>
+<span class="sd">            in order to be able to be able to combine this with `__set__` to get a tag</span>
+<span class="sd">            list where property and handler are in sync.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">tagkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span></div>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TagHandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler">[docs]</a><span class="k">class</span> <span class="nc">TagHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -804,7 +795,7 @@
         <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
             <span class="n">tup</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
             <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">nlen</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># just a key</span>
+            <span class="k">if</span> <span class="n">nlen</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># just a key, no category</span>
                 <span class="n">keys</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">elif</span> <span class="n">nlen</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">keys</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -813,6 +804,27 @@
                 <span class="n">data</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># overwrite previous</span>
         <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TagHandler.batch_remove"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.batch_remove">[docs]</a>    <span class="k">def</span> <span class="nf">batch_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Batch-remove tags from a list of tuples.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args (tuple or str): Each argument should be a `tagstr` keys or tuple</span>
+<span class="sd">                `(keystr, category)` or `(keystr, category, data)` (the `data` field is ignored,</span>
+<span class="sd">                only `keystr`/`category` matters). It&#39;s possible to mix input types.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">tup</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+            <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nlen</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># just a key, no category</span>
+                <span class="n">keys</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">nlen</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">keys</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>

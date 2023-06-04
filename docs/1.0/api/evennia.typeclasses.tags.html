@@ -319,7 +319,7 @@ if a tag is set on an object.</p>
 
 <dl class="py class">
 <dt id="evennia.typeclasses.tags.TagCategoryProperty">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">TagCategoryProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagCategoryProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagCategoryProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">TagCategoryProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">default_tags</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagCategoryProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagCategoryProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Tag Category Property.</p>
 <dl class="py attribute">
@@ -329,15 +329,19 @@ if a tag is set on an object.</p>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.tags.TagCategoryProperty.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagCategoryProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagCategoryProperty.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">default_tags</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagCategoryProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagCategoryProperty.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assign a property for a Tag Category, with any number of Tag keys.
 This is often more useful than the <strong>TagProperty</strong> since it’s common to want to check which
 tags of a particular category the object is a member of.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>*args</strong> (<em>str</em><em> or </em><em>callable</em>) – Tag keys to assign to this property, using the category given
-by the name of the property. If a callable, it will be called without arguments
-to return the tag key. It is not possible to set tag <strong>data</strong> this way (use the
+by the name of the property. Note that, if these tags are always set on the object,
+if they are removed by some other means, they will be re-added when this property
+is accessed. Furthermore, changing this list after the object was created, will
+not remove any old tags (there is no way for the property to know if the
+new list is new or not).  If a callable, it will be called without arguments to
+return the tag key. It is not possible to set tag <strong>data</strong> this way (use the
 Taghandler directly for that). Tag keys are not case sensitive.</p>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -538,6 +542,19 @@ types.</p>
 based on the number of categories involved (including
 <strong>None</strong>) (data is not unique and may be overwritten by the content
 of a latter tuple with the same category).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.batch_remove">
+<code class="sig-name descname">batch_remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.batch_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.batch_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch-remove tags from a list of tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em><em> or </em><em>str</em>) – Each argument should be a <strong>tagstr</strong> keys or tuple
+<strong>(keystr, category)</strong> or <strong>(keystr, category, data)</strong> (the <strong>data</strong> field is ignored,
+only <strong>keystr</strong>/<strong>category</strong> matters). It’s possible to mix input types.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

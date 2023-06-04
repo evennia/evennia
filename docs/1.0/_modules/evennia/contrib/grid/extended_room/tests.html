@@ -113,8 +113,13 @@
     <span class="n">base_room_desc</span> <span class="o">=</span> <span class="s2">&quot;Base room description.&quot;</span>
 
 <div class="viewcode-block" id="TestExtendedRoom.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">ExtendedRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Test Room&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_room_desc</span></div>
+
+<div class="viewcode-block" id="TestExtendedRoom.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestExtendedRoom.test_room_description"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_description">[docs]</a>    <span class="k">def</span> <span class="nf">test_room_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -166,7 +171,8 @@
             <span class="s2">&quot;$state(night, Night room description.)&quot;</span>
             <span class="s2">&quot; What a great day!&quot;</span>
         <span class="p">)</span>
-        <span class="n">room_desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">char</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="n">room_desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">room_desc</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2"> What a great day!&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TestExtendedRoom.test_room_states"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_room_states">[docs]</a>    <span class="k">def</span> <span class="nf">test_room_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -180,18 +186,19 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">add_room_state</span><span class="p">(</span><span class="s2">&quot;under_construction&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">room_states</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;under_construction&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="s2">&quot;This room is under construction. &quot;</span><span class="p">)</span>
+        <span class="n">char</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="n">char</span><span class="p">),</span> <span class="s2">&quot;This room is under construction. &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">add_room_state</span><span class="p">(</span><span class="s2">&quot;under_repair&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">room_states</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;under_construction&quot;</span><span class="p">,</span> <span class="s2">&quot;under_repair&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="n">char</span><span class="p">),</span>
             <span class="s2">&quot;This room is under construction. This room is under repair.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">remove_room_state</span><span class="p">(</span><span class="s2">&quot;under_construction&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="n">char</span><span class="p">),</span>
             <span class="s2">&quot; This room is under repair.&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -200,6 +207,10 @@
 <span class="sd">        Test rooms with alternate descriptions.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+
+        <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>  <span class="c1"># TODO - fixes an issue with home FK missing</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">add_desc</span><span class="p">(</span><span class="s2">&quot;The room is burning!&quot;</span><span class="p">,</span> <span class="n">room_state</span><span class="o">=</span><span class="s2">&quot;burning&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">add_desc</span><span class="p">(</span><span class="s2">&quot;The room is flooding!&quot;</span><span class="p">,</span> <span class="n">room_state</span><span class="o">=</span><span class="s2">&quot;flooding&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_display_desc</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_room_desc</span><span class="p">)</span>

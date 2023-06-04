@@ -63,11 +63,13 @@
   <ul>
 <li><a class="reference internal" href="#">Tags</a><ul>
 <li><a class="reference internal" href="#working-with-tags">Working with Tags</a><ul>
-<li><a class="reference internal" href="#properties-of-tags-and-aliases-and-permissions">Properties of Tags (and Aliases and Permissions)</a></li>
-<li><a class="reference internal" href="#adding-removing-tags">Adding/Removing Tags</a></li>
-<li><a class="reference internal" href="#searching-for-objects-with-a-given-tag">Searching for objects with a given tag</a></li>
+<li><a class="reference internal" href="#searching-for-tags">Searching for tags</a></li>
+<li><a class="reference internal" href="#taghandler">TagHandler</a></li>
+<li><a class="reference internal" href="#tagproperty">TagProperty</a></li>
+<li><a class="reference internal" href="#tagcategoryproperty">TagCategoryProperty</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#properties-of-tags-and-aliases-and-permissions">Properties of Tags (and Aliases and Permissions)</a></li>
 <li><a class="reference internal" href="#aliases-and-permissions">Aliases and Permissions</a></li>
 </ul>
 </li>
@@ -137,10 +139,19 @@
 
     <span class="c1"># name of property is the category, tag-keys are arguments</span>
     <span class="n">damage_type</span> <span class="o">=</span> <span class="n">TagCategoryProperty</span><span class="p">(</span><span class="s2">&quot;piercing&quot;</span><span class="p">,</span> <span class="s2">&quot;slashing&quot;</span><span class="p">)</span>
-    <span class="n">crafting_element</span> <span class="o">=</span> <span class="n">TagCategory</span><span class="p">(</span><span class="s2">&quot;blade&quot;</span><span class="p">,</span> <span class="s2">&quot;hilt&quot;</span><span class="p">,</span> <span class="s2">&quot;pommel&quot;</span><span class="p">)</span> 
+    <span class="n">crafting_element</span> <span class="o">=</span> <span class="n">TagCategoryProperty</span><span class="p">(</span><span class="s2">&quot;blade&quot;</span><span class="p">,</span> <span class="s2">&quot;hilt&quot;</span><span class="p">,</span> <span class="s2">&quot;pommel&quot;</span><span class="p">)</span> 
         
 </pre></div>
 </div>
+</div>
+<p>In-game, tags are controlled <code class="docutils literal notranslate"><span class="pre">tag</span></code> command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; tag Chair = furniture
+ &gt; tag Chair = furniture
+ &gt; tag Table = furniture
+ 
+ &gt; tag/search furniture 
+ Chair, Sofa, Table
+</pre></div>
 </div>
 <p><em>Tags</em> are short text lables one can ‘hang’ on objects in order to organize, group and quickly find out their properties. An Evennia entity can be tagged by any number of tags. They are more efficient than <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> since on the database-side, Tags are <em>shared</em> between all objects with that particular tag. A tag does not carry a value in itself; it either sits on the entity</p>
 <p>You manage Tags using the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.tags</span></code>) on typeclassed entities. You can also assign Tags on the class level through the <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code> (one tag, one category per line) or the <code class="docutils literal notranslate"><span class="pre">TagCategoryProperty</span></code> (one category, multiple tags per line). Both of these use the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> under the hood, they are just convenient ways to add tags already when you define your class.</p>
@@ -149,56 +160,13 @@ Another example would be a weather script affecting all rooms tagged as <code cl
 <p>In Evennia, Tags are technically also used to implement <code class="docutils literal notranslate"><span class="pre">Aliases</span></code> (alternative names for objects) and <code class="docutils literal notranslate"><span class="pre">Permissions</span></code> (simple strings for <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> to check for).</p>
 <section id="working-with-tags">
 <h2>Working with Tags<a class="headerlink" href="#working-with-tags" title="Permalink to this headline">¶</a></h2>
-<section id="properties-of-tags-and-aliases-and-permissions">
-<h3>Properties of Tags (and Aliases and Permissions)<a class="headerlink" href="#properties-of-tags-and-aliases-and-permissions" title="Permalink to this headline">¶</a></h3>
-<p>Tags are <em>unique</em>. This means that there is only ever one Tag object with a given key and category.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Not specifying a category (default) gives the tag a category of <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is also considered a unique key + category combination. You cannot use <code class="docutils literal notranslate"><span class="pre">TagCategoryProperty</span></code> to set Tags with <code class="docutils literal notranslate"><span class="pre">None</span></code> categories, since the property name may not be <code class="docutils literal notranslate"><span class="pre">None</span></code>. Use the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (or <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code>) for this.</p>
-</div>
-<p>When Tags are assigned to game entities, these entities are actually sharing the same Tag. This means that Tags are not suitable for storing information about a single object - use an
-<a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attribute</span></a> for this instead. Tags are a lot more limited than Attributes but this also
-makes them very quick to lookup in the database - this is the whole point.</p>
-<p>Tags have the following properties, stored in the database:</p>
-<ul class="simple">
-<li><p><strong>key</strong> - the name of the Tag. This is the main property to search for when looking up a Tag.</p></li>
-<li><p><strong>category</strong> - this category allows for retrieving only specific subsets of tags used for different purposes. You could have one category of tags for “zones”, another for “outdoor locations”, for example. If not given, the category will be <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is also considered a separate, default, category.</p></li>
-<li><p><strong>data</strong> - this is an optional text field with information about the tag. Remember that Tags are shared between entities, so this field cannot hold any object-specific information. Usually it would be used to hold info about the group of entities the Tag is tagging - possibly used for contextual help like a tool tip. It is not used by default.</p></li>
-</ul>
-<p>There are also two special properties. These should usually not need to be changed or set, it is used internally by Evennia to implement various other uses it makes of the <code class="docutils literal notranslate"><span class="pre">Tag</span></code> object:</p>
-<ul class="simple">
-<li><p><strong>model</strong> - this holds a <em>natural-key</em> description of the model object that this tag deals with, on the form <em>application.modelclass</em>, for example <code class="docutils literal notranslate"><span class="pre">objects.objectdb</span></code>. It used by the TagHandler of each entity type for correctly storing the data behind the  scenes.</p></li>
-<li><p><strong>tagtype</strong> - this is a “top-level category” of sorts for the inbuilt children of Tags, namely <em>Aliases</em> and <em>Permissions</em>. The Taghandlers using this special field are especially intended to free up the <em>category</em> property for any use you desire.</p></li>
-</ul>
-</section>
-<section id="adding-removing-tags">
-<h3>Adding/Removing Tags<a class="headerlink" href="#adding-removing-tags" title="Permalink to this headline">¶</a></h3>
-<p>You can tag any <em>typeclassed</em> object, namely <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>. General tags are added by the <em>Taghandler</em>.  The tag handler is accessed as a property <code class="docutils literal notranslate"><span class="pre">tags</span></code> on the relevant entity:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span>
-     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;luxurious&quot;</span><span class="p">)</span>
-     <span class="n">myroom</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;dungeon#01&quot;</span><span class="p">)</span>
-     <span class="n">myscript</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;weather&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;climate&quot;</span><span class="p">)</span>
-     <span class="n">myaccount</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;guestaccount&quot;</span><span class="p">)</span>
-
-     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>  <span class="c1"># returns a list of Tags</span>
-     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span> 
-     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>    
+<section id="searching-for-tags">
+<h3>Searching for tags<a class="headerlink" href="#searching-for-tags" title="Permalink to this headline">¶</a></h3>
+<p>The common way to use tags (once they have been set) is find all objects tagged with a particular tag combination:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>objs = evennia.search_tag(key=(&quot;foo&quot;, &quot;bar&quot;), category=&#39;mycategory&#39;)
 </pre></div>
 </div>
-<p>Adding a new tag will either create a new Tag or re-use an already existing one. Note that there are
-<em>two</em> “furniture” tags, one with a <code class="docutils literal notranslate"><span class="pre">None</span></code> category, and one with the “luxurious” category.</p>
-<p>When using <code class="docutils literal notranslate"><span class="pre">remove</span></code>, the <code class="docutils literal notranslate"><span class="pre">Tag</span></code> is not deleted but are just disconnected from the tagged object. This
-makes for very quick operations. The <code class="docutils literal notranslate"><span class="pre">clear</span></code> method removes (disconnects) all Tags from the object.
-You can also use the default <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> command:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @tag mychair = furniture
-</pre></div>
-</div>
-<p>This tags the chair with a ‘furniture’ Tag (the one with a <code class="docutils literal notranslate"><span class="pre">None</span></code> category).</p>
-</section>
-<section id="searching-for-objects-with-a-given-tag">
-<h3>Searching for objects with a given tag<a class="headerlink" href="#searching-for-objects-with-a-given-tag" title="Permalink to this headline">¶</a></h3>
-<p>Usually tags are used as a quick way to find tagged database entities. You can retrieve all objects
-with a given Tag like this in code:</p>
+<p>As shown above, you can also have tags without a category (category of <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">import</span> <span class="nn">evennia</span>
      
      <span class="c1"># all methods return Querysets</span>
@@ -223,8 +191,7 @@ with a given Tag like this in code:</p>
 <div><p>Note that searching for just “furniture” will only return the objects tagged with the “furniture” tag that has a category of <code class="docutils literal notranslate"><span class="pre">None</span></code>. We must explicitly give the category to get the “luxurious” furniture.</p>
 </div></blockquote>
 <p>Using any of the <code class="docutils literal notranslate"><span class="pre">search_tag</span></code> variants will all return <a class="reference external" href="https://docs.djangoproject.com/en/4.1/ref/models/querysets/">Django Querysets</a>, including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them.</p>
-<p>Remember when searching that not setting a category means setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code> - this does <em>not</em>
-mean that category is undefined, rather <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered the default, unnamed category.</p>
+<p>Remember when searching that not setting a category means setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code> - this does <em>not</em> mean that category is undefined, rather <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered the default, unnamed category.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span> 
 
 <span class="n">myobj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>  <span class="c1"># implies category=None</span>
@@ -244,6 +211,93 @@ mean that category is undefined, rather <code class="docutils literal notranslat
 </pre></div>
 </div>
 </section>
+<section id="taghandler">
+<h3>TagHandler<a class="headerlink" href="#taghandler" title="Permalink to this headline">¶</a></h3>
+<p>This is  the main way to work with tags when you have the entry already. This handler sits on all typeclassed entities as <code class="docutils literal notranslate"><span class="pre">.tags</span></code> and you use <code class="docutils literal notranslate"><span class="pre">.tags.add()</span></code>, <code class="docutils literal notranslate"><span class="pre">.tags.remove()</span></code> and <code class="docutils literal notranslate"><span class="pre">.tags.has()</span></code> to manage Tags on the object. <a class="reference internal" href="../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler" title="evennia.typeclasses.tags.TagHandler"><span class="xref myst py py-class">See the api docs</span></a> for more useful methods.</p>
+<p>The TagHandler can be found on any of the base <em>typeclassed</em> objects, namely <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a> (as well as their children). Here are some examples of use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span>
+     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;luxurious&quot;</span><span class="p">)</span>
+     <span class="n">myroom</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;dungeon#01&quot;</span><span class="p">)</span>
+     <span class="n">myscript</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;weather&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;climate&quot;</span><span class="p">)</span>
+     <span class="n">myaccount</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;guestaccount&quot;</span><span class="p">)</span>
+
+     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>  <span class="c1"># returns a list of Tags</span>
+     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span> 
+     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>    
+</pre></div>
+</div>
+<p>Adding a new tag will either create a new Tag or re-use an already existing one. Note that there are <em>two</em> “furniture” tags, one with a <code class="docutils literal notranslate"><span class="pre">None</span></code> category, and one with the “luxurious” category.</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">remove</span></code>, the <code class="docutils literal notranslate"><span class="pre">Tag</span></code> is not deleted but are just disconnected from the tagged object. This makes for very quick operations. The <code class="docutils literal notranslate"><span class="pre">clear</span></code> method removes (disconnects) all Tags from the object.</p>
+</section>
+<section id="tagproperty">
+<h3>TagProperty<a class="headerlink" href="#tagproperty" title="Permalink to this headline">¶</a></h3>
+<p>This is used as a property when you create a new class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TagProperty</span> 
+<span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">Object</span> 
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+    <span class="n">mytag</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="n">tagcategory</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will create a Tag named <code class="docutils literal notranslate"><span class="pre">mytag</span></code> and category <code class="docutils literal notranslate"><span class="pre">tagcategory</span></code> in the database. You’ll be able to find it by <code class="docutils literal notranslate"><span class="pre">obj.mytag</span></code> but more useful you can find it with the normal Tag searching methods in the database.</p>
+<p>Note that if you were to delete this tag with <code class="docutils literal notranslate"><span class="pre">obj.tags.remove(&quot;mytag&quot;,</span> <span class="pre">&quot;tagcategory&quot;)</span></code>, that tag will be <em>re-added</em> to the object next time this property is accessed!</p>
+</section>
+<section id="tagcategoryproperty">
+<h3>TagCategoryProperty<a class="headerlink" href="#tagcategoryproperty" title="Permalink to this headline">¶</a></h3>
+<p>This is the inverse of <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TagCategoryProperty</span> 
+<span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">Object</span> 
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span> 
+    <span class="n">tagcategory</span> <span class="o">=</span> <span class="n">TagCategroyProperty</span><span class="p">(</span><span class="n">tagkey1</span><span class="p">,</span> <span class="n">tagkey2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above example means you’ll have two tags (<code class="docutils literal notranslate"><span class="pre">tagkey1</span></code> and <code class="docutils literal notranslate"><span class="pre">tagkey2</span></code>), each with the <code class="docutils literal notranslate"><span class="pre">tagcategory</span></code> category, assigned to this object.</p>
+<p>Note that similarly to how it works for <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code>, if you were to delete these tags from the object with the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">obj.tags.remove(&quot;tagkey1&quot;,</span> <span class="pre">&quot;tagcategory&quot;)</span></code>, then these tags will be <em>re-added</em> automatically next time the property is accessed.</p>
+<p>The reverse is however not true: If you were to <em>add</em> a new tag of the same category to the object, via the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code>, then this property will include that in the list of returned tags.</p>
+<p>If you want to ‘re-sync’ the tags in the property with that in the database, you can use the <code class="docutils literal notranslate"><span class="pre">del</span></code> operation on it - next time the property is accessed, it will then only show the default keys you specify in it. Here’s how it works:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">tagcategory</span> 
+<span class="go">[&quot;tagkey1&quot;, &quot;tagkey2&quot;]</span>
+
+<span class="go"># remove one of the default tags outside the property</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;tagkey1&quot;</span><span class="p">,</span> <span class="s2">&quot;tagcategory&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">tagcategory</span> 
+<span class="go">[&quot;tagkey1&quot;, &quot;tagkey2&quot;]   # missing tag is auto-created! </span>
+
+<span class="go"># add a new tag from outside the property </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tagkey3&quot;</span><span class="p">,</span> <span class="s2">&quot;tagcategory&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">tagcategory</span> 
+<span class="go">[&quot;tagkey1&quot;, &quot;tagkey2&quot;, &quot;tagkey3&quot;]  # includes the new tag! </span>
+
+<span class="go"># sync property with datbase </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">tagcategory</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">tagcategory</span> 
+<span class="go">[&quot;tagkey1&quot;, &quot;tagkey2&quot;]   # property/database now in sync </span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="properties-of-tags-and-aliases-and-permissions">
+<h2>Properties of Tags (and Aliases and Permissions)<a class="headerlink" href="#properties-of-tags-and-aliases-and-permissions" title="Permalink to this headline">¶</a></h2>
+<p>Tags are <em>unique</em>. This means that there is only ever one Tag object with a given key and category.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Not specifying a category (default) gives the tag a category of <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is also considered a unique key + category combination. You cannot use <code class="docutils literal notranslate"><span class="pre">TagCategoryProperty</span></code> to set Tags with <code class="docutils literal notranslate"><span class="pre">None</span></code> categories, since the property name may not be <code class="docutils literal notranslate"><span class="pre">None</span></code>. Use the <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (or <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code>) for this.</p>
+</div>
+<p>When Tags are assigned to game entities, these entities are actually sharing the same Tag. This means that Tags are not suitable for storing information about a single object - use an
+<a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attribute</span></a> for this instead. Tags are a lot more limited than Attributes but this also
+makes them very quick to lookup in the database - this is the whole point.</p>
+<p>Tags have the following properties, stored in the database:</p>
+<ul class="simple">
+<li><p><strong>key</strong> - the name of the Tag. This is the main property to search for when looking up a Tag.</p></li>
+<li><p><strong>category</strong> - this category allows for retrieving only specific subsets of tags used for different purposes. You could have one category of tags for “zones”, another for “outdoor locations”, for example. If not given, the category will be <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is also considered a separate, default, category.</p></li>
+<li><p><strong>data</strong> - this is an optional text field with information about the tag. Remember that Tags are shared between entities, so this field cannot hold any object-specific information. Usually it would be used to hold info about the group of entities the Tag is tagging - possibly used for contextual help like a tool tip. It is not used by default.</p></li>
+</ul>
+<p>There are also two special properties. These should usually not need to be changed or set, it is used internally by Evennia to implement various other uses it makes of the <code class="docutils literal notranslate"><span class="pre">Tag</span></code> object:</p>
+<ul class="simple">
+<li><p><strong>model</strong> - this holds a <em>natural-key</em> description of the model object that this tag deals with, on the form <em>application.modelclass</em>, for example <code class="docutils literal notranslate"><span class="pre">objects.objectdb</span></code>. It used by the TagHandler of each entity type for correctly storing the data behind the  scenes.</p></li>
+<li><p><strong>tagtype</strong> - this is a “top-level category” of sorts for the inbuilt children of Tags, namely <em>Aliases</em> and <em>Permissions</em>. The Taghandlers using this special field are especially intended to free up the <em>category</em> property for any use you desire.</p></li>
+</ul>
 </section>
 <section id="aliases-and-permissions">
 <h2>Aliases and Permissions<a class="headerlink" href="#aliases-and-permissions" title="Permalink to this headline">¶</a></h2>
