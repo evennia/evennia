@@ -177,7 +177,7 @@ class TagCategoryProperty:
 
     taghandler_name = "tags"
 
-    def __init__(self, *args):
+    def __init__(self, *default_tags):
         """
         Assign a property for a Tag Category, with any number of Tag keys.
         This is often more useful than the `TagProperty` since it's common to want to check which
@@ -185,8 +185,12 @@ class TagCategoryProperty:
 
         Args:
             *args (str or callable): Tag keys to assign to this property, using the category given
-                by the name of the property. If a callable, it will be called without arguments
-                to return the tag key. It is not possible to set tag `data` this way (use the
+                by the name of the property. Note that, if these tags are always set on the object,
+                if they are removed by some other means, they will be re-added when this property
+                is accessed. Furthermore, changing this list after the object was created, will
+                not remove any old tags (there is no way for the property to know if the
+                new list is new or not).  If a callable, it will be called without arguments to
+                return the tag key. It is not possible to set tag `data` this way (use the
                 Taghandler directly for that). Tag keys are not case sensitive.
 
         Raises:
@@ -204,7 +208,7 @@ class TagCategoryProperty:
 
         """
         self._category = ""
-        self._tags = self._parse_tag_input(*args)
+        self._default_tags = self._parse_tag_input(*default_tags)
 
     def _parse_tag_input(self, *args):
         """
@@ -240,56 +244,43 @@ class TagCategoryProperty:
         """
         taghandler = getattr(instance, self.taghandler_name)
 
-        tags = []
-        add_new = []
-        for tagkey in self._tags:
-            try:
-                tag = taghandler.get(
-                    key=tagkey, category=self._category, return_list=False, raise_exception=True
-                )
-            except AttributeError:
-                add_new.append(tagkey)
-            else:
-                tags.append(tag)
-        if add_new:
-            for new_tag in add_new:
-                # we must remove this from the internal store or system will think it already
-                # existed when determining the sets in __set__
-                self._tags.remove(new_tag)
-            self.__set__(instance, *add_new)
+        default_tags = self._default_tags
+        tags = taghandler.get(category=self._category, return_list=True)
+
+        missing_default_tags = set(default_tags) - set(tags)
+
+        if missing_default_tags:
+            getattr(instance, self.taghandler_name).batch_add(
+                *[(tag, self._category) for tag in missing_default_tags]
+            )
+
+            tags += missing_default_tags  # to avoid a second db call
 
         return tags
 
     def __set__(self, instance, *args):
         """
-        Assign a new set of tags to the category. This replaces the previous set of tags.
+        Assign a new set of tags to the category. Note that we can't know if previous
+        tags were assigned from this property or from TagHandler, so we don't
+        remove old tags. To refresh to only have the tags in this constructor, first
+        use `del` on this property and re-access the property with the changed default list.
 
         """
-        taghandler = getattr(instance, self.taghandler_name)
-
-        old_tags = set(self._tags)
-        new_tags = set(self._parse_tag_input(*args))
-
-        # new_tags could be a sub/superset of old tags
-        removed_tags = old_tags - new_tags
-        added_tags = new_tags - old_tags
-
-        # remove tags
-        for tag in removed_tags:
-            taghandler.remove(key=tag, category=self._category)
-
-        # add new tags (won't re-add if obj already had it)
-        taghandler.batch_add(*[(tag, self._category) for tag in added_tags])
+        getattr(instance, self.taghandler_name).batch_add(*[(tag, self._category) for tag in args])
 
     def __delete__(self, instance):
         """
         Called when running `del` on the property. Will remove all tags of this
-        category from the object. Note that the tags will be readded on next fetch
-        unless the TagCategoryProperty is also removed in code!
+        category from the object. Note that next time this desriptor is accessed, the
+        default ones will be re-added!
+
+        Note:
+            This will remove _all_ tags of this category from the object. This is necessary
+            in order to be able to be able to combine this with `__set__` to get a tag
+            list where property and handler are in sync.
 
         """
-        for tagkey in self.tags:
-            getattr(instance, self.taghandler_name).remove(key=self.tagkey, category=self._category)
+        getattr(instance, self.taghandler_name).remove(category=self._category)
 
 
 class TagHandler(object):
@@ -726,7 +717,7 @@ class TagHandler(object):
         for tup in args:
             tup = make_iter(tup)
             nlen = len(tup)
-            if nlen == 1:  # just a key
+            if nlen == 1:  # just a key, no category
                 keys[None].append(tup[0])
             elif nlen == 2:
                 keys[tup[1]].append(tup[0])
@@ -735,6 +726,27 @@ class TagHandler(object):
                 data[tup[1]] = tup[2]  # overwrite previous
         for category, key in keys.items():
             self.add(key=key, category=category, data=data.get(category, None))
+
+    def batch_remove(self, *args):
+        """
+        Batch-remove tags from a list of tuples.
+
+        Args:
+            *args (tuple or str): Each argument should be a `tagstr` keys or tuple
+                `(keystr, category)` or `(keystr, category, data)` (the `data` field is ignored,
+                only `keystr`/`category` matters). It's possible to mix input types.
+
+        """
+        keys = defaultdict(list)
+        for tup in args:
+            tup = make_iter(tup)
+            nlen = len(tup)
+            if nlen == 1:  # just a key, no category
+                keys[None].append(tup[0])
+            elif nlen > 1:
+                keys[tup[1]].append(tup[0])
+        for category, key in keys.items():
+            self.remove(key=key, category=category, data=data.get(category, None))
 
     def __str__(self):
         return ",".join(self.all())

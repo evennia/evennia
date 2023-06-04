@@ -354,6 +354,54 @@ class TestProperties(EvenniaTestCase):
         self.assertTrue(obj.tags.has("category_tag2", category="tagcategory2"))
         self.assertTrue(obj.tags.has("category_tag3", category="tagcategory2"))
 
+        self.assertEqual(obj.tagcategory1, ["category_tag1"])
+        self.assertEqual(
+            set(obj.tagcategory2), set(["category_tag1", "category_tag2", "category_tag3"])
+        )
+
+    def test_tag_category_properties_external_modification(self):
+        obj = self.obj
+
+        self.assertEqual(obj.tagcategory1, ["category_tag1"])
+        self.assertEqual(
+            set(obj.tagcategory2), set(["category_tag1", "category_tag2", "category_tag3"])
+        )
+
+        # add extra tag to category
+        obj.tags.add("category_tag2", category="tagcategory1")
+        self.assertEqual(
+            obj.tags.get(category="tagcategory1"),
+            ["category_tag1", "category_tag2"],
+        )
+        self.assertEqual(set(obj.tagcategory1), set(["category_tag1", "category_tag2"]))
+
+        # add/remove extra tags to category
+        obj.tags.add("category_tag4", category="tagcategory2")
+        obj.tags.remove("category_tag3", category="tagcategory2")
+        self.assertEqual(
+            set(obj.tags.get(category="tagcategory2", return_list=True)),
+            set(["category_tag1", "category_tag2", "category_tag4"]),
+        )
+        # note that when we access the property again, it will be updated to contain the same tags
+        self.assertEqual(
+            set(obj.tagcategory2),
+            set(["category_tag1", "category_tag2", "category_tag3", "category_tag4"]),
+        )
+
+        del obj.tagcategory1
+        # should be deleted from database
+        self.assertEqual(obj.tags.get(category="tagcategory1", return_list=True), [])
+        # accessing the property should return the default value
+        self.assertEqual(obj.tagcategory1, ["category_tag1"])
+
+        del obj.tagcategory2
+        # should be deleted from database
+        self.assertEqual(obj.tags.get(category="tagcategory2", return_list=True), [])
+        # accessing the property should return the default value
+        self.assertEqual(
+            set(obj.tagcategory2), set(["category_tag1", "category_tag2", "category_tag3"])
+        )
+
     def test_object_awareness(self):
         """Test the "object-awareness" of customized AttributeProperty getter/setters"""
         obj = self.obj
