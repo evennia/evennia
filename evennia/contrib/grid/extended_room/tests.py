@@ -248,8 +248,8 @@ Base room description.
         self.call(
             extended_room.CmdExtendedRoomDesc(),
             "",
-            """
-Room Room(#1) Season: autumn. Time: afternoon. States: None
+            f"""
+Room Room(#{self.room1.id}) Season: autumn. Time: afternoon. States: None
 
 Room state autumn (active):
 Autumn description.
