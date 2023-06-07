@@ -216,7 +216,7 @@ Base room description.
         self.call(
             extended_room.CmdExtendedRoomDesc(),
             "",
-            """
+            f"""
 Room Room(#{self.room1.id}) Season: autumn. Time: afternoon. States: None
 
 Room state spring:
