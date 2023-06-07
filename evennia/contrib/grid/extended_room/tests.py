@@ -217,7 +217,7 @@ Base room description.
             extended_room.CmdExtendedRoomDesc(),
             "",
             """
-Room Room(#1) Season: autumn. Time: afternoon. States: None
+Room Room(#{self.room1.id}) Season: autumn. Time: afternoon. States: None
 
 Room state spring:
 Spring description.
@@ -234,10 +234,8 @@ Base room description.
         self.call(
             extended_room.CmdExtendedRoomDesc(),
             "/del/burning/spring",
-            (
-                "The burning-description was deleted, if it existed.|The spring-description was"
-                " deleted, if it existed"
-            ),
+            "The burning-description was deleted, if it existed.|The spring-description was"
+            " deleted, if it existed",
         )
         # add autumn, which should be active
         self.call(
@@ -324,10 +322,8 @@ The room Room(#{self.room1.id}) doesn't have any details.
         self.call(
             extended_room.CmdExtendedRoomState(),
             "",
-            (
-                f"Room states (not counting automatic time/season) on Room(#{self.room1.id}):\n "
-                "'burning' and 'windy'"
-            ),
+            f"Room states (not counting automatic time/season) on Room(#{self.room1.id}):\n "
+            "'burning' and 'windy'",
         )
         # toggle windy
         self.call(
@@ -338,10 +334,8 @@ The room Room(#{self.room1.id}) doesn't have any details.
         self.call(
             extended_room.CmdExtendedRoomState(),
             "",
-            (
-                f"Room states (not counting automatic time/season) on Room(#{self.room1.id}):\n "
-                "'burning'"
-            ),
+            f"Room states (not counting automatic time/season) on Room(#{self.room1.id}):\n "
+            "'burning'",
         )
         # add a autumn state and make sure we override it
         self.room1.add_desc("Autumn description.", room_state="autumn")
@@ -392,17 +386,13 @@ The room Room(#{self.room1.id}) doesn't have any details.
         self.call(
             extended_room.CmdExtendedRoomLook(),
             "",
-            (
-                f"Room(#{self.room1.id})\nThis is a nice autumnal forest. The afternoon sun is"
-                " shining through the trees."
-            ),
+            f"Room(#{self.room1.id})\nThis is a nice autumnal forest. The afternoon sun is"
+            " shining through the trees.",
         )
         self.room1.add_room_state("burning")
         self.call(
             extended_room.CmdExtendedRoomLook(),
             "",
-            (
-                f"Room(#{self.room1.id})\nThis is a nice autumnal forest. The afternoon sun is"
-                " shining through the trees and this place is on fire!"
-            ),
+            f"Room(#{self.room1.id})\nThis is a nice autumnal forest. The afternoon sun is"
+            " shining through the trees and this place is on fire!",
         )
