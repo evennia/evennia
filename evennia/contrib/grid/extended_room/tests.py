@@ -112,7 +112,7 @@ class TestExtendedRoom(EvenniaTestCase):
         self.assertEqual(self.room.get_display_desc(char), "This room is under construction. ")
 
         self.room.add_room_state("under_repair")
-        self.assertEqual(self.room.room_states, ["under_construction", "under_repair"])
+        self.assertEqual(set(self.room.room_states), set(["under_construction", "under_repair"]))
         self.assertEqual(
             self.room.get_display_desc(char),
             "This room is under construction. This room is under repair.",

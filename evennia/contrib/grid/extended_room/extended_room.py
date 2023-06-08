@@ -263,7 +263,7 @@ class ExtendedRoom(DefaultRoom):
         Get all room_states set on this room.
 
         """
-        return self.tags.get(category=self.room_state_tag_category, return_list=True)
+        return list(sorted(self.tags.get(category=self.room_state_tag_category, return_list=True)))
 
     def add_room_state(self, *room_states):
         """
