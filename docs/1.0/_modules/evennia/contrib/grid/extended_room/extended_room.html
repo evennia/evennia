@@ -423,7 +423,7 @@
             <span class="o">**</span><span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">},</span>
             <span class="o">**</span><span class="p">{</span>
                 <span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">[</span><span class="mi">5</span><span class="p">:]:</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span>
-                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;desc_&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__startswith</span><span class="o">=</span><span class="s2">&quot;desc_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
             <span class="p">},</span>
         <span class="p">}</span></div>
 
