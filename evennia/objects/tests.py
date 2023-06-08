@@ -370,8 +370,8 @@ class TestProperties(EvenniaTestCase):
         # add extra tag to category
         obj.tags.add("category_tag2", category="tagcategory1")
         self.assertEqual(
-            obj.tags.get(category="tagcategory1"),
-            ["category_tag1", "category_tag2"],
+            set(obj.tags.get(category="tagcategory1")),
+            set(["category_tag1", "category_tag2"]),
         )
         self.assertEqual(set(obj.tagcategory1), set(["category_tag1", "category_tag2"]))
 

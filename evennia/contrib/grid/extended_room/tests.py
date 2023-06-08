@@ -219,11 +219,11 @@ Base room description.
             f"""
 Room Room(#{self.room1.id}) Season: autumn. Time: afternoon. States: None
 
-Room state spring:
-Spring description.
-
 Room state burning:
 Burning description.
+
+Room state spring:
+Spring description.
 
 Room state (default) (active):
 Base room description.

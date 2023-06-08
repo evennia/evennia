@@ -345,7 +345,7 @@ class ExtendedRoom(DefaultRoom):
             **{None: self.db.desc or ""},
             **{
                 attr.key[5:]: attr.value
-                for attr in self.db_attributes.filter(db_key__startswith="desc_")
+                for attr in self.db_attributes.filter(db_key__startswith="desc_").order_by("db_key")
             },
         }
 
