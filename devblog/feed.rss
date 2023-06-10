@@ -3,7 +3,7 @@
         multi-player games and virtual worlds (also known as MUD, MUSH, MU,
         MUX, MUCK, etc). While Evennia handles all the necessary things every
         online game needs, like database and networking, you create the game of
-        your dreams by writing normal Python modules.</description><language>en-US</language><lastBuildDate>Sat, 10 Jun 2023 16:28:41 GMT</lastBuildDate><generator>rfeed v1.1.1</generator><docs>https://github.com/svpino/rfeed/blob/master/README.md</docs><item><title> Evennia 2.0.0 released today</title><link>2023.html#2023-06-10-evennia-2.0.0-released-today</link><description>&lt;p&gt;&lt;img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Field_Hamois_Belgium_Luc_Viatour.jpg" alt="screenshot" /&gt;
+        your dreams by writing normal Python modules.</description><language>en-US</language><lastBuildDate>Sat, 10 Jun 2023 16:32:17 GMT</lastBuildDate><generator>rfeed v1.1.1</generator><docs>https://github.com/svpino/rfeed/blob/master/README.md</docs><item><title> Evennia 2.0.0 released today</title><link>2023.html#2023-06-10-evennia-2.0.0-released-today</link><description>&lt;p&gt;&lt;img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Field_Hamois_Belgium_Luc_Viatour.jpg" alt="screenshot" /&gt;
 &lt;br&gt;&lt;/p&gt;
 &lt;p&gt;As part of our new use of &lt;a href="https://semver.org/"&gt;semantic versioning&lt;/a&gt;, Evennia
 2.0.0 was released today. Evennia is a Python &lt;code&gt;MU*&lt;/code&gt; creation framework and
