@@ -22,7 +22,6 @@ author = "The Evennia developer community"
 # This will be used for multi-version selection options.
 release = "2.x"
 
-
 # -- General configuration ---------------------------------------------------
 
 extensions = [
@@ -68,11 +67,16 @@ legacy_versions = ["1.3.0", "0.9.5"]
 
 def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
     # this is read by versioning.html template (sidebar)
+
+    # set this when building legacy docs, to show the 'you are reading an old version' headers
+    current_is_legacy = False
+
     LVersion = namedtuple("legacy_version", ["release", "name", "url"])
     context["legacy_versions"] = [
         LVersion(release=f"{vers}", name=f"v{vers}", url=f"../{vers}/index.html")
         for vers in legacy_versions
     ]
+    context["current_is_legacy"] = current_is_legacy
 
 
 # -- Options for HTML output -------------------------------------------------

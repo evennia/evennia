@@ -169,21 +169,18 @@
   {%- block body_tag %}<body>{% endblock %}
 {%- block header %}
 
+    {% if current_is_legacy %}
+        <div class="admonition important">
+            <p class="first admonition-title">Note</p>
+            <p class="last">You are reading an old version of the Evennia documentation. <a href="https://www.evennia.com/docs/latest/index.html">The latest version is here</a></p>.
+        </div>
+    {% endif %} 
+
 {% endblock %}
 
 {%- block relbar1 %}{{ relbar() }}{% endblock %}
 
 {%- block content %}
-
-  {% if legacy_versions %}
-    {% if release in legacy_versions %}
-        <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">You are reading an old version of this documentation.</p>
-        </div>
-
-    {% endif %}
-  {% endif %}
 
   {%- block sidebar1 %} {# possible location for sidebar #} {% endblock %}
 
@@ -210,7 +207,16 @@
 {%- block relbar2 %}{{ relbar() }}{% endblock %}
 
 {%- block footer %}
+
+    {% if current_is_legacy %}
+        <div class="admonition important">
+            <p class="first admonition-title">Note</p>
+            <p class="last">You are reading an old version of the Evennia documentation. <a href="https://www.evennia.com/docs/latest/index.html">The latest version is here</a></p>.
+        </div>
+    {% endif %} 
+
     <div class="footer" role="contentinfo">
+
     {%- if show_copyright %}
       {%- if hasdoc('copyright') %}
         {% trans path=pathto('copyright'), copyright=copyright|e %}&#169; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}
