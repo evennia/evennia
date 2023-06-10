@@ -682,8 +682,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tool_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_tags</span>
 
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_prototypes</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+        <span class="p">),</span> <span class="s2">&quot;Crafting </span><span class="si">{self.__class__}</span><span class="s2">.output_prototypes must be a list or tuple.&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consumable_names</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consumable_tags</span><span class="p">),</span> <span class="p">(</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_prototypes</span><span class="p">),</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Crafting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s2">.output_names list must &quot;</span>
                 <span class="s2">&quot;have the same length as .output_prototypes.&quot;</span>
             <span class="p">)</span>
@@ -694,10 +698,6 @@
                 <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_prototypes</span>
             <span class="p">]</span>
-
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output_prototypes</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
-        <span class="p">),</span> <span class="s2">&quot;Crafting </span><span class="si">{self.__class__}</span><span class="s2">.output_prototypes must be a list or tuple.&quot;</span>
 
         <span class="c1"># don&#39;t allow reuse if we have consumables. If only tools we can reuse</span>
         <span class="c1"># over and over since nothing changes.</span>
