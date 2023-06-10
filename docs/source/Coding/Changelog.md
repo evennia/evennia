@@ -26,6 +26,7 @@ June 10, 2023
   supports 3.11 on Windows.
 - Docs: New Beginner-Tutorial lessons for NPCs, Base-Combat Twitch-Combat and
   Turnbased-combat (note that the Beginner tutorial is still WIP).
+- Stabilize how to make the major update in the docs.
 - Fix: A lot of other minor bug fixes.
 
 
