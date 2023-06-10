@@ -45,9 +45,6 @@
         <li class="nav-item nav-item-this"><a href="{{ link|e }}">{{ title }}</a></li>
         {%- block relbaritems %} {% endblock %}
       </ul>
-      {%- if release == '1.0-dev' %}
-        <div class="develop">develop branch</div>
-      {%- endif %}
     </div>
 {%- endmacro %}
 
@@ -170,11 +167,24 @@
 {%- block extrahead %} {% endblock %}
   </head>
   {%- block body_tag %}<body>{% endblock %}
-{%- block header %}{% endblock %}
+{%- block header %}
+
+{% endblock %}
 
 {%- block relbar1 %}{{ relbar() }}{% endblock %}
 
 {%- block content %}
+
+  {% if legacy_versions %}
+    {% if release in legacy_versions %}
+        <div class="admonition note">
+            <p class="first admonition-title">Note</p>
+            <p class="last">You are reading an old version of this documentation.</p>
+        </div>
+
+    {% endif %}
+  {% endif %}
+
   {%- block sidebar1 %} {# possible location for sidebar #} {% endblock %}
 
     <div class="document">

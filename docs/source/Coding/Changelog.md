@@ -1,11 +1,16 @@
 # Changelog
 
-## Main branch
+## Evennia 2.0
 
+June 10, 2023
+
+- **Possible backwards incompatibility**: Updated contrib `ExtendedRoom` now
+  supports arbitrary room-states, state-based descriptions, embedded funcparser
+  tags, details and random messages.  While this feature is made to be as
+  backwards-compatible as possible, so many people depend on this contrib class
+  that we are updating the major Evennia version to indicate the big changes.
 - New Contrib: `Container` typeclass with new commands for storing and retrieving
   things inside them (InspectorCaracal)
-- Updated Contrib: `ExtendedRoom` now supports arbitrary room-states,
-  state-based descriptions, embedded funcparser tags, details and random messages.
 - Feature: Add `TagCategoryProperty` for setting categories with multiple tags
   as properties directly on objects. Complements `TagProperty`.
 - Feature: Attribute-support for saving/loading `deques` with `maxlen=` set.
@@ -17,8 +22,11 @@
   keyword arg, like our docs already claimed it should (Volund)
 - Fix: `TickerHandler` store key updating was refactored, fixing an issue with
   updating intervals (InspectorCaracal)
+- Docs: Removed warning about Python3.11 on Windows; upstream Twistd now
+  supports 3.11 on Windows.
 - Docs: New Beginner-Tutorial lessons for NPCs, Base-Combat Twitch-Combat and
   Turnbased-combat (note that the Beginner tutorial is still WIP).
+- Fix: A lot of other minor bug fixes.
 
 
 ## Evennia 1.3.0
