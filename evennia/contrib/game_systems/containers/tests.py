@@ -31,6 +31,9 @@ class TestContainerCmds(BaseEvenniaCommandTest):
         # move it into a non-container object and look at it there too
         self.obj1.location = self.obj2
         self.call(CmdContainerLook(), "obj in obj2", "Obj")
+        # make sure normal looking works too
+        self.call(CmdContainerLook(), "obj2", "Obj2")
+        self.call(CmdContainerLook(), "", "Room")
 
     def test_get_and_put(self):
         # get normally
