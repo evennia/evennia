@@ -12,7 +12,7 @@
         <script src="../javascripts/scale.fix.js">
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <meta name="description" content="
+        <!--meta name="description" content="
         Latest Evennia dev blog: {{ latest_title }}: {{ latest_blurb }} ...
         ---
         Evennia is a modern Python library and server for creating text-based
@@ -57,8 +57,8 @@
                                     {% endif %}
                                         {% for blogpost in page.posts %}
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="{{ blogpost.permalink }}">{{ blogpost.date_short}}
-                                                        <span class="devblog-calendar-tooltip-text">{{ blogpost.title }}</span>
+                                                    <span class="devblog-calendar-tooltip-text">{{ blogpost.title }}</span>
+                                                    <a href="{{ blogpost.permalink }}">{{ blogpost.title_short }}
                                                    </a>
                                                 </li>
                                         {% endfor %}

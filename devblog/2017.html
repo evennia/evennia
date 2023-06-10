@@ -12,8 +12,100 @@
         <script src="../javascripts/scale.fix.js">
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <meta name="description" content="
-        Latest Evennia dev blog:  Evennia 1.0 released!: <br>
+        <!--meta name="description" content="
+        Latest Evennia dev blog:  Evennia 2.0.0 released today: <p><img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Field_Hamois_Belgium_Luc_Viatour.jpg" alt="screenshot" />
+<br></p>
+<p>As part of our new use of <a href="https://semver.org/">semantic versioning</a>, Evennia
+2.0.0 was released today. Evennia is a Python <code>MU*</code> creation framework and
+server. As the change of the major version indicates, this is a backwards
+incompatible change ... well, <em>maybe</em>. It depends on your use-case. Read on.</p>
+<p>In this post I&#x27;ll go over some of the new things since the release of Evennia
+1.0 some six months ago.</p>
+<h2>New version of the ExtendedRoom</h2>
+<p>The main thing that <em>may</em> be backwards income is the <code>ExtendedRoom</code> contrib.
+This contrib extends the standard room with the ability to look at &#x27;details&#x27; and
+to have descriptions that change by season and by time-of-day in the game. I
+originally wrote the <code>ExtendedRoom</code> contrib more than a decade ago and it was
+in dire need to be recactored and cleaned up to use the modern tools available
+in Evennia. Not to mention make use of my additional years of experience since
+first creating it.</p>
+<p>Here are the <a href="https://github.com/evennia/evennia/discussions/3200">new features</a>:</p>
+<ul>
+<li>All rooms can now have any number of &quot;room states&quot;, like &quot;burning&quot;, &quot;flooded&quot;,
+&quot;dark&quot;, &quot;crowded&quot; or what have you. The <code>season</code> and <code>time_of_day</code> are now just
+treated as any other room-states except that they auto-change with in-game time.</li>
+<li>Rooms can have any number of swappable room-descriptions, just by adding an
+Attribute <code>desc_&lt;roomstate&gt;</code> to the room. This will be used when a given
+room-state is set on the room. If no room state matches, the traditional
+<code>desc</code> Attribute is used.</li>
+<li>In the old contrib, you could add special tags, like <code>&lt;morning&gt;...&lt;/morning&gt;</code>
+in your descriptions and have those parts of the texts only appear when it&#x27;s
+morning in-game. This still works, but only ever supported time-of-day states.
+The new way is to make use Evennia&#x27;s FuncParser to embed functions in the text
+directly. The <code>ExtendedRoom</code> understands the new <code>state</code> inline function. This
+can be used with <em>any</em> room state (including seasons and time-of-day). For
+example: <code>$state(morning, The morning sun is shining in.)</code> or
+<code>$state(burning, This place is on fire!)</code>.</li>
+<li>The room still supports <code>details</code> - the ability to look at things in the room
+without needing to create a new database object first. This hasn&#x27;t changed.</li>
+<li>The <code>ExtendedRoom</code> now also has simple support for echoing random messages now
+and then to the room.</li>
+</ul>
+<p>Overall, the code was completely re-written and cleaned up, making use of the
+latest Evennia tooling. It also has much better unit-test coverage. All the unit
+tests of the old implementation passes for the new one, but the changes are
+so big that it&#x27;s nevertheless possible people making heavy use of
+this contrib may see side effects from upgrading.</p>
+<p>Now, a contrib is not part of the core, so it (potentially) being
+backwards-incompatible should normally not warrant a major version bump. But I
+feel the <code>ExtendedRoom</code> contrib is used by so many in the Evennia community that
+it&#x27;s prudent to up the major version to let people know that they should
+keep an eye out when upgrading.</p>
+<h2>More on the Beginner Tutorial</h2>
+<p>Most of my time has been spent continuing to work on the new <a href="https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Beginner-Tutorial-Overview.html">Beginner Tutorial</a>. Notably on <a href="https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Part3-Overview.html">part three</a>, where
+we are making a whole little Evennia MUD game from scratch. While still not
+done, I have now added detailed lessons on</p>
+<ul>
+<li>Creating RPG dice rollers and rule systems (in our example we are using the
+<em>Knave</em> TTRPG ruleset).</li>
+<li>Organizing Player Character data, and character generation.</li>
+<li>In-game objects and items.</li>
+<li>Handling equipment and weapons.</li>
+<li>In-game rooms.</li>
+<li>Non-player characters.</li>
+<li>Two types of Combat systems (Twitch-based and Turn based).</li>
+</ul>
+<p>TODOs are Monster/NPC AI, Dynamical generation of rooms, Questin, Shops and some
+more bits and bobs. And of course a separate session on building the game world
+and tying all these systems together into a little example game.</p>
+<h2>A truckload of new features!</h2>
+<p>As usual, the Evennia community ame through with a bunch of new useful stuff since
+the release of Evennia 1.0.</p>
+<ul>
+<li><code>Containers</code> - A new contrib with a typeclass and commands to make and manage
+all sorts of containers, from chests to crates and jars, along with commands
+to put things in them and take things out of them. A great place to start
+tweaking for your own game implementation (InspectorCaracal).</li>
+<li>The ANSI color fallbacks (for use when your client does not support XTerm256)
+were improved to make more sense (InspectorCaracal).</li>
+<li>New <code>logger.delete_log</code> method for deleting log files from inside the server (aMiss-aWry).</li>
+<li>For those intending to override the <code>SessionHandler</code>, it was cleaned up and
+refactored to make it less prone to cause circular import issues (Volund).</li>
+<li>New <code>create_channel(attr=...)</code> keyword, for setting channel Attributes
+directly on creation, especially from channels defined in <code>settings.DEFAULT_CHANNELS</code> (me)</li>
+<li>Attributes will now properly save Python <code>deques</code> with <code>maxlen=...</code> set (me).</li>
+<li><a href="https://www.evennia.com/docs/latest/Components/Tags.html#tagcategoryproperty"><code>TagCategoryProperty</code></a> - A new way to define tags with a particular category on a class at creation-time, without having to do so in the <code>at_object_creation</code> method (me).</li>
+<li>A lot of bug fixes; <a href="https://www.evennia.com/docs/latest/Coding/Changelog.html">see the CHANGELOG</a> for all the details!</li>
+</ul>
+<h2>Continuing</h2>
+<p>Over summer, my development usually slows down a bit, but I plan to keep pushing
+on getting that Beginner tutorial done. We are also seeing more people joing
+the <a href="https://discord.gg/AJJpcRUhtF">evennia discord</a>, which means more eyes on
+the code and more bugs and edge cases being detected (and ironed out). So a lot
+of maintenance work to be done in the short term.</p>
+<p>In the longer term, there are a lot of exciting plans for Evennia in the pipe,
+but we&#x27;ll get there when we get there. :)</p>
+<p>Have a nice summer!</p>
  ...
         ---
         Evennia is a modern Python library and server for creating text-based
@@ -50,32 +142,48 @@
                     <ul>
                         
                             <li>
+                                <a href="2023.html"> 2023 (1)
+                                    
+                                        <ul class="devblog-calendar-closed">
+                                    
+                                        
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <span class="devblog-calendar-tooltip-text"> Evennia 2.0.0 released today</span>
+                                                    <a href="2023.html#2023-06-10-evennia-2.0.0-released-today"> Evennia 2.0.0 rel...
+                                                   </a>
+                                                </li>
+                                        
+                                        </ul>
+                                </a>
+                            </li>
+                        
+                            <li>
                                 <a href="2022.html"> 2022 (4)
                                     
                                         <ul class="devblog-calendar-closed">
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2022.html#2022-12-03-evennia-1.0-released!">Dec  3
-                                                        <span class="devblog-calendar-tooltip-text"> Evennia 1.0 released!</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Evennia 1.0 released!</span>
+                                                    <a href="2022.html#2022-12-03-evennia-1.0-released!"> Evennia 1.0 relea...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2022.html#2022-09-17-project-plans-and-splitting-a-setting-in-two">Sep 17
-                                                        <span class="devblog-calendar-tooltip-text"> Project plans and Splitting a Setting in two</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Project plans and Splitting a Setting in two</span>
+                                                    <a href="2022.html#2022-09-17-project-plans-and-splitting-a-setting-in-two"> Project plans and...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2022.html#2022-07-05-tutorial-writing-and-attributes-galore">Jul  5
-                                                        <span class="devblog-calendar-tooltip-text"> Tutorial-writing and Attributes galore</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Tutorial-writing and Attributes galore</span>
+                                                    <a href="2022.html#2022-07-05-tutorial-writing-and-attributes-galore"> Tutorial-writing ...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2022.html#2022-01-06-into-2022-with-thanks-and-plans">Jan  6
-                                                        <span class="devblog-calendar-tooltip-text"> Into 2022 with thanks and plans</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Into 2022 with thanks and plans</span>
+                                                    <a href="2022.html#2022-01-06-into-2022-with-thanks-and-plans"> Into 2022 with th...
                                                    </a>
                                                 </li>
                                         
@@ -90,20 +198,20 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2021.html#2021-11-18-the-blog-moved!">Nov 18
-                                                        <span class="devblog-calendar-tooltip-text"> The blog moved!</span>
+                                                    <span class="devblog-calendar-tooltip-text"> The blog moved!</span>
+                                                    <a href="2021.html#2021-11-18-the-blog-moved!"> The blog moved!
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2021.html#2021-03-21-where-do-i-begin?">Mar 21
-                                                        <span class="devblog-calendar-tooltip-text"> Where do I begin?</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Where do I begin?</span>
+                                                    <a href="2021.html#2021-03-21-where-do-i-begin?"> Where do I begin?
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2021.html#2021-01-01-happy-new-years-2021!">Jan  1
-                                                        <span class="devblog-calendar-tooltip-text"> Happy New Years 2021!</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Happy New Years 2021!</span>
+                                                    <a href="2021.html#2021-01-01-happy-new-years-2021!"> Happy New Years 2...
                                                    </a>
                                                 </li>
                                         
@@ -118,20 +226,20 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2020.html#2020-11-14-evennia-0.9.5-released">Nov 14
-                                                        <span class="devblog-calendar-tooltip-text">Evennia 0.9.5 released</span>
+                                                    <span class="devblog-calendar-tooltip-text">Evennia 0.9.5 released</span>
+                                                    <a href="2020.html#2020-11-14-evennia-0.9.5-released">Evennia 0.9.5 rele...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2020.html#2020-10-20-on-using-markdown-with-sphinx">Oct 20
-                                                        <span class="devblog-calendar-tooltip-text">On using Markdown with Sphinx</span>
+                                                    <span class="devblog-calendar-tooltip-text">On using Markdown with Sphinx</span>
+                                                    <a href="2020.html#2020-10-20-on-using-markdown-with-sphinx">On using Markdown ...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2020.html#2020-04-14-spring-updates-while-trying-to-stay-healthy">Apr 14
-                                                        <span class="devblog-calendar-tooltip-text">Spring updates while trying to stay healthy</span>
+                                                    <span class="devblog-calendar-tooltip-text">Spring updates while trying to stay healthy</span>
+                                                    <a href="2020.html#2020-04-14-spring-updates-while-trying-to-stay-healthy">Spring updates whi...
                                                    </a>
                                                 </li>
                                         
@@ -146,44 +254,44 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2019.html#2019-09-30-blackifying-and-fixing-bugs">Sep 30
-                                                        <span class="devblog-calendar-tooltip-text">Blackifying and fixing bugs</span>
+                                                    <span class="devblog-calendar-tooltip-text">Blackifying and fixing bugs</span>
+                                                    <a href="2019.html#2019-09-30-blackifying-and-fixing-bugs">Blackifying and fi...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2019.html#2019-07-04-evennia-0.9-released">Jul  4
-                                                        <span class="devblog-calendar-tooltip-text">Evennia 0.9 released</span>
+                                                    <span class="devblog-calendar-tooltip-text">Evennia 0.9 released</span>
+                                                    <a href="2019.html#2019-07-04-evennia-0.9-released">Evennia 0.9 released
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2019.html#2019-05-26-creating-evscaperoom-part-2">May 26
-                                                        <span class="devblog-calendar-tooltip-text">Creating Evscaperoom Part 2</span>
+                                                    <span class="devblog-calendar-tooltip-text">Creating Evscaperoom Part 2</span>
+                                                    <a href="2019.html#2019-05-26-creating-evscaperoom-part-2">Creating Evscapero...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2019.html#2019-05-18-creating-evscaperoom-part-1">May 18
-                                                        <span class="devblog-calendar-tooltip-text">Creating Evscaperoom Part 1</span>
+                                                    <span class="devblog-calendar-tooltip-text">Creating Evscaperoom Part 1</span>
+                                                    <a href="2019.html#2019-05-18-creating-evscaperoom-part-1">Creating Evscapero...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2019.html#2019-05-09-podcast-about-evennia">May  9
-                                                        <span class="devblog-calendar-tooltip-text">Podcast about Evennia</span>
+                                                    <span class="devblog-calendar-tooltip-text">Podcast about Evennia</span>
+                                                    <a href="2019.html#2019-05-09-podcast-about-evennia">Podcast about Even...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2019.html#2019-04-25-steaming-on-eating-jam">Apr 25
-                                                        <span class="devblog-calendar-tooltip-text">Steaming on Eating Jam</span>
+                                                    <span class="devblog-calendar-tooltip-text">Steaming on Eating Jam</span>
+                                                    <a href="2019.html#2019-04-25-steaming-on-eating-jam">Steaming on Eating...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2019.html#2019-01-02-into-2019">Jan  2
-                                                        <span class="devblog-calendar-tooltip-text">Into 2019</span>
+                                                    <span class="devblog-calendar-tooltip-text">Into 2019</span>
+                                                    <a href="2019.html#2019-01-02-into-2019">Into 2019
                                                    </a>
                                                 </li>
                                         
@@ -198,26 +306,26 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2018.html#2018-09-30-evennia-0.8-released">Sep 30
-                                                        <span class="devblog-calendar-tooltip-text">Evennia 0.8 released</span>
+                                                    <span class="devblog-calendar-tooltip-text">Evennia 0.8 released</span>
+                                                    <a href="2018.html#2018-09-30-evennia-0.8-released">Evennia 0.8 released
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2018.html#2018-08-18-inline-building-in-upcoming-evennia-0.8">Aug 18
-                                                        <span class="devblog-calendar-tooltip-text">Inline building in upcoming Evennia 0.8</span>
+                                                    <span class="devblog-calendar-tooltip-text">Inline building in upcoming Evennia 0.8</span>
+                                                    <a href="2018.html#2018-08-18-inline-building-in-upcoming-evennia-0.8">Inline building in...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2018.html#2018-01-27-kicking-into-gear-from-a-distance">Jan 27
-                                                        <span class="devblog-calendar-tooltip-text">Kicking into gear from a distance</span>
+                                                    <span class="devblog-calendar-tooltip-text">Kicking into gear from a distance</span>
+                                                    <a href="2018.html#2018-01-27-kicking-into-gear-from-a-distance">Kicking into gear ...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2018.html#2018-01-05-new-year,-new-stuff">Jan  5
-                                                        <span class="devblog-calendar-tooltip-text"> New year, new stuff</span>
+                                                    <span class="devblog-calendar-tooltip-text"> New year, new stuff</span>
+                                                    <a href="2018.html#2018-01-05-new-year,-new-stuff"> New year, new stuff
                                                    </a>
                                                 </li>
                                         
@@ -232,38 +340,38 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2017.html#2017-10-29-getting-a-mud-rp-scene-going">Oct 29
-                                                        <span class="devblog-calendar-tooltip-text">Getting a MUD RP scene going</span>
+                                                    <span class="devblog-calendar-tooltip-text">Getting a MUD RP scene going</span>
+                                                    <a href="2017.html#2017-10-29-getting-a-mud-rp-scene-going">Getting a MUD RP s...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2017.html#2017-10-01-evennia-in-hacktobergest-2017">Oct  1
-                                                        <span class="devblog-calendar-tooltip-text">Evennia in Hacktobergest 2017</span>
+                                                    <span class="devblog-calendar-tooltip-text">Evennia in Hacktobergest 2017</span>
+                                                    <a href="2017.html#2017-10-01-evennia-in-hacktobergest-2017">Evennia in Hacktob...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2017.html#2017-09-20-evennia-0.7-released">Sep 20
-                                                        <span class="devblog-calendar-tooltip-text">Evennia 0.7 released</span>
+                                                    <span class="devblog-calendar-tooltip-text">Evennia 0.7 released</span>
+                                                    <a href="2017.html#2017-09-20-evennia-0.7-released">Evennia 0.7 released
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2017.html#2017-08-25-renaming-django's-auth-user-and-app">Aug 25
-                                                        <span class="devblog-calendar-tooltip-text"> Renaming Django's Auth User and App</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Renaming Django's Auth User and App</span>
+                                                    <a href="2017.html#2017-08-25-renaming-django's-auth-user-and-app"> Renaming Django's...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2017.html#2017-04-23-the-luxury-of-a-creative-community">Apr 23
-                                                        <span class="devblog-calendar-tooltip-text">The luxury of a creative community</span>
+                                                    <span class="devblog-calendar-tooltip-text">The luxury of a creative community</span>
+                                                    <a href="2017.html#2017-04-23-the-luxury-of-a-creative-community">The luxury of a cr...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2017.html#2017-02-05-news-items-from-the-new-year">Feb  5
-                                                        <span class="devblog-calendar-tooltip-text">News items from the new year</span>
+                                                    <span class="devblog-calendar-tooltip-text">News items from the new year</span>
+                                                    <a href="2017.html#2017-02-05-news-items-from-the-new-year">News items from th...
                                                    </a>
                                                 </li>
                                         
@@ -278,44 +386,44 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2016.html#2016-11-30-birthday-retrospective">Nov 30
-                                                        <span class="devblog-calendar-tooltip-text">Birthday retrospective</span>
+                                                    <span class="devblog-calendar-tooltip-text">Birthday retrospective</span>
+                                                    <a href="2016.html#2016-11-30-birthday-retrospective">Birthday retrospec...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2016.html#2016-10-13-season-of-fixes">Oct 13
-                                                        <span class="devblog-calendar-tooltip-text">Season of fixes</span>
+                                                    <span class="devblog-calendar-tooltip-text">Season of fixes</span>
+                                                    <a href="2016.html#2016-10-13-season-of-fixes">Season of fixes
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2016.html#2016-07-01-the-art-of-sharing-nicks-and-descriptions">Jul  1
-                                                        <span class="devblog-calendar-tooltip-text">The art of sharing nicks and descriptions</span>
+                                                    <span class="devblog-calendar-tooltip-text">The art of sharing nicks and descriptions</span>
+                                                    <a href="2016.html#2016-07-01-the-art-of-sharing-nicks-and-descriptions">The art of sharing...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2016.html#2016-05-31-evennia-in-pictures">May 31
-                                                        <span class="devblog-calendar-tooltip-text">Evennia in Pictures</span>
+                                                    <span class="devblog-calendar-tooltip-text">Evennia in Pictures</span>
+                                                    <a href="2016.html#2016-05-31-evennia-in-pictures">Evennia in Pictures
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2016.html#2016-05-22-evennia-0.6!">May 22
-                                                        <span class="devblog-calendar-tooltip-text"> Evennia 0.6!</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Evennia 0.6!</span>
+                                                    <a href="2016.html#2016-05-22-evennia-0.6!"> Evennia 0.6!
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2016.html#2016-03-24-technical-stuff-happening">Mar 24
-                                                        <span class="devblog-calendar-tooltip-text">Technical stuff happening</span>
+                                                    <span class="devblog-calendar-tooltip-text">Technical stuff happening</span>
+                                                    <a href="2016.html#2016-03-24-technical-stuff-happening">Technical stuff ha...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2016.html#2016-02-14-climbing-up-branches">Feb 14
-                                                        <span class="devblog-calendar-tooltip-text">Climbing up Branches</span>
+                                                    <span class="devblog-calendar-tooltip-text">Climbing up Branches</span>
+                                                    <a href="2016.html#2016-02-14-climbing-up-branches">Climbing up Branches
                                                    </a>
                                                 </li>
                                         
@@ -330,80 +438,80 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-12-17-a-summary-of-a-year">Dec 17
-                                                        <span class="devblog-calendar-tooltip-text">A summary of a year</span>
+                                                    <span class="devblog-calendar-tooltip-text">A summary of a year</span>
+                                                    <a href="2015.html#2015-12-17-a-summary-of-a-year">A summary of a year
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-11-12-mit-uses-evennia!">Nov 12
-                                                        <span class="devblog-calendar-tooltip-text"> MIT uses Evennia!</span>
+                                                    <span class="devblog-calendar-tooltip-text"> MIT uses Evennia!</span>
+                                                    <a href="2015.html#2015-11-12-mit-uses-evennia!"> MIT uses Evennia!
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-10-11-illustrations-and-soaps">Oct 11
-                                                        <span class="devblog-calendar-tooltip-text">Illustrations and soaps</span>
+                                                    <span class="devblog-calendar-tooltip-text">Illustrations and soaps</span>
+                                                    <a href="2015.html#2015-10-11-illustrations-and-soaps">Illustrations and ...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-10-02-emoting-system">Oct  2
-                                                        <span class="devblog-calendar-tooltip-text">Emoting System</span>
+                                                    <span class="devblog-calendar-tooltip-text">Emoting System</span>
+                                                    <a href="2015.html#2015-10-02-emoting-system">Emoting System
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-09-29-evennia-on-`podcast.__init__`">Sep 29
-                                                        <span class="devblog-calendar-tooltip-text"> Evennia on `podcast.__init__`</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Evennia on `podcast.__init__`</span>
+                                                    <a href="2015.html#2015-09-29-evennia-on-`podcast.__init__`"> Evennia on `podca...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-09-24-pushing-through-a-straw">Sep 24
-                                                        <span class="devblog-calendar-tooltip-text">Pushing through a straw</span>
+                                                    <span class="devblog-calendar-tooltip-text">Pushing through a straw</span>
+                                                    <a href="2015.html#2015-09-24-pushing-through-a-straw">Pushing through a ...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-08-27-a-wagon-load-of-post-summer-updates">Aug 27
-                                                        <span class="devblog-calendar-tooltip-text">A wagon load of post summer updates</span>
+                                                    <span class="devblog-calendar-tooltip-text">A wagon load of post summer updates</span>
+                                                    <a href="2015.html#2015-08-27-a-wagon-load-of-post-summer-updates">A wagon load of po...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-06-22-announcing-the-evennia-example-game-project-"ainneve"">Jun 22
-                                                        <span class="devblog-calendar-tooltip-text"> Announcing the Evennia example-game project "Ainneve"</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Announcing the Evennia example-game project "Ainneve"</span>
+                                                    <a href="2015.html#2015-06-22-announcing-the-evennia-example-game-project-"ainneve""> Announcing the Ev...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-06-15-need-your-help!">Jun 15
-                                                        <span class="devblog-calendar-tooltip-text"> Need your help!</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Need your help!</span>
+                                                    <a href="2015.html#2015-06-15-need-your-help!"> Need your help!
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-05-30-dreaming-big?">May 30
-                                                        <span class="devblog-calendar-tooltip-text"> Dreaming big?</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Dreaming big?</span>
+                                                    <a href="2015.html#2015-05-30-dreaming-big?"> Dreaming big?
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-05-11-things-goin-on">May 11
-                                                        <span class="devblog-calendar-tooltip-text">Things goin on</span>
+                                                    <span class="devblog-calendar-tooltip-text">Things goin on</span>
+                                                    <a href="2015.html#2015-05-11-things-goin-on">Things goin on
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-05-09-documenting-python-without-sphinx">May  9
-                                                        <span class="devblog-calendar-tooltip-text">Documenting Python without Sphinx</span>
+                                                    <span class="devblog-calendar-tooltip-text">Documenting Python without Sphinx</span>
+                                                    <a href="2015.html#2015-05-09-documenting-python-without-sphinx">Documenting Python...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2015.html#2015-01-19-building-django-proxies-and-mud-libraries">Jan 19
-                                                        <span class="devblog-calendar-tooltip-text">Building Django proxies and MUD libraries</span>
+                                                    <span class="devblog-calendar-tooltip-text">Building Django proxies and MUD libraries</span>
+                                                    <a href="2015.html#2015-01-19-building-django-proxies-and-mud-libraries">Building Django pr...
                                                    </a>
                                                 </li>
                                         
@@ -418,44 +526,44 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2014.html#2014-10-02-slowly-moving-through-town">Oct  2
-                                                        <span class="devblog-calendar-tooltip-text">Slowly moving through town</span>
+                                                    <span class="devblog-calendar-tooltip-text">Slowly moving through town</span>
+                                                    <a href="2014.html#2014-10-02-slowly-moving-through-town">Slowly moving thro...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2014.html#2014-08-04-dance-my-puppets">Aug  4
-                                                        <span class="devblog-calendar-tooltip-text">Dance my puppets</span>
+                                                    <span class="devblog-calendar-tooltip-text">Dance my puppets</span>
+                                                    <a href="2014.html#2014-08-04-dance-my-puppets">Dance my puppets
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2014.html#2014-06-30-webby-stuff">Jun 30
-                                                        <span class="devblog-calendar-tooltip-text">Webby stuff</span>
+                                                    <span class="devblog-calendar-tooltip-text">Webby stuff</span>
+                                                    <a href="2014.html#2014-06-30-webby-stuff">Webby stuff
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2014.html#2014-06-15-bringing-back-python-memory">Jun 15
-                                                        <span class="devblog-calendar-tooltip-text">Bringing back Python memory</span>
+                                                    <span class="devblog-calendar-tooltip-text">Bringing back Python memory</span>
+                                                    <a href="2014.html#2014-06-15-bringing-back-python-memory">Bringing back Pyth...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2014.html#2014-05-16-imaginary-realities-volume-6,-issue-1">May 16
-                                                        <span class="devblog-calendar-tooltip-text"> Imaginary Realities volume 6, issue 1</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Imaginary Realities volume 6, issue 1</span>
+                                                    <a href="2014.html#2014-05-16-imaginary-realities-volume-6,-issue-1"> Imaginary Realiti...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2014.html#2014-02-08-moving-from-google-code-to-github">Feb  8
-                                                        <span class="devblog-calendar-tooltip-text">Moving from Google Code to Github</span>
+                                                    <span class="devblog-calendar-tooltip-text">Moving from Google Code to Github</span>
+                                                    <a href="2014.html#2014-02-08-moving-from-google-code-to-github">Moving from Google...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2014.html#2014-01-24-looking-forwards-and-backwards">Jan 24
-                                                        <span class="devblog-calendar-tooltip-text">Looking forwards and backwards</span>
+                                                    <span class="devblog-calendar-tooltip-text">Looking forwards and backwards</span>
+                                                    <a href="2014.html#2014-01-24-looking-forwards-and-backwards">Looking forwards a...
                                                    </a>
                                                 </li>
                                         
@@ -470,32 +578,32 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2013.html#2013-12-16-imaginary-realities-is-back">Dec 16
-                                                        <span class="devblog-calendar-tooltip-text">Imaginary Realities is back</span>
+                                                    <span class="devblog-calendar-tooltip-text">Imaginary Realities is back</span>
+                                                    <a href="2013.html#2013-12-16-imaginary-realities-is-back">Imaginary Realitie...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2013.html#2013-11-28-out-of-band-mergings">Nov 28
-                                                        <span class="devblog-calendar-tooltip-text">Out of band mergings</span>
+                                                    <span class="devblog-calendar-tooltip-text">Out of band mergings</span>
+                                                    <a href="2013.html#2013-11-28-out-of-band-mergings">Out of band mergings
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2013.html#2013-10-22-a-list-of-evennia-topics">Oct 22
-                                                        <span class="devblog-calendar-tooltip-text">A list of Evennia topics</span>
+                                                    <span class="devblog-calendar-tooltip-text">A list of Evennia topics</span>
+                                                    <a href="2013.html#2013-10-22-a-list-of-evennia-topics">A list of Evennia ...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2013.html#2013-05-13-one-to-many">May 13
-                                                        <span class="devblog-calendar-tooltip-text">One to Many</span>
+                                                    <span class="devblog-calendar-tooltip-text">One to Many</span>
+                                                    <a href="2013.html#2013-05-13-one-to-many">One to Many
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2013.html#2013-01-29-churning-behind-the-scenes">Jan 29
-                                                        <span class="devblog-calendar-tooltip-text">Churning behind the scenes</span>
+                                                    <span class="devblog-calendar-tooltip-text">Churning behind the scenes</span>
+                                                    <a href="2013.html#2013-01-29-churning-behind-the-scenes">Churning behind th...
                                                    </a>
                                                 </li>
                                         
@@ -510,80 +618,80 @@
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-10-28-evennia-changes-to-bsd-license">Oct 28
-                                                        <span class="devblog-calendar-tooltip-text">Evennia changes to BSD license</span>
+                                                    <span class="devblog-calendar-tooltip-text">Evennia changes to BSD license</span>
+                                                    <a href="2012.html#2012-10-28-evennia-changes-to-bsd-license">Evennia changes to...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-10-05-community-interest">Oct  5
-                                                        <span class="devblog-calendar-tooltip-text">Community interest</span>
+                                                    <span class="devblog-calendar-tooltip-text">Community interest</span>
+                                                    <a href="2012.html#2012-10-05-community-interest">Community interest
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-08-31-combining-twisted-and-django">Aug 31
-                                                        <span class="devblog-calendar-tooltip-text">Combining Twisted and Django</span>
+                                                    <span class="devblog-calendar-tooltip-text">Combining Twisted and Django</span>
+                                                    <a href="2012.html#2012-08-31-combining-twisted-and-django">Combining Twisted ...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-08-16-taking-command">Aug 16
-                                                        <span class="devblog-calendar-tooltip-text">Taking command</span>
+                                                    <span class="devblog-calendar-tooltip-text">Taking command</span>
+                                                    <a href="2012.html#2012-08-16-taking-command">Taking command
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-06-26-extending-time-and-details">Jun 26
-                                                        <span class="devblog-calendar-tooltip-text">Extending time and details</span>
+                                                    <span class="devblog-calendar-tooltip-text">Extending time and details</span>
+                                                    <a href="2012.html#2012-06-26-extending-time-and-details">Extending time and...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-06-11-coding-from-the-inside">Jun 11
-                                                        <span class="devblog-calendar-tooltip-text">Coding from the inside</span>
+                                                    <span class="devblog-calendar-tooltip-text">Coding from the inside</span>
+                                                    <a href="2012.html#2012-06-11-coding-from-the-inside">Coding from the in...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-05-30-dummies-doing-(even-more)-dummy-things">May 30
-                                                        <span class="devblog-calendar-tooltip-text"> Dummies doing (even more) dummy things</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Dummies doing (even more) dummy things</span>
+                                                    <a href="2012.html#2012-05-30-dummies-doing-(even-more)-dummy-things"> Dummies doing (ev...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-03-26-shortcuts-to-goodness">Mar 26
-                                                        <span class="devblog-calendar-tooltip-text">Shortcuts to goodness</span>
+                                                    <span class="devblog-calendar-tooltip-text">Shortcuts to goodness</span>
+                                                    <a href="2012.html#2012-03-26-shortcuts-to-goodness">Shortcuts to goodn...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-02-22-dummies-doing-dummy-things">Feb 22
-                                                        <span class="devblog-calendar-tooltip-text">Dummies doing dummy things</span>
+                                                    <span class="devblog-calendar-tooltip-text">Dummies doing dummy things</span>
+                                                    <a href="2012.html#2012-02-22-dummies-doing-dummy-things">Dummies doing dumm...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-02-17-commands-and-you">Feb 17
-                                                        <span class="devblog-calendar-tooltip-text">Commands and you</span>
+                                                    <span class="devblog-calendar-tooltip-text">Commands and you</span>
+                                                    <a href="2012.html#2012-02-17-commands-and-you">Commands and you
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-02-15-such-a-small-thing-...">Feb 15
-                                                        <span class="devblog-calendar-tooltip-text"> Such a small thing ...</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Such a small thing ...</span>
+                                                    <a href="2012.html#2012-02-15-such-a-small-thing-..."> Such a small thin...
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-02-05-evennia's-open-bottlenecks">Feb  5
-                                                        <span class="devblog-calendar-tooltip-text"> Evennia's open bottlenecks</span>
+                                                    <span class="devblog-calendar-tooltip-text">About this dev blog</span>
+                                                    <a href="2012.html#2012-02-05-about-this-dev-blog">About this dev blog
                                                    </a>
                                                 </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="2012.html#2012-02-05-about-this-dev-blog">Feb  5
-                                                        <span class="devblog-calendar-tooltip-text">About this dev blog</span>
+                                                    <span class="devblog-calendar-tooltip-text"> Evennia's open bottlenecks</span>
+                                                    <a href="2012.html#2012-02-05-evennia's-open-bottlenecks"> Evennia's open bo...
                                                    </a>
                                                 </li>
                                         
@@ -632,27 +740,13 @@
 <p>But sometimes scenes won’t come naturally. Sometimes your favourite game has only a few people online, or most of them are hovering in private areas. It’s time to go proactive. Below I offer some archetypes, tropes and ideas for how to get a random Scene started and people interested. The list is based on one I did for a RP-heavy MUD I played some time back.</p>
 <p>Some terms used in the list:</p>
 <ul>
-<li>
-<p>Character concept - The general idea behind your player character (PC), like “The scarred veteran”, “The grumpy old magician” or “The swashbuckling bounty-hunter”.</p>
-</li>
-<li>
-<p>IC/OOC - In-Character/Out-Of-Character.</p>
-</li>
-<li>
-<p>Emote/pose - This is the common way to roleplay in MUDs. This displays a free-form action to the room, such as “The tall man sighs heavily”. Some MUDs offer a slew of special commands for particular actions or special syntax to decorate poses. Some games use specific “say” commands for verbal communication whereas others make say’s part of the emote completely.</p>
-</li>
-<li>
-<p>Action/static pose - a pose that “lingers”, such as The tall man is sitting by the bar. Commonly static poses remain assigned to your character’s description  until you change it or exit the room, meaning that new people entering will immediately see your current status.</p>
-</li>
-<li>
-<p>NPC - Non-Player Character. Also known as a “mob”. An in-game character that is controlled by the computer, such as a bartender or a city guard.</p>
-</li>
-<li>
-<p>vNPC - a “virtual” NPC. This NPC does not actually exist in code but they should be there. Even though there are only two Players and a City guard in the central plaza, that place is actually packed with people most of the day. Most RP-heavy muds ask players to imagine vNPCs being all around them and have it influence their roleplay.</p>
-</li>
-<li>
-<p>Godmodding - this is considered very bad form. Godmodding means to include another Player’s character in your roleplay in a way that takes control away from them unfairly. Depending on the game, disagreements on how to resolve a situation may be down to skill checks, die rolls or calling in a staff arbiter.</p>
-</li>
+<li>Character concept - The general idea behind your player character (PC), like “The scarred veteran”, “The grumpy old magician” or “The swashbuckling bounty-hunter”.</li>
+<li>IC/OOC - In-Character/Out-Of-Character.</li>
+<li>Emote/pose - This is the common way to roleplay in MUDs. This displays a free-form action to the room, such as “The tall man sighs heavily”. Some MUDs offer a slew of special commands for particular actions or special syntax to decorate poses. Some games use specific “say” commands for verbal communication whereas others make say’s part of the emote completely.</li>
+<li>Action/static pose - a pose that “lingers”, such as The tall man is sitting by the bar. Commonly static poses remain assigned to your character’s description  until you change it or exit the room, meaning that new people entering will immediately see your current status.</li>
+<li>NPC - Non-Player Character. Also known as a “mob”. An in-game character that is controlled by the computer, such as a bartender or a city guard.</li>
+<li>vNPC - a “virtual” NPC. This NPC does not actually exist in code but they should be there. Even though there are only two Players and a City guard in the central plaza, that place is actually packed with people most of the day. Most RP-heavy muds ask players to imagine vNPCs being all around them and have it influence their roleplay.</li>
+<li>Godmodding - this is considered very bad form. Godmodding means to include another Player’s character in your roleplay in a way that takes control away from them unfairly. Depending on the game, disagreements on how to resolve a situation may be down to skill checks, die rolls or calling in a staff arbiter.</li>
 </ul>
 <h2>Scene starters</h2>
 <p>Scene starters are for when you are alone in a room hoping for others to join you (we&#x27;ve all done it). It is considerably easier to run Scene starters if there is some OOC way for other players to know where to find you (such as a list showing who&#x27;s interesting in roleplay and where they are in the game). If not, it’s best to prepare your starter in a commonly visited central location or hub. You normally trigger the starter whenever another Player enters.</p>
@@ -746,87 +840,37 @@
 <p>Here is the <a href="https://groups.google.com/forum/#%21category-topic/evennia/evennia-news/0JYYNGY-NfE">hefty forum post</a> that details how you migrate to Evennia 0.7.</p>
 <p>Evennia 0.7 comes with a range of changes and updates (these are just the ones merged from the latest devel branch, a lot more has happened since 0.6 that were already in master):</p>
 <ul>
-<li>
-<p>Evennia separates <code>Player</code> objects from <code>Character</code> objects in that the former is an OOC entity that can puppet one or more of the latter. The name <code>Player</code> was a source of some confusion since this is used differently in other code bases. <code>Player</code> has now been renamed to <code>Account</code> to make its function clearer.</p>
-</li>
-<li>
-<p>Evennia&#x27;s in-built website now uses our own theme and <code>bootstrap</code> under the hood to make it easier to modify as well as rescale it better on mobile devices (webclient is not updated at this point).</p>
-</li>
-<li>
-<p>Shared logins between webclient and website, with the ability to log out of each independently of the other if so desired.</p>
-</li>
-<li>
-<p>Prefix-ignoring - All default commands are now renamed without their @-prefixes. Both @examine, +examine or examine will now all point to the same command. You can customize which prefixes Evennia simply ignores when searching for a command. The mechanic is clever though - if you create a command with a specific key &quot;+foo&quot;, then that will still work and won&#x27;t clash with another command named just &quot;foo&quot;.</p>
-</li>
-<li>
-<p>Easy pause mechanisms using <code>yield</code> statements directly in Command code (just do <code>yield 10</code> in your command code to have it pause ten seconds without blocking anyone else). You can also do <code>retval = yield &quot;Do you want to accept?&quot;</code> and have the command pause (non-blocking) for the player&#x27;s input before continuing.</p>
-</li>
+<li>Evennia separates <code>Player</code> objects from <code>Character</code> objects in that the former is an OOC entity that can puppet one or more of the latter. The name <code>Player</code> was a source of some confusion since this is used differently in other code bases. <code>Player</code> has now been renamed to <code>Account</code> to make its function clearer.</li>
+<li>Evennia&#x27;s in-built website now uses our own theme and <code>bootstrap</code> under the hood to make it easier to modify as well as rescale it better on mobile devices (webclient is not updated at this point).</li>
+<li>Shared logins between webclient and website, with the ability to log out of each independently of the other if so desired.</li>
+<li>Prefix-ignoring - All default commands are now renamed without their @-prefixes. Both @examine, +examine or examine will now all point to the same command. You can customize which prefixes Evennia simply ignores when searching for a command. The mechanic is clever though - if you create a command with a specific key &quot;+foo&quot;, then that will still work and won&#x27;t clash with another command named just &quot;foo&quot;.</li>
+<li>Easy pause mechanisms using <code>yield</code> statements directly in Command code (just do <code>yield 10</code> in your command code to have it pause ten seconds without blocking anyone else). You can also do <code>retval = yield &quot;Do you want to accept?&quot;</code> and have the command pause (non-blocking) for the player&#x27;s input before continuing.</li>
 </ul>
 <p>New contribs (optional plugins) (selection, new since 0.6 but many have been available on <code>master</code> branch for a while):</p>
 <ul>
-<li>
-<p>The optional <a href="https://github.com/evennia/evennia/wiki/Tutorials#contrib"><em>In-Game-Python</em></a> contrib by Vincent le Geoff allows for coding and scripting in-game using full-fledged Python to make events and triggers. It&#x27;s <em>not</em> a safe softcode-style language (you have the full power of Python which is not good for untrusted users) but is intended for trusted builders to make complex scripting from the command line.</p>
-</li>
-<li>
-<p>Wilderness/maps - Creation of dynamic or static maps based on ascii-maps for dynamically creating rooms and to show when moving around. (titeuf87, Cloud Keeper)</p>
-</li>
-<li>
-<p>Full turn-based combat system, meant to expand for a desired system (battlejenkins)</p>
-</li>
-<li>
-<p>Alternative Unix-style command base for Evennia, for those that prefer to enter commands like you do on the unix command line (with <code>--flags</code> etc) (Vincent le Geoff)</p>
-</li>
-<li>
-<p>Multidescer, which together with Evennia&#x27;s nick replacement system can be heavily customized in-game (me).</p>
-</li>
-<li>
-<p>Mail - a <code>@brandymail</code>-style in-game mail-system (grungies1138)</p>
-</li>
-<li>
-<p>Clothing system, for layered outfits adding to the wearer&#x27;s desc when worn (battlejenkins).</p>
-</li>
+<li>The optional <a href="https://github.com/evennia/evennia/wiki/Tutorials#contrib"><em>In-Game-Python</em></a> contrib by Vincent le Geoff allows for coding and scripting in-game using full-fledged Python to make events and triggers. It&#x27;s <em>not</em> a safe softcode-style language (you have the full power of Python which is not good for untrusted users) but is intended for trusted builders to make complex scripting from the command line.</li>
+<li>Wilderness/maps - Creation of dynamic or static maps based on ascii-maps for dynamically creating rooms and to show when moving around. (titeuf87, Cloud Keeper)</li>
+<li>Full turn-based combat system, meant to expand for a desired system (battlejenkins)</li>
+<li>Alternative Unix-style command base for Evennia, for those that prefer to enter commands like you do on the unix command line (with <code>--flags</code> etc) (Vincent le Geoff)</li>
+<li>Multidescer, which together with Evennia&#x27;s nick replacement system can be heavily customized in-game (me).</li>
+<li>Mail - a <code>@brandymail</code>-style in-game mail-system (grungies1138)</li>
+<li>Clothing system, for layered outfits adding to the wearer&#x27;s desc when worn (battlejenkins).</li>
 </ul>
 <p>A more technical list from the main announcement post:</p>
 <ul>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1205">EvMenu formatting functions now part of class</a> - EvMenu no longer accepts formatting functions as inputs, these are now part of the EvMenu class. To override the formatting of EvMenu nodes you should now override EvMenu and replace the format method you want. This brings EvMenu more in line with other services in Evennia, all of which are built around overriding.</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1179">Scripts are now valid message senders</a> - Also Scripts can now act as &quot;sender&quot; of a Msg, for example to a Channel or a player.</p>
-</li>
-<li>
-<p>Due to the new prefix-ignoring above, <strong>@desc</strong> (builder-level description-setting) was renamed to <strong>setdesc</strong> to make it clearly separate from <strong>desc</strong> (used by a player setting their own description). This was actually the only clash we had to resolve this way in the default commands.</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1175">Permission Hierarchy names change</a> - To make Evennia&#x27;s permission hierarchy better reflect how Evennia actually works, the old <strong>Players, Player Helpers, Builders, Wizards, Immortals</strong> hierarchy has changed to <strong>Player, Helper, Builder, Admin, Developer</strong>. Singular/Plural form is now ignored so <strong>Builder</strong> and <strong>Builders</strong> will both work (this was a common source of simple errors) Old permissions will be renamed as part of the migration process. The distribution of responsibilities has not changed: Wizards (which in some other systems was the highest level, which confused some) always had the power to affect player accounts (like an admin) whereas Immortals had server-level access such as @py - that is, they were developers. The new names hopefully makes this distinction clearer.</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1206">All manager methods now return querysets</a> - Some of these used to return lists which was a throwback to an older version of Typeclasses. With manager methods returning querysets one can chain queries onto their results like you can with any django query.</p>
-</li>
-<li>
-<p>PrettyTable was removed from the codebase. You can still fetch it for your game if you prefer (it&#x27;s on pypi). But <strong>EvTable</strong> has more functionality as well as color-support.</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1276">Add *<em>kwargs support to all object at_</em> hooks</a> - All object at_ hooks, such as <strong>at_look</strong>, <strong>at_give</strong> etc now has an additional **kwarg argument. This allows developers to send arbitrary data to those hooks so they can expand on them without changing the API.</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1229">Remove {-color tags</a> - The use of {r, {n etc was deprecated**** for years and have now been completely removed from Evennia&#x27;s core in favor of only one form, namely |r, |n etc. However, the color parser is now pluggable and the {-style as well as the %c style color tags etc can be re-added to your game since they are now in a contrib.</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1288">Updated hooks for say/whisper commands</a> - There are now at_before/after_say sub-hooks to allow say to be more easily customized. There is still ongoing discussion on the best way to handle this (see e.g. <a href="https://github.com/evennia/evennia/pull/1419">this PR</a>).</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1365">More compact distribution of ports</a> - Before, Evennia distributed its ports widely, such as using <strong>4000, 4001, 8000, 8001, 5001, 8022</strong>, some of which appeared close but actually was unrelated in functionality. They were also scattered throughout the settings file. The port definitions have now all moved more closer together, at the top of the settings file. Evennia will now use ports <strong>4000-4006</strong> by default (fewer depending on which protocols you want to start). This should make it easier to assign port ranges when wanting to run multiple Evennia instances on the same machine.</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/1063">Change how auto-login works</a> - It used to be that once you logged into the website, every time you went to the webclient you would auto-login, even if you manually quite the webclient before. Only way to really log out (to change account, say) would be to first log out of the website. Now this will work more intuitively - you will still auto-login but if you log out of the webclient you &quot;decouple&quot; from the login state of the website and need to re-login to the webclient next time, even if you are still logged into the website.</p>
-</li>
-<li>
-<p><a href="https://github.com/evennia/evennia/issues/701">Better idle disconnects</a> - This is a long-running pet peeve for many. Idle timeouts will now honor a particular lock. Setting this lock allows selected entities (for example staff and bots) to avoid getting timed out like everyone else.</p>
-</li>
-<li>
-<p>A slew of bug fixes and other tweaks. See <a href="https://github.com/evennia/evennia/projects/6">here</a> for the list.</p>
-</li>
+<li><a href="https://github.com/evennia/evennia/issues/1205">EvMenu formatting functions now part of class</a> - EvMenu no longer accepts formatting functions as inputs, these are now part of the EvMenu class. To override the formatting of EvMenu nodes you should now override EvMenu and replace the format method you want. This brings EvMenu more in line with other services in Evennia, all of which are built around overriding.</li>
+<li><a href="https://github.com/evennia/evennia/issues/1179">Scripts are now valid message senders</a> - Also Scripts can now act as &quot;sender&quot; of a Msg, for example to a Channel or a player.</li>
+<li>Due to the new prefix-ignoring above, <strong>@desc</strong> (builder-level description-setting) was renamed to <strong>setdesc</strong> to make it clearly separate from <strong>desc</strong> (used by a player setting their own description). This was actually the only clash we had to resolve this way in the default commands.</li>
+<li><a href="https://github.com/evennia/evennia/issues/1175">Permission Hierarchy names change</a> - To make Evennia&#x27;s permission hierarchy better reflect how Evennia actually works, the old <strong>Players, Player Helpers, Builders, Wizards, Immortals</strong> hierarchy has changed to <strong>Player, Helper, Builder, Admin, Developer</strong>. Singular/Plural form is now ignored so <strong>Builder</strong> and <strong>Builders</strong> will both work (this was a common source of simple errors) Old permissions will be renamed as part of the migration process. The distribution of responsibilities has not changed: Wizards (which in some other systems was the highest level, which confused some) always had the power to affect player accounts (like an admin) whereas Immortals had server-level access such as @py - that is, they were developers. The new names hopefully makes this distinction clearer.</li>
+<li><a href="https://github.com/evennia/evennia/issues/1206">All manager methods now return querysets</a> - Some of these used to return lists which was a throwback to an older version of Typeclasses. With manager methods returning querysets one can chain queries onto their results like you can with any django query.</li>
+<li>PrettyTable was removed from the codebase. You can still fetch it for your game if you prefer (it&#x27;s on pypi). But <strong>EvTable</strong> has more functionality as well as color-support.</li>
+<li><a href="https://github.com/evennia/evennia/issues/1276">Add *<em>kwargs support to all object at_</em> hooks</a> - All object at_ hooks, such as <strong>at_look</strong>, <strong>at_give</strong> etc now has an additional **kwarg argument. This allows developers to send arbitrary data to those hooks so they can expand on them without changing the API.</li>
+<li><a href="https://github.com/evennia/evennia/issues/1229">Remove {-color tags</a> - The use of {r, {n etc was deprecated**** for years and have now been completely removed from Evennia&#x27;s core in favor of only one form, namely |r, |n etc. However, the color parser is now pluggable and the {-style as well as the %c style color tags etc can be re-added to your game since they are now in a contrib.</li>
+<li><a href="https://github.com/evennia/evennia/issues/1288">Updated hooks for say/whisper commands</a> - There are now at_before/after_say sub-hooks to allow say to be more easily customized. There is still ongoing discussion on the best way to handle this (see e.g. <a href="https://github.com/evennia/evennia/pull/1419">this PR</a>).</li>
+<li><a href="https://github.com/evennia/evennia/issues/1365">More compact distribution of ports</a> - Before, Evennia distributed its ports widely, such as using <strong>4000, 4001, 8000, 8001, 5001, 8022</strong>, some of which appeared close but actually was unrelated in functionality. They were also scattered throughout the settings file. The port definitions have now all moved more closer together, at the top of the settings file. Evennia will now use ports <strong>4000-4006</strong> by default (fewer depending on which protocols you want to start). This should make it easier to assign port ranges when wanting to run multiple Evennia instances on the same machine.</li>
+<li><a href="https://github.com/evennia/evennia/issues/1063">Change how auto-login works</a> - It used to be that once you logged into the website, every time you went to the webclient you would auto-login, even if you manually quite the webclient before. Only way to really log out (to change account, say) would be to first log out of the website. Now this will work more intuitively - you will still auto-login but if you log out of the webclient you &quot;decouple&quot; from the login state of the website and need to re-login to the webclient next time, even if you are still logged into the website.</li>
+<li><a href="https://github.com/evennia/evennia/issues/701">Better idle disconnects</a> - This is a long-running pet peeve for many. Idle timeouts will now honor a particular lock. Setting this lock allows selected entities (for example staff and bots) to avoid getting timed out like everyone else.</li>
+<li>A slew of bug fixes and other tweaks. See <a href="https://github.com/evennia/evennia/projects/6">here</a> for the list.</li>
 </ul>
 
 <footer class="devblog-footer">
@@ -853,105 +897,56 @@
 <h3>Our problem</h3>
 <p>So I wanted to migrate the database change &quot;Rename the Player model to Account&quot;. We had to do this under a series of additional constraints however:</p>
 <ol>
-<li>
-<p>The Player is the Django Auth user, storing the password. Such a user Django expects to exist from the beginning of the migration history.</p>
-</li>
-<li>
-<p>The Player model sits in a application (folder) named &quot;players&quot;. This folder should also be renamed to &quot;accounts&quot;, meaning any in-migration references to this from other apps would become invalid.</p>
-</li>
-<li>
-<p>Our migration must both work for old <em>and</em> new users. That is, we cannot expect people to all have existing databases to migrate. Some will need to create the database from scratch and must be able to do so without needing to do any changes to the migration structure.</p>
-</li>
-<li>
-<p>We have a lot of references to &quot;player&quot; throughout the code, all of which must be renamed.</p>
-</li>
-<li>
-<p>The migration, including renames, should be possible to do by new users with newbie-level Python and database skills.</p>
-</li>
+<li>The Player is the Django Auth user, storing the password. Such a user Django expects to exist from the beginning of the migration history.</li>
+<li>The Player model sits in a application (folder) named &quot;players&quot;. This folder should also be renamed to &quot;accounts&quot;, meaning any in-migration references to this from other apps would become invalid.</li>
+<li>Our migration must both work for old <em>and</em> new users. That is, we cannot expect people to all have existing databases to migrate. Some will need to create the database from scratch and must be able to do so without needing to do any changes to the migration structure.</li>
+<li>We have a lot of references to &quot;player&quot; throughout the code, all of which must be renamed.</li>
+<li>The migration, including renames, should be possible to do by new users with newbie-level Python and database skills.</li>
 </ol>
 <h3>Some false starts</h3>
 <p>There is no lack of tutorials and help online for solving the problem of renaming a model. I think I tested most of them. But none I found actually ended up addressing these restraints. Especially point <strong>2</strong> in combination with point <strong>3</strong> above is a <em>killer</em>.</p>
 <ul>
-<li>
-<p>One of my first tries wiped the migrations table completely, renamed the folder and just assumed Player never existed. This sounds good on paper and works perfectly for fresh databases. But existing databases will still contain the old Player-related models. With the old migrations gone, this is now all wrong and there is no information on how to migrate it.</p>
-</li>
-<li>
-<p>I tried initiating fresh migrations with a player model state so you can move an existing database over to it. But then fresh databases doesn&#x27;t work instead, since the player folder is gone. Also, you run into trouble with the auth system.</p>
-</li>
-<li>
-<p>I next tried to keep the old migrations (those we know work both for old and new databases) but to migrate it in-place. I did many different attempts at this, but every time one of the restraints above would get in the way.</p>
-</li>
-<li>
-<p>Eventually I wrote raw SQL code in the migrations to modify the database tables retroactively. That is, I basically manually removed all traces of Player in the database where it was, copying things table by table. This was very work-intensive but overall decently successful. With proper error-checking I could get most of the migration to work from old databases as well as for new databases. The trouble was the migrations themselves. No matter how I tried, I couldn&#x27;t get the migration history to accept what I had done - the dependencies now longer made sense on the database level (since I had manually edited things) and adding new migrations in the future would have been tricky.</p>
-</li>
+<li>One of my first tries wiped the migrations table completely, renamed the folder and just assumed Player never existed. This sounds good on paper and works perfectly for fresh databases. But existing databases will still contain the old Player-related models. With the old migrations gone, this is now all wrong and there is no information on how to migrate it.</li>
+<li>I tried initiating fresh migrations with a player model state so you can move an existing database over to it. But then fresh databases doesn&#x27;t work instead, since the player folder is gone. Also, you run into trouble with the auth system.</li>
+<li>I next tried to keep the old migrations (those we know work both for old and new databases) but to migrate it in-place. I did many different attempts at this, but every time one of the restraints above would get in the way.</li>
+<li>Eventually I wrote raw SQL code in the migrations to modify the database tables retroactively. That is, I basically manually removed all traces of Player in the database where it was, copying things table by table. This was very work-intensive but overall decently successful. With proper error-checking I could get most of the migration to work from old databases as well as for new databases. The trouble was the migrations themselves. No matter how I tried, I couldn&#x27;t get the migration history to accept what I had done - the dependencies now longer made sense on the database level (since I had manually edited things) and adding new migrations in the future would have been tricky.</li>
 </ul>
 <p>In the end I concluded that I had to abandon the notion that users be able to just do a single migrate command. Some more work would be needed on the user&#x27;s part.</p>
 <h3>The solution</h3>
 <p>In the end I needed to combine the power of migrations with the power of Git. Using Git resolved the Gordian knot about the player folder. Basically the process goes like this:</p>
 <ul>
-<li>
-<p>First I copied of the <code>players</code> folder and renamed it and everything in it to accounts. I added this to settings.INSTALLED_APPS. I also copied the migrations from player and renamed everything in them appropriately - those migrations thus look like Account has always existed - so when you run the migration from scratch the database will be created normally. Note that this also means setting the Account as the auth user from the beginning of the migration history. This would be fine when migrating from scratch except for the fact that it would clash with the still existing Player model saying the same thing. We dodge this problem by the way we run this migration (we&#x27;ll get to this later).</p>
-</li>
-<li>
-<p>Next I added one new migration in the Account app - this is the migration that copies the data from the player to the equivalent account-named copies in the database. Since Player will not exist if you run this from scratch you have to make sure that the Player model exists at that point in the migration chain. You can&#x27;t just do this with a normal import and traceback, you need to use the migration infrastructure. This kind of check works:</p>
-</li>
+<li>First I copied of the <code>players</code> folder and renamed it and everything in it to accounts. I added this to settings.INSTALLED_APPS. I also copied the migrations from player and renamed everything in them appropriately - those migrations thus look like Account has always existed - so when you run the migration from scratch the database will be created normally. Note that this also means setting the Account as the auth user from the beginning of the migration history. This would be fine when migrating from scratch except for the fact that it would clash with the still existing Player model saying the same thing. We dodge this problem by the way we run this migration (we&#x27;ll get to this later).</li>
+<li>Next I added one new migration in the Account app - this is the migration that copies the data from the player to the equivalent account-named copies in the database. Since Player will not exist if you run this from scratch you have to make sure that the Player model exists at that point in the migration chain. You can&#x27;t just do this with a normal import and traceback, you need to use the migration infrastructure. This kind of check works:</li>
 </ul>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>  <span style="color: #3D7B7B; font-style: italic"># ...  </span>
-
  
-
   <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">forwards</span>(apps, schema_editor):  
-
       <span style="color: #008000; font-weight: bold">try</span>:  
-
           PlayerDB <span style="color: #666666">=</span> apps<span style="color: #666666">.</span>get_model(<span style="color: #BA2121">&quot;players&quot;</span>, <span style="color: #BA2121">&quot;PlayerDB&quot;</span>)  
-
       <span style="color: #008000; font-weight: bold">except</span> <span style="color: #CB3F38; font-weight: bold">LookupError</span>:  
-
           <span style="color: #008000; font-weight: bold">return</span>  
-
  
-
       <span style="color: #3D7B7B; font-style: italic"># copy data from player-tables to database tables here  </span>
-
  
-
  <span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Migrations</span>(migrations<span style="color: #666666">.</span>Migration):  
-
      <span style="color: #3D7B7B; font-style: italic"># ...  </span>
-
      operations <span style="color: #666666">=</span> [  
-
          migrations<span style="color: #666666">.</span>RunPython(forwards, migrations<span style="color: #666666">.</span>RunPython<span style="color: #666666">.</span>noop)  
-
      ]  
 </pre></div>
 
 <ul>
-<li>
-<p>Now, a lot of my other apps/models has ForeignKey or Many2Many relations to the Player model. Aided by viewing the tables in the database I visited all of those and added a migration to each where I duplicated the player-relation with a duplicate account relation. So at this point I had set up a parallel, co-existing duplicate of the Player model, named Account.</p>
-</li>
-<li>
-<p>I now made sure to commit my changes to git and tag this position in the version history with a clear git tag for later reference. This is an important step. We are saving the historical point in time where the player- and account-apps coexisted.5. The git position safely saved, I now went about purging player. I removed the player app and its folder.</p>
-</li>
-<li>
-<p>Since the player folder is not there, it&#x27;s migrations are not there either. So in another app (any would work) I made a migration to remove the player tables from the database. Thing is, the missing player app means other migrations also cannot reference it. It is possible I could have waited to remove the player/ folder so as to be able to do this bit in pure Python. On the other hand, that might have caused issues since you would be trying to migrate with two Auth users - not sure. As it were, I ended up purging the now useless player-tables with raw SQL:</p>
-</li>
+<li>Now, a lot of my other apps/models has ForeignKey or Many2Many relations to the Player model. Aided by viewing the tables in the database I visited all of those and added a migration to each where I duplicated the player-relation with a duplicate account relation. So at this point I had set up a parallel, co-existing duplicate of the Player model, named Account.</li>
+<li>I now made sure to commit my changes to git and tag this position in the version history with a clear git tag for later reference. This is an important step. We are saving the historical point in time where the player- and account-apps coexisted.5. The git position safely saved, I now went about purging player. I removed the player app and its folder.</li>
+<li>Since the player folder is not there, it&#x27;s migrations are not there either. So in another app (any would work) I made a migration to remove the player tables from the database. Thing is, the missing player app means other migrations also cannot reference it. It is possible I could have waited to remove the player/ folder so as to be able to do this bit in pure Python. On the other hand, that might have caused issues since you would be trying to migrate with two Auth users - not sure. As it were, I ended up purging the now useless player-tables with raw SQL:</li>
 </ul>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span> <span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">django.db</span> <span style="color: #008000; font-weight: bold">import</span> connection  
-
   
-
     <span style="color: #3D7B7B; font-style: italic"># ...  </span>
-
   
-
     <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">_table_exists</span>(db_cursor, tablename):  
-
         <span style="color: #BA2121">&quot;Returns bool if table exists or not&quot;</span>  
-
         sql_check_exists <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;SELECT * from </span><span style="color: #A45A77; font-weight: bold">%s</span><span style="color: #BA2121">;&quot;</span> <span style="color: #666666">%</span> tablename  
-
     <span style="color: #3D7B7B; font-style: italic">### [Renaming Django&#39;s Auth User and App](https://evennia.blogspot.com/2017/08/renaming-djangos-auth-user-and-app.html)</span>
 </pre></div>
 
@@ -960,33 +955,15 @@
 <h3>Running the final migration</h3>
 <p>In brief, what our users will do after pulling the latest code is as follows:</p>
 <ol>
-<li>
-<p>If they are starting fresh, they just run <strong>evennia migrate</strong> as usual. All migrations referencing player will detect that there is no such app and just be skipped. They are finished, hooray!</p>
-</li>
-<li>
-<p>If they have an existing database, they should make a copy of my renaming-program, then check out  the tagged point in the git history I created above, a time when players and accounts coexisted in code.</p>
-</li>
-<li>
-<p>Since an important aspect of Evennia is that users create their own game in a &quot;game&quot; folder, the user can now use my renaming program to interactively rename all occurrencies of <code>player</code> into <code>account</code> (the term &#x27;player&#x27; is so ubiquitous that they may have used in in different places they don&#x27;t want to rename).</p>
-</li>
-<li>
-<p>Next they run migrations at that point of the git history. This duplicates player data into its renamed counterparts.</p>
-</li>
-<li>
-<p>Now they should check out the latest Evennia again, jumping back to a point where the players application is  gone and only accounts exists.</p>
-</li>
-<li>
-<p>Note that our migration history is wrong at this point. It will still contain references to migrations from the now nonexisting players app. When trying to run from scratch, those will fail. We need to force Django to forget that. So the user must here go into their database of choice and run the single SQL statement <strong>DELETE FROM django_migations;</strong> . This clears the migration history.  This is a step I wanted to avoid (since it requires users to use SQL) but in the end I concluded it must be done (and is hopefully a simple enough instruction).</p>
-</li>
-<li>
-<p>Next, we trick the database to again think that we have run all the migrations from the beginning (this time without any mention of players). This is done with the <strong>--fake</strong> switch: <strong>evennia migrate --fake</strong> . This fake-applies all migrations and stores in the database that they have run.</p>
-</li>
-<li>
-<p>However, the last few migrations are the ones I added just above. Those actually remove the player-related tables from the database. We really <em>do</em> want to run those. So we fake-<em>fake</em> undo those with <strong>evennia migrate --fake typeclasses 0007</strong>, which is the application and migration number I used to wipe players. This causes django to forget those migrations so we can run them again.</p>
-</li>
-<li>
-<p>Finally we run evennia migrate. This runs the previously &quot;forgotten&quot; migrations and purges the last vestigest of players from the database. Done!</p>
-</li>
+<li>If they are starting fresh, they just run <strong>evennia migrate</strong> as usual. All migrations referencing player will detect that there is no such app and just be skipped. They are finished, hooray!</li>
+<li>If they have an existing database, they should make a copy of my renaming-program, then check out  the tagged point in the git history I created above, a time when players and accounts coexisted in code.</li>
+<li>Since an important aspect of Evennia is that users create their own game in a &quot;game&quot; folder, the user can now use my renaming program to interactively rename all occurrencies of <code>player</code> into <code>account</code> (the term &#x27;player&#x27; is so ubiquitous that they may have used in in different places they don&#x27;t want to rename).</li>
+<li>Next they run migrations at that point of the git history. This duplicates player data into its renamed counterparts.</li>
+<li>Now they should check out the latest Evennia again, jumping back to a point where the players application is  gone and only accounts exists.</li>
+<li>Note that our migration history is wrong at this point. It will still contain references to migrations from the now nonexisting players app. When trying to run from scratch, those will fail. We need to force Django to forget that. So the user must here go into their database of choice and run the single SQL statement <strong>DELETE FROM django_migations;</strong> . This clears the migration history.  This is a step I wanted to avoid (since it requires users to use SQL) but in the end I concluded it must be done (and is hopefully a simple enough instruction).</li>
+<li>Next, we trick the database to again think that we have run all the migrations from the beginning (this time without any mention of players). This is done with the <strong>--fake</strong> switch: <strong>evennia migrate --fake</strong> . This fake-applies all migrations and stores in the database that they have run.</li>
+<li>However, the last few migrations are the ones I added just above. Those actually remove the player-related tables from the database. We really <em>do</em> want to run those. So we fake-<em>fake</em> undo those with <strong>evennia migrate --fake typeclasses 0007</strong>, which is the application and migration number I used to wipe players. This causes django to forget those migrations so we can run them again.</li>
+<li>Finally we run evennia migrate. This runs the previously &quot;forgotten&quot; migrations and purges the last vestigest of players from the database. Done!</li>
 </ol>
 <h3>Conclusions</h3>
 <p>And that&#x27;s it. It&#x27;s a bit more involved for the end user than I would have liked, and took me much longer than expected to figure out. But it&#x27;s possible to reproduce and you only need to do it once - and only if you have a database to convert. Whereas this is necessarily specified for Evennia, I hope this might give a hint for other django users aiming to do something like this!</p>
@@ -1082,8 +1059,8 @@
 <p>The currently largest Evennia game, the mush <a href="http://play.arxmush.org/">Arx - After the Reckoning</a> has helped a lot in stress testing. Their lead coder Tehom has also been active both in reporting issues and fixing them - kudos! There are however <a href="https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&amp;q=is%3Aopen%20is%3Aissue%20author%3ATehomCD%20label%3Abug">some lingering issues</a> which appears rarely enough that they have not been possible to reproduce yet; we&#x27;re working on those. Overall though I must say that considering how active Arx is, I would have expected to have seen even more &quot;childhood diseases&quot; than we have.</p>
 <h2>Launch scripts and discussions</h2>
 <p>It is always interesting with feedback, and some time back another discussion thread erupted over on <a href="http://musoapbox.net/topic/1366/what-is-out-there-hard-and-soft-codebases-of-choice">musoapbox, here</a>. The musoapbox regulars have strong opinions about many things and this time some were critical of Evennia&#x27;s install process. They felt it was too elaborate with too many steps, especially if you are approaching the system with no knowledge about Python. Apparently the average MUSH server has a much shorter path to go (even though that does require C compiling). Whereas I don&#x27;t necessarily agree with all notions in that thread, it&#x27;s valuable feedback - I&#x27;ve long acknowledged that it&#x27;s hard to know just what is hard or not for a beginner.</p>
-<p>Whereas we are planning to eventually move Evennia to pypi (so you can do pip install evennia), the instructions around getting virtualenv setup is not likely to change. So there is now unix shell scripts supplied with the system for installing on debian-derived systems (Debian, Ubuntu, Mint etc). I also made scripts for automating the setup and launch of Evennia and to use it with linux&#x27; initd within the scope of a virtualenv.</p>
-<p>So far these scripts are not tested by enough people to warrant them being generally recommended, but if you are on a supported OS and is interested to try they are found from the top of the Evennia repo, in bin/unix/. More info can be found <a href="https://github.com/evennia/evennia/wiki/Start-Stop-Reload#optional-server-startup-script-linux-only">on their documentation page</a>.</p>
+<p>Whereas we are planning to eventually move Evennia to pypi (so you can do pip install evennia), the instructions around getting virtualenv setup is not likely to change. So there is now unix shell scripts supplied with the system for installing on debian-derived systems (Debian, Ubuntu, Mint etc). I also made scripts for automating the setup and launch of Evennia and to use it with linux&#x27; initd within the scope of a virtualenv.<br />
+So far these scripts are not tested by enough people to warrant them being generally recommended, but if you are on a supported OS and is interested to try they are found from the top of the Evennia repo, in bin/unix/. More info can be found <a href="https://github.com/evennia/evennia/wiki/Start-Stop-Reload#optional-server-startup-script-linux-only">on their documentation page</a>.</p>
 <h2>Docker</h2>
 <p>Speaking of installing, Evennia now has an official Docker image, courtesy of the work of contributor and Ainneve dev feend78. The image is automatically kept up-to.date with the latest Evennia repo and allows Evennia to be easily deployed in a production environment (most cloud services supports this). See <a href="https://github.com/evennia/evennia/wiki/Running%20Evennia%20in%20Docker">Docker wiki page</a> for more info.</p>
 <h2>Lots of new PRs</h2>

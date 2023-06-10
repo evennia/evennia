@@ -144,7 +144,7 @@ but we&#x27;ll get there when we get there. :)</p>
                             <li>
                                 <a href="2023.html"> 2023 (1)
                                     
-                                        <ul class="devblog-calendar-closed">
+                                        <ul class="devblog-calendar-open">
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
@@ -302,7 +302,7 @@ but we&#x27;ll get there when we get there. :)</p>
                             <li>
                                 <a href="2018.html"> 2018 (4)
                                     
-                                        <ul class="devblog-calendar-open">
+                                        <ul class="devblog-calendar-closed">
                                     
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
@@ -730,159 +730,111 @@ but we&#x27;ll get there when we get there. :)</p>
                 
                     
                     <div class="blog_post">
-                    <h1 id=2018-09-30-evennia-0.8-released>
-    Evennia 0.8 released
-    <a class="devblog-headerlink" href="2018.html#2018-09-30-evennia-0.8-released" title="Permalink to this blog post">¶</a>
-    <div class="devblog-title-date">- September 30, 2018</div>
+                    <h1 id=2023-06-10-evennia-2.0.0-released-today>
+     Evennia 2.0.0 released today
+    <a class="devblog-headerlink" href="2023.html#2023-06-10-evennia-2.0.0-released-today" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- June 10, 2023</div>
 </h1>
-<p><a href="https://4.bp.blogspot.com/-2Axqwk9ps84/Ui8fvdZ3ReI/AAAAAAAAB-M/mNkREiXqmJM8Ilz-VmP3V-4YhazaZJIIQCPcBGAYYCw/s1600/evennia_logo_small.png"><img src="https://4.bp.blogspot.com/-2Axqwk9ps84/Ui8fvdZ3ReI/AAAAAAAAB-M/mNkREiXqmJM8Ilz-VmP3V-4YhazaZJIIQCPcBGAYYCw/s1600/evennia_logo_small.png" alt="" /></a>After about a year of work and almost 540 commits from close to 20 contributors, <a href="http://www.evennia.com/">Evennia</a> 0.8 is out! Evennia is a Python game server for creating text-based multiplayer games (MUDs, Mushes, etc) using Django and Twisted.</p>
-<p>Some of the upcoming improvements have been covered by previous dev blogs, such as the <a href="https://evennia.blogspot.com/2018/01/kicking-into-gear-from-distance.html">completely reworked server infrastructure</a>:</p>
-<p><a href="https://4.bp.blogspot.com/-R0ziGF8cMPc/Wmz0ppbJkQI/AAAAAAAAH9s/e1D6DVBVwMMia04OubZi5nvO1h8RfdRoACPcBGAYYCw/s1600/portal_server_reboot_develop.png"><img src="https://4.bp.blogspot.com/-R0ziGF8cMPc/Wmz0ppbJkQI/AAAAAAAAH9s/e1D6DVBVwMMia04OubZi5nvO1h8RfdRoACPcBGAYYCw/s320/portal_server_reboot_develop.png" alt="" /></a></p>
-<p>as well as the new <a href="https://evennia.blogspot.com/2018/08/inline-building-in-upcoming-evennia-08.html">Online Creation System</a> that allows for editing in-game prototypes using a powerful menu system:</p>
-<p><a href="https://3.bp.blogspot.com/-ht9SIPcUxfc/W3f0xcl2HdI/AAAAAAAAJIw/cZt90znG82sSNg7Y-dpdiG5f1EXefZiNACPcBGAYYCw/s1600/Screenshot%2Bfrom%2B2018-08-18%2B12-26-12.png"><img src="https://3.bp.blogspot.com/-ht9SIPcUxfc/W3f0xcl2HdI/AAAAAAAAJIw/cZt90znG82sSNg7Y-dpdiG5f1EXefZiNACPcBGAYYCw/s400/Screenshot%2Bfrom%2B2018-08-18%2B12-26-12.png" alt="" /></a></p>
-<p>Other improvements are in the web client, which supports split-panes out of the box. The user can split the output area in any number of panes, resize as desired and then assign different types of content to each pane. You can also have panes that absorb &quot;all the rest&quot; or &quot;all&quot; of the content.</p>
-<p><a href="https://4.bp.blogspot.com/-BKHBV0L443U/W7EgLdZIQmI/AAAAAAAAJZo/Dzv_aD80B-80GgxzZsyq6XUSzAzv86IwQCLcBGAs/s1600/Screenshot%2Bfrom%2B2018-09-30%2B21-09-55.png"><img src="https://4.bp.blogspot.com/-BKHBV0L443U/W7EgLdZIQmI/AAAAAAAAJZo/Dzv_aD80B-80GgxzZsyq6XUSzAzv86IwQCLcBGAs/s400/Screenshot%2Bfrom%2B2018-09-30%2B21-09-55.png" alt="" /></a></p>
-<p>There are still some bits which are a bit shaky and there is still much to do with the web client (for example, not that many outgoing messages yet defaults to being tagged in a way that the webclient recognizes). But it&#x27;s a step forward!</p>
-<p>There are many other improvements for developers, such as easier tools for running debuggers and a lot of new utilities and helper functions. The menu-creation tool (EvMenu) has seen a lot of improvements and also sport a few new decorators for quickly creating multi-page menus with full functionality to flip through and select large numbers of options.</p>
-<p>The community has also chipped in with a large number of optional contributions for developers to use for their own game, such as a full turn-based combat system (divided into convenient chunks for the dev to pick and choose support for everything from magic and potions to equipment and ranged attacks).  There are also a range of helper functions for creating simpler menus and build commands as well as auditing tools and additions making better use of Django&#x27;s very mature security features.</p>
-<p>The more detailed list of improvements and changes can be found in the announcement <a href="https://groups.google.com/forum/#%21category-topic/evennia/evennia-news/teSx6ICHSTU">here</a>. As usual, please report any issues to the issue tracker on github.</p>
-<h3>Future</h3>
-<p>In the immediate future, we&#x27;ll focus on resolving any bugs that may have slipped through the cracks and also resolve some other issues in the pipeline.</p>
-<p>But beyond that, work on Evennia 0.9 will begin. And before you ask - yes Evennia 0.9 is the version where we&#x27;ll move fully to Python3. Our dependencies have now reached a point where this is possible and there will be no intermediary Python2/3 version. There is no timeline for the 0.9 release but it should hopefully not be too tricky for the community to make the jump when the time comes.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Field_Hamois_Belgium_Luc_Viatour.jpg" alt="screenshot" />
+<br></p>
+<p>As part of our new use of <a href="https://semver.org/">semantic versioning</a>, Evennia
+2.0.0 was released today. Evennia is a Python <code>MU*</code> creation framework and
+server. As the change of the major version indicates, this is a backwards
+incompatible change ... well, <em>maybe</em>. It depends on your use-case. Read on.</p>
+<p>In this post I&#x27;ll go over some of the new things since the release of Evennia
+1.0 some six months ago.</p>
+<h2>New version of the ExtendedRoom</h2>
+<p>The main thing that <em>may</em> be backwards income is the <code>ExtendedRoom</code> contrib.
+This contrib extends the standard room with the ability to look at &#x27;details&#x27; and
+to have descriptions that change by season and by time-of-day in the game. I
+originally wrote the <code>ExtendedRoom</code> contrib more than a decade ago and it was
+in dire need to be recactored and cleaned up to use the modern tools available
+in Evennia. Not to mention make use of my additional years of experience since
+first creating it.</p>
+<p>Here are the <a href="https://github.com/evennia/evennia/discussions/3200">new features</a>:</p>
+<ul>
+<li>All rooms can now have any number of &quot;room states&quot;, like &quot;burning&quot;, &quot;flooded&quot;,
+&quot;dark&quot;, &quot;crowded&quot; or what have you. The <code>season</code> and <code>time_of_day</code> are now just
+treated as any other room-states except that they auto-change with in-game time.</li>
+<li>Rooms can have any number of swappable room-descriptions, just by adding an
+Attribute <code>desc_&lt;roomstate&gt;</code> to the room. This will be used when a given
+room-state is set on the room. If no room state matches, the traditional
+<code>desc</code> Attribute is used.</li>
+<li>In the old contrib, you could add special tags, like <code>&lt;morning&gt;...&lt;/morning&gt;</code>
+in your descriptions and have those parts of the texts only appear when it&#x27;s
+morning in-game. This still works, but only ever supported time-of-day states.
+The new way is to make use Evennia&#x27;s FuncParser to embed functions in the text
+directly. The <code>ExtendedRoom</code> understands the new <code>state</code> inline function. This
+can be used with <em>any</em> room state (including seasons and time-of-day). For
+example: <code>$state(morning, The morning sun is shining in.)</code> or
+<code>$state(burning, This place is on fire!)</code>.</li>
+<li>The room still supports <code>details</code> - the ability to look at things in the room
+without needing to create a new database object first. This hasn&#x27;t changed.</li>
+<li>The <code>ExtendedRoom</code> now also has simple support for echoing random messages now
+and then to the room.</li>
+</ul>
+<p>Overall, the code was completely re-written and cleaned up, making use of the
+latest Evennia tooling. It also has much better unit-test coverage. All the unit
+tests of the old implementation passes for the new one, but the changes are
+so big that it&#x27;s nevertheless possible people making heavy use of
+this contrib may see side effects from upgrading.</p>
+<p>Now, a contrib is not part of the core, so it (potentially) being
+backwards-incompatible should normally not warrant a major version bump. But I
+feel the <code>ExtendedRoom</code> contrib is used by so many in the Evennia community that
+it&#x27;s prudent to up the major version to let people know that they should
+keep an eye out when upgrading.</p>
+<h2>More on the Beginner Tutorial</h2>
+<p>Most of my time has been spent continuing to work on the new <a href="https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Beginner-Tutorial-Overview.html">Beginner Tutorial</a>. Notably on <a href="https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Part3-Overview.html">part three</a>, where
+we are making a whole little Evennia MUD game from scratch. While still not
+done, I have now added detailed lessons on</p>
+<ul>
+<li>Creating RPG dice rollers and rule systems (in our example we are using the
+<em>Knave</em> TTRPG ruleset).</li>
+<li>Organizing Player Character data, and character generation.</li>
+<li>In-game objects and items.</li>
+<li>Handling equipment and weapons.</li>
+<li>In-game rooms.</li>
+<li>Non-player characters.</li>
+<li>Two types of Combat systems (Twitch-based and Turn based).</li>
+</ul>
+<p>TODOs are Monster/NPC AI, Dynamical generation of rooms, Questin, Shops and some
+more bits and bobs. And of course a separate session on building the game world
+and tying all these systems together into a little example game.</p>
+<h2>A truckload of new features!</h2>
+<p>As usual, the Evennia community ame through with a bunch of new useful stuff since
+the release of Evennia 1.0.</p>
+<ul>
+<li><code>Containers</code> - A new contrib with a typeclass and commands to make and manage
+all sorts of containers, from chests to crates and jars, along with commands
+to put things in them and take things out of them. A great place to start
+tweaking for your own game implementation (InspectorCaracal).</li>
+<li>The ANSI color fallbacks (for use when your client does not support XTerm256)
+were improved to make more sense (InspectorCaracal).</li>
+<li>New <code>logger.delete_log</code> method for deleting log files from inside the server (aMiss-aWry).</li>
+<li>For those intending to override the <code>SessionHandler</code>, it was cleaned up and
+refactored to make it less prone to cause circular import issues (Volund).</li>
+<li>New <code>create_channel(attr=...)</code> keyword, for setting channel Attributes
+directly on creation, especially from channels defined in <code>settings.DEFAULT_CHANNELS</code> (me)</li>
+<li>Attributes will now properly save Python <code>deques</code> with <code>maxlen=...</code> set (me).</li>
+<li><a href="https://www.evennia.com/docs/latest/Components/Tags.html#tagcategoryproperty"><code>TagCategoryProperty</code></a> - A new way to define tags with a particular category on a class at creation-time, without having to do so in the <code>at_object_creation</code> method (me).</li>
+<li>A lot of bug fixes; <a href="https://www.evennia.com/docs/latest/Coding/Changelog.html">see the CHANGELOG</a> for all the details!</li>
+</ul>
+<h2>Continuing</h2>
+<p>Over summer, my development usually slows down a bit, but I plan to keep pushing
+on getting that Beginner tutorial done. We are also seeing more people joing
+the <a href="https://discord.gg/AJJpcRUhtF">evennia discord</a>, which means more eyes on
+the code and more bugs and edge cases being detected (and ironed out). So a lot
+of maintenance work to be done in the short term.</p>
+<p>In the longer term, there are a lot of exciting plans for Evennia in the pipe,
+but we&#x27;ll get there when we get there. :)</p>
+<p>Have a nice summer!</p>
 
 <footer class="devblog-footer">
     <span class="devblog-copyrights">
-        
-    </span>
-    <a class="devblog-to-toplink" href="2018.html#2018-09-30-evennia-0.8-released" title="Link to top of post">⇬(top)</a>
-</footer>
-                    </div>
-                
-                    <hr>
-                    <div class="blog_post">
-                    <h1 id=2018-08-18-inline-building-in-upcoming-evennia-0.8>
-    Inline building in upcoming Evennia 0.8
-    <a class="devblog-headerlink" href="2018.html#2018-08-18-inline-building-in-upcoming-evennia-0.8" title="Permalink to this blog post">¶</a>
-    <div class="devblog-title-date">- August 18, 2018</div>
-</h1>
-<p><a href="https://4.bp.blogspot.com/-h2OiulcCLIY/W3gLw-UzGgI/AAAAAAAAJKI/bS_gTmOcQoAgaGmCOnx-b4x60zTr1pVCgCLcBGAs/s1600/773px-Industrial_Trust_Building_Providence_RI.jpg"><img src="https://4.bp.blogspot.com/-h2OiulcCLIY/W3gLw-UzGgI/AAAAAAAAJKI/bS_gTmOcQoAgaGmCOnx-b4x60zTr1pVCgCLcBGAs/s200/773px-Industrial_Trust_Building_Providence_RI.jpg" alt="" /></a></p>
-<p><a href="http://www.evennia.com/">Evennia</a>, the Python MUD-server game development kit, is slowly creeping closer to its 0.8 release.</p>
-<p>In our development branch I&#x27;ve just pushed the first version of the new OLC (OnLine Creator) system. This is a system to allow builders (who may have limited coding knowledge) to customize and spawn new in-game objects more easily without code access. It&#x27;s started with the <strong>olc</strong> command in-game. This is a visual system for manipulating Evennia <em>Prototypes</em>.</p>
-<h3>Briefly on Prototypes</h3>
-<p>The <em>Prototype</em> is an Evennia concept that has been around a good while. The prototype is a Python dictionary that holds specific keys with values representing properties on a game object. Here&#x27;s an example of a simple prototype:</p>
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span> {&quot;key&quot;: &quot;My house&quot;, 
-  &quot;typeclass&quot;: &quot;typeclasses.houses.MyHouse&quot;}
-</pre></div>
+        <p>Image by Luc Viatour / <a href="https://lucnix.be">https://lucnix.be/</a>, released under Creative Commons.</p>
 
-<p>By passing this dict to the spawner, a new object named &quot;My house&quot; will be created. It will be set up with the given typeclass (a &#x27;typeclass&#x27; is, in Evennia lingo, a Python class with a database backend). A prototype can specify all aspects of an in-game object - its attributes (like description and other game-specific properties), tags, aliases, location and so on. Prototypes also support inheritance - so you can expand on an existing template without having to add everything fresh every time.</p>
-<p>There are two main reasons for the Prototypes existing in Evennia:</p>
-<ul>
-<li>They allow you to customize <em>individual</em> objects easier. For example you could have a &#x27;Goblin&#x27; base prototype with inheriting prototypes  Goblin Wizard&quot; and &quot;Goblin Chieftain&quot; - all using the same Typeclass, but with different Attributes, equipment etc.</li>
-<li>Prototypes can be manipulated and scripted by builders without needing full Python access. This means that while the Typeclasses are designed and supplied by the Python developer, the builders can then use that typeclass to make very different types of object instances in-game.</li>
-</ul>
-<h3>What&#x27;s new</h3>
-<p>As said, Prototypes have been around for a good while in Evennia. But in the past they were either manually entered directly as a dict on the command line, or created in code and read from a Python module. The former solution is cumbersome and requires that you know how to build a proper-syntax Python dictionary. The latter requires server code access, making them less useful to builders than they could be.</p>
-<p><em>Note: If you are visually impaired, each image is also a link to a text-only version.</em></p>
-<p><a href="https://pastebin.com/raw/3YNtAdvz"><img src="https://2.bp.blogspot.com/-ht9SIPcUxfc/W3f0xcl2HdI/AAAAAAAAJIk/VSk4VaBMhTc3J8ZaTnar9X2Rws-LOMiqACLcBGAs/s400/Screenshot%2Bfrom%2B2018-08-18%2B12-26-12.png" alt="OLC index" title="OLC index 1" /></a></p>
-<p>In Evennia 0.8, while you can still insert the Prototype as a raw dict, <strong>spawn/menu</strong> or the new <strong>olc</strong> command opens a new menu-driven interface.<br />
-<a href="https://pastebin.com/raw/4UbUNGmG"><img src="https://3.bp.blogspot.com/-tdauL-B6j1E/W3f01ltKlzI/AAAAAAAAJIs/Q5-cIY6AcGU_IXXasdzPWec7cxN061WrwCLcBGAs/s400/Screenshot%2Bfrom%2B2018-08-18%2B12-27-37.png" alt="Select a prototype to load. This will replace any prototype currently being edited! ___________________________________________________________________________________________________  Select with &lt;num&gt;. Other actions: examine &lt;num&gt; | delete &lt;num&gt; Back (index) | Validate prototype | Quit   1: goblin_archer      5: goblin_archwizard                2: goblin_wizard                                          3: goblin                                                 4: archwizard_mixin            " title="Prototype loading" /></a></p>
-<p>More importantly, builders can now create, save and load prototypes in the database for themselves and other builders to use. The prototypes can be tagged and searched as a joint resource. Builders can also lock prototypes if others are not to be able to read or use them to spawn things. Developers can still supply module-based &quot;read-only&quot; prototypes (for use as starting points or examples to their Builders, for example).</p>
-<p><a href="https://pastebin.com/raw/dUGiSLDL"><img src="https://2.bp.blogspot.com/-XFm3KqhLBwE/W3f93upyVLI/AAAAAAAAJJA/eZDWGPHM93MWvt2T5W8Ytr4cHstGg8iXACLcBGAs/s400/Screenshot%2Bfrom%2B2018-08-18%2B13-04-48.png" alt="Found 1 match.   (Warning: creating a prototype will overwrite the current prototype!) ____________________________________________________________________________________  Actions: examine &lt;num&gt; | create prototype from object &lt;num&gt; Back (index) | Quit   1: Griatch(#1)" title="Load prototype from object" /></a></p>
-<p>You can now also use the menu to search for and create a new Prototype based on <em>an existing object</em> (if you have access to do so). This makes it quick to start up a new prototype and tweak it for spawning other similar objects. Of course you could spawn temporary objects without saving the prototype as well.</p>
-<p><a href="https://pastebin.com/raw/VspKN3xf"><img src="https://1.bp.blogspot.com/-DYcYStEWXKk/W3f_-bnH4vI/AAAAAAAAJJY/iv4-GN8NTpUCpBvyXBwMUABG8TTPJYN9ACLcBGAs/s400/Screenshot%2Bfrom%2B2018-08-18%2B13-15-44.png" alt="The Typeclass defines what &#x27;type&#x27; of object this is - the actual working code to use.  All spawned objects must have a typeclass. If not given here, the typeclass must be set in one of the prototype&#x27;s parents.  [No typeclass set] ______________________________________________________________________________________________________________________________________________  Back (prototype-parent) | Forward (key) | Index | Validate prototype | Quit   1: evennia.contrib.tutorial_world.mob.Mob                 7: evennia.contrib.tutorial_world.objects.TutorialObject    2: evennia.contrib.tutorial_world.objects.Climbable       8: evennia.contrib.tutorial_world.objects.Weapon            3: evennia.contrib.tutorial_world.objects.CrumblingWall   9: evennia.contrib.tutorial_world.objects.WeaponRack        4: evennia.contrib.tutorial_world.objects.LightSource     10: evennia.contrib.tutorial_world.rooms.BridgeRoom         5: evennia.contrib.tutorial_world.objects.Obelisk         current: (1/3)                                              6: evennia.contrib.tutorial_world.objects.Readable        next page " title="Typeclass selection, miltipage" /></a></p>
-<p>Builders will likely not know which typeclasses are available in the code base. There are new a few ways to list them. The menu display makes use of Evennia 0.8&#x27;s new EvMenu improvements, which allows for automatically creating multi-page listings (see example above).</p>
-<p>There is also a new switch to the <strong>typeclass</strong> command, <strong>/list</strong>, that will list all available typeclasses outside of the OLC.</p>
-<h3>Protfuncs</h3>
-<p>Another new feature are <em>Protfuncs.</em> Similarly to how <em>Inlinefuncs</em> allows for calling for the result of a function call inside a text string, Protfuncs allows for calling functions inside a prototype&#x27;s values. It&#x27;s given on the form $funcname(arguments),  where arguments could themselves contain one or more nested Protfuncs.</p>
-<p>As with other such systems in Evennia, only Python functions in a specific module or modules (given by settings) are available for use as Protfuncs in-game. A bunch of default ones are included out of the box. Protfuncs are called at the time of spawning. So for example, you could set the Attribute</p>
-<blockquote>
-<p><strong>Strength = $randint(5, 20)</strong></p>
-</blockquote>
-<p>to automatically spawn objects with a random strength between 5 and 20.</p>
-<p><a href="https://pastebin.com/raw/3VLMEPFd"><img src="https://1.bp.blogspot.com/-qHeRpEQTEzU/W3gFpJ9ge5I/AAAAAAAAJJw/-PVcelDk2CsIW1nJwWvMjazcJ9LyKx5pgCLcBGAs/s400/Screenshot%2Bfrom%2B2018-08-18%2B13-40-04.png" alt="prototype-key: goblin, -tags: [], -locks: spawn:all();edit:all() -desc: Built from goblin prototype-parent: None      key: goblin aliases: monster, mob attrs:  desc = You see nothing special.  strength = $randint(5,20)  agility = $random(6,20)  magic = 0 tags:  mob (category: None) locks:  call:true();control:id(1) or perm(Admin);delete:id(1) or perm(Admin);edit:perm(Admin);examine:perm(Builder);get:all();puppet:pperm(Developer) ;tell:perm(Admin);view:all() location: #2 home: #2   No validation errors found. (but errors could still happen at spawn-time) ______________________________________________________________________________________________________________________________________________  Actions: examine &lt;num&gt; | remove &lt;num&gt; Back (index) | Validate prototype | Quit   1: Spawn in prototype&#x27;s defined location (#2)       2: Spawn in Griatch&#x27;s location (Limbo)              3: Spawn in Griatch&#x27;s inventory                     4: Update 2 existing objects with this prototype" title="Spawning screen" /></a></p>
-<p>When spawning, the olc will validate the prototype and run tests on any Protfunc used. For convenience you can override the spawn-location if any is hard-coded in the prototype.</p>
-<p><a href="https://pastebin.com/raw/K0a1z23h"><img src="https://4.bp.blogspot.com/-mkpUmXNQsWQ/W3gKE-5nnlI/AAAAAAAAJJ8/S65RiLXa6BcSstru3ePZmMna38cnWGRYQCLcBGAs/s400/Screenshot%2Bfrom%2B2018-08-18%2B13-58-27.png" alt="https://pastebin.com/raw/K0a1z23h" /></a></p>
-<p>The system will also allow you to try updating existing objects created from the same-named prototype earlier. It will sample the existing objects and calculate a &#x27;diff&#x27; to apply. This is bit is still a bit iffy, with edge cases that still needs fixing.</p>
-<h2>Current status</h2>
-<p>The OLC is currently in the develop branch of Evennia - what will soon(ish) merge to become Evennia 0.8.</p>
-<p>It&#x27;s a pretty big piece of code and as such it&#x27;s still a bit unstable and there are edge cases and display issues to fix. But it would be great with more people trying it out and reporting errors so the childhood issues can be ironed out before release!</p>
-
-<footer class="devblog-footer">
-    <span class="devblog-copyrights">
-        
     </span>
-    <a class="devblog-to-toplink" href="2018.html#2018-08-18-inline-building-in-upcoming-evennia-0.8" title="Link to top of post">⇬(top)</a>
-</footer>
-                    </div>
-                
-                    <hr>
-                    <div class="blog_post">
-                    <h1 id=2018-01-27-kicking-into-gear-from-a-distance>
-    Kicking into gear from a distance
-    <a class="devblog-headerlink" href="2018.html#2018-01-27-kicking-into-gear-from-a-distance" title="Permalink to this blog post">¶</a>
-    <div class="devblog-title-date">- January 27, 2018</div>
-</h1>
-<p><a href="https://3.bp.blogspot.com/-63mc2ur3Gyk/Wmz6puNzMGI/AAAAAAAAH94/vsXKZcCu2MwKlEaoCi7IjzWHJnPvGAQKgCLcBGAs/s1600/karate-312470_640.png"><img src="https://3.bp.blogspot.com/-63mc2ur3Gyk/Wmz6puNzMGI/AAAAAAAAH94/vsXKZcCu2MwKlEaoCi7IjzWHJnPvGAQKgCLcBGAs/s200/karate-312470_640.png" alt="" /></a></p>
-<p>The last few weeks I have reworked the way <a href="http://www.evennia.com/">Evennia</a>&#x27;s startup procedure works. This is now finished in the <em>develop</em> branch so I thought I&#x27;d mention a little what&#x27;s going on.</p>
-<p>Evennia, being a server for creating and running text-games (MU*s), consists of two main processes:</p>
-<ul>
-<li>The <em>Portal</em> - this is what players connect to with their clients.</li>
-<li>The <em>Server</em> - this is the actual game, with the database etc. This can be shutdown and started again without anyone connected to the Portal getting kicked from the game. This allows for hot-adding new Python code into the running Server without any downtime.</li>
-</ul>
-<p>Since Evennia should be easy to set up <em>and</em> also run easily on Windows as well as on Linux/Mac, we have foregone using the linux process management services but instead offered our own solution. This is how the reload mechanism currently looks in master branch:</p>
-<p><a href="https://1.bp.blogspot.com/-U98LnVTJF7Y/WmzvHbQN2NI/AAAAAAAAH9U/10u8n91y56MdyW4Fmuv9k5Abk79TCCtUgCLcBGAs/s1600/portal_server_reboot_master.png"><img src="https://1.bp.blogspot.com/-U98LnVTJF7Y/WmzvHbQN2NI/AAAAAAAAH9U/10u8n91y56MdyW4Fmuv9k5Abk79TCCtUgCLcBGAs/s400/portal_server_reboot_master.png" alt="" /></a></p>
-<p>Here I&#x27;ve excluded connections irrelevant to reloading, such as the Twisted AMP connection between Portal and Server. Dashed lines suggest a more &quot;temporary&quot; connection than a solid line.</p>
-<p>The <strong><em>Launcher</em></strong> is the evennia program one uses to interact with the Server in the terminal/console. You give it commands like evennia start/stop/reload.</p>
-<ul>
-<li>When <strong>starting</strong>, the Launcher spawns a new program, the <em><strong>Runner</strong></em>, and then exits. The Runner stays up and starts the Portal and Server. When it starts the Server, it does so in a blocking way and sits waiting in a stalled loop for the Server process to end. As the Server and Portal start they record their current process-ids in <em><strong>.pid files</strong></em>.</li>
-<li>When <strong>reloading</strong>, the Launcher writes a flag in a little <em><strong>.restart</strong></em> <em><strong>file</strong></em>. The Launcher then looks up the Server&#x27;s .pid file and sends a SIGINT signal to that process to tell it to gracefully shut down. As the Server process dies, the Runner next looks at the Server&#x27;s .restart file. If that indicates a reload is desired, The Runner steps in its loop and starts up a new Server process.</li>
-<li>When <strong>stopping,</strong> everything happens like when reloading, except the .restart file tells the Runner that it should just exit the loop and let the Server stay down. The Launcher also looks at the Portal&#x27;s .pid file and sends a SIGINT signal to kill it. Internally the processes catch the SIGINT and close gracefully.</li>
-</ul>
-<p>The original reason for this Server-Portal-Runner setup is that the Portal is <em>also</em> reloadable in the same way (it&#x27;s not shown above). But over time I&#x27;ve found that having the Portal reloadable is not very useful - since players get disconnected when the Portal reloads one can just as well stop and start both processes. There are also a few issues with the setup, such as the .pid files going stale if the server is killed in some catastrophic way and various issues with reliably sending signals under Windows. Also, the interactive mode works a little strangely since closing the terminal will actually kill the Runner, not the Server/Portal - so they will keep on running except they can no longer reload ...<br />
-It overall feels a little ... fiddly.</p>
-<p>In develop branch, this is now the new process management setup:</p>
-<p><a href="https://4.bp.blogspot.com/-R0ziGF8cMPc/Wmz0ppbJkQI/AAAAAAAAH9o/2BNcUTEqvBwkmlZAy7Q74Xmww_LkpB3wgCLcBGAs/s1600/portal_server_reboot_develop.png"><img src="https://4.bp.blogspot.com/-R0ziGF8cMPc/Wmz0ppbJkQI/AAAAAAAAH9o/2BNcUTEqvBwkmlZAy7Q74Xmww_LkpB3wgCLcBGAs/s400/portal_server_reboot_develop.png" alt="" /></a></p>
-<p>The Portal is now a Twisted <a href="https://twistedmatrix.com/documents/current/api/twisted.protocols.amp.html">AMP</a> server, while the Evennia Server and Launcher are AMP clients. The Runner is no more.</p>
-<ul>
-<li>When <strong>starting</strong>, the Launcher spawns the Portal and tries to connect to it as an AMP client as soon as it can. The Portal in turn spawns the Server. When the Server AMP client connects back to the Portal, the Portal reports back to the Launcher over the AMP connection. The Launcher then prints to the user and disconnects.</li>
-<li>When <strong>reloading</strong>, the Launcher connects to the Portal and gives it a reload-command. The Portal then tells the Server (over their AMP connection) to shutdown. Once the Portal sees that the Server has disconnected, it spawns a new Server. Since the Portal itself knows if a reload or shutdown is desired no external .restart (or .pid) files are needed. It reports the status back to the Launcher that can then disconnect.</li>
-<li>When <strong>stopping</strong>, the Launcher sends the &quot;Stop Server&quot; command to the Portal. The Portal tells the Server to shut down and when it has done so it reports back to the Launcher that the Server has stopped. The Launcher then sends the &quot;Stop Portal&quot; command to also stop the Portal.  The Launcher waits until the Portal&#x27;s AMP port dies, at which point it reports the shutdown to the user and stops itself.</li>
-</ul>
-<p>So far I really like how this new setup works and while there were some initial issues on Windows (spawning new processes does not quite work they way you expect on that platform) I think this should conceptually be more OS-agnostic than sending kill-signals.</p>
-<p>This solution gives much more control over the processes. It&#x27;s easy to start/stop the Server behind the portal at will. The Portal knows the Server state and stores the executable-string needed to start the Server. Thus the Server can also itself request to be reloaded by just mimicking the Launcher&#x27;s instructions.<br />
-The launcher is now only a client connecting to a port, so one difference with this setup is that there is no more &#x27;interactive&#x27; mode - that is the Server/Portal will always run as daemons rather than giving log messages directly in the terminal/console. For that reason the Launcher instead has an in-built log-tailing mechanism now. With this the launcher will combine the server/portal logs and print them in real time to easily see errors etc during development.</p>
-<p>The merger of the develop branch is still a good bit off, but anyone may try it out already here: https://github.com/evennia/evennia/tree/develop . Report problems to the issue tracker as usual.</p>
-
-<footer class="devblog-footer">
-    <span class="devblog-copyrights">
-        
-    </span>
-    <a class="devblog-to-toplink" href="2018.html#2018-01-27-kicking-into-gear-from-a-distance" title="Link to top of post">⇬(top)</a>
-</footer>
-                    </div>
-                
-                    <hr>
-                    <div class="blog_post">
-                    <h1 id=2018-01-05-new-year,-new-stuff>
-     New year, new stuff
-    <a class="devblog-headerlink" href="2018.html#2018-01-05-new-year,-new-stuff" title="Permalink to this blog post">¶</a>
-    <div class="devblog-title-date">- January  5, 2018</div>
-</h1>
-<p><a href="https://1.bp.blogspot.com/-Cos98gc1wVU/Wk9Qdu2v6pI/AAAAAAAAH3U/O29xABaYrPYxPT3xubw79li5zU-kj_HVACLcBGAs/s1600/child-1539341_640.jpg"><img src="https://1.bp.blogspot.com/-Cos98gc1wVU/Wk9Qdu2v6pI/AAAAAAAAH3U/O29xABaYrPYxPT3xubw79li5zU-kj_HVACLcBGAs/s200/child-1539341_640.jpg" alt="" /></a></p>
-<p>Happy 2018 everyone! Here&#x27;s a little summary of the past Evennia year and what is brewing.</p>
-<p><em>(Evennia is a Python server- and toolbox for creating text-based multiplayer games (MU*)).</em></p>
-<p>The biggest challenge for me last year Evennia-wise was the release of Evennia 0.7. Especially designing the migration process for arbitrary users migrating the Django auth-user took a lot of thought to figure out <a href="http://evennia.blogspot.se/2017/08/renaming-djangos-auth-user-and-app.html">as described in my blog post here.</a> But now 0.7 <a href="http://evennia.blogspot.se/2017/09/evennia-07-released.html">is released</a> and a few initial minor adjustments could be made after feedback from daring pilot testers. <a href="https://groups.google.com/forum/#%21category-topic/evennia/evennia-news/0JYYNGY-NfE">The final process</a> of migrating from 0.6 to 0.7 is, while involved, a step-by-step copy&amp;paste list that has worked fine for most to follow. I&#x27;ve gotten far fewer questions and complains about it than could be expected so that&#x27;s a good sign.</p>
-<p>Working away on the boring but important behind-the-scenes stuff made me less able to keep up with more &quot;mundane&quot; issues and bugs popping up, or with adding new &quot;fun&quot; features to existing code. Luckily the Evennia community has really been thriving this year; It feels like new users pop up in the support channel all the time now. The number of pull requests both fixing issues and offering new features and contribs have really picked up. A bigger part of my time has been spent reviewing Pull Requests this year than any other I think. I would like to take the opportunity to thank everyone contributing, it&#x27;s really awesome to see others donating their time and energy adding to Evennia. The <a href="http://evennia.blogspot.se/2017/10/evennia-in-hacktoberfest-2017.html">Hacktoberfest</a> participation was also surprisingly effective in getting people to create PRs - I have a feeling some were just happy to have an &quot;excuse&quot; for getting started to contribute. We should attend that next year too.</p>
-<p>One thing we added with 0.7 was a more formal branching structure: Evennia now uses fixed <strong>master</strong> and <strong>develop</strong> branches, where master is for bug-fixes and develop is for new features (things that will eventually become evennia 0.8). This is simple but enough for our needs; it also makes it easier to track new from old now that we are actually doing releases.</p>
-<p>Now that Twisted is at a point where this is possible for us to do, we also now have a <a href="https://groups.google.com/forum/#%21category-topic/evennia/evennia-news/GbLh1GF-ZaY">sort-of plan</a> for finally moving Evennia to Python 3. I won&#x27;t personally be actively working on it until after 0.8 is out though. I don&#x27;t expect both Evennia 0.8 and 0.9 (which will be pure py3) to get released this year, but we&#x27;ll see - so far contributors have done all the work on the conversion.</p>
-<p>At any rate, this coming year will probably be dominated by catching up on issues and edge cases that are lining our <a href="https://github.com/evennia/evennia/issues">Issue tracker</a>. One side effect of more newcomers is more eyes on the code and finding the creaky-bits. At least for me, most of my Evennia-time will be spent resolving bugs and issues. The fun thing is that unlike previous years this is not only up to me anymore - hopefully others will keep helping to resolve issues/bugs to broaden our bandwidth when it comes to keeping Evennia stable. The faster we can handle the backlog of issues the faster we can focus on new shiny features after all.</p>
-<p>Finally, a continued great thank you to those of you contributing to the <a href="https://www.patreon.com/griatch">Patreon</a>. Even small donations have a great encouraging value when working on something as niche as a Python MU* game server in 2018 - thanks a lot!</p>
-
-<footer class="devblog-footer">
-    <span class="devblog-copyrights">
-        
-    </span>
-    <a class="devblog-to-toplink" href="2018.html#2018-01-05-new-year,-new-stuff" title="Link to top of post">⇬(top)</a>
+    <a class="devblog-to-toplink" href="2023.html#2023-06-10-evennia-2.0.0-released-today" title="Link to top of post">⇬(top)</a>
 </footer>
                     </div>
                 

@@ -1,5 +1,5 @@
 title: Tutorial-writing and Attributes galore
-copyrights: [Alpha Stock Images](http://alphastockimages.com/) (released under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) )
+copyrights: Image from [Alpha Stock Images](http://alphastockimages.com/) (released under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) )
 
 ---
 

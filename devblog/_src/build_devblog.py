@@ -70,6 +70,7 @@ class BlogPost:
     """
 
     title: str
+    title_short: str
     blurb: str
     permalink: str
     pagelink: str
@@ -199,6 +200,12 @@ def md2html():
                     image_copyrights = line[12:]
                     image_copyrights = mistletoe.markdown(image_copyrights)
 
+        # merge two lines if they are not separated by a blank line
+        # (this is to allow for markdown to be split over multiple lines)
+
+        lines = " ".join(lines)
+        lines = lines.split("\n\n")
+
         # get first paragraph as blurb
         markdown_blurb = "\n".join(
             [line for line in lines if line and not line.startswith("!")][:3]
@@ -213,8 +220,11 @@ def md2html():
         pagelink = OUTFILE_TEMPLATE.format(year=date.year)
         permalink = "{}#{}".format(pagelink, anchor)
 
+        shortlink_len = 18
+
         blogpost = BlogPost(
             title=title,
+            title_short=title[:shortlink_len] + "..." if len(title) > shortlink_len + 2 else title,
             blurb=blurb,
             permalink=permalink,
             pagelink=pagelink,
