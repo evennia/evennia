@@ -70,7 +70,7 @@ def add_legacy_versions_to_html_page_context(app, pagename, templatename, contex
     # this is read by versioning.html template (sidebar)
     LVersion = namedtuple("legacy_version", ["release", "name", "url"])
     context["legacy_versions"] = [
-        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../../{vers}/index.html")
+        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../{vers}/index.html")
         for vers in legacy_versions
     ]
 
