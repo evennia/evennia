@@ -131,15 +131,16 @@ class CmdContainerLook(CmdLook):
             if not target:
                 self.msg("You have no location to look at!")
                 return
-        elif self.rhs:
-            # we are looking in something, find that first
-            container = caller.search(self.rhs)
-            if not container:
-                return
+        else:
+            if self.rhs:
+                # we are looking in something, find that first
+                container = caller.search(self.rhs)
+                if not container:
+                    return
 
-        target = caller.search(self.lhs, location=container)
-        if not target:
-            return
+            target = caller.search(self.lhs, location=container)
+            if not target:
+                return
 
         desc = caller.at_look(target)
         # add the type=look to the outputfunc to make it
