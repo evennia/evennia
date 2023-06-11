@@ -1,6 +1,6 @@
 # Changelog
 
-## Evennia 2.0
+## Evennia 2.0.0
 
 June 10, 2023
 
