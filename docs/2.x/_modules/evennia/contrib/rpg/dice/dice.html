@@ -134,48 +134,62 @@
 <span class="sd">```python</span>
 
 <span class="sd">from evennia.contrib.rpg import dice</span>
-<span class="sd">dice.roll_dice(3, 10, (&quot;+&quot;, 2))  # 3d10 + 2</span>
-
+<span class="sd">dice.roll(3, 10, (&quot;+&quot;, 2))  # 3d10 + 2</span>
 <span class="sd">```</span>
+
+<span class="sd">or use the string syntax:</span>
+
+<span class="sd">dice.roll(&quot;3d10 + 2&quot;)</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">default_cmds</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">simple_eval</span>
 
 
-<div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.dice.html#evennia.contrib.rpg.dice.dice.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">dicenum</span><span class="p">,</span> <span class="n">dicetype</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.dice.html#evennia.contrib.rpg.dice.dice.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span>
+    <span class="n">dice</span><span class="p">,</span>
+    <span class="n">dicetype</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">modifier</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">conditional</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">max_dicenum</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">max_dicetype</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a standard dice roller.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">     dicenum (int): Number of dice to roll (the result to be added).</span>
-<span class="sd">     dicetype (int): Number of sides of the dice to be rolled.</span>
-<span class="sd">     modifier (tuple): A tuple `(operator, value)`, where operator is</span>
+<span class="sd">     dice (int or str): If an `int`, this is the number of dice to roll, and `dicetype` is used</span>
+<span class="sd">        to determine the type. If a `str`, it should be on the form `NdM` where `N` is the number</span>
+<span class="sd">        of dice and `M` is the number of sides on each die. Also</span>
+<span class="sd">        `NdM [modifier] [number] [conditional]` is understood, e.g. `1d6 + 3`</span>
+<span class="sd">        or `2d10 / 2 &gt; 10`.</span>
+<span class="sd">     dicetype (int, optional): Number of sides of the dice to be rolled. Ignored if</span>
+<span class="sd">        `dice` is a string.</span>
+<span class="sd">     modifier (tuple, optional): A tuple `(operator, value)`, where operator is</span>
 <span class="sd">        one of `&quot;+&quot;`, `&quot;-&quot;`, `&quot;/&quot;` or `&quot;*&quot;`. The result of the dice</span>
-<span class="sd">        roll(s) will be modified by this value.</span>
-<span class="sd">     conditional (tuple): A tuple `(conditional, value)`, where</span>
+<span class="sd">        roll(s) will be modified by this value. Ignored if `dice` is a string.</span>
+<span class="sd">     conditional (tuple, optional): A tuple `(conditional, value)`, where</span>
 <span class="sd">        conditional is one of `&quot;==&quot;`,`&quot;&lt;&quot;`,`&quot;&gt;&quot;`,`&quot;&gt;=&quot;`,`&quot;&lt;=`&quot; or &quot;`!=`&quot;.</span>
-<span class="sd">        This allows the roller to directly return a result depending</span>
-<span class="sd">        on if the conditional was passed or not.</span>
+<span class="sd">        Ignored if `dice` is a string.</span>
 <span class="sd">     return_tuple (bool): Return a tuple with all individual roll</span>
 <span class="sd">        results or not.</span>
+<span class="sd">     max_dicenum (int): The max number of dice to allow to be rolled.</span>
+<span class="sd">     max_dicetype (int): The max number of sides on the dice to roll.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        roll_result (int): The result of the roll + modifiers. This is the</span>
-<span class="sd">             default return.</span>
-<span class="sd">        condition_result (bool): A True/False value returned if `conditional`</span>
-<span class="sd">            is set but not `return_tuple`. This effectively hides the result</span>
-<span class="sd">            of the roll.</span>
-<span class="sd">        full_result (tuple): If, return_tuple` is `True`, instead</span>
-<span class="sd">            return a tuple `(result, outcome, diff, rolls)`. Here,</span>
-<span class="sd">            `result` is the normal result of the roll + modifiers.</span>
-<span class="sd">            `outcome` and `diff` are the boolean result of the roll and</span>
-<span class="sd">            absolute difference to the `conditional` input; they will</span>
-<span class="sd">            be will be `None` if `conditional` is not set. `rolls` is</span>
-<span class="sd">            itself a tuple holding all the individual rolls in the case of</span>
-<span class="sd">            multiple die-rolls.</span>
+<span class="sd">        int, bool or tuple : By default, this is the result of the roll + modifiers.  If</span>
+<span class="sd">        `conditional` is given, or `dice` is a string defining a conditional, then a True/False</span>
+<span class="sd">        value is returned. Finally, if `return_tuple` is set, this is a tuple</span>
+<span class="sd">        `(result, outcome, diff, rolls)`, where, `result` is the the normal result of the</span>
+<span class="sd">        roll + modifiers,  `outcome` and `diff` are the boolean absolute difference between the roll</span>
+<span class="sd">        and the `conditional` input; both will be will be `None` if `conditional` is not set.</span>
+<span class="sd">        The `rolls` a tuple holding all the individual rolls (one or more depending on how many</span>
+<span class="sd">        dice were rolled).</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError if non-supported modifiers or conditionals are given.</span>
@@ -184,48 +198,100 @@
 <span class="sd">        All input numbers are converted to integers.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        print roll_dice(2, 6) # 2d6</span>
-<span class="sd">        &lt;&lt;&lt; 7</span>
-<span class="sd">        print roll_dice(1, 100, (&#39;+&#39;, 5) # 1d100 + 5</span>
-<span class="sd">        &lt;&lt;&lt; 34</span>
-<span class="sd">        print roll_dice(1, 20, conditional=(&#39;&lt;&#39;, 10) # let&#39;say we roll 3</span>
-<span class="sd">        &lt;&lt;&lt; True</span>
-<span class="sd">        print roll_dice(3, 10, return_tuple=True)</span>
-<span class="sd">        &lt;&lt;&lt; (11, None, None, (2, 5, 4))</span>
-<span class="sd">        print roll_dice(2, 20, (&#39;-&#39;, 2), conditional=(&#39;&gt;=&#39;, 10), return_tuple=True)</span>
-<span class="sd">        &lt;&lt;&lt; (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8</span>
+<span class="sd">        ::</span>
+<span class="sd">            # explicit arguments</span>
+<span class="sd">            print roll(2, 6) # 2d6</span>
+<span class="sd">            7</span>
+<span class="sd">            print roll(1, 100, (&#39;+&#39;, 5) # 1d100 + 5</span>
+<span class="sd">            4</span>
+<span class="sd">            print roll(1, 20, conditional=(&#39;&lt;&#39;, 10) # let&#39;say we roll 3</span>
+<span class="sd">            True</span>
+<span class="sd">            print roll(3, 10, return_tuple=True)</span>
+<span class="sd">            (11, None, None, (2, 5, 4))</span>
+<span class="sd">            print roll(2, 20, (&#39;-&#39;, 2), conditional=(&#39;&gt;=&#39;, 10), return_tuple=True)</span>
+<span class="sd">            (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8</span>
+
+<span class="sd">            # string form</span>
+<span class="sd">            print roll(&quot;3d6 + 2&quot;)</span>
+<span class="sd">            10</span>
+<span class="sd">            print roll(&quot;2d10 + 2 &gt; 10&quot;)</span>
+<span class="sd">            True</span>
+<span class="sd">            print roll(&quot;2d20 - 2 &gt;= 10&quot;)</span>
+<span class="sd">            (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dicenum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dicenum</span><span class="p">)</span>
-    <span class="n">dicetype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dicetype</span><span class="p">)</span>
+
+    <span class="n">modifier_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">conditional_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">conditional_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dice</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;d&quot;</span> <span class="ow">in</span> <span class="n">dice</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="c1"># A string is given, parse it as NdM dice notation</span>
+        <span class="n">roll_string</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="c1"># split to get the NdM syntax</span>
+        <span class="n">dicenum</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">roll_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># parse packwards right-to-left</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="kc">True</span> <span class="k">for</span> <span class="n">cond</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">cond</span> <span class="ow">in</span> <span class="n">rest</span><span class="p">):</span>
+            <span class="c1"># split out any conditionals, like &#39;&lt; 12&#39;</span>
+            <span class="n">rest</span><span class="p">,</span> <span class="o">*</span><span class="n">conditionals</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(==|&lt;=|&gt;=|&lt;|&gt;|!=)&quot;</span><span class="p">,</span> <span class="n">rest</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">conditional_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">conditionals</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Conditional &#39;</span><span class="si">{</span><span class="n">conditionals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; was not recognized. Must be a number.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">conditional_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">conditionals</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="kc">True</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">rest</span><span class="p">):</span>
+            <span class="c1"># split out any modifiers, like &#39;+ 2&#39;</span>
+            <span class="n">rest</span><span class="p">,</span> <span class="o">*</span><span class="n">modifiers</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\+|-|/|\*)&quot;</span><span class="p">,</span> <span class="n">rest</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">modifier_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">modifiers</span><span class="p">)</span>
+
+        <span class="c1"># whatever is left is the dice type</span>
+        <span class="n">dicetype</span> <span class="o">=</span> <span class="n">rest</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># an integer is given - explicit modifiers and conditionals as part of kwargs</span>
+        <span class="n">dicenum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dice</span><span class="p">)</span>
+        <span class="n">dicetype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dicetype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">modifier</span><span class="p">:</span>
+            <span class="n">modifier_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">modifier</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">conditional</span><span class="p">:</span>
+            <span class="n">conditional_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">conditional</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">conditional_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">conditional</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dicenum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dicenum</span><span class="p">)</span>
+        <span class="n">dicetype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dicetype</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The number of dice and dice-size must both be numerical. Got &#39;</span><span class="si">{</span><span class="n">dicenum</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;and &#39;</span><span class="si">{</span><span class="n">dicetype</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">dicenum</span> <span class="o">&gt;</span> <span class="n">max_dicenum</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid number of dice rolled (must be between 1 and </span><span class="si">{</span><span class="n">max_dicenum</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">dicetype</span> <span class="o">&gt;</span> <span class="n">max_dicetype</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid die-size used (must be between 1 and </span><span class="si">{</span><span class="n">max_dicetype</span><span class="si">}</span><span class="s2"> sides).&quot;</span><span class="p">)</span>
 
     <span class="c1"># roll all dice, remembering each roll</span>
-    <span class="n">rolls</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dicetype</span><span class="p">)</span> <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dicenum</span><span class="p">)])</span>
+    <span class="n">rolls</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dicetype</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dicenum</span><span class="p">)])</span>
     <span class="n">result</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rolls</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">modifier</span><span class="p">:</span>
-        <span class="c1"># make sure to check types well before eval</span>
-        <span class="n">mod</span><span class="p">,</span> <span class="n">modvalue</span> <span class="o">=</span> <span class="n">modifier</span>
-        <span class="k">if</span> <span class="n">mod</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Non-supported dice modifier: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">mod</span><span class="p">)</span>
-        <span class="n">modvalue</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">modvalue</span><span class="p">)</span>  <span class="c1"># for safety</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">modvalue</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">modifier_string</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">simple_eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">modifier_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="n">outcome</span><span class="p">,</span> <span class="n">diff</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">conditional</span><span class="p">:</span>
-        <span class="c1"># make sure to check types well before eval</span>
-        <span class="n">cond</span><span class="p">,</span> <span class="n">condvalue</span> <span class="o">=</span> <span class="n">conditional</span>
-        <span class="k">if</span> <span class="n">cond</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Non-supported dice result conditional: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">conditional</span><span class="p">)</span>
-        <span class="n">condvalue</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">condvalue</span><span class="p">)</span>  <span class="c1"># for safety</span>
-        <span class="n">outcome</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">cond</span><span class="p">,</span> <span class="n">condvalue</span><span class="p">))</span>  <span class="c1"># True/False</span>
-        <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">result</span> <span class="o">-</span> <span class="n">condvalue</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">conditional_string</span> <span class="ow">and</span> <span class="n">conditional_value</span><span class="p">:</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="n">simple_eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">conditional_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">result</span> <span class="o">-</span> <span class="n">conditional_value</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">return_tuple</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">rolls</span>
+    <span class="k">elif</span> <span class="n">conditional</span> <span class="ow">or</span> <span class="p">(</span><span class="n">conditional_string</span> <span class="ow">and</span> <span class="n">conditional_value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">outcome</span>  <span class="c1"># True|False</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">conditional</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">outcome</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">result</span></div>
+        <span class="k">return</span> <span class="n">result</span>  <span class="c1"># integer</span></div>
 
 
 <span class="c1"># legacy alias</span>
@@ -321,7 +387,8 @@
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                 <span class="s2">&quot;You need to enter valid integer numbers, modifiers and operators.&quot;</span>
-                <span class="s2">&quot; |w</span><span class="si">%s</span><span class="s2">|n was not understood.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+                <span class="s2">&quot; |w</span><span class="si">%s</span><span class="s2">|n was not understood.&quot;</span>
+                <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="c1"># format output</span>

@@ -67,8 +67,11 @@
   <ul>
 <li><a class="reference internal" href="#">Dice roller</a><ul>
 <li><a class="reference internal" href="#installation">Installation:</a></li>
-<li><a class="reference internal" href="#usage">Usage:</a><ul>
-<li><a class="reference internal" href="#rolling-dice-from-code">Rolling dice from code</a></li>
+<li><a class="reference internal" href="#usage">Usage:</a></li>
+<li><a class="reference internal" href="#rolling-dice-from-code">Rolling dice from code</a><ul>
+<li><a class="reference internal" href="#roll-dice-based-on-a-string">Roll dice based on a string</a></li>
+<li><a class="reference internal" href="#explicit-arguments">Explicit arguments</a></li>
+<li><a class="reference internal" href="#get-all-roll-details">Get all roll details</a></li>
 </ul>
 </li>
 </ul>
@@ -134,7 +137,7 @@ rolls for use by a human game master.</p>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="c1"># ...</span>
-    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">CmdDice</span><span class="p">())</span>  <span class="c1"># &lt;---</span>
 
@@ -165,15 +168,60 @@ was.</p>
 </pre></div>
 </div>
 <p>Is a hidden roll that does not inform the room it happened.</p>
+</section>
 <section id="rolling-dice-from-code">
-<h3>Rolling dice from code<a class="headerlink" href="#rolling-dice-from-code" title="Permalink to this headline">¶</a></h3>
-<p>To roll dice in code, use the <code class="docutils literal notranslate"><span class="pre">roll</span></code> function from this module:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">dice</span>
-<span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># 3d10 + 2</span>
+<h2>Rolling dice from code<a class="headerlink" href="#rolling-dice-from-code" title="Permalink to this headline">¶</a></h2>
+<p>To roll dice in code, use the <code class="docutils literal notranslate"><span class="pre">roll</span></code> function from this module. It has two
+main ways to define the expected roll:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.dice</span> <span class="kn">import</span> <span class="n">roll</span>
+
+<span class="n">roll</span><span class="p">(</span><span class="n">dice</span><span class="p">,</span> <span class="n">dicetype</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+      <span class="n">max_dicenum</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_dicetype</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 </pre></div>
 </div>
+<p>You can only roll one set of dice. If your RPG requires you to roll multiple
+sets of dice and combine them in more advanced ways, you can do so with multiple
+<code class="docutils literal notranslate"><span class="pre">roll()</span></code> calls.</p>
+<section id="roll-dice-based-on-a-string">
+<h3>Roll dice based on a string<a class="headerlink" href="#roll-dice-based-on-a-string" title="Permalink to this headline">¶</a></h3>
+<p>You can specify the first argument as a string on standard RPG d-syntax (NdM,
+where N is the number of dice to roll, and M is the number sides per dice):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;3d10 + 2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also give a conditional (you’ll then get a <code class="docutils literal notranslate"><span class="pre">True</span></code>/<code class="docutils literal notranslate"><span class="pre">False</span></code> back):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;2d6 - 1 &gt;= 10&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="explicit-arguments">
+<h3>Explicit arguments<a class="headerlink" href="#explicit-arguments" title="Permalink to this headline">¶</a></h3>
+<p>If you specify the first argument as an integer, it’s interpret as the number of
+dice to roll and you can then build the roll more explicitly. This can be
+useful if you are using the roller together with some other system and want to
+construct the roll from components.</p>
+<p>Here’s how to roll <code class="docutils literal notranslate"><span class="pre">3d10</span> <span class="pre">+</span> <span class="pre">2</span></code> with explicit syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">roll</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Here’s how to roll <code class="docutils literal notranslate"><span class="pre">2d6</span> <span class="pre">-</span> <span class="pre">1</span> <span class="pre">&gt;=</span> <span class="pre">10</span></code> (you’ll get back <code class="docutils literal notranslate"><span class="pre">True</span></code>/<code class="docutils literal notranslate"><span class="pre">False</span></code> back):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">roll</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">conditional</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="get-all-roll-details">
+<h3>Get all roll details<a class="headerlink" href="#get-all-roll-details" title="Permalink to this headline">¶</a></h3>
+<p>If you need the individual rolls (e.g. for a dice pool), set the <code class="docutils literal notranslate"><span class="pre">return_tuple</span></code> kwarg:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;3d10 &gt; 10&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>  <span class="c1"># (result, outcome, diff, rolls)</span>
+</pre></div>
+</div>
+<p>The return is a tuple <code class="docutils literal notranslate"><span class="pre">(result,</span> <span class="pre">outcome,</span> <span class="pre">diff,</span> <span class="pre">rolls)</span></code>, where <code class="docutils literal notranslate"><span class="pre">result</span></code> is the
+result of the roll, <code class="docutils literal notranslate"><span class="pre">outcome</span></code> is <code class="docutils literal notranslate"><span class="pre">True/False</span></code> if a conditional was
+given (<code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise), <code class="docutils literal notranslate"><span class="pre">diff</span></code> is the absolute difference between the
+conditional and the result (<code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise) and <code class="docutils literal notranslate"><span class="pre">rolls</span></code> is a tuple containing
+the individual roll results.</p>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/rpg/dice/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
