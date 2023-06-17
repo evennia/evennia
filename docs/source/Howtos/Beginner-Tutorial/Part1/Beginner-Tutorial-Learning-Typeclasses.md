@@ -390,7 +390,7 @@ We made a new method, gave it a docstring and had it `return` the RP-esque value
 
 So what happens when we increase our strength? This would be one way: 
 
-    > py self.strength = self.str + 1
+    > py self.strength = self.strength + 1
     > py self.strength
     11
     
@@ -412,8 +412,7 @@ After a reload all our changes were forgotten. When we change properties like th
  
 In principle we could change the python code. But we don't want to do that manually every time. And more importantly since we have the stats hardcoded in the class, _every_ character instance in the game will have exactly the  same `str`, `dex` and `int` now! This is clearly not what we want. 
 
-Evennia offers a special, persistent type of property for this, called an `Attribute`. Rework your 
-`mygame/typeclasses/characters.py` like this: 
+Evennia offers a special, persistent type of property for this, called an `Attribute`. Rework your  `mygame/typeclasses/characters.py` like this: 
     
 ```python
 
