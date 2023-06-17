@@ -1,5 +1,11 @@
 # Changelog
 
+## Evennia 2.0.1
+
+June 17, 2023
+
+- Fix: A look-bug in the `ExtendedRoom` contrib (InspectorCaracal)
+
 ## Evennia 2.0.0
 
 June 10, 2023
