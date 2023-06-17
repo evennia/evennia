@@ -20,8 +20,9 @@
 ## Third-party
 
 - [Evennia-related repos on github](https://github.com/search?p=1&q=evennia)
+- [Evennia minimud](https://github.com/InspectorCaracal/evennia-minimud) - minimal Evennia game using only contribs, based on Evennia 2.0.0 code. Useful to build from!
 - [EvscapeRoom](https://github.com/Griatch/evscaperoom) Full code of Evennia-based multiplayer escaperoom (engine is an [Evennia contrib](Contribs/Contrib-Evscaperoom.md))
-- [Arx sources](https://github.com/Arx-Game/arxcode) - Open-source code release of the very popular [Arx](https://play.arxmush.org/) Evennia game. [Here are instructions for installing](https://www.evennia.com/docs/1.0-dev/Howtos/Arxcode-Installation.html)
+- [Arx sources](https://github.com/Arx-Game/arxcode) - Open-source code release of the very popular [Arx](https://play.arxmush.org/) Evennia-based game. [Here are instructions for installing](https://www.evennia.com/docs/1.0-dev/Howtos/Arxcode-Installation.html). Uses a somewhat old version of Evennia.
 - [Encarnia sources](https://github.com/whitehorse-io/encarnia) - An open-sourced game dir for an older version of Evennia with things like races, combat etc. [Summary here](https://www.reddit.com/r/MUD/comments/6z6s3j/encarnia_an_evennia_python_mud_code_base_with/).
 - [The dark net/March Hare MUD](https://github.com/thedarknet/evennia) from the 2019 [DEF CON 27](https://www.defcon.org/html/defcon-27/dc-27-index.html) hacker conference in Paris. This is an Evennia game dir with batchcode to build the custom _Hackers_ style cyberspace zone with puzzles and challenges [used during the conference](https://dcdark.net/home#).
 

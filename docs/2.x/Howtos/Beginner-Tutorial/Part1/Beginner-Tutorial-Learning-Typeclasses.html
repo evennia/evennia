@@ -529,7 +529,7 @@ Strength is 10.
 <section id="attributes">
 <h3><span class="section-number">7.3.2. </span>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
 <p>So what happens when we increase our strength? This would be one way:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.strength = self.str + 1
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.strength = self.strength + 1
 &gt; py self.strength
 11
 </pre></div>
@@ -550,8 +550,7 @@ Strength is 10.
 </div>
 <p>After a reload all our changes were forgotten. When we change properties like this, it only changes in memory, not in the database (nor do we modify the python module’s code). So when we reloaded, the ‘fresh’ <code class="docutils literal notranslate"><span class="pre">Character</span></code>  class was loaded, and it still has the original stats we wrote in it.</p>
 <p>In principle we could change the python code. But we don’t want to do that manually every time. And more importantly since we have the stats hardcoded in the class, <em>every</em> character instance in the game will have exactly the  same <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">dex</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code> now! This is clearly not what we want.</p>
-<p>Evennia offers a special, persistent type of property for this, called an <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>. Rework your
-<code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> like this:</p>
+<p>Evennia offers a special, persistent type of property for this, called an <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>. Rework your  <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
