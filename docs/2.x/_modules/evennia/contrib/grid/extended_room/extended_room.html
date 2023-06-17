@@ -698,8 +698,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># search, waiting to return errors so we can also check details</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_detail</span><span class="p">():</span>
-                <span class="n">_AT_SEARCH_RESULT</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="c1"># if there&#39;s no target, check details</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+                <span class="c1"># no target AND no detail means run the normal no-results message</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_detail</span><span class="p">():</span>
+                    <span class="n">_AT_SEARCH_RESULT</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="c1"># otherwise, run normal search result handling</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">_AT_SEARCH_RESULT</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
                 <span class="k">return</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
         <span class="c1"># add the type=look to the outputfunc to make it</span>
