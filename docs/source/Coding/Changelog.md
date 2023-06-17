@@ -1,5 +1,10 @@
 # Changelog
 
+## Main
+
+- Contrib update: Made `dice.roll` contrib function optionally accept dice
+  definition string e.g. `dice.roll("2d10 + 4 > 10")`. Old way works too.
+
 ## Evennia 2.0.1
 
 June 17, 2023

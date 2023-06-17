@@ -48,48 +48,62 @@ To roll dice in code, use the `roll` function from this module:
 ```python
 
 from evennia.contrib.rpg import dice
-dice.roll_dice(3, 10, ("+", 2))  # 3d10 + 2
-
+dice.roll(3, 10, ("+", 2))  # 3d10 + 2
 ```
+
+or use the string syntax:
+
+dice.roll("3d10 + 2")
 
 """
 import re
+from ast import literal_eval
 from random import randint
 
 from evennia import CmdSet, default_cmds
+from evennia.utils.utils import simple_eval
 
 
-def roll(dicenum, dicetype, modifier=None, conditional=None, return_tuple=False):
+def roll(
+    dice,
+    dicetype=6,
+    modifier=None,
+    conditional=None,
+    return_tuple=False,
+    max_dicenum=10,
+    max_dicetype=1000,
+):
     """
     This is a standard dice roller.
 
     Args:
-     dicenum (int): Number of dice to roll (the result to be added).
-     dicetype (int): Number of sides of the dice to be rolled.
-     modifier (tuple): A tuple `(operator, value)`, where operator is
+     dice (int or str): If an `int`, this is the number of dice to roll, and `dicetype` is used
+        to determine the type. If a `str`, it should be on the form `NdM` where `N` is the number
+        of dice and `M` is the number of sides on each die. Also
+        `NdM [modifier] [number] [conditional]` is understood, e.g. `1d6 + 3`
+        or `2d10 / 2 > 10`.
+     dicetype (int, optional): Number of sides of the dice to be rolled. Ignored if
+        `dice` is a string.
+     modifier (tuple, optional): A tuple `(operator, value)`, where operator is
         one of `"+"`, `"-"`, `"/"` or `"*"`. The result of the dice
-        roll(s) will be modified by this value.
-     conditional (tuple): A tuple `(conditional, value)`, where
+        roll(s) will be modified by this value. Ignored if `dice` is a string.
+     conditional (tuple, optional): A tuple `(conditional, value)`, where
         conditional is one of `"=="`,`"<"`,`">"`,`">="`,`"<=`" or "`!=`".
-        This allows the roller to directly return a result depending
-        on if the conditional was passed or not.
+        Ignored if `dice` is a string.
      return_tuple (bool): Return a tuple with all individual roll
         results or not.
+     max_dicenum (int): The max number of dice to allow to be rolled.
+     max_dicetype (int): The max number of sides on the dice to roll.
 
     Returns:
-        roll_result (int): The result of the roll + modifiers. This is the
-             default return.
-        condition_result (bool): A True/False value returned if `conditional`
-            is set but not `return_tuple`. This effectively hides the result
-            of the roll.
-        full_result (tuple): If, return_tuple` is `True`, instead
-            return a tuple `(result, outcome, diff, rolls)`. Here,
-            `result` is the normal result of the roll + modifiers.
-            `outcome` and `diff` are the boolean result of the roll and
-            absolute difference to the `conditional` input; they will
-            be will be `None` if `conditional` is not set. `rolls` is
-            itself a tuple holding all the individual rolls in the case of
-            multiple die-rolls.
+        int, bool or tuple : By default, this is the result of the roll + modifiers.  If
+        `conditional` is given, or `dice` is a string defining a conditional, then a True/False
+        value is returned. Finally, if `return_tuple` is set, this is a tuple
+        `(result, outcome, diff, rolls)`, where, `result` is the the normal result of the
+        roll + modifiers,  `outcome` and `diff` are the boolean absolute difference between the roll
+        and the `conditional` input; both will be will be `None` if `conditional` is not set.
+        The `rolls` a tuple holding all the individual rolls (one or more depending on how many
+        dice were rolled).
 
     Raises:
         TypeError if non-supported modifiers or conditionals are given.
@@ -98,48 +112,100 @@ def roll(dicenum, dicetype, modifier=None, conditional=None, return_tuple=False)
         All input numbers are converted to integers.
 
     Examples:
-        print roll_dice(2, 6) # 2d6
-        <<< 7
-        print roll_dice(1, 100, ('+', 5) # 1d100 + 5
-        <<< 34
-        print roll_dice(1, 20, conditional=('<', 10) # let'say we roll 3
-        <<< True
-        print roll_dice(3, 10, return_tuple=True)
-        <<< (11, None, None, (2, 5, 4))
-        print roll_dice(2, 20, ('-', 2), conditional=('>=', 10), return_tuple=True)
-        <<< (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8
+        ::
+            # explicit arguments
+            print roll(2, 6) # 2d6
+            7
+            print roll(1, 100, ('+', 5) # 1d100 + 5
+            4
+            print roll(1, 20, conditional=('<', 10) # let'say we roll 3
+            True
+            print roll(3, 10, return_tuple=True)
+            (11, None, None, (2, 5, 4))
+            print roll(2, 20, ('-', 2), conditional=('>=', 10), return_tuple=True)
+            (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8
+
+            # string form
+            print roll("3d6 + 2")
+            10
+            print roll("2d10 + 2 > 10")
+            True
+            print roll("2d20 - 2 >= 10")
+            (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8
 
     """
-    dicenum = int(dicenum)
-    dicetype = int(dicetype)
+
+    modifier_string = ""
+    conditional_string = ""
+    conditional_value = None
+    if isinstance(dice, str) and "d" in dice.lower():
+        # A string is given, parse it as NdM dice notation
+        roll_string = dice.lower()
+
+        # split to get the NdM syntax
+        dicenum, rest = roll_string.split("d", 1)
+
+        # parse packwards right-to-left
+        if any(True for cond in ("==", "<", ">", "!=", "<=", ">=") if cond in rest):
+            # split out any conditionals, like '< 12'
+            rest, *conditionals = re.split(r"(==|<=|>=|<|>|!=)", rest, maxsplit=1)
+            try:
+                conditional_value = int(conditionals[1])
+            except ValueError:
+                raise TypeError(
+                    f"Conditional '{conditionals[-1]}' was not recognized. Must be a number."
+                )
+            conditional_string = "".join(conditionals)
+
+        if any(True for op in ("+", "-", "*", "/") if op in rest):
+            # split out any modifiers, like '+ 2'
+            rest, *modifiers = re.split(r"(\+|-|/|\*)", rest, maxsplit=1)
+            modifier_string = "".join(modifiers)
+
+        # whatever is left is the dice type
+        dicetype = rest
+
+    else:
+        # an integer is given - explicit modifiers and conditionals as part of kwargs
+        dicenum = int(dice)
+        dicetype = int(dicetype)
+        if modifier:
+            modifier_string = "".join(str(part) for part in modifier)
+        if conditional:
+            conditional_value = int(conditional[1])
+            conditional_string = "".join(str(part) for part in conditional)
+
+    try:
+        dicenum = int(dicenum)
+        dicetype = int(dicetype)
+    except Exception:
+        raise TypeError(
+            f"The number of dice and dice-size must both be numerical. Got '{dicenum}' "
+            f"and '{dicetype}'."
+        )
+    if 0 < dicenum > max_dicenum:
+        raise TypeError(f"Invalid number of dice rolled (must be between 1 and {max_dicenum}).")
+    if 0 < dicetype > max_dicetype:
+        raise TypeError(f"Invalid die-size used (must be between 1 and {max_dicetype} sides).")
 
     # roll all dice, remembering each roll
-    rolls = tuple([randint(1, dicetype) for roll in range(dicenum)])
+    rolls = tuple([randint(1, dicetype) for _ in range(dicenum)])
     result = sum(rolls)
 
-    if modifier:
-        # make sure to check types well before eval
-        mod, modvalue = modifier
-        if mod not in ("+", "-", "*", "/"):
-            raise TypeError("Non-supported dice modifier: %s" % mod)
-        modvalue = int(modvalue)  # for safety
-        result = eval("%s %s %s" % (result, mod, modvalue))
+    if modifier_string:
+        result = simple_eval(f"{result} {modifier_string}")
+
     outcome, diff = None, None
-    if conditional:
-        # make sure to check types well before eval
-        cond, condvalue = conditional
-        if cond not in (">", "<", ">=", "<=", "!=", "=="):
-            raise TypeError("Non-supported dice result conditional: %s" % conditional)
-        condvalue = int(condvalue)  # for safety
-        outcome = eval("%s %s %s" % (result, cond, condvalue))  # True/False
-        diff = abs(result - condvalue)
+    if conditional_string and conditional_value:
+        outcome = simple_eval(f"{result} {conditional_string}")
+        diff = abs(result - conditional_value)
+
     if return_tuple:
         return result, outcome, diff, rolls
+    elif conditional or (conditional_string and conditional_value):
+        return outcome  # True|False
     else:
-        if conditional:
-            return outcome
-        else:
-            return result
+        return result  # integer
 
 
 # legacy alias
@@ -235,7 +301,8 @@ class CmdDice(default_cmds.MuxCommand):
         except ValueError:
             self.caller.msg(
                 "You need to enter valid integer numbers, modifiers and operators."
-                " |w%s|n was not understood." % self.args
+                " |w%s|n was not understood."
+                % self.args
             )
             return
         # format output
