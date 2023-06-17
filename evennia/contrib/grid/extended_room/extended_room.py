@@ -612,8 +612,15 @@ class CmdExtendedRoomLook(default_cmds.CmdLook):
         else:
             # search, waiting to return errors so we can also check details
             target = caller.search(self.args, quiet=True)
-            if not target and not self.look_detail():
-                _AT_SEARCH_RESULT(target, caller, self.args, quiet=False)
+            # if there's no target, check details
+            if not target:
+                # no target AND no detail means run the normal no-results message
+                if not self.look_detail():
+                    _AT_SEARCH_RESULT(target, caller, self.args, quiet=False)
+                return
+            # otherwise, run normal search result handling
+            target = _AT_SEARCH_RESULT(target, caller, self.args, quiet=False)
+            if not target:
                 return
         desc = caller.at_look(target)
         # add the type=look to the outputfunc to make it
