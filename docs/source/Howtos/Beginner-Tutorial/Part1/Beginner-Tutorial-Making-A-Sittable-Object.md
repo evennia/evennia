@@ -39,7 +39,7 @@ class Character(DefaultCharacter):
 When moving somewhere, [character.move_to](evennia.objects.objects.DefaultObject.move_to) is called. This in turn
 will call `character.at_pre_move`.  If this returns `False`, the move is aborted. 
 
-Here we look for an Attribute `is_resting` (which we will assign below) to determine if we are stuck on the chair or not.
+Here we look for an Attribute `is_sitting` (which we will assign below) to determine if we are stuck on the chair or not.
 
 ## Making the Chair itself
 
