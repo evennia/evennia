@@ -162,7 +162,7 @@ This requires a change to our Character typeclass. Open <code class="docutils li
 </div>
 <p>When moving somewhere, <a class="reference internal" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to" title="evennia.objects.objects.DefaultObject.move_to"><span class="xref myst py py-meth">character.move_to</span></a> is called. This in turn
 will call <code class="docutils literal notranslate"><span class="pre">character.at_pre_move</span></code>.  If this returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, the move is aborted.</p>
-<p>Here we look for an Attribute <code class="docutils literal notranslate"><span class="pre">is_resting</span></code> (which we will assign below) to determine if we are stuck on the chair or not.</p>
+<p>Here we look for an Attribute <code class="docutils literal notranslate"><span class="pre">is_sitting</span></code> (which we will assign below) to determine if we are stuck on the chair or not.</p>
 </section>
 <section id="making-the-chair-itself">
 <h2><span class="section-number">13.2. </span>Making the Chair itself<a class="headerlink" href="#making-the-chair-itself" title="Permalink to this headline">¶</a></h2>
