@@ -2,8 +2,8 @@
 
 ## Main
 
-- Contrib update: Made `dice.roll` contrib function optionally accept dice
-  definition string e.g. `dice.roll("2d10 + 4 > 10")`. Old way works too.
+- Contrib: Refactored `dice.roll` contrib function to use `safe_eval`. Can now
+  optionally be used as `dice.roll("2d10 + 4 > 10")`. Old way works too.
 
 ## Evennia 2.0.1
 
