@@ -646,7 +646,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">cover_with</span><span class="p">,</span> <span class="n">ContribClothing</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cover_with</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> isn&#39;t something you can wear.&quot;</span><span class="p">)</span>
-            <span class="n">rturn</span>
+            <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="ow">in</span> <span class="n">CLOTHING_TYPE_CANT_COVER_WITH</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You can&#39;t cover anything with </span><span class="si">{</span><span class="n">cover_with</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
