@@ -560,7 +560,7 @@ class CmdCover(MuxCommand):
 
         if not inherits_from(cover_with, ContribClothing):
             self.caller.msg(f"{cover_with.name} isn't something you can wear.")
-            rturn
+            return
 
         if cover_with.db.clothing_type in CLOTHING_TYPE_CANT_COVER_WITH:
             self.caller.msg(f"You can't cover anything with {cover_with.name}.")
