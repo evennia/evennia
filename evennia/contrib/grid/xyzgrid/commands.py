@@ -68,7 +68,7 @@ class CmdXYZTeleport(building.CmdTeleport):
         else:
             # use current location's Z, if it exists
             try:
-                xyz = self.caller.xyz
+                xyz = self.caller.location.xyz
             except AttributeError:
                 self.caller.msg(
                     "Z-coordinate is also required since you are not currently "
