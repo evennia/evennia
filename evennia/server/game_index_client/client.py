@@ -8,7 +8,10 @@ import urllib.parse
 import urllib.request
 
 import django
+import evennia
 from django.conf import settings
+from evennia.accounts.models import AccountDB
+from evennia.utils import get_evennia_version, logger
 from twisted.internet import defer, protocol, reactor
 from twisted.internet.defer import inlineCallbacks
 from twisted.web.client import Agent, HTTPConnectionPool, _HTTP11ClientFactory
@@ -16,15 +19,11 @@ from twisted.web.http_headers import Headers
 from twisted.web.iweb import IBodyProducer
 from zope.interface import implementer
 
-import evennia
-from evennia.accounts.models import AccountDB
-from evennia.utils import get_evennia_version, logger
-
 _EGI_HOST = "http://evennia-game-index.appspot.com"
 _EGI_REPORT_PATH = "/api/v1/game/check_in"
 
 
-class EvenniaGameIndexClient(object):
+class EvenniaGameIndexClient:
     """
     This client class is used for gathering and sending game details to the
     Evennia Game Index. Since EGI is in the early goings, this isn't
@@ -33,8 +32,8 @@ class EvenniaGameIndexClient(object):
 
     def __init__(self, on_bad_request=None):
         """
-        :param on_bad_request: Optional callable to trigger when a bad request
-            was sent. This is almost always going to be due to bad config.
+        on_bad_request (callable, optional): Callable to trigger when a bad request was sent.
+
         """
         self.report_host = _EGI_HOST
         self.report_path = _EGI_REPORT_PATH
@@ -150,7 +149,7 @@ class SimpleResponseReceiver(protocol.Protocol):
 
 
 @implementer(IBodyProducer)
-class StringProducer(object):
+class StringProducer:
     """
     Used for feeding a request body to the tx HTTP client.
     """

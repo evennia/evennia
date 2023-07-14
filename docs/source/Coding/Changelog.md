@@ -1,5 +1,10 @@
 # Changelog
 
+## Evennia main branch
+
+- Contrib: Large-language-model (LLM) AI integration; allows NPCs to talk using
+  responses from a neural network server.
+
 ## Evennia 2.1.0
 
 July 14, 2023
