@@ -110,7 +110,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An NPC that uses the LLM server to generate its responses. If the server is slow, it will</span>
 <span class="sd">    echo a thinking message to the character while it waits for a response.&quot;&quot;&quot;</span>
 
-    <span class="n">response_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> says: </span><span class="si">{response}</span><span class="s2">&quot;</span>
+    <span class="n">response_template</span> <span class="o">=</span> <span class="s2">&quot;$You() $conj(say) (to $You(character)): </span><span class="si">{response}</span><span class="s2">&quot;</span>
     <span class="n">thinking_timeout</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># seconds</span>
     <span class="n">thinking_messages</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> thinks about what you said ...&quot;</span><span class="p">,</span>
@@ -135,16 +135,30 @@
                 <span class="c1"># abort the thinking message if we were fast enough</span>
                 <span class="n">thinking_defer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
 
-            <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">response_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">),</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span>
-                <span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">),</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+                    <span class="n">response</span><span class="p">,</span>
+                    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="n">character</span><span class="p">},</span>
+                    <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># fallback if character is not in a location</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">)</span><span class="si">}</span><span class="s2"> says, </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_echo_thinking_message</span><span class="p">():</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Echo a random thinking message to the character&quot;&quot;&quot;</span>
-            <span class="n">thinking_messages</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">thinking_messages</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">thinking_messages</span><span class="p">)</span>
-            <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="n">thinking_messages</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">)))</span>
+            <span class="n">thinking_message</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span>
+                <span class="n">make_iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">thinking_messages</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">thinking_messages</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+                <span class="n">thinking_message</span> <span class="o">=</span> <span class="n">thinking_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;$You()&quot;</span><span class="p">)</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">thinking_message</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">thinking_message</span> <span class="o">=</span> <span class="n">thinking_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">))</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">thinking_message</span><span class="p">)</span>
 
         <span class="c1"># if response takes too long, note that the NPC is thinking.</span>
         <span class="n">thinking_defer</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thinking_timeout</span><span class="p">,</span> <span class="n">_echo_thinking_message</span><span class="p">)</span>
@@ -185,8 +199,8 @@
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
             <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;$You() talk to $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s1">), saying &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">speech</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
-                <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">},</span>
+                <span class="sa">f</span><span class="s2">&quot;$You() $conj(say) (to $You(target)): </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">speech</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">},</span>
                 <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;at_talked_to&quot;</span><span class="p">):</span>
