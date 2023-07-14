@@ -154,7 +154,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># use current location&#39;s Z, if it exists</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">xyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">xyz</span>
+                <span class="n">xyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">xyz</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                     <span class="s2">&quot;Z-coordinate is also required since you are not currently &quot;</span>
