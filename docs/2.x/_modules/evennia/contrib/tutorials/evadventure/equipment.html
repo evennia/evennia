@@ -179,9 +179,6 @@
 <span class="sd">        Args:</span>
 <span class="sd">            obj (EvAdventureObject): The object to add.</span>
 
-<span class="sd">        Raise:</span>
-<span class="sd">            EquipmentError: If there&#39;s not enough room.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">EvAdventureObject</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">EquipmentError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not something that can be equipped.&quot;</span><span class="p">)</span>
@@ -189,6 +186,7 @@
         <span class="n">size</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">size</span>
         <span class="n">max_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_slots</span>
         <span class="n">current_slot_usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_slots</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="n">current_slot_usage</span> <span class="o">+</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="n">max_slots</span><span class="p">:</span>
             <span class="n">slots_left</span> <span class="o">=</span> <span class="n">max_slots</span> <span class="o">-</span> <span class="n">current_slot_usage</span>
             <span class="k">raise</span> <span class="n">EquipmentError</span><span class="p">(</span>

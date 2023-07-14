@@ -168,6 +168,16 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="n">SSL_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4003</span><span class="p">]</span>
 <span class="c1"># Telnet+SSL Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
 <span class="n">SSL_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
+<span class="c1"># Telnet+SSL certificate issuers. Don&#39;t change unless you have issues, e.g. CN may need to be</span>
+<span class="c1"># changed to your server&#39;s hostname.</span>
+<span class="n">SSL_CERTIFICATE_ISSUER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;EV&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;O&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia Security&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OU&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia Department&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CN&quot;</span><span class="p">:</span> <span class="s2">&quot;evennia&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 <span class="c1"># OOB (out-of-band) telnet communication allows Evennia to communicate</span>
 <span class="c1"># special commands and data with enabled Telnet clients. This is used</span>
 <span class="c1"># to create custom client interfaces over a telnet connection. To make</span>

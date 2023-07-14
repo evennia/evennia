@@ -192,11 +192,11 @@
             <span class="n">npcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">combatants</span> <span class="k">if</span> <span class="n">comb</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">:</span>
                 <span class="c1"># combatant is a PC, so NPCs are all enemies</span>
-                <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">pcs</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">!=</span> <span class="n">combatant</span><span class="p">]</span>
+                <span class="n">allies</span> <span class="o">=</span> <span class="n">pcs</span>
                 <span class="n">enemies</span> <span class="o">=</span> <span class="n">npcs</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># combatant is an NPC, so PCs are all enemies</span>
-                <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">npcs</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">!=</span> <span class="n">combatant</span><span class="p">]</span>
+                <span class="n">allies</span> <span class="o">=</span> <span class="n">npcs</span>
                 <span class="n">enemies</span> <span class="o">=</span> <span class="n">pcs</span>
         <span class="k">return</span> <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span></div>
 
@@ -302,7 +302,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
-        <span class="n">allies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
 
         <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span>
 

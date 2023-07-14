@@ -336,11 +336,11 @@
             <span class="n">npcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span> <span class="k">if</span> <span class="n">comb</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">:</span>
                 <span class="c1"># combatant is a PC, so NPCs are all enemies</span>
-                <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">pcs</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">!=</span> <span class="n">combatant</span><span class="p">]</span>
+                <span class="n">allies</span> <span class="o">=</span> <span class="n">pcs</span>
                 <span class="n">enemies</span> <span class="o">=</span> <span class="n">npcs</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># combatant is an NPC, so PCs are all enemies</span>
-                <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">npcs</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">!=</span> <span class="n">combatant</span><span class="p">]</span>
+                <span class="n">allies</span> <span class="o">=</span> <span class="n">npcs</span>
                 <span class="n">enemies</span> <span class="o">=</span> <span class="n">pcs</span>
         <span class="k">return</span> <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span></div>
 
@@ -431,7 +431,7 @@
             <span class="n">surviving_combatant</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="p">(),</span> <span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># grab a random survivor and check of they have any living enemies.</span>
+            <span class="c1"># grab a random survivor and check if they have any living enemies.</span>
             <span class="n">surviving_combatant</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
             <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">surviving_combatant</span><span class="p">)</span>
 
@@ -623,19 +623,6 @@
     <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">allies</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
 
-    <span class="c1"># can choose yourself</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Yourself&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="n">_step_wizard</span><span class="p">,</span>
-                <span class="p">{</span>
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                    <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">caller</span><span class="p">}}},</span>
-                <span class="p">},</span>
-            <span class="p">),</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
     <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="p">{</span>
@@ -665,19 +652,6 @@
     <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">allies</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
 
-    <span class="c1"># can choose yourself</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Yourself&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="n">_step_wizard</span><span class="p">,</span>
-                <span class="p">{</span>
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                    <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="n">caller</span><span class="p">}}},</span>
-                <span class="p">},</span>
-            <span class="p">),</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
     <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="p">{</span>

@@ -68,6 +68,16 @@ SSL_ENABLED = False
 SSL_PORTS = [4003]
 # Telnet+SSL Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSL_INTERFACES = ["0.0.0.0"]
+# Telnet+SSL certificate issuers. Don't change unless you have issues, e.g. CN may need to be
+# changed to your server's hostname.
+SSL_CERTIFICATE_ISSUER = {
+    "C": "EV",
+    "ST": "Evennia",
+    "L": "Evennia",
+    "O": "Evennia Security",
+    "OU": "Evennia Department",
+    "CN": "evennia",
+}
 # OOB (out-of-band) telnet communication allows Evennia to communicate
 # special commands and data with enabled Telnet clients. This is used
 # to create custom client interfaces over a telnet connection. To make

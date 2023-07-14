@@ -288,11 +288,11 @@ The<span class="w"> </span>battle<span class="w"> </span>is<span class="w"> </sp
             <span class="n">npcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">combatants</span> <span class="k">if</span> <span class="n">comb</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">:</span>
                 <span class="c1"># combatant is a PC, so NPCs are all enemies</span>
-                <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">pcs</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">!=</span> <span class="n">combatant</span><span class="p">]</span>
+                <span class="n">allies</span> <span class="o">=</span> <span class="n">pcs</span>
                 <span class="n">enemies</span> <span class="o">=</span> <span class="n">npcs</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># combatant is an NPC, so PCs are all enemies</span>
-                <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">npcs</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">!=</span> <span class="n">combatant</span><span class="p">]</span>
+                <span class="n">allies</span> <span class="o">=</span> <span class="n">npcs</span>
                 <span class="n">enemies</span> <span class="o">=</span> <span class="n">pcs</span>
         <span class="k">return</span> <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span>
 
@@ -588,8 +588,7 @@ a given combatant has advantage.</p>
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_twitch.py </span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_twitch.py </span>
 
 <span class="k">class</span> <span class="nc">EvAdventureCombatTwitchHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
 
@@ -601,15 +600,14 @@ a given combatant has advantage.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
 <span class="hll">        <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
-</span>        <span class="n">allies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
-
+</span>
         <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span>
 
         <span class="c1"># only keep combatants that are alive and still in the same room</span>
-<span class="hll">        <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">allies</span> <span class="k">if</span> <span class="n">comb</span><span class="o">.</span><span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">comb</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">location</span><span class="p">]</span>
-</span><span class="hll">        <span class="n">enemies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">enemies</span> <span class="k">if</span> <span class="n">comb</span><span class="o">.</span><span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">comb</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">location</span><span class="p">]</span>
-</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">allies</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">enemies</span><span class="p">:</span>
+        <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">allies</span> <span class="k">if</span> <span class="n">comb</span><span class="o">.</span><span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">comb</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">location</span><span class="p">]</span>
+<span class="hll">        <span class="n">enemies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">enemies</span> <span class="k">if</span> <span class="n">comb</span><span class="o">.</span><span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">comb</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">location</span><span class="p">]</span>
+</span><span class="hll">
+</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">allies</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">enemies</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The combat is over. Noone stands.&quot;</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_combat</span><span class="p">()</span>
             <span class="k">return</span>
@@ -626,7 +624,7 @@ a given combatant has advantage.</p>
 </div>
 <p>We must make sure to check if combat is over.</p>
 <ul class="simple">
-<li><p><strong>Line 12</strong>: With our <code class="docutils literal notranslate"><span class="pre">.get_sides()</span></code> method we can easily get the two sides of the conflict. Note that <code class="docutils literal notranslate"><span class="pre">combatant</span></code> is not included among the allies, so we need to add it back in on the following line.</p></li>
+<li><p><strong>Line 12</strong>: With our <code class="docutils literal notranslate"><span class="pre">.get_sides()</span></code> method we can easily get the two sides of the conflict.</p></li>
 <li><p><strong>Lines 18, 19</strong>: We get everyone still alive <em>and still in the same room</em>. The latter condition is important in case we move away from the battle - you can’t hit your enemy from another room.</p></li>
 </ul>
 <p>In the <code class="docutils literal notranslate"><span class="pre">stop_method</span></code> we’ll need to do a bunch of cleanup. We’ll hold off on implementing this until we have the Commands written out. Read on.</p>
