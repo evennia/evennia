@@ -311,9 +311,9 @@ class EquipmentHandler:
         """
         Put something in the backpack.
         """
-        self.validate_slot_usage(obj)
-        self.slots[WieldLocation.BACKPACK].append(obj)
-        self._save()
+        if self.validate_slot_usage(obj):
+	        self.slots[WieldLocation.BACKPACK].append(obj)
+	        self._save()
 
     def remove(self, slot):
         """
@@ -363,7 +363,9 @@ class EquipmentHandler:
          
         # make sure to remove from equipment/backpack first, to avoid double-adding
         self.remove(obj) 
-        
+        if not self.validate_slot_usage(obj):
+            return
+
         slots = self.slots
         use_slot = getattr(obj, "inventory_use_slot", WieldLocation.BACKPACK)
 
