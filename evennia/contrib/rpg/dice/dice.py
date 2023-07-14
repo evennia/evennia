@@ -33,7 +33,7 @@ from evennia.contrib.rpg import dice  <---
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     # ...
-    def at_object_creation(self):
+    def at_cmdset_creation(self):
         # ...
         self.add(dice.CmdDice())  # <---
 
@@ -45,15 +45,16 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 To roll dice in code, use the `roll` function from this module:
 
-```python
+    from evennia.contrib.rpg import dice
 
-from evennia.contrib.rpg import dice
-dice.roll(3, 10, ("+", 2))  # 3d10 + 2
-```
+    dice.roll("3d10 + 2")
 
-or use the string syntax:
 
-dice.roll("3d10 + 2")
+If your system generates the dice dynamically you can also enter each part
+of the roll separately:
+
+    dice.roll(3, 10, ("+", 2))  # 3d10 + 2
+
 
 """
 import re
@@ -113,6 +114,14 @@ def roll(
 
     Examples:
         ::
+            # string form
+            print roll("3d6 + 2")
+            10
+            print roll("2d10 + 2 > 10")
+            True
+            print roll("2d20 - 2 >= 10")
+            (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8
+
             # explicit arguments
             print roll(2, 6) # 2d6
             7
@@ -123,14 +132,6 @@ def roll(
             print roll(3, 10, return_tuple=True)
             (11, None, None, (2, 5, 4))
             print roll(2, 20, ('-', 2), conditional=('>=', 10), return_tuple=True)
-            (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8
-
-            # string form
-            print roll("3d6 + 2")
-            10
-            print roll("2d10 + 2 > 10")
-            True
-            print roll("2d20 - 2 >= 10")
             (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8
 
     """

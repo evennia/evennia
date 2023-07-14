@@ -34,7 +34,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
     > roll 1d20
     > roll 1d20 - 4
 
-The result of the roll will be echoed to the room
+The result of the roll will be echoed to the room.
 
 One can also specify a standard Python operator in order to specify
 eventual target numbers and get results in a fair and guaranteed
@@ -55,27 +55,12 @@ Is a hidden roll that does not inform the room it happened.
 
 ## Rolling dice from code
 
-To roll dice in code, use the `roll` function from this module. It has two
-main ways to define the expected roll:
-
-```python
-from evennia.contrib.rpg.dice import roll
-
-roll(dice, dicetype=6, modifier=None, conditional=None, return_tuple=False,
-      max_dicenum=10, max_dicetype=1000)
-
-```
-
-You can only roll one set of dice. If your RPG requires you to roll multiple
-sets of dice and combine them in more advanced ways, you can do so with multiple
-`roll()` calls.
-
-### Roll dice based on a string
-
 You can specify the first argument as a string on standard RPG d-syntax (NdM,
 where N is the number of dice to roll, and M is the number sides per dice):
 
 ```python
+from evennia.contrib.rpg.dice import roll
+
 roll("3d10 + 2")
 ```
 
@@ -85,13 +70,16 @@ You can also give a conditional (you'll then get a `True`/`False` back):
 roll("2d6 - 1 >= 10")
 ```
 
-### Explicit arguments
-
 If you specify the first argument as an integer, it's interpret as the number of
 dice to roll and you can then build the roll more explicitly. This can be
 useful if you are using the roller together with some other system and want to
 construct the roll from components.
 
+
+```python
+roll(dice, dicetype=6, modifier=None, conditional=None, return_tuple=False,
+      max_dicenum=10, max_dicetype=1000)
+```
 
 Here's how to roll `3d10 + 2` with explicit syntax:
 
@@ -104,6 +92,10 @@ Here's how to roll `2d6 - 1 >= 10` (you'll get back `True`/`False` back):
 ```python
 roll(2, 6, modifier=("-", 1), conditional=(">=", 10))
 ```
+
+You can only roll one set of dice. If your RPG requires you to roll multiple
+sets of dice and combine them in more advanced ways, you can do so with multiple
+`roll()` calls.
 
 ### Get all roll details
 
