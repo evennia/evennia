@@ -1,7 +1,6 @@
 # Searching for things
 
-We have gone through how to create the various entities in Evennia. But creating something is of little use
-if we cannot find and use it afterwards.
+We have gone through how to create the various entities in Evennia. But creating something is of little use if we cannot find and use it afterwards.
 
 ## Main search functions
 
@@ -10,8 +9,8 @@ The base tools are the `evennia.search_*` functions, such as `evennia.search_obj
 ```python
 import evennia 
 
-roses = evennia.search_object(key="rose")
-accts = evennia.search_account(key="MyAccountName", email="foo@bar.com")
+roses = evennia.search_object("rose")
+accts = evennia.search_account("MyAccountName", email="foo@bar.com")
 ```
 
 ```{sidebar} Querysets
@@ -19,14 +18,14 @@ accts = evennia.search_account(key="MyAccountName", email="foo@bar.com")
 What is returned from the main search functions is actually a `queryset`. They can be treated like lists except that they can't modified in-place. We'll discuss querysets in the `next lesson` <Django-queries>`_.
 ```
 
-Strings are always case-insensitive, so searching for `"rose"`, `"Rose"` or `"rOsE"` give the same results. It's important to remember that what is returned from these search methods is a _listing_ of zero, one or more elements - all the matches to your search. To get the first match:
+This searches by `key` of the object. Strings are always case-insensitive, so searching for `"rose"`, `"Rose"` or `"rOsE"` give the same results. It's important to remember that what is returned from these search methods is a _listing_ of zero, one or more elements - all the matches to your search. To get the first match:
 
     rose = roses[0]
 
 Often you really want all matches to the search parameters you specify. In other situations, having zero or more than one match is a sign of a problem and you need to handle this case yourself.
 
 ```python
-    the_one_ring = evennia.search_object(key="The one Ring")
+    the_one_ring = evennia.search_object("The one Ring")
     if not the_one_ring:
         # handle not finding the ring at all
     elif len(the_one_ring) > 1:
@@ -43,13 +42,14 @@ There are equivalent search functions for all the main resources. You can find a
 
 On the `DefaultObject` is a `.search` method which we have already tried out when we made Commands. For this to be used you must already have an object available:
 
+    obj = evennia.search_object("My Object")[0]  # assuming this exists
     rose = obj.search("rose")
 
 This searches for objects based on `key` or aliases.  The `.search` method wraps `evennia.search_object` and handles its output in various ways.
 
 - By default it will always search for objects among those in `obj.location.contents` and `obj.contents` (that is, things in obj's inventory or in the same room).
-- It will always return exactly one match. If it found zero or more than one match, the return is `None`.
-- On a no-match or multimatch, `.search` will automatically send an error message to `obj`.
+- It will always return exactly one match. If it found zero or more than one match, the return is `None`. This is different from `evennia.search`, which always returns a list.
+- On a no-match or multimatch, `.search` will automatically send an error message to `obj`. So you don't have to worry about reporting messages if the result is `None`.
 
 So this method handles error messaging for you. A very common way to use it is in commands:
 
@@ -57,26 +57,26 @@ So this method handles error messaging for you. A very common way to use it is i
 from evennia import Command
 
 class CmdQuickFind(Command):
-	""" 
-	Find an item in your current location.
+    """ 
+    Find an item in your current location.
 
-	Usage: 
-	  quickfind <query>
-
+    Usage: 
+        quickfind <query>
+        
 	"""
 
     key = "quickfind"
 
     def func(self):
-		query = self.args
+        query = self.args
         result = self.caller.search(query)
-        if not result
+        if not result:
             return
-        self.caller.msg(f"Found match for {query}: {foo}")
+        self.caller.msg(f"Found match for {query}: {result}")
 ```
 
 Remember, `self.caller` is the one calling the command. This is usually a Character, which
-inherits from `DefaultObject`! 
+inherits from `DefaultObject`. So it has `.search()` available on it.
 
 This simple little Command takes its arguments and searches for a match. If it can't find it, `result` will be `None`. The error has already been reported to `self.caller` so we just abort with `return`.
 

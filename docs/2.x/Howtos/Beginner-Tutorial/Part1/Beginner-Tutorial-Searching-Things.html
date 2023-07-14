@@ -129,27 +129,26 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="searching-for-things">
 <h1><span class="section-number">11. </span>Searching for things<a class="headerlink" href="#searching-for-things" title="Permalink to this headline">¶</a></h1>
-<p>We have gone through how to create the various entities in Evennia. But creating something is of little use
-if we cannot find and use it afterwards.</p>
+<p>We have gone through how to create the various entities in Evennia. But creating something is of little use if we cannot find and use it afterwards.</p>
 <section id="main-search-functions">
 <h2><span class="section-number">11.1. </span>Main search functions<a class="headerlink" href="#main-search-functions" title="Permalink to this headline">¶</a></h2>
 <p>The base tools are the <code class="docutils literal notranslate"><span class="pre">evennia.search_*</span></code> functions, such as <code class="docutils literal notranslate"><span class="pre">evennia.search_object</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span> 
 
-<span class="n">roses</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;rose&quot;</span><span class="p">)</span>
-<span class="n">accts</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyAccountName&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;foo@bar.com&quot;</span><span class="p">)</span>
+<span class="n">roses</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;rose&quot;</span><span class="p">)</span>
+<span class="n">accts</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="s2">&quot;MyAccountName&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;foo@bar.com&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Querysets</p>
 <p>What is returned from the main search functions is actually a <code class="docutils literal notranslate"><span class="pre">queryset</span></code>. They can be treated like lists except that they can’t modified in-place. We’ll discuss querysets in the <code class="docutils literal notranslate"><span class="pre">next</span> <span class="pre">lesson</span></code> <Django-queries>`_.</p>
 </aside>
-<p>Strings are always case-insensitive, so searching for <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Rose&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;rOsE&quot;</span></code> give the same results. It’s important to remember that what is returned from these search methods is a <em>listing</em> of zero, one or more elements - all the matches to your search. To get the first match:</p>
+<p>This searches by <code class="docutils literal notranslate"><span class="pre">key</span></code> of the object. Strings are always case-insensitive, so searching for <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Rose&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;rOsE&quot;</span></code> give the same results. It’s important to remember that what is returned from these search methods is a <em>listing</em> of zero, one or more elements - all the matches to your search. To get the first match:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rose = roses[0]
 </pre></div>
 </div>
 <p>Often you really want all matches to the search parameters you specify. In other situations, having zero or more than one match is a sign of a problem and you need to handle this case yourself.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">the_one_ring</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;The one Ring&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">the_one_ring</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;The one Ring&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">the_one_ring</span><span class="p">:</span>
         <span class="c1"># handle not finding the ring at all</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">the_one_ring</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -165,39 +164,40 @@ if we cannot find and use it afterwards.</p>
 <section id="searching-using-object-search">
 <h2><span class="section-number">11.2. </span>Searching using Object.search<a class="headerlink" href="#searching-using-object-search" title="Permalink to this headline">¶</a></h2>
 <p>On the <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is a <code class="docutils literal notranslate"><span class="pre">.search</span></code> method which we have already tried out when we made Commands. For this to be used you must already have an object available:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rose = obj.search(&quot;rose&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>obj = evennia.search_object(&quot;My Object&quot;)[0]  # assuming this exists
+rose = obj.search(&quot;rose&quot;)
 </pre></div>
 </div>
 <p>This searches for objects based on <code class="docutils literal notranslate"><span class="pre">key</span></code> or aliases.  The <code class="docutils literal notranslate"><span class="pre">.search</span></code> method wraps <code class="docutils literal notranslate"><span class="pre">evennia.search_object</span></code> and handles its output in various ways.</p>
 <ul class="simple">
 <li><p>By default it will always search for objects among those in <code class="docutils literal notranslate"><span class="pre">obj.location.contents</span></code> and <code class="docutils literal notranslate"><span class="pre">obj.contents</span></code> (that is, things in obj’s inventory or in the same room).</p></li>
-<li><p>It will always return exactly one match. If it found zero or more than one match, the return is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p>On a no-match or multimatch, <code class="docutils literal notranslate"><span class="pre">.search</span></code> will automatically send an error message to <code class="docutils literal notranslate"><span class="pre">obj</span></code>.</p></li>
+<li><p>It will always return exactly one match. If it found zero or more than one match, the return is <code class="docutils literal notranslate"><span class="pre">None</span></code>. This is different from <code class="docutils literal notranslate"><span class="pre">evennia.search</span></code>, which always returns a list.</p></li>
+<li><p>On a no-match or multimatch, <code class="docutils literal notranslate"><span class="pre">.search</span></code> will automatically send an error message to <code class="docutils literal notranslate"><span class="pre">obj</span></code>. So you don’t have to worry about reporting messages if the result is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 <p>So this method handles error messaging for you. A very common way to use it is in commands:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="k">class</span> <span class="nc">CmdQuickFind</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-<span class="w">	</span><span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">	Find an item in your current location.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Find an item in your current location.</span>
 
-<span class="sd">	Usage: </span>
-<span class="sd">	  quickfind &lt;query&gt;</span>
-
+<span class="sd">    Usage: </span>
+<span class="sd">        quickfind &lt;query&gt;</span>
+<span class="sd">        </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;quickfind&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found match for </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">foo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found match for </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Remember, <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> is the one calling the command. This is usually a Character, which
-inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>!</p>
+inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>. So it has <code class="docutils literal notranslate"><span class="pre">.search()</span></code> available on it.</p>
 <p>This simple little Command takes its arguments and searches for a match. If it can’t find it, <code class="docutils literal notranslate"><span class="pre">result</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code>. The error has already been reported to <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> so we just abort with <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p>
 <p>With the <code class="docutils literal notranslate"><span class="pre">global_search</span></code> flag, you can use <code class="docutils literal notranslate"><span class="pre">.search</span></code> to find anything, not just stuff in the same room:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>volcano = self.caller.search(&quot;Vesuvio&quot;, global_search=True)

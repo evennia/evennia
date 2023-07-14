@@ -190,12 +190,11 @@ all one by one:</p>
 </div>
 <p>If there were <em>a lot</em> of functions, you could instead just import <code class="docutils literal notranslate"><span class="pre">test</span></code> and get the function
 from there when you need (without having to give the full <code class="docutils literal notranslate"><span class="pre">world.test</span></code> every time):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from world import test ; test.hello_world(me
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from world import test ; test.hello_world(me)
 Hello World!
 </pre></div>
 </div>
-<p>You can also <em>rename</em> stuff you import. Say for example that the module you import to already
-has a function <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> but we also want to use the one from <code class="docutils literal notranslate"><span class="pre">world/test.py</span></code>:</p>
+<p>You can also <em>rename</em> stuff you import. Say for example that the module you import to already has a function <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> but we also want to use the one from <code class="docutils literal notranslate"><span class="pre">world/test.py</span></code>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from world.test import hello_world as test_hello_world
 </pre></div>
 </div>
