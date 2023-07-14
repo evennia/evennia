@@ -94,7 +94,10 @@
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span>
 <span class="kn">from</span> <span class="nn">twisted.web.client</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">HTTPConnectionPool</span><span class="p">,</span> <span class="n">_HTTP11ClientFactory</span>
@@ -102,15 +105,11 @@
 <span class="kn">from</span> <span class="nn">twisted.web.iweb</span> <span class="kn">import</span> <span class="n">IBodyProducer</span>
 <span class="kn">from</span> <span class="nn">zope.interface</span> <span class="kn">import</span> <span class="n">implementer</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">logger</span>
-
 <span class="n">_EGI_HOST</span> <span class="o">=</span> <span class="s2">&quot;http://evennia-game-index.appspot.com&quot;</span>
 <span class="n">_EGI_REPORT_PATH</span> <span class="o">=</span> <span class="s2">&quot;/api/v1/game/check_in&quot;</span>
 
 
-<div class="viewcode-block" id="EvenniaGameIndexClient"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.EvenniaGameIndexClient">[docs]</a><span class="k">class</span> <span class="nc">EvenniaGameIndexClient</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaGameIndexClient"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.EvenniaGameIndexClient">[docs]</a><span class="k">class</span> <span class="nc">EvenniaGameIndexClient</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This client class is used for gathering and sending game details to the</span>
 <span class="sd">    Evennia Game Index. Since EGI is in the early goings, this isn&#39;t</span>
@@ -119,8 +118,8 @@
 
 <div class="viewcode-block" id="EvenniaGameIndexClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.EvenniaGameIndexClient.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_bad_request</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param on_bad_request: Optional callable to trigger when a bad request</span>
-<span class="sd">            was sent. This is almost always going to be due to bad config.</span>
+<span class="sd">        on_bad_request (callable, optional): Callable to trigger when a bad request was sent.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">report_host</span> <span class="o">=</span> <span class="n">_EGI_HOST</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">report_path</span> <span class="o">=</span> <span class="n">_EGI_REPORT_PATH</span>
@@ -236,7 +235,7 @@
 
 
 <div class="viewcode-block" id="StringProducer"><a class="viewcode-back" href="../../../../api/evennia.server.game_index_client.client.html#evennia.server.game_index_client.client.StringProducer">[docs]</a><span class="nd">@implementer</span><span class="p">(</span><span class="n">IBodyProducer</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">StringProducer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">StringProducer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used for feeding a request body to the tx HTTP client.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

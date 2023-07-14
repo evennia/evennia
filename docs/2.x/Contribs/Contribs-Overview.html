@@ -115,6 +115,7 @@
 <li><a class="reference internal" href="#character-creator"><code class="docutils literal notranslate"><span class="pre">character_creator</span></code></a></li>
 <li><a class="reference internal" href="#dice"><code class="docutils literal notranslate"><span class="pre">dice</span></code></a></li>
 <li><a class="reference internal" href="#health-bar"><code class="docutils literal notranslate"><span class="pre">health_bar</span></code></a></li>
+<li><a class="reference internal" href="#llm"><code class="docutils literal notranslate"><span class="pre">llm</span></code></a></li>
 <li><a class="reference internal" href="#rpsystem"><code class="docutils literal notranslate"><span class="pre">rpsystem</span></code></a></li>
 <li><a class="reference internal" href="#traits"><code class="docutils literal notranslate"><span class="pre">traits</span></code></a></li>
 </ul>
@@ -193,7 +194,7 @@ in the <a class="reference external" href="https://github.com/evennia/evennia/di
 <p><em>Contribs</em> are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than ‘core’ Evennia.
-This page is auto-generated and summarizes all <strong>48</strong> contribs currently included
+This page is auto-generated and summarizes all <strong>49</strong> contribs currently included
 with the Evennia distribution.</p>
 <p>All contrib categories are imported from <code class="docutils literal notranslate"><span class="pre">evennia.contrib</span></code>, such as</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from evennia.contrib.base_systems import building_menu
@@ -269,32 +270,32 @@ copy its entire folder to your game directory and modify/use it from there.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ingame-map-display"><span class="std std-doc">ingame_map_display</span></a></p></td>
 <td><p><a class="reference internal" href="#ingame-python"><span class="std std-doc">ingame_python</span></a></p></td>
+<td><p><a class="reference internal" href="#llm"><span class="std std-doc">llm</span></a></p></td>
 <td><p><a class="reference internal" href="#mail"><span class="std std-doc">mail</span></a></p></td>
 <td><p><a class="reference internal" href="#mapbuilder"><span class="std std-doc">mapbuilder</span></a></p></td>
-<td><p><a class="reference internal" href="#menu-login"><span class="std std-doc">menu_login</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mirror"><span class="std std-doc">mirror</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#menu-login"><span class="std std-doc">menu_login</span></a></p></td>
+<td><p><a class="reference internal" href="#mirror"><span class="std std-doc">mirror</span></a></p></td>
 <td><p><a class="reference internal" href="#multidescer"><span class="std std-doc">multidescer</span></a></p></td>
 <td><p><a class="reference internal" href="#mux-comms-cmds"><span class="std std-doc">mux_comms_cmds</span></a></p></td>
 <td><p><a class="reference internal" href="#name-generator"><span class="std std-doc">name_generator</span></a></p></td>
-<td><p><a class="reference internal" href="#puzzles"><span class="std std-doc">puzzles</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#random-string-generator"><span class="std std-doc">random_string_generator</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#puzzles"><span class="std std-doc">puzzles</span></a></p></td>
+<td><p><a class="reference internal" href="#random-string-generator"><span class="std std-doc">random_string_generator</span></a></p></td>
 <td><p><a class="reference internal" href="#red-button"><span class="std std-doc">red_button</span></a></p></td>
 <td><p><a class="reference internal" href="#rpsystem"><span class="std std-doc">rpsystem</span></a></p></td>
 <td><p><a class="reference internal" href="#simpledoor"><span class="std std-doc">simpledoor</span></a></p></td>
-<td><p><a class="reference internal" href="#slow-exit"><span class="std std-doc">slow_exit</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#talking-npc"><span class="std std-doc">talking_npc</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#slow-exit"><span class="std std-doc">slow_exit</span></a></p></td>
+<td><p><a class="reference internal" href="#talking-npc"><span class="std std-doc">talking_npc</span></a></p></td>
 <td><p><a class="reference internal" href="#traits"><span class="std std-doc">traits</span></a></p></td>
 <td><p><a class="reference internal" href="#tree-select"><span class="std std-doc">tree_select</span></a></p></td>
 <td><p><a class="reference internal" href="#turnbattle"><span class="std std-doc">turnbattle</span></a></p></td>
-<td><p><a class="reference internal" href="#tutorial-world"><span class="std std-doc">tutorial_world</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#unixcommand"><span class="std std-doc">unixcommand</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tutorial-world"><span class="std std-doc">tutorial_world</span></a></p></td>
+<td><p><a class="reference internal" href="#unixcommand"><span class="std std-doc">unixcommand</span></a></p></td>
 <td><p><a class="reference internal" href="#wilderness"><span class="std std-doc">wilderness</span></a></p></td>
 <td><p><a class="reference internal" href="#xyzgrid"><span class="std std-doc">xyzgrid</span></a></p></td>
-<td><p></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -659,6 +660,7 @@ and rule implementation like character traits, dice rolling and emoting.</em></p
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Character-Creator.html">Character Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Dice.html">Dice roller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Health-Bar.html">Health Bar</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Llm.html">Large Language Model (“Chat-bot AI”) integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-RPSystem.html">Roleplaying base system for Evennia</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Traits.html">Traits</a></li>
 </ul>
@@ -693,6 +695,12 @@ bars or meters as a colorful bar instead of just a number. A “health bar”
 is merely the most obvious use for this, but the bar is highly customizable
 and can be used for any sort of appropriate data besides player health.</p>
 <p><a class="reference internal" href="Contrib-Health-Bar.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.health_bar.html#evennia-contrib-rpg-health-bar"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="llm">
+<h3><code class="docutils literal notranslate"><span class="pre">llm</span></code><a class="headerlink" href="#llm" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2023</em></p>
+<p>This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Large Language Model, along the lines of ChatGPT). Example uses a local OSS LLM install. Included is an NPC you can chat with using a new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command. The NPC will respond using the AI responses from the LLM server. All calls are asynchronous, so if the LLM is slow, Evennia is not affected.</p>
+<p><a class="reference internal" href="Contrib-Llm.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.llm.html#evennia-contrib-rpg-llm"><span class="std std-ref">Browse the Code</span></a></p>
 </section>
 <section id="rpsystem">
 <h3><code class="docutils literal notranslate"><span class="pre">rpsystem</span></code><a class="headerlink" href="#rpsystem" title="Permalink to this headline">¶</a></h3>
