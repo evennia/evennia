@@ -54,38 +54,10 @@ The default LLM api config should work with the text-generation-webui LLM server
     # this key will be inserted in the request, with your user-input
     LLM_PROMPT_KEYNAME = "prompt"
 
-    # defaults are set up for text-generation-webui. I have no idea what most of
-    # these do ^_^; you'll need to read a book on LLMs, or at least dive
-    # into a bunch of online tutorials.
+    # defaults are set up for text-generation-webui and most models
     LLM_REQUEST_BODY = {
         "max_new_tokens": 250,  # set how many tokens are part of a response
-        "preset": "None",
-        "do_sample": True,
-        "temperature": 0.7,
-        "top_p": 0.1,
-        "typical_p": 1,
-        "epsilon_cutoff": 0,  # In units of 1e-4
-        "eta_cutoff": 0,  # In units of 1e-4
-        "tfs": 1,
-        "top_a": 0,
-        "repetition_penalty": 1.18,
-        "repetition_penalty_range": 0,
-        "top_k": 40,
-        "min_length": 0,
-        "no_repeat_ngram_size": 0,
-        "num_beams": 1,
-        "penalty_alpha": 0,
-        "length_penalty": 1,
-        "early_stopping": False,
-        "mirostat_mode": 0,
-        "mirostat_tau": 5,
-        "mirostat_eta": 0.1,
-        "seed": -1,
-        "add_bos_token": True,
-        "truncation_length": 2048,
-        "ban_eos_token": False,
-        "skip_special_tokens": True,
-        "stopping_strings": [],
+        "temperature": 0.7, # 0-2. higher=more random, lower=predictable
     }
 ```
 Don't forget to reload Evennia if you make any changes.
@@ -119,9 +91,27 @@ Also be aware that many open-source models are intended for AI research and lice
 
 ### Why not use an AI cloud service?
 
-You could in principle use this to call out to an external API, like OpenAI (chat-GPT) or Google. Most such cloud-hosted services are commercial (costs money). But since they have the hardware to run bigger models (or their own, proprietary models), they may give better and faster results.
+You could in principle use this to call out to an external API, like OpenAI (chat-GPT) or Google. Most cloud-hosted services are commercial and costs money. But since they have the hardware to run bigger models (or their own, proprietary models), they may give better and faster results.
 
 Calling an external API is not tested, so report any findings. Since the Evennia Server (not the Portal) is doing the calling, you are recommended to put a proxy between you and the internet if you call out like this.
+
+Here is an untested example of the Evennia setting for calling [OpenAI's v1/completions API](https://platform.openai.com/docs/api-reference/completions):
+
+```python 
+LLM_HOST = "https://api.openai.com"
+LLM_PATH = "/v1/completions"
+LLM_HEADERS = {"Content-Type": "application/json", 
+               "Authorization": "Bearer YOUR_OPENAI_API_KEY"}
+LLM_PROMPT_KEYNAME = "prompt"
+LLM_REQUEST_BODY = { 
+                        "model": "gpt-3.5-turbo",
+                        "temperature": 0.7,
+                        "max_tokens": 128,
+                   }
+
+```
+
+> TODO: OpenAI's more modern [v1/chat/completions](https://platform.openai.com/docs/api-reference/chat) api does currently not work out of the gate since it's a bit more complex, having the prompt given as a list of all responses so far.
 
 ## The LLMNPC class
 
@@ -141,6 +131,15 @@ This is a simple Character class, with a few extra properties:
 ```
 
 The character has a new method `at_talked_to` which does the connection to the LLM server and responds. This is called by the new `talk` command. Note that all these calls are asynchronous, meaning a slow response will not block Evennia.
+
+## TODO 
+
+There is a lot of expansion potential with this contrib. Some ideas: 
+
+- Better standard prompting to make the NPC actually conversant. 
+- Have the NPC remember previous conversations with the player 
+- Easier support for different cloud LLM provider API structures.
+- More examples of useful prompts and suitable models for MUD use.
 
 ----
 

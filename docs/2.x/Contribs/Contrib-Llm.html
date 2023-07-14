@@ -77,6 +77,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#the-llmnpc-class">The LLMNPC class</a></li>
+<li><a class="reference internal" href="#todo">TODO</a></li>
 </ul>
 </li>
 </ul>
@@ -171,38 +172,10 @@ villager says (to You): Yeah, it is really quite nice, ain&#39;t it.
     <span class="c1"># this key will be inserted in the request, with your user-input</span>
     <span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
 
-    <span class="c1"># defaults are set up for text-generation-webui. I have no idea what most of</span>
-    <span class="c1"># these do ^_^; you&#39;ll need to read a book on LLMs, or at least dive</span>
-    <span class="c1"># into a bunch of online tutorials.</span>
+    <span class="c1"># defaults are set up for text-generation-webui and most models</span>
     <span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>  <span class="c1"># set how many tokens are part of a response</span>
-        <span class="s2">&quot;preset&quot;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;do_sample&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
-        <span class="s2">&quot;top_p&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-        <span class="s2">&quot;typical_p&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;epsilon_cutoff&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># In units of 1e-4</span>
-        <span class="s2">&quot;eta_cutoff&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># In units of 1e-4</span>
-        <span class="s2">&quot;tfs&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;top_a&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;repetition_penalty&quot;</span><span class="p">:</span> <span class="mf">1.18</span><span class="p">,</span>
-        <span class="s2">&quot;repetition_penalty_range&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;top_k&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
-        <span class="s2">&quot;min_length&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;no_repeat_ngram_size&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;num_beams&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;penalty_alpha&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;length_penalty&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;early_stopping&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="s2">&quot;mirostat_mode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;mirostat_tau&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="s2">&quot;mirostat_eta&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-        <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;add_bos_token&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;truncation_length&quot;</span><span class="p">:</span> <span class="mi">2048</span><span class="p">,</span>
-        <span class="s2">&quot;ban_eos_token&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="s2">&quot;skip_special_tokens&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;stopping_strings&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="c1"># 0-2. higher=more random, lower=predictable</span>
     <span class="p">}</span>
 </pre></div>
 </div>
@@ -231,8 +204,25 @@ girl says (to You): Hello! How are you?
 <p>Also be aware that many open-source models are intended for AI research and licensed for non-commercial use only. So be careful if you want to use this in a commercial game. No doubt there will be a lot of changes in this area over the coming years.</p>
 <section id="why-not-use-an-ai-cloud-service">
 <h3>Why not use an AI cloud service?<a class="headerlink" href="#why-not-use-an-ai-cloud-service" title="Permalink to this headline">¶</a></h3>
-<p>You could in principle use this to call out to an external API, like OpenAI (chat-GPT) or Google. Most such cloud-hosted services are commercial (costs money). But since they have the hardware to run bigger models (or their own, proprietary models), they may give better and faster results.</p>
+<p>You could in principle use this to call out to an external API, like OpenAI (chat-GPT) or Google. Most cloud-hosted services are commercial and costs money. But since they have the hardware to run bigger models (or their own, proprietary models), they may give better and faster results.</p>
 <p>Calling an external API is not tested, so report any findings. Since the Evennia Server (not the Portal) is doing the calling, you are recommended to put a proxy between you and the internet if you call out like this.</p>
+<p>Here is an untested example of the Evennia setting for calling <a class="reference external" href="https://platform.openai.com/docs/api-reference/completions">OpenAI’s v1/completions API</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;https://api.openai.com&quot;</span>
+<span class="n">LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/v1/completions&quot;</span>
+<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span> 
+               <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_OPENAI_API_KEY&quot;</span><span class="p">}</span>
+<span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
+<span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span> 
+                        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+                        <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>
+                   <span class="p">}</span>
+
+</pre></div>
+</div>
+<blockquote>
+<div><p>TODO: OpenAI’s more modern <a class="reference external" href="https://platform.openai.com/docs/api-reference/chat">v1/chat/completions</a> api does currently not work out of the gate since it’s a bit more complex, having the prompt given as a list of all responses so far.</p>
+</div></blockquote>
 </section>
 </section>
 <section id="the-llmnpc-class">
@@ -251,6 +241,16 @@ girl says (to You): Hello! How are you?
 </pre></div>
 </div>
 <p>The character has a new method <code class="docutils literal notranslate"><span class="pre">at_talked_to</span></code> which does the connection to the LLM server and responds. This is called by the new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command. Note that all these calls are asynchronous, meaning a slow response will not block Evennia.</p>
+</section>
+<section id="todo">
+<h2>TODO<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
+<p>There is a lot of expansion potential with this contrib. Some ideas:</p>
+<ul class="simple">
+<li><p>Better standard prompting to make the NPC actually conversant.</p></li>
+<li><p>Have the NPC remember previous conversations with the player</p></li>
+<li><p>Easier support for different cloud LLM provider API structures.</p></li>
+<li><p>More examples of useful prompts and suitable models for MUD use.</p></li>
+</ul>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/rpg/llm/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>

@@ -124,36 +124,8 @@
 <span class="n">DEFAULT_LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
 <span class="n">DEFAULT_LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
 <span class="n">DEFAULT_LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>
-    <span class="c1"># Generation params. If &#39;preset&#39; is set to different than &#39;None&#39;, the values</span>
-    <span class="c1"># in presets/preset-name.yaml are used instead of the individual numbers.</span>
-    <span class="s2">&quot;preset&quot;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;do_sample&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
-    <span class="s2">&quot;top_p&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-    <span class="s2">&quot;typical_p&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;epsilon_cutoff&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># In units of 1e-4</span>
-    <span class="s2">&quot;eta_cutoff&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># In units of 1e-4</span>
-    <span class="s2">&quot;tfs&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;top_a&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;repetition_penalty&quot;</span><span class="p">:</span> <span class="mf">1.18</span><span class="p">,</span>
-    <span class="s2">&quot;repetition_penalty_range&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;top_k&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
-    <span class="s2">&quot;min_length&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;no_repeat_ngram_size&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;num_beams&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;penalty_alpha&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;length_penalty&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;early_stopping&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;mirostat_mode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;mirostat_tau&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="s2">&quot;mirostat_eta&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-    <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;add_bos_token&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;truncation_length&quot;</span><span class="p">:</span> <span class="mi">2048</span><span class="p">,</span>
-    <span class="s2">&quot;ban_eos_token&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;skip_special_tokens&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;stopping_strings&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>  <span class="c1"># max number of tokens to generate</span>
+    <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>  <span class="c1"># higher = more random, lower = more predictable</span>
 <span class="p">}</span>
 
 
