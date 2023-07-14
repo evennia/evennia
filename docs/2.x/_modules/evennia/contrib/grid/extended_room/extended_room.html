@@ -225,6 +225,8 @@
 <span class="sd">      echoed to the room at the given rate.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># fallback description if nothing else is set</span>
+    <span class="n">fallback_desc</span> <span class="o">=</span> <span class="s2">&quot;You see nothing special.&quot;</span>
 
     <span class="c1"># tag room_state category</span>
     <span class="n">room_state_tag_category</span> <span class="o">=</span> <span class="s2">&quot;room_state&quot;</span>
@@ -496,7 +498,7 @@
             <span class="k">return</span> <span class="n">desc</span>
 
         <span class="c1"># fallback to normal desc Attribute</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_desc</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ExtendedRoom.replace_legacy_time_of_day_markup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.extended_room.html#evennia.contrib.grid.extended_room.extended_room.ExtendedRoom.replace_legacy_time_of_day_markup">[docs]</a>    <span class="k">def</span> <span class="nf">replace_legacy_time_of_day_markup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">desc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -514,6 +516,7 @@
 <span class="sd">            This is legacy. Use the $state markup for new rooms instead.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
         <span class="n">time_of_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time_of_day</span><span class="p">()</span>
 
         <span class="c1"># regexes for in-desc replacements (gets cached)</span>
