@@ -36,14 +36,7 @@ _PRIVATE_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssl.key")
 _PUBLIC_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssl-public.key")
 _CERTIFICATE_FILE = os.path.join(_GAME_DIR, "server", "ssl.cert")
 _CERTIFICATE_EXPIRE = 365 * 24 * 60 * 60 * 20  # 20 years
-_CERTIFICATE_ISSUER = {
-    "C": "EV",
-    "ST": "Evennia",
-    "L": "Evennia",
-    "O": "Evennia Security",
-    "OU": "Evennia Department",
-    "CN": "evennia",
-}
+_CERTIFICATE_ISSUER = settings.SSL_CERTIFICATE_ISSUER
 
 # messages
 
