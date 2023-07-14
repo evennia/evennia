@@ -250,11 +250,11 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
             npcs = [comb for comb in self.combatants if comb not in pcs]
             if combatant in pcs:
                 # combatant is a PC, so NPCs are all enemies
-                allies = [comb for comb in pcs if comb != combatant]
+                allies = pcs
                 enemies = npcs
             else:
                 # combatant is an NPC, so PCs are all enemies
-                allies = [comb for comb in npcs if comb != combatant]
+                allies = npcs
                 enemies = pcs
         return allies, enemies
 
@@ -345,7 +345,7 @@ class EvAdventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
             surviving_combatant = None
             allies, enemies = (), ()
         else:
-            # grab a random survivor and check of they have any living enemies.
+            # grab a random survivor and check if they have any living enemies.
             surviving_combatant = random.choice(list(self.combatants.keys()))
             allies, enemies = self.get_sides(surviving_combatant)
 
@@ -537,19 +537,6 @@ def node_choose_allied_target(caller, raw_string, **kwargs):
     combathandler = _get_combathandler(caller)
     allies, _ = combathandler.get_sides(caller)
 
-    # can choose yourself
-    options = [
-        {
-            "desc": "Yourself",
-            "goto": (
-                _step_wizard,
-                {
-                    **kwargs,
-                    **{"action_dict": {**action_dict, **{"target": caller}}},
-                },
-            ),
-        }
-    ]
     options.extend(
         [
             {
@@ -579,19 +566,6 @@ def node_choose_allied_recipient(caller, raw_string, **kwargs):
     combathandler = _get_combathandler(caller)
     allies, _ = combathandler.get_sides(caller)
 
-    # can choose yourself
-    options = [
-        {
-            "desc": "Yourself",
-            "goto": (
-                _step_wizard,
-                {
-                    **kwargs,
-                    **{"action_dict": {**action_dict, **{"recipient": caller}}},
-                },
-            ),
-        }
-    ]
     options.extend(
         [
             {

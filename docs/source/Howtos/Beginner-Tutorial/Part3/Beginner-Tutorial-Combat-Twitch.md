@@ -152,11 +152,11 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
             npcs = [comb for comb in combatants if comb not in pcs]
             if combatant in pcs:
                 # combatant is a PC, so NPCs are all enemies
-                allies = [comb for comb in pcs if comb != combatant]
+                allies = pcs
                 enemies = npcs
             else:
                 # combatant is an NPC, so PCs are all enemies
-                allies = [comb for comb in npcs if comb != combatant]
+                allies = npcs
                 enemies = pcs
         return allies, enemies
 
@@ -357,7 +357,6 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
         """
 
         allies, enemies = self.get_sides(self.obj)
-        allies.append(self.obj)
 
         location = self.obj.location
 
@@ -382,7 +381,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
 
 We must make sure to check if combat is over. 
 
-- **Line 12**: With our `.get_sides()` method we can easily get the two sides of the conflict. Note that `combatant` is not included among the allies, so we need to add it back in on the following line.
+- **Line 12**: With our `.get_sides()` method we can easily get the two sides of the conflict.
 - **Lines 18, 19**: We get everyone still alive _and still in the same room_. The latter condition is important in case we move away from the battle - you can't hit your enemy from another room. 
 
 In the `stop_method` we'll need to do a bunch of cleanup. We'll hold off on implementing this until we have the Commands written out. Read on.

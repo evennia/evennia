@@ -176,11 +176,11 @@ class EvadventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
                npcs = [comb for comb in self.combatants if comb not in pcs]
                if combatant in pcs:
                    # combatant is a PC, so NPCs are all enemies
-                   allies = [comb for comb in pcs if comb != combatant]
+                   allies = pcs
                    enemies = npcs
                else:
                    # combatant is an NPC, so PCs are all enemies
-                   allies = [comb for comb in npcs if comb != combatant]
+                   allies = npcs
                    enemies = pcs
         return allies, enemies
 ```
@@ -897,7 +897,7 @@ def node_choose_allied_recipient(caller, raw_string, **kwargs):
         - Finally we merge this with the existing `kwargs` dict. The result is a new dict that now has the updated `"action_dict"` key pointing to an action-dict where `target` is set. 
 - **Line 23**: We extend the `options` list with the default wizard options (`back`, `abort`). Since we made a helper function for this, this is only one line. 
 
-Creating the three other needed nodes `node_choose_enemy_recipient`, `node_choose_allied_target` and `node_choose_allied_recipient` are following the same pattern; they just use either the `allies` or `enemies` return from `combathandler.get_sides()` (for the `allies`, don't forget to add `caller` so you can target yourself!). It then sets either the `target` or `recipient` field in the `action_dict`. We leave these up to the reader to implement. 
+Creating the three other needed nodes `node_choose_enemy_recipient`, `node_choose_allied_target` and `node_choose_allied_recipient` are following the same pattern; they just use either the `allies` or `enemies` return from `combathandler.get_sides(). It then sets either the `target` or `recipient` field in the `action_dict`. We leave these up to the reader to implement. 
 
 ### Choose an Ability 
 

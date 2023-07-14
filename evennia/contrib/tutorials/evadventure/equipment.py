@@ -93,9 +93,6 @@ class EquipmentHandler:
         Args:
             obj (EvAdventureObject): The object to add.
 
-        Raise:
-            EquipmentError: If there's not enough room.
-
         """
         if not inherits_from(obj, EvAdventureObject):
             raise EquipmentError(f"{obj.key} is not something that can be equipped.")
@@ -103,6 +100,7 @@ class EquipmentHandler:
         size = obj.size
         max_slots = self.max_slots
         current_slot_usage = self.count_slots()
+
         if current_slot_usage + size > max_slots:
             slots_left = max_slots - current_slot_usage
             raise EquipmentError(

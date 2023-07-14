@@ -81,7 +81,7 @@ class TestEvAdventureCombatBaseHandler(_CombatTestBase):
     def test_get_combat_summary(self):
         """Test combat summary"""
 
-        self.combathandler.get_sides = Mock(return_value=([], [self.target]))
+        self.combathandler.get_sides = Mock(return_value=([self.combatant], [self.target]))
 
         # as seen from one side
         result = str(self.combathandler.get_combat_summary(self.combatant))
@@ -92,7 +92,7 @@ class TestEvAdventureCombatBaseHandler(_CombatTestBase):
         )
 
         # as seen from other side
-        self.combathandler.get_sides = Mock(return_value=([], [self.combatant]))
+        self.combathandler.get_sides = Mock(return_value=([self.target], [self.combatant]))
         result = str(self.combathandler.get_combat_summary(self.target))
 
         self.assertEqual(
@@ -383,11 +383,11 @@ class EvAdventureTurnbasedCombatHandlerTest(_CombatTestBase):
 
         # allies to combatant
         allies, enemies = self.combathandler.get_sides(self.combatant)
-        self.assertEqual((allies, enemies), ([combatant2], [self.target, target2]))
+        self.assertEqual((allies, enemies), ([self.combatant, combatant2], [self.target, target2]))
 
         # allies to monster
         allies, enemies = self.combathandler.get_sides(self.target)
-        self.assertEqual((allies, enemies), ([target2], [self.combatant, combatant2]))
+        self.assertEqual((allies, enemies), ([self.target, target2], [self.combatant, combatant2]))
 
     def test_queue_and_execute_action(self):
         """Queue actions and execute"""
@@ -551,7 +551,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
 
     def test_get_sides(self):
         sides = self.combatant_combathandler.get_sides(self.combatant)
-        self.assertEqual(sides, ([], [self.target]))
+        self.assertEqual(sides, ([self.combatant], [self.target]))
 
     def test_give_advantage(self):
         self.combatant_combathandler.give_advantage(self.combatant, self.target)
@@ -612,7 +612,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
         # only one side wiped out
         self.combatant.hp = 10
         self.target.hp = -1
-        self.combatant_combathandler.get_sides = Mock(return_value=([], []))
+        self.combatant_combathandler.get_sides = Mock(return_value=([self.combatant], []))
         self.combatant_combathandler.check_stop_combat()
         self.combatant.msg.assert_called_with(
             text=("The combat is over.", {}), from_obj=self.combatant
