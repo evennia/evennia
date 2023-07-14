@@ -4,6 +4,19 @@ Contribution by Griatch 2023
 
 This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Large Language Model, along the lines of ChatGPT). Example uses a local OSS LLM install. Included is an NPC you can chat with using a new `talk` command. The NPC will respond using the AI responses from the LLM server. All calls are asynchronous, so if the LLM is slow, Evennia is not affected.
 
+```
+> create/drop villager:evennia.contrib.rpg.llm.LLMNPC
+You create a new LLMNPC: villager
+
+> talk villager Hello there friend, what's up?
+You say (to villager): Hello there friend, what's up?
+villager says (to You): Hello! Not much going on, really. How about you?
+
+> talk villager Just enjoying the nice weather.
+You say (to villager): Just enjoying the nice weather.
+villager says (to You): Yeah, it is really quite nice, ain't it.
+```
+
 ## Installation
 
 You need two components for this contrib - Evennia, and an LLM webserver that operates and provides an API to an LLM AI model.
@@ -84,12 +97,13 @@ With the LLM server running and the new `talk` command added, create a new LLM-c
 
     > create/drop girl:evennia.contrib.rpg.llm.LLMNPC
     > talk girl Hello!
+    You say (to girl): Hello
     girl ponders ...
-    girl says, Hello! How are you?
-
-The NPC will show a 'thinking' message if the server responds slower than 2 seconds (by default).
+    girl says (to You): Hello! How are you?
 
 Most likely, your first response will *not* be this nice and short, but will be quite nonsensical, looking like an email. This is because the example model we loaded is not optimized for conversations. But at least you know it works!
+
+The  conversation will be echoed to everyone in the room. The NPC will show a thinking/pondering message if the server responds slower than 2 seconds (by default). 
 
 ## A note on running LLMs locally
 
@@ -114,7 +128,8 @@ Calling an external API is not tested, so report any findings. Since the Evennia
 This is a simple Character class, with a few extra properties:
 
 ```python
-    response_template = "{name} says: {response}"
+    # response template on msg_contents form.
+    response_template = "$You() $conj(say) (to $You(character)): {response}"
     thinking_timeout = 2    # how long to wait until showing thinking
 
     # random 'thinking echoes' to return while we wait, if the AI is slow

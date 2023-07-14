@@ -24,7 +24,7 @@ class LLMNPC(DefaultCharacter):
     """An NPC that uses the LLM server to generate its responses. If the server is slow, it will
     echo a thinking message to the character while it waits for a response."""
 
-    response_template = "{name} says: {response}"
+    response_template = "$You() $conj(say) (to $You(character)): {response}"
     thinking_timeout = 2  # seconds
     thinking_messages = [
         "{name} thinks about what you said ...",
@@ -49,16 +49,30 @@ class LLMNPC(DefaultCharacter):
                 # abort the thinking message if we were fast enough
                 thinking_defer.cancel()
 
-            character.msg(
-                self.response_template.format(
-                    name=self.get_display_name(character), response=response
-                )
+            response = self.response_template.format(
+                name=self.get_display_name(character), response=response
             )
+            if character.location:
+                character.location.msg_contents(
+                    response,
+                    mapping={"character": character},
+                    from_obj=self,
+                )
+            else:
+                # fallback if character is not in a location
+                character.msg(f"{self.get_display_name(character)} says, {response}")
 
         def _echo_thinking_message():
             """Echo a random thinking message to the character"""
-            thinking_messages = make_iter(self.db.thinking_messages or self.thinking_messages)
-            character.msg(choice(thinking_messages).format(name=self.get_display_name(character)))
+            thinking_message = choice(
+                make_iter(self.db.thinking_messages or self.thinking_messages)
+            )
+            if character.location:
+                thinking_message = thinking_message.format(name="$You()")
+                character.location.msg_contents(thinking_message, from_obj=self)
+            else:
+                thinking_message = thinking_message.format(name=self.get_display_name(character))
+                character.msg(thinking_message)
 
         # if response takes too long, note that the NPC is thinking.
         thinking_defer = task.deferLater(reactor, self.thinking_timeout, _echo_thinking_message)
@@ -99,8 +113,8 @@ class CmdLLMTalk(Command):
             return
         if location:
             location.msg_contents(
-                f'$You() talk to $You({target.key}), saying "{self.speech}"',
-                mapping={target.key: target},
+                f"$You() $conj(say) (to $You(target)): {self.speech}",
+                mapping={"target": target},
                 from_obj=self.caller,
             )
         if hasattr(target, "at_talked_to"):
