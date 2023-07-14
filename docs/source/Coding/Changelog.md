@@ -1,12 +1,14 @@
 # Changelog
 
-## Main
+## Evennia 2.1.0
 
+- Fix: The new `ExtendedRoom` contrib has a bug when dug with no descriptions.
 - Fix: Clean up `get_sides` function in evadventure tutorial to return also
   the calling combatant with its `allies` return, to make it easier to reason around.
 - Feature: Add `SSL_CERTIFICATE_ISSUERS` setting for customizing Telnet+SSL.
 - Contrib: Refactored `dice.roll` contrib function to use `safe_eval`. Can now
   optionally be used as `dice.roll("2d10 + 4 > 10")`. Old way works too.
+- Lots of doc updates.
 
 ## Evennia 2.0.1
 
