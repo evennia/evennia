@@ -106,11 +106,11 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
             npcs = [comb for comb in combatants if comb not in pcs]
             if combatant in pcs:
                 # combatant is a PC, so NPCs are all enemies
-                allies = [comb for comb in pcs if comb != combatant]
+                allies = pcs
                 enemies = npcs
             else:
                 # combatant is an NPC, so PCs are all enemies
-                allies = [comb for comb in npcs if comb != combatant]
+                allies = npcs
                 enemies = pcs
         return allies, enemies
 
@@ -216,7 +216,6 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
         """
 
         allies, enemies = self.get_sides(self.obj)
-        allies.append(self.obj)
 
         location = self.obj.location
 

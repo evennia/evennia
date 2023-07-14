@@ -356,8 +356,6 @@ class EvAdventureCombatBaseHandler(DefaultScript):
 
         """
         allies, enemies = self.get_sides(combatant)
-        # we must include outselves at the top of the list (we are not returned from get_sides)
-        allies.insert(0, combatant)
         nallies, nenemies = len(allies), len(enemies)
 
         # prepare colors and hurt-levels
