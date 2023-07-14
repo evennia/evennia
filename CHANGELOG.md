@@ -2,6 +2,8 @@
 
 ## Evennia 2.1.0
 
+July 14, 2023
+
 - Fix: The new `ExtendedRoom` contrib has a bug when dug with no descriptions.
 - Fix: Clean up `get_sides` function in evadventure tutorial to return also
   the calling combatant with its `allies` return, to make it easier to reason around.
