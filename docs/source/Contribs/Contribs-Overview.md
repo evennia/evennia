@@ -7,7 +7,7 @@ in the [Community Contribs & Snippets][forum] forum.
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all **48** contribs currently included
+This page is auto-generated and summarizes all **49** contribs currently included
 with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
@@ -34,11 +34,11 @@ If you want to add a contrib, see [the contrib guidelines](./Contribs-Guidelines
 | [components](#components) | [containers](#containers) | [cooldowns](#cooldowns) | [crafting](#crafting) | [custom_gametime](#custom_gametime) |
 | [dice](#dice) | [email_login](#email_login) | [evadventure](#evadventure) | [evscaperoom](#evscaperoom) | [extended_room](#extended_room) |
 | [fieldfill](#fieldfill) | [gendersub](#gendersub) | [git_integration](#git_integration) | [godotwebsocket](#godotwebsocket) | [health_bar](#health_bar) |
-| [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) |
-| [mirror](#mirror) | [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) |
-| [random_string_generator](#random_string_generator) | [red_button](#red_button) | [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) |
-| [talking_npc](#talking_npc) | [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) |
-| [unixcommand](#unixcommand) | [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
+| [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [llm](#llm) | [mail](#mail) | [mapbuilder](#mapbuilder) |
+| [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) |
+| [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) | [rpsystem](#rpsystem) | [simpledoor](#simpledoor) |
+| [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) |
+| [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
 
 
 
@@ -552,6 +552,7 @@ Contrib-Buffs.md
 Contrib-Character-Creator.md
 Contrib-Dice.md
 Contrib-Health-Bar.md
+Contrib-Llm.md
 Contrib-RPSystem.md
 Contrib-Traits.md
 ```
@@ -601,6 +602,16 @@ is merely the most obvious use for this, but the bar is highly customizable
 and can be used for any sort of appropriate data besides player health.
 
 [Read the documentation](./Contrib-Health-Bar.md) - [Browse the Code](evennia.contrib.rpg.health_bar)
+
+
+
+### `llm`
+
+_Contribution by Griatch 2023_
+
+This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Large Language Model, along the lines of ChatGPT). Example uses a local OSS LLM install. Included is an NPC you can chat with using a new `talk` command. The NPC will respond using the AI responses from the LLM server. All calls are asynchronous, so if the LLM is slow, Evennia is not affected.
+
+[Read the documentation](./Contrib-Llm.md) - [Browse the Code](evennia.contrib.rpg.llm)
 
 
 
