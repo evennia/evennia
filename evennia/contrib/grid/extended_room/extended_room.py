@@ -139,6 +139,8 @@ class ExtendedRoom(DefaultRoom):
       echoed to the room at the given rate.
 
     """
+    # fallback description if nothing else is set
+    fallback_desc = "You see nothing special."
 
     # tag room_state category
     room_state_tag_category = "room_state"
@@ -410,7 +412,7 @@ class ExtendedRoom(DefaultRoom):
             return desc
 
         # fallback to normal desc Attribute
-        return self.attributes.get("desc")
+        return self.attributes.get("desc", self.fallback_desc)
 
     def replace_legacy_time_of_day_markup(self, desc):
         """
@@ -428,6 +430,7 @@ class ExtendedRoom(DefaultRoom):
             This is legacy. Use the $state markup for new rooms instead.
 
         """
+        desc = desc or ""
         time_of_day = self.get_time_of_day()
 
         # regexes for in-desc replacements (gets cached)
