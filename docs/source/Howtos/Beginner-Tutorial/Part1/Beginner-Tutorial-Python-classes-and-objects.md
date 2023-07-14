@@ -72,11 +72,10 @@ all one by one:
 If there were _a lot_ of functions, you could instead just import `test` and get the function
 from there when you need (without having to give the full `world.test` every time):
 
-    > from world import test ; test.hello_world(me
+    > from world import test ; test.hello_world(me)
     Hello World!
 
-You can also _rename_ stuff you import. Say for example that the module you import to already
-has a function `hello_world` but we also want to use the one from `world/test.py`:
+You can also _rename_ stuff you import. Say for example that the module you import to already has a function `hello_world` but we also want to use the one from `world/test.py`:
 
     from world.test import hello_world as test_hello_world
 
