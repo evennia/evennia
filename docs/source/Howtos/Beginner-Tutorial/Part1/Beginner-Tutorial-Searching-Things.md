@@ -57,22 +57,22 @@ So this method handles error messaging for you. A very common way to use it is i
 from evennia import Command
 
 class CmdQuickFind(Command):
-	""" 
-	Find an item in your current location.
+    """ 
+    Find an item in your current location.
 
-	Usage: 
-	  quickfind <query>
-
+    Usage: 
+        quickfind <query>
+        
 	"""
 
     key = "quickfind"
 
     def func(self):
-		query = self.args
+        query = self.args
         result = self.caller.search(query)
-        if not result
+        if not result:
             return
-        self.caller.msg(f"Found match for {query}: {foo}")
+        self.caller.msg(f"Found match for {query}: {result}")
 ```
 
 Remember, `self.caller` is the one calling the command. This is usually a Character, which
