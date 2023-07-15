@@ -123,6 +123,11 @@ echo a ‘thinking…’ message if the LLM server takes too long to respond.</p
 <p>An NPC that uses the LLM server to generate its responses. If the server is slow, it will
 echo a thinking message to the character while it waits for a response.</p>
 <dl class="py attribute">
+<dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.prompt_prefix">
+<code class="sig-name descname">prompt_prefix</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.prompt_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.response_template">
 <code class="sig-name descname">response_template</code><em class="property"> = '$You() $conj(say) (to $You(character)): {response}'</em><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.response_template" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -141,6 +146,13 @@ echo a thinking message to the character while it waits for a response.</p>
 <dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.llm_client">
 <em class="property">property </em><code class="sig-name descname">llm_client</code><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.llm_client" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.llm_prompt_prefix">
+<em class="property">property </em><code class="sig-name descname">llm_prompt_prefix</code><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.llm_prompt_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>get prefix, first from Attribute, then from class variable,
+then from settings, then from default</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.at_talked_to">

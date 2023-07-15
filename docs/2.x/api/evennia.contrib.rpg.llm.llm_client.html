@@ -230,7 +230,9 @@ to this Protocol.  The connection has been closed.</p>
 <dd><p>Get a response from the LLM server for the given npc.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>prompt</strong> (<em>str</em>) – The prompt to send to the LLM server.</p>
+<dd class="field-odd"><p><strong>prompt</strong> (<em>str</em><em> or </em><em>list</em>) – The prompt to send to the LLM server. If a list,
+this is assumed to be the chat history so far, and will be added to the
+prompt in a way suitable for the api.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p><em>str</em> –</p>

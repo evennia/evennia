@@ -98,6 +98,7 @@
 
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
 
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">task</span>
@@ -105,10 +106,20 @@
 
 <span class="kn">from</span> <span class="nn">.llm_client</span> <span class="kn">import</span> <span class="n">LLMClient</span>
 
+<span class="c1"># fallback if not specified anywhere else. Check order is</span>
+<span class="c1"># npc.db.prompt_prefix, npcClass.prompt_prefix, then settings.LLM_PROMPT_PREFIX, then this</span>
+<span class="n">DEFAULT_PROMPT_PREFIX</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;You are roleplaying that your name is </span><span class="si">{name}</span><span class="s2">, a </span><span class="si">{desc}</span><span class="s2"> existing in </span><span class="si">{location}</span><span class="s2">. &quot;</span>
+    <span class="s2">&quot;Roleplay a suitable response to the following input only: &quot;</span>
+<span class="p">)</span>
+
 
 <div class="viewcode-block" id="LLMNPC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_npc.html#evennia.contrib.rpg.llm.llm_npc.LLMNPC">[docs]</a><span class="k">class</span> <span class="nc">LLMNPC</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An NPC that uses the LLM server to generate its responses. If the server is slow, it will</span>
 <span class="sd">    echo a thinking message to the character while it waits for a response.&quot;&quot;&quot;</span>
+
+    <span class="c1"># use this to override the prefix per class</span>
+    <span class="n">prompt_prefix</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">response_template</span> <span class="o">=</span> <span class="s2">&quot;$You() $conj(say) (to $You(character)): </span><span class="si">{response}</span><span class="s2">&quot;</span>
     <span class="n">thinking_timeout</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># seconds</span>
@@ -121,8 +132,19 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">llm_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_llm_client&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_llm_client</span> <span class="o">=</span> <span class="n">LLMClient</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_llm_client</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">llm_client</span> <span class="o">=</span> <span class="n">LLMClient</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">llm_client</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">llm_prompt_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get prefix, first from Attribute, then from class variable,</span>
+<span class="sd">        then from settings, then from default&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;prompt_prefix&quot;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;LLM_PROMPT_PREFIX&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_prefix</span> <span class="ow">or</span> <span class="n">DEFAULT_PROMPT_PREFIX</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="LLMNPC.at_talked_to"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_npc.html#evennia.contrib.rpg.llm.llm_npc.LLMNPC.at_talked_to">[docs]</a>    <span class="nd">@inlineCallbacks</span>
     <span class="k">def</span> <span class="nf">at_talked_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speech</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
@@ -163,8 +185,18 @@
         <span class="c1"># if response takes too long, note that the NPC is thinking.</span>
         <span class="n">thinking_defer</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thinking_timeout</span><span class="p">,</span> <span class="n">_echo_thinking_message</span><span class="p">)</span>
 
+        <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">llm_prompt_prefix</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;commoner&quot;</span><span class="p">,</span>
+                <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="k">else</span> <span class="s2">&quot;the void&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+            <span class="o">+</span> <span class="n">speech</span>
+        <span class="p">)</span>
+
         <span class="c1"># get the response from the LLM server</span>
-        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_client</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">speech</span><span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">_respond</span><span class="p">)</span></div></div>
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_client</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">_respond</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdLLMTalk"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_npc.html#evennia.contrib.rpg.llm.llm_npc.CmdLLMTalk">[docs]</a><span class="k">class</span> <span class="nc">CmdLLMTalk</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
