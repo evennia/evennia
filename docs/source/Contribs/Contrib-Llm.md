@@ -31,7 +31,7 @@ There are many LLM servers, but they can be pretty technical to install and set 
 4. Once all is loaded, stop the server with `Ctrl-C` (or `Cmd-C`) and open the file `webui.py` (it's one of the top files in the archive you unzipped). Find the text string `CMD_FLAGS = ''` near the top and change this to `CMD_FLAGS = '--api'`. Then save and close. This makes the server activate its api automatically.
 4. Now just run that server starting script (`start_linux.sh` etc) again. This is what you'll use to start the LLM server henceforth.
 5. Once the server is running, point your browser to http://127.0.0.1:7860 to see the running Text generation web ui running. If you turned on the API, you'll find it's now active on port 5000. This should not collide with default Evennia ports unless you changed something.
-6. At this point you have the server and API, but it's not actually running any Large-Language-Model (LLM) yet. In the web ui, go to the `models` tab and enter a github-style path in the `Download custom model or LoRA` field.  To test so things work, enter `facebook/opt-125m` and download. This is a relatively small model (125 million parameters) so should be possible to run on most machines using only CPU. Update the models in the drop-down on the left and select it, then load it with the `Transformers` loader. It should load pretty quickly. If you want to load this every time, you can select the `Autoload the model` checkbox; otherwise you'll need to select and load the model every time you start the LLM server.
+6. At this point you have the server and API, but it's not actually running any Large-Language-Model (LLM) yet. In the web ui, go to the `models` tab and enter a github-style path in the `Download custom model or LoRA` field.  To test so things work, enter `DeepPavlov/bart-base-en-persona-chat` and download. This is a relatively small model (350 million parameters) so should be possible to run on most machines using only CPU. Update the models in the drop-down on the left and select it, then load it with the `Transformers` loader. It should load pretty quickly. If you want to load this every time, you can select the `Autoload the model` checkbox; otherwise you'll need to select and load the model every time you start the LLM server.
 7. To experiment, you can find thousands of other open-source text-generation LLM models on [huggingface.co/models](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending). Beware to not download a too huge model; your machine may not be able to load it! If you try large models, _don't_ set the `Autoload the model` checkbox, in case the model crashes your server on startup.
 
 For troubleshooting, you can look at the terminal output of the `text-generation-webui` server; it will show you the requests you do to it and also list any errors. See the text-generation-webui homepage for more details.
@@ -119,6 +119,8 @@ This is a simple Character class, with a few extra properties:
 
 ```python
     # response template on msg_contents form.
+    prompt_prefix = ("You will chat and roleplay ")
+
     response_template = "$You() $conj(say) (to $You(character)): {response}"
     thinking_timeout = 2    # how long to wait until showing thinking
 

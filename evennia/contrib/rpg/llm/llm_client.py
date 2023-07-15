@@ -26,6 +26,7 @@ import json
 
 from django.conf import settings
 from evennia import logger
+from evennia.utils.utils import make_iter
 from twisted.internet import defer, protocol, reactor
 from twisted.internet.defer import inlineCallbacks
 from twisted.web.client import Agent, HTTPConnectionPool, _HTTP11ClientFactory
@@ -37,6 +38,7 @@ DEFAULT_LLM_HOST = "http://127.0.0.1:5000"
 DEFAULT_LLM_PATH = "/api/v1/generate"
 DEFAULT_LLM_HEADERS = {"Content-Type": "application/json"}
 DEFAULT_LLM_PROMPT_KEYNAME = "prompt"
+DEFAULT_LLM_API_TYPE = ""  # or openai
 DEFAULT_LLM_REQUEST_BODY = {
     "max_new_tokens": 250,  # max number of tokens to generate
     "temperature": 0.7,  # higher = more random, lower = more predictable
@@ -105,13 +107,54 @@ class LLMClient:
         self.headers = getattr(settings, "LLM_HEADERS", DEFAULT_LLM_HEADERS)
         self.request_body = getattr(settings, "LLM_REQUEST_BODY", DEFAULT_LLM_REQUEST_BODY)
 
+        self.api_type = getattr(settings, "LLM_API_TYPE", DEFAULT_LLM_API_TYPE)
+
+        self.agent = Agent(reactor, pool=self._conn_pool)
+
+    def _format_request_body(self, prompt):
+        """Structure the request body for the LLM server"""
+        request_body = self.request_body.copy()
+
+        prompt = "\n".join(make_iter(prompt))
+
+        request_body[self.prompt_keyname] = prompt
+
+        return request_body
+
+    def _handle_llm_response_body(self, response):
+        """Get the response body from the response"""
+        d = defer.Deferred()
+        response.deliverBody(SimpleResponseReceiver(response.code, d))
+        return d
+
+    def _handle_llm_error(self, failure):
+        """Correctly handle server connection errors"""
+        failure.trap(Exception)
+        return (500, failure.getErrorMessage())
+
+    def _get_response_from_llm_server(self, prompt):
+        """Call the LLM server and handle the response/failure"""
+        request_body = self._format_request_body(prompt)
+
+        d = self.agent.request(
+            b"POST",
+            bytes(self.hostname + self.pathname, "utf-8"),
+            headers=Headers(self.headers),
+            bodyProducer=StringProducer(json.dumps(request_body)),
+        )
+
+        d.addCallbacks(self._handle_llm_response_body, self._handle_llm_error)
+        return d
+
     @inlineCallbacks
     def get_response(self, prompt):
         """
         Get a response from the LLM server for the given npc.
 
         Args:
-            prompt (str): The prompt to send to the LLM server.
+            prompt (str or list): The prompt to send to the LLM server. If a list,
+                this is assumed to be the chat history so far, and will be added to the
+                prompt in a way suitable for the api.
 
         Returns:
             str: The generated text response. Will return an empty string
@@ -125,31 +168,3 @@ class LLMClient:
         else:
             logger.log_err(f"LLM API error (status {status_code}): {response}")
             return ""
-
-    def _get_response_from_llm_server(self, prompt):
-        """Call and wait for response from LLM server"""
-
-        agent = Agent(reactor, pool=self._conn_pool)
-
-        request_body = self.request_body.copy()
-        request_body[self.prompt_keyname] = prompt
-
-        d = agent.request(
-            b"POST",
-            bytes(self.hostname + self.pathname, "utf-8"),
-            headers=Headers(self.headers),
-            bodyProducer=StringProducer(json.dumps(request_body)),
-        )
-
-        d.addCallbacks(self._handle_llm_response_body, self._handle_llm_error)
-        return d
-
-    def _handle_llm_response_body(self, response):
-        """Get the response body from the response"""
-        d = defer.Deferred()
-        response.deliverBody(SimpleResponseReceiver(response.code, d))
-        return d
-
-    def _handle_llm_error(self, failure):
-        failure.trap(Exception)
-        return (500, failure.getErrorMessage())
