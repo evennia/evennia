@@ -24,8 +24,9 @@ from .llm_client import LLMClient
 # fallback if not specified anywhere else. Check order is
 # npc.db.prompt_prefix, npcClass.prompt_prefix, then settings.LLM_PROMPT_PREFIX, then this
 DEFAULT_PROMPT_PREFIX = (
-    "You are roleplaying that your name is {name}, a {desc} existing in {location}. "
-    "From here on, the conversation between {character} and {name} begins."
+    "You are roleplaying as {name}, a {desc} existing in {location}. "
+    "Answer with short sentences. Only respond as {name} would. "
+    "From here on, the conversation between {name} and {character} begins."
 )
 
 
@@ -116,8 +117,11 @@ class LLMNPC(DefaultCharacter):
                 # abort the thinking message if we were fast enough
                 thinking_defer.cancel()
 
-            # remember this response
-            self._add_to_memory(character, self, response)
+            if response:
+                # remember this response
+                self._add_to_memory(character, self, response)
+            else:
+                response = "... I'm sorry, I was distracted. Can you repeat?"
 
             response = self.response_template.format(
                 name=self.get_display_name(character), response=response
