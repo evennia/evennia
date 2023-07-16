@@ -110,8 +110,9 @@
 <span class="c1"># fallback if not specified anywhere else. Check order is</span>
 <span class="c1"># npc.db.prompt_prefix, npcClass.prompt_prefix, then settings.LLM_PROMPT_PREFIX, then this</span>
 <span class="n">DEFAULT_PROMPT_PREFIX</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;You are roleplaying that your name is </span><span class="si">{name}</span><span class="s2">, a </span><span class="si">{desc}</span><span class="s2"> existing in </span><span class="si">{location}</span><span class="s2">. &quot;</span>
-    <span class="s2">&quot;From here on, the conversation between </span><span class="si">{character}</span><span class="s2"> and </span><span class="si">{name}</span><span class="s2"> begins.&quot;</span>
+    <span class="s2">&quot;You are roleplaying as </span><span class="si">{name}</span><span class="s2">, a </span><span class="si">{desc}</span><span class="s2"> existing in </span><span class="si">{location}</span><span class="s2">. &quot;</span>
+    <span class="s2">&quot;Answer with short sentences. Only respond as </span><span class="si">{name}</span><span class="s2"> would. &quot;</span>
+    <span class="s2">&quot;From here on, the conversation between </span><span class="si">{name}</span><span class="s2"> and </span><span class="si">{character}</span><span class="s2"> begins.&quot;</span>
 <span class="p">)</span>
 
 
@@ -202,8 +203,11 @@
                 <span class="c1"># abort the thinking message if we were fast enough</span>
                 <span class="n">thinking_defer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
 
-            <span class="c1"># remember this response</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_memory</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+                <span class="c1"># remember this response</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_memory</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;... I&#39;m sorry, I was distracted. Can you repeat?&quot;</span>
 
             <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">),</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span>
