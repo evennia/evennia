@@ -136,6 +136,9 @@ class LLMClient:
         """Call the LLM server and handle the response/failure"""
         request_body = self._format_request_body(prompt)
 
+        if settings.DEBUG:
+            logger.log_info(f"LLM request body: {request_body}")
+
         d = self.agent.request(
             b"POST",
             bytes(self.hostname + self.pathname, "utf-8"),
@@ -164,6 +167,8 @@ class LLMClient:
         """
         status_code, response = yield self._get_response_from_llm_server(prompt)
         if status_code == 200:
+            if settings.DEBUG:
+                logger.log_info(f"LLM response: {response}")
             return json.loads(response)["results"][0]["text"]
         else:
             logger.log_err(f"LLM API error (status {status_code}): {response}")

@@ -10,13 +10,14 @@ echo a 'thinking...' message if the LLM server takes too long to respond.
 
 """
 
+from collections import defaultdict
 from random import choice
 
 from django.conf import settings
-from evennia import Command, DefaultCharacter
+from evennia import AttributeProperty, Command, DefaultCharacter
 from evennia.utils.utils import make_iter
 from twisted.internet import reactor, task
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import CancelledError, inlineCallbacks
 
 from .llm_client import LLMClient
 
@@ -24,7 +25,7 @@ from .llm_client import LLMClient
 # npc.db.prompt_prefix, npcClass.prompt_prefix, then settings.LLM_PROMPT_PREFIX, then this
 DEFAULT_PROMPT_PREFIX = (
     "You are roleplaying that your name is {name}, a {desc} existing in {location}. "
-    "Roleplay a suitable response to the following input only: "
+    "From here on, the conversation between {character} and {name} begins."
 )
 
 
@@ -32,16 +33,25 @@ class LLMNPC(DefaultCharacter):
     """An NPC that uses the LLM server to generate its responses. If the server is slow, it will
     echo a thinking message to the character while it waits for a response."""
 
-    # use this to override the prefix per class
+    # use this to override the prefix per class. Assign an Attribute to override per-instance.
     prompt_prefix = None
 
-    response_template = "$You() $conj(say) (to $You(character)): {response}"
-    thinking_timeout = 2  # seconds
-    thinking_messages = [
-        "{name} thinks about what you said ...",
-        "{name} ponders your words ...",
-        "{name} ponders ...",
-    ]
+    response_template = AttributeProperty(
+        "$You() $conj(say) (to $You(character)): {response}", autocreate=False
+    )
+    thinking_timeout = AttributeProperty(2, autocreate=False)  # seconds
+    thinking_messages = AttributeProperty(
+        [
+            "{name} thinks about what you said ...",
+            "{name} ponders your words ...",
+            "{name} ponders ...",
+        ],
+        autocreate=False,
+    )
+
+    max_chat_memory_size = AttributeProperty(25, autocreate=False)
+    # this is a store of {character: [chat, chat, ...]}
+    chat_memory = AttributeProperty(defaultdict(list))
 
     @property
     def llm_client(self):
@@ -60,6 +70,41 @@ class LLMNPC(DefaultCharacter):
             ),
         )
 
+    def _add_to_memory(self, character, who_talked, speech):
+        """Add a person's speech to the memory. This is stored as name: chat for the LLM."""
+        memory = self.chat_memory[character]
+        memory.append(f"{who_talked.get_display_name(self)}: {speech}")
+
+        # trim the memory if it's getting too long in order to save space
+        memory = memory[-self.max_chat_memory_size :]
+        self.chat_memory[character] = memory
+
+    def build_prompt(self, character, speech):
+        """
+        Build the prompt to send to the LLM server.
+
+        Args:
+            character (Object): The one talking to the NPC.
+            speech (str): The latest speech from the character.
+
+        Returns:
+            str: The prompt to return.
+
+        """
+        name = self.get_display_name(character)
+        charname = character.get_display_name(self)
+        memory = self.chat_memory[character]
+
+        # get starting prompt
+        prompt = self.llm_prompt_prefix.format(
+            name=name,
+            desc=self.db.desc or "someone",
+            location=self.location.key if self.location else "the void",
+            character=charname,
+        )
+        prompt += "\n" + "\n".join(mem for mem in memory)
+        return prompt
+
     @inlineCallbacks
     def at_talked_to(self, speech, character):
         """Called when this NPC is talked to by a character."""
@@ -71,9 +116,14 @@ class LLMNPC(DefaultCharacter):
                 # abort the thinking message if we were fast enough
                 thinking_defer.cancel()
 
+            # remember this response
+            self._add_to_memory(character, self, response)
+
             response = self.response_template.format(
                 name=self.get_display_name(character), response=response
             )
+
+            # tell the character about it
             if character.location:
                 character.location.msg_contents(
                     response,
@@ -83,6 +133,8 @@ class LLMNPC(DefaultCharacter):
             else:
                 # fallback if character is not in a location
                 character.msg(f"{self.get_display_name(character)} says, {response}")
+
+        # if response takes too long, note that the NPC is thinking.
 
         def _echo_thinking_message():
             """Echo a random thinking message to the character"""
@@ -96,18 +148,19 @@ class LLMNPC(DefaultCharacter):
                 thinking_message = thinking_message.format(name=self.get_display_name(character))
                 character.msg(thinking_message)
 
-        # if response takes too long, note that the NPC is thinking.
-        thinking_defer = task.deferLater(reactor, self.thinking_timeout, _echo_thinking_message)
+        def _handle_cancel_error(failure):
+            """Suppress task-cancel errors only"""
+            failure.trap(CancelledError)
 
-        prompt = (
-            self.llm_prompt_prefix.format(
-                name=self.key,
-                desc=self.db.desc or "commoner",
-                location=self.location.key if self.location else "the void",
-            )
-            + " "
-            + speech
-        )
+        thinking_defer = task.deferLater(
+            reactor, self.thinking_timeout, _echo_thinking_message
+        ).addErrback(_handle_cancel_error)
+
+        # remember latest input in memory, so it's included in the prompt
+        self._add_to_memory(character, character, speech)
+
+        # build the prompt
+        prompt = self.build_prompt(character, speech)
 
         # get the response from the LLM server
         yield self.llm_client.get_response(prompt).addCallback(_respond)
