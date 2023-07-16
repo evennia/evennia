@@ -4,18 +4,16 @@ Contribution by Griatch 2023
 
 This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Large Language Model, along the lines of ChatGPT). Example uses a local OSS LLM install. Included is an NPC you can chat with using a new `talk` command. The NPC will respond using the AI responses from the LLM server. All calls are asynchronous, so if the LLM is slow, Evennia is not affected.
 
-```
-> create/drop villager:evennia.contrib.rpg.llm.LLMNPC
-You create a new LLMNPC: villager
-
-> talk villager Hello there friend, what's up?
-You say (to villager): Hello there friend, what's up?
-villager says (to You): Hello! Not much going on, really. How about you?
-
-> talk villager Just enjoying the nice weather.
-You say (to villager): Just enjoying the nice weather.
-villager says (to You): Yeah, it is really quite nice, ain't it.
-```
+    > create/drop villager:evennia.contrib.rpg.llm.LLMNPC
+    You create a new LLMNPC: villager
+   
+    > talk villager Hello there friend, what's up?
+    You say (to villager): Hello there friend, what's up?
+    villager says (to You): Hello! Not much going on, really.
+   
+    > talk villager Do you know where we are?
+    You say (to villager): Do you know where we are?
+    villager says (to You): We are in this strange place called 'Limbo'. Not much to do here.
 
 ## Installation
 
@@ -59,6 +57,12 @@ The default LLM api config should work with the text-generation-webui LLM server
         "max_new_tokens": 250,  # set how many tokens are part of a response
         "temperature": 0.7, # 0-2. higher=more random, lower=predictable
     }
+    # helps guide the NPC AI. See the LLNPC section.
+    LLM_PROMPT_PREFIx = (
+      "You are roleplaying as {name}, a {desc} existing in {location}. "
+      "Answer with short sentences. Only respond as {name} would. "
+      "From here on, the conversation between {name} and {character} begins."
+ ​￼)
 ```
 Don't forget to reload Evennia if you make any changes.
 
@@ -115,31 +119,56 @@ LLM_REQUEST_BODY = {
 
 ## The LLMNPC class
 
-This is a simple Character class, with a few extra properties:
+The LLM-able NPC class has a new method `at_talked_to` which does the connection to the LLM server and responds. This is called by the new `talk` command. Note that all these calls are asynchronous, meaning a slow response will not block Evennia.
 
-```python
-    # response template on msg_contents form.
-    prompt_prefix = ("You will chat and roleplay ")
+The NPC's AI is controlled with a few extra properties and Attributes, most of which can be customized directly in-game by a builder.
 
-    response_template = "$You() $conj(say) (to $You(character)): {response}"
-    thinking_timeout = 2    # how long to wait until showing thinking
+### `prompt_prefix`
 
-    # random 'thinking echoes' to return while we wait, if the AI is slow
-    thinking_messages = [
-        "{name} thinks about what you said ...",
-        "{name} ponders your words ...",
-        "{name} ponders ...",
-    ]
-```
+The `prompt_prefix` is very important. This will be added in front of your prompt and helps the AI know how to respond. Remember that an LLM model is basically an auto-complete mechaniss, so by providing examples and instructions in the prefix, you can help it respond in a better way. 
 
-The character has a new method `at_talked_to` which does the connection to the LLM server and responds. This is called by the new `talk` command. Note that all these calls are asynchronous, meaning a slow response will not block Evennia.
+The prefix string to use for a given NPC is looked up from one of these locations, in order: 
+
+1. An Attribute `npc.db.chat_prefix` stored on the NPC (not set by default)
+2. A property `chat_prefix` on the the LLMNPC class (set to `None` by default). 
+3. The `LLM_PROMPT_PREFIX` setting (unset by default)
+4. If none of the above locations are set, the following default is used: 
+
+       "You are roleplaying as {name}, a {desc} existing in {location}.
+       Answer with short sentences. Only respond as {name} would.
+       From here on, the conversation between {name} and {character} begins."
+
+Here, the formatting tag `{name}` is replaced with the NPCs's name, `desc` by it's description, the `location` by its current location's name and `character` by the one talking to it. All names of characters are given by the `get_display_name(looker)` call, so this may be different 
+from person to person. 
+
+Depending on the model, it can be very important to extend the prefix both with more information about the character as well as communication examples. A lot of tweaking may be necessary before producing something remniscent of human speech.
+
+### Response template 
+
+The `response_template` AttributeProperty defaults to being 
+
+    $You() $conj(say) (to $You(character)): {response}"
+
+following common `msg_contents` [FuncParser](../Components/FuncParser.md) syntax. The `character` string will be mapped to the one talking to the NPC and the `response` will be what is said by the NPC.
+
+### Memory 
+
+The NPC remembers what has been said to it by each player. This memory will be included with the prompt to the LLM and helps it understand the context of the conversation. The length of this memory is given by the `max_chat_memory_size` AttributeProperty. Default is 25 messages.  Once the memory is maximum is reached, older messages are forgotten. Memory is stored separately for each player talking to the NPC. 
+
+### Thinking 
+
+If the LLM server is slow to respond, the NPC will echo a random 'thinking message' to show it has not forgotten about you (something like "The villager ponders your words ..."). 
+
+They are controlled by two `AttributeProperties`:
+
+- `thinking_timeout`: How long, in seconds to wait before showing the message. Default is 2 seconds. 
+- `thinking_messages`: A list of messages to randomly pick between. Each message string can contain `{name}`, which will be replaced by the NPCs name. 
+
 
 ## TODO 
 
 There is a lot of expansion potential with this contrib. Some ideas: 
 
-- Better standard prompting to make the NPC actually conversant. 
-- Have the NPC remember previous conversations with the player 
 - Easier support for different cloud LLM provider API structures.
 - More examples of useful prompts and suitable models for MUD use.
 

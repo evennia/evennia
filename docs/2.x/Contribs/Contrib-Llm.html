@@ -76,7 +76,13 @@
 <li><a class="reference internal" href="#why-not-use-an-ai-cloud-service">Why not use an AI cloud service?</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#the-llmnpc-class">The LLMNPC class</a></li>
+<li><a class="reference internal" href="#the-llmnpc-class">The LLMNPC class</a><ul>
+<li><a class="reference internal" href="#prompt-prefix"><code class="docutils literal notranslate"><span class="pre">prompt_prefix</span></code></a></li>
+<li><a class="reference internal" href="#response-template">Response template</a></li>
+<li><a class="reference internal" href="#memory">Memory</a></li>
+<li><a class="reference internal" href="#thinking">Thinking</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#todo">TODO</a></li>
 </ul>
 </li>
@@ -127,16 +133,16 @@
 <h1>Large Language Model (“Chat-bot AI”) integration<a class="headerlink" href="#large-language-model-chat-bot-ai-integration" title="Permalink to this headline">¶</a></h1>
 <p>Contribution by Griatch 2023</p>
 <p>This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Large Language Model, along the lines of ChatGPT). Example uses a local OSS LLM install. Included is an NPC you can chat with using a new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command. The NPC will respond using the AI responses from the LLM server. All calls are asynchronous, so if the LLM is slow, Evennia is not affected.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; create/drop villager:evennia.contrib.rpg.llm.LLMNPC
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop villager:evennia.contrib.rpg.llm.LLMNPC
 You create a new LLMNPC: villager
 
 &gt; talk villager Hello there friend, what&#39;s up?
 You say (to villager): Hello there friend, what&#39;s up?
-villager says (to You): Hello! Not much going on, really. How about you?
+villager says (to You): Hello! Not much going on, really.
 
-&gt; talk villager Just enjoying the nice weather.
-You say (to villager): Just enjoying the nice weather.
-villager says (to You): Yeah, it is really quite nice, ain&#39;t it.
+&gt; talk villager Do you know where we are?
+You say (to villager): Do you know where we are?
+villager says (to You): We are in this strange place called &#39;Limbo&#39;. Not much to do here.
 </pre></div>
 </div>
 <section id="installation">
@@ -161,22 +167,28 @@ villager says (to You): Yeah, it is really quite nice, ain&#39;t it.
 <h3>Evennia config<a class="headerlink" href="#evennia-config" title="Permalink to this headline">¶</a></h3>
 <p>To be able to talk to NPCs, import and add the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.rpg.llm.llm_npc.CmdLLMTalk</span></code> command to your Character cmdset in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_commands.py</span></code> (see the basic tutorials if you are unsure).</p>
 <p>The default LLM api config should work with the text-generation-webui LLM server running its API on port 5000. You can also customize it via settings (if a setting is not added, the default below is used):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># path to the LLM server</span>
-    <span class="n">LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:5000&quot;</span>
-    <span class="n">LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/api/v1/generate&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    # path to the LLM server
+    LLM_HOST = &quot;http://127.0.0.1:5000&quot;
+    LLM_PATH = &quot;/api/v1/generate&quot;
 
-    <span class="c1"># if you wanted to authenticated to some external service, you could</span>
-    <span class="c1"># add an Authenticate header here with a token</span>
-    <span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+    # if you wanted to authenticated to some external service, you could
+    # add an Authenticate header here with a token
+    LLM_HEADERS = {&quot;Content-Type&quot;: &quot;application/json&quot;}
 
-    <span class="c1"># this key will be inserted in the request, with your user-input</span>
-    <span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
+    # this key will be inserted in the request, with your user-input
+    LLM_PROMPT_KEYNAME = &quot;prompt&quot;
 
-    <span class="c1"># defaults are set up for text-generation-webui and most models</span>
-    <span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>  <span class="c1"># set how many tokens are part of a response</span>
-        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="c1"># 0-2. higher=more random, lower=predictable</span>
-    <span class="p">}</span>
+    # defaults are set up for text-generation-webui and most models
+    LLM_REQUEST_BODY = {
+        &quot;max_new_tokens&quot;: 250,  # set how many tokens are part of a response
+        &quot;temperature&quot;: 0.7, # 0-2. higher=more random, lower=predictable
+    }
+    # helps guide the NPC AI. See the LLNPC section.
+    LLM_PROMPT_PREFIx = (
+      &quot;You are roleplaying as {name}, a {desc} existing in {location}. &quot;
+      &quot;Answer with short sentences. Only respond as {name} would. &quot;
+      &quot;From here on, the conversation between {name} and {character} begins.&quot;
+ ​￼)
 </pre></div>
 </div>
 <p>Don’t forget to reload Evennia if you make any changes.</p>
@@ -227,29 +239,54 @@ girl says (to You): Hello! How are you?
 </section>
 <section id="the-llmnpc-class">
 <h2>The LLMNPC class<a class="headerlink" href="#the-llmnpc-class" title="Permalink to this headline">¶</a></h2>
-<p>This is a simple Character class, with a few extra properties:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># response template on msg_contents form.</span>
-    <span class="n">prompt_prefix</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;You will chat and roleplay &quot;</span><span class="p">)</span>
-
-    <span class="n">response_template</span> <span class="o">=</span> <span class="s2">&quot;$You() $conj(say) (to $You(character)): </span><span class="si">{response}</span><span class="s2">&quot;</span>
-    <span class="n">thinking_timeout</span> <span class="o">=</span> <span class="mi">2</span>    <span class="c1"># how long to wait until showing thinking</span>
-
-    <span class="c1"># random &#39;thinking echoes&#39; to return while we wait, if the AI is slow</span>
-    <span class="n">thinking_messages</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> thinks about what you said ...&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> ponders your words ...&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> ponders ...&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
+<p>The LLM-able NPC class has a new method <code class="docutils literal notranslate"><span class="pre">at_talked_to</span></code> which does the connection to the LLM server and responds. This is called by the new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command. Note that all these calls are asynchronous, meaning a slow response will not block Evennia.</p>
+<p>The NPC’s AI is controlled with a few extra properties and Attributes, most of which can be customized directly in-game by a builder.</p>
+<section id="prompt-prefix">
+<h3><code class="docutils literal notranslate"><span class="pre">prompt_prefix</span></code><a class="headerlink" href="#prompt-prefix" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">prompt_prefix</span></code> is very important. This will be added in front of your prompt and helps the AI know how to respond. Remember that an LLM model is basically an auto-complete mechaniss, so by providing examples and instructions in the prefix, you can help it respond in a better way.</p>
+<p>The prefix string to use for a given NPC is looked up from one of these locations, in order:</p>
+<ol>
+<li><p>An Attribute <code class="docutils literal notranslate"><span class="pre">npc.db.chat_prefix</span></code> stored on the NPC (not set by default)</p></li>
+<li><p>A property <code class="docutils literal notranslate"><span class="pre">chat_prefix</span></code> on the the LLMNPC class (set to <code class="docutils literal notranslate"><span class="pre">None</span></code> by default).</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">LLM_PROMPT_PREFIX</span></code> setting (unset by default)</p></li>
+<li><p>If none of the above locations are set, the following default is used:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&quot;You are roleplaying as {name}, a {desc} existing in {location}.
+Answer with short sentences. Only respond as {name} would.
+From here on, the conversation between {name} and {character} begins.&quot;
 </pre></div>
 </div>
-<p>The character has a new method <code class="docutils literal notranslate"><span class="pre">at_talked_to</span></code> which does the connection to the LLM server and responds. This is called by the new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command. Note that all these calls are asynchronous, meaning a slow response will not block Evennia.</p>
+</li>
+</ol>
+<p>Here, the formatting tag <code class="docutils literal notranslate"><span class="pre">{name}</span></code> is replaced with the NPCs’s name, <code class="docutils literal notranslate"><span class="pre">desc</span></code> by it’s description, the <code class="docutils literal notranslate"><span class="pre">location</span></code> by its current location’s name and <code class="docutils literal notranslate"><span class="pre">character</span></code> by the one talking to it. All names of characters are given by the <code class="docutils literal notranslate"><span class="pre">get_display_name(looker)</span></code> call, so this may be different
+from person to person.</p>
+<p>Depending on the model, it can be very important to extend the prefix both with more information about the character as well as communication examples. A lot of tweaking may be necessary before producing something remniscent of human speech.</p>
+</section>
+<section id="response-template">
+<h3>Response template<a class="headerlink" href="#response-template" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">response_template</span></code> AttributeProperty defaults to being</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$You() $conj(say) (to $You(character)): {response}&quot;
+</pre></div>
+</div>
+<p>following common <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> <a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser</span></a> syntax. The <code class="docutils literal notranslate"><span class="pre">character</span></code> string will be mapped to the one talking to the NPC and the <code class="docutils literal notranslate"><span class="pre">response</span></code> will be what is said by the NPC.</p>
+</section>
+<section id="memory">
+<h3>Memory<a class="headerlink" href="#memory" title="Permalink to this headline">¶</a></h3>
+<p>The NPC remembers what has been said to it by each player. This memory will be included with the prompt to the LLM and helps it understand the context of the conversation. The length of this memory is given by the <code class="docutils literal notranslate"><span class="pre">max_chat_memory_size</span></code> AttributeProperty. Default is 25 messages.  Once the memory is maximum is reached, older messages are forgotten. Memory is stored separately for each player talking to the NPC.</p>
+</section>
+<section id="thinking">
+<h3>Thinking<a class="headerlink" href="#thinking" title="Permalink to this headline">¶</a></h3>
+<p>If the LLM server is slow to respond, the NPC will echo a random ‘thinking message’ to show it has not forgotten about you (something like “The villager ponders your words …”).</p>
+<p>They are controlled by two <code class="docutils literal notranslate"><span class="pre">AttributeProperties</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">thinking_timeout</span></code>: How long, in seconds to wait before showing the message. Default is 2 seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thinking_messages</span></code>: A list of messages to randomly pick between. Each message string can contain <code class="docutils literal notranslate"><span class="pre">{name}</span></code>, which will be replaced by the NPCs name.</p></li>
+</ul>
+</section>
 </section>
 <section id="todo">
 <h2>TODO<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
 <p>There is a lot of expansion potential with this contrib. Some ideas:</p>
 <ul class="simple">
-<li><p>Better standard prompting to make the NPC actually conversant.</p></li>
-<li><p>Have the NPC remember previous conversations with the player</p></li>
 <li><p>Easier support for different cloud LLM provider API structures.</p></li>
 <li><p>More examples of useful prompts and suitable models for MUD use.</p></li>
 </ul>
