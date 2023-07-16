@@ -96,13 +96,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">task</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">CancelledError</span><span class="p">,</span> <span class="n">inlineCallbacks</span>
 
 <span class="kn">from</span> <span class="nn">.llm_client</span> <span class="kn">import</span> <span class="n">LLMClient</span>
 
@@ -110,7 +111,7 @@
 <span class="c1"># npc.db.prompt_prefix, npcClass.prompt_prefix, then settings.LLM_PROMPT_PREFIX, then this</span>
 <span class="n">DEFAULT_PROMPT_PREFIX</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;You are roleplaying that your name is </span><span class="si">{name}</span><span class="s2">, a </span><span class="si">{desc}</span><span class="s2"> existing in </span><span class="si">{location}</span><span class="s2">. &quot;</span>
-    <span class="s2">&quot;Roleplay a suitable response to the following input only: &quot;</span>
+    <span class="s2">&quot;From here on, the conversation between </span><span class="si">{character}</span><span class="s2"> and </span><span class="si">{name}</span><span class="s2"> begins.&quot;</span>
 <span class="p">)</span>
 
 
@@ -118,16 +119,25 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An NPC that uses the LLM server to generate its responses. If the server is slow, it will</span>
 <span class="sd">    echo a thinking message to the character while it waits for a response.&quot;&quot;&quot;</span>
 
-    <span class="c1"># use this to override the prefix per class</span>
+    <span class="c1"># use this to override the prefix per class. Assign an Attribute to override per-instance.</span>
     <span class="n">prompt_prefix</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">response_template</span> <span class="o">=</span> <span class="s2">&quot;$You() $conj(say) (to $You(character)): </span><span class="si">{response}</span><span class="s2">&quot;</span>
-    <span class="n">thinking_timeout</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># seconds</span>
-    <span class="n">thinking_messages</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> thinks about what you said ...&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> ponders your words ...&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> ponders ...&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
+    <span class="n">response_template</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span>
+        <span class="s2">&quot;$You() $conj(say) (to $You(character)): </span><span class="si">{response}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="n">thinking_timeout</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># seconds</span>
+    <span class="n">thinking_messages</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> thinks about what you said ...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> ponders your words ...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> ponders ...&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">max_chat_memory_size</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># this is a store of {character: [chat, chat, ...]}</span>
+    <span class="n">chat_memory</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">llm_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -146,6 +156,41 @@
             <span class="p">),</span>
         <span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_add_to_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">who_talked</span><span class="p">,</span> <span class="n">speech</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a person&#39;s speech to the memory. This is stored as name: chat for the LLM.&quot;&quot;&quot;</span>
+        <span class="n">memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chat_memory</span><span class="p">[</span><span class="n">character</span><span class="p">]</span>
+        <span class="n">memory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">who_talked</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">speech</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># trim the memory if it&#39;s getting too long in order to save space</span>
+        <span class="n">memory</span> <span class="o">=</span> <span class="n">memory</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_chat_memory_size</span> <span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chat_memory</span><span class="p">[</span><span class="n">character</span><span class="p">]</span> <span class="o">=</span> <span class="n">memory</span>
+
+<div class="viewcode-block" id="LLMNPC.build_prompt"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_npc.html#evennia.contrib.rpg.llm.llm_npc.LLMNPC.build_prompt">[docs]</a>    <span class="k">def</span> <span class="nf">build_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">speech</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the prompt to send to the LLM server.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            character (Object): The one talking to the NPC.</span>
+<span class="sd">            speech (str): The latest speech from the character.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The prompt to return.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+        <span class="n">charname</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chat_memory</span><span class="p">[</span><span class="n">character</span><span class="p">]</span>
+
+        <span class="c1"># get starting prompt</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_prompt_prefix</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;someone&quot;</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="k">else</span> <span class="s2">&quot;the void&quot;</span><span class="p">,</span>
+            <span class="n">character</span><span class="o">=</span><span class="n">charname</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">prompt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mem</span> <span class="k">for</span> <span class="n">mem</span> <span class="ow">in</span> <span class="n">memory</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">prompt</span></div>
+
 <div class="viewcode-block" id="LLMNPC.at_talked_to"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_npc.html#evennia.contrib.rpg.llm.llm_npc.LLMNPC.at_talked_to">[docs]</a>    <span class="nd">@inlineCallbacks</span>
     <span class="k">def</span> <span class="nf">at_talked_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speech</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when this NPC is talked to by a character.&quot;&quot;&quot;</span>
@@ -157,9 +202,14 @@
                 <span class="c1"># abort the thinking message if we were fast enough</span>
                 <span class="n">thinking_defer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
 
+            <span class="c1"># remember this response</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_memory</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
             <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">),</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span>
             <span class="p">)</span>
+
+            <span class="c1"># tell the character about it</span>
             <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
                     <span class="n">response</span><span class="p">,</span>
@@ -169,6 +219,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># fallback if character is not in a location</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">)</span><span class="si">}</span><span class="s2"> says, </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># if response takes too long, note that the NPC is thinking.</span>
 
         <span class="k">def</span> <span class="nf">_echo_thinking_message</span><span class="p">():</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Echo a random thinking message to the character&quot;&quot;&quot;</span>
@@ -182,18 +234,19 @@
                 <span class="n">thinking_message</span> <span class="o">=</span> <span class="n">thinking_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">character</span><span class="p">))</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">thinking_message</span><span class="p">)</span>
 
-        <span class="c1"># if response takes too long, note that the NPC is thinking.</span>
-        <span class="n">thinking_defer</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thinking_timeout</span><span class="p">,</span> <span class="n">_echo_thinking_message</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_handle_cancel_error</span><span class="p">(</span><span class="n">failure</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Suppress task-cancel errors only&quot;&quot;&quot;</span>
+            <span class="n">failure</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="n">CancelledError</span><span class="p">)</span>
 
-        <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">llm_prompt_prefix</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;commoner&quot;</span><span class="p">,</span>
-                <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="k">else</span> <span class="s2">&quot;the void&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="o">+</span> <span class="s2">&quot; &quot;</span>
-            <span class="o">+</span> <span class="n">speech</span>
-        <span class="p">)</span>
+        <span class="n">thinking_defer</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">deferLater</span><span class="p">(</span>
+            <span class="n">reactor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thinking_timeout</span><span class="p">,</span> <span class="n">_echo_thinking_message</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">_handle_cancel_error</span><span class="p">)</span>
+
+        <span class="c1"># remember latest input in memory, so it&#39;s included in the prompt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_memory</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">speech</span><span class="p">)</span>
+
+        <span class="c1"># build the prompt</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_prompt</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">speech</span><span class="p">)</span>
 
         <span class="c1"># get the response from the LLM server</span>
         <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_client</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">_respond</span><span class="p">)</span></div></div>

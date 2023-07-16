@@ -129,18 +129,33 @@ echo a thinking message to the character while it waits for a response.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.response_template">
-<code class="sig-name descname">response_template</code><em class="property"> = '$You() $conj(say) (to $You(character)): {response}'</em><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.response_template" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">response_template</code><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.response_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.thinking_timeout">
-<code class="sig-name descname">thinking_timeout</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.thinking_timeout" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">thinking_timeout</code><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.thinking_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.thinking_messages">
-<code class="sig-name descname">thinking_messages</code><em class="property"> = ['{name} thinks about what you said ...', '{name} ponders your words ...', '{name} ponders ...']</em><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.thinking_messages" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">thinking_messages</code><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.thinking_messages" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.max_chat_memory_size">
+<code class="sig-name descname">max_chat_memory_size</code><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.max_chat_memory_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.chat_memory">
+<code class="sig-name descname">chat_memory</code><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.chat_memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.llm_client">
@@ -152,6 +167,23 @@ echo a thinking message to the character while it waits for a response.</p>
 <em class="property">property </em><code class="sig-name descname">llm_prompt_prefix</code><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.llm_prompt_prefix" title="Permalink to this definition">¶</a></dt>
 <dd><p>get prefix, first from Attribute, then from class variable,
 then from settings, then from default</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_npc.LLMNPC.build_prompt">
+<code class="sig-name descname">build_prompt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">speech</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_npc.html#LLMNPC.build_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_npc.LLMNPC.build_prompt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the prompt to send to the LLM server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>character</strong> (<em>Object</em>) – The one talking to the NPC.</p></li>
+<li><p><strong>speech</strong> (<em>str</em>) – The latest speech from the character.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The prompt to return.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

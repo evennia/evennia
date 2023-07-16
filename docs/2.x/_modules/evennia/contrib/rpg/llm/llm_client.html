@@ -222,6 +222,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the LLM server and handle the response/failure&quot;&quot;&quot;</span>
         <span class="n">request_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_request_body</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM request body: </span><span class="si">{</span><span class="n">request_body</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="sa">b</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
@@ -250,6 +253,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">status_code</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_response_from_llm_server</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">)[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM API error (status </span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
