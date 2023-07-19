@@ -1,4 +1,4 @@
-# Part 2: What we want
+# Part 2: What We Want
 
 ```{sidebar} Beginner Tutorial Parts
 - [Introduction](./Beginner-Tutorial-Overview.md)
