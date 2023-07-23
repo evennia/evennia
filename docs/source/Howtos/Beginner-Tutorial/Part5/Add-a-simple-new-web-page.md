@@ -66,8 +66,11 @@ instead do something like this:
 
 ```html
 <html>
-Expand All
-	@@ -69,32 +78,46 @@ If you'd rather not take advantage of Evennia's base styles, you can do somethin
+  <body>
+    <h1>A story about a tree</h1>
+    <p>
+    This is a story about a tree, a classic tale ...
+  </body>
 </html>
 ```
 
