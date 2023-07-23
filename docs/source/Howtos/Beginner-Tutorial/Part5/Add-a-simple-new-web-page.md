@@ -48,13 +48,15 @@ is not an HTML tutorial, so this file's content will be simple:
 
 ```html
 {% extends "base.html" %}
-{% endblock %}
-
 {% block content %}
 <div class="row">
   <div class="col">
-Expand All
-	@@ -55,9 +64,9 @@ This is not a HTML tutorial, so we'll go simple:
+    <h1>A story about a tree</h1>
+    <p>
+        This is a story about a tree, a classic tale ...
+    </p>
+  </div>
+</div>
 {% endblock %}
 ```
 
