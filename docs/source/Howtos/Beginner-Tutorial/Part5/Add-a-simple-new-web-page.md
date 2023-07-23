@@ -1,7 +1,7 @@
 # Add a simple new web page
 Evennia leverages [Django](https://docs.djangoproject.com) which is a web development framework.
-Huge professional websites are made in Django and there is extensive documentation (and books) on it
-. You are encouraged to at least look at the Django basic tutorials. Here we will just give a brief
+Huge professional websites are made in Django and there is extensive documentation (and books) on it.
+You are encouraged to at least look at the Django basic tutorials. Here we will just give a brief
 introduction for how things hang together, to get you started.
 
 We assume you have installed and set up Evennia to run. A webserver and website comes along with the
@@ -14,8 +14,8 @@ In this tutorial, we will add a new page that you can visit at `http://localhost
 ### Create the view
 
 A django "view" is a normal Python function that django calls to render the HTML page you will see
-in the web browser. Django can do all sorts of cool stuff to a page by using the view function -- like
-adding dynamic content or making changes to a page on the fly -- but, here, we will just have it spit
+in the web browser. Django can do all sorts of cool stuff to a page by using the view function &mdash; like
+adding dynamic content or making changes to a page on the fly &mdash; but, here, we will just have it spit
 back raw HTML.
 
 Open `mygame/web/website` folder and create a new module file there named `story.py`. (You could also
@@ -33,7 +33,7 @@ def storypage(request):
     return render(request, "story.html")
 ```
 
-The above view takes advantage of a shortcut provided for use by Django: _render_. Thre render shortcut
+The above view takes advantage of a shortcut provided for use by Django: _render_. The render shortcut
 gives the template information from the request. For instance, it might provide the game name, and then
 renders it.
 
@@ -72,12 +72,12 @@ Expand All
 ### The URL
 
 When you enter the address `http://localhost:4001/story` in your web browser, Django will parse the
-stub following the port -- here, `/story` -- to find out to which page you would like displayed. How
+stub following the port &mdash; here, `/story` &mdash; to find out to which page you would like displayed. How
 does Django know what HTML file `/story` should link to? You inform Django about what address stub
 patterns correspond to what files in the file `mygame/web/website/urls.py`. Open it in your editor now.
 
 Django looks for the variable `urlpatterns` in this file. You will want to add your new `story` pattern
-and corresponding path to `urlpatterns` list - which is then, in turn, merged with the default
+and corresponding path to `urlpatterns` list &mdash; which is then, in turn, merged with the default
 `urlpatterns`. Here's how it could look:
 
 ```python
@@ -102,11 +102,11 @@ urlpatterns = [
 urlpatterns = urlpatterns + evennia_website_urlpatterns
 ```
 
-The above code imports our `story.py` Python view module from where we created it earlier -- in 
-`mygame/web/website/` -- and then add the corresponding `path` instance. The first argument to
+The above code imports our `story.py` Python view module from where we created it earlier &mdash; in 
+`mygame/web/website/` &mdash; and then add the corresponding `path` instance. The first argument to
 `path` is the pattern of the URL that we want to find (`"story"`) as a regular expression, and
 then the view function from `story.py` that we want to call.
 
-That should be it. Reload Evennia -- `evennia reload` -- and you should now be able to navigate
+That should be it. Reload Evennia &mdash; `evennia reload` &mdash; and you should now be able to navigate
 your browser to the `http://localhost:4001/story` location and view your new story page as
 rendered by Python!
