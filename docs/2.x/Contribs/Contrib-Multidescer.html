@@ -126,11 +126,9 @@ will use the <code class="docutils literal notranslate"><span class="pre">multid
 It adds a new <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command (where the + is optional in Evennia).</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Edit <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add
-<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.contrib.game_systems.multidescer</span> <span class="pre">import</span> <span class="pre">CmdMultiDesc</span></code> to the top.</p>
-<p>Next, look up the <code class="docutils literal notranslate"><span class="pre">at_cmdset_create</span></code> method of the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>
-class and add a line <code class="docutils literal notranslate"><span class="pre">self.add(CmdMultiDesc())</span></code> to the end
-of it.</p>
+<p>Like for any custom command, you just add the new <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command to a default
+cmdset: Import the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.multidescer.CmdMultiDesc</span></code> into
+<code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add it to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> class.</p>
 <p>Reload the server and you should have the <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command available (it
 will replace the default <code class="docutils literal notranslate"><span class="pre">desc</span></code> command).</p>
 </section>
