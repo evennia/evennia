@@ -12,6 +12,7 @@ evennia.contrib.tutorials.evadventure
 .. toctree::
    :maxdepth: 6
 
+   evennia.contrib.tutorials.evadventure.ai
    evennia.contrib.tutorials.evadventure.build_techdemo
    evennia.contrib.tutorials.evadventure.build_world
    evennia.contrib.tutorials.evadventure.characters
