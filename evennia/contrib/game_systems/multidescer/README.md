@@ -14,12 +14,9 @@ It adds a new `+desc` command (where the + is optional in Evennia).
 
 ## Installation
 
-Edit `mygame/commands/default_cmdsets.py` and add
-`from evennia.contrib.game_systems.multidescer import CmdMultiDesc` to the top.
-
-Next, look up the `at_cmdset_create` method of the `CharacterCmdSet`
-class and add a line `self.add(CmdMultiDesc())` to the end
-of it.
+Like for any custom command, you just add the new `+desc` command to a default
+cmdset: Import the `evennia.contrib.game_systems.multidescer.CmdMultiDesc` into
+`mygame/commands/default_cmdsets.py` and add it to the `CharacterCmdSet` class.
 
 Reload the server and you should have the `+desc` command available (it
 will replace the default `desc` command).
