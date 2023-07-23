@@ -67,6 +67,7 @@
   <ul>
 <li><a class="reference internal" href="#">Evennia Multidescer</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
 </ul>
 </li>
 </ul>
@@ -116,13 +117,13 @@
 <h1>Evennia Multidescer<a class="headerlink" href="#evennia-multidescer" title="Permalink to this headline">¶</a></h1>
 <p>Contribution by Griatch 2016</p>
 <p>A “multidescer” is a concept from the MUSH world. It allows for
-creating, managing and switching between multiple character
-descriptions and is a way for quickly managing your look (such as when
+splitting your descriptions into arbitrary named ‘sections’ which you can
+then swap out at will. It is a way for quickly managing your look (such as when
 changing clothes) in more free-form roleplaying systems. This will also
 work well together with the <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code> contrib.</p>
-<p>This multidescer will not
-require any changes to the Character class, rather it will use the <code class="docutils literal notranslate"><span class="pre">multidescs</span></code>
-Attribute (a list) and create it if it does not exist.</p>
+<p>This multidescer will not require any changes to the Character class, rather it
+will use the <code class="docutils literal notranslate"><span class="pre">multidescs</span></code> Attribute (a list) and create it if it does not exist.
+It adds a new <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command (where the + is optional in Evennia).</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Edit <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add
@@ -130,8 +131,58 @@ Attribute (a list) and create it if it does not exist.</p>
 <p>Next, look up the <code class="docutils literal notranslate"><span class="pre">at_cmdset_create</span></code> method of the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>
 class and add a line <code class="docutils literal notranslate"><span class="pre">self.add(CmdMultiDesc())</span></code> to the end
 of it.</p>
-<p>Reload the server and you should have the +desc command available (it
+<p>Reload the server and you should have the <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command available (it
 will replace the default <code class="docutils literal notranslate"><span class="pre">desc</span></code> command).</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command in-game:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+desc [key]                - show current desc desc with &lt;key&gt;
++desc &lt;key&gt; = &lt;text&gt;       - add/replace desc with &lt;key&gt;
++desc/list                 - list descriptions (abbreviated)
++desc/list/full            - list descriptions (full texts)
++desc/edit &lt;key&gt;           - add/edit desc &lt;key&gt; in line editor
++desc/del &lt;key&gt;            - delete desc &lt;key&gt;
++desc/swap &lt;key1&gt;-&lt;key2&gt;   - swap positions of &lt;key1&gt; and &lt;key2&gt; in list
++desc/set &lt;key&gt; [+key+...] - set desc as default or combine multiple descs
+</pre></div>
+</div>
+<p>As an example, you can set one description for clothing, another for your boots,
+hairstyle or whatever you like. Use <code class="docutils literal notranslate"><span class="pre">|/</span></code> to add line breaks for multi-line descriptions and
+paragraphs, as well as <code class="docutils literal notranslate"><span class="pre">|_</span></code> to enforce indentations and whitespace (we don’t
+include colors in the example since they don’t show in this documentation).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+desc base = A handsome man.|_
++desc mood = He is cheerful, like all is going his way.|/|/
++desc head = On his head he has a red hat with a feather in it.|_
++desc shirt = His chest is wrapped in a white shirt. It has golden buttons.|_
++desc pants = He wears blue pants with a dragorn pattern on them.|_
++desc boots = His boots are dusty from the road.
++desc/set base + mood + head + shirt + pants + boots
+</pre></div>
+</div>
+<p>When looking at this character, you will now see (assuming auto-linebreaks)</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A hansome man. He is cheerful, like all is going his way.
+
+On his head he has a red hat with a feather in it. His chest is wrapped in a
+white shirt. It has golden buttons. He wears blue pants with a dragon
+pattern on them. His boots are dusty from the road.
+</pre></div>
+</div>
+<p>If you now do</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+desc mood = He looks sullen and forlorn.|/|/
++desc shirt = His formerly white shirt is dirty and has a gash in it.|_
+</pre></div>
+</div>
+<p>Your description will now be</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A handsome man. He looks sullen and forlorn.
+
+On his head he as a red hat with a feathre in it. His formerly white shirt
+is dirty and has a gash in it. He wears blue pants with a pattern on them.
+His boots are dusty from the road.
+</pre></div>
+</div>
+<p>You can use any number of ‘pieces’ to build up your description, and can swap
+and replace them as you like and RP requires.</p>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/multidescer/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>

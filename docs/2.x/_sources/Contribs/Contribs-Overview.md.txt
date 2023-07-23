@@ -374,9 +374,9 @@ on their own.
 _Contribution by Griatch 2016_
 
 A "multidescer" is a concept from the MUSH world. It allows for
-creating, managing and switching between multiple character
-descriptions and is a way for quickly managing your look (such as when 
-changing clothes) in more free-form roleplaying systems. This will also 
+splitting your descriptions into arbitrary named 'sections' which you can
+then swap out at will. It is a way for quickly managing your look (such as when
+changing clothes) in more free-form roleplaying systems. This will also
 work well together with the `rpsystem` contrib.
 
 [Read the documentation](./Contrib-Multidescer.md) - [Browse the Code](evennia.contrib.game_systems.multidescer)
