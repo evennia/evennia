@@ -1,7 +1,7 @@
 # Show a dynamic map of rooms
 
 ```{sidebar}
-See also the [Mapbuilder](../Contribs/Contrib-Mapbuilder.md) and [XYZGrid](../Contribs/Contrib-XYZGrid.md) contribs, which offer alternative ways of both creating and displaying room maps.
+See also the [Mapbuilder](../Contribs/Contrib-Mapbuilder.md) and [XYZGrid](../Contribs/Contrib-XYZGrid.md) contribs, which offer alternative ways of both creating and displaying room maps. The [Beginner Tutorial lesson implementing Evadventure rooms](https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Rooms.html#adding-a-room-map) also explains how to add a (simpler) auto-map. 
 ```
 An often desired feature in a MUD is to show an in-game map to help navigation.
 
