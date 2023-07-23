@@ -6,11 +6,11 @@ This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Lar
 
     > create/drop villager:evennia.contrib.rpg.llm.LLMNPC
     You create a new LLMNPC: villager
-    
+   
     > talk villager Hello there friend, what's up?
     You say (to villager): Hello there friend, what's up?
     villager says (to You): Hello! Not much going on, really.
-    
+   
     > talk villager Do you know where we are?
     You say (to villager): Do you know where we are?
     villager says (to You): We are in this strange place called 'Limbo'. Not much to do here.
