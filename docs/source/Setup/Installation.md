@@ -45,7 +45,7 @@ Once installed, make sure the `evennia` command works. Use `evennia -h` for usag
 
 We will create a new "game dir" in which to create your game. Here, and in the rest of the Evennia documentation, we refer to this game dir as  `mygame`, but you should, of course, name your game whatever you like. To create the new `mygame` folder -- or whatever you choose -- in your current location: 
 
-```{sidebar} Game Dir vs Game Dame
+```{sidebar} Game Dir vs Game Name
 The game dir you create doesn't have to match the name of your game. You can change the name of your game later by editing `mygame/server/conf/settings.py`.
 ```
 
@@ -99,7 +99,7 @@ or just:
 
 	evennia -l
 
-Pressing `Ctrl-C` (`Cmd-C` for Mac) to stop viewing the live log. 
+Press `Ctrl-C` (`Cmd-C` for Mac) to stop viewing the live log. 
 
 You may also begin viewing the real-time log immediately by adding `-l/--log` to `evennia` commands, such as when starting the server:
 
