@@ -20,7 +20,7 @@ Installing Evennia doesn't make anything visible online. Apart from installation
 ## Install with `pip`
 
 ```{important}
-Using a light-weight [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended, to keep your Evennia installation independent from the system libraries. The virtualenv system is a part of Python and will make your life easier!
+Using a light-weight [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended_, to keep your Evennia installation independent from the system libraries. The virtualenv system is a part of Python and will make your life easier!
 ```
 
 Evennia is managed from the terminal (console/Command Prompt on Windows). Once you have Python installed&mdash;and after activating your virtualenv if you are using one&mdash;install Evennia with:
