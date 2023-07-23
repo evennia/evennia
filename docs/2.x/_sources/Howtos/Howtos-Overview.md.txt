@@ -7,12 +7,6 @@ Want more details about something? See the documentation for Evennia's core [Com
 
 ## Beginner Tutorial
 
-```{sidebar}
-```{toctree}
-:maxdepth: 1
-Howtos-Overview.md 
-``` 
-```
 Recommended starting point! This will take you from absolute beginner to making
 a small -- but full -- game with Evennia. Other tutorials and how-to's tend to assume you are already familiar with the concepts explained in the Beginner Tutorial.
 
@@ -30,6 +24,10 @@ Part 3 and onwards are still under development.
 ./Beginner-Tutorial/Part5/Beginner-Tutorial-Part5-Overview
 ```
 
+```{toctree}
+:maxdepth: 1
+Howtos-Overview.md 
+``` 
 ## How-To's
 
 ```{toctree}
