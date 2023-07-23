@@ -23,7 +23,7 @@ Installing Evennia doesn't make anything visible online. Apart from installation
 Using a light-weight [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended, to keep your Evennia installation independent from the system libraries. The virtualenv system is a part of Python and will make your life easier!
 ```
 
-Evennia is managed from the terminal (console/Command Prompt on Windows). Once you have Python, -- after activating your virtualenv if you are using one -- install Evennia with:
+Evennia is managed from the terminal (console/Command Prompt on Windows). Once you have Python installed&mdash;and after activating your virtualenv if you are using one&mdash;install Evennia with:
 
 	pip install evennia
 
@@ -43,7 +43,7 @@ Once installed, make sure the `evennia` command works. Use `evennia -h` for usag
 
 ## Initialize a New Game
 
-We will create a new "game dir" in which to create your game. Here, and in the rest of the Evennia documentation, we refer to this game dir as  `mygame`, but you should, of course, name your game whatever you like. To create the new `mygame` folder -- or whatever you choose -- in your current location: 
+We will create a new "game dir" in which to create your game. Here, and in the rest of the Evennia documentation, we refer to this game dir as  `mygame`, but you should, of course, name your game whatever you like. To create the new `mygame` folder&mdash;or whatever you choose&mdash;in your current location: 
 
 ```{sidebar} Game Dir vs Game Name
 The game dir you create doesn't have to match the name of your game. You can change the name of your game later by editing `mygame/server/conf/settings.py`.
@@ -70,7 +70,7 @@ When prompted, enter a username and password for the in-game "god" or "superuser
 
 > You can also [automate](./Installation-Non-Interactive.md) creation of the superuser.
 
-If all went well, your new Evennia server is now up and running! To play your new -- albeit empty -- game, point a legacy MUD/telnet client to `localhost:4000` or a web browser to [http://localhost:4001](http://localhost:4001). You may log in as a new account or use the superuser account you created above.
+If all went well, your new Evennia server is now up and running! To play your new&mdash;albeit empty&mdash;game, point a legacy MUD/telnet client to `localhost:4000` or a web browser to [http://localhost:4001](http://localhost:4001). You may log in as a new account or use the superuser account you created above.
 
 ## Restarting and Stopping
 
@@ -115,9 +115,9 @@ To let the world know that you are working on a new Evennia-based game, you may 
 
     evennia connections 
 
-Then, just follow the prompts. You don't have to be open for players to do this -- simply mark your game as closed and "pre-alpha."
+Then, just follow the prompts. You don't have to be open for players to do this &mdash; simply mark your game as closed and "pre-alpha."
 
-See [here](./Evennia-Game-Index.md) for more instructions and please [check out the index](http:games.evennia.com)  beforehand to make sure you don't pick a game name that is already taken - be nice!
+See [here](./Evennia-Game-Index.md) for more instructions and please [check out the index](http:games.evennia.com)  beforehand to make sure you don't pick a game name that is already taken &mdash; be nice!
 
 ## Next Steps
 
