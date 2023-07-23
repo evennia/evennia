@@ -1,17 +1,17 @@
 # Part 5: Showing the World
 
 ```{sidebar} Beginner Tutorial Parts
-- [Introduction](./Beginner-Tutorial-Overview.md)
+- [Introduction](../Beginner-Tutorial-Overview.md)
 <br>Getting set up.
-- Part 1: [What We Have](Part1/Beginner-Tutorial-Part1-Overview.md)
+- Part 1: [What We Have](../Part1/Beginner-Tutorial-Part1-Overview.md)
 <br>A tour of Evennia and how to use the tools, including an introduction to Python.
-- Part 2: [What We Want](Part2/Beginner-Tutorial-Part2-Overview.md)
+- Part 2: [What We Want](../Part2/Beginner-Tutorial-Part2-Overview.md)
 <br>Planning our tutorial game and what to consider when planning your own.
-- Part 3: [How We Get There](Part3/Beginner-Tutorial-Part3-Overview.md)
+- Part 3: [How We Get There](../Part3/Beginner-Tutorial-Part3-Overview.md)
 <br>Getting down to the meat of extending Evennia to make your game.
-- Part 4: [Using What We Created](Part4/Beginner-Tutorial-Part4-Overview.md)
+- Part 4: [Using What We Created](../Part4/Beginner-Tutorial-Part4-Overview.md)
 <br>Building a tech-demo and world content to go with our code.
-- *Part 5: [Showing the World](Part5/Beginner-Tutorial-Part5-Overview.md)*
+- *Part 5: [Showing the World](./Beginner-Tutorial-Part5-Overview.md)*
 <br>Taking our new game online and letting players try it out.
 ```
 
