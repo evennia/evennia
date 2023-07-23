@@ -1,19 +1,27 @@
-# Tutorials and Howto's
+# Tutorials and How-To's
+Below you will find a variety of tutorials and how-to's for Evennia. The Beginner Tutorial is the recommended starting point.
+
+```{note}
+Want more details about something? See the documentation for Evennia's core [Components](../Components/Components-Overview.md) and important [Concepts](../Concepts/Concepts-Overview.md).
+```
 
 ## Beginner Tutorial
 
-```{sidebar} Want more details about something?
-See the documentation about the Evennia core [Components](../Components/Components-Overview.md) and important [Concepts](../Concepts/Concepts-Overview.md).
+```{sidebar}
+```{toctree}
+:maxdepth: 1
+Howtos-Overview.md 
+``` 
 ```
 Recommended starting point! This will take you from absolute beginner to making
-a small but full game with Evennia. Other tutorials and howto's tend to assume you are already familiar with the concepts explained in the Beginning tutorial.
+a small -- but full -- game with Evennia. Other tutorials and how-to's tend to assume you are already familiar with the concepts explained in the Beginner Tutorial.
 
 ```{note}
 Part 3 and onwards are still under development.
 ```
 
 ```{toctree}
-:maxdepth: 3
+:maxdepth: 1
 ./Beginner-Tutorial/Beginner-Tutorial-Overview
 ./Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Overview
 ./Beginner-Tutorial/Part2/Beginner-Tutorial-Part2-Overview
@@ -22,8 +30,7 @@ Part 3 and onwards are still under development.
 ./Beginner-Tutorial/Part5/Beginner-Tutorial-Part5-Overview
 ```
 
-
-## Howto's
+## How-To's
 
 ```{toctree}
 :maxdepth: 1
@@ -51,7 +58,7 @@ Tutorial-Coordinates.md
 Tutorial-Displaying-Room-Map.md
 ```
 
-## Web-related tutorials
+## Website Tutorials
 
 _Some of these will likely move into the Beginner tutorial later_.
 
@@ -66,7 +73,7 @@ Web-Help-System-Tutorial.md
 Web-Extending-the-REST-API
 Web-Tweeting-Game-Stats.md
 ```
-## Deep-dives
+## Deep Dives
 
 ```{toctree}
 :maxdepth: 1
@@ -79,7 +86,7 @@ Evennia-for-MUSH-Users.md
 Tutorial-Using-Arxcode.md
 ```
 
-## Old tutorials
+## Old Tutorials
 
 These will be replaced by the Beginner Tutorial, but remain here until that is complete. 
 
