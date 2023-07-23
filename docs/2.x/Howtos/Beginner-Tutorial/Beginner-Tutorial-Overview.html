@@ -66,11 +66,11 @@
 <h3><a href="../../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Beginner Tutorial</a><ul>
-<li><a class="reference internal" href="#things-you-need">Things you need</a><ul>
-<li><a class="reference internal" href="#a-command-line">A Command line</a></li>
-<li><a class="reference internal" href="#a-fresh-game-dir">A fresh game dir?</a></li>
-<li><a class="reference internal" href="#a-mud-client">A MUD client</a></li>
-<li><a class="reference internal" href="#a-text-editor-or-ide">A text Editor or IDE</a></li>
+<li><a class="reference internal" href="#things-you-need">Things You Need</a><ul>
+<li><a class="reference internal" href="#a-command-line-interface">A Command Line Interface</a></li>
+<li><a class="reference internal" href="#a-fresh-game-dir">A Fresh Game-Dir?</a></li>
+<li><a class="reference internal" href="#a-mud-client">A MUD Client</a></li>
+<li><a class="reference internal" href="#a-text-editor-or-ide">A Text Editor or IDE</a></li>
 </ul>
 </li>
 </ul>
@@ -137,53 +137,52 @@
 <br>Taking our new game online and letting players try it out.</p></li>
 </ul>
 </aside>
-<p>Welcome to Evennia! This multi-part Beginner Tutorial will help you get off the ground.</p>
-<p>You can pick what seems interesting, but if you follow through to the end you will have created a little online game of your own to play and share with others!</p>
-<p>Use the menu on the right to get the index of each tutorial-part. Use the <a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Overview.html"><span class="doc std std-doc">next</span></a> and <a class="reference internal" href="../Howtos-Overview.html"><span class="doc std std-doc">previous</span></a> links at the top/bottom right of the page to step between lessons.</p>
+<p>Welcome to Evennia! This multi-part Beginner Tutorial will help get you off the ground and running.</p>
+<p>You may choose topics that seem interesting but, if you follow this tutorial through to the end, you will have created your own small online game to play and share with others!</p>
+<p>Use the menu on the right to navigate the index of each of the tutorial’s parts. Use the <a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Overview.html"><span class="doc std std-doc">next</span></a> and <a class="reference internal" href="../Howtos-Overview.html"><span class="doc std std-doc">previous</span></a> links at the top/bottom right of each page to jump between lessons.</p>
 <section id="things-you-need">
-<h2>Things you need<a class="headerlink" href="#things-you-need" title="Permalink to this headline">¶</a></h2>
+<h2>Things You Need<a class="headerlink" href="#things-you-need" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>A Command line</p></li>
+<li><p>A command line interface</p></li>
 <li><p>A MUD client (or web browser)</p></li>
 <li><p>A text-editor/IDE</p></li>
 <li><p>Evennia installed and a game-dir initialized</p></li>
 </ul>
-<section id="a-command-line">
-<h3>A Command line<a class="headerlink" href="#a-command-line" title="Permalink to this headline">¶</a></h3>
-<p>You need to know how to find your Terminal/Console in your OS. The Evennia server can be controlled from in-game, but you <em>will</em> need to use the command-line to get anywhere. Here are some starters:</p>
+<section id="a-command-line-interface">
+<h3>A Command Line Interface<a class="headerlink" href="#a-command-line-interface" title="Permalink to this headline">¶</a></h3>
+<p>You need to know how to find the terminal/console in your OS. The Evennia server can be controlled from in-game, but you <em>will</em> realistically need to use the command-line interface to get anywhere. Here are some starters:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://tutorial.djangogirls.org/en/intro_to_command_line/">Online Intro to the Command line for different OS:es</a></p></li>
 </ul>
 <blockquote>
-<div><p>Note that we usually only show forward-slashes <code class="docutils literal notranslate"><span class="pre">/</span></code> for file system paths. Windows users should mentally convert this to back-slashes <code class="docutils literal notranslate"><span class="pre">\</span></code> instead.</p>
+<div><p>Note that the documentation typically uses forward-slashes (<code class="docutils literal notranslate"><span class="pre">/</span></code>) for file system paths. Windows users should convert these to back-slashes (<code class="docutils literal notranslate"><span class="pre">\</span></code>) instead.</p>
 </div></blockquote>
 </section>
 <section id="a-fresh-game-dir">
-<h3>A fresh game dir?<a class="headerlink" href="#a-fresh-game-dir" title="Permalink to this headline">¶</a></h3>
-<p>You should make sure you have successfully <a class="reference internal" href="../../Setup/Installation.html"><span class="doc std std-doc">installed Evennia</span></a>. If you followed the instructions you will already have created a game-dir. You could re-use that or make a new one only for this tutorial, it’s up to you.</p>
-<p>If you already have a game dir and want a separate one for the tutorial, use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code> to halt the running server and then <a class="reference internal" href="../../Setup/Installation.html#initialize-a-new-game"><span class="std std-doc">Initialize a new game dir</span></a> somewhere else (<em>not</em> inside the previous game dir!). We refer to it everywhere as <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, so you may want to use that name too.</p>
+<h3>A Fresh Game-Dir?<a class="headerlink" href="#a-fresh-game-dir" title="Permalink to this headline">¶</a></h3>
+<p>You should make sure that you have successfully <a class="reference internal" href="../../Setup/Installation.html"><span class="doc std std-doc">installed Evennia</span></a>. If you followed the instructions, you will have already created a game-dir. The documentation will continue to refer to this game-dir as <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, so you may want to re-use it or make a new one specific to this tutorial only – it’s up to you.</p>
+<p>If you already have a game-dir and want a new one specific to this tutorial, use the <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code> command to halt the running server. Then, <a class="reference internal" href="../../Setup/Installation.html#initialize-a-new-game"><span class="std std-doc">initialize a new game-dir</span></a> somewhere else (<em>not</em> inside the previous game-dir!).</p>
 </section>
 <section id="a-mud-client">
-<h3>A MUD client<a class="headerlink" href="#a-mud-client" title="Permalink to this headline">¶</a></h3>
-<p>You might already have a MUD-client you prefer. Check out the <a class="reference internal" href="../../Setup/Client-Support-Grid.html"><span class="doc std std-doc">grid of supported clients</span></a>.
-If telnet’s not your thing, you can also just use Evennia’s web client in your browser.</p>
-<p>Make sure you know how to connect to and log in to your locally running Evennia server.</p>
+<h3>A MUD Client<a class="headerlink" href="#a-mud-client" title="Permalink to this headline">¶</a></h3>
+<p>You may already have a preferred MUD client. Check out the <a class="reference internal" href="../../Setup/Client-Support-Grid.html"><span class="doc std std-doc">grid of supported clients</span></a>. Or, if telnet’s not your thing, you may also simply use Evennia’s web-client in your preferred browser.</p>
+<p>Make sure you know how to connect and log in to your locally running Evennia server.</p>
 <blockquote>
-<div><p>In this documentation we often use the terms ‘MUD’, ‘MU’ or ‘MU*’ interchangeably to represent all the historically different forms of text-based multiplayer game-styles, like MUD, MUX, MUSH, MUCK, MOO and others. Evennia can be used to create all those game-styles and more.</p>
+<div><p>In this documentation we often interchangeably use the terms ‘MUD’, ‘MU’, and ‘MU*’ to represent all the historically different forms of text-based multiplayer game-styles (i.e., MUD, MUX, MUSH, MUCK, MOO, etc.). Evennia can be used to create any of these game-styles… and more!</p>
 </div></blockquote>
 </section>
 <section id="a-text-editor-or-ide">
-<h3>A text Editor or IDE<a class="headerlink" href="#a-text-editor-or-ide" title="Permalink to this headline">¶</a></h3>
-<p>You need a text-editor to edit Python source files. Most everything that can edit and output raw text works (so not Word).</p>
+<h3>A Text Editor or IDE<a class="headerlink" href="#a-text-editor-or-ide" title="Permalink to this headline">¶</a></h3>
+<p>You need a text editor application to edit Python source files. Most anything that can edit and output raw text should work (…so not Microsoft Word).</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://www.elegantthemes.com/blog/resources/best-code-editors">Here’s a blog post summing up some of the alternatives</a> - these things don’t change much from year to year. Popular choices for Python are PyCharm, VSCode, Atom, Sublime Text and Notepad++. Evennia is to a very large degree coded in VIM, but that’s not suitable for beginners.</p></li>
+<li><p><a class="reference external" href="https://www.elegantthemes.com/blog/resources/best-code-editors">Here’s a blog post summing up a variety of text editor options</a> - these things don’t change much from year to year. Popular choices for Python are PyCharm, VSCode, Atom, Sublime Text, and Notepad++. Evennia is – to a very large degree – coded in VIM, but it is not suitable for beginners.</p></li>
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Use spaces, not tabs
-Make sure to configure your editor so that pressing TAB inserts <em>4 spaces</em> rather than a Tab-character. Since Python is whitespace-aware, this will make your life a lot easier.</p>
+<p>Use Spaces, Not Tabs&lt; br/&gt;
+Make sure to configure your text editor so that pressing the ‘Tab’ key inserts <em>4 spaces</em> rather than a tab-character. Because Python is whitespace-aware, this simple practice will make your life much easier.</p>
 </div>
-<p>You should now be ready to move on to the <a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Overview.html"><span class="doc std std-doc">first part of the tutorial</span></a> (in the future, use the <code class="docutils literal notranslate"><span class="pre">previous</span> <span class="pre">|</span> <span class="pre">next</span></code> buttons on the top/bottom of the page to progress)!</p>
+<p>You should now be ready to move on to the <a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Overview.html"><span class="doc std std-doc">first part of the Beginner Tutorial</span></a>! (In the future, use the <code class="docutils literal notranslate"><span class="pre">previous</span> <span class="pre">|</span> <span class="pre">next</span></code> buttons on the top/bottom of the page to progress.)</p>
 <details>
 <summary>
 Click here to see the full index of all parts and lessons of the Beginner-Tutorial.
