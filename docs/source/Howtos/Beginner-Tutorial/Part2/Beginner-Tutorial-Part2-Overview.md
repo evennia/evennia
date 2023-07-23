@@ -15,7 +15,7 @@
 <br>Taking our new game online and letting players try it out.
 ```
 
-In Part Two of the Evennia Beginner Tutorial, we'll take a step back to plan the type of tutorial game that you will create. This part id more 'theoretical' in that you won't do any hands-on programming. 
+In Part Two of the Evennia Beginner Tutorial, we'll take a step back to plan the type of tutorial game that you will create. This part is more 'theoretical' in that we won't do any hands-on programming. 
 
 In the process, we'll address the common questions of "where to start" and "what to think about" when creating a multiplayer online text game.
 
