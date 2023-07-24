@@ -13,116 +13,114 @@ You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker
 Installing Evennia doesn't make anything visible online. Apart from installation and updating, you can develop your game without any internet connection if you want to.
 ```
 - Evennia requires [Python](https://www.python.org/downloads/) 3.10 or 3.11 (recommended). Any OS that supports Python should work.
-	- _Windows_: In the installer, make sure you select `add python to path`.  If you have multiple versions of Python installed, use `py` command instead of `python` to have Windows automatically use the latest.
+	- _Windows_: In the installer, make sure to select `add python to path`. If you have multiple versions of Python installed, use `py` command instead of `python` to have Windows automatically use the latest.
 - Don't install Evennia as administrator or superuser. 
 - If you run into trouble, see [installation troubleshooting](./Installation-Troubleshooting.md).
 
 ## Install with `pip`
 
 ```{important}
-Using a light-weight [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended_ in order to keep your Evennia installation independent from the system libraries. The virtualenv system is a part of Python and will make your life easier!
+Using a light-weight [Python virtual environment](./Installation-Git.md#virtualenv) is optional, but _highly recommended_, to keep your Evennia installation independent from the system libraries. The virtualenv system is a part of Python and will make your life easier!
 ```
 
-Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you - after activating your virtualenv if you are using one - install Evennia with
+Evennia is managed from the terminal (console/Command Prompt on Windows). Once you have Python installed&mdash;and after activating your virtualenv if you are using one&mdash;install Evennia with:
 
-    pip install evennia
+	pip install evennia
 
-Optional: If you use a [contrib](../Contribs/Contribs-Overview.md) that warns you that it needs additional packages, you can  install all extra dependencies with 
+Optional: If you use a [contrib](../Contribs/Contribs-Overview.md) that warns you that it needs additional packages, you can  install all extra dependencies with:
 
 	pip install evennia[extra]
 
-To update Evennia later, do 
+To update Evennia later, do the following: 
 
-    pip install --upgrade evennia
+	pip install --upgrade evennia
 
 ```{note} **Windows users only -** 
-You now need to run `python -m evennia` once. This should permanently make the `evennia` command available in your environment.
+You now must run `python -m evennia` once. This should permanently make the `evennia` command available in your environment.
 ```
 
-Once installed, make sure the `evennia` command works.  Use `evennia -h` for usage help. If you are using a  virtualenv, make sure it's active whenever you need to use the `evennia` command later.
+Once installed, make sure the `evennia` command works. Use `evennia -h` for usage help. If you are using a virtualenv, make sure it is active whenever you need to use the `evennia` command later.
 
-## Initialize a new game
+## Initialize a New Game
 
-We will create a new "game dir" for you do create your game in. Here (and in
-the rest of the Evennia documentation) we refer to this game dir as  `mygame`, but you should of course name your game whatever you like.
+We will create a new "game dir" in which to create your game. Here, and in the rest of the Evennia documentation, we refer to this game dir as  `mygame`, but you should, of course, name your game whatever you like. To create the new `mygame` folder&mdash;or whatever you choose&mdash;in your current location: 
 
-```{sidebar} Game-dir vs game-name
-The game-dir you create doesn't have to match the name of your game. You can set the name of your game later by editing `mygame/server/conf/settings.py`.
+```{sidebar} Game Dir vs Game Name
+The game dir you create doesn't have to match the name of your game. You can change the name of your game later by editing `mygame/server/conf/settings.py`.
 ```
 
-    evennia --init mygame
+	evennia --init mygame
 
-This will create a new folder `mygame` (or whatever you chose) in your current location. This
-contains empty templates and all the default settings needed to start the server.
+The resultant folder contains all the empty templates and default settings needed to start the Evennia server.
 
-## Start the new game
+## Start the New Game
 
-    cd mygame 
-    evennia migrate
+First, create the default database (Sqlite3):
 
-This will create the default database (Sqlite3). The database file ends up as `mygame/server/evennia.db3`. If you ever want to start from a fresh database, just delete this file and re-run `evennia migrate` again.
+	cd mygame
+	evennia migrate
 
-    evennia start
+The resulting database file is created in `mygame/server/evennia.db3`. If you ever want to start from a fresh database, just delete this file and re-run the `evennia migrate` command.
 
-Set your user-name and password when prompted. This will be the "god user" or "super user" in-game.  The email is optional.
+Next, start the Evennia server with:
 
-> You can also [automate](./Installation-Non-Interactive.md) the creation of the super user.
+	evennia start
 
-If all went well, the server is now up and running. Point a legacy MUD/telnet client to `localhost:4000` or a web browser at [http://localhost:4001](http://localhost:4001) to play your new (if empty) game! 
+When prompted, enter a username and password for the in-game "god" or "superuser." Providing an email address is optional.
 
-Log in as a new account or use the superuser you just created.
+> You can also [automate](./Installation-Non-Interactive.md) creation of the superuser.
+
+If all went well, your new Evennia server is now up and running! To play your new&mdash;albeit empty&mdash;game, point a legacy MUD/telnet client to `localhost:4000` or a web browser to [http://localhost:4001](http://localhost:4001). You may log in as a new account or use the superuser account you created above.
+
+## Restarting and Stopping
 
 
-## Restarting and stopping
+You can restart the server (without disconnecting players) by issuing:
 
+	evennia restart
 
-You can restart the server without disconnecting players:
+And, to do a full stop and restart (with disconnecting players) use:
 
-    evennia restart
+	evennia reboot
 
-To do a full stop and restart (will disconnect players):
+A full stop of the server (use `evennia start` to restart) is achieved with:
 
-    evennia reboot
+	evennia stop
 
-Full stop of the server (use `evennia start` to restart):
+See the [Server start-stop-reload](./Running-Evennia.md) documentation page for details.
 
-    evennia stop
+## View Server Logs
 
-See [Server start-stop-reload](./Running-Evennia.md) page for more details.
+Log files are located in `mygame/server/logs`. You can tail the logging in real-time with:
 
-## See server logs
+	evennia --log
 
-Log files are in `mygame/server/logs`. You can tail them live with
+or just:
 
-    evennia --log
+	evennia -l
 
-or
+Press `Ctrl-C` (`Cmd-C` for Mac) to stop viewing the live log. 
 
-    evennia -l
-
-Stop viewing the log by pressing `Ctrl-C` (`Cmd-C` for Mac). 
-
-You can start viewing the log immediately by adding `-l/--log` to `evennia` commands, such as
+You may also begin viewing the real-time log immediately by adding `-l/--log` to `evennia` commands, such as when starting the server:
 
     evennia start -l
 
-## Server configuration 
+## Server Configuration 
 
-The server configuration file is `mygame/server/settings.py`. It's empty by default. Copy and change  only the settings you want from the [default settings file](./Settings-Default.md). See the [Settings](./Settings.md) documentation for more info.
+Your server's configuration file is `mygame/server/settings.py`. It's empty by default. Copy and paste **only** the settings you want/need from the [default settings file](./Settings-Default.md) to your server's `settings.py`. See the [Settings](./Settings.md) documentation for more information before configuring your server at this time.
  
 ## Register with the Evennia Game Index (optional)
 
-You can let the world know that you are working on a new Evennia-based game by 
-registering your server with the _Evennia game index_. 
+To let the world know that you are working on a new Evennia-based game, you may register your server with the _Evennia game index_ by issuing: 
 
     evennia connections 
 
-Just follow the prompts. You don't have to be  open for players to do this - you just mark your game as closed and "pre-alpha".
+Then, just follow the prompts. You don't have to be open for players to do this &mdash; simply mark your game as closed and "pre-alpha."
 
-See [here](./Evennia-Game-Index.md) for more instructions and please [check out the index](http:games.evennia.com)  beforehand to make sure you don't pick a game name that is already taken - be nice!
+See [here](./Evennia-Game-Index.md) for more instructions and please [check out the index](http:games.evennia.com)  beforehand to make sure you don't pick a game name that is already taken &mdash; be nice!
 
-## The Next steps
+## Next Steps
 
 You are good to go! 
 
-Next, why not head into the [Starting Tutorial](../Howtos/Beginner-Tutorial/Beginner-Tutorial-Overview.md)  to learn how to start making your new game!
+Next, why not head over to the [Starting Tutorial](../Howtos/Beginner-Tutorial/Beginner-Tutorial-Overview.md) to learn how to begin making your new game!
