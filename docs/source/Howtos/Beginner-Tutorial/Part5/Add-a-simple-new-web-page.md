@@ -1,27 +1,31 @@
 # Add a simple new web page
-
-
 Evennia leverages [Django](https://docs.djangoproject.com) which is a web development framework.
-Huge professional websites are made in Django and there is extensive documentation (and books) on it
-. You are encouraged to at least look at the Django basic tutorials. Here we will just give a brief
+Huge professional websites are made in Django and there is extensive documentation (and books) on it.
+You are encouraged to at least look at the Django basic tutorials. Here we will just give a brief
 introduction for how things hang together, to get you started.
 
-We assume you have installed and set up Evennia to run. A webserver and website comes out of the
-box. You can get to that by entering `http://localhost:4001` in your web browser - you should see a
-welcome page with some game statistics and a link to the web client. Let us add a new page that you
-can get to by going to `http://localhost:4001/story`.
+We assume you have installed and set up Evennia to run. A webserver and website comes along with the
+default Evennia install out of the box. You can view the default website by pointing your web browser
+to `http://localhost:4001`. You will see a generic welcome page with some game statistics and a link
+to the Evennia web client. 
 
-## Create the view
+In this tutorial, we will add a new page that you can visit at `http://localhost:4001/story`.
+
+### Create the view
 
 A django "view" is a normal Python function that django calls to render the HTML page you will see
-in the web browser. Here we will just have it spit back the raw html, but Django can do all sorts of
-cool stuff with the page in the view, like adding dynamic content or change it on the fly. Open
-`mygame/web` folder and add a new module there named `story.py` (you could also put it in its own
-folder if you wanted to be neat. Don't forget to add an empty `__init__.py` file if you do, to tell
-Python you can import from the new folder). Here's how it looks:
+in the web browser. Django can do all sorts of cool stuff to a page by using the view function &mdash; like
+adding dynamic content or making changes to a page on the fly &mdash; but, here, we will just have it spit
+back raw HTML.
+
+Open `mygame/web/website` folder and create a new module file there named `story.py`. (You could also
+put it in its own folder if you wanted to be neat but, if you do, don't forget to add an empty 
+`__init__.py` file in the new folfder. Adding the `__init__.py` file tells Python that modules can be
+imported from the new folder. For this tutorial, here's what the example contents of your new `story.py`
+module should look like:
 
 ```python
-# in mygame/web/story.py
+# in mygame/web/website/story.py
 
 from django.shortcuts import render
 
@@ -29,17 +33,18 @@ def storypage(request):
     return render(request, "story.html")
 ```
 
-This view takes advantage of a shortcut provided to use by Django, _render_. This shortcut gives the
-template some information from the request, for instance, the game name, and then renders it.
+The above view takes advantage of a shortcut provided for use by Django: _render_. The render shortcut
+gives the template information from the request. For instance, it might provide the game name, and then
+renders it.
 
-## The HTML page
+### The HTML page
 
-We need to find a place where Evennia (and Django) looks for html files (called *templates* in
-Django parlance). You can specify such places in your settings (see the `TEMPLATES` variable in
-`default_settings.py` for more info), but here we'll use an existing one. Go to
-`mygame/template/overrides/website/` and create a page `story.html` there.
+Next, we need to find the location where Evennia (and Django) looks for HTML files, which are referred
+to as *templates* in Django's parlance. You can specify such locations in your settings (see the
+`TEMPLATES` variable in `default_settings.py` for more info) but, here we'll use an existing one. 
 
-This is not a HTML tutorial, so we'll go simple:
+Navigate to `mygame/web/templates/website/` and create a new file there called `story.html`. This
+is not an HTML tutorial, so this file's content will be simple:
 
 ```html
 {% extends "base.html" %}
@@ -55,9 +60,9 @@ This is not a HTML tutorial, so we'll go simple:
 {% endblock %}
 ```
 
-Since we've used the _render_ shortcut, Django will allow us to extend our base styles easily.
-
-If you'd rather not take advantage of Evennia's base styles, you can do something like this instead:
+As shown above, Django will allow us to extend our base styles easily because we've used the
+_render_ shortcut. If you'd prefer to not take advantage of Evennia's base styles, you might
+instead do something like this:
 
 ```html
 <html>
@@ -69,32 +74,44 @@ If you'd rather not take advantage of Evennia's base styles, you can do somethin
 </html>
 ```
 
+### The URL
 
-## The URL
+When you enter the address `http://localhost:4001/story` in your web browser, Django will parse the
+stub following the port &mdash; here, `/story` &mdash; to find out to which page you would like displayed. How
+does Django know what HTML file `/story` should link to? You inform Django about what address stub
+patterns correspond to what files in the file `mygame/web/website/urls.py`. Open it in your editor now.
 
-When you enter the address `http://localhost:4001/story` in your web browser, Django will parse that
-field to figure out which page you want to go to. You tell it which patterns are relevant in the
-file
-[mygame/web/urls.py](https://github.com/evennia/evennia/blob/main/evennia/game_template/web/urls.py).
-Open it now
-
-Django looks for the variable `urlpatterns` in this file. You want to add your new pattern to the
-`custom_patterns` list we have prepared - that is then merged with the default `urlpatterns`. Here's
-how it could look:
+Django looks for the variable `urlpatterns` in this file. You will want to add your new `story` pattern
+and corresponding path to `urlpatterns` list &mdash; which is then, in turn, merged with the default
+`urlpatterns`. Here's how it could look:
 
 ```python
-from web import story
+"""
+This reroutes from an URL to a python view-function/class.
+The main web/urls.py includes these routes for all urls (the root of the url)
+so it can reroute to all website pages.
+"""
+from django.urls import path
 
-# ...
+from web.website import story
 
-custom_patterns = [
-    url(r'story', story.storypage, name='Story'),
+from evennia.web.website.urls import urlpatterns as evennia_website_urlpatterns
+
+# add patterns here
+urlpatterns = [
+    # path("url-pattern", imported_python_view),
+    path(r"story", story.storypage, name="Story"),
 ]
+
+# read by Django
+urlpatterns = urlpatterns + evennia_website_urlpatterns
 ```
 
-That is, we import our story view module from where we created it earlier and then create an `url`
-instance. The first argument to `url` is the pattern of the url we want to find (`"story"`) (this is
-a regular expression if you are familiar with those) and then our view function we want to direct
-to.
+The above code imports our `story.py` Python view module from where we created it earlier &mdash; in 
+`mygame/web/website/` &mdash; and then add the corresponding `path` instance. The first argument to
+`path` is the pattern of the URL that we want to find (`"story"`) as a regular expression, and
+then the view function from `story.py` that we want to call.
 
-That should be it. Reload Evennia and you should be able to browse to your new story page!
+That should be it. Reload Evennia &mdash; `evennia reload` &mdash; and you should now be able to navigate
+your browser to the `http://localhost:4001/story` location and view your new story page as
+rendered by Python!
