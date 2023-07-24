@@ -90,6 +90,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Something</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTestCase</span>
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
@@ -98,19 +99,20 @@
 
 
 <div class="viewcode-block" id="TestLLMClient"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.tests.html#evennia.contrib.rpg.llm.tests.TestLLMClient">[docs]</a><span class="k">class</span> <span class="nc">TestLLMClient</span><span class="p">(</span><span class="n">EvenniaTestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestLLMClient.test_npc_at_talked_to"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.tests.html#evennia.contrib.rpg.llm.tests.TestLLMClient.test_npc_at_talked_to">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.llm.llm_npc.task.deferLater&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestLLMClient.test_npc_at_talked_to"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.tests.html#evennia.contrib.rpg.llm.tests.TestLLMClient.test_npc_at_talked_to">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">LLM_PROMPT_PREFIX</span><span class="o">=</span><span class="s2">&quot;You are a test bot.&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.llm.llm_npc.task.deferLater&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_npc_at_talked_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_deferLater</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the LLMNPC class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">npc</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">LLMNPC</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Test NPC&quot;</span><span class="p">)</span>
         <span class="n">mock_LLMClient</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
-        <span class="n">npc</span><span class="o">.</span><span class="n">_llm_client</span> <span class="o">=</span> <span class="n">mock_LLMClient</span>
+        <span class="n">npc</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">llm_client</span> <span class="o">=</span> <span class="n">mock_LLMClient</span>
 
         <span class="n">npc</span><span class="o">.</span><span class="n">at_talked_to</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="n">npc</span><span class="p">)</span>
 
         <span class="n">mock_deferLater</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">Something</span><span class="p">,</span> <span class="n">npc</span><span class="o">.</span><span class="n">thinking_timeout</span><span class="p">,</span> <span class="n">Something</span><span class="p">)</span>
-        <span class="n">mock_LLMClient</span><span class="o">.</span><span class="n">get_response</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span></div></div>
+        <span class="n">mock_LLMClient</span><span class="o">.</span><span class="n">get_response</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You are a test bot.</span><span class="se">\n</span><span class="s2">Test NPC: Hello&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
