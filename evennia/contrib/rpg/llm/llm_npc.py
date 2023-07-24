@@ -56,7 +56,7 @@ class LLMNPC(DefaultCharacter):
 
     @property
     def llm_client(self):
-        if not hasattr(self, "_llm_client"):
+        if not self.ndb.llm_client:
             self.ndb.llm_client = LLMClient()
         return self.ndb.llm_client
 
