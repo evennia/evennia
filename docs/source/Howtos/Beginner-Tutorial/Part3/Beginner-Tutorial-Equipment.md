@@ -216,7 +216,7 @@ class EquipmentHandler:
          size = obj.size
          max_slots = self.max_slots
          current_slot_usage = self.count_slots()
-         return current_slot_usage + size <= max_slots:
+         return current_slot_usage + size <= max_slots
 
 ```
 
