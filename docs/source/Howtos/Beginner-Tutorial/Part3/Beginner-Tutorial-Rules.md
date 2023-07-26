@@ -186,7 +186,7 @@ crazy big so the loop takes forever!
 
 Now that we have the generic roller, we can start using it to do a more complex roll. 
 
-```
+```python
 # in mygame/evadventure/rules.py 
 
 # ... 
@@ -247,46 +247,46 @@ from .enums import Ability
 
 class EvAdventureRollEngine: 
 
-   def roll(...)
-       # ...
+    def roll(...)
+        # ...
    
-   def roll_with_advantage_or_disadvantage(...)
-       # ...
+    def roll_with_advantage_or_disadvantage(...)
+        # ...
        
-   def saving_throw(self, character, bonus_type=Ability.STR, target=15, 
-                    advantage=False, disadvantage=False):
-       """ 
-       Do a saving throw, trying to beat a target.
+    def saving_throw(self, character, bonus_type=Ability.STR, target=15, 
+                     advantage=False, disadvantage=False):
+        """ 
+        Do a saving throw, trying to beat a target.
        
-       Args:
-          character (Character): A character (assumed to have Ability bonuses
-              stored on itself as Attributes).
-          bonus_type (Ability): A valid Ability bonus enum.
-          target (int): The target number to beat. Always 15 in Knave.
-          advantage (bool): If character has advantage on this roll.
-          disadvantage (bool): If character has disadvantage on this roll.
+        Args:
+           character (Character): A character (assumed to have Ability bonuses
+               stored on itself as Attributes).
+           bonus_type (Ability): A valid Ability bonus enum.
+           target (int): The target number to beat. Always 15 in Knave.
+           advantage (bool): If character has advantage on this roll.
+           disadvantage (bool): If character has disadvantage on this roll.
           
-       Returns:
-           tuple: A tuple (bool, Ability), showing if the throw succeeded and 
-               the quality is one of None or Ability.CRITICAL_FAILURE/SUCCESS
+        Returns:
+            tuple: A tuple (bool, Ability), showing if the throw succeeded and 
+                the quality is one of None or Ability.CRITICAL_FAILURE/SUCCESS
                
-       """
+        """
                     
-       # make a roll 
-       dice_roll = self.roll_with_advantage_or_disadvantage(advantage, disadvantage)
+        # make a roll 
+        dice_roll = self.roll_with_advantage_or_disadvantage(advantage, disadvantage)
        
-       # figure out if we had critical failure/success
-       quality = None
-       if dice_roll == 1:
-           quality = Ability.CRITICAL_FAILURE
-       elif dice_roll == 20:
-           quality = Ability.CRITICAL_SUCCESS 
+        # figure out if we had critical failure/success
+        quality = None
+        if dice_roll == 1:
+            quality = Ability.CRITICAL_FAILURE
+        elif dice_roll == 20:
+            quality = Ability.CRITICAL_SUCCESS 
 
-       # figure out bonus
-       bonus = getattr(character, bonus_type.value, 1) 
+        # figure out bonus
+        bonus = getattr(character, bonus_type.value, 1) 
 
-       # return a tuple (bool, quality)
-       return (dice_roll + bonus) > target, quality
+        # return a tuple (bool, quality)
+        return (dice_roll + bonus) > target, quality
 ```
 
 The `getattr(obj, attrname, default)` function is a very useful Python tool for getting an attribute 
@@ -510,12 +510,12 @@ if you do, you die too.
 
 death_table = (
     ("1-2", "dead"),
-    ("3": "strength",
-    ("4": "dexterity"),
-    ("5": "constitution"),
-    ("6": "intelligence"),
-    ("7": "wisdom"),
-    ("8": "charisma"),
+    ("3", "strength"),
+    ("4", "dexterity"),
+    ("5", "constitution"),
+    ("6", "intelligence"),
+    ("7", "wisdom"),
+    ("8", "charisma"),
 )
     
     
@@ -543,7 +543,7 @@ class EvAdventureRollEngine:
                 pass 
             else:
                 # refresh 1d4 health, but suffer 1d4 ability loss
-                self.heal(character, self.roll("1d4") 
+                self.heal(character, self.roll("1d4"))
                 setattr(character, ability_name, current_ability)
                 
                 character.msg(
