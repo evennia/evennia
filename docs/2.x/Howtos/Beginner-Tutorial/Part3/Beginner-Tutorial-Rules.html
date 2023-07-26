@@ -306,7 +306,7 @@ crazy big so the loop takes forever!</p>
 <section id="rolling-with-advantage">
 <h3><span class="section-number">2.3.2. </span>Rolling with advantage<a class="headerlink" href="#rolling-with-advantage" title="Permalink to this headline">¶</a></h3>
 <p>Now that we have the generic roller, we can start using it to do a more complex roll.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
 <span class="c1"># ... </span>
 
@@ -359,46 +359,46 @@ Attribute is available as <code class="docutils literal notranslate"><span class
 
 <span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span> 
 
-   <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-       <span class="c1"># ...</span>
+    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+        <span class="c1"># ...</span>
    
-   <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-       <span class="c1"># ...</span>
+    <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+        <span class="c1"># ...</span>
        
-   <span class="k">def</span> <span class="nf">saving_throw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> 
-                    <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">       </span><span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">       Do a saving throw, trying to beat a target.</span>
+    <span class="k">def</span> <span class="nf">saving_throw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> 
+                     <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Do a saving throw, trying to beat a target.</span>
 <span class="sd">       </span>
-<span class="sd">       Args:</span>
-<span class="sd">          character (Character): A character (assumed to have Ability bonuses</span>
-<span class="sd">              stored on itself as Attributes).</span>
-<span class="sd">          bonus_type (Ability): A valid Ability bonus enum.</span>
-<span class="sd">          target (int): The target number to beat. Always 15 in Knave.</span>
-<span class="sd">          advantage (bool): If character has advantage on this roll.</span>
-<span class="sd">          disadvantage (bool): If character has disadvantage on this roll.</span>
+<span class="sd">        Args:</span>
+<span class="sd">           character (Character): A character (assumed to have Ability bonuses</span>
+<span class="sd">               stored on itself as Attributes).</span>
+<span class="sd">           bonus_type (Ability): A valid Ability bonus enum.</span>
+<span class="sd">           target (int): The target number to beat. Always 15 in Knave.</span>
+<span class="sd">           advantage (bool): If character has advantage on this roll.</span>
+<span class="sd">           disadvantage (bool): If character has disadvantage on this roll.</span>
 <span class="sd">          </span>
-<span class="sd">       Returns:</span>
-<span class="sd">           tuple: A tuple (bool, Ability), showing if the throw succeeded and </span>
-<span class="sd">               the quality is one of None or Ability.CRITICAL_FAILURE/SUCCESS</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple (bool, Ability), showing if the throw succeeded and </span>
+<span class="sd">                the quality is one of None or Ability.CRITICAL_FAILURE/SUCCESS</span>
 <span class="sd">               </span>
-<span class="sd">       &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
                     
-       <span class="c1"># make a roll </span>
-       <span class="n">dice_roll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="n">advantage</span><span class="p">,</span> <span class="n">disadvantage</span><span class="p">)</span>
+        <span class="c1"># make a roll </span>
+        <span class="n">dice_roll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="n">advantage</span><span class="p">,</span> <span class="n">disadvantage</span><span class="p">)</span>
        
-       <span class="c1"># figure out if we had critical failure/success</span>
-       <span class="n">quality</span> <span class="o">=</span> <span class="kc">None</span>
-       <span class="k">if</span> <span class="n">dice_roll</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-           <span class="n">quality</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_FAILURE</span>
-       <span class="k">elif</span> <span class="n">dice_roll</span> <span class="o">==</span> <span class="mi">20</span><span class="p">:</span>
-           <span class="n">quality</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_SUCCESS</span> 
+        <span class="c1"># figure out if we had critical failure/success</span>
+        <span class="n">quality</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">dice_roll</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">quality</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_FAILURE</span>
+        <span class="k">elif</span> <span class="n">dice_roll</span> <span class="o">==</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="n">quality</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_SUCCESS</span> 
 
-       <span class="c1"># figure out bonus</span>
-       <span class="n">bonus</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+        <span class="c1"># figure out bonus</span>
+        <span class="n">bonus</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
 
-       <span class="c1"># return a tuple (bool, quality)</span>
-       <span class="k">return</span> <span class="p">(</span><span class="n">dice_roll</span> <span class="o">+</span> <span class="n">bonus</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">,</span> <span class="n">quality</span>
+        <span class="c1"># return a tuple (bool, quality)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">dice_roll</span> <span class="o">+</span> <span class="n">bonus</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">,</span> <span class="n">quality</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">getattr(obj,</span> <span class="pre">attrname,</span> <span class="pre">default)</span></code> function is a very useful Python tool for getting an attribute
@@ -650,12 +650,12 @@ if you do, you die too.</p>
 
 <span class="n">death_table</span> <span class="o">=</span> <span class="p">(</span>
     <span class="p">(</span><span class="s2">&quot;1-2&quot;</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="s2">&quot;strength&quot;</span><span class="p">,</span>
-    <span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="s2">&quot;dexterity&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">:</span> <span class="s2">&quot;constitution&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">:</span> <span class="s2">&quot;intelligence&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;7&quot;</span><span class="p">:</span> <span class="s2">&quot;wisdom&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;8&quot;</span><span class="p">:</span> <span class="s2">&quot;charisma&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;strength&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;dexterity&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;constitution&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;intelligence&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="s2">&quot;wisdom&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;8&quot;</span><span class="p">,</span> <span class="s2">&quot;charisma&quot;</span><span class="p">),</span>
 <span class="p">)</span>
     
     
@@ -683,7 +683,7 @@ if you do, you die too.</p>
                 <span class="k">pass</span> 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># refresh 1d4 health, but suffer 1d4 ability loss</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">heal</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d4&quot;</span><span class="p">)</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">heal</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d4&quot;</span><span class="p">))</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">ability_name</span><span class="p">,</span> <span class="n">current_ability</span><span class="p">)</span>
                 
                 <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
