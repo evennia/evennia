@@ -602,9 +602,7 @@ So the result for <code class="docutils literal notranslate"><span class="pre">1
 </section>
 <section id="roll-for-death">
 <h3><span class="section-number">2.3.8. </span>Roll for death<a class="headerlink" href="#roll-for-death" title="Permalink to this headline">¶</a></h3>
-<p>While original Knave suggests hitting 0 HP means insta-death, we will grab the optional “death table”
-from the “prettified” Knave’s optional rules to make it a little less punishing. We also changed the
-result of <code class="docutils literal notranslate"><span class="pre">2</span></code> to ‘dead’ since we don’t simulate ‘dismemberment’ in this tutorial:</p>
+<p>While original Knave suggests hitting 0 HP means insta-death, we will grab the optional “death table” from the “prettified” Knave’s optional rules to make it a little less punishing. We also changed the result of <code class="docutils literal notranslate"><span class="pre">2</span></code> to ‘dead’ since we don’t simulate ‘dismemberment’ in this tutorial:</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="text-align:center head"><p>Roll</p></th>
@@ -643,9 +641,7 @@ result of <code class="docutils literal notranslate"><span class="pre">2</span><
 </tr>
 </tbody>
 </table>
-<p>All the non-dead values map to a loss of 1d4 in one of the six Abilities (but you get HP back).
-We need to map back to this from the above table. One also cannot have less than -10 Ability bonus,
-if you do, you die too.</p>
+<p>All the non-dead values map to a loss of 1d4 in one of the six Abilities (but you get HP back). We need to map back to this from the above table. One also cannot have less than -10 Ability bonus,  if you do, you die too.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
 <span class="n">death_table</span> <span class="o">=</span> <span class="p">(</span>
@@ -696,9 +692,7 @@ if you do, you die too.</p>
 </div>
 <p>Here we roll on the ‘death table’ from the rules to see what happens. We give the character
 a message if they survive, to let them know what happened.</p>
-<p>We don’t yet know what ‘killing the character’ technically means, so we mark this as <code class="docutils literal notranslate"><span class="pre">TODO</span></code> and
-return to it in a later lesson. We just know that we need to do <em>something</em> here to kill off the
-character!</p>
+<p>We don’t yet know what ‘killing the character’ technically means, so we mark this as <code class="docutils literal notranslate"><span class="pre">TODO</span></code> and  return to it in a later lesson. We just know that we need to do <em>something</em> here to kill off the character!</p>
 </section>
 </section>
 <section id="testing">
@@ -743,14 +737,9 @@ has a complete example of rule testing.</p>
 test method. We use <code class="docutils literal notranslate"><span class="pre">super().setUp()</span></code> to make sure the parent class’ version of this method
 always fire. Then we create a fresh <code class="docutils literal notranslate"><span class="pre">EvAdventureRollEngine</span></code> we can test with.</p>
 <p>In our test, we import <code class="docutils literal notranslate"><span class="pre">patch</span></code> from the <code class="docutils literal notranslate"><span class="pre">unittest.mock</span></code> library. This is a very useful tool for testing.
-Normally the <code class="docutils literal notranslate"><span class="pre">randint</span></code> function we imported in <code class="docutils literal notranslate"><span class="pre">rules</span></code> will return a random value. That’s very hard to
-test for, since the value will be different every test.</p>
-<p>With <code class="docutils literal notranslate"><span class="pre">&#64;patch</span></code> (this is called a <em>decorator</em>), we temporarily replace <code class="docutils literal notranslate"><span class="pre">rules.randint</span></code> with a ‘mock’ - a
-dummy entity. This mock is passed into the testing method. We then take this <code class="docutils literal notranslate"><span class="pre">mock_randint</span></code> and set
-<code class="docutils literal notranslate"><span class="pre">.return_value</span> <span class="pre">=</span> <span class="pre">4</span></code> on it.</p>
-<p>Adding <code class="docutils literal notranslate"><span class="pre">return_value</span></code> to the mock means that every time this mock is called, it will return 4. For the
-duration of the test we can now check with <code class="docutils literal notranslate"><span class="pre">self.assertEqual</span></code> that our <code class="docutils literal notranslate"><span class="pre">roll</span></code> method always returns a
-result as-if the random result was 4.</p>
+Normally the <code class="docutils literal notranslate"><span class="pre">randint</span></code> function we imported in <code class="docutils literal notranslate"><span class="pre">rules</span></code> will return a random value. That’s very hard to test for, since the value will be different every test.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">&#64;patch</span></code> (this is called a <em>decorator</em>), we temporarily replace <code class="docutils literal notranslate"><span class="pre">rules.randint</span></code> with a ‘mock’ - a  dummy entity. This mock is passed into the testing method. We then take this <code class="docutils literal notranslate"><span class="pre">mock_randint</span></code> and set  <code class="docutils literal notranslate"><span class="pre">.return_value</span> <span class="pre">=</span> <span class="pre">4</span></code> on it.</p>
+<p>Adding <code class="docutils literal notranslate"><span class="pre">return_value</span></code> to the mock means that every time this mock is called, it will return 4. For the  duration of the test we can now check with <code class="docutils literal notranslate"><span class="pre">self.assertEqual</span></code> that our <code class="docutils literal notranslate"><span class="pre">roll</span></code> method always returns a  result as-if the random result was 4.</p>
 <p>There are <a class="reference external" href="https://realpython.com/python-mock-library/">many resources for understanding mock</a>, refer to
 them for further help.</p>
 <blockquote>
@@ -760,9 +749,7 @@ them for further help.</p>
 </section>
 <section id="summary">
 <h2><span class="section-number">2.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>This concludes all the core rule mechanics of <em>Knave</em> - the rules used during play. We noticed here
-that we are going to soon need to establish how our <em>Character</em> actually stores data. So we will
-address that next.</p>
+<p>This concludes all the core rule mechanics of <em>Knave</em> - the rules used during play. We noticed here  that we are going to soon need to establish how our <em>Character</em> actually stores data. So we will address that next.</p>
 </section>
 </section>
 

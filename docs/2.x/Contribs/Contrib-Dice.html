@@ -69,6 +69,7 @@
 <li><a class="reference internal" href="#installation">Installation:</a></li>
 <li><a class="reference internal" href="#usage">Usage:</a></li>
 <li><a class="reference internal" href="#rolling-dice-from-code">Rolling dice from code</a><ul>
+<li><a class="reference internal" href="#dice-pools-and-other-variations">Dice pools and other variations</a></li>
 <li><a class="reference internal" href="#get-all-roll-details">Get all roll details</a></li>
 </ul>
 </li>
@@ -119,9 +120,9 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="dice-roller">
 <h1>Dice roller<a class="headerlink" href="#dice-roller" title="Permalink to this headline">¶</a></h1>
-<p>Contribution by Griatch, 2012</p>
+<p>Contribution by Griatch, 2012, 2023</p>
 <p>A dice roller for any number and side of dice. Adds in-game dice rolling
-(<code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">2d10</span> <span class="pre">+</span> <span class="pre">1</span></code>) as well as conditionals (roll under/over/equal to a target)
+(like <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">2d10</span> <span class="pre">+</span> <span class="pre">1</span></code>) as well as conditionals (roll under/over/equal to a target)
 and functions for rolling dice in code. Command also supports hidden or secret
 rolls for use by a human game master.</p>
 <section id="installation">
@@ -157,15 +158,15 @@ unbiased way.  For example:</p>
 </pre></div>
 </div>
 <p>Rolling this will inform all parties if roll was indeed below 8 or not.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; roll/hidden
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; roll/hidden 1d100
 </pre></div>
 </div>
 <p>Informs the room that the roll is being made without telling what the result
 was.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; roll/secret
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; roll/secret 1d20
 </pre></div>
 </div>
-<p>Is a hidden roll that does not inform the room it happened.</p>
+<p>This a hidden roll that does not inform the room it happened.</p>
 </section>
 <section id="rolling-dice-from-code">
 <h2>Rolling dice from code<a class="headerlink" href="#rolling-dice-from-code" title="Permalink to this headline">¶</a></h2>
@@ -196,9 +197,33 @@ construct the roll from components.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">roll</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">conditional</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>You can only roll one set of dice. If your RPG requires you to roll multiple
+<section id="dice-pools-and-other-variations">
+<h3>Dice pools and other variations<a class="headerlink" href="#dice-pools-and-other-variations" title="Permalink to this headline">¶</a></h3>
+<p>You can only roll one set of dice at a time. If your RPG requires you to roll multiple
 sets of dice and combine them in more advanced ways, you can do so with multiple
-<code class="docutils literal notranslate"><span class="pre">roll()</span></code> calls.</p>
+<code class="docutils literal notranslate"><span class="pre">roll()</span></code> calls. Depending on what you need, you may just want to express this as
+helper functions specific for your game.</p>
+<p>Here’s how to roll a D&amp;D advantage roll (roll d20 twice, pick highest):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.contrib.rpg.dice</span> <span class="kn">import</span> <span class="n">roll</span>
+
+    <span class="k">def</span> <span class="nf">roll_d20_with_advantage</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get biggest result of two d20 rolls&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;d20&quot;</span><span class="p">),</span> <span class="n">roll</span><span class="p">(</span><span class="s2">&quot;d20&quot;</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<p>Here’s an example of a Free-League style dice pool, where you roll a pile of d6
+and want to know how many 1s and sixes you get:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.dice</span> <span class="kn">import</span> <span class="n">roll</span>
+
+<span class="k">def</span> <span class="nf">roll_dice_pool</span><span class="p">(</span><span class="n">poolsize</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (number_of_ones, number_of_sixes)&quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">poolsize</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
 <section id="get-all-roll-details">
 <h3>Get all roll details<a class="headerlink" href="#get-all-roll-details" title="Permalink to this headline">¶</a></h3>
 <p>If you need the individual rolls (e.g. for a dice pool), set the <code class="docutils literal notranslate"><span class="pre">return_tuple</span></code> kwarg:</p>
