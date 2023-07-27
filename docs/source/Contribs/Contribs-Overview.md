@@ -581,10 +581,10 @@ Commands for managing and initiating an in-game character-creation menu.
 
 ### `dice`
 
-_Contribution by Griatch, 2012_
+_Contribution by Griatch, 2012, 2023_
 
 A dice roller for any number and side of dice. Adds in-game dice rolling
-(`roll 2d10 + 1`) as well as conditionals (roll under/over/equal to a target)
+(like `roll 2d10 + 1`) as well as conditionals (roll under/over/equal to a target)
 and functions for rolling dice in code. Command also supports hidden or secret
 rolls for use by a human game master.
 

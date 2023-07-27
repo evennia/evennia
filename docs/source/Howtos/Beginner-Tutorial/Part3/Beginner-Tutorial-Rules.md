@@ -487,9 +487,7 @@ we check if `maxval` actually has a value `("5",)` or if its empty `()`. The res
 
 ### Roll for death 
 
-While original Knave suggests hitting 0 HP means insta-death, we will grab the optional "death table"
-from the "prettified" Knave's optional rules to make it a little less punishing. We also changed the 
-result of `2` to 'dead' since we don't simulate 'dismemberment' in this tutorial:
+While original Knave suggests hitting 0 HP means insta-death, we will grab the optional "death table" from the "prettified" Knave's optional rules to make it a little less punishing. We also changed the result of `2` to 'dead' since we don't simulate 'dismemberment' in this tutorial:
 
 | Roll |  Result  | -1d4 Loss of Ability | 
 |:---: |:--------:|:--------------------:|
@@ -501,9 +499,7 @@ result of `2` to 'dead' since we don't simulate 'dismemberment' in this tutorial
 | 7 | rattled |         WIS          | 
 | 8 | disfigured |         CHA          |
 
-All the non-dead values map to a loss of 1d4 in one of the six Abilities (but you get HP back).
-We need to map back to this from the above table. One also cannot have less than -10 Ability bonus, 
-if you do, you die too.
+All the non-dead values map to a loss of 1d4 in one of the six Abilities (but you get HP back). We need to map back to this from the above table. One also cannot have less than -10 Ability bonus,  if you do, you die too.
 
 ```python 
 # in mygame/evadventure/rules.py 
@@ -557,9 +553,7 @@ dice = EvAdventureRollEngine()
 Here we roll on the 'death table' from the rules to see what happens. We give the character 
 a message if they survive, to let them know what happened.
 
-We don't yet know what 'killing the character' technically means, so we mark this as `TODO` and 
-return to it in a later lesson. We just know that we need to do _something_ here to kill off the 
-character!
+We don't yet know what 'killing the character' technically means, so we mark this as `TODO` and  return to it in a later lesson. We just know that we need to do _something_ here to kill off the character!
 
 ## Testing 
 
@@ -605,16 +599,11 @@ test method. We use `super().setUp()` to make sure the parent class' version of 
 always fire. Then we create a fresh `EvAdventureRollEngine` we can test with. 
 
 In our test, we import `patch` from the `unittest.mock` library. This is a very useful tool for testing. 
-Normally the `randint` function we imported in `rules` will return a random value. That's very hard to 
-test for, since the value will be different every test.
+Normally the `randint` function we imported in `rules` will return a random value. That's very hard to test for, since the value will be different every test.
 
-With `@patch` (this is called a _decorator_), we temporarily replace `rules.randint` with a 'mock' - a 
-dummy entity. This mock is passed into the testing method. We then take this `mock_randint` and set 
-`.return_value = 4` on it. 
+With `@patch` (this is called a _decorator_), we temporarily replace `rules.randint` with a 'mock' - a  dummy entity. This mock is passed into the testing method. We then take this `mock_randint` and set  `.return_value = 4` on it. 
 
-Adding `return_value` to the mock means that every time this mock is called, it will return 4. For the 
-duration of the test we can now check with `self.assertEqual` that our `roll` method always returns a 
-result as-if the random result was 4.
+Adding `return_value` to the mock means that every time this mock is called, it will return 4. For the  duration of the test we can now check with `self.assertEqual` that our `roll` method always returns a  result as-if the random result was 4.
 
 There are [many resources for understanding mock](https://realpython.com/python-mock-library/), refer to 
 them for further help.
@@ -623,9 +612,7 @@ them for further help.
 
 ## Summary 
 
-This concludes all the core rule mechanics of _Knave_ - the rules used during play. We noticed here 
-that we are going to soon need to establish how our _Character_ actually stores data. So we will 
-address that next.
+This concludes all the core rule mechanics of _Knave_ - the rules used during play. We noticed here  that we are going to soon need to establish how our _Character_ actually stores data. So we will address that next.
 
 
 
