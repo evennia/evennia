@@ -2661,20 +2661,20 @@ class DefaultCharacter(DefaultObject):
             session (Session): Session controlling the connection.
 
         """
-        if (
-            self.location is None
-        ):  # Make sure character's location is never None before being puppeted.
-            # Return to last location (or home, which should always exist),
-            self.location = self.db.prelogout_location if self.db.prelogout_location else self.home
-            self.location.at_object_receive(
-                self, None
-            )  # and trigger the location's reception hook.
-        if self.location:  # If the character is verified to be somewhere,
+        if self.location is None:
+            # Make sure character's location is never None before being puppeted.
+            # Return to last location (or home, which should always exist)
+            location = self.db.prelogout_location if self.db.prelogout_location else self.home
+            if location:
+                self.location = location
+                self.location.at_object_receive(self, None)
+
+        if self.location:
             self.db.prelogout_location = self.location  # save location again to be sure.
         else:
             account.msg(
                 _("|r{obj} has no location and no home is set.|n").format(obj=self), session=session
-            )  # Note to set home.
+            )
 
     def at_post_puppet(self, **kwargs):
         """
