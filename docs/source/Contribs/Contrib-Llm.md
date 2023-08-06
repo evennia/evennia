@@ -6,11 +6,11 @@ This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Lar
 
     > create/drop villager:evennia.contrib.rpg.llm.LLMNPC
     You create a new LLMNPC: villager
-   
+
     > talk villager Hello there friend, what's up?
     You say (to villager): Hello there friend, what's up?
     villager says (to You): Hello! Not much going on, really.
-   
+
     > talk villager Do you know where we are?
     You say (to villager): Do you know where we are?
     villager says (to You): We are in this strange place called 'Limbo'. Not much to do here.
@@ -41,6 +41,7 @@ To be able to talk to NPCs, import and add the `evennia.contrib.rpg.llm.llm_npc.
 The default LLM api config should work with the text-generation-webui LLM server running its API on port 5000. You can also customize it via settings (if a setting is not added, the default below is used):
 
 ```python
+
     # path to the LLM server
     LLM_HOST = "http://127.0.0.1:5000"
     LLM_PATH = "/api/v1/generate"
@@ -62,7 +63,7 @@ The default LLM api config should work with the text-generation-webui LLM server
       "You are roleplaying as {name}, a {desc} existing in {location}. "
       "Answer with short sentences. Only respond as {name} would. "
       "From here on, the conversation between {name} and {character} begins."
- ​￼)
+    )
 ```
 Don't forget to reload Evennia if you make any changes.
 
@@ -79,7 +80,7 @@ With the LLM server running and the new `talk` command added, create a new LLM-c
 
 Most likely, your first response will *not* be this nice and short, but will be quite nonsensical, looking like an email. This is because the example model we loaded is not optimized for conversations. But at least you know it works!
 
-The  conversation will be echoed to everyone in the room. The NPC will show a thinking/pondering message if the server responds slower than 2 seconds (by default). 
+The  conversation will be echoed to everyone in the room. The NPC will show a thinking/pondering message if the server responds slower than 2 seconds (by default).
 
 ## A note on running LLMs locally
 
@@ -101,13 +102,13 @@ Calling an external API is not tested, so report any findings. Since the Evennia
 
 Here is an untested example of the Evennia setting for calling [OpenAI's v1/completions API](https://platform.openai.com/docs/api-reference/completions):
 
-```python 
+```python
 LLM_HOST = "https://api.openai.com"
 LLM_PATH = "/v1/completions"
-LLM_HEADERS = {"Content-Type": "application/json", 
+LLM_HEADERS = {"Content-Type": "application/json",
                "Authorization": "Bearer YOUR_OPENAI_API_KEY"}
 LLM_PROMPT_KEYNAME = "prompt"
-LLM_REQUEST_BODY = { 
+LLM_REQUEST_BODY = {
                         "model": "gpt-3.5-turbo",
                         "temperature": 0.7,
                         "max_tokens": 128,
@@ -125,52 +126,53 @@ The NPC's AI is controlled with a few extra properties and Attributes, most of w
 
 ### `prompt_prefix`
 
-The `prompt_prefix` is very important. This will be added in front of your prompt and helps the AI know how to respond. Remember that an LLM model is basically an auto-complete mechaniss, so by providing examples and instructions in the prefix, you can help it respond in a better way. 
+The `prompt_prefix` is very important. This will be added in front of your prompt and helps the AI know how to respond. Remember that an LLM model is basically an auto-complete mechaniss, so by providing examples and instructions in the prefix, you can help it respond in a better way.
 
-The prefix string to use for a given NPC is looked up from one of these locations, in order: 
+The prefix string to use for a given NPC is looked up from one of these locations, in order:
 
 1. An Attribute `npc.db.chat_prefix` stored on the NPC (not set by default)
-2. A property `chat_prefix` on the the LLMNPC class (set to `None` by default). 
+2. A property `chat_prefix` on the the LLMNPC class (set to `None` by default).
 3. The `LLM_PROMPT_PREFIX` setting (unset by default)
-4. If none of the above locations are set, the following default is used: 
+4. If none of the above locations are set, the following default is used:
 
        "You are roleplaying as {name}, a {desc} existing in {location}.
        Answer with short sentences. Only respond as {name} would.
        From here on, the conversation between {name} and {character} begins."
 
-Here, the formatting tag `{name}` is replaced with the NPCs's name, `desc` by it's description, the `location` by its current location's name and `character` by the one talking to it. All names of characters are given by the `get_display_name(looker)` call, so this may be different 
-from person to person. 
+Here, the formatting tag `{name}` is replaced with the NPCs's name, `desc` by it's description, the `location` by its current location's name and `character` by the one talking to it. All names of characters are given by the `get_display_name(looker)` call, so this may be different
+from person to person.
 
 Depending on the model, it can be very important to extend the prefix both with more information about the character as well as communication examples. A lot of tweaking may be necessary before producing something remniscent of human speech.
 
-### Response template 
+### Response template
 
-The `response_template` AttributeProperty defaults to being 
+The `response_template` AttributeProperty defaults to being
 
     $You() $conj(say) (to $You(character)): {response}"
 
 following common `msg_contents` [FuncParser](../Components/FuncParser.md) syntax. The `character` string will be mapped to the one talking to the NPC and the `response` will be what is said by the NPC.
 
-### Memory 
+### Memory
 
-The NPC remembers what has been said to it by each player. This memory will be included with the prompt to the LLM and helps it understand the context of the conversation. The length of this memory is given by the `max_chat_memory_size` AttributeProperty. Default is 25 messages.  Once the memory is maximum is reached, older messages are forgotten. Memory is stored separately for each player talking to the NPC. 
+The NPC remembers what has been said to it by each player. This memory will be included with the prompt to the LLM and helps it understand the context of the conversation. The length of this memory is given by the `max_chat_memory_size` AttributeProperty. Default is 25 messages.  Once the memory is maximum is reached, older messages are forgotten. Memory is stored separately for each player talking to the NPC.
 
-### Thinking 
+### Thinking
 
-If the LLM server is slow to respond, the NPC will echo a random 'thinking message' to show it has not forgotten about you (something like "The villager ponders your words ..."). 
+If the LLM server is slow to respond, the NPC will echo a random 'thinking message' to show it has not forgotten about you (something like "The villager ponders your words ...").
 
 They are controlled by two `AttributeProperties`:
 
-- `thinking_timeout`: How long, in seconds to wait before showing the message. Default is 2 seconds. 
-- `thinking_messages`: A list of messages to randomly pick between. Each message string can contain `{name}`, which will be replaced by the NPCs name. 
+- `thinking_timeout`: How long, in seconds to wait before showing the message. Default is 2 seconds.
+- `thinking_messages`: A list of messages to randomly pick between. Each message string can contain `{name}`, which will be replaced by the NPCs name.
 
 
-## TODO 
+## TODO
 
-There is a lot of expansion potential with this contrib. Some ideas: 
+There is a lot of expansion potential with this contrib. Some ideas:
 
 - Easier support for different cloud LLM provider API structures.
 - More examples of useful prompts and suitable models for MUD use.
+
 
 ----
 
