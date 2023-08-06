@@ -855,13 +855,6 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 account.db.creator_ip = ip
 
             # join the new account to the public channels
-            pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
-            if not pchannel or not pchannel.connect(account):
-                string = "New account '{account.key}' could not connect to public channel!"
-                errors.append(string)
-                logger.log_err(string)
-
-            # join the new account to the public channels
             for chan_info in settings.DEFAULT_CHANNELS:
                 if chankey := chan_info.get("key"):
                     channel = ChannelDB.objects.get_channel(chankey)
