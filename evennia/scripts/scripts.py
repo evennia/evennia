@@ -205,7 +205,9 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
             self.db_interval = interval
             update_fields.append("db_interval")
         if start_delay is not None:
-            self.db_start_delay = start_delay
+            # note that for historical reasons, the start_delay is a boolean field, not an int; the
+            # actual value is only used with the task.
+            self.db_start_delay = bool(start_delay)
             update_fields.append("db_start_delay")
         if repeats is not None:
             self.db_repeats = repeats
@@ -244,7 +246,9 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
 
         if not self.ndb._task.running:
             # if not unpausing started it, start script anew with the new values
-            self.ndb._task.start(self.db_interval, now=not self.db_start_delay)
+            self.ndb._task.start(
+                self.db_interval, now=not self.db_start_delay, start_delay=start_delay
+            )
 
         self.at_start(**kwargs)
 
@@ -547,7 +551,7 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
 
         Keyword Args:
             interval (int): How often to fire `at_repeat` in seconds.
-            start_delay (int): If the start of ticking should be delayed.
+            start_delay (int): If the start of ticking should be delayed and by how much.
             repeats (int): How many repeats. 0 for infinite repeats.
             **kwargs: Optional (default unused) kwargs passed on into the `at_start` hook.
 

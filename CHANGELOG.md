@@ -7,6 +7,7 @@
 - Fix: Make sure `at_server_reload` is called also on non-repeating Scripts.
 - Fix: Webclient was not giving a proper error when sending an unknown outputfunc to it.
 - Fix: Make `py` command always send strings unless `client_raw` flag is set.
+- Fix: `Script.start` with an integer `start_delay` caused a traceback.
 - Docs: Remove doc pages for Travis/TeamCity CI tools, they were both very much
   out of date, and Travis is not free for OSS anymore.
 - Docs: A lot fixes of typos and bugs in tutorials.
