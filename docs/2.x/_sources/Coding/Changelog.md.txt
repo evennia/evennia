@@ -3,7 +3,10 @@
 ## Evennia main branch
 
 - Contrib: Large-language-model (LLM) AI integration; allows NPCs to talk using
-  responses from a neural network server.
+  responses from an LLM server.
+- Fix: Make sure `at_server_reload` is called also on non-repeating Scripts.
+- Fix: Webclient was not giving a proper error when sending an unknown outputfunc to it.
+- Documentation fixes.
 
 ## Evennia 2.1.0
 
