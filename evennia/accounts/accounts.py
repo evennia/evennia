@@ -14,13 +14,13 @@ import re
 import time
 from random import getrandbits
 
+import evennia
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
-import evennia
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -854,12 +854,27 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if ip:
                 account.db.creator_ip = ip
 
-            # join the new account to the public channel
+            # join the new account to the public channels
             pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
             if not pchannel or not pchannel.connect(account):
                 string = "New account '{account.key}' could not connect to public channel!"
                 errors.append(string)
                 logger.log_err(string)
+
+            # join the new account to the public channels
+            for chan_info in settings.DEFAULT_CHANNELS:
+                if chankey := chan_info.get("key"):
+                    channel = ChannelDB.objects.get_channel(chankey)
+                    if not channel or not (
+                        channel.access(account, "listen") and channel.connect(account)
+                    ):
+                        string = (
+                            f"New account '{account.key}' could not connect to default channel"
+                            f" '{chankey}'!"
+                        )
+                        logger.log_err(string)
+                else:
+                    logger.log_err(f"Default channel '{chan_info}' is missing a 'key' field!")
 
             if account and _AUTO_CREATE_CHARACTER_WITH_ACCOUNT:
                 # Auto-create a character to go with this account
