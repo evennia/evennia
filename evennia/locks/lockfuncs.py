@@ -17,7 +17,6 @@ a certain object type.
 from ast import literal_eval
 
 from django.conf import settings
-
 from evennia.utils import utils
 
 _PERMISSION_HIERARCHY = [pe.lower() for pe in settings.PERMISSION_HIERARCHY]
@@ -127,7 +126,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     hpos_target = None
     if permission in _PERMISSION_HIERARCHY:
         hpos_target = _PERMISSION_HIERARCHY.index(permission)
-    if permission.endswith("s") and permission[:-1] in _PERMISSION_HIERARCHY:
+    elif permission.endswith("s") and permission[:-1] in _PERMISSION_HIERARCHY:
         hpos_target = _PERMISSION_HIERARCHY.index(permission[:-1])
     if hpos_target is not None:
         # hieratchy match
@@ -142,7 +141,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
                 for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                 if hperm in perms_account_single
             ]
-            hpos_account = hpos_account and hpos_account[-1] or -1
+            hpos_account = hpos_account[-1] if hpos_account else -1
 
         if not account or is_quell:
             # only get the object-level perms if there is no account or quelling
@@ -152,7 +151,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
                 for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                 if hperm in perms_object_single
             ]
-            hpos_object = hpos_object and hpos_object[-1] or -1
+            hpos_object = hpos_object[-1] if hpos_object else -1
 
         if account and is_quell:
             # quell mode: use smallest perm from account and object
