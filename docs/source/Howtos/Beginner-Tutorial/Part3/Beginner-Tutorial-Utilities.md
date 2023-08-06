@@ -171,7 +171,7 @@ Damage roll: 1d6
 Here's the start of how the function could look:
 
 ```python
-# in mygame/evadventure/time.py
+# in mygame/evadventure/utils.py
 
 _OBJ_STATS = """
 |c{key}|n
@@ -180,7 +180,7 @@ Value: ~|y{value}|n coins{carried}
 {desc}
 
 Slots: |w{size}|n, Used from: |w{use_slot_name}|n
-Quality: |w{quality}|n, Uses: |wuses|n
+Quality: |w{quality}|n, Uses: |w{uses}|n
 Attacks using |w{attack_type_name}|n against |w{defense_type_name}|n
 Damage roll: |w{damage_roll}|n
 """.strip()
@@ -205,10 +205,10 @@ def get_obj_stats(obj, owner=None):
         desc=obj.db.desc, 
         size=1,
         quality=3,
-        uses="infinite"
+        uses="infinite",
         use_slot_name="backpack",
-        attack_type_name="strength"
-        defense_type_name="armor"
+        attack_type_name="strength",
+        defense_type_name="armor",
         damage_roll="1d6"
     )
 ```
@@ -262,7 +262,7 @@ class TestUtils(BaseEvenniaTest):
             result, 
             """ 
 |ctestobj|n
-Value: ~|y10|n coins
+Value: ~|y10|n coins[not carried]
 
 A test object
 
@@ -289,11 +289,11 @@ The `assertEqual` method is available on all testing classes and checks that the
 
 To run your test you need to stand inside your `mygame` folder and execute the following command:
 
-    evennia test --settings settings.py .evadventure.tests
+    evennia test --settings settings.py evadventure.tests
 
 This will run all your `evadventure` tests (if you had more of them). To only run your utility tests  you could do 
 
-    evennia test --settings settings.py .evadventure.tests.test_utils
+    evennia test --settings settings.py evadventure.tests.test_utils
 
 If all goes well, you should get an `OK` back. Otherwise you need to check the failure, maybe  your return string doesn't quite match what you expected.
 
