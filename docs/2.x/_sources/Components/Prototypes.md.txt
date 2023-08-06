@@ -221,7 +221,7 @@ You can also specify the prototype directly as a valid Python dictionary:
             "weapon": "wooden staff", \
             "health": 20}
 
-> Note: The @spawn` command is more lenient about the prototype dictionary than shown here. So you can for example skip the `prototype_key` if you are just testing a throw-away prototype. A random hash will be used to please the validation. You could also skip  `prototype_parent/typeclass` - then the typeclass given by `settings.BASE_OBJECT_TYPECLASS` will be used.
+> Note: The `spawn` command is more lenient about the prototype dictionary than shown here. So you can for example skip the `prototype_key` if you are just testing a throw-away prototype. A random hash will be used to please the validation. You could also skip  `prototype_parent/typeclass` - then the typeclass given by `settings.BASE_OBJECT_TYPECLASS` will be used.
 
 ### Using evennia.prototypes.spawner()
 
@@ -238,6 +238,7 @@ matching list of created objects. Example:
     obj1, obj2 = evennia.prototypes.spawner.spawn({"key": "Obj1", "desc": "A test"},
                                                   {"key": "Obj2", "desc": "Another test"})
 ```
+
 > Hint: Same as when using `spawn`, when spawning from a one-time prototype dict like this, you can skip otherwise required keys, like `prototype_key` or `typeclass`/`prototype_parent`. Defaults will be used.
 
-Note that no `location` will be set automatically when using `evennia.prototypes.spawner.spawn()`, you have to specify `location` explicitly in the prototype dict.  If the prototypes you supply are using `prototype_parent` keywords, the spawner will read prototypes from modules in `settings.PROTOTYPE_MODULES` as well as those saved to the database to determine the body of available parents. The `spawn` command takes many optional keywords, you can find its definition [in the api docs](github:evennia.prototypes.spawner#spawn). 
+Note that no `location` will be set automatically when using `evennia.prototypes.spawner.spawn()`, you have to specify `location` explicitly in the prototype dict.  If the prototypes you supply are using `prototype_parent` keywords, the spawner will read prototypes from modules in `settings.PROTOTYPE_MODULES` as well as those saved to the database to determine the body of available parents. The `spawn` command takes many optional keywords, you can find its definition [in the api docs](https://www.evennia.com/docs/latest/api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.spawn)
