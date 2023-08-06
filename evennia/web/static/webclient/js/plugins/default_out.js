@@ -40,7 +40,7 @@ let defaultout_plugin = (function () {
 
     //
     // By default just show an error for the Unhandled Event.
-    var onUnknownCmd = function (args, kwargs) {
+    var onUnknownCmd = function (cmdname, args, kwargs) {
         var mwin = $("#messagewindow");
         mwin.append(
             "<div class='msg err'>"

@@ -25,12 +25,12 @@
 //
 
 var options = {}; // Global "settings" object that all plugins can use to
-                  // save/pass data to each other and the server.
-                  // format should match:
-                  //  { 'plugin_name': { 'option_key': value, ... }, ... }
+// save/pass data to each other and the server.
+// format should match:
+//  { 'plugin_name': { 'option_key': value, ... }, ... }
 
 var plugins = {}; // Global plugin objects by name.
-                  // Each must have an init() function.
+// Each must have an init() function.
 
 //
 // Global plugin_handler
@@ -47,7 +47,7 @@ var plugin_handler = (function () {
     // Add a new plugin
     var add = function (name, plugin) {
         plugins[name] = plugin;
-        ordered_plugins.push( plugin );
+        ordered_plugins.push(plugin);
     }
 
 
@@ -58,12 +58,12 @@ var plugin_handler = (function () {
     // catch all keyboard input, handle special chars
     var onKeydown = function (event) {
         // cycle through each plugin's keydown
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
             // does this plugin handle keydown events?
-            if( 'onKeydown' in plugin ) {
+            if ('onKeydown' in plugin) {
                 // yes, does this plugin claim this event exclusively?
-                if( plugin.onKeydown(event) ) {
+                if (plugin.onKeydown(event)) {
                     // 'true' claims this event has been handled
                     return;
                 }
@@ -78,9 +78,9 @@ var plugin_handler = (function () {
     // in Firefox, there it's a standard error.
     var onBeforeUnload = function () {
         // cycle through each plugin to look for unload handlers
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'onBeforeUnload' in plugin ) {
+            if ('onBeforeUnload' in plugin) {
                 plugin.onBeforeUnload();
             }
         }
@@ -93,9 +93,9 @@ var plugin_handler = (function () {
 
     // Handle onLoggedIn from the server
     var onLoggedIn = function (args, kwargs) {
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'onLoggedIn' in plugin ) {
+            if ('onLoggedIn' in plugin) {
                 plugin.onLoggedIn(args, kwargs);
             }
         }
@@ -105,9 +105,9 @@ var plugin_handler = (function () {
     // Handle onGotOptions from the server
     var onGotOptions = function (args, kwargs) {
         // does any plugin handle Options?
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'onGotOptions' in plugin ) {
+            if ('onGotOptions' in plugin) {
                 plugin.onGotOptions(args, kwargs);
             }
         }
@@ -117,10 +117,10 @@ var plugin_handler = (function () {
     // Handle text coming from the server
     var onText = function (args, kwargs) {
         // does this plugin handle this onText event?
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'onText' in plugin ) {
-                if( plugin.onText(args, kwargs) ) {
+            if ('onText' in plugin) {
+                if (plugin.onText(args, kwargs)) {
                     // True  -- means this plugin claims this Text exclusively.
                     return;
                 }
@@ -133,10 +133,10 @@ var plugin_handler = (function () {
     // Handle prompt output from the server
     var onPrompt = function (args, kwargs) {
         // does this plugin handle this onPrompt event?
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'onPrompt' in plugin ) {
-                if( plugin.onPrompt(args, kwargs) ) {
+            if ('onPrompt' in plugin) {
+                if (plugin.onPrompt(args, kwargs)) {
                     // True -- means this plugin claims this Prompt exclusively.
                     return;
                 }
@@ -149,10 +149,10 @@ var plugin_handler = (function () {
     // Handle unrecognized commands from server
     var onDefault = function (cmdname, args, kwargs) {
         // does this plugin handle this UnknownCmd?
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'onUnknownCmd' in plugin ) {
-                if( plugin.onUnknownCmd(args, kwargs) ) {
+            if ('onUnknownCmd' in plugin) {
+                if (plugin.onUnknownCmd(cmdname, args, kwargs)) {
                     // True -- means this plugin claims this UnknownCmd exclusively.
                     return;
                 }
@@ -165,19 +165,19 @@ var plugin_handler = (function () {
     // Handle the server connection closing
     var onConnectionClose = function (args, kwargs) {
         // give every plugin a chance to do stuff onConnectionClose
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'onConnectionClose' in plugin ) {
+            if ('onConnectionClose' in plugin) {
                 plugin.onConnectionClose(args, kwargs);
             }
         }
 
-        onText(["The connection was closed or lost."], {'cls': 'err'});
+        onText(["The connection was closed or lost."], { 'cls': 'err' });
     }
 
 
     // Silences events we don't do anything with.
-    var onSilence = function (cmdname, args, kwargs) {}
+    var onSilence = function (cmdname, args, kwargs) { }
 
 
     //
@@ -188,7 +188,7 @@ var plugin_handler = (function () {
         if (!Evennia.isConnected()) {
             var reconnect = confirm("Not currently connected. Reconnect?");
             if (reconnect) {
-                onText(["Attempting to reconnnect..."], {cls: "sys"});
+                onText(["Attempting to reconnnect..."], { cls: "sys" });
                 Evennia.connect();
             }
             // Don't try to send anything until the connection is back.
@@ -197,17 +197,17 @@ var plugin_handler = (function () {
 
         // default output command
         var cmd = {
-                command: "text",
-                args: [ line ],
-                kwargs: {}
-              };
+            command: "text",
+            args: [line],
+            kwargs: {}
+        };
 
         // Give each plugin a chance to use/modify the outgoing command for aliases/history/etc
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'onSend' in plugin ) {
+            if ('onSend' in plugin) {
                 var outCmd = plugin.onSend(line);
-                if( outCmd ) {
+                if (outCmd) {
                     cmd = outCmd;
                 }
             }
@@ -222,7 +222,7 @@ var plugin_handler = (function () {
     // call each plugins' init function (the only required function)
     //
     var init = function () {
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             ordered_plugins[n].init();
         }
     }
@@ -233,9 +233,9 @@ var plugin_handler = (function () {
     // pass to avoid chicken/egg dependencies between two plugins.
     var postInit = function () {
         // does this plugin need postInit() to be called?
-        for( let n=0; n < ordered_plugins.length; n++ ) {
+        for (let n = 0; n < ordered_plugins.length; n++) {
             let plugin = ordered_plugins[n];
-            if( 'postInit' in plugin ) {
+            if ('postInit' in plugin) {
                 plugin.postInit();
             }
         }
@@ -265,7 +265,7 @@ var plugin_handler = (function () {
 //
 
 // Event when client finishes loading
-$(document).ready(function() {
+$(document).ready(function () {
     // This is safe to call, it will always only
     // initialize once.
     Evennia.init();
@@ -290,10 +290,10 @@ $(document).ready(function() {
 
     // set an idle timer to send idle every 3 minutes,
     // to avoid proxy servers timing out on us
-    setInterval( function() { // Connect to server
-            Evennia.msg("text", ["idle"], {});
-        },
-        60000*3
+    setInterval(function () { // Connect to server
+        Evennia.msg("text", ["idle"], {});
+    },
+        60000 * 3
     );
 
     // Initialize all plugins
