@@ -1,6 +1,6 @@
 # Continuous Integration (CI)
 
-[Continuous Integration (CI)](https://www.thoughtworks.com/continuous-integration) is a development practice that requires developers to integrate code into a shared repository. Each check-in is then verified by an automated build, allowing teams to detect problems early. This  can be set up to safely deploy data to a production server only after tests have passed, for example. 
+[Continuous Integration (CI)](https://en.wikipedia.org/wiki/Continuous_integration) is a development practice that requires developers to integrate code into a shared repository. Each check-in is then verified by an automated build, allowing teams to detect problems early. This  can be set up to safely deploy data to a production server only after tests have passed, for example. 
 
 For Evennia, continuous integration allows an automated build process to:
 
@@ -13,16 +13,6 @@ For Evennia, continuous integration allows an automated build process to:
 
 ## Continuous-Integration guides
 
-There are a lot of tools and services providing CI functionality. Here are a few that people have used  with Evennia: 
+Evennia itself is making heavy use of [github actions](https://github.com/features/actions). This is integrated with Github and is probably the one to go for most people, especially if your code is on Github already. You can see and analyze how Evennia's actions are running [here](https://github.com/evennia/evennia/actions).
 
-```{toctree} 
-:maxdepth: 1
-
-Continuous-Integration-Travis.md
-Continuous-Integration-TeamCity.md
-
-```
-
-- Evennia is itself making heavy use of [github actions]()
-
-[This is an overview of other tools](https://www.atlassian.com/continuous-delivery/continuous-integration/tools)  (external link).
+There are however a lot of tools and services providing CI functionality.   [Here is a blog overview](https://www.atlassian.com/continuous-delivery/continuous-integration/tools)  (external link).

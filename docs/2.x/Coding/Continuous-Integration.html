@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Continuous integration with Travis" href="Continuous-Integration-Travis.html" />
+    <link rel="next" title="Setting up PyCharm with Evennia" href="Setting-up-PyCharm.html" />
     <link rel="prev" title="Profiling" href="Profiling.html" /> 
   </head><body>
 
@@ -34,7 +34,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Continuous-Integration-Travis.html" title="Continuous integration with Travis"
+          <a href="Setting-up-PyCharm.html" title="Setting up PyCharm with Evennia"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Profiling.html" title="Profiling"
@@ -75,8 +75,8 @@
   <p class="topless"><a href="Profiling.html"
                         title="previous chapter">Profiling</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Continuous-Integration-Travis.html"
-                        title="next chapter">Continuous integration with Travis</a></p>
+  <p class="topless"><a href="Setting-up-PyCharm.html"
+                        title="next chapter">Setting up PyCharm with Evennia</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -114,7 +114,7 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="continuous-integration-ci">
 <h1>Continuous Integration (CI)<a class="headerlink" href="#continuous-integration-ci" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://www.thoughtworks.com/continuous-integration">Continuous Integration (CI)</a> is a development practice that requires developers to integrate code into a shared repository. Each check-in is then verified by an automated build, allowing teams to detect problems early. This  can be set up to safely deploy data to a production server only after tests have passed, for example.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Continuous_integration">Continuous Integration (CI)</a> is a development practice that requires developers to integrate code into a shared repository. Each check-in is then verified by an automated build, allowing teams to detect problems early. This  can be set up to safely deploy data to a production server only after tests have passed, for example.</p>
 <p>For Evennia, continuous integration allows an automated build process to:</p>
 <ul class="simple">
 <li><p>Pull down a latest build from Source Control.</p></li>
@@ -126,17 +126,8 @@
 </ul>
 <section id="continuous-integration-guides">
 <h2>Continuous-Integration guides<a class="headerlink" href="#continuous-integration-guides" title="Permalink to this headline">¶</a></h2>
-<p>There are a lot of tools and services providing CI functionality. Here are a few that people have used  with Evennia:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Continuous-Integration-Travis.html">Continuous integration with Travis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Continuous-Integration-TeamCity.html">Continuous Integration - TeamCity (linux)</a></li>
-</ul>
-</div>
-<ul class="simple">
-<li><p>Evennia is itself making heavy use of <span class="xref myst">github actions</span></p></li>
-</ul>
-<p><a class="reference external" href="https://www.atlassian.com/continuous-delivery/continuous-integration/tools">This is an overview of other tools</a>  (external link).</p>
+<p>Evennia itself is making heavy use of <a class="reference external" href="https://github.com/features/actions">github actions</a>. This is integrated with Github and is probably the one to go for most people, especially if your code is on Github already. You can see and analyze how Evennia’s actions are running <a class="reference external" href="https://github.com/evennia/evennia/actions">here</a>.</p>
+<p>There are however a lot of tools and services providing CI functionality.   <a class="reference external" href="https://www.atlassian.com/continuous-delivery/continuous-integration/tools">Here is a blog overview</a>  (external link).</p>
 </section>
 </section>
 
@@ -156,7 +147,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Continuous-Integration-Travis.html" title="Continuous integration with Travis"
+          <a href="Setting-up-PyCharm.html" title="Setting up PyCharm with Evennia"
              >next</a> |</li>
         <li class="right" >
           <a href="Profiling.html" title="Profiling"
