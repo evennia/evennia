@@ -67,12 +67,14 @@
   <ul>
 <li><a class="reference internal" href="#">Large Language Model (“Chat-bot AI”) integration</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
-<li><a class="reference internal" href="#llm-server">LLM Server</a></li>
+<li><a class="reference internal" href="#llm-server">LLM Server</a><ul>
+<li><a class="reference internal" href="#primer-on-open-source-llm-models">Primer on open-source LLM models</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#evennia-config">Evennia config</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#a-note-on-running-llms-locally">A note on running LLMs locally</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
 <li><a class="reference internal" href="#why-not-use-an-ai-cloud-service">Why not use an AI cloud service?</a></li>
 </ul>
 </li>
@@ -158,10 +160,37 @@ villager says (to You): We are in this strange place called &#39;Limbo&#39;. Not
 <li><p>Once all is loaded, stop the server with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (or <code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code>) and open the file <code class="docutils literal notranslate"><span class="pre">webui.py</span></code> (it’s one of the top files in the archive you unzipped). Find the text string <code class="docutils literal notranslate"><span class="pre">CMD_FLAGS</span> <span class="pre">=</span> <span class="pre">''</span></code> near the top and change this to <code class="docutils literal notranslate"><span class="pre">CMD_FLAGS</span> <span class="pre">=</span> <span class="pre">'--api'</span></code>. Then save and close. This makes the server activate its api automatically.</p></li>
 <li><p>Now just run that server starting script (<code class="docutils literal notranslate"><span class="pre">start_linux.sh</span></code> etc) again. This is what you’ll use to start the LLM server henceforth.</p></li>
 <li><p>Once the server is running, point your browser to <a class="reference external" href="http://127.0.0.1:7860">http://127.0.0.1:7860</a> to see the running Text generation web ui running. If you turned on the API, you’ll find it’s now active on port 5000. This should not collide with default Evennia ports unless you changed something.</p></li>
-<li><p>At this point you have the server and API, but it’s not actually running any Large-Language-Model (LLM) yet. In the web ui, go to the <code class="docutils literal notranslate"><span class="pre">models</span></code> tab and enter a github-style path in the <code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">custom</span> <span class="pre">model</span> <span class="pre">or</span> <span class="pre">LoRA</span></code> field.  To test so things work, enter <code class="docutils literal notranslate"><span class="pre">DeepPavlov/bart-base-en-persona-chat</span></code> and download. This is a relatively small model (350 million parameters) so should be possible to run on most machines using only CPU. Update the models in the drop-down on the left and select it, then load it with the <code class="docutils literal notranslate"><span class="pre">Transformers</span></code> loader. It should load pretty quickly. If you want to load this every time, you can select the <code class="docutils literal notranslate"><span class="pre">Autoload</span> <span class="pre">the</span> <span class="pre">model</span></code> checkbox; otherwise you’ll need to select and load the model every time you start the LLM server.</p></li>
+<li><p>At this point you have the server and API, but it’s not actually running any Large-Language-Model (LLM) yet. In the web ui, go to the <code class="docutils literal notranslate"><span class="pre">models</span></code> tab and enter a github-style path in the <code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">custom</span> <span class="pre">model</span> <span class="pre">or</span> <span class="pre">LoRA</span></code> field.  To test so things work, enter <code class="docutils literal notranslate"><span class="pre">DeepPavlov/bart-base-en-persona-chat</span></code> and download. This is a small model (350 million parameters) so should be possible to run on most machines using only CPU. Update the models in the drop-down on the left and select it, then load it with the <code class="docutils literal notranslate"><span class="pre">Transformers</span></code> loader. It should load pretty quickly. If you want to load this every time, you can select the <code class="docutils literal notranslate"><span class="pre">Autoload</span> <span class="pre">the</span> <span class="pre">model</span></code> checkbox; otherwise you’ll need to select and load the model every time you start the LLM server.</p></li>
 <li><p>To experiment, you can find thousands of other open-source text-generation LLM models on <a class="reference external" href="https://huggingface.co/models?pipeline_tag=text-generation&amp;sort=trending">huggingface.co/models</a>. Beware to not download a too huge model; your machine may not be able to load it! If you try large models, <em>don’t</em> set the <code class="docutils literal notranslate"><span class="pre">Autoload</span> <span class="pre">the</span> <span class="pre">model</span></code> checkbox, in case the model crashes your server on startup.</p></li>
 </ol>
 <p>For troubleshooting, you can look at the terminal output of the <code class="docutils literal notranslate"><span class="pre">text-generation-webui</span></code> server; it will show you the requests you do to it and also list any errors. See the text-generation-webui homepage for more details.</p>
+<section id="primer-on-open-source-llm-models">
+<h4>Primer on open-source LLM models<a class="headerlink" href="#primer-on-open-source-llm-models" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="https://huggingface.co/models?pipeline_tag=text-generation&amp;sort=trending">Hugginfface</a> is becoming a sort of standard for downloading OSS models. I the text generation category there are some 20k models to choose from (2023). Just to get you started, check out models by <a class="reference external" href="https://huggingface.co/models?pipeline_tag=text-generation&amp;sort=trending&amp;search=TheBloke">TheBloke</a>, who are ‘quantizing’ models (sort of like scaling them down) for people to be able to run them on more modest hardware. Models from TheBloke follows roughly this naming standard:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TheBloke/BaseModel-ParameterSize-other-GGML/GPTQ
+</pre></div>
+</div>
+<p>For example</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TheBloke/Llama-2-7B-Chat-GGML
+TheBloke/StableBeluga-13B-GPTQ
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">Llama-2</span></code> is a ‘base model’ released open-source by Meta for free (also commercial) use. A base model takes millions of dollars and supercomputers to train from scratch. Then others “fine tune” that base model. The StableBeluga model takes the Llama-2 and makes it better at something, like chatting in a particular style.</p>
+<p>Models come in sizes, given as number of parameters they have, sort of how many ‘neurons’ they have in their brain. The top one has 7B - 7 billion parameters and the second 13B - 13 billion. The small model we suggested during install is only 0.35B by comparson.</p>
+<p>Running these in their base form would still not be possible to do without people like TheBloke “quantizing” them, basically reducing their precision. Quantiziation are given in byte precision. So if the original supercomputer version uses 32bit precision, the model you can actually run on your machine may have 8bit or even only 4 bit resolution (this is actually not as bad as it sounds).</p>
+<p>Finally, you will see GPTQ or GGML endings to TheBloke’s quantized models. Simplified, GPTQ are the main quantized models. To run this model, you need to have a beefy enough GPU to be able to fit the entire model in VRAM. GGML, in contrast allows you to offload some of the model to normal RAM and use your CPU to process the model. Since you probably have more RAM than VRAM, this means you can run much bigger models this way, but they will run much slower.</p>
+<p>Moreover, you need memory space for the <em>context</em> of the model. If you are chatting, this would be the chat history. While this sounds like it would just be some text, for the LLM, this matters a lot since it determines how much it must ‘keep in mind’ in order to draw conclusions. This is measured in ‘tokens’ (roughly parts of words). Common context length is 2048 tokens, and a model must be specifically trained if it is to be able to handle longer contexts.</p>
+<p>Here’s some rough estimates of hardware requirements for the most common model sizes. This is for 2048 token context. The more VRAM you have, the faster the model will generate results for you. For GMML models, you can offload all or some of this to RAM - you don’t even need a GPU at all if the speed penalty is okay for you.</p>
+<p>| Model size | approx VRAM or RAM needed (4bit / 8bit) |
+| — | — | — |
+| 3B  | 1.5 GB / 3 GB
+| 7B  | 3.5 GB / 7 GB |
+| 13B | 7 GB/13 GB |
+| 33B | 14 GB / 33 GB |
+| 70B | 35 GB / 70 GB |</p>
+<p>The results from a 7B or  even a 3B  model can be astounding! But set your expectations. Current (2023) top of the line consumer gaming GPUs have 24GB or VRAM and can at most run a 33B 4bit quantized model at full speed (GPTQ).</p>
+<p>By comparison, Chat-GPT 3.5 is a 175B model. We don’t know how large Chat-GPT 4 is, but it may be up to 1700B. For this reason you may also consider paying a commercial provider to run the model for you, over an API. This is discussed a little later, but try run locally with a small model first to see everything worls.</p>
+</section>
 </section>
 <section id="evennia-config">
 <h3>Evennia config<a class="headerlink" href="#evennia-config" title="Permalink to this headline">¶</a></h3>
@@ -193,6 +222,7 @@ villager says (to You): We are in this strange place called &#39;Limbo&#39;. Not
 </pre></div>
 </div>
 <p>Don’t forget to reload Evennia if you make any changes.</p>
+<p>It’s also important to note that the PROMPT_PREFIX needed by each model depends on how they were trained. There are a bunch of different formats. So you need to look into what should be used for each model you try. Report your findings!</p>
 </section>
 </section>
 <section id="usage">
@@ -207,14 +237,6 @@ girl says (to You): Hello! How are you?
 </div>
 <p>Most likely, your first response will <em>not</em> be this nice and short, but will be quite nonsensical, looking like an email. This is because the example model we loaded is not optimized for conversations. But at least you know it works!</p>
 <p>The  conversation will be echoed to everyone in the room. The NPC will show a thinking/pondering message if the server responds slower than 2 seconds (by default).</p>
-</section>
-<section id="a-note-on-running-llms-locally">
-<h2>A note on running LLMs locally<a class="headerlink" href="#a-note-on-running-llms-locally" title="Permalink to this headline">¶</a></h2>
-<p>Running an LLM locally can be <em>very</em> demanding.</p>
-<p>As an example, I tested this on my very beefy work laptop. It has 32GB or RAM, but no gpu. so i ran the example (small 128m parameter) model on cpu. it takes about 3-4 seconds to generate a (frankly very bad) response. so keep that in mind.</p>
-<p>On <a class="reference external" href="http://huggingface.co">huggingface.co</a> you can find listings of the ‘best performing’ language models right now. This changes all the time. The leading models require 100+ GB RAM. And while it’s possible to run on a CPU, ideally you should have a large graphics card (GPU) with a lot of VRAM too.</p>
-<p>So most likely you’ll have to settle on something smaller. Experimenting with different models and also tweaking the prompt is needed.</p>
-<p>Also be aware that many open-source models are intended for AI research and licensed for non-commercial use only. So be careful if you want to use this in a commercial game. No doubt there will be a lot of changes in this area over the coming years.</p>
 <section id="why-not-use-an-ai-cloud-service">
 <h3>Why not use an AI cloud service?<a class="headerlink" href="#why-not-use-an-ai-cloud-service" title="Permalink to this headline">¶</a></h3>
 <p>You could in principle use this to call out to an external API, like OpenAI (chat-GPT) or Google. Most cloud-hosted services are commercial and costs money. But since they have the hardware to run bigger models (or their own, proprietary models), they may give better and faster results.</p>
@@ -234,7 +256,7 @@ girl says (to You): Hello! How are you?
 </pre></div>
 </div>
 <blockquote>
-<div><p>TODO: OpenAI’s more modern <a class="reference external" href="https://platform.openai.com/docs/api-reference/chat">v1/chat/completions</a> api does currently not work out of the gate since it’s a bit more complex, having the prompt given as a list of all responses so far.</p>
+<div><p>TODO: OpenAI’s more modern <a class="reference external" href="https://platform.openai.com/docs/api-reference/chat">v1/chat/completions</a> api does currently not work out of the gate since it’s a bit more complex.</p>
 </div></blockquote>
 </section>
 </section>
