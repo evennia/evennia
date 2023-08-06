@@ -1,6 +1,6 @@
 # Changelog
 
-## Evennia main branch
+## Evennia 2.2.0
 
 - Contrib: Large-language-model (LLM) AI integration; allows NPCs to talk using
   responses from an LLM server.
