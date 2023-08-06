@@ -1409,11 +1409,7 @@ The work flow of working with the grid is usually as follows:
    will delete it next `evennia xyzgrid spawn` runs (since it's not on the map).
 6. If you want to add new grid-rooms/exits you should _always_ do so by
    modifying the _Map String_ and then rerunning `evennia xyzgrid spawn` to
-   apply the changes. 
-
-```{important}
-You can currently not change a node-type _in-place_ by respawning your map. That is, if you change a `#` to a `T`, the re-spawner won't understand this change. Either make this change manually in-game, or do it in two steps: First remove the `#` on your map and respawn (this will remove the node). Next you now add `T` in its place and respawn again (this will now create the new `T` node in the empty location).
-```
+   apply the changes.
 
 ## Details
 
