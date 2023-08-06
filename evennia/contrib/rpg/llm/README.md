@@ -29,10 +29,45 @@ There are many LLM servers, but they can be pretty technical to install and set 
 4. Once all is loaded, stop the server with `Ctrl-C` (or `Cmd-C`) and open the file `webui.py` (it's one of the top files in the archive you unzipped). Find the text string `CMD_FLAGS = ''` near the top and change this to `CMD_FLAGS = '--api'`. Then save and close. This makes the server activate its api automatically.
 4. Now just run that server starting script (`start_linux.sh` etc) again. This is what you'll use to start the LLM server henceforth.
 5. Once the server is running, point your browser to http://127.0.0.1:7860 to see the running Text generation web ui running. If you turned on the API, you'll find it's now active on port 5000. This should not collide with default Evennia ports unless you changed something.
-6. At this point you have the server and API, but it's not actually running any Large-Language-Model (LLM) yet. In the web ui, go to the `models` tab and enter a github-style path in the `Download custom model or LoRA` field.  To test so things work, enter `DeepPavlov/bart-base-en-persona-chat` and download. This is a relatively small model (350 million parameters) so should be possible to run on most machines using only CPU. Update the models in the drop-down on the left and select it, then load it with the `Transformers` loader. It should load pretty quickly. If you want to load this every time, you can select the `Autoload the model` checkbox; otherwise you'll need to select and load the model every time you start the LLM server.
+6. At this point you have the server and API, but it's not actually running any Large-Language-Model (LLM) yet. In the web ui, go to the `models` tab and enter a github-style path in the `Download custom model or LoRA` field.  To test so things work, enter `DeepPavlov/bart-base-en-persona-chat` and download. This is a small model (350 million parameters) so should be possible to run on most machines using only CPU. Update the models in the drop-down on the left and select it, then load it with the `Transformers` loader. It should load pretty quickly. If you want to load this every time, you can select the `Autoload the model` checkbox; otherwise you'll need to select and load the model every time you start the LLM server.
 7. To experiment, you can find thousands of other open-source text-generation LLM models on [huggingface.co/models](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending). Beware to not download a too huge model; your machine may not be able to load it! If you try large models, _don't_ set the `Autoload the model` checkbox, in case the model crashes your server on startup.
 
 For troubleshooting, you can look at the terminal output of the `text-generation-webui` server; it will show you the requests you do to it and also list any errors. See the text-generation-webui homepage for more details.
+
+#### Primer on open-source LLM models 
+
+[Hugginfface](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending) is becoming a sort of standard for downloading OSS models. I the text generation category there are some 20k models to choose from (2023). Just to get you started, check out models by [TheBloke](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending&search=TheBloke), who are 'quantizing' models (sort of like scaling them down) for people to be able to run them on more modest hardware. Models from TheBloke follows roughly this naming standard: 
+
+	TheBloke/BaseModel-ParameterSize-other-GGML/GPTQ
+
+For example
+
+	TheBloke/Llama-2-7B-Chat-GGML
+	TheBloke/StableBeluga-13B-GPTQ
+
+ Here, `Llama-2` is a 'base model' released open-source by Meta for free (also commercial) use. A base model takes millions of dollars and supercomputers to train from scratch. Then others "fine tune" that base model. The StableBeluga model takes the Llama-2 and makes it better at something, like chatting in a particular style. 
+ 
+Models come in sizes, given as number of parameters they have, sort of how many 'neurons' they have in their brain. The top one has 7B - 7 billion parameters and the second 13B - 13 billion. The small model we suggested during install is only 0.35B by comparson.
+
+Running these in their base form would still not be possible to do without people like TheBloke "quantizing" them, basically reducing their precision. Quantiziation are given in byte precision. So if the original supercomputer version uses 32bit precision, the model you can actually run on your machine may have 8bit or even only 4 bit resolution (this is actually not as bad as it sounds). 
+
+Finally, you will see GPTQ or GGML endings to TheBloke's quantized models. Simplified, GPTQ are the main quantized models. To run this model, you need to have a beefy enough GPU to be able to fit the entire model in VRAM. GGML, in contrast allows you to offload some of the model to normal RAM and use your CPU to process the model. Since you probably have more RAM than VRAM, this means you can run much bigger models this way, but they will run much slower. 
+
+Moreover, you need memory space for the _context_ of the model. If you are chatting, this would be the chat history. While this sounds like it would just be some text, for the LLM, this matters a lot since it determines how much it must 'keep in mind' in order to draw conclusions. This is measured in 'tokens' (roughly parts of words). Common context length is 2048 tokens, and a model must be specifically trained if it is to be able to handle longer contexts. 
+
+Here's some rough estimates of hardware requirements for the most common model sizes. This is for 2048 token context. The more VRAM you have, the faster the model will generate results for you. For GMML models, you can offload all or some of this to RAM - you don't even need a GPU at all if the speed penalty is okay for you.
+
+| Model size | approx VRAM or RAM needed (4bit / 8bit) |
+| --- | --- | --- |
+| 3B  | 1.5 GB / 3 GB
+| 7B  | 3.5 GB / 7 GB | 
+| 13B | 7 GB/13 GB | 
+| 33B | 14 GB / 33 GB |
+| 70B | 35 GB / 70 GB |
+
+The results from a 7B or  even a 3B  model can be astounding! But set your expectations. Current (2023) top of the line consumer gaming GPUs have 24GB or VRAM and can at most run a 33B 4bit quantized model at full speed (GPTQ). 
+
+By comparison, Chat-GPT 3.5 is a 175B model. We don't know how large Chat-GPT 4 is, but it may be up to 1700B. For this reason you may also consider paying a commercial provider to run the model for you, over an API. This is discussed a little later, but try run locally with a small model first to see everything worls.
 
 ### Evennia config
 
@@ -65,7 +100,9 @@ The default LLM api config should work with the text-generation-webui LLM server
       "From here on, the conversation between {name} and {character} begins."
     )
 ```
-Don't forget to reload Evennia if you make any changes.
+Don't forget to reload Evennia if you make any changes. 
+
+It's also important to note that the PROMPT_PREFIX needed by each model depends on how they were trained. There are a bunch of different formats. So you need to look into what should be used for each model you try. Report your findings!
 
 
 ## Usage
@@ -82,17 +119,6 @@ Most likely, your first response will *not* be this nice and short, but will be 
 
 The  conversation will be echoed to everyone in the room. The NPC will show a thinking/pondering message if the server responds slower than 2 seconds (by default).
 
-## A note on running LLMs locally
-
-Running an LLM locally can be _very_ demanding.
-
-As an example, I tested this on my very beefy work laptop. It has 32GB or RAM, but no gpu. so i ran the example (small 128m parameter) model on cpu. it takes about 3-4 seconds to generate a (frankly very bad) response. so keep that in mind.
-
-On huggingface.co you can find listings of the 'best performing' language models right now. This changes all the time. The leading models require 100+ GB RAM. And while it's possible to run on a CPU, ideally you should have a large graphics card (GPU) with a lot of VRAM too.
-
-So most likely you'll have to settle on something smaller. Experimenting with different models and also tweaking the prompt is needed.
-
-Also be aware that many open-source models are intended for AI research and licensed for non-commercial use only. So be careful if you want to use this in a commercial game. No doubt there will be a lot of changes in this area over the coming years.
 
 ### Why not use an AI cloud service?
 
@@ -116,7 +142,7 @@ LLM_REQUEST_BODY = {
 
 ```
 
-> TODO: OpenAI's more modern [v1/chat/completions](https://platform.openai.com/docs/api-reference/chat) api does currently not work out of the gate since it's a bit more complex, having the prompt given as a list of all responses so far.
+> TODO: OpenAI's more modern [v1/chat/completions](https://platform.openai.com/docs/api-reference/chat) api does currently not work out of the gate since it's a bit more complex.
 
 ## The LLMNPC class
 

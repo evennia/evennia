@@ -2,6 +2,8 @@
 
 ## Evennia 2.2.0
 
+Aug 6, 2023
+
 - Contrib: Large-language-model (LLM) AI integration; allows NPCs to talk using
   responses from an LLM server.
 - Fix: Make sure `at_server_reload` is called also on non-repeating Scripts.
