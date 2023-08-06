@@ -192,11 +192,12 @@ WEBSOCKET_CLIENT_URL = "wss://fqdn:4002"
 
 Also, on Freenode visit the #letsencrypt channel for assistance from the community. For an additional resource, Let's Encrypt has a very active [community forum](https://community.letsencrypt.org/).
 
-[A blog where someone sets up Let's Encrypt](https://www.digitalocean.com/community/tutorials/how- to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04)
+[A blog where someone sets up Let's Encrypt](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04)
 
 The only process missing from all of the above documentation is how to pass verification. This is how Let's Encrypt verifies that you have control over your domain (not necessarily ownership, it's Domain Validation (DV)). This can be done either with configuring a certain path on your web server or through a TXT record in your DNS. Which one you will want to do is a personal preference, but can also be based on your hosting choice. In a controlled/cPanel environment, you will most likely have to use DNS verification.
 
 ### Relevant SSL Proxy Setup Information
+
 - [Apache webserver configuration](./Config-Apache-Proxy.md) (optional)
 - [HAProxy Config](./Config-HAProxy.md)
 
