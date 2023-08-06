@@ -36,38 +36,38 @@ For troubleshooting, you can look at the terminal output of the `text-generation
 
 #### Primer on open-source LLM models 
 
-[Hugginfface](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending) is becoming a sort of standard for downloading OSS models. I the text generation category there are some 20k models to choose from (2023). Just to get you started, check out models by [TheBloke](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending&search=TheBloke), who are 'quantizing' models (sort of like scaling them down) for people to be able to run them on more modest hardware. Models from TheBloke follows roughly this naming standard: 
+[Hugging Face](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending) is becoming a sort of standard for downloading OSS models. In the `text generation` category (which is what we want for chat bots), there are some 20k models to choose from (2023). Just to get you started, check out models by [TheBloke](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending&search=TheBloke). TheBloke has taken on 'quantizing' (lowering their resolution) models released by others for them to fit on consumer hardware. Models from TheBloke follows roughly this naming standard: 
 
-	TheBloke/BaseModel-ParameterSize-other-GGML/GPTQ
+	TheBloke/ModelName-ParameterSize-other-GGML/GPTQ
 
 For example
 
 	TheBloke/Llama-2-7B-Chat-GGML
 	TheBloke/StableBeluga-13B-GPTQ
 
- Here, `Llama-2` is a 'base model' released open-source by Meta for free (also commercial) use. A base model takes millions of dollars and supercomputers to train from scratch. Then others "fine tune" that base model. The StableBeluga model takes the Llama-2 and makes it better at something, like chatting in a particular style. 
+Here, `Llama-2` is a 'base model' released open-source by Meta for free (also commercial) use. A base model takes millions of dollars and a supercomputer to train from scratch. Then others "fine tune" that base model. The `StableBeluga` model is created by someone partly retraining the `Llama-2` to make it more focused in some particular area, like chatting in a particular style. 
  
-Models come in sizes, given as number of parameters they have, sort of how many 'neurons' they have in their brain. The top one has 7B - 7 billion parameters and the second 13B - 13 billion. The small model we suggested during install is only 0.35B by comparson.
+Models come in sizes, given as number of parameters they have, sort of how many 'neurons' they have in their brain. In the two examples above, the top one has `7B` - 7 billion parameters and the second `13B` - 13 billion. The small model we suggested to try during install is only `0.35B` by comparson.
 
-Running these in their base form would still not be possible to do without people like TheBloke "quantizing" them, basically reducing their precision. Quantiziation are given in byte precision. So if the original supercomputer version uses 32bit precision, the model you can actually run on your machine may have 8bit or even only 4 bit resolution (this is actually not as bad as it sounds). 
+Running these models in their base form would still not be possible to do without people like TheBloke "quantizing" them, basically reducing their precision. Quantiziation are given in byte precision. So if the original supercomputer version uses 32bit precision, the model you can actually run on your machine often only uses 8bit or 4bit resolution. The common wisdom seems to be that being able to run a model with more parameters at low resolution is better than a smaller one with a higher resolution.
 
-Finally, you will see GPTQ or GGML endings to TheBloke's quantized models. Simplified, GPTQ are the main quantized models. To run this model, you need to have a beefy enough GPU to be able to fit the entire model in VRAM. GGML, in contrast allows you to offload some of the model to normal RAM and use your CPU to process the model. Since you probably have more RAM than VRAM, this means you can run much bigger models this way, but they will run much slower. 
+You will see GPTQ or GGML endings to TheBloke's quantized models. Simplified, GPTQ are the main quantized models. To run this model, you need to have a beefy enough GPU to be able to fit the entire model in VRAM. GGML, in contrast, allows you to offload some of the model to normal RAM and use your CPU intead. Since you probably have more RAM than VRAM, this means you can run much bigger models this way, but they will run much slower. 
 
-Moreover, you need memory space for the _context_ of the model. If you are chatting, this would be the chat history. While this sounds like it would just be some text, for the LLM, this matters a lot since it determines how much it must 'keep in mind' in order to draw conclusions. This is measured in 'tokens' (roughly parts of words). Common context length is 2048 tokens, and a model must be specifically trained if it is to be able to handle longer contexts. 
+Moreover, you need additional memory space for the _context_ of the model. If you are chatting, this would be the chat history. While this sounds like it would just be some text, the length of the context determines how much the AI must 'keep in mind' in order to draw conclusions. This is measured in 'tokens' (roughly parts of words). Common context length is 2048 tokens, and a model must be specifically trained to be able to handle longer contexts. 
 
-Here's some rough estimates of hardware requirements for the most common model sizes. This is for 2048 token context. The more VRAM you have, the faster the model will generate results for you. For GMML models, you can offload all or some of this to RAM - you don't even need a GPU at all if the speed penalty is okay for you.
+Here are some rough estimates of hardware requirements for the most common model sizes and 2048 token context. Use GPTQ models if you have enough VRAM on your GPU, otherwise use GMML models to also be able to put some or all data in RAM. 
 
 | Model size | approx VRAM or RAM needed (4bit / 8bit) |
-| --- | --- | --- |
+| --- | --- |
 | 3B  | 1.5 GB / 3 GB
 | 7B  | 3.5 GB / 7 GB | 
 | 13B | 7 GB/13 GB | 
 | 33B | 14 GB / 33 GB |
 | 70B | 35 GB / 70 GB |
 
-The results from a 7B or  even a 3B  model can be astounding! But set your expectations. Current (2023) top of the line consumer gaming GPUs have 24GB or VRAM and can at most run a 33B 4bit quantized model at full speed (GPTQ). 
+The results from a 7B or  even a 3B  model can be astounding! But set your expectations. Current (2023) top of the line consumer gaming GPUs have 24GB or VRAM and can at most fit a 33B 4bit quantized model at full speed (GPTQ). 
 
-By comparison, Chat-GPT 3.5 is a 175B model. We don't know how large Chat-GPT 4 is, but it may be up to 1700B. For this reason you may also consider paying a commercial provider to run the model for you, over an API. This is discussed a little later, but try run locally with a small model first to see everything worls.
+By comparison, Chat-GPT 3.5 is a 175B model. We don't know how large Chat-GPT 4 is, but it may be up to 1700B. For this reason you may also consider paying a commercial provider to run the model for you, over an API. This is discussed a little later, but try running locally with a small model first to see everything worls.
 
 ### Evennia config
 
