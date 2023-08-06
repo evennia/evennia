@@ -66,7 +66,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#evennia-main-branch">Evennia main branch</a></li>
+<li><a class="reference internal" href="#evennia-2-2-0">Evennia 2.2.0</a></li>
 <li><a class="reference internal" href="#evennia-2-1-0">Evennia 2.1.0</a></li>
 <li><a class="reference internal" href="#evennia-2-0-1">Evennia 2.0.1</a></li>
 <li><a class="reference internal" href="#evennia-2-0-0">Evennia 2.0.0</a></li>
@@ -181,14 +181,16 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<section id="evennia-main-branch">
-<h2>Evennia main branch<a class="headerlink" href="#evennia-main-branch" title="Permalink to this headline">¶</a></h2>
+<section id="evennia-2-2-0">
+<h2>Evennia 2.2.0<a class="headerlink" href="#evennia-2-2-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Contrib: Large-language-model (LLM) AI integration; allows NPCs to talk using
 responses from an LLM server.</p></li>
 <li><p>Fix: Make sure <code class="docutils literal notranslate"><span class="pre">at_server_reload</span></code> is called also on non-repeating Scripts.</p></li>
 <li><p>Fix: Webclient was not giving a proper error when sending an unknown outputfunc to it.</p></li>
 <li><p>Fix: Make <code class="docutils literal notranslate"><span class="pre">py</span></code> command always send strings unless <code class="docutils literal notranslate"><span class="pre">client_raw</span></code> flag is set.</p></li>
+<li><p>Fix: <code class="docutils literal notranslate"><span class="pre">Script.start</span></code> with an integer <code class="docutils literal notranslate"><span class="pre">start_delay</span></code> caused a traceback.</p></li>
+<li><p>Fix: Removing “Guest” from the permission-hierarchy setting messed up access.</p></li>
 <li><p>Docs: Remove doc pages for Travis/TeamCity CI tools, they were both very much
 out of date, and Travis is not free for OSS anymore.</p></li>
 <li><p>Docs: A lot fixes of typos and bugs in tutorials.</p></li>

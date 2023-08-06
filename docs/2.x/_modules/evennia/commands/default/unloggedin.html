@@ -92,9 +92,8 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">lookup</span> <span class="k">as</span> <span class="n">codecs_lookup</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">import</span> <span class="nn">evennia</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_LOGINSTART</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
@@ -552,67 +551,6 @@
                 <span class="n">utils</span><span class="o">.</span><span class="n">get_evennia_version</span><span class="p">(),</span>
             <span class="p">)</span>
         <span class="p">)</span></div></div>
-
-
-<span class="k">def</span> <span class="nf">_create_account</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">accountname</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function, creates an account of the specified typeclass.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">new_account</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span>
-            <span class="n">accountname</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span>
-        <span class="p">)</span>
-
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-            <span class="s2">&quot;There was an error creating the Account:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2"> If this problem persists, contact an&quot;</span>
-            <span class="s2">&quot; admin.&quot;</span> <span class="o">%</span> <span class="n">e</span>
-        <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="c1"># This needs to be set so the engine knows this account is</span>
-    <span class="c1"># logging in for the first time. (so it knows to call the right</span>
-    <span class="c1"># hooks during login later)</span>
-    <span class="n">new_account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">FIRST_LOGIN</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="c1"># join the new account to the public channel</span>
-    <span class="n">pchannel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">pchannel</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pchannel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">new_account</span><span class="p">):</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;New account &#39;</span><span class="si">%s</span><span class="s2">&#39; could not connect to public channel!&quot;</span> <span class="o">%</span> <span class="n">new_account</span><span class="o">.</span><span class="n">key</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">new_account</span>
-
-
-<span class="k">def</span> <span class="nf">_create_character</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">new_account</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">home</span><span class="p">,</span> <span class="n">permissions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function, creates a character based on an account&#39;s name.</span>
-<span class="sd">    This is meant for Guest and AUTO_CREATRE_CHARACTER_WITH_ACCOUNT=True situations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">new_character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-            <span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">new_account</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="n">home</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span>
-        <span class="p">)</span>
-        <span class="c1"># set playable character list</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span>
-
-        <span class="c1"># allow only the character itself and the account to puppet this character (and Developers).</span>
-        <span class="n">new_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developer) or pperm(Developer)&quot;</span>
-            <span class="o">%</span> <span class="p">(</span><span class="n">new_character</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">new_account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="c1"># If no description is set, set a default description</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a character.&quot;</span>
-        <span class="c1"># We need to set this to have ic auto-connect to this character</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="n">new_character</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-            <span class="s2">&quot;There was an error creating the Character:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2"> If this problem persists, contact an&quot;</span>
-            <span class="s2">&quot; admin.&quot;</span> <span class="o">%</span> <span class="n">e</span>
-        <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
 </pre></div>
 
           </div>

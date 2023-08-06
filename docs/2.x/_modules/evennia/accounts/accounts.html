@@ -100,13 +100,13 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">authenticate</span><span class="p">,</span> <span class="n">password_validation</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span><span class="p">,</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.module_loading</span> <span class="kn">import</span> <span class="n">import_string</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.manager</span> <span class="kn">import</span> <span class="n">AccountManager</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
@@ -940,12 +940,20 @@
             <span class="k">if</span> <span class="n">ip</span><span class="p">:</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_ip</span> <span class="o">=</span> <span class="n">ip</span>
 
-            <span class="c1"># join the new account to the public channel</span>
-            <span class="n">pchannel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">pchannel</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pchannel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;New account &#39;</span><span class="si">{account.key}</span><span class="s2">&#39; could not connect to public channel!&quot;</span>
-                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="c1"># join the new account to the public channels</span>
+            <span class="k">for</span> <span class="n">chan_info</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">chankey</span> <span class="o">:=</span> <span class="n">chan_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">):</span>
+                    <span class="n">channel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">chankey</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span>
+                        <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+                    <span class="p">):</span>
+                        <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;New account &#39;</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; could not connect to default channel&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot; &#39;</span><span class="si">{</span><span class="n">chankey</span><span class="si">}</span><span class="s2">&#39;!&quot;</span>
+                        <span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Default channel &#39;</span><span class="si">{</span><span class="n">chan_info</span><span class="si">}</span><span class="s2">&#39; is missing a &#39;key&#39; field!&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">_AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span><span class="p">:</span>
                 <span class="c1"># Auto-create a character to go with this account</span>

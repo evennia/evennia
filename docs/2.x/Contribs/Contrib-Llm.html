@@ -167,28 +167,29 @@ villager says (to You): We are in this strange place called &#39;Limbo&#39;. Not
 <h3>Evennia config<a class="headerlink" href="#evennia-config" title="Permalink to this headline">¶</a></h3>
 <p>To be able to talk to NPCs, import and add the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.rpg.llm.llm_npc.CmdLLMTalk</span></code> command to your Character cmdset in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_commands.py</span></code> (see the basic tutorials if you are unsure).</p>
 <p>The default LLM api config should work with the text-generation-webui LLM server running its API on port 5000. You can also customize it via settings (if a setting is not added, the default below is used):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    # path to the LLM server
-    LLM_HOST = &quot;http://127.0.0.1:5000&quot;
-    LLM_PATH = &quot;/api/v1/generate&quot;
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+    <span class="c1"># path to the LLM server</span>
+    <span class="n">LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:5000&quot;</span>
+    <span class="n">LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/api/v1/generate&quot;</span>
 
-    # if you wanted to authenticated to some external service, you could
-    # add an Authenticate header here with a token
-    LLM_HEADERS = {&quot;Content-Type&quot;: &quot;application/json&quot;}
+    <span class="c1"># if you wanted to authenticated to some external service, you could</span>
+    <span class="c1"># add an Authenticate header here with a token</span>
+    <span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
 
-    # this key will be inserted in the request, with your user-input
-    LLM_PROMPT_KEYNAME = &quot;prompt&quot;
+    <span class="c1"># this key will be inserted in the request, with your user-input</span>
+    <span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
 
-    # defaults are set up for text-generation-webui and most models
-    LLM_REQUEST_BODY = {
-        &quot;max_new_tokens&quot;: 250,  # set how many tokens are part of a response
-        &quot;temperature&quot;: 0.7, # 0-2. higher=more random, lower=predictable
-    }
-    # helps guide the NPC AI. See the LLNPC section.
-    LLM_PROMPT_PREFIx = (
-      &quot;You are roleplaying as {name}, a {desc} existing in {location}. &quot;
-      &quot;Answer with short sentences. Only respond as {name} would. &quot;
-      &quot;From here on, the conversation between {name} and {character} begins.&quot;
- ​￼)
+    <span class="c1"># defaults are set up for text-generation-webui and most models</span>
+    <span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>  <span class="c1"># set how many tokens are part of a response</span>
+        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="c1"># 0-2. higher=more random, lower=predictable</span>
+    <span class="p">}</span>
+    <span class="c1"># helps guide the NPC AI. See the LLNPC section.</span>
+    <span class="n">LLM_PROMPT_PREFIx</span> <span class="o">=</span> <span class="p">(</span>
+      <span class="s2">&quot;You are roleplaying as </span><span class="si">{name}</span><span class="s2">, a </span><span class="si">{desc}</span><span class="s2"> existing in </span><span class="si">{location}</span><span class="s2">. &quot;</span>
+      <span class="s2">&quot;Answer with short sentences. Only respond as </span><span class="si">{name}</span><span class="s2"> would. &quot;</span>
+      <span class="s2">&quot;From here on, the conversation between </span><span class="si">{name}</span><span class="s2"> and </span><span class="si">{character}</span><span class="s2"> begins.&quot;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 <p>Don’t forget to reload Evennia if you make any changes.</p>
@@ -221,10 +222,10 @@ girl says (to You): Hello! How are you?
 <p>Here is an untested example of the Evennia setting for calling <a class="reference external" href="https://platform.openai.com/docs/api-reference/completions">OpenAI’s v1/completions API</a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;https://api.openai.com&quot;</span>
 <span class="n">LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/v1/completions&quot;</span>
-<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span> 
+<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_OPENAI_API_KEY&quot;</span><span class="p">}</span>
 <span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
-<span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span> 
+<span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
                         <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>

@@ -291,7 +291,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span> <span class="o">=</span> <span class="n">interval</span>
             <span class="n">update_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;db_interval&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">start_delay</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_start_delay</span> <span class="o">=</span> <span class="n">start_delay</span>
+            <span class="c1"># note that for historical reasons, the start_delay is a boolean field, not an int; the</span>
+            <span class="c1"># actual value is only used with the task.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_start_delay</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">start_delay</span><span class="p">)</span>
             <span class="n">update_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;db_start_delay&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">repeats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db_repeats</span> <span class="o">=</span> <span class="n">repeats</span>
@@ -330,7 +332,9 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
             <span class="c1"># if not unpausing started it, start script anew with the new values</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_start_delay</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_start_delay</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">at_start</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -633,7 +637,7 @@
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            interval (int): How often to fire `at_repeat` in seconds.</span>
-<span class="sd">            start_delay (int): If the start of ticking should be delayed.</span>
+<span class="sd">            start_delay (int): If the start of ticking should be delayed and by how much.</span>
 <span class="sd">            repeats (int): How many repeats. 0 for infinite repeats.</span>
 <span class="sd">            **kwargs: Optional (default unused) kwargs passed on into the `at_start` hook.</span>
 
