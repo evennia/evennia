@@ -2747,20 +2747,20 @@
 <span class="sd">            session (Session): Session controlling the connection.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="p">):</span>  <span class="c1"># Make sure character&#39;s location is never None before being puppeted.</span>
-            <span class="c1"># Return to last location (or home, which should always exist),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">home</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">at_object_receive</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span> <span class="kc">None</span>
-            <span class="p">)</span>  <span class="c1"># and trigger the location&#39;s reception hook.</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>  <span class="c1"># If the character is verified to be somewhere,</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Make sure character&#39;s location is never None before being puppeted.</span>
+            <span class="c1"># Return to last location (or home, which should always exist)</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">home</span>
+            <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>  <span class="c1"># save location again to be sure.</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                 <span class="n">_</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">{obj}</span><span class="s2"> has no location and no home is set.|n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
-            <span class="p">)</span>  <span class="c1"># Note to set home.</span></div>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultCharacter.at_post_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

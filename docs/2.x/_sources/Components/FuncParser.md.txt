@@ -22,7 +22,7 @@ You say "To get a random value from 1 to 5, use $randint(1,5)."
 
 While `randint` may look and work just like `random.randint` from the standard Python library, it is _not_. Instead it's a `inlinefunc` named `randint` made available to Evennia (which in turn uses the standard library function). For security reasons, only functions explicitly assigned to be used as inlinefuncs are viable. 
 
-The `FuncParser`  tool is initialized with the inlinefuncs it's supposed to recognize. Below is an example of a parser only only understanding a single `$pow` inlinefunc: 
+You can apply the `FuncParser`  manually. The parser is initialized with the inlinefunc(s) it's supposed to recognize in that string. Below is an example of a parser only understanding a single `$pow` inlinefunc: 
 
 ```python
 from evennia.utils.funcparser import FuncParser
@@ -49,6 +49,8 @@ Normally the return is always converted to a string but you can also get the act
 parser.parse_to_any("$pow(4)")
 16
 ```
+
+You don't have to define all your inline functions from scratch. In `evennia.utils.funcparser` you'll find ready-made dicts of inline-funcs you can import and plug into your parsers. See [default funcparser callables](#default-funcparser-callables) below for the defails. 
 
 ## Working with FuncParser
 

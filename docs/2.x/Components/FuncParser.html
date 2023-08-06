@@ -139,7 +139,7 @@ You<span class="w"> </span>say<span class="w"> </span><span class="s2">&quot;I g
 </div>
 <p>To escape the inlinefunc (e.g. to explain to someone how it works, use <code class="docutils literal notranslate"><span class="pre">$$</span></code>)</p>
 <p>While <code class="docutils literal notranslate"><span class="pre">randint</span></code> may look and work just like <code class="docutils literal notranslate"><span class="pre">random.randint</span></code> from the standard Python library, it is <em>not</em>. Instead it’s a <code class="docutils literal notranslate"><span class="pre">inlinefunc</span></code> named <code class="docutils literal notranslate"><span class="pre">randint</span></code> made available to Evennia (which in turn uses the standard library function). For security reasons, only functions explicitly assigned to be used as inlinefuncs are viable.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">FuncParser</span></code>  tool is initialized with the inlinefuncs it’s supposed to recognize. Below is an example of a parser only only understanding a single <code class="docutils literal notranslate"><span class="pre">$pow</span></code> inlinefunc:</p>
+<p>You can apply the <code class="docutils literal notranslate"><span class="pre">FuncParser</span></code>  manually. The parser is initialized with the inlinefunc(s) it’s supposed to recognize in that string. Below is an example of a parser only understanding a single <code class="docutils literal notranslate"><span class="pre">$pow</span></code> inlinefunc:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
 
 <span class="k">def</span> <span class="nf">_power_callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -162,6 +162,7 @@ You<span class="w"> </span>say<span class="w"> </span><span class="s2">&quot;I g
 <span class="mi">16</span>
 </pre></div>
 </div>
+<p>You don’t have to define all your inline functions from scratch. In <code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser</span></code> you’ll find ready-made dicts of inline-funcs you can import and plug into your parsers. See <a class="reference internal" href="#default-funcparser-callables"><span class="std std-doc">default funcparser callables</span></a> below for the defails.</p>
 <section id="working-with-funcparser">
 <h2>Working with FuncParser<a class="headerlink" href="#working-with-funcparser" title="Permalink to this headline">¶</a></h2>
 <p>The FuncParser can be applied to any string. Out of the box it’s applied in a few situations:</p>

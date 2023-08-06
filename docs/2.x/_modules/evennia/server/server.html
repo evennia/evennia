@@ -113,21 +113,16 @@
 
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
-<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
-
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
 <span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
-
+<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">mod_import</span>
-
-
 
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 
@@ -576,9 +571,9 @@
             <span class="k">yield</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">at_server_reload</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span>
             <span class="k">yield</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">at_server_reload</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span>
             <span class="k">yield</span> <span class="p">[</span>
-                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">_pause_task</span><span class="p">(</span><span class="n">auto_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">s</span><span class="o">.</span><span class="n">at_server_reload</span><span class="p">())</span>
+                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">_pause_task</span><span class="p">(</span><span class="n">auto_pause</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">is_active</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">at_server_reload</span><span class="p">())</span>
                 <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">is_active</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span>
             <span class="p">]</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_reload_stop</span><span class="p">()</span>
@@ -791,7 +786,6 @@
 <span class="n">EVENNIA</span> <span class="o">=</span> <span class="n">Evennia</span><span class="p">(</span><span class="n">application</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">AMP_ENABLED</span><span class="p">:</span>
-
     <span class="c1"># The AMP protocol handles the communication between</span>
     <span class="c1"># the portal and the mud server. Only reason to ever deactivate</span>
     <span class="c1"># it would be during testing and debugging.</span>
@@ -810,7 +804,6 @@
     <span class="n">EVENNIA</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">addService</span><span class="p">(</span><span class="n">amp_service</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">WEBSERVER_ENABLED</span><span class="p">:</span>
-
     <span class="c1"># Start a django-compatible webserver.</span>
 
     <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="p">(</span>
