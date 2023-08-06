@@ -27,21 +27,16 @@ import evennia
 
 evennia._init()
 
-from evennia.server.sessionhandler import SESSIONS
-
 from django.conf import settings
 from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext as _
-
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
 from evennia.server.models import ServerConfig
-
+from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import logger
 from evennia.utils.utils import get_evennia_version, make_iter, mod_import
-
-
 
 _SA = object.__setattr__
 
@@ -490,9 +485,9 @@ class Evennia:
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
             yield [p.at_server_reload() for p in AccountDB.get_all_cached_instances()]
             yield [
-                (s._pause_task(auto_pause=True), s.at_server_reload())
+                (s._pause_task(auto_pause=True) if s.is_active else None, s.at_server_reload())
                 for s in ScriptDB.get_all_cached_instances()
-                if s.id and s.is_active
+                if s.id
             ]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
@@ -705,7 +700,6 @@ if "--nodaemon" not in sys.argv and "test" not in sys.argv:
 EVENNIA = Evennia(application)
 
 if AMP_ENABLED:
-
     # The AMP protocol handles the communication between
     # the portal and the mud server. Only reason to ever deactivate
     # it would be during testing and debugging.
@@ -724,7 +718,6 @@ if AMP_ENABLED:
     EVENNIA.services.addService(amp_service)
 
 if WEBSERVER_ENABLED:
-
     # Start a django-compatible webserver.
 
     from evennia.server.webserver import (
