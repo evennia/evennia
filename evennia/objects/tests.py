@@ -1,3 +1,5 @@
+from unittest import skip
+
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
 from evennia.typeclasses.attributes import AttributeProperty
@@ -428,3 +430,37 @@ class TestProperties(EvenniaTestCase):
         del obj.cusattr
         self.assertEqual(obj.cusattr, 5)
         self.assertEqual(obj.settest, 5)
+
+    @skip("TODO: Needs more research")
+    def test_stored_object_queries(self):
+        """,
+        Test https://github.com/evennia/evennia/issues/3155, where AttributeProperties
+        holding another object references would lead to db queries not finding
+        that nested object.
+
+        """
+        obj1 = create.create_object(TestObjectPropertiesClass, key="obj1")
+        obj2 = create.create_object(TestObjectPropertiesClass, key="obj2")
+        obj1.attr1 = obj2
+
+        # check property works
+        self.assertEqual(obj1.attr1, obj2)
+
+        self.assertEqual(obj1.attributes.get("attr1"), obj2)
+        obj1.attributes.reset_cache()
+        self.assertEqual(obj1.attributes.get("attr1"), obj2)
+
+        self.assertIn(obj1, TestObjectPropertiesClass.objects.get_by_attribute("attr1"))
+        self.assertEqual(
+            list(TestObjectPropertiesClass.objects.get_by_attribute("attr1", value=obj2)), [obj1]
+        )
+
+        # now we query for it by going via the Attribute table
+        query = TestObjectPropertiesClass.objects.filter(
+            db_attributes__db_key="attr1", db_attributes__db_value=obj2
+        )
+
+        self.assertEqual(list(query), [obj1])
+
+        obj1.delete()
+        obj2.delete()
