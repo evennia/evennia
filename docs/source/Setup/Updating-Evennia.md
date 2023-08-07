@@ -12,11 +12,8 @@ If you followed the [normal install instructions](./Installation.md), here's wha
 4. `evennia stop`
 5. `pip install --upgrade evennia`
 6. `cd` tor your game dir 
-7. `evennia migrate`  (_ignore_ any warnings about running `makemigrations`, it should _not_ be done)
+7. `evennia migrate` - this is safe to do, but can be skipped unless the release announcement/changelog specifically tells you to do so. _Ignore_ any warnings about running `makemigrations`, it should _not_ be done!
 8. `evennia start`
-
-If the upstream changes are large, you may also need to go into your gamedoor
-
 
 ##  If you installed with `git`
 
@@ -32,7 +29,7 @@ At any time, development is either happening in the `main` branch (latest stable
 6. `git pull`
 7. `pip install --upgrade -e .`  (remember the `.` at the end!)
 9. `cd` back to your game dir
-10. `evennia migrate` (_ignore_ any warnings about running `makemigrations` , it should _not_ be done)
+10. `evennia migrate` - this is safe to do, but can be skipped unless the release announcement/changelog specifically tells you to do so. _Ignore_ any warnings about running `makemigrations`, it should _not_ be done!
 11. `evennia start`
 
 ## If you installed with `docker`
