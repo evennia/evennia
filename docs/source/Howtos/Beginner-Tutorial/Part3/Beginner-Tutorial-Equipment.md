@@ -315,31 +315,47 @@ class EquipmentHandler:
 	        self.slots[WieldLocation.BACKPACK].append(obj)
 	        self._save()
 
-    def remove(self, slot):
+ def remove(self, obj_or_slot):
         """
-        Remove contents of a particular slot, for
-        example `equipment.remove(WieldLocation.SHIELD_HAND)`
+        Remove specific object or objects from a slot.
+
+        Returns a list of 0, 1 or more objects removed from inventory.
         """
         slots = self.slots
         ret = []
-        if slot is WieldLocation.BACKPACK:
-            # empty entire backpack! 
-            ret.extend(slots[slot])
-            slots[slot] = []
-        else:
-            ret.append(slots[slot])
-            slots[slot] = None
+        if isinstance(obj_or_slot, WieldLocation):
+            # a slot; if this fails, obj_or_slot must be obj
+            if obj_or_slot is WieldLocation.BACKPACK:
+                # empty entire backpack
+                ret.extend(slots[obj_or_slot])
+                slots[obj_or_slot] = []
+            else:
+                ret.append(slots[obj_or_slot])
+                slots[obj_or_slot] = None
+        elif obj_or_slot in self.slots.values():
+            # obj in use/wear slot
+            for slot, objslot in slots.items():
+                if objslot is obj_or_slot:
+                    slots[slot] = None
+                    ret.append(objslot)
+        elif obj_or_slot in slots[WieldLocation.BACKPACK]:
+            # obj in backpack slot
+            try:
+                slots[WieldLocation.BACKPACK].remove(obj_or_slot)
+                ret.append(obj_or_slot)
+            except ValueError:
+                pass
         if ret:
             self._save()
         return ret
 ```
 
-Both of these should be straight forward to follow. In `.add`, we make use of `validate_slot_usage` to 
+In `.add`, we make use of `validate_slot_usage` to 
 double-check we can actually fit the thing, then we add the item to the backpack. 
 
-In `.delete`, we allow emptying by `WieldLocation` - we figure out what slot it is and return 
-the item within (if any). If we gave `BACKPACK` as the slot, we empty the backpack and 
-return all items. 
+In `.remove`, we allow emptying both by `WieldLocation` or by explicitly saying which object to remove. Note that the first `if` statement checks if `obj_or_slot` is a slot. So if that fails then code in the other `elif` can safely assume that it must instead be an object!
+
+Any removed objects are returned. If we gave `BACKPACK` as the slot, we empty the backpack and return all items inside it. 
 
 Whenever we change the equipment loadout we must make sure to `._save()` the result, or it will be lost after a server reload.
 
