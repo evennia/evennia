@@ -413,30 +413,44 @@ together.</p>
 	        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 	        <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_or_slot</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove contents of a particular slot, for</span>
-<span class="sd">        example `equipment.remove(WieldLocation.SHIELD_HAND)`</span>
+<span class="sd">        Remove specific object or objects from a slot.</span>
+
+<span class="sd">        Returns a list of 0, 1 or more objects removed from inventory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">:</span>
-            <span class="c1"># empty entire backpack! </span>
-            <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">])</span>
-            <span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">])</span>
-            <span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj_or_slot</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="p">):</span>
+            <span class="c1"># a slot; if this fails, obj_or_slot must be obj</span>
+            <span class="k">if</span> <span class="n">obj_or_slot</span> <span class="ow">is</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">:</span>
+                <span class="c1"># empty entire backpack</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">obj_or_slot</span><span class="p">])</span>
+                <span class="n">slots</span><span class="p">[</span><span class="n">obj_or_slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">obj_or_slot</span><span class="p">])</span>
+                <span class="n">slots</span><span class="p">[</span><span class="n">obj_or_slot</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">obj_or_slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="c1"># obj in use/wear slot</span>
+            <span class="k">for</span> <span class="n">slot</span><span class="p">,</span> <span class="n">objslot</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">objslot</span> <span class="ow">is</span> <span class="n">obj_or_slot</span><span class="p">:</span>
+                    <span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objslot</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">obj_or_slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]:</span>             <span class="c1"># obj in backpack slot</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj_or_slot</span><span class="p">)</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj_or_slot</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
         <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ret</span>
 </pre></div>
 </div>
-<p>Both of these should be straight forward to follow. In <code class="docutils literal notranslate"><span class="pre">.add</span></code>, we make use of <code class="docutils literal notranslate"><span class="pre">validate_slot_usage</span></code> to
+<p>In <code class="docutils literal notranslate"><span class="pre">.add</span></code>, we make use of <code class="docutils literal notranslate"><span class="pre">validate_slot_usage</span></code> to
 double-check we can actually fit the thing, then we add the item to the backpack.</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">.delete</span></code>, we allow emptying by <code class="docutils literal notranslate"><span class="pre">WieldLocation</span></code> - we figure out what slot it is and return
-the item within (if any). If we gave <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> as the slot, we empty the backpack and
-return all items.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">.remove</span></code>, we allow emptying both by <code class="docutils literal notranslate"><span class="pre">WieldLocation</span></code> or by explicitly saying which object to remove. Note that the first <code class="docutils literal notranslate"><span class="pre">if</span></code> statement checks if <code class="docutils literal notranslate"><span class="pre">obj_or_slot</span></code> is a slot. So if that fails then code in the other <code class="docutils literal notranslate"><span class="pre">elif</span></code> can safely assume that it must instead be an object!</p>
+<p>Any removed objects are returned. If we gave <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> as the slot, we empty the backpack and return all items inside it.</p>
 <p>Whenever we change the equipment loadout we must make sure to <code class="docutils literal notranslate"><span class="pre">._save()</span></code> the result, or it will be lost after a server reload.</p>
 </section>
 <section id="moving-things-around">
