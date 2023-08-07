@@ -34,7 +34,72 @@ There are many LLM servers, but they can be pretty technical to install and set 
 
 For troubleshooting, you can look at the terminal output of the `text-generation-webui` server; it will show you the requests you do to it and also list any errors. See the text-generation-webui homepage for more details.
 
-#### Primer on open-source LLM models 
+### Evennia config
+
+To be able to talk to NPCs, import and add the `evennia.contrib.rpg.llm.llm_npc.CmdLLMTalk` to your default cmdset in `mygame/commands/default_cmdsets.py`:
+
+```py
+# in mygame/commands/default_cmdsets.py
+
+# ... 
+from evennia.contrib.rpg.llm import CmdLLMTalk  # <----
+
+class CharacterCmdSet(default_cmds.CharacterCmdSet): 
+    # ...
+    def at_cmdset_creation(self): 
+        # ... 
+        self.add(CmdLLMTalk())     # <-----
+
+
+```
+
+See this [the tutorial on adding commands](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md) for more info. 
+
+The default LLM api config should work with the `text-generation-webui` LLM server running its API on port 5000. You can also customize it via settings (if a setting is not added, the default below is used):
+
+```python
+# in mygame/server/conf/settings.py
+
+# path to the LLM server
+LLM_HOST = "http://127.0.0.1:5000"
+LLM_PATH = "/api/v1/generate"
+
+# if you wanted to authenticated to some external service, you could
+# add an Authenticate header here with a token
+LLM_HEADERS = {"Content-Type": "application/json"}
+
+# this key will be inserted in the request, with your user-input
+LLM_PROMPT_KEYNAME = "prompt"
+
+# defaults are set up for text-generation-webui and most models
+LLM_REQUEST_BODY = {
+    "max_new_tokens": 250,  # set how many tokens are part of a response
+    "temperature": 0.7, # 0-2. higher=more random, lower=predictable
+}
+# helps guide the NPC AI. See the LLNPC section.
+LLM_PROMPT_PREFIx = (
+  "You are roleplaying as {name}, a {desc} existing in {location}. "
+  "Answer with short sentences. Only respond as {name} would. "
+  "From here on, the conversation between {name} and {character} begins."
+)
+```
+Don't forget to reload Evennia (`reload` in game, or `evennia reload` from the terminal) if you make any changes. 
+
+It's also important to note that the `PROMPT_PREFIX` needed by each model depends on how they were trained. There are a bunch of different formats. So you need to look into what should be used for each model you try. Report your findings!
+
+## Usage
+
+With the LLM server running and the new `talk` command added, create a new LLM-connected NPC and talk to it in-game.
+
+    > create/drop girl:evennia.contrib.rpg.llm.LLMNPC
+    > talk girl Hello!
+    You say (to girl): Hello
+    girl ponders ...
+    girl says (to You): Hello! How are you?
+
+The  conversation will be echoed to everyone in the room. The NPC will show a thinking/pondering message if the server responds slower than 2 seconds (by default).
+
+## Primer on open-source LLM models 
 
 [Hugging Face](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending) is becoming a sort of standard for downloading OSS models. In the `text generation` category (which is what we want for chat bots), there are some 20k models to choose from (2023). Just to get you started, check out models by [TheBloke](https://huggingface.co/models?pipeline_tag=text-generation&sort=trending&search=TheBloke). TheBloke has taken on 'quantizing' (lowering their resolution) models released by others for them to fit on consumer hardware. Models from TheBloke follows roughly this naming standard: 
 
@@ -69,63 +134,15 @@ The results from a 7B or  even a 3B  model can be astounding! But set your expec
 
 By comparison, Chat-GPT 3.5 is a 175B model. We don't know how large Chat-GPT 4 is, but it may be up to 1700B. For this reason you may also consider paying a commercial provider to run the model for you, over an API. This is discussed a little later, but try running locally with a small model first to see everything worls.
 
-### Evennia config
 
-To be able to talk to NPCs, import and add the `evennia.contrib.rpg.llm.llm_npc.CmdLLMTalk` command to your Character cmdset in `mygame/commands/default_commands.py` (see the basic tutorials if you are unsure).
+## Using an AI cloud service
 
-The default LLM api config should work with the text-generation-webui LLM server running its API on port 5000. You can also customize it via settings (if a setting is not added, the default below is used):
+You could also call out to an external API, like OpenAI (chat-GPT) or Google. Most cloud-hosted services are commercial and costs money. But since they have the hardware to run bigger models (or their own, proprietary models), they may give better and faster results.
 
-```python
+```{warning}
+Calling an external API is currently untested, so report any findings. Since the Evennia Server (not the Portal) is doing the calling, you are recommended to put a proxy between you and the internet if you call out like this.
 
-    # path to the LLM server
-    LLM_HOST = "http://127.0.0.1:5000"
-    LLM_PATH = "/api/v1/generate"
-
-    # if you wanted to authenticated to some external service, you could
-    # add an Authenticate header here with a token
-    LLM_HEADERS = {"Content-Type": "application/json"}
-
-    # this key will be inserted in the request, with your user-input
-    LLM_PROMPT_KEYNAME = "prompt"
-
-    # defaults are set up for text-generation-webui and most models
-    LLM_REQUEST_BODY = {
-        "max_new_tokens": 250,  # set how many tokens are part of a response
-        "temperature": 0.7, # 0-2. higher=more random, lower=predictable
-    }
-    # helps guide the NPC AI. See the LLNPC section.
-    LLM_PROMPT_PREFIx = (
-      "You are roleplaying as {name}, a {desc} existing in {location}. "
-      "Answer with short sentences. Only respond as {name} would. "
-      "From here on, the conversation between {name} and {character} begins."
-    )
 ```
-Don't forget to reload Evennia if you make any changes. 
-
-It's also important to note that the PROMPT_PREFIX needed by each model depends on how they were trained. There are a bunch of different formats. So you need to look into what should be used for each model you try. Report your findings!
-
-
-## Usage
-
-With the LLM server running and the new `talk` command added, create a new LLM-connected NPC and talk to it in-game.
-
-    > create/drop girl:evennia.contrib.rpg.llm.LLMNPC
-    > talk girl Hello!
-    You say (to girl): Hello
-    girl ponders ...
-    girl says (to You): Hello! How are you?
-
-Most likely, your first response will *not* be this nice and short, but will be quite nonsensical, looking like an email. This is because the example model we loaded is not optimized for conversations. But at least you know it works!
-
-The  conversation will be echoed to everyone in the room. The NPC will show a thinking/pondering message if the server responds slower than 2 seconds (by default).
-
-
-### Why not use an AI cloud service?
-
-You could in principle use this to call out to an external API, like OpenAI (chat-GPT) or Google. Most cloud-hosted services are commercial and costs money. But since they have the hardware to run bigger models (or their own, proprietary models), they may give better and faster results.
-
-Calling an external API is not tested, so report any findings. Since the Evennia Server (not the Portal) is doing the calling, you are recommended to put a proxy between you and the internet if you call out like this.
-
 Here is an untested example of the Evennia setting for calling [OpenAI's v1/completions API](https://platform.openai.com/docs/api-reference/completions):
 
 ```python
@@ -186,7 +203,7 @@ The NPC remembers what has been said to it by each player. This memory will be i
 
 If the LLM server is slow to respond, the NPC will echo a random 'thinking message' to show it has not forgotten about you (something like "The villager ponders your words ...").
 
-They are controlled by two `AttributeProperties`:
+They are controlled by two `AttributeProperties` on the LLMNPC class:
 
 - `thinking_timeout`: How long, in seconds to wait before showing the message. Default is 2 seconds.
 - `thinking_messages`: A list of messages to randomly pick between. Each message string can contain `{name}`, which will be replaced by the NPCs name.
