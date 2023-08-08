@@ -70,6 +70,10 @@ from evennia.utils import logger, utils
 
 MXP_ENABLED = settings.MXP_ENABLED
 
+
+_RE_HEX = re.compile(r'(?<!\|)\|#([0-9a-f]{6})', re.I)
+_RE_HEX_BG = re.compile(r'(?<!\|)\|\[#([0-9a-f]{6})', re.I)
+
 # ANSI definitions
 
 ANSI_BEEP = "\07"
@@ -244,6 +248,9 @@ class ANSIParser(object):
     ansi_re = r"\033\[[0-9;]+m"
     ansi_regex = re.compile(ansi_re)
 
+    hex_fg = _RE_HEX
+    hex_bg = _RE_HEX_BG
+
     # escapes - these double-chars will be replaced with a single
     # instance of each
     ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
@@ -333,6 +340,7 @@ class ANSIParser(object):
             red, green, blue = gray, gray, gray
 
         if use_xterm256:
+
             if not grayscale:
                 colval = 16 + (red * 36) + (green * 6) + blue
 
@@ -344,55 +352,56 @@ class ANSIParser(object):
         else:
             # xterm256 not supported, convert the rgb value to ansi instead
             rgb = (red, green, blue)
-
+	
             def _convert_for_ansi(val):
-                return int((val + 1) // 2)
+                return int((val+1)//2)
 
             # greys
             if (max(rgb) - min(rgb)) <= 1:
                 match rgb:
-                    case (0, 0, 0):
+                    case (0,0,0):
                         return ANSI_BACK_BLACK if background else ANSI_NORMAL + ANSI_BLACK
-                    case ((1 | 2), (1 | 2), (1 | 2)):
+                    case ((1|2), (1|2), (1|2)):
                         return ANSI_BACK_BLACK if background else ANSI_HILITE + ANSI_BLACK
-                    case ((2 | 3), (2 | 3), (2 | 3)):
+                    case ((2|3), (2|3), (2|3)):
                         return ANSI_BACK_WHITE if background else ANSI_NORMAL + ANSI_WHITE
-                    case ((3 | 4), (3 | 4), (3 | 4)):
+                    case ((3|4), (3|4), (3|4)):
                         return ANSI_BACK_WHITE if background else ANSI_NORMAL + ANSI_WHITE
-                    case ((4 | 5), (4 | 5), (4 | 5)):
+                    case ((4|5), (4|5), (4|5)):
                         return ANSI_BACK_WHITE if background else ANSI_HILITE + ANSI_WHITE
 
             match tuple(_convert_for_ansi(c) for c in rgb):
                 # red
-                case ((2 | 3), (0 | 1), (0 | 1)):
+                case ((2|3), (0|1), (0|1)):
                     return ANSI_BACK_RED if background else ANSI_HILITE + ANSI_RED
-                case ((1 | 2), 0, 0):
+                case ((1|2), 0, 0):
                     return ANSI_BACK_RED if background else ANSI_NORMAL + ANSI_RED
                 # green
-                case ((0 | 1), (2 | 3), (0 | 1)):
+                case ((0|1), (2|3), (0|1)):
                     return ANSI_BACK_GREEN if background else ANSI_HILITE + ANSI_GREEN
                 case ((0 | 1), 1, 0) if green > red:
                     return ANSI_BACK_GREEN if background else ANSI_NORMAL + ANSI_GREEN
                 # blue
-                case ((0 | 1), (0 | 1), (2 | 3)):
+                case ((0|1), (0|1), (2|3)):
                     return ANSI_BACK_BLUE if background else ANSI_HILITE + ANSI_BLUE
                 case (0, 0, 1):
                     return ANSI_BACK_BLUE if background else ANSI_NORMAL + ANSI_BLUE
                 # cyan
-                case ((0 | 1 | 2), (2 | 3), (2 | 3)) if red == min(rgb):
+                case ((0|1|2), (2|3), (2|3)) if red == min(rgb):
                     return ANSI_BACK_CYAN if background else ANSI_HILITE + ANSI_CYAN
-                case (0, (1 | 2), (1 | 2)):
+                case (0, (1|2), (1|2)):
                     return ANSI_BACK_CYAN if background else ANSI_NORMAL + ANSI_CYAN
                 # yellow
-                case ((2 | 3), (2 | 3), (0 | 1 | 2)) if blue == min(rgb):
+                case ((2|3), (2|3), (0|1|2)) if blue == min(rgb):
                     return ANSI_BACK_YELLOW if background else ANSI_HILITE + ANSI_YELLOW
-                case ((2 | 1), (2 | 1), (0 | 1)):
+                case ((2|1), (2|1), (0|1)):
                     return ANSI_BACK_YELLOW if background else ANSI_NORMAL + ANSI_YELLOW
                 # magenta
-                case ((2 | 3), (0 | 1 | 2), (2 | 3)) if green == min(rgb):
+                case ((2|3), (0|1|2), (2|3)) if green == min(rgb):
                     return ANSI_BACK_MAGENTA if background else ANSI_HILITE + ANSI_MAGENTA
-                case ((1 | 2), 0, (1 | 2)):
+                case ((1|2), 0, (1|2)):
                     return ANSI_BACK_MAGENTA if background else ANSI_NORMAL + ANSI_MAGENTA
+                
 
     def strip_raw_codes(self, string):
         """
@@ -422,6 +431,21 @@ class ANSIParser(object):
         string = self.mxp_url_sub.sub(r"\1", string)  # replace with url verbatim
         return string
 
+    def strip_hex(self, string):
+        """
+        Strips all hex-color codes from a string.
+
+        Args:
+            string (str): The string to strip.
+
+        Returns:
+            string (str): The processed string.
+
+        """
+        string = self.hex_fg.sub(r"", string)
+        string = self.hex_bg.sub(r"", string)
+        return string
+
     def strip_unsafe_tokens(self, string):
         """
         Strip explicitly ansi line breaks and tabs.
@@ -429,7 +453,7 @@ class ANSIParser(object):
         """
         return self.unsafe_tokens.sub("", string)
 
-    def parse_markup(self, string, strip_ansi=False, xterm256=False, mxp=False):
+    def parse_markup(self, string, strip_ansi=False, xterm256=False, rgb=False, mxp=False):
         """
         Parses a string, subbing color codes according to the stored
         mapping.
@@ -491,6 +515,9 @@ class ANSIParser(object):
 
         if not mxp:
             parsed_string = self.strip_mxp(parsed_string)
+        
+        if not rgb:
+            parsed_string = self.strip_hex(parsed_string)
 
         if strip_ansi:
             # remove all ansi codes (including those manually
