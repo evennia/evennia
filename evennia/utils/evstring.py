@@ -25,13 +25,14 @@ _RE_STYLES = re.compile(r'(?<!\|)\|\[?([rRgGbBcCyYwWxXmMu\*\>\_n]|#[0-9a-f]{6})|
 _RE_MXP = re.compile(r"(?<!\|)\|l[uc](.*?)\|lt(.*?)\|le", re.DOTALL)
 _RE_LINE = re.compile(r'^(-+|_+)$', re.MULTILINE)
 
-def strip_markup(string, mxp=MXP_ENABLED):
+def strip_markup(text, mxp=MXP_ENABLED):
     """
     Removes all Evennia markup codes from the text.
     """
-    string = _RE_STYLES.sub('', string)
+    text = _RE_STYLES.sub('', text)
     if mxp:
-        string = _RE_MXP.sub('', string)
+        text = _RE_MXP.sub('', text)
+    return text
 
 
 # translate hex tags to XTERM tags
@@ -374,7 +375,6 @@ class EvString(str, metaclass=EvStringMeta):
         escapes, and which are for the readable text.
 
         """
-        self.parser = kwargs.pop("parser", ANSI_PARSER)
         super().__init__()
         if self._code_indexes is None:
             self._code_indexes, self._char_indexes = self._get_indexes()
