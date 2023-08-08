@@ -7,12 +7,13 @@
 
 
 import functools
+from textwrap import TextWrapper
 from django.conf import settings
 from evennia.server.portal.mxp import mxp_parse
 from evennia.utils import logger
 from evennia.utils.ansi import ANSI_PARSER
 from evennia.utils.text2html import HTML_PARSER
-from evennia.utils.utils import to_str
+from evennia.utils.utils import display_len, is_iter, to_str
 
 import re
 
@@ -213,6 +214,147 @@ def _spacing_preflight(func):
         return func(self, width, fillchar, _difference)
 
     return wrapped
+
+# 
+def _to_evstring(obj):
+    """
+    convert to ANSIString.
+
+    Args:
+        obj (str): Convert incoming text to markup-aware EvStrings.
+    """
+    if is_iter(obj):
+        return [_to_evstring(o) for o in obj]
+    else:
+        return EvString(obj)
+
+class EvTextWrapper(TextWrapper):
+    """
+    This is a wrapper work class for handling strings with markup tags
+    in it.  It overloads the standard library `TextWrapper` class.
+
+    """
+
+    def _munge_whitespace(self, text):
+        """_munge_whitespace(text : string) -> string
+
+        Munge whitespace in text: expand tabs and convert all other
+        whitespace characters to spaces.  Eg. " foo\tbar\n\nbaz"
+        becomes " foo    bar  baz".
+        """
+        return text
+
+    # TODO: Ignore expand_tabs/replace_whitespace until ANSIString handles them.
+    # - don't remove this code. /Griatch
+    #        if self.expand_tabs:
+    #            text = text.expandtabs()
+    #        if self.replace_whitespace:
+    #            if isinstance(text, str):
+    #                text = text.translate(self.whitespace_trans)
+    #        return text
+
+    def _split(self, text):
+        """_split(text : string) -> [string]
+
+        Split the text to wrap into indivisible chunks.  Chunks are
+        not quite the same as words; see _wrap_chunks() for full
+        details.  As an example, the text
+          Look, goof-ball -- use the -b option!
+        breaks into the following chunks:
+          'Look,', ' ', 'goof-', 'ball', ' ', '--', ' ',
+          'use', ' ', 'the', ' ', '-b', ' ', 'option!'
+        if break_on_hyphens is True, or in:
+          'Look,', ' ', 'goof-ball', ' ', '--', ' ',
+          'use', ' ', 'the', ' ', '-b', ' ', option!'
+        otherwise.
+        """
+        # NOTE-PYTHON3: The following code only roughly approximates what this
+        #               function used to do. Regex splitting on ANSIStrings is
+        #               dropping ANSI codes, so we're using ANSIString.split
+        #               for the time being.
+        #
+        #               A less hackier solution would be appreciated.
+        text = EvString(text)
+
+
+        chunks = [chunk + " " for chunk in chunks if chunk]  # remove empty chunks
+
+        if len(chunks) > 1:
+            chunks[-1] = chunks[-1][0:-1]
+
+        return chunks
+
+    def _wrap_chunks(self, chunks):
+        """_wrap_chunks(chunks : [string]) -> [string]
+
+        Wrap a sequence of text chunks and return a list of lines of
+        length 'self.width' or less.  (If 'break_long_words' is false,
+        some lines may be longer than this.)  Chunks correspond roughly
+        to words and the whitespace between them: each chunk is
+        indivisible (modulo 'break_long_words'), but a line break can
+        come between any two chunks.  Chunks should not have internal
+        whitespace; ie. a chunk is either all whitespace or a "word".
+        Whitespace chunks will be removed from the beginning and end of
+        lines, but apart from that whitespace is preserved.
+        """
+        lines = []
+        if self.width <= 0:
+            raise ValueError("invalid width %r (must be > 0)" % self.width)
+
+        # Arrange in reverse order so items can be efficiently popped
+        # from a stack of chucks.
+        chunks.reverse()
+
+        while chunks:
+
+            # Start the list of chunks that will make up the current line.
+            # cur_len is just the length of all the chunks in cur_line.
+            cur_line = []
+            cur_len = 0
+
+            # Figure out which static string will prefix this line.
+            if lines:
+                indent = self.subsequent_indent
+            else:
+                indent = self.initial_indent
+
+            # Maximum width for this line.
+            width = self.width - display_len(indent)
+
+            # First chunk on line is whitespace -- drop it, unless this
+            # is the very beginning of the text (ie. no lines started yet).
+            if self.drop_whitespace and chunks[-1].strip() == "" and lines:
+                del chunks[-1]
+
+            while chunks:
+                ln = display_len(chunks[-1])
+
+                # Can at least squeeze this chunk onto the current line.
+                if cur_len + ln <= width:
+                    cur_line.append(chunks.pop())
+                    cur_len += ln
+
+                # Nope, this line is full.
+                else:
+                    break
+
+            # The current line is full, and the next chunk is too big to
+            # fit on *any* line (not just this one).
+            if chunks and display_len(chunks[-1]) > width:
+                self._handle_long_word(chunks, cur_line, cur_len, width)
+
+            # If the last chunk on this line is all whitespace, drop it.
+            if self.drop_whitespace and cur_line and cur_line[-1].strip() == "":
+                del cur_line[-1]
+
+            # Convert current line back to a string and store it in list
+            # of all lines (return value).
+            if cur_line:
+                ln = ""
+                for w in cur_line:  # ANSI fix
+                    ln += w  #
+                lines.append(indent + ln)
+        return lines
 
 
 class EvString(str, metaclass=EvStringMeta):
@@ -1000,3 +1142,55 @@ class EvString(str, metaclass=EvStringMeta):
 
         """
         return self._filler(fillchar, _difference) + self
+
+
+class EvStringContainer:
+    """
+    Abstract base class for formatting classes which contain EvString units,
+    or other EvStringContainers.
+    """
+    sep = "\n"
+
+    @staticmethod
+    def _to_evstring(obj, regexable=False):
+        "convert anything to EvString"
+
+        if isinstance(obj, EvString):
+            return obj
+        elif isinstance(obj, str):
+            # this should work better now??
+            return EvString(obj)
+            # # since ansi will be parsed twice (here and in the normal ansi send), we have to
+            # # escape ansi twice.
+            # obj = ansi_raw(obj)
+
+        if isinstance(obj, dict):
+            return dict(
+                (key, EvStringContainer._to_evstring(value, regexable=regexable)) for key, value in obj.items()
+            )
+        # regular _to_evstring (from EvTable)
+        elif is_iter(obj):
+            return [EvStringContainer._to_evstring(o) for o in obj]
+        else:
+            return EvString(obj, regexable=regexable)
+
+    def collect_evstring(self):
+        """
+        Collects all of the data into a list of EvStrings.
+        """
+        pass
+
+    def ansi(self, **kwargs):
+        """
+        Return the container's data formatted with ANSI code
+        """
+        data = EvString(self.sep).join(self.collect_evstring())
+        return data.ansi(**kwargs)
+    
+    def html(self, **kwargs):
+        """
+        Return the container's data formatted for HTML
+        """
+        data = EvString(self.sep).join(self.collect_evstring())
+        return data.html(**kwargs)
+        

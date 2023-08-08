@@ -53,7 +53,7 @@ ENCODINGS = settings.ENCODINGS
 _TASK_HANDLER = None
 _TICKER_HANDLER = None
 _STRIP_UNSAFE_TOKENS = None
-_ANSISTRING = None
+_EVSTRING = None
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -239,13 +239,12 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         justified (str): The justified and indented block of text.
 
     """
-    # we need to retain ansitrings
-    global _ANSISTRING
-    if not _ANSISTRING:
-        from evennia.utils.evstring import EvString as _ANSISTRING
+    global _EVSTRING
+    if not _EVSTRING:
+        from evennia.utils.evstring import EvString as _EVSTRING
 
-    is_ansi = isinstance(text, _ANSISTRING)
-    lb = _ANSISTRING("\n") if is_ansi else "\n"
+    is_markup = isinstance(text, _EVSTRING)
+    lb = _EVSTRING("\n") if is_markup else "\n"
 
     def _process_line(line):
         """
@@ -255,7 +254,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         """
         line_rest = width - (wlen + ngaps)
 
-        gap = _ANSISTRING(" ") if is_ansi else " "
+        gap = _EVSTRING(" ") if is_markup else " "
 
         if line_rest > 0:
             if align == "l":
@@ -1923,7 +1922,6 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefi
             be inserted into the grid at the correct position and may be surrounded
             by padding unless filling the entire line. This is useful for embedding
             decorations in the grid, such as horizontal bars.
-        ignore_ansi (bool, optional): Ignore ansi markups when calculating white spacing.
         line_prefix (str, optional): A prefix to add at the beginning of each line.
             This can e.g. be used to preserve line color across line breaks.
 
@@ -2273,13 +2271,13 @@ def display_len(target):
         int: The visible width of the target.
 
     """
-    # Would create circular import if in module root.
-    from evennia.utils.ansi import ANSI_PARSER
+    global _EVSTRING
+    if not _EVSTRING:
+        from evennia.utils.evstring import EvString as _EVSTRING
 
     if inherits_from(target, str):
-        # str or ANSIString
-        target = ANSI_PARSER.strip_mxp(target)
-        target = ANSI_PARSER.parse_markup(target, strip_ansi=True)
+        # str or EvString
+        target = _EVSTRING(target).clean()
         extra_wide = ("F", "W")
         return sum(2 if east_asian_width(char) in extra_wide else 1 for char in target)
     else:

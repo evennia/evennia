@@ -148,8 +148,7 @@ the form will raise an error.
 import re
 from copy import copy
 
-from evennia.utils.evstring import EvString
-from evennia.utils.ansi import raw as ansi_raw
+from evennia.utils.evstring import EvString, EvStringContainer
 from evennia.utils.evtable import EvCell, EvTable
 from evennia.utils.utils import all_from_module, is_iter, to_str
 
@@ -157,12 +156,9 @@ from evennia.utils.utils import all_from_module, is_iter, to_str
 # used as separators between forms without being detected
 # as an identifier). These should be listed in regex form.
 INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
-# if there is an ansi-escape (||) we have to replace this with ||| to make sure
-# to properly escape down the line
-_ANSI_ESCAPE = re.compile(r"\|\|")
 
 
-class EvForm:
+class EvForm(EvStringContainer):
     """
     This object is instantiated with a text file and parses
     it for rectangular form fields. It can then be fed a
@@ -326,14 +322,14 @@ class EvForm:
         Forces all lines to be as long as the longest line, filling with whitespace.
 
         Args:
-            lines (list): list of `ANSIString`s
+            lines (list): list of `EvString`s
 
         Returns:
-            (list): list of `ANSIString`s of
+            (list): list of `EvString`s of
             same length as the longest input line
 
         """
-        matrix = EvForm._to_ansi(self.literal_form.split("\n"))
+        matrix = EvForm._to_evstring(self.literal_form.split("\n"))
 
         maxl = max(len(line) for line in matrix)
         matrix = [line + " " * (maxl - len(line)) for line in matrix]
@@ -341,27 +337,6 @@ class EvForm:
             # the first line is normally empty, we strip it.
             matrix = matrix[1:]
         return matrix
-
-    @staticmethod
-    def _to_ansi(obj, regexable=False):
-        "convert anything to ANSIString"
-
-        if isinstance(obj, EvString):
-            return obj
-        elif isinstance(obj, str):
-            # since ansi will be parsed twice (here and in the normal ansi send), we have to
-            # escape ansi twice.
-            obj = ansi_raw(obj)
-
-        if isinstance(obj, dict):
-            return dict(
-                (key, EvForm._to_ansi(value, regexable=regexable)) for key, value in obj.items()
-            )
-        # regular _to_ansi (from EvTable)
-        elif is_iter(obj):
-            return [EvForm._to_ansi(o) for o in obj]
-        else:
-            return EvString(obj, regexable=regexable)
 
     def _rectangles_to_mapping(self):
         """
@@ -390,7 +365,7 @@ class EvForm:
             regex = re.compile(rf"{char}+([^{INVALID_FORMCHARS}{char}]+){char}+")
 
             # find the start/width of rectangles for each line
-            for iy, line in enumerate(EvForm._to_ansi(matrix, regexable=True)):
+            for iy, line in enumerate(EvForm._to_evstring(matrix, regexable=True)):
                 ix0 = 0
                 while True:
                     match = regex.search(line, ix0)
@@ -551,6 +526,9 @@ class EvForm:
 
         # parse and build the form
         self.reload()
+
+    def collect_evstrings(self):
+        return list([line for line in self.form])
 
     def __str__(self):
         "Prints the form"

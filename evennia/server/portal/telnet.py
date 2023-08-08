@@ -429,7 +429,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         text = args[0] if args else ""
         if text is None:
             return
-        text = EvString(text)
+        if not hasattr(text, 'ansi'):
+            text = EvString(text)
+
         # handle arguments
         options = kwargs.get("options", {})
         flags = self.protocol_flags

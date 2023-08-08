@@ -274,6 +274,9 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         else:
             return
 
+        if not hasattr(text, 'html'):
+            text = EvString(text)
+
         flags = self.protocol_flags
 
         options = kwargs.pop("options", {})
@@ -282,8 +285,6 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         nocolor = options.get("nocolor", flags.get("NOCOLOR", False))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
-
-        text = EvString(text)
 
         if screenreader:
             # screenreader mode cleans up output
