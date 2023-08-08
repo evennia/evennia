@@ -139,6 +139,7 @@ class ExtendedRoom(DefaultRoom):
       echoed to the room at the given rate.
 
     """
+
     # fallback description if nothing else is set
     fallback_desc = "You see nothing special."
 
@@ -194,9 +195,9 @@ class ExtendedRoom(DefaultRoom):
         )
 
     def _start_broadcast_repeat_task(self):
-        if self.random_message_rate and self.random_messages and not self.ndb.broadcast_repeat_task:
+        if self.room_message_rate and self.room_messages and not self.ndb.broadcast_repeat_task:
             self.ndb.broadcast_repeat_task = repeat(
-                self.random_message_rate, self.repeat_broadcast_msg_to_room, persistent=False
+                self.room_message_rate, self.repeat_broadcast_msg_to_room, persistent=False
             )
 
     def at_init(self):
