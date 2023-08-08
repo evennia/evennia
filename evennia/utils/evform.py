@@ -402,7 +402,6 @@ class EvForm(EvStringContainer):
 
                 # store (key, y, x, width, height) of triangle
                 rects.append((key, iyup, leftix, width, height))
-
             return rects
 
         # Map EvCells into form rectangles
@@ -527,9 +526,10 @@ class EvForm(EvStringContainer):
         # parse and build the form
         self.reload()
 
-    def collect_evstrings(self):
+    def collect_evstring(self):
         return list([line for line in self.form])
 
     def __str__(self):
         "Prints the form"
-        return str(EvString("\n").join([line for line in self.form]))
+        return self.clean()
+        # return str(EvString("\n").join([line for line in self.form]))

@@ -708,7 +708,7 @@ class EvCell(EvStringContainer):
     def __repr__(self):
         if not self.formatted:
             self.formatted = self._reformat()
-        return str(EvString("<EvCel %s>" % self.formatted))
+        return str(EvString("<EvCell %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"

@@ -154,7 +154,7 @@ def _on_raw(func_name):
             pass
         result = getattr(self._raw_string, func_name)(*args, **kwargs)
         if isinstance(result, str):
-            return EvString(result, decoded=True)
+            return EvString(result)
         return result
 
     return wrapped
@@ -680,7 +680,7 @@ class EvString(str, metaclass=EvStringMeta):
         for index in range(0, item + 1):
             if index in self._code_indexes:
                 result += self._raw_string[index]
-        return EvString(result + clean + append_tail, decoded=True)
+        return EvString(result + clean + append_tail)
 
     def clean(self):
         """
@@ -1179,6 +1179,13 @@ class EvStringContainer:
         else:
             return EvString(obj, regexable=regexable)
 
+    def __str__(self):
+        """
+        Converts the container into a string.
+        """
+        # TODO: should this be rendered as raw or clean?
+        return self.raw()
+
     def collect_evstring(self):
         """
         Collects all of the data into a list of EvStrings.
@@ -1193,7 +1200,7 @@ class EvStringContainer:
         sep = self.sep
         if hasattr(sep, 'clean'):
             sep = sep.clean()
-        return str(sep).join([item.clean() for item in self.collect_evstring()])
+        return str(sep).join([item.clean() for item in self.collect_evstring() if item])
 
     def raw(self):
         """
@@ -1202,19 +1209,23 @@ class EvStringContainer:
         sep = self.sep
         if hasattr(sep, 'raw'):
             sep = sep.raw()
-        return str(sep).join([item.raw() for item in self.collect_evstring()])
+        return str(sep).join([item.raw() for item in self.collect_evstring() if item])
 
     def ansi(self, **kwargs):
         """
         Return the container's data formatted with ANSI code
         """
-        sep = EvString(self.sep)
-        return sep.ansi(**kwargs).join([item.ansi(**kwargs) for item in self.collect_evstring()])
+        sep = self.sep
+        if not hasattr(sep, 'ansi'):
+            sep = EvString(self.sep)
+        return sep.ansi(**kwargs).join([item.ansi(**kwargs) for item in self.collect_evstring() if item])
     
     def html(self, **kwargs):
         """
         Return the container's data formatted for HTML
         """
-        sep = EvString(self.sep)
-        return sep.html(**kwargs).join([item.html(**kwargs) for item in self.collect_evstring()])
+        sep = self.sep
+        if not hasattr(sep, 'html'):
+            sep = EvString(self.sep)
+        return sep.html(**kwargs).join([item.html(**kwargs) for item in self.collect_evstring() if item])
         

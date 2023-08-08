@@ -21,20 +21,30 @@ class TestEvString(TestCase):
     def setUp(self):
         self.example_raw = "|relectric |cboogaloo|n"
         self.example_ansi = EvString(self.example_raw)
-        self.example_str = "electric boogaloo"
+        self.example_clean = "electric boogaloo"
         # self.example_output = "\x1b[1m\x1b[31melectric \x1b[1m\x1b[36mboogaloo\x1b[0m"
 
     def test_length(self):
         self.assertEqual(len(self.example_ansi), 17)
 
     def test_clean(self):
-        self.assertEqual(self.example_ansi.clean(), self.example_str)
+        self.assertEqual(self.example_ansi.clean(), self.example_clean)
 
     def test_raw(self):
         self.assertEqual(self.example_ansi.raw(), self.example_raw)
 
     def test_format(self):
-        self.assertEqual(f"{self.example_ansi:0<20}", self.example_str + "000")
+        self.assertEqual(f"{self.example_ansi:0<20}", self.example_raw + "000")
+
+    def test_slice(self):
+        # TODO: determine if the trailing tag should be included
+        self.assertEqual(self.example_ansi[:9].raw(), "|relectric ")
+        self.assertEqual(self.example_ansi[9:].raw(), "|cboogaloo|n")
+
+    def test_inequality(self):
+        """Make sure equality comparison includes codes"""
+        self.assertNotEqual(EvString("|c|relectric |cboogaloo|n"), self.example_ansi)
+        self.assertNotEqual(EvString("|relectric |cboogaloo"), self.example_ansi)
 
     def test_split_with_mixed_strings(self):
         """This tests the solution of a bug"""
