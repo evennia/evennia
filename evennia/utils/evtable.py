@@ -118,8 +118,7 @@ from copy import copy, deepcopy
 from textwrap import TextWrapper
 
 from django.conf import settings
-
-from evennia.utils.ansi import ANSIString
+from evennia.utils.evstring import EvString
 from evennia.utils.utils import display_len as d_len
 from evennia.utils.utils import is_iter, justify
 
@@ -137,7 +136,7 @@ def _to_ansi(obj):
     if is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(obj)
+        return EvString(obj)
 
 
 _whitespace = "\t\n\x0b\x0c\r "
@@ -221,6 +220,7 @@ class ANSITextWrapper(TextWrapper):
         chunks.reverse()
 
         while chunks:
+
             # Start the list of chunks that will make up the current line.
             # cur_len is just the length of all the chunks in cur_line.
             cur_line = []
@@ -514,7 +514,7 @@ class EvCell:
                 # fix for ANSIString not supporting expand_tabs/translate
                 adjusted_data.extend(
                     [
-                        ANSIString(part + ANSIString("|n"))
+                        EvString(part + EvString("|n"))
                         for part in wrap(line, width=width, drop_whitespace=False)
                     ]
                 )
@@ -626,8 +626,8 @@ class EvCell:
 
         """
 
-        left = self.border_left_char * self.border_left + ANSIString("|n")
-        right = ANSIString("|n") + self.border_right_char * self.border_right
+        left = self.border_left_char * self.border_left + EvString("|n")
+        right = EvString("|n") + self.border_right_char * self.border_right
 
         cwidth = (
             self.width
@@ -846,13 +846,13 @@ class EvCell:
     def __repr__(self):
         if not self.formatted:
             self.formatted = self._reformat()
-        return str(ANSIString("<EvCel %s>" % self.formatted))
+        return str(EvString("<EvCel %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
         if not self.formatted:
             self.formatted = self._reformat()
-        return str(ANSIString("\n").join(self.formatted))
+        return str(EvString("\n").join(self.formatted))
 
 
 # EvColumn class
@@ -1401,6 +1401,7 @@ class EvTable:
         if self.height:
             # if we are fixing the table height, it means cells must crop text instead of resizing.
             if nrowmax:
+
                 # get minimum possible cell heights for each column
                 cheights_min = [
                     max(cell.get_min_height() for cell in (col[iy] for col in self.worktable))
@@ -1466,7 +1467,7 @@ class EvTable:
             cell_data = [cell.get() for cell in cell_row]
             cell_height = min(len(lines) for lines in cell_data)
             for iline in range(cell_height):
-                yield ANSIString("").join(_to_ansi(celldata[iline] for celldata in cell_data))
+                yield EvString("").join(_to_ansi(celldata[iline] for celldata in cell_data))
 
     def add_header(self, *args, **kwargs):
         """
@@ -1668,4 +1669,4 @@ class EvTable:
     def __str__(self):
         """print table (this also balances it)"""
         # h = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
-        return str(str(ANSIString("\n").join([line for line in self._generate_lines()])))
+        return str(str(EvString("\n").join([line for line in self._generate_lines()])))

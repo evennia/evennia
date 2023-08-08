@@ -8,7 +8,7 @@ Test of the ANSI parsing and ANSIStrings.
 
 from django.test import TestCase
 
-from evennia.utils.ansi import ANSIString as AN
+from evennia.utils.evstring import EvString as AN
 
 
 class TestANSIString(TestCase):

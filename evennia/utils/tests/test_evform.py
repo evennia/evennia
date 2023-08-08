@@ -7,6 +7,7 @@ from unittest import skip
 from django.test import TestCase
 
 from evennia.utils import ansi, evform, evtable
+import evennia.utils.evstring
 
 
 class TestEvForm(TestCase):
@@ -326,13 +327,13 @@ class TestEvFormErrors(TestCase):
         # testing the underlying problem
 
         cell = evtable.EvCell(" Hi", align="l")
-        self.assertEqual(cell._align(cell.data), [ansi.ANSIString("Hi ")])
+        self.assertEqual(cell._align(cell.data), [evennia.utils.evstring.EvString("Hi ")])
 
         cell = evtable.EvCell("  Hi", align="l")
-        self.assertEqual(cell._align(cell.data), [ansi.ANSIString("Hi  ")])
+        self.assertEqual(cell._align(cell.data), [evennia.utils.evstring.EvString("Hi  ")])
 
         cell = evtable.EvCell("  Hi", align="a")
-        self.assertEqual(cell._align(cell.data), [ansi.ANSIString("  Hi")])
+        self.assertEqual(cell._align(cell.data), [evennia.utils.evstring.EvString("  Hi")])
 
         form = """
 .-----------------------.

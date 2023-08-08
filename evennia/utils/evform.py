@@ -148,7 +148,7 @@ the form will raise an error.
 import re
 from copy import copy
 
-from evennia.utils.ansi import ANSIString
+from evennia.utils.evstring import EvString
 from evennia.utils.ansi import raw as ansi_raw
 from evennia.utils.evtable import EvCell, EvTable
 from evennia.utils.utils import all_from_module, is_iter, to_str
@@ -346,7 +346,7 @@ class EvForm:
     def _to_ansi(obj, regexable=False):
         "convert anything to ANSIString"
 
-        if isinstance(obj, ANSIString):
+        if isinstance(obj, EvString):
             return obj
         elif isinstance(obj, str):
             # since ansi will be parsed twice (here and in the normal ansi send), we have to
@@ -361,7 +361,7 @@ class EvForm:
         elif is_iter(obj):
             return [EvForm._to_ansi(o) for o in obj]
         else:
-            return ANSIString(obj, regexable=regexable)
+            return EvString(obj, regexable=regexable)
 
     def _rectangles_to_mapping(self):
         """
@@ -554,4 +554,4 @@ class EvForm:
 
     def __str__(self):
         "Prints the form"
-        return str(ANSIString("\n").join([line for line in self.form]))
+        return str(EvString("\n").join([line for line in self.form]))

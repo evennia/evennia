@@ -7,7 +7,7 @@ import re
 from django.test import TestCase, override_settings
 
 from evennia.utils import funcparser
-from evennia.utils.ansi import ANSIString
+from evennia.utils.evstring import EvString
 from evennia.utils.text2html import TextToHTMLparser
 
 
@@ -33,7 +33,7 @@ class ANSIStringTestCase(TestCase):
         """
         clean = "This isA|r testTest"
         encoded = "\x1b[1m\x1b[32mThis is\x1b[1m\x1b[31mA|r test\x1b[0mTest\x1b[0m"
-        target = ANSIString(r"|gThis is|rA||r test|nTest|n")
+        target = EvString(r"|gThis is|rA||r test|nTest|n")
         char_table = [9, 10, 11, 12, 13, 14, 15, 25, 26, 27, 28, 29, 30, 31, 32, 37, 38, 39, 40]
         code_table = [
             0,
@@ -65,20 +65,20 @@ class ANSIStringTestCase(TestCase):
         ]
         self.checker(target, encoded, clean)
         self.table_check(target, char_table, code_table)
-        self.checker(ANSIString(target), encoded, clean)
-        self.table_check(ANSIString(target), char_table, code_table)
-        self.checker(ANSIString(encoded, decoded=True), encoded, clean)
-        self.table_check(ANSIString(encoded, decoded=True), char_table, code_table)
-        self.checker(ANSIString("Test"), "Test", "Test")
-        self.table_check(ANSIString("Test"), [0, 1, 2, 3], [])
-        self.checker(ANSIString(""), "", "")
+        self.checker(EvString(target), encoded, clean)
+        self.table_check(EvString(target), char_table, code_table)
+        self.checker(EvString(encoded, decoded=True), encoded, clean)
+        self.table_check(EvString(encoded, decoded=True), char_table, code_table)
+        self.checker(EvString("Test"), "Test", "Test")
+        self.table_check(EvString("Test"), [0, 1, 2, 3], [])
+        self.checker(EvString(""), "", "")
 
     def test_slice(self):
         """
         Verifies that slicing an ANSIString results in expected color code
         distribution.
         """
-        target = ANSIString(r"|gTest|rTest|n")
+        target = EvString(r"|gTest|rTest|n")
         result = target[:3]
         self.checker(result, "\x1b[1m\x1b[32mTes", "Tes")
         result = target[:4]
@@ -95,7 +95,7 @@ class ANSIStringTestCase(TestCase):
         Verifies that re.split and .split behave similarly and that color
         codes end up where they should.
         """
-        target = ANSIString("|gThis is |nA split string|g")
+        target = EvString("|gThis is |nA split string|g")
         first = ("\x1b[1m\x1b[32mThis is \x1b[0m", "This is ")
         second = ("\x1b[1m\x1b[32m\x1b[0m split string\x1b[1m\x1b[32m", " split string")
         re_split = re.split("A", target)
@@ -112,11 +112,11 @@ class ANSIStringTestCase(TestCase):
         # This isn't the desired behavior, but the expected one. Python
         # concatenates the in-memory representation with the built-in string's
         # join.
-        l = [ANSIString("|gTest|r") for _ in range(0, 3)]
+        l = [EvString("|gTest|r") for _ in range(0, 3)]
         # Force the generator to be evaluated.
         result = "".join(l)
         self.assertEqual(str(result), "TestTestTest")
-        result = ANSIString("").join(l)
+        result = EvString("").join(l)
         self.checker(
             result,
             "\x1b[1m\x1b[32mTest\x1b[1m\x1b[31m\x1b[1m\x1b"
@@ -130,14 +130,14 @@ class ANSIStringTestCase(TestCase):
         Make sure that length reporting on ANSIStrings does not include
         ANSI codes.
         """
-        self.assertEqual(len(ANSIString("|gTest|n")), 4)
+        self.assertEqual(len(EvString("|gTest|n")), 4)
 
     def test_capitalize(self):
         """
         Make sure that capitalization works. This is the simplest of the
         _transform functions.
         """
-        target = ANSIString("|gtest|n")
+        target = EvString("|gtest|n")
         result = "\x1b[1m\x1b[32mTest\x1b[0m"
         self.checker(target.capitalize(), result, "Test")
 
@@ -148,23 +148,23 @@ class ANSIStringTestCase(TestCase):
         mxp1 = "|lclook|ltat|le"
         mxp2 = "Start to |lclook here|ltclick somewhere here|le first"
         mxp3 = "Check out |luhttps://www.example.com|ltmy website|le!"
-        self.assertEqual(15, len(ANSIString(mxp1)))
-        self.assertEqual(53, len(ANSIString(mxp2)))
-        self.assertEqual(53, len(ANSIString(mxp3)))
+        self.assertEqual(15, len(EvString(mxp1)))
+        self.assertEqual(53, len(EvString(mxp2)))
+        self.assertEqual(53, len(EvString(mxp3)))
         # These would indicate an issue with the tables.
-        self.assertEqual(len(ANSIString(mxp1)), len(ANSIString(mxp1).split("\n")[0]))
-        self.assertEqual(len(ANSIString(mxp2)), len(ANSIString(mxp2).split("\n")[0]))
-        self.assertEqual(len(ANSIString(mxp3)), len(ANSIString(mxp3).split("\n")[0]))
-        self.assertEqual(mxp1, ANSIString(mxp1))
-        self.assertEqual(mxp2, str(ANSIString(mxp2)))
-        self.assertEqual(mxp3, str(ANSIString(mxp3)))
+        self.assertEqual(len(EvString(mxp1)), len(EvString(mxp1).split("\n")[0]))
+        self.assertEqual(len(EvString(mxp2)), len(EvString(mxp2).split("\n")[0]))
+        self.assertEqual(len(EvString(mxp3)), len(EvString(mxp3).split("\n")[0]))
+        self.assertEqual(mxp1, EvString(mxp1))
+        self.assertEqual(mxp2, str(EvString(mxp2)))
+        self.assertEqual(mxp3, str(EvString(mxp3)))
 
     def test_add(self):
         """
         Verify concatenation works correctly.
         """
-        a = ANSIString("|gTest")
-        b = ANSIString("|cString|n")
+        a = EvString("|gTest")
+        b = EvString("|cString|n")
         c = a + b
         result = "\x1b[1m\x1b[32mTest\x1b[1m\x1b[36mString\x1b[0m"
         self.checker(c, result, "TestString")
@@ -176,18 +176,18 @@ class ANSIStringTestCase(TestCase):
         """
         Test the ansi-aware .strip() methods
         """
-        a = ANSIString("   |r   Test of stuff |b with spaces   |n   ")
-        b = ANSIString("|r|b")
-        self.assertEqual(a.strip(), ANSIString("|rTest of stuff |b with spaces|n"))
-        self.assertEqual(a.lstrip(), ANSIString("|rTest of stuff |b with spaces   |n   "))
-        self.assertEqual(a.rstrip(), ANSIString("   |r   Test of stuff |b with spaces|n"))
+        a = EvString("   |r   Test of stuff |b with spaces   |n   ")
+        b = EvString("|r|b")
+        self.assertEqual(a.strip(), EvString("|rTest of stuff |b with spaces|n"))
+        self.assertEqual(a.lstrip(), EvString("|rTest of stuff |b with spaces   |n   "))
+        self.assertEqual(a.rstrip(), EvString("   |r   Test of stuff |b with spaces|n"))
         self.assertEqual(b.strip(), b)
 
     def test_regex_search(self):
         """
         Test regex-search in ANSIString - the found position should ignore any ansi-markers
         """
-        string = ANSIString(" |r|[b  Test ")
+        string = EvString(" |r|[b  Test ")
         match = re.search(r"Test", string)
         self.assertTrue(match)
         self.assertEqual(match.span(), (3, 7))
@@ -198,13 +198,13 @@ class ANSIStringTestCase(TestCase):
         the ansi markers but not remove them!
 
         """
-        string = ANSIString("A |rTest|n string")
+        string = EvString("A |rTest|n string")
         match = re.search(r"Test", string)
         ix1, ix2 = match.span()
         self.assertEqual((ix1, ix2), (2, 6))
 
         result = string[:ix1] + "Replacement" + string[ix2:]
-        expected = ANSIString("A |rReplacement|n string")
+        expected = EvString("A |rReplacement|n string")
 
         self.assertEqual(expected, result)
 
@@ -212,7 +212,7 @@ class ANSIStringTestCase(TestCase):
         """
         Inserting a slice should not remove ansi markup (issue #2205)
         """
-        string = ANSIString("|rTest|n")
+        string = EvString("|rTest|n")
         split_string = string[:0] + "Test" + string[4:]
         self.assertEqual(string.raw(), split_string.raw())
 
@@ -222,22 +222,22 @@ class ANSIStringTestCase(TestCase):
         produce a *visually* identical result. The result is a longer string in
         raw characters, but one which correctly represents the color output.
         """
-        string = ANSIString("A bigger |rTest|n of things |bwith more color|n")
+        string = EvString("A bigger |rTest|n of things |bwith more color|n")
         # from evennia import set_trace;set_trace()
         split_string = string[:9] + "Test" + string[13:]
         self.assertEqual(
             repr(
                 (
-                    ANSIString("A bigger ")
-                    + ANSIString("|rTest")  # note that the |r|n is replayed together on next line
-                    + ANSIString("|r|n of things |bwith more color|n")
+                    EvString("A bigger ")
+                    + EvString("|rTest")  # note that the |r|n is replayed together on next line
+                    + EvString("|r|n of things |bwith more color|n")
                 ).raw()
             ),
             repr(split_string.raw()),
         )
 
     def test_slice_full(self):
-        string = ANSIString("A bigger |rTest|n of things |bwith more color|n")
+        string = EvString("A bigger |rTest|n of things |bwith more color|n")
         split_string = string[:]
         self.assertEqual(string.raw(), split_string.raw())
 

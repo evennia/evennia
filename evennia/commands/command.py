@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from evennia.locks.lockhandler import LockHandler
-from evennia.utils.ansi import ANSIString
+from evennia.utils.evstring import EvString
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
 
@@ -646,21 +646,21 @@ Command {self} has no defined `func()` - showing on-command variables:
         colornames = ["|%s%s|n" % (column_color, col) for col in args]
 
         h_line_char = kwargs.pop("header_line_char", "~")
-        header_line_char = ANSIString(f"|{border_color}{h_line_char}|n")
+        header_line_char = EvString(f"|{border_color}{h_line_char}|n")
         c_char = kwargs.pop("corner_char", "+")
-        corner_char = ANSIString(f"|{border_color}{c_char}|n")
+        corner_char = EvString(f"|{border_color}{c_char}|n")
 
         b_left_char = kwargs.pop("border_left_char", "||")
-        border_left_char = ANSIString(f"|{border_color}{b_left_char}|n")
+        border_left_char = EvString(f"|{border_color}{b_left_char}|n")
 
         b_right_char = kwargs.pop("border_right_char", "||")
-        border_right_char = ANSIString(f"|{border_color}{b_right_char}|n")
+        border_right_char = EvString(f"|{border_color}{b_right_char}|n")
 
         b_bottom_char = kwargs.pop("border_bottom_char", "-")
-        border_bottom_char = ANSIString(f"|{border_color}{b_bottom_char}|n")
+        border_bottom_char = EvString(f"|{border_color}{b_bottom_char}|n")
 
         b_top_char = kwargs.pop("border_top_char", "-")
-        border_top_char = ANSIString(f"|{border_color}{b_top_char}|n")
+        border_top_char = EvString(f"|{border_color}{b_top_char}|n")
 
         table = EvTable(
             *colornames,
@@ -711,16 +711,16 @@ Command {self} has no defined `func()` - showing on-command variables:
 
         if header_text:
             if color_header:
-                header_text = ANSIString(header_text).clean()
-                header_text = ANSIString("|n|%s%s|n" % (colors["headertext"], header_text))
+                header_text = EvString(header_text).clean()
+                header_text = EvString("|n|%s%s|n" % (colors["headertext"], header_text))
             if mode == "header":
-                begin_center = ANSIString(
+                begin_center = EvString(
                     "|n|%s<|%s* |n" % (colors["border"], colors["headerstar"])
                 )
-                end_center = ANSIString("|n |%s*|%s>|n" % (colors["headerstar"], colors["border"]))
-                center_string = ANSIString(begin_center + header_text + end_center)
+                end_center = EvString("|n |%s*|%s>|n" % (colors["headerstar"], colors["border"]))
+                center_string = EvString(begin_center + header_text + end_center)
             else:
-                center_string = ANSIString("|n |%s%s |n" % (colors["headertext"], header_text))
+                center_string = EvString("|n |%s%s |n" % (colors["headertext"], header_text))
         else:
             center_string = ""
 
@@ -734,17 +734,17 @@ Command {self} has no defined `func()` - showing on-command variables:
             right_width = math.floor(remain_fill / 2)
             left_width = math.ceil(remain_fill / 2)
 
-        right_fill = ANSIString("|n|%s%s|n" % (colors["border"], fill_character * int(right_width)))
-        left_fill = ANSIString("|n|%s%s|n" % (colors["border"], fill_character * int(left_width)))
+        right_fill = EvString("|n|%s%s|n" % (colors["border"], fill_character * int(right_width)))
+        left_fill = EvString("|n|%s%s|n" % (colors["border"], fill_character * int(left_width)))
 
         if edge_character:
-            edge_fill = ANSIString("|n|%s%s|n" % (colors["border"], edge_character))
-            main_string = ANSIString(center_string)
+            edge_fill = EvString("|n|%s%s|n" % (colors["border"], edge_character))
+            main_string = EvString(center_string)
             final_send = (
-                ANSIString(edge_fill) + left_fill + main_string + right_fill + ANSIString(edge_fill)
+                EvString(edge_fill) + left_fill + main_string + right_fill + EvString(edge_fill)
             )
         else:
-            final_send = left_fill + ANSIString(center_string) + right_fill
+            final_send = left_fill + EvString(center_string) + right_fill
         return final_send
 
     def styled_header(self, *args, **kwargs):

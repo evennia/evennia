@@ -15,7 +15,7 @@ from parameterized import parameterized
 from twisted.internet import task
 
 from evennia.utils import utils
-from evennia.utils.ansi import ANSIString
+from evennia.utils.evstring import EvString
 from evennia.utils.test_resources import BaseEvenniaTest
 
 
@@ -109,10 +109,10 @@ class TestMLen(TestCase):
         self.assertEqual(utils.m_len("|lclook|ltat|le"), 2)
 
     def test_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString("|lcl|gook|ltat|le|n")), 2)
+        self.assertEqual(utils.m_len(EvString("|lcl|gook|ltat|le|n")), 2)
 
     def test_non_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString("|gHello|n")), 5)
+        self.assertEqual(utils.m_len(EvString("|gHello|n")), 5)
 
     def test_list(self):
         self.assertEqual(utils.m_len([None, None]), 2)
@@ -134,10 +134,10 @@ class TestDisplayLen(TestCase):
         self.assertEqual(utils.display_len("|lclook|ltat|le"), 2)
 
     def test_mxp_ansi_string(self):
-        self.assertEqual(utils.display_len(ANSIString("|lcl|gook|ltat|le|n")), 2)
+        self.assertEqual(utils.display_len(EvString("|lcl|gook|ltat|le|n")), 2)
 
     def test_non_mxp_ansi_string(self):
-        self.assertEqual(utils.display_len(ANSIString("|gHello|n")), 5)
+        self.assertEqual(utils.display_len(EvString("|gHello|n")), 5)
 
     def test_list(self):
         self.assertEqual(utils.display_len([None, None]), 2)
@@ -156,7 +156,7 @@ class TestANSIString(TestCase):
 
     def setUp(self):
         self.example_raw = "|relectric |cboogaloo|n"
-        self.example_ansi = ANSIString(self.example_raw)
+        self.example_ansi = EvString(self.example_raw)
         self.example_str = "electric boogaloo"
         self.example_output = "\x1b[1m\x1b[31melectric \x1b[1m\x1b[36mboogaloo\x1b[0m"
 
@@ -768,7 +768,7 @@ class TestJustify(TestCase):
 
         from evennia.utils.ansi import ANSI_RED
 
-        line = ANSIString("This is a |rred|n word")
+        line = EvString("This is a |rred|n word")
 
         result = utils.justify(line, align="c", width=30)
 

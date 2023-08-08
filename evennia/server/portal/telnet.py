@@ -10,6 +10,12 @@ sessions etc.
 import re
 
 from django.conf import settings
+from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
+from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
+from evennia.server.portal.mxp import Mxp, mxp_parse
+from evennia.utils import ansi
+from evennia.utils.evstring import EvString
+from evennia.utils.utils import class_from_module, to_bytes
 from twisted.conch.telnet import (
     ECHO,
     GA,
@@ -28,13 +34,6 @@ from twisted.conch.telnet import (
 from twisted.internet import protocol
 from twisted.internet.task import LoopingCall
 
-from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
-from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
-from evennia.server.portal.mxp import Mxp, mxp_parse
-from evennia.utils import ansi
-from evennia.utils.utils import class_from_module, to_bytes
-
-_RE_N = re.compile(r"\|n$")
 _RE_LEND = re.compile(rb"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
 _RE_LINEBREAK = re.compile(rb"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(
@@ -430,7 +429,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         text = args[0] if args else ""
         if text is None:
             return
-
+        text = EvString(text)
         # handle arguments
         options = kwargs.get("options", {})
         flags = self.protocol_flags
@@ -448,21 +447,26 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
 
         if screenreader:
             # screenreader mode cleans up output
-            text = ansi.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
+            text = text.clean()
             text = _RE_SCREENREADER_REGEX.sub("", text)
+
+        elif nocolor:
+            text = text.clean()
+        elif raw:
+            text = text.raw()
+        else:
+            text = text.ansi(
+                    xterm256=xterm256,
+                    mxp=mxp,
+                )
+            # we need to make sure to kill the color at the end in order
+            # to match the webclient output.
+            if not text.endswith(ansi.ANSI_NORMAL):
+                text += ansi.ANSI_NORMAL
 
         if options.get("send_prompt"):
             # send a prompt instead.
             prompt = text
-            if not raw:
-                # processing
-                prompt = ansi.parse_ansi(
-                    _RE_N.sub("", prompt) + ("||n" if prompt.endswith("|") else "|n"),
-                    strip_ansi=nocolor,
-                    xterm256=xterm256,
-                )
-                if mxp:
-                    prompt = mxp_parse(prompt)
             prompt = to_bytes(prompt, self)
             prompt = prompt.replace(IAC, IAC + IAC).replace(b"\n", b"\r\n")
             if not self.protocol_flags.get(
@@ -484,22 +488,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     # by telling the client that WE WILL echo, the client can
                     # safely turn OFF its OWN echo.
                     self.transport.write(mccp_compress(self, IAC + WILL + ECHO))
-            if raw:
-                # no processing
-                self.sendLine(text)
-                return
-            else:
-                # we need to make sure to kill the color at the end in order
-                # to match the webclient output.
-                linetosend = ansi.parse_ansi(
-                    _RE_N.sub("", text) + ("||n" if text.endswith("|") else "|n"),
-                    strip_ansi=nocolor,
-                    xterm256=xterm256,
-                    mxp=mxp,
-                )
-                if mxp:
-                    linetosend = mxp_parse(linetosend)
-                self.sendLine(linetosend)
+            self.sendLine(text)
 
     def send_prompt(self, *args, **kwargs):
         """

@@ -242,7 +242,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     # we need to retain ansitrings
     global _ANSISTRING
     if not _ANSISTRING:
-        from evennia.utils.ansi import ANSIString as _ANSISTRING
+        from evennia.utils.evstring import EvString as _ANSISTRING
 
     is_ansi = isinstance(text, _ANSISTRING)
     lb = _ANSISTRING("\n") if is_ansi else "\n"
@@ -2279,7 +2279,7 @@ def display_len(target):
     if inherits_from(target, str):
         # str or ANSIString
         target = ANSI_PARSER.strip_mxp(target)
-        target = ANSI_PARSER.parse_ansi(target, strip_ansi=True)
+        target = ANSI_PARSER.parse_markup(target, strip_ansi=True)
         extra_wide = ("F", "W")
         return sum(2 if east_asian_width(char) in extra_wide else 1 for char in target)
     else:
