@@ -7,12 +7,16 @@
 
 
 import functools
+from django.conf import settings
+from evennia.server.portal.mxp import mxp_parse
 from evennia.utils import logger
-from evennia.utils.ansi import ANSI_PARSER, MXP_ENABLED
+from evennia.utils.ansi import ANSI_PARSER
 from evennia.utils.text2html import HTML_PARSER
 from evennia.utils.utils import to_str
 
 import re
+
+MXP_ENABLED = settings.MXP_ENABLED
 
 _RE_HEX = re.compile(r'(?<!\|)\|#([0-9a-f]{6})', re.I)
 _RE_HEX_BG = re.compile(r'(?<!\|)\|\[#([0-9a-f]{6})', re.I)
@@ -556,7 +560,8 @@ class EvString(str, metaclass=EvStringMeta):
         Returns a string object with Evennia markup converted to ANSI
         """
         if self._ansi_parser:
-            return self._ansi_parser.parse_markup(self._raw_string, xterm256=xterm256, mxp=mxp)
+            text = self._ansi_parser.parse_markup(self._raw_string, xterm256=xterm256, mxp=mxp)
+            return mxp_parse(text) if mxp else text
         else:
             # should we raise an error?
             return self._clean_string
