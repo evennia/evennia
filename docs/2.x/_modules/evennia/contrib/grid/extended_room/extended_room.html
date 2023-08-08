@@ -225,6 +225,7 @@
 <span class="sd">      echoed to the room at the given rate.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># fallback description if nothing else is set</span>
     <span class="n">fallback_desc</span> <span class="o">=</span> <span class="s2">&quot;You see nothing special.&quot;</span>
 
@@ -280,9 +281,9 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_start_broadcast_repeat_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_message_rate</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_messages</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">broadcast_repeat_task</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">room_message_rate</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">room_messages</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">broadcast_repeat_task</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">broadcast_repeat_task</span> <span class="o">=</span> <span class="n">repeat</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">random_message_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_broadcast_msg_to_room</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">room_message_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_broadcast_msg_to_room</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="ExtendedRoom.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.extended_room.html#evennia.contrib.grid.extended_room.extended_room.ExtendedRoom.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
