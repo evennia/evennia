@@ -5,15 +5,15 @@ Tests for EvTable component.
 
 from unittest import skip
 
-from evennia.utils import ansi, evtable
+from evennia.utils import evstring, evtable
 from evennia.utils.test_resources import EvenniaTestCase
 
 
 class TestEvTable(EvenniaTestCase):
     def _validate(self, expected, result):
         """easier debug"""
-        expected = ansi.strip_ansi(expected).strip()
-        result = ansi.strip_ansi(result).strip()
+        expected = evstring.strip_markup(expected).strip()
+        result = result.clean().strip()
 
         err = f"\n{'expected':-^60}\n{expected}\n{'result':-^60}\n{result}\n{'':-^60}"
         self.assertEqual(expected, result, err)
@@ -44,7 +44,7 @@ class TestEvTable(EvenniaTestCase):
 +----------+----------+----------+
 """
 
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_table_with_short_header(self):
         """
@@ -70,7 +70,7 @@ class TestEvTable(EvenniaTestCase):
 +----------+----------+---+
 """
 
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_add_column(self):
         table = evtable.EvTable(
@@ -94,7 +94,7 @@ class TestEvTable(EvenniaTestCase):
 | 3        | 6        | 9        |                          |
 +----------+----------+----------+--------------------------+
 """
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_add_row(self):
         table = evtable.EvTable(
@@ -120,7 +120,7 @@ class TestEvTable(EvenniaTestCase):
 | This is a single row |          |          |
 +----------------------+----------+----------+
 """
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_add_row_and_column(self):
         table = evtable.EvTable(
@@ -147,7 +147,7 @@ class TestEvTable(EvenniaTestCase):
 | This is a single row |          |          |                          |
 +----------------------+----------+----------+--------------------------+
 """
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_reformat(self):
         table = evtable.EvTable(
@@ -173,7 +173,7 @@ class TestEvTable(EvenniaTestCase):
 | 3              | 6             | 9             |
 +----------------+---------------+---------------+
         """
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
         # right-aligned
 
@@ -191,7 +191,7 @@ class TestEvTable(EvenniaTestCase):
 | 3       | 6      |                           9 |
 +---------+--------+-----------------------------+
         """
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_multiple_rows(self):
         """
@@ -221,7 +221,7 @@ class TestEvTable(EvenniaTestCase):
         expected.append(expected[0])
         expected = "\n".join(expected)
 
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_direct_evcolumn_adds(self):
         """
@@ -241,13 +241,13 @@ class TestEvTable(EvenniaTestCase):
 |#her.#|
 +------+
         """
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
         # add with .add_column
         table = evtable.EvTable(fill_char=".", pad_char="#")
         table.add_column("another", width=8)
 
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
         # add by passing a column to constructor directly
 
@@ -255,7 +255,7 @@ class TestEvTable(EvenniaTestCase):
 
         table = evtable.EvTable(table=[colB], fill_char=".", pad_char="#")
 
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
         # more complex table
 
@@ -274,7 +274,7 @@ class TestEvTable(EvenniaTestCase):
 +--------+-------+
         """
 
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_width_enforcement(self):
         """
@@ -292,7 +292,7 @@ class TestEvTable(EvenniaTestCase):
         """
 
         # more advanced table with crop
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
         colA = evtable.EvColumn("it", "is", "a", "column", width=6, enforce_size=True)
         colB = evtable.EvColumn("and", "another", "column", "here")
@@ -307,7 +307,7 @@ class TestEvTable(EvenniaTestCase):
 +----+---------------------------------+
         """
 
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_styling_overrides(self):
         """
@@ -328,7 +328,7 @@ class TestEvTable(EvenniaTestCase):
 +--------+
         """
 
-        self._validate(expected, str(table))
+        self._validate(expected, table)
 
     def test_color_transfer(self):
         """
@@ -344,8 +344,8 @@ class TestEvTable(EvenniaTestCase):
 
         table = evtable.EvTable(table=[[row1, row2]])
 
-        self.assertIn(ANSI_RED, str(table))
-        self.assertIn(ANSI_CYAN, str(table))
+        self.assertIn(ANSI_RED, table.ansi())
+        self.assertIn(ANSI_CYAN, table.ansi())
 
     @skip("Pending refactor into client-side ansi parsing")
     def test_mxp_links(self):

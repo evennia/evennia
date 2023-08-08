@@ -275,14 +275,19 @@ class EvTextWrapper(TextWrapper):
         #
         #               A less hackier solution would be appreciated.
         text = EvString(text)
-
-
-        chunks = [chunk + " " for chunk in chunks if chunk]  # remove empty chunks
-
-        if len(chunks) > 1:
-            chunks[-1] = chunks[-1][0:-1]
-
+        if self.break_on_hyphens is True:
+            chunks = self.wordsep_re.split(text)
+        else:
+            chunks = self.wordsep_simple_re.split(text)
+        chunks = [c for c in chunks if c]
         return chunks
+
+        # chunks = [chunk + " " for chunk in chunks if chunk]  # remove empty chunks
+
+        # if len(chunks) > 1:
+        #     chunks[-1] = chunks[-1][0:-1]
+
+        # return chunks
 
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]
@@ -490,7 +495,7 @@ class EvString(str, metaclass=EvStringMeta):
         elif align == "=":
             pass
 
-        # Return the raw string with ANSI markup, ready to be displayed.
+        # Return the raw string, reformatted
         return base_output.raw()
 
     def __repr__(self):
@@ -1180,17 +1185,36 @@ class EvStringContainer:
         """
         pass
 
+    def clean(self):
+        """
+        Return the container's data with all markup stripped.
+        """
+        # support using EvString separators
+        sep = self.sep
+        if hasattr(sep, 'clean'):
+            sep = sep.clean()
+        return str(sep).join([item.clean() for item in self.collect_evstring()])
+
+    def raw(self):
+        """
+        Return the container's data with the original markup.
+        """
+        sep = self.sep
+        if hasattr(sep, 'raw'):
+            sep = sep.raw()
+        return str(sep).join([item.raw() for item in self.collect_evstring()])
+
     def ansi(self, **kwargs):
         """
         Return the container's data formatted with ANSI code
         """
-        data = EvString(self.sep).join(self.collect_evstring())
-        return data.ansi(**kwargs)
+        sep = EvString(self.sep)
+        return sep.ansi(**kwargs).join([item.ansi(**kwargs) for item in self.collect_evstring()])
     
     def html(self, **kwargs):
         """
         Return the container's data formatted for HTML
         """
-        data = EvString(self.sep).join(self.collect_evstring())
-        return data.html(**kwargs)
+        sep = EvString(self.sep)
+        return sep.html(**kwargs).join([item.html(**kwargs) for item in self.collect_evstring()])
         

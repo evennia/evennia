@@ -258,18 +258,18 @@ class EvCell(EvStringContainer):
 
         # avoid multi-char pad_chars messing up counting
         pad_char = kwargs.get("pad_char", " ")
-        pad_char = pad_char[0] if pad_char else " "
+        pad_char = EvString(pad_char[0]) if pad_char else " "
         hpad_char = kwargs.get("hpad_char", pad_char)
-        self.hpad_char = hpad_char[0] if hpad_char else pad_char
+        self.hpad_char = EvString(hpad_char[0]) if hpad_char else pad_char
         vpad_char = kwargs.get("vpad_char", pad_char)
-        self.vpad_char = vpad_char[0] if vpad_char else pad_char
+        self.vpad_char = EvString(vpad_char[0]) if vpad_char else pad_char
 
         fill_char = kwargs.get("fill_char", " ")
-        fill_char = fill_char[0] if fill_char else " "
+        fill_char = EvString(fill_char[0]) if fill_char else " "
         hfill_char = kwargs.get("hfill_char", fill_char)
-        self.hfill_char = hfill_char[0] if hfill_char else " "
+        self.hfill_char = EvString(hfill_char[0]) if hfill_char else " "
         vfill_char = kwargs.get("vfill_char", fill_char)
-        self.vfill_char = vfill_char[0] if vfill_char else " "
+        self.vfill_char = EvString(vfill_char[0]) if vfill_char else " "
 
         self.crop_string = kwargs.get("crop_string", "[...]")
 
@@ -281,20 +281,20 @@ class EvCell(EvStringContainer):
         self.border_bottom = kwargs.get("border_bottom", borderwidth)
 
         borderchar = kwargs.get("border_char", None)
-        self.border_left_char = kwargs.get("border_left_char", borderchar if borderchar else "|")
-        self.border_right_char = kwargs.get(
+        self.border_left_char = EvString(kwargs.get("border_left_char", borderchar if borderchar else "|"))
+        self.border_right_char = EvString(kwargs.get(
             "border_right_char", borderchar if borderchar else self.border_left_char
-        )
-        self.border_top_char = kwargs.get("border_top_char", borderchar if borderchar else "-")
-        self.border_bottom_char = kwargs.get(
+        ))
+        self.border_top_char = EvString(kwargs.get("border_top_char", borderchar if borderchar else "-"))
+        self.border_bottom_char = EvString(kwargs.get(
             "border_bottom_char", borderchar if borderchar else self.border_top_char
-        )
+        ))
 
         corner_char = kwargs.get("corner_char", "+")
-        self.corner_top_left_char = kwargs.get("corner_top_left_char", corner_char)
-        self.corner_top_right_char = kwargs.get("corner_top_right_char", corner_char)
-        self.corner_bottom_left_char = kwargs.get("corner_bottom_left_char", corner_char)
-        self.corner_bottom_right_char = kwargs.get("corner_bottom_right_char", corner_char)
+        self.corner_top_left_char = EvString(kwargs.get("corner_top_left_char", corner_char))
+        self.corner_top_right_char = EvString(kwargs.get("corner_top_right_char", corner_char))
+        self.corner_bottom_left_char = EvString(kwargs.get("corner_bottom_left_char", corner_char))
+        self.corner_bottom_right_char = EvString(kwargs.get("corner_bottom_right_char", corner_char))
 
         # alignments
         self.align = kwargs.get("align", "l")
@@ -371,7 +371,7 @@ class EvCell(EvStringContainer):
                 # fix for ANSIString not supporting expand_tabs/translate
                 adjusted_data.extend(
                     [
-                        EvString(part + EvString("|n"))
+                        EvString(part) + EvString("|n")
                         for part in wrap(line, width=width, drop_whitespace=False)
                     ]
                 )
@@ -595,17 +595,17 @@ class EvCell(EvStringContainer):
 
         self.enforce_size = kwargs.get("enforce_size", False)
 
-        pad_char = kwargs.pop("pad_char", None)
+        pad_char = kwargs.pop("pad_char", '')
         hpad_char = kwargs.pop("hpad_char", pad_char)
-        self.hpad_char = hpad_char[0] if hpad_char else self.hpad_char
+        self.hpad_char = EvString(hpad_char[0]) if hpad_char else self.hpad_char
         vpad_char = kwargs.pop("vpad_char", pad_char)
-        self.vpad_char = vpad_char[0] if vpad_char else self.vpad_char
+        self.vpad_char = EvString(vpad_char[0]) if vpad_char else self.vpad_char
 
         fillchar = kwargs.pop("fill_char", None)
         hfill_char = kwargs.pop("hfill_char", fillchar)
-        self.hfill_char = hfill_char[0] if hfill_char else self.hfill_char
+        self.hfill_char = EvString(hfill_char[0]) if hfill_char else self.hfill_char
         vfill_char = kwargs.pop("vfill_char", fillchar)
-        self.vfill_char = vfill_char[0] if vfill_char else self.vfill_char
+        self.vfill_char = EvString(vfill_char[0]) if vfill_char else self.vfill_char
 
         borderwidth = kwargs.get("border_width", None)
         self.border_left = kwargs.pop(
@@ -622,35 +622,35 @@ class EvCell(EvStringContainer):
         )
 
         borderchar = kwargs.get("border_char", None)
-        self.border_left_char = kwargs.pop(
+        self.border_left_char = EvString(kwargs.pop(
             "border_left_char", borderchar if borderchar else self.border_left_char
-        )
-        self.border_right_char = kwargs.pop(
+        ))
+        self.border_right_char = EvString(kwargs.pop(
             "border_right_char", borderchar if borderchar else self.border_right_char
-        )
-        self.border_top_char = kwargs.pop(
+        ))
+        self.border_top_char = EvString(kwargs.pop(
             "border_topchar", borderchar if borderchar else self.border_top_char
-        )
-        self.border_bottom_char = kwargs.pop(
+        ))
+        self.border_bottom_char = EvString(kwargs.pop(
             "border_bottom_char", borderchar if borderchar else self.border_bottom_char
-        )
+        ))
 
         corner_char = kwargs.get("corner_char", None)
-        self.corner_top_left_char = kwargs.pop(
+        self.corner_top_left_char = EvString(kwargs.pop(
             "corner_top_left", corner_char if corner_char is not None else self.corner_top_left_char
-        )
-        self.corner_top_right_char = kwargs.pop(
+        ))
+        self.corner_top_right_char = EvString(kwargs.pop(
             "corner_top_right",
             corner_char if corner_char is not None else self.corner_top_right_char,
-        )
-        self.corner_bottom_left_char = kwargs.pop(
+        ))
+        self.corner_bottom_left_char = EvString(kwargs.pop(
             "corner_bottom_left",
             corner_char if corner_char is not None else self.corner_bottom_left_char,
-        )
-        self.corner_bottom_right_char = kwargs.pop(
+        ))
+        self.corner_bottom_right_char = EvString(kwargs.pop(
             "corner_bottom_right",
             corner_char if corner_char is not None else self.corner_bottom_right_char,
-        )
+        ))
 
         # this is used by the table to adjust size of cells with borders in the middle
         # of the table
@@ -829,7 +829,6 @@ class EvColumn(EvStringContainer):
         self.column[index].reformat(**kwargs)
 
     def collect_evstring(self):
-        # TODO: i don't think nesting like this is going to work right, will revisit
         return list(self.column)
 
     def __repr__(self):
