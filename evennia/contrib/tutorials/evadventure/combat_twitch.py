@@ -300,7 +300,7 @@ class _BaseTwitchCombatCommand(Command):
                 raise InterruptCommand()
 
             EvAdventureCombatTwitchHandler.get_or_create_combathandler(
-                target, combathandler_key=combathandler_key
+                target, key=combathandler_key
             )
         return EvAdventureCombatTwitchHandler.get_or_create_combathandler(self.caller)
 
