@@ -1,5 +1,9 @@
 # Changelog
 
+## Main branch
+
+- Fix: Typo in evadventure twitch combat's call of `create_combathandler`.
+
 ## Evennia 2.2.0
 
 Aug 6, 2023
