@@ -1256,7 +1256,7 @@ class CmdSetHome(CmdLink):
 
     Usage:
       sethome <obj> [= <home_location>]
-      sethom <obj>
+      sethome <obj>
 
     The "home" location is a "safety" location for objects; they
     will be moved there if their current location ceases to exist. All
