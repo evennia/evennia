@@ -189,7 +189,7 @@ This opens an exit `north` (with an alias `n`) to the previously created room `h
 
 If you have many rooms named `house`, you will get a list of matches and must select to which specific one you want to link.
 
-Next, follow the northern exit to your "house" by walking north, or you can also `teleport` to it:
+Next, follow the northern exit to your "house" by walking north. You can also `teleport` to it:
 
     north
 
