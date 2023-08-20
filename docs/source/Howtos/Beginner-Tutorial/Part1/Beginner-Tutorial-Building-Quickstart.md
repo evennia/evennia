@@ -77,7 +77,7 @@ At this point in the building tutorial, our Character is currently carrying the 
 
     drop box
 
-Hey presto - there it is on the ground, in all its normality. There is also a shortcut to both create and drop an object in one go by using the `/drop` switch immediateliy after the create command (e.g, `create/drop box`). 
+Hey presto, &mdash; there it is on the ground, in all its normality. There is also a shortcut to both create and drop an object in one go by using the `/drop` switch (e.g, `create/drop box`). 
 
 Let us take a closer look at our new box:
 
