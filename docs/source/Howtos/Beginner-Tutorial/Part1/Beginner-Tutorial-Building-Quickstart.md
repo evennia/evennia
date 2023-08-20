@@ -128,7 +128,7 @@ The above string tells Evennia to dig up the Python code at the place we indicat
 
 Wait a while and you will notice yourself starting to make random observations...
 
-    script self
+    script self =
 
 The above command will show details about scripts on the given object, in this case your self. The `examine` command also includes such details. 
 
