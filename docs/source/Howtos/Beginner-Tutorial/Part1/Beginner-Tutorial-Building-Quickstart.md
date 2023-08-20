@@ -187,7 +187,7 @@ You can create new exits from where you are standing, using the `open` command:
 
 This opens an exit `north` (with an alias `n`) to the previously created room `house`.
 
-If you have many rooms named `house`, you will get a list of matches and must select to which specifric one you want to link.
+If you have many rooms named `house`, you will get a list of matches and must select to which specific one you want to link.
 
 Next, follow the northern exit to your "house" by walking north, or you can also `teleport` to it:
 
