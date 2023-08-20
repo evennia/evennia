@@ -911,7 +911,9 @@ class EvMenu:
 
         # validation of the node return values
 
-        # if the nodetext is a list/tuple, the second set is the help text.
+        # if the nodetext is a list/tuple, the second set is the help text. 
+        # helptext can also be a dict, which allows for tooltip command-text (key-value) pairs. 
+
         helptext = ""
         if is_iter(nodetext):
             nodetext, *helptext = nodetext
@@ -1084,6 +1086,8 @@ class EvMenu:
                 self.goto(goto_node, raw_string, **(goto_kwargs or {}))
             elif self.auto_look and cmd in ("look", "l"):
                 self.display_nodetext()
+            elif self.auto_help and isinstance(self.helptext, dict) and cmd in self.helptext:
+                self.display_tooltip(cmd)
             elif self.auto_help and cmd in ("help", "h"):
                 self.display_helptext()
             elif self.auto_quit and cmd in ("quit", "q", "exit"):
@@ -1105,6 +1109,9 @@ class EvMenu:
 
     def display_helptext(self):
         self.msg(self.helptext)
+    
+    def display_tooltip(self, cmd):
+        self.msg(self.helptext.get(cmd))
 
     # formatters - override in a child class
 
