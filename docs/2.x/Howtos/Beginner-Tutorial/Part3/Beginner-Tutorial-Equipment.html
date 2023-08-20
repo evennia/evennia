@@ -80,7 +80,10 @@
 <li><a class="reference internal" href="#add-and-remove">5.5. <code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code></a></li>
 <li><a class="reference internal" href="#moving-things-around">5.6. Moving things around</a></li>
 <li><a class="reference internal" href="#get-everything">5.7. Get everything</a></li>
-<li><a class="reference internal" href="#weapon-and-armor">5.8. Weapon and armor</a></li>
+<li><a class="reference internal" href="#weapon-and-armor">5.8. Weapon and armor</a><ul>
+<li><a class="reference internal" href="#fixing-the-character-class">5.8.1. Fixing the Character class</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#extra-credits">5.9. Extra credits</a></li>
 <li><a class="reference internal" href="#unit-testing">5.10. Unit Testing</a></li>
 <li><a class="reference internal" href="#summary">5.11. Summary</a></li>
@@ -280,6 +283,7 @@ we will skip that for this tutorial.</p>
 </pre></div>
 </div>
 <p>Above we have assumed the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.equipment</span></code>) has methods <code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code>,  <code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code>. But we haven’t actually added them yet - we just put some reasonable names! Before we can use this, we need to go actually adding those methods.</p>
+<p>When you do things like <code class="docutils literal notranslate"><span class="pre">create/drop</span> <span class="pre">monster:NPC</span></code>, the npc will briefly be in your inventory before being dropped on the ground. Since an NPC is not a valid thing to equip, the EquipmentHandler will complain with an <code class="docutils literal notranslate"><span class="pre">EquipmentError</span></code> (we define this see below). So we need to</p>
 </section>
 <section id="expanding-the-equipmenthandler">
 <h2><span class="section-number">5.3. </span>Expanding the Equipmenthandler<a class="headerlink" href="#expanding-the-equipmenthandler" title="Permalink to this headline">¶</a></h2>
@@ -582,6 +586,52 @@ double-check we can actually fit the thing, then we add the item to the backpack
 </div>
 <p>In the <code class="docutils literal notranslate"><span class="pre">.armor()</span></code> method we get the item (if any) out of each relevant wield-slot (body, shield, head), and grab their <code class="docutils literal notranslate"><span class="pre">armor</span></code> Attribute. We then <code class="docutils literal notranslate"><span class="pre">sum()</span></code> them all up.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">.weapon()</span></code>, we simply check which of the possible weapon slots (weapon-hand or two-hands) have  something in them. If not we fall back to the ‘Bare Hands’ object we created in the <a class="reference internal" href="Beginner-Tutorial-Objects.html#your-bare-hands"><span class="std std-doc">Object tutorial lesson</span></a> earlier.</p>
+<section id="fixing-the-character-class">
+<h3><span class="section-number">5.8.1. </span>Fixing the Character class<a class="headerlink" href="#fixing-the-character-class" title="Permalink to this headline">¶</a></h3>
+<p>So we have added our equipment handler which validate what we put in it. This will however lead to a problem when we create things like NPCs in game, e.g. with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop monster:evadventure.npcs.EvAdventureNPC
+</pre></div>
+</div>
+<p>The problem is that when the monster is created it will briefly appear in your inventory before being dropped, so this code will fire on you when you do that (assuming you are an <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/characters.py</span>
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Called by Evennia when an object arrives &#39;in&#39; the character.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>At this means that the equipmenthandler will check the NPC, and since it’s not a equippable thing, an <code class="docutils literal notranslate"><span class="pre">EquipmentError</span></code> will be raised, failing the creation. Since we want to be able to create npcs etc easily, we will handle this error with a <code class="docutils literal notranslate"><span class="pre">try...except</span></code> statement like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/characters.py</span>
+<span class="c1"># ... </span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span> 
+<span class="kn">from</span> <span class="nn">.equipment</span> <span class="kn">import</span> <span class="n">EquipmentError</span>
+
+<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Called by Evennia when an object arrives &#39;in&#39; the character.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">EquipmentError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            
+</pre></div>
+</div>
+<p>Using Evennia’s <code class="docutils literal notranslate"><span class="pre">logger.log_trace()</span></code> we catch the error and direct it to the server log. This allows you to see if there are real errors here as well, but once things work and these errors are spammy, you can also just replace the <code class="docutils literal notranslate"><span class="pre">logger.log_trace()</span></code> line with a <code class="docutils literal notranslate"><span class="pre">pass</span></code> to hide these errors.</p>
+</section>
 </section>
 <section id="extra-credits">
 <h2><span class="section-number">5.9. </span>Extra credits<a class="headerlink" href="#extra-credits" title="Permalink to this headline">¶</a></h2>
