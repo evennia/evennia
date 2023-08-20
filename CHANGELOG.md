@@ -2,6 +2,7 @@
 
 ## Main branch
 
+- Feat: EvMenu tooltips for multiple help categories in a node (Seannio)
 - Fix: Typo in evadventure twitch combat's call of `create_combathandler`.
 
 ## Evennia 2.2.0

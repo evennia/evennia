@@ -66,8 +66,11 @@ returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
 
 - `text` (str, tuple or None): Text shown at this node. If a tuple, the
-   second element in the tuple is a help text to display at this
-   node when the user enters the menu help command there.
+   second element in the tuple holds either a string or a dict. If a string,
+   this is the help text to show when `auto_help` is active for the menu and
+   the user presses `h`. If a dict, this is a mapping of `'help topic': 'help text'` to
+   show in that menu. This can be used to show information without having to
+   switch to another node.
 - `options` (tuple, dict or None): If `None`, this exits the menu.
   If a single dict, this is a single-option node. If a tuple,
   it should be a tuple of option dictionaries. Option dicts have the following keys:
@@ -911,13 +914,22 @@ class EvMenu:
 
         # validation of the node return values
 
-        # if the nodetext is a list/tuple, the second set is the help text. 
-        # helptext can also be a dict, which allows for tooltip command-text (key-value) pairs. 
+        # if the nodetext is a list/tuple, the second set is the help text.
+        # helptext can also be a dict, which allows for tooltip command-text (key-value) or
+        # ((key,aliases)-value) pairs.
 
-        helptext = ""
         if is_iter(nodetext):
             nodetext, *helptext = nodetext
             helptext = helptext[0] if helptext else ""
+
+            if isinstance(helptext, dict):
+                # handle both (key-value) and (key, aliases)-value pairs
+                _help_text = {}
+                for topic_keys, help_entry in helptext.items():
+                    for topic_key in make_iter(topic_keys):
+                        _help_text[topic_key.strip().lower()] = help_entry
+                helptext = _help_text
+
         nodetext = "" if nodetext is None else str(nodetext)
 
         # handle the helptext
@@ -1109,7 +1121,7 @@ class EvMenu:
 
     def display_helptext(self):
         self.msg(self.helptext)
-    
+
     def display_tooltip(self, cmd):
         self.msg(self.helptext.get(cmd))
 
