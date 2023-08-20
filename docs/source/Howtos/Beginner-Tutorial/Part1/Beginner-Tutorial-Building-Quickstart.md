@@ -36,7 +36,7 @@ The most common command is
 
 This will show you the description of the current location. `l` is an alias for the look command.
 
-When targeting objects in commands, you have two special labels you can use: (1) `here` for the current room, or (2) `me`/`self` to point back to yourself. Thus,
+When targeting objects in commands, you have two special labels you can use: `here` for the current room, or `me`/`self` to point back to yourself. Thus,
 
     look me
 
