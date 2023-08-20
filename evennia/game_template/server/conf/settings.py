@@ -4,7 +4,7 @@ Evennia settings file.
 The available options are found in the default settings file found
 here:
 
-{settings_default}
+https://www.evennia.com/docs/latest/Setup/Settings-Default.html
 
 Remember:
 
