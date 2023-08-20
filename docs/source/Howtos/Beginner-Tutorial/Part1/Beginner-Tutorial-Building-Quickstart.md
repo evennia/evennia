@@ -151,7 +151,7 @@ Let's make us one of _those_!
 
     create/drop button:tutorials.red_button.RedButton
 
-Enter the above command, switch, and Python-path and there you go &mdash; one red button! Just as in the Script example earlier, we have specified a "Python-path" to the Python code that we want Evennia to use for creating the object. 
+Enter the above command with Python-path and there you go &mdash; one red button! Just as in the Script example earlier, we have specified a Python-path to the Python code that we want Evennia to use for creating the object. 
 
 The RedButton is an example object intended to show off a few of Evennia's features. You will find that the [Typeclass](../../../Components/Typeclasses.md) and [Commands](../../../Components/Commands.md) controlling it are inside [evennia/contrib/tutorials/red_button](../../../api/evennia.contrib.tutorials.red_button.md).
 
