@@ -179,7 +179,7 @@ If you wanted to use regular compass directions (north, west, southwest, etc.), 
 
     tunnel sw = cliff
 
-This will create a new room "cliff" with a "southwest" exit leading there, and a "northeast" path leading back from the cliff to your current location. <!-- is it always bidirectional be default? if so, we might do well to state so explicitly.>
+This will create a new room named "cliff" with a "southwest" exit leading there, and a "northeast" path leading back from the cliff to your current location.
 
 You can create new exits from where you are standing, using the `open` command:
 
