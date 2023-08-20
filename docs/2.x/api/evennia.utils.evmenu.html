@@ -172,8 +172,11 @@ returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default “look” command is called.</p>
 <ul class="simple">
 <li><dl class="simple">
-<dt><strong>text</strong> (str, tuple or None): Text shown at this node. If a tuple, the</dt><dd><p>second element in the tuple is a help text to display at this
-node when the user enters the menu help command there.</p>
+<dt><strong>text</strong> (str, tuple or None): Text shown at this node. If a tuple, the</dt><dd><p>second element in the tuple holds either a string or a dict. If a string,
+this is the help text to show when <strong>auto_help</strong> is active for the menu and
+the user presses <strong>h</strong>. If a dict, this is a mapping of <strong>‘help topic’: ‘help text’</strong> to
+show in that menu. This can be used to show information without having to
+switch to another node.</p>
 </dd>
 </dl>
 </li>
@@ -669,6 +672,11 @@ should also report errors directly to the user.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.utils.evmenu.EvMenu.display_tooltip">
+<code class="sig-name descname">display_tooltip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.display_tooltip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.display_tooltip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="evennia.utils.evmenu.EvMenu.nodetext_formatter">
 <code class="sig-name descname">nodetext_formatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodetext</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.nodetext_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.nodetext_formatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format the node text itself.</p>
@@ -939,7 +947,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['abort', 'a', 'no', '__nomatch_command', 'y', 'yes', 'n']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['y', '__nomatch_command', 'n', 'abort', 'yes', 'a', 'no']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -965,7 +973,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'abort a no __nomatch_command y yes n', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' abort a no __nomatch_command y yes n', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'y __nomatch_command n abort yes a no', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' y __nomatch_command n abort yes a no', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

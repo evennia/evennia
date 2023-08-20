@@ -152,8 +152,11 @@
 <span class="sd">menu is immediately exited and the default &quot;look&quot; command is called.</span>
 
 <span class="sd">- `text` (str, tuple or None): Text shown at this node. If a tuple, the</span>
-<span class="sd">   second element in the tuple is a help text to display at this</span>
-<span class="sd">   node when the user enters the menu help command there.</span>
+<span class="sd">   second element in the tuple holds either a string or a dict. If a string,</span>
+<span class="sd">   this is the help text to show when `auto_help` is active for the menu and</span>
+<span class="sd">   the user presses `h`. If a dict, this is a mapping of `&#39;help topic&#39;: &#39;help text&#39;` to</span>
+<span class="sd">   show in that menu. This can be used to show information without having to</span>
+<span class="sd">   switch to another node.</span>
 <span class="sd">- `options` (tuple, dict or None): If `None`, this exits the menu.</span>
 <span class="sd">  If a single dict, this is a single-option node. If a tuple,</span>
 <span class="sd">  it should be a tuple of option dictionaries. Option dicts have the following keys:</span>
@@ -998,10 +1001,21 @@
         <span class="c1"># validation of the node return values</span>
 
         <span class="c1"># if the nodetext is a list/tuple, the second set is the help text.</span>
-        <span class="n">helptext</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># helptext can also be a dict, which allows for tooltip command-text (key-value) or</span>
+        <span class="c1"># ((key,aliases)-value) pairs.</span>
+
         <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">):</span>
             <span class="n">nodetext</span><span class="p">,</span> <span class="o">*</span><span class="n">helptext</span> <span class="o">=</span> <span class="n">nodetext</span>
             <span class="n">helptext</span> <span class="o">=</span> <span class="n">helptext</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">helptext</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">helptext</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># handle both (key-value) and (key, aliases)-value pairs</span>
+                <span class="n">_help_text</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">topic_keys</span><span class="p">,</span> <span class="n">help_entry</span> <span class="ow">in</span> <span class="n">helptext</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">topic_key</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">topic_keys</span><span class="p">):</span>
+                        <span class="n">_help_text</span><span class="p">[</span><span class="n">topic_key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">help_entry</span>
+                <span class="n">helptext</span> <span class="o">=</span> <span class="n">_help_text</span>
+
         <span class="n">nodetext</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">nodetext</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">nodetext</span><span class="p">)</span>
 
         <span class="c1"># handle the helptext</span>
@@ -1170,6 +1184,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">goto_node</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">goto_kwargs</span> <span class="ow">or</span> <span class="p">{}))</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_look</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">display_nodetext</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">display_tooltip</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">display_helptext</span><span class="p">()</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_quit</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;exit&quot;</span><span class="p">):</span>
@@ -1191,6 +1207,9 @@
 
 <div class="viewcode-block" id="EvMenu.display_helptext"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_helptext">[docs]</a>    <span class="k">def</span> <span class="nf">display_helptext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvMenu.display_tooltip"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_tooltip">[docs]</a>    <span class="k">def</span> <span class="nf">display_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span></div>
 
     <span class="c1"># formatters - override in a child class</span>
 

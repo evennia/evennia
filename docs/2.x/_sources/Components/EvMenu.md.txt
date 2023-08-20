@@ -18,8 +18,7 @@ accepts specific options as input or free-form input. Depending what the player
 chooses, they are forwarded to different nodes in the menu.
 
 The `EvMenu` utility class is located in [evennia/utils/evmenu.py](evennia.utils.evmenu).
-It allows for easily adding interactive menus to the game; for example to implement Character
-creation, building commands or similar. Below is an example of offering NPC conversation choices:
+It allows for easily adding interactive menus to the game; for example to implement Character creation, building commands or similar. Below is an example of offering NPC conversation choices:
 
 This is how the example menu at the top of this page will look in code:
 
@@ -175,8 +174,7 @@ into combat!
 
 ## Launching the menu
 
-Initializing the menu is done using a call to the `evennia.utils.evmenu.EvMenu` class. This is the
-most common way to do so - from inside a [Command](./Commands.md):
+Initializing the menu is done using a call to the `evennia.utils.evmenu.EvMenu` class. This is the most common way to do so - from inside a [Command](./Commands.md):
 
 ```python
 # in, for example gamedir/commands/command.py
@@ -218,7 +216,7 @@ EvMenu(caller, menu_data,
  - `startnode` (str): is the name of the menu-node to start the menu at. Changing this means that you can jump into a menu tree at different positions depending on circumstance and thus possibly re-use menu entries.
  - `cmdset_mergetype` (str): This is usually one of "Replace" or "Union" (see [CmdSets](Command- Sets). The first means that the menu is exclusive - the user has no access to any other commands while in the menu. The Union mergetype means the menu co-exists with previous commands (and may overload them, so be careful as to what to name your menu entries in this case).
  - `cmdset_priority` (int): The priority with which to merge in the menu cmdset. This allows for advanced usage.
- - `auto_quit`, `auto_look`, `auto_help` (bool): If either of these are `True`, the menu automatically makes a `quit`, `look` or `help` command available to the user. The main reason why you'd want to turn this off is if  you want to use the aliases "q", "l" or "h" for something in your menu. Nevertheless, at least `quit` is highly recommend - if `False`, the menu *must* itself supply an "exit node" (a node without any options), or the user will be stuck in the menu until the server reloads (or eternally if the menu is `persistent`)!
+ - `auto_quit`, `auto_look`, `auto_help` (bool): If either of these are `True`, the menu automatically makes a `quit`, `look` or `help` command available to the user. The main reason why you'd want to turn this off is if  you want to use the aliases "q", "l" or "h" for something in your menu. The `auto_help` also activates the ability to have arbitrary "tool tips" in your menu node (see below), At least `quit` is highly recommend - if `False`, the menu *must* itself supply an "exit node" (a node without any options), or the user will be stuck in the menu until the server reloads (or eternally if the menu is `persistent`)!
  - `cmd_on_exit` (str): This command string will be executed right *after* the menu has closed down. From experience, it's useful to trigger a "look" command to make sure the user is aware of the change of state; but any command can be used. If set to `None`, no command will be triggered after exiting the menu.
  - `persistent` (bool) - if `True`, the menu will survive a reload (so the user will not be kicked
    out by the reload - make sure they can exit on their own!)
@@ -257,24 +255,16 @@ def menunodename3(caller, raw_string, **kwargs):
 
 ```
 
-> While all of the above forms are okay, it's recommended to stick to the third and last form since
-it
-> gives the most flexibility. The previous forms are mainly there for backwards compatibility with
-> existing menus from a time when EvMenu was less able.
+> While all of the above forms are okay, it's recommended to stick to the third and last form since it gives the most flexibility. The previous forms are mainly there for backwards compatibility with  existing menus from a time when EvMenu was less able and may become deprecated at some time in the future.
 
 
 ### Input arguments to the node
 
- - `caller` (Object or Account): The object using the menu - usually a Character but could also be a
-   Session or Account depending on where the menu is used.
+ - `caller` (Object or Account): The object using the menu - usually a Character but could also be a Session or Account depending on where the menu is used.
  - `raw_string` (str): If this is given, it will be set to the exact text the user entered on the
-   *previous* node (that is, the command entered to get to this node). On the starting-node of the
-   menu, this will be an empty string, unless `startnode_input` was set.
- - `kwargs` (dict): These extra keyword arguments are extra optional arguments passed to the node
-   when the user makes a choice on the *previous* node. This may include things like status flags
-   and details about which exact option was chosen (which can be impossible to determine from
-   `raw_string` alone). Just what is passed in `kwargs` is up to you when you create the previous
-   node.
+   *previous* node (that is, the command entered to get to this node). On the starting-node of the menu, this will be an empty string, unless `startnode_input` was set.
+ - `kwargs` (dict): These extra keyword arguments are extra optional arguments passed to the node when the user makes a choice on the *previous* node. This may include things like status flags and details about which exact option was chosen (which can be impossible to determine from
+   `raw_string` alone). Just what is passed in `kwargs` is up to you when you create the previous node.
 
 ### Return values from the node
 
@@ -283,13 +273,34 @@ Each node function must return two variables, `text` and `options`.
 
 #### text
 
-The `text` variable is a string or tuple. This text is what will be displayed when the user reaches this node. If this is a tuple, then the first element of the tuple will be considered the displayed text and the second the help-text to display when the user enters the `help` command on this node.
+The `text` variable is either a string or a tuple. This is the simplest form: 
+
 ```python
-    text = ("This is the text to display", "This is the help text for this node")
+text = "Node text"
 ```
 
-Returning a `None` text is allowed and simply leads to a node with no text and only options.  If the help text is not given, the menu will give a generic error message when using `help`.
+This is what will be displayed as text in the menu node when entering it. You can modify this dynamically in the node if you want. Returning a `None` node text text is allowed - this leads to a node with no text and only options.  
 
+```python
+text = ("Node text", "help text to show with h|elp")
+```
+
+In this form, we also add an optional help text. If `auto_help=True` when initializing the EvMenu, the user will be able to use `h` or `help` to see this text when viewing this node. If the user were to provide a custom option overriding `h` or `help`, that will be shown instead.
+
+If `auto_help=True` and no help text is provided, using `h|elp` will give a generic error message.
+
+```python
+text = ("Node text", {"help topic 1": "Help 1", 
+                      ("help topic 2", "alias1", ...): "Help 2", ...})
+```
+
+This is 'tooltip' or 'multi-help category' mode. This also requires `auto_help=True` when initializing the EvMenu. By providing a `dict` as the second element of the `text` tuple, the user will be able to help about any of these topics. Use a tuple as key to add multiple aliases to the same help entry. This allows the user to get more detailed help text without leaving the given node. 
+
+Note that in 'tooltip' mode, the normal `h|elp` command won't work. The `h|elp` entry must be added manually in the dict. As an example, this would reproduce the normal help functionality: 
+
+```python
+text = ("Node text", {("help", "h"): "Help entry...", ...})
+```
 
 #### options
 

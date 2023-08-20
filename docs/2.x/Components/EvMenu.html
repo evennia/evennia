@@ -170,8 +170,7 @@ Thanks<span class="w"> </span><span class="k">for</span><span class="w"> </span>
 accepts specific options as input or free-form input. Depending what the player
 chooses, they are forwarded to different nodes in the menu.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> utility class is located in <a class="reference internal" href="../api/evennia.utils.evmenu.html#evennia-utils-evmenu"><span class="std std-ref">evennia/utils/evmenu.py</span></a>.
-It allows for easily adding interactive menus to the game; for example to implement Character
-creation, building commands or similar. Below is an example of offering NPC conversation choices:</p>
+It allows for easily adding interactive menus to the game; for example to implement Character creation, building commands or similar. Below is an example of offering NPC conversation choices:</p>
 <p>This is how the example menu at the top of this page will look in code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmenu</span>
 
@@ -310,8 +309,7 @@ choose to point you to nodes that continue the conversation or maybe dump you
 into combat!</p>
 <section id="launching-the-menu">
 <h2>Launching the menu<a class="headerlink" href="#launching-the-menu" title="Permalink to this headline">¶</a></h2>
-<p>Initializing the menu is done using a call to the <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.EvMenu</span></code> class. This is the
-most common way to do so - from inside a <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Command</span></a>:</p>
+<p>Initializing the menu is done using a call to the <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.EvMenu</span></code> class. This is the most common way to do so - from inside a <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Command</span></a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in, for example gamedir/commands/command.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
@@ -349,7 +347,7 @@ most common way to do so - from inside a <a class="reference internal" href="Com
 <li><p><code class="docutils literal notranslate"><span class="pre">startnode</span></code> (str): is the name of the menu-node to start the menu at. Changing this means that you can jump into a menu tree at different positions depending on circumstance and thus possibly re-use menu entries.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmdset_mergetype</span></code> (str): This is usually one of “Replace” or “Union” (see [CmdSets](Command- Sets). The first means that the menu is exclusive - the user has no access to any other commands while in the menu. The Union mergetype means the menu co-exists with previous commands (and may overload them, so be careful as to what to name your menu entries in this case).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmdset_priority</span></code> (int): The priority with which to merge in the menu cmdset. This allows for advanced usage.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">auto_quit</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_look</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_help</span></code> (bool): If either of these are <code class="docutils literal notranslate"><span class="pre">True</span></code>, the menu automatically makes a <code class="docutils literal notranslate"><span class="pre">quit</span></code>, <code class="docutils literal notranslate"><span class="pre">look</span></code> or <code class="docutils literal notranslate"><span class="pre">help</span></code> command available to the user. The main reason why you’d want to turn this off is if  you want to use the aliases “q”, “l” or “h” for something in your menu. Nevertheless, at least <code class="docutils literal notranslate"><span class="pre">quit</span></code> is highly recommend - if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the menu <em>must</em> itself supply an “exit node” (a node without any options), or the user will be stuck in the menu until the server reloads (or eternally if the menu is <code class="docutils literal notranslate"><span class="pre">persistent</span></code>)!</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auto_quit</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_look</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_help</span></code> (bool): If either of these are <code class="docutils literal notranslate"><span class="pre">True</span></code>, the menu automatically makes a <code class="docutils literal notranslate"><span class="pre">quit</span></code>, <code class="docutils literal notranslate"><span class="pre">look</span></code> or <code class="docutils literal notranslate"><span class="pre">help</span></code> command available to the user. The main reason why you’d want to turn this off is if  you want to use the aliases “q”, “l” or “h” for something in your menu. The <code class="docutils literal notranslate"><span class="pre">auto_help</span></code> also activates the ability to have arbitrary “tool tips” in your menu node (see below), At least <code class="docutils literal notranslate"><span class="pre">quit</span></code> is highly recommend - if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the menu <em>must</em> itself supply an “exit node” (a node without any options), or the user will be stuck in the menu until the server reloads (or eternally if the menu is <code class="docutils literal notranslate"><span class="pre">persistent</span></code>)!</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmd_on_exit</span></code> (str): This command string will be executed right <em>after</em> the menu has closed down. From experience, it’s useful to trigger a “look” command to make sure the user is aware of the change of state; but any command can be used. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no command will be triggered after exiting the menu.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code> (bool) - if <code class="docutils literal notranslate"><span class="pre">True</span></code>, the menu will survive a reload (so the user will not be kicked
 out by the reload - make sure they can exit on their own!)</p></li>
@@ -387,24 +385,16 @@ menu. Temporary variables you store on a persistent <code class="docutils litera
 </pre></div>
 </div>
 <blockquote>
-<div><p>While all of the above forms are okay, it’s recommended to stick to the third and last form since
-it
-gives the most flexibility. The previous forms are mainly there for backwards compatibility with
-existing menus from a time when EvMenu was less able.</p>
+<div><p>While all of the above forms are okay, it’s recommended to stick to the third and last form since it gives the most flexibility. The previous forms are mainly there for backwards compatibility with  existing menus from a time when EvMenu was less able and may become deprecated at some time in the future.</p>
 </div></blockquote>
 <section id="input-arguments-to-the-node">
 <h3>Input arguments to the node<a class="headerlink" href="#input-arguments-to-the-node" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> (Object or Account): The object using the menu - usually a Character but could also be a
-Session or Account depending on where the menu is used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> (Object or Account): The object using the menu - usually a Character but could also be a Session or Account depending on where the menu is used.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">raw_string</span></code> (str): If this is given, it will be set to the exact text the user entered on the
-<em>previous</em> node (that is, the command entered to get to this node). On the starting-node of the
-menu, this will be an empty string, unless <code class="docutils literal notranslate"><span class="pre">startnode_input</span></code> was set.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> (dict): These extra keyword arguments are extra optional arguments passed to the node
-when the user makes a choice on the <em>previous</em> node. This may include things like status flags
-and details about which exact option was chosen (which can be impossible to determine from
-<code class="docutils literal notranslate"><span class="pre">raw_string</span></code> alone). Just what is passed in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> is up to you when you create the previous
-node.</p></li>
+<em>previous</em> node (that is, the command entered to get to this node). On the starting-node of the menu, this will be an empty string, unless <code class="docutils literal notranslate"><span class="pre">startnode_input</span></code> was set.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> (dict): These extra keyword arguments are extra optional arguments passed to the node when the user makes a choice on the <em>previous</em> node. This may include things like status flags and details about which exact option was chosen (which can be impossible to determine from
+<code class="docutils literal notranslate"><span class="pre">raw_string</span></code> alone). Just what is passed in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> is up to you when you create the previous node.</p></li>
 </ul>
 </section>
 <section id="return-values-from-the-node">
@@ -412,11 +402,25 @@ node.</p></li>
 <p>Each node function must return two variables, <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">options</span></code>.</p>
 <section id="text">
 <h4>text<a class="headerlink" href="#text" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> variable is a string or tuple. This text is what will be displayed when the user reaches this node. If this is a tuple, then the first element of the tuple will be considered the displayed text and the second the help-text to display when the user enters the <code class="docutils literal notranslate"><span class="pre">help</span></code> command on this node.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;This is the text to display&quot;</span><span class="p">,</span> <span class="s2">&quot;This is the help text for this node&quot;</span><span class="p">)</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> variable is either a string or a tuple. This is the simplest form:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Node text&quot;</span>
 </pre></div>
 </div>
-<p>Returning a <code class="docutils literal notranslate"><span class="pre">None</span></code> text is allowed and simply leads to a node with no text and only options.  If the help text is not given, the menu will give a generic error message when using <code class="docutils literal notranslate"><span class="pre">help</span></code>.</p>
+<p>This is what will be displayed as text in the menu node when entering it. You can modify this dynamically in the node if you want. Returning a <code class="docutils literal notranslate"><span class="pre">None</span></code> node text text is allowed - this leads to a node with no text and only options.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Node text&quot;</span><span class="p">,</span> <span class="s2">&quot;help text to show with h|elp&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this form, we also add an optional help text. If <code class="docutils literal notranslate"><span class="pre">auto_help=True</span></code> when initializing the EvMenu, the user will be able to use <code class="docutils literal notranslate"><span class="pre">h</span></code> or <code class="docutils literal notranslate"><span class="pre">help</span></code> to see this text when viewing this node. If the user were to provide a custom option overriding <code class="docutils literal notranslate"><span class="pre">h</span></code> or <code class="docutils literal notranslate"><span class="pre">help</span></code>, that will be shown instead.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">auto_help=True</span></code> and no help text is provided, using <code class="docutils literal notranslate"><span class="pre">h|elp</span></code> will give a generic error message.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Node text&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;help topic 1&quot;</span><span class="p">:</span> <span class="s2">&quot;Help 1&quot;</span><span class="p">,</span> 
+                      <span class="p">(</span><span class="s2">&quot;help topic 2&quot;</span><span class="p">,</span> <span class="s2">&quot;alias1&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span> <span class="s2">&quot;Help 2&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>This is ‘tooltip’ or ‘multi-help category’ mode. This also requires <code class="docutils literal notranslate"><span class="pre">auto_help=True</span></code> when initializing the EvMenu. By providing a <code class="docutils literal notranslate"><span class="pre">dict</span></code> as the second element of the <code class="docutils literal notranslate"><span class="pre">text</span></code> tuple, the user will be able to help about any of these topics. Use a tuple as key to add multiple aliases to the same help entry. This allows the user to get more detailed help text without leaving the given node.</p>
+<p>Note that in ‘tooltip’ mode, the normal <code class="docutils literal notranslate"><span class="pre">h|elp</span></code> command won’t work. The <code class="docutils literal notranslate"><span class="pre">h|elp</span></code> entry must be added manually in the dict. As an example, this would reproduce the normal help functionality:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Node text&quot;</span><span class="p">,</span> <span class="p">{(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span> <span class="s2">&quot;Help entry...&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
+</pre></div>
+</div>
 </section>
 <section id="options">
 <h4>options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h4>
