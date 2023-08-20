@@ -73,7 +73,6 @@ class TestEvTable(EvenniaTestCase):
         self._validate(expected, str(table))
 
     def test_add_column(self):
-
         table = evtable.EvTable(
             "|yHeading1|n",
             "|gHeading2|n",
@@ -124,7 +123,6 @@ class TestEvTable(EvenniaTestCase):
         self._validate(expected, str(table))
 
     def test_add_row_and_column(self):
-
         table = evtable.EvTable(
             "|yHeading1|n",
             "|gHeading2|n",
@@ -152,7 +150,6 @@ class TestEvTable(EvenniaTestCase):
         self._validate(expected, str(table))
 
     def test_reformat(self):
-
         table = evtable.EvTable(
             "|yHeading1|n",
             "|gHeading2|n",
