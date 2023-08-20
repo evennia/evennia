@@ -99,7 +99,7 @@ If you try the `get` command, we will pick up the box. So far so good. But, if w
 
     lock box = get:false()
 
-Locks represent a rather [big topic](../../../Components/Locks.md) but, for now, this will do what we want. The above command will lock the box so no one can lift it &mdash; with one exception. Remember that superusers override all locks and will pick it up anyway. Make sure you are quelling your superuser powers, and now try to get the box now:
+Locks represent a rather [big topic](../../../Components/Locks.md) but, for now, this will do what we want. The above command will lock the box so no one can lift it &mdash; with one exception. Remember that superusers override all locks and will pick it up anyway. Make sure you are quelling your superuser powers, and try to get it again:
 
     > get box
     You can't get that.
