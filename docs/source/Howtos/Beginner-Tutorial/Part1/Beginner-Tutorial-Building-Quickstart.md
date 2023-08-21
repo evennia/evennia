@@ -172,8 +172,7 @@ The main command for shaping your game world is `dig`. For example, if you are s
 
     dig house = large red door;door;in,to the outside;out
 
-<!-- This is a confusing paragraph as related to the above command and might be more effective if it were to explicitly identify the use of commas in the arguments. -->
-This will create a new room named "house." Spaces at the start/end of object names and aliases are ignored so you could put more air if you wanted. The above dig command call will directly create an exit from your current location named 'large red door' and a corresponding exit named 'to the outside' in the house room leading back to Limbo. We also define a few aliases to those exits, so people don't have to write the full thing all the time.
+The above command will create a new room named "house." It will also create an exit from your current location named 'large red door' and a corresponding exit named 'to the outside' in the new house room leading back to Limbo. In above, we also define a few aliases to those exits so that players don't need to type the full exit name.
 
 If you wanted to use regular compass directions (north, west, southwest, etc.), you could do that with `dig`, too. However, Evennia also has a specialized version of `dig` that helps with cardinal directions (as well as up/down and in/out). It's called `tunnel`:
 
