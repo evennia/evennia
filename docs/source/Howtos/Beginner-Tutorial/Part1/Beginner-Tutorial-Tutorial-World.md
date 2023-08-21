@@ -1,29 +1,28 @@
 # The Tutorial World
 
-The *Tutorial World* is a small and functioning MUD-style game world shipped with Evennia.
-It's a small showcase of what is possible. It can also be useful for those who have an easier
+The *Tutorial World* is a small, functioning MUD-style game world shipped with Evennia.
+It's a small showcase of what is possible. It may also be useful for those who have an easier
 time learning by deconstructing existing code.
 
-Stand in the Limbo room and install it with
+To install the tutorial world, stand in the Limbo room and input:
 
     batchcommand tutorial_world.build
 
-What this does is to run the build script
+This command runn the build script in 
 [evennia/contrib/tutorials/tutorial_world/build.ev](github:evennia/contrib/tutorials/tutorial_world/build.ev).
-This is pretty much just a list of build-commands executed in sequence by the `batchcommand` command.
+Basically, this script is a list of build-commands executed in sequence by the `batchcommand` command.
 Wait for the building to complete and don't run it twice.
 
-> After having run the batchcommand, the `intro` command also becomes available in Limbo. Try it out to 
-> for in-game help and to get an example of [EvMenu](../../../Components/EvMenu.md), Evennia's in-built 
+> After having run the batchcommand, the `intro` command becomes available in Limbo. Try it out for
+> in-game help using an example of [EvMenu](../../../Components/EvMenu.md), Evennia's in-built 
 > menu generation system!
 
-The game consists of a single-player quest and has some 20 rooms that you can explore as you seek
+The tutorial world consists of a single-player quest and has some 20 rooms to explore as you seek
 to discover the whereabouts of a mythical weapon. 
 
-A new exit should have appeared named _Tutorial_. Enter by writing `tutorial`.
+A new exit should have appeared named _Tutorial_. Enter the tutorial world by typing `tutorial`.
 
-You will automatically `quell` when you enter (and `unquell` when you leave), so you can play the way it was intended.
-Both if you are triumphant or if you use the `give up` command you will eventually end up back in Limbo.
+You will automatically `quell` when you enter (and `unquell` when you leave), so you can play the way it was intended. Whether you are triumphant or use the `give up` command, you will eventually end up back in Limbo.
 
 ```{important}
 Only LOSERS and QUITTERS use the `give up` command.
