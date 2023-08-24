@@ -1282,6 +1282,12 @@ class CounterTrait(Trait):
             trait_data["last_update"] = None
         return trait_data
 
+    def __str__(self):
+        status = "{current:4} / {base:4}".format(current=self.current, base=self.base)
+        return "{name:12} {status} ({mod:+3}) (* {mult:.2f})".format(
+            name=self.name, status=status, mod=self.mod, mult=self.mult
+        )
+
     # Helpers
 
     def _within_boundaries(self, value):
