@@ -2,10 +2,13 @@
 
 ## Main branch
 
-- Feat: EvMenu tooltips for multiple help categories in a node (Seannio)
+- Feat: EvMenu tooltips for multiple help categories in a node (Seannio).
+- Fix: Portal would accidentally start global scripts. (InspectorCaracal)
+- Fix: Traceback when printing CounterTrait contrib objects. (InspectorCaracal)
 - Fix: Typo in evadventure twitch combat's call of `create_combathandler`.
-- Docs: Fix bug in evadventure equipmenthandler blocking creation of npcs
+- Docs: Fix bug in evadventure equipmenthandler blocking creation of npcs.
   in-game.
+- Docs: Plenty of typo fixes (iLPDev)
 
 ## Evennia 2.2.0
 
