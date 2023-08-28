@@ -918,6 +918,8 @@ class EvMenu:
         # helptext can also be a dict, which allows for tooltip command-text (key-value) or
         # ((key,aliases)-value) pairs.
 
+        # make sure helptext is defined
+        helptext = ""       
         if is_iter(nodetext):
             nodetext, *helptext = nodetext
             helptext = helptext[0] if helptext else ""
