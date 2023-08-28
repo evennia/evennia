@@ -1004,6 +1004,8 @@
         <span class="c1"># helptext can also be a dict, which allows for tooltip command-text (key-value) or</span>
         <span class="c1"># ((key,aliases)-value) pairs.</span>
 
+        <span class="c1"># make sure helptext is defined</span>
+        <span class="n">helptext</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>       
         <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">):</span>
             <span class="n">nodetext</span><span class="p">,</span> <span class="o">*</span><span class="n">helptext</span> <span class="o">=</span> <span class="n">nodetext</span>
             <span class="n">helptext</span> <span class="o">=</span> <span class="n">helptext</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">helptext</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
