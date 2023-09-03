@@ -3,6 +3,8 @@
 ## Main branch
 
 - Feat: EvMenu tooltips for multiple help categories in a node (Seannio).
+- Feat: Default `examine` command now also shows an account's `last_login`
+  (michaelfaith84)
 - Fix: Portal would accidentally start global scripts. (InspectorCaracal)
 - Fix: Traceback when printing CounterTrait contrib objects. (InspectorCaracal)
 - Fix: Typo in evadventure twitch combat's call of `create_combathandler`.

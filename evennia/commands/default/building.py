@@ -2550,7 +2550,7 @@ class CmdExamine(ObjManipCommand):
 
     def format_last_login(self, obj):
         if hasattr(obj, "last_login") and obj.last_login:
-            return f"{self.detail_color}{obj.last_login}"
+            return f"{self.detail_color}{obj.last_login}|n"
 
     def format_account_key(self, account):
         return f"{self.detail_color}{account.name}|n ({account.dbref})"
