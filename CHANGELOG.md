@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch
+## Evennia 2.3.0
+
+Sept 3, 2023
 
 - Feat: EvMenu tooltips for multiple help categories in a node (Seannio).
 - Feat: Default `examine` command now also shows an account's `last_login`
@@ -10,7 +12,7 @@
 - Fix: Typo in evadventure twitch combat's call of `create_combathandler`.
 - Docs: Fix bug in evadventure equipmenthandler blocking creation of npcs.
   in-game.
-- Docs: Plenty of typo fixes (iLPDev)
+- Docs: Plenty of typo fixes (iLPDev, moldikins, others)
 
 ## Evennia 2.2.0
 
