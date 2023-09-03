@@ -458,7 +458,7 @@ It's convenient to have the `EquipmentHandler` easily tell you what weapon is cu
 # mygame/evadventure/equipment.py 
 
 from .enums import WieldLocation, Ability
-from .objects import get_empty_hand
+from .objects import get_bare_hand
 
 # ... 
 
@@ -505,7 +505,7 @@ So we have added our equipment handler which validate what we put in it. This wi
 
     create/drop monster:evadventure.npcs.EvAdventureNPC
 
-The problem is that when the monster is created it will briefly appear in your inventory before being dropped, so this code will fire on you when you do that (assuming you are an `EvAdventureCharacter`):
+The problem is that when the/ monster is created it will briefly appear in your inventory before being dropped, so this code will fire on you when you do that (assuming you are an `EvAdventureCharacter`):
 
 ```python
 # mygame/evadventure/characters.py
@@ -583,8 +583,9 @@ passing these into the handler's methods.
 from evennia.utils import create 
 from evennia.utils.test_resources import BaseEvenniaTest 
 
-from ..objects import EvAdventureRoom
+from ..objects import EvAdventureObject, EvAdventureHelmet, EvAdventureWeapon
 from ..enums import WieldLocation
+from ..characters import EvAdventureCharacter
 
 class TestEquipment(BaseEvenniaTest): 
     
