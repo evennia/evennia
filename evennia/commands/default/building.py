@@ -2548,6 +2548,10 @@ class CmdExamine(ObjManipCommand):
         if hasattr(obj, "email") and obj.email:
             return f"{self.detail_color}{obj.email}|n"
 
+    def format_last_login(self, obj):
+        if hasattr(obj, "last_login") and obj.last_login:
+            return f"{self.detail_color}{obj.last_login}"
+
     def format_account_key(self, account):
         return f"{self.detail_color}{account.name}|n ({account.dbref})"
 
@@ -2827,6 +2831,7 @@ class CmdExamine(ObjManipCommand):
         objdata["Typeclass"] = self.format_typeclass(obj)
         objdata["Sessions"] = self.format_sessions(obj)
         objdata["Email"] = self.format_email(obj)
+        objdata["Last Login"] = self.format_last_login(obj)
         if hasattr(obj, "has_account") and obj.has_account:
             objdata["Account"] = self.format_account_key(obj.account)
             objdata["  Account Typeclass"] = self.format_account_typeclass(obj.account)
