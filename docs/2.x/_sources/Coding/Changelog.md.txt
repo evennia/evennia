@@ -7,7 +7,7 @@ Sept 3, 2023
 - Feat: EvMenu tooltips for multiple help categories in a node (Seannio).
 - Feat: Default `examine` command now also shows an account's `last_login`
   (michaelfaith84)
-- Fix: Portal would accidentally start global scripts. (InspectorCaracal)
+- Fix: Portal would accidentally start global scripts. (blongden)
 - Fix: Traceback when printing CounterTrait contrib objects. (InspectorCaracal)
 - Fix: Typo in evadventure twitch combat's call of `create_combathandler`.
 - Docs: Fix bug in evadventure equipmenthandler blocking creation of npcs.
