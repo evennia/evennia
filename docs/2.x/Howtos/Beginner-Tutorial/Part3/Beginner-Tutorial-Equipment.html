@@ -547,7 +547,7 @@ double-check we can actually fit the thing, then we add the item to the backpack
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
 
 <span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
-<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">get_empty_hand</span>
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">get_bare_hand</span>
 
 <span class="c1"># ... </span>
 
@@ -592,7 +592,7 @@ double-check we can actually fit the thing, then we add the item to the backpack
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop monster:evadventure.npcs.EvAdventureNPC
 </pre></div>
 </div>
-<p>The problem is that when the monster is created it will briefly appear in your inventory before being dropped, so this code will fire on you when you do that (assuming you are an <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>):</p>
+<p>The problem is that when the/ monster is created it will briefly appear in your inventory before being dropped, so this code will fire on you when you do that (assuming you are an <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/characters.py</span>
 <span class="c1"># ... </span>
 
@@ -664,8 +664,9 @@ passing these into the handler’s methods.</p>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span> 
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span> 
 
-<span class="kn">from</span> <span class="nn">..objects</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+<span class="kn">from</span> <span class="nn">..objects</span> <span class="kn">import</span> <span class="n">EvAdventureObject</span><span class="p">,</span> <span class="n">EvAdventureHelmet</span><span class="p">,</span> <span class="n">EvAdventureWeapon</span>
 <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span>
+<span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
 
 <span class="k">class</span> <span class="nc">TestEquipment</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span> 
     
