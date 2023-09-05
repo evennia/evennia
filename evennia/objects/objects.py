@@ -107,7 +107,7 @@ class ObjectSessionHandler:
             ]
         if None in sessions:
             # this happens only if our cache has gone out of sync with the SessionHandler.
-
+            self._recache()
             return self.get(sessid=sessid)
         return sessions
 
