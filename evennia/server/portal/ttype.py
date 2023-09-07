@@ -11,6 +11,7 @@ All data will be stored on the protocol's protocol_flags dictionary,
 under the 'TTYPE' key.
 
 """
+import weakref
 
 # telnet option codes
 TTYPE = bytes([24])  # b"\x18"
@@ -55,16 +56,16 @@ class Ttype:
 
         """
         self.ttype_step = 0
-        self.protocol = protocol
+        self.protocol = weakref.ref(protocol)
         # we set FORCEDENDLINE for clients not supporting ttype
-        self.protocol.protocol_flags["FORCEDENDLINE"] = True
-        self.protocol.protocol_flags["TTYPE"] = False
+        self.protocol().protocol_flags["FORCEDENDLINE"] = True
+        self.protocol().protocol_flags["TTYPE"] = False
         # is it a safe bet to assume ANSI is always supported?
-        self.protocol.protocol_flags["ANSI"] = True
+        self.protocol().protocol_flags["ANSI"] = True
         # setup protocol to handle ttype initialization and negotiation
-        self.protocol.negotiationMap[TTYPE] = self.will_ttype
+        self.protocol().negotiationMap[TTYPE] = self.will_ttype
         # ask if client will ttype, connect callback if it does.
-        self.protocol.do(TTYPE).addCallbacks(self.will_ttype, self.wont_ttype)
+        self.protocol().do(TTYPE).addCallbacks(self.will_ttype, self.wont_ttype)
 
     def wont_ttype(self, option):
         """
@@ -74,8 +75,8 @@ class Ttype:
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags["TTYPE"] = False
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["TTYPE"] = False
+        self.protocol().handshake_done()
 
     def will_ttype(self, option):
         """
@@ -91,7 +92,7 @@ class Ttype:
             stored on protocol.protocol_flags under the TTYPE key.
 
         """
-        options = self.protocol.protocol_flags
+        options = self.protocol().protocol_flags
 
         if options and options.get("TTYPE", False) or self.ttype_step > 3:
             return
@@ -104,7 +105,7 @@ class Ttype:
 
         if self.ttype_step == 0:
             # just start the request chain
-            self.protocol.requestNegotiation(TTYPE, SEND)
+            self.protocol().requestNegotiation(TTYPE, SEND)
 
         elif self.ttype_step == 1:
             # this is supposed to be the name of the client/terminal.
@@ -125,9 +126,9 @@ class Ttype:
                 xterm256 = clientname.split("MUDLET", 1)[1].strip() >= "1.1"
                 # Mudlet likes GA's on a prompt line for the prompt trigger to
                 # match, if it's not wanting NOGOAHEAD.
-                if not self.protocol.protocol_flags["NOGOAHEAD"]:
-                    self.protocol.protocol_flags["NOGOAHEAD"] = True
-                    self.protocol.protocol_flags["NOPROMPTGOAHEAD"] = False
+                if not self.protocol().protocol_flags["NOGOAHEAD"]:
+                    self.protocol().protocol_flags["NOGOAHEAD"] = True
+                    self.protocol().protocol_flags["NOPROMPTGOAHEAD"] = False
 
             if (
                 clientname.startswith("XTERM")
@@ -148,10 +149,10 @@ class Ttype:
                 xterm256 = True
 
             # all clients supporting TTYPE at all seem to support ANSI
-            self.protocol.protocol_flags["ANSI"] = True
-            self.protocol.protocol_flags["XTERM256"] = xterm256
-            self.protocol.protocol_flags["CLIENTNAME"] = clientname
-            self.protocol.requestNegotiation(TTYPE, SEND)
+            self.protocol().protocol_flags["ANSI"] = True
+            self.protocol().protocol_flags["XTERM256"] = xterm256
+            self.protocol().protocol_flags["CLIENTNAME"] = clientname
+            self.protocol().requestNegotiation(TTYPE, SEND)
 
         elif self.ttype_step == 2:
             # this is a term capabilities flag
@@ -164,11 +165,11 @@ class Ttype:
                 and not tupper.endswith("-COLOR")  # old Tintin, Putty
             )
             if xterm256:
-                self.protocol.protocol_flags["ANSI"] = True
-                self.protocol.protocol_flags["XTERM256"] = xterm256
-            self.protocol.protocol_flags["TERM"] = term
+                self.protocol().protocol_flags["ANSI"] = True
+                self.protocol().protocol_flags["XTERM256"] = xterm256
+            self.protocol().protocol_flags["TERM"] = term
             # request next information
-            self.protocol.requestNegotiation(TTYPE, SEND)
+            self.protocol().requestNegotiation(TTYPE, SEND)
 
         elif self.ttype_step == 3:
             # the MTTS bitstring identifying term capabilities
@@ -180,12 +181,12 @@ class Ttype:
                     support = dict(
                         (capability, True) for bitval, capability in MTTS if option & bitval > 0
                     )
-                    self.protocol.protocol_flags.update(support)
+                    self.protocol().protocol_flags.update(support)
                 else:
                     # some clients send erroneous MTTS as a string. Add directly.
-                    self.protocol.protocol_flags[option.upper()] = True
+                    self.protocol().protocol_flags[option.upper()] = True
 
-            self.protocol.protocol_flags["TTYPE"] = True
+            self.protocol().protocol_flags["TTYPE"] = True
             # we must sync ttype once it'd done
-            self.protocol.handshake_done()
+            self.protocol().handshake_done()
         self.ttype_step += 1
