@@ -186,7 +186,6 @@ def _init(portal_mode=False):
     from .typeclasses.tags import TagCategoryProperty, TagProperty
     from .utils import ansi, gametime, logger
     from .utils.ansi import ANSIString
-    from .utils.evrich import install as install_evrich
 
     # containers
     from .utils.containers import GLOBAL_SCRIPTS, OPTION_CLASSES
@@ -375,9 +374,6 @@ def _init(portal_mode=False):
     syscmdkeys = SystemCmds()
     del SystemCmds
     del _EvContainer
-
-    # Trigger EvRich to monkey-patch Rich in-memory.
-    install_evrich()
 
     # delayed starts - important so as to not back-access evennia before it has
     # finished initializing

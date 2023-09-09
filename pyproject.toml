@@ -83,8 +83,7 @@ dependencies = [
   "anything ==0.2.1",
   "black >= 22.6",
   "isort >= 5.10",
-  "parameterized ==0.8.1",
-  "rich >= 13.3.5,
+  "parameterized ==0.8.1"
 ]
 
 [project.optional-dependencies]
