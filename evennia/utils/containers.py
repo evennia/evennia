@@ -155,9 +155,7 @@ class GlobalScriptContainer(Container):
                 return None
 
             # store a hash representation of the setup
-            script.attributes.add("_global_script_settings", compare_hash, category="settings_hash")
-
-        self.scripts[key] = script
+            script.attributes.add("global_script_settings", compare_hash, category="settings_hash")
 
         return script
 
