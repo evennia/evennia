@@ -35,8 +35,8 @@ class EvenniaWebTest(BaseEvenniaTest):
         super().setUp()
 
         # Add chars to account rosters
-        self.account.add_character_to_playable_list(self.char1)
-        self.account2.add_character_to_playable_list(self.char2)
+        self.account.characters.add(self.char1)
+        self.account2.characters.add(self.char2)
 
         for account in (self.account, self.account2):
             # Demote accounts to Player permissions
@@ -220,7 +220,7 @@ class CharacterCreateView(EvenniaWebTest):
     @override_settings(MAX_NR_CHARACTERS=1)
     def test_valid_access_multisession_0(self):
         "Account1 with no characters should be able to create a new one"
-        self.account.remove_character_from_playable_list(self.char1)
+        self.account.characters.remove(self.char1)
 
         # Login account
         self.login()

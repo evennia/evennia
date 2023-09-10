@@ -120,6 +120,80 @@ class AccountSessionHandler(object):
         return len(self.get())
 
 
+class CharactersHandler:
+    """
+    A simple Handler that lives on DefaultAccount as .characters via @lazy_property used to
+    wrap access to .db._playable_characters.
+    """
+
+    def __init__(self, owner: "DefaultAccount"):
+        """
+        Create the CharactersHandler.
+
+        Args:
+            owner: The Account that owns this handler.
+        """
+        self.owner = owner
+        self._ensure_playable_characters()
+        self._clean()
+
+    def _ensure_playable_characters(self):
+        if self.owner.db._playable_characters is None:
+            self.owner.db._playable_characters = []
+
+    def _clean(self):
+        # Remove all instances of None from the list.
+        self.owner.db._playable_characters = [x for x in self.owner.db._playable_characters if x]
+
+    def add(self, character: "DefaultCharacter"):
+        """
+        Add a character to this account's list of playable characters.
+
+        Args:
+            character (DefaultCharacter): The character to add.
+        """
+        self._clean()
+        if character not in self.owner.db._playable_characters:
+            self.owner.db._playable_characters.append(character)
+            self.owner.at_post_add_character(character)
+
+    def remove(self, character: "DefaultCharacter"):
+        """
+        Remove a character from this account's list of playable characters.
+
+        Args:
+            character (DefaultCharacter): The character to remove.
+        """
+        self._clean()
+        if character in self.owner.db._playable_characters:
+            self.owner.db._playable_characters.remove(character)
+            self.owner.at_post_remove_character(character)
+
+    def all(self) -> list["DefaultCharacter"]:
+        """
+        Get all playable characters.
+
+        Returns:
+            list[DefaultCharacter]: All playable characters.
+        """
+        self._clean()
+        return list(self.owner.db._playable_characters)
+
+    def count(self) -> int:
+        """
+        Get the number of playable characters.
+
+        Returns:
+            int: The number of playable characters.
+        """
+        return len(self.all())
+
+    __len__ = count
+
+    def __iter__(self):
+        return iter(self.all())
+
+
 class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     """
     This is the base Typeclass for all Accounts. Accounts represent
@@ -219,55 +293,31 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             load_kwargs={"category": "option"},
         )
 
-    # Do not make this a lazy property; the web UI will not refresh it!
-    @property
+    @lazy_property
     def characters(self):
-        # Get playable characters list
-        objs = self.db._playable_characters or []
+        return CharactersHandler(self)
 
-        # Rebuild the list if legacy code left null values after deletion
-        try:
-            if None in objs:
-                objs = [x for x in self.db._playable_characters if x]
-                self.db._playable_characters = objs
-        except Exception as e:
-            logger.log_trace(e)
-            logger.log_err(e)
-
-        return objs
-
-    def add_character_to_playable_list(self, character: "DefaultCharacter"):
-        """
-        Add a character to this account's list of playable characters.
-        """
-        if character not in self.db._playable_characters:
-            self.db._playable_characters.append(character)
-            self.at_post_add_character_to_playable_list(character)
-
-    def at_post_add_character_to_playable_list(self, character: "DefaultCharacter"):
+    def at_post_add_character(self, character: "DefaultCharacter"):
         """
         Called after a character is added to this account's list of playable characters.
 
         Use it to easily implement custom logic when a character is added to an account.
+
+        Args:
+            character (DefaultCharacter): The character that was added.
         """
         pass
 
-    def remove_character_from_playable_list(self, character):
-        """
-        Remove a character from this account's list of playable characters.
-        """
-        if character in self.db._playable_characters:
-            self.db._playable_characters.remove(character)
-            self.at_post_remove_character_from_playable_list(character)
-
-    def at_post_remove_character_from_playable_list(self, character):
+    def at_post_remove_character(self, character: "DefaultAccount"):
         """
         Called after a character is removed from this account's list of playable characters.
 
         Use it to easily implement custom logic when a character is removed from an account.
+
+        Args:
+            character (DefaultCharacter): The character that was removed.
         """
         pass
-
 
     def uses_screenreader(self, session=None):
         """
@@ -776,7 +826,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         )
         if character:
             # Update playable character list
-            self.add_character_to_playable_list(character)
+            self.characters.add(character)
 
             # We need to set this to have @ic auto-connect to this character
             self.db._last_puppet = character

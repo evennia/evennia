@@ -179,7 +179,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
             "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"
             " perm(Admin)" % (new_character.id, account.id, account.id)
         )
-        account.add_character_to_playable_list(new_character)
+        account.characters.add(new_character)
         if desc:
             new_character.db.desc = desc
         elif not new_character.db.desc:
@@ -238,7 +238,7 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                     # only take action
                     delobj = caller.ndb._char_to_delete
                     key = delobj.key
-                    caller.remove_character_from_playable_list(delobj)
+                    caller.characters.remove(delobj)
                     delobj.delete()
                     self.msg(f"Character '{key}' was permanently deleted.")
                     logger.log_sec(

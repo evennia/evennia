@@ -319,7 +319,7 @@ class ObjectAdmin(admin.ModelAdmin):
 
         if account:
             account.db._last_puppet = obj
-            account.add_character_to_playable_list(obj)
+            account.characters.add(obj)
             if not obj.access(account, "puppet"):
                 lock = obj.locks.get("puppet")
                 lock += f" or pid({account.id})"
