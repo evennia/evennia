@@ -257,9 +257,6 @@ class ServerSession(_BASE_SESSION_CLASS):
                 for the protocol(s).
 
         """
-        if (t := kwargs.get("text", None)):
-            if hasattr(t, "__rich_console__"):
-                kwargs["text"] = self.print(t)
         self.sessionhandler.data_out(self, **kwargs)
 
     def data_in(self, **kwargs):
@@ -296,8 +293,6 @@ class ServerSession(_BASE_SESSION_CLASS):
         kwargs.pop("session", None)
         kwargs.pop("from_obj", None)
         if text is not None:
-            if hasattr(text, "__rich_console__"):
-                text = self.print(text)
             self.data_out(text=text, **kwargs)
         else:
             self.data_out(**kwargs)

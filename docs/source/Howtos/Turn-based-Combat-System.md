@@ -389,7 +389,7 @@ def resolve_combat(combat_handler, actiondict):
     for (char, fleevalue) in flee.items():
         if fleevalue == 2:
             combat_handler.msg_all(f"{char} withdraws from combat.")
-            combat_handler.remove_character_from_playable_list(char)
+            combat_handler.remove_character(char)
 ```
 
 To make it simple (and to save space), this example rule module actually resolves each interchange twice - first when it gets to each character and then again when handling the target. Also, since we use the combat handler's `msg_all` method here, the system will get pretty spammy. To clean it up, one could imagine tracking all the possible interactions to make sure each pair is only handled and reported once.
@@ -428,13 +428,13 @@ class CmdAttack(Command):
         # set up combat
         if target.ndb.combat_handler:
             # target is already in combat - join it            
-            target.ndb.combat_handler.add_character_to_playable_list(self.caller)
+            target.ndb.combat_handler.add_character(self.caller)
             target.ndb.combat_handler.msg_all(f"{self.caller} joins combat!")
         else:
             # create a new combat handler
             chandler = create_script("combat_handler.CombatHandler")
-            chandler.add_character_to_playable_list(self.caller)
-            chandler.add_character_to_playable_list(target)
+            chandler.add_character(self.caller)
+            chandler.add_character(target)
             self.caller.msg(f"You attack {target}! You are in combat.")
             target.msg(f"{self.caller} attacks you! You are in combat.")       
 ```
