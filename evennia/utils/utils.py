@@ -2249,11 +2249,10 @@ def m_len(target):
         length (int): The length of `target`, ignoring MXP components.
 
     """
-    # Would create circular import if in module root.
-    from evennia.utils.ansi import ANSI_PARSER
-
-    if inherits_from(target, str) and "|lt" in target:
-        return len(ANSI_PARSER.strip_mxp(target))
+    from evennia.utils.evstring import strip_mxp
+    
+    if inherits_from(target, str):
+        target = strip_mxp(target)
     return len(target)
 
 

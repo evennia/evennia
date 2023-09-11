@@ -23,7 +23,6 @@ from autobahn.twisted.websocket import WebSocketServerProtocol
 from django.conf import settings
 
 from evennia.utils.evstring import EvString
-from evennia.utils.text2html import parse_html
 from evennia.utils.utils import class_from_module, mod_import
 
 _RE_SCREENREADER_REGEX = re.compile(

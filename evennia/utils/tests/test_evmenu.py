@@ -21,10 +21,9 @@ import copy
 
 from anything import Anything
 from django.test import TestCase
-from mock import MagicMock
-
-from evennia.utils import ansi, evmenu
+from evennia.utils import evstring, evmenu
 from evennia.utils.test_resources import BaseEvenniaTest
+from mock import MagicMock
 
 
 class TestEvMenu(TestCase):
@@ -61,7 +60,7 @@ class TestEvMenu(TestCase):
 
     def _debug_output(self, indent, msg):
         if self.debug_output:
-            print(" " * indent + ansi.strip_ansi(msg))
+            print(" " * indent + evstring.strip_markup(msg))
 
     def _test_menutree(self, menu):
         """
@@ -79,7 +78,7 @@ class TestEvMenu(TestCase):
             # run validation tests for this node
             compare_text = self.expected_node_texts.get(nodename, None)
             if compare_text is not None:
-                compare_text = ansi.strip_ansi(compare_text.strip())
+                compare_text = evstring.strip_markup(compare_text.strip())
                 node_text = menu.test_nodetext
                 self.assertIsNotNone(
                     bool(node_text),
@@ -87,7 +86,7 @@ class TestEvMenu(TestCase):
                 )
                 if isinstance(node_text, tuple):
                     node_text, helptext = node_text
-                node_text = ansi.strip_ansi(node_text.strip())
+                node_text = evstring.strip_markup(node_text.strip())
                 self.assertTrue(
                     node_text.startswith(compare_text),
                     "\nnode \"{}':\nOutput:\n{}\n\nExpected (startswith):\n{}".format(

@@ -13,7 +13,7 @@ import evennia
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import logger, search, utils
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 

@@ -47,7 +47,7 @@ from django.utils.translation import gettext as _
 from evennia import CmdSet
 from evennia.commands import cmdhandler
 from evennia.utils import dedent, fill, is_iter, justify, logger, to_str, utils
-from evennia.utils.ansi import raw
+from evennia.utils.evstring import escape_markup
 
 # we use cmdhandler instead of evennia.syscmdkeys to
 # avoid some cases of loading before evennia init'd
@@ -401,7 +401,7 @@ class CmdLineInput(CmdEditorBase):
         if editor._codefunc and editor._indent >= 0:
             # if automatic indentation is active, add spaces
             line = editor.deduce_indent(line, buf)
-        buf = line if not buf else buf + "\n%s" % line
+        buf = line if not buf else buf + "\n" + line
         self.editor.update_buffer(buf)
         if self.editor._echo_mode:
             # need to do it here or we will be off one line
@@ -412,9 +412,9 @@ class CmdLineInput(CmdEditorBase):
                 if indent < 0:
                     indent = "off"
 
-                self.caller.msg("|b%02i|||n (|g%s|n) %s" % (cline, indent, raw(line)))
+                self.caller.msg("|b%02i|||n (|g%s|n) %s" % (cline, indent, escape_markup(line)))
             else:
-                self.caller.msg("|b%02i|||n %s" % (cline, raw(self.args)))
+                self.caller.msg("|b%02i|||n %s" % (cline, escape_markup(self.args)))
 
 
 class CmdEditorGroup(CmdEditorBase):
@@ -1104,11 +1104,11 @@ class EvEditor:
         )
         if linenums:
             main = "\n".join(
-                "|b%02i|||n %s" % (iline + 1 + offset, raw(line))
+                "|b%02i|||n %s" % (iline + 1 + offset, escape_markup(line))
                 for iline, line in enumerate(lines)
             )
         else:
-            main = "\n".join([raw(line) for line in lines])
+            main = "\n".join([escape_markup(line) for line in lines])
         string = "%s\n%s\n%s" % (header, main, footer)
         self._caller.msg(string, options=options)
 

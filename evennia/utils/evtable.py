@@ -301,7 +301,10 @@ class EvCell(EvStringContainer):
         self.valign = kwargs.get("valign", "c")
 
         self.data = self._split_lines(EvCell._to_evstring(data))
-        self.raw_width = max(d_len(line) for line in self.data)
+        if not self.data:
+            self.raw_width = 0
+        else:
+            self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
 
         # this is extra trimming required for cels in the middle of a table only
@@ -536,7 +539,7 @@ class EvCell(EvStringContainer):
             natural_height (int): Height of cell.
 
         """
-        return len(self.formatted)  # if self.formatted else 0
+        return len(self.formatted) # if self.formatted else 0
 
     def get_width(self):
         """
@@ -546,7 +549,7 @@ class EvCell(EvStringContainer):
             natural_width (int): Width of cell.
 
         """
-        return d_len(self.formatted[0])  # if self.formatted else 0
+        return d_len(self.formatted[0]) if self.formatted else 0
 
     def replace_data(self, data, **kwargs):
         """
@@ -561,6 +564,10 @@ class EvCell(EvStringContainer):
 
         """
         self.data = self._split_lines(EvCell._to_evstring(data))
+        if not self.data:
+            self.raw_width = 0
+        else:
+            self.raw_width = max(d_len(line) for line in self.data)
         self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
         self.reformat(**kwargs)

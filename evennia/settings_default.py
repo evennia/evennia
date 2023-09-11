@@ -208,6 +208,9 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # of users with screen readers. Note that ANSI/MXP doesn't need to
 # be stripped this way, that is handled automatically.
 SCREENREADER_REGEX_STRIP = r"\+-+|\+$|\+~|--+|~~+|==+"
+# Define the character used to indicate style markup and MXP tags. By default, it
+# is set to |
+MARKUP_CHAR = '|'
 # MXP support means the ability to show clickable links in the client. Clicking
 # the link will execute a game command. It's a way to add mouse input to the game.
 MXP_ENABLED = True

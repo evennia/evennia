@@ -29,8 +29,6 @@ from twisted.web import resource, server
 
 from evennia.server import session
 from evennia.utils import utils
-from evennia.utils.ansi import parse_ansi
-from evennia.utils.text2html import parse_html
 from evennia.utils.utils import to_bytes, ip_from_request
 
 _CLIENT_SESSIONS = utils.mod_import(settings.SESSION_ENGINE).SessionStore
@@ -424,7 +422,7 @@ class AjaxWebClientSession(session.Session):
         Keyword Args:
             options (dict): Options-dict with the following keys understood:
                 - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
-                - nocolor (bool): Remove all color.
+                - nocolor (bool): Clean out all color.
                 - screenreader (bool): Use Screenreader mode.
                 - send_prompt (bool): Send a prompt with parsed html
 
@@ -437,29 +435,35 @@ class AjaxWebClientSession(session.Session):
         else:
             return
 
+        if not hasattr(text, 'html'):
+            text = EvString(text)
+
         flags = self.protocol_flags
-        text = utils.to_str(text)
 
         options = kwargs.pop("options", {})
         raw = options.get("raw", flags.get("RAW", False))
-        xterm256 = options.get("xterm256", flags.get("XTERM256", True))
-        useansi = options.get("ansi", flags.get("ANSI", True))
-        nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
+        client_raw = options.get("client_raw", False)
+        nocolor = options.get("nocolor", flags.get("NOCOLOR", False))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
 
         if screenreader:
             # screenreader mode cleans up output
-            text = parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
+            text = text.clean()
             text = _RE_SCREENREADER_REGEX.sub("", text)
-        cmd = "prompt" if prompt else "text"
-        if raw:
-            args[0] = text
-        else:
-            args[0] = parse_html(text, strip_ansi=nocolor)
 
+        elif nocolor:
+            text = text.clean()
+        elif raw or client_raw:
+            text = text.raw()
+        else:
+            text = text.html()
+
+        # put processed message back in the args
+        args[0] = text
+        cmd = "prompt" if prompt else "text"
         # send to client on required form [cmdname, args, kwargs]
-        self.client.lineSend(self.csessid, [cmd, args, kwargs])
+        self.sendLine(json.dumps([cmd, args, kwargs]))
 
     def send_prompt(self, *args, **kwargs):
         kwargs["options"].update({"send_prompt": True})

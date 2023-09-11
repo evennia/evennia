@@ -69,10 +69,9 @@ from django.conf import settings
 from evennia.utils import logger, utils
 
 MXP_ENABLED = settings.MXP_ENABLED
+_MARKUP_CHAR = settings.MARKUP_CHAR
 
-
-_RE_HEX = re.compile(r'(?<!\|)\|#([0-9a-f]{6})', re.I)
-_RE_HEX_BG = re.compile(r'(?<!\|)\|\[#([0-9a-f]{6})', re.I)
+_EVSTRING = None
 
 # ANSI definitions
 
@@ -118,70 +117,68 @@ ANSI_SPACE = " "
 # Escapes
 ANSI_ESCAPES = ("{{", "\\\\", "\|\|")
 
+_COLOR_NO_DEFAULT = settings.COLOR_NO_DEFAULT
+
+_RE_HEX = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}#([0-9a-f]{6})', re.I)
+_RE_HEX_BG = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}\[#([0-9a-f]{6})', re.I)
+_RE_XTERM = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}([0-5][0-5][0-5]|\=[a-z])')
+_RE_XTERM_BG = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}\[([0-5][0-5][0-5]|\=[a-z])')
+
 _PARSE_CACHE = OrderedDict()
 _PARSE_CACHE_SIZE = 10000
 
-_COLOR_NO_DEFAULT = settings.COLOR_NO_DEFAULT
-
-
-class ANSIParser(object):
+class RenderToANSI(object):
     """
-    A class that parses Evennia markup
-    to ANSI command sequences
-
-    We also allow to escape colour codes
-    by prepending with an extra `|`.
+    A class that converts Evennia markup to ANSI command sequences
 
     """
-
-    # Mapping using {r {n etc
 
     ansi_map = [
         # alternative |-format
-        (r"|n", ANSI_NORMAL),  # reset
-        (r"|/", ANSI_RETURN),  # line break
-        (r"|-", ANSI_TAB),  # tab
-        (r"|>", ANSI_SPACE * 4),  # indent (4 spaces)
-        (r"|_", ANSI_SPACE),  # space
-        (r"|*", ANSI_INVERSE),  # invert
-        (r"|^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
-        (r"|u", ANSI_UNDERLINE),  # underline
-        (r"|r", ANSI_HILITE + ANSI_RED),
-        (r"|g", ANSI_HILITE + ANSI_GREEN),
-        (r"|y", ANSI_HILITE + ANSI_YELLOW),
-        (r"|b", ANSI_HILITE + ANSI_BLUE),
-        (r"|m", ANSI_HILITE + ANSI_MAGENTA),
-        (r"|c", ANSI_HILITE + ANSI_CYAN),
-        (r"|w", ANSI_HILITE + ANSI_WHITE),  # pure white
-        (r"|x", ANSI_HILITE + ANSI_BLACK),  # dark grey
-        (r"|R", ANSI_UNHILITE + ANSI_RED),
-        (r"|G", ANSI_UNHILITE + ANSI_GREEN),
-        (r"|Y", ANSI_UNHILITE + ANSI_YELLOW),
-        (r"|B", ANSI_UNHILITE + ANSI_BLUE),
-        (r"|M", ANSI_UNHILITE + ANSI_MAGENTA),
-        (r"|C", ANSI_UNHILITE + ANSI_CYAN),
-        (r"|W", ANSI_UNHILITE + ANSI_WHITE),  # light grey
-        (r"|X", ANSI_UNHILITE + ANSI_BLACK),  # pure black
+        (r"n", ANSI_NORMAL),  # reset
+        (r"/", ANSI_RETURN),  # line break
+        (r"-", ANSI_TAB),  # tab
+        (r">", ANSI_SPACE * 4),  # indent (4 spaces)
+        (r"_", ANSI_SPACE),  # space
+        (r"*", ANSI_INVERSE),  # invert
+        (r"^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
+        (r"u", ANSI_UNDERLINE),  # underline
+        (r"r", ANSI_HILITE + ANSI_RED),
+        (r"g", ANSI_HILITE + ANSI_GREEN),
+        (r"y", ANSI_HILITE + ANSI_YELLOW),
+        (r"b", ANSI_HILITE + ANSI_BLUE),
+        (r"m", ANSI_HILITE + ANSI_MAGENTA),
+        (r"c", ANSI_HILITE + ANSI_CYAN),
+        (r"w", ANSI_HILITE + ANSI_WHITE),  # pure white
+        (r"x", ANSI_HILITE + ANSI_BLACK),  # dark grey
+        (r"R", ANSI_UNHILITE + ANSI_RED),
+        (r"G", ANSI_UNHILITE + ANSI_GREEN),
+        (r"Y", ANSI_UNHILITE + ANSI_YELLOW),
+        (r"B", ANSI_UNHILITE + ANSI_BLUE),
+        (r"M", ANSI_UNHILITE + ANSI_MAGENTA),
+        (r"C", ANSI_UNHILITE + ANSI_CYAN),
+        (r"W", ANSI_UNHILITE + ANSI_WHITE),  # light grey
+        (r"X", ANSI_UNHILITE + ANSI_BLACK),  # pure black
         # hilight-able colors
-        (r"|h", ANSI_HILITE),
-        (r"|H", ANSI_UNHILITE),
-        (r"|!R", ANSI_RED),
-        (r"|!G", ANSI_GREEN),
-        (r"|!Y", ANSI_YELLOW),
-        (r"|!B", ANSI_BLUE),
-        (r"|!M", ANSI_MAGENTA),
-        (r"|!C", ANSI_CYAN),
-        (r"|!W", ANSI_WHITE),  # light grey
-        (r"|!X", ANSI_BLACK),  # pure black
+        (r"h", ANSI_HILITE),
+        (r"H", ANSI_UNHILITE),
+        (r"!R", ANSI_RED),
+        (r"!G", ANSI_GREEN),
+        (r"!Y", ANSI_YELLOW),
+        (r"!B", ANSI_BLUE),
+        (r"!M", ANSI_MAGENTA),
+        (r"!C", ANSI_CYAN),
+        (r"!W", ANSI_WHITE),  # light grey
+        (r"!X", ANSI_BLACK),  # pure black
         # normal ANSI backgrounds
-        (r"|[R", ANSI_BACK_RED),
-        (r"|[G", ANSI_BACK_GREEN),
-        (r"|[Y", ANSI_BACK_YELLOW),
-        (r"|[B", ANSI_BACK_BLUE),
-        (r"|[M", ANSI_BACK_MAGENTA),
-        (r"|[C", ANSI_BACK_CYAN),
-        (r"|[W", ANSI_BACK_WHITE),  # light grey background
-        (r"|[X", ANSI_BACK_BLACK),  # pure black background
+        (r"[R", ANSI_BACK_RED),
+        (r"[G", ANSI_BACK_GREEN),
+        (r"[Y", ANSI_BACK_YELLOW),
+        (r"[B", ANSI_BACK_BLUE),
+        (r"[M", ANSI_BACK_MAGENTA),
+        (r"[C", ANSI_BACK_CYAN),
+        (r"[W", ANSI_BACK_WHITE),  # light grey background
+        (r"[X", ANSI_BACK_BLACK),  # pure black background
     ]
 
     ansi_xterm256_bright_bg_map = [
@@ -190,19 +187,20 @@ class ANSIParser(object):
         # fallback to dark ANSI background colors if xterm256
         # is not supported by client)
         # |-style variations
-        (r"|[r", r"|[500"),
-        (r"|[g", r"|[050"),
-        (r"|[y", r"|[550"),
-        (r"|[b", r"|[005"),
-        (r"|[m", r"|[505"),
-        (r"|[c", r"|[055"),
-        (r"|[w", r"|[555"),  # white background
-        (r"|[x", r"|[222"),
-    ]  # dark grey background
+        (r"[r", r"|[500"),
+        (r"[g", r"|[050"),
+        (r"[y", r"|[550"),
+        (r"[b", r"|[005"),
+        (r"[m", r"|[505"),
+        (r"[c", r"|[055"),
+        (r"[w", r"|[555"),  # white background
+        (r"[x", r"|[222"),  # dark grey background
+    ]
 
     # xterm256. These are replaced directly by
     # the sub_xterm256 method
 
+    # with adding the markup character to the settings, this should be deprecated?
     if settings.COLOR_NO_DEFAULT:
         ansi_map = settings.COLOR_ANSI_EXTRA_MAP
         xterm256_fg = settings.COLOR_XTERM256_EXTRA_FG
@@ -211,10 +209,10 @@ class ANSIParser(object):
         xterm256_gbg = settings.COLOR_XTERM256_EXTRA_GBG
         ansi_xterm256_bright_bg_map = settings.COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
     else:
-        xterm256_fg = [r"\|([0-5])([0-5])([0-5])"]  # |123 - foreground colour
-        xterm256_bg = [r"\|\[([0-5])([0-5])([0-5])"]  # |[123 - background colour
-        xterm256_gfg = [r"\|=([a-z])"]  # |=a - greyscale foreground
-        xterm256_gbg = [r"\|\[=([a-z])"]  # |[=a - greyscale background
+        xterm256_fg = [fr"\{_MARKUP_CHAR}([0-5])([0-5])([0-5])"]  # |123 - foreground colour
+        xterm256_bg = [fr"\{_MARKUP_CHAR}\[([0-5])([0-5])([0-5])"]  # |[123 - background colour
+        xterm256_gfg = [fr"\{_MARKUP_CHAR}=([a-z])"]  # |=a - greyscale foreground
+        xterm256_gbg = [fr"\{_MARKUP_CHAR}\[=([a-z])"]  # |[=a - greyscale background
         ansi_map += settings.COLOR_ANSI_EXTRA_MAP
         xterm256_fg += settings.COLOR_XTERM256_EXTRA_FG
         xterm256_bg += settings.COLOR_XTERM256_EXTRA_BG
@@ -222,77 +220,26 @@ class ANSIParser(object):
         xterm256_gbg += settings.COLOR_XTERM256_EXTRA_GBG
         ansi_xterm256_bright_bg_map += settings.COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 
-    mxp_re = r"\|lc(.*?)\|lt(.*?)\|le"
-    mxp_url_re = r"\|lu(.*?)\|lt(.*?)\|le"
-
     # prepare regex matching
-    brightbg_sub = re.compile(
-        r"|".join([r"(?<!\|)%s" % re.escape(tup[0]) for tup in ansi_xterm256_bright_bg_map]),
-        re.DOTALL,
-    )
-    xterm256_fg_sub = re.compile(r"|".join(xterm256_fg), re.DOTALL)
-    xterm256_bg_sub = re.compile(r"|".join(xterm256_bg), re.DOTALL)
-    xterm256_gfg_sub = re.compile(r"|".join(xterm256_gfg), re.DOTALL)
-    xterm256_gbg_sub = re.compile(r"|".join(xterm256_gbg), re.DOTALL)
-
-    # xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
-    ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_map]), re.DOTALL)
-    mxp_sub = re.compile(mxp_re, re.DOTALL)
-    mxp_url_sub = re.compile(mxp_url_re, re.DOTALL)
+    re_xterm256_fg = re.compile(r"|".join(xterm256_fg), re.DOTALL)
+    re_xterm256_bg = re.compile(r"|".join(xterm256_bg), re.DOTALL)
+    re_xterm256_gfg = re.compile(r"|".join(xterm256_gfg), re.DOTALL)
+    re_xterm256_gbg = re.compile(r"|".join(xterm256_gbg), re.DOTALL)
 
     # used by regex replacer to correctly map ansi sequences
     ansi_map_dict = dict(ansi_map)
     ansi_xterm256_bright_bg_map_dict = dict(ansi_xterm256_bright_bg_map)
 
-    # prepare matching ansi codes overall
-    ansi_re = r"\033\[[0-9;]+m"
-    ansi_regex = re.compile(ansi_re)
+    # for matching ansi codes overall
+    ansi_regex = re.compile(r"\033\[[0-9;]+m")
 
     hex_fg = _RE_HEX
     hex_bg = _RE_HEX_BG
 
-    # escapes - these double-chars will be replaced with a single
-    # instance of each
-    ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
-
-    # tabs/linebreaks |/ and |- should be able to be cleaned
-    unsafe_tokens = re.compile(r"\|\/|\|-", re.DOTALL)
-
-    def sub_ansi(self, ansimatch):
-        """
-        Replacer used by `re.sub` to replace ANSI
-        markers with correct ANSI sequences
-
-        Args:
-            ansimatch (re.matchobject): The match.
-
-        Returns:
-            processed (str): The processed match string.
-
-        """
-        return self.ansi_map_dict.get(ansimatch.group(), "")
-
-    def sub_brightbg(self, ansimatch):
-        """
-        Replacer used by `re.sub` to replace ANSI
-        bright background markers with Xterm256 replacement
-
-        Args:
-            ansimatch (re.matchobject): The match.
-
-        Returns:
-            processed (str): The processed match string.
-
-        """
-        return self.ansi_xterm256_bright_bg_map_dict.get(ansimatch.group(), "")
-
-    def sub_xterm256(self, rgbmatch, use_xterm256=False, color_type="fg"):
+    def convert_xterm256(self, rgbmatch, use_xterm256=False, color_type="fg"):
         """
         This is a replacer method called by `re.sub` with the matched
         tag. It must return the correct ansi sequence.
-
-        It checks `self.do_xterm256` to determine if conversion
-        to standard ANSI should be done or not.
 
         Args:
             rgbmatch (re.matchobject): The match.
@@ -344,7 +291,7 @@ class ANSIParser(object):
             if not grayscale:
                 colval = 16 + (red * 36) + (green * 6) + blue
 
-            return "\033[%s8;5;%sm" % (3 + int(background), colval)
+            return "\033[{}8;5;{}m".format(3 + int(background), colval)
             # replaced since some clients (like Potato) does not accept codes with leading zeroes,
             # see issue #1024.
             # return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)  # noqa
@@ -352,7 +299,7 @@ class ANSIParser(object):
         else:
             # xterm256 not supported, convert the rgb value to ansi instead
             rgb = (red, green, blue)
-	
+  
             def _convert_for_ansi(val):
                 return int((val+1)//2)
 
@@ -403,6 +350,36 @@ class ANSIParser(object):
                     return ANSI_BACK_MAGENTA if background else ANSI_NORMAL + ANSI_MAGENTA
                 
 
+    def hex_to_xterm(self, string, bg=False):
+        """
+        Converts a hexadecimal rgb string to an xterm256 rgb string
+
+        Args:
+          string (str): the text to parse for tags
+
+        Returns:
+          str: the text with converted tags
+        """
+        def split_hex(text):
+          return ( int(text[i:i+2],16) for i in range(0,6,2) )
+          
+        def grey_int(num):
+          return round( max((num-8),0)/10 )
+
+        def hue_int(num):
+          return round(max((num-45),0)/40)
+        
+        r, g, b = split_hex(string)
+
+        if r == g and g == b:
+            # greyscale
+            i = grey_int(r)
+            string = _MARKUP_CHAR + '=' + _GREYS[i]
+        else:
+            string = f"{_MARKUP_CHAR}{'[' if bg else ''}{hue_int(r)}{hue_int(g)}{hue_int(b)}"
+        
+        return string
+
     def strip_raw_codes(self, string):
         """
         Strips raw ANSI codes from a string.
@@ -416,36 +393,6 @@ class ANSIParser(object):
         """
         return self.ansi_regex.sub("", string)
 
-    def strip_mxp(self, string):
-        """
-        Strips all MXP codes from a string.
-
-        Args:
-            string (str): The string to strip.
-
-        Returns:
-            string (str): The processed string.
-
-        """
-        string = self.mxp_sub.sub(r"\2", string)
-        string = self.mxp_url_sub.sub(r"\1", string)  # replace with url verbatim
-        return string
-
-    def strip_hex(self, string):
-        """
-        Strips all hex-color codes from a string.
-
-        Args:
-            string (str): The string to strip.
-
-        Returns:
-            string (str): The processed string.
-
-        """
-        string = self.hex_fg.sub(r"", string)
-        string = self.hex_bg.sub(r"", string)
-        return string
-
     def strip_unsafe_tokens(self, string):
         """
         Strip explicitly ansi line breaks and tabs.
@@ -453,77 +400,78 @@ class ANSIParser(object):
         """
         return self.unsafe_tokens.sub("", string)
 
-    def parse_markup(self, string, strip_ansi=False, xterm256=False, rgb=False, mxp=False):
+    def convert_markup(self, chunks, strip_ansi=False, xterm256=False, rgb=False, mxp=False):
         """
-        Parses a string, subbing color codes according to the stored
-        mapping.
+        Replaces any evennia markup elements with ANSI codes
 
         Args:
-            string (str): The string to parse.
-            strip_ansi (boolean, optional): Strip all found ansi markup.
-            xterm256 (boolean, optional): If actually using xterm256 or if
-                these values should be converted to 16-color ANSI.
-            mxp (boolean, optional): Parse MXP commands in string.
+            chunks (iter): The chunked string/code data to process
+            strip_ansi (bool, optional): Strip all ANSI sequences.
+            rgb (bool, optional): Support full RGB color or not.
+            xterm256 (bool, optional): Support xterm256 or not.
+            mxp (bool, optional): Support MXP markup or not.
 
         Returns:
             string (str): The parsed string.
 
         """
-        if hasattr(string, "_raw_string"):
-            if strip_ansi:
-                return string.clean()
-            else:
-                return string.raw()
-
-        if not string:
-            return ""
+        global _EVSTRING
+        if not _EVSTRING:
+            from evennia.utils.evstring import EvString as _EVSTRING
 
         # check cached parsings
         global _PARSE_CACHE
-        cachekey = "%s-%s-%s-%s" % (string, strip_ansi, xterm256, mxp)
+        cachekey = "%s-%s-%s-%s" % (''.join(chunks), strip_ansi, xterm256, mxp)
         if cachekey in _PARSE_CACHE:
             return _PARSE_CACHE[cachekey]
 
-        # pre-convert bright colors to xterm256 color tags
-        string = self.brightbg_sub.sub(self.sub_brightbg, string)
+        from evennia.utils.evstring import EvCode, EvLink
 
-        def do_xterm256_fg(part):
-            return self.sub_xterm256(part, xterm256, "fg")
+        output = []
+        for chunk in chunks:
+            if isinstance(chunk, EvCode):
+                code_str = str(chunk)
+                # check for hex first
+                # TODO: if rgb = True, convert; for now, always fall back to xterm
+                if match := self.hex_fg.search(code_str):
+                    code_str = hex_to_xterm(match.group(0))
+                elif match := self.hex_bg.search(code_str):
+                    code_str = hex_to_xterm(match.group(0), bg=True)
+                # next, check for bright bg matches (slicing off the markup tag)
+                if match := self.ansi_xterm256_bright_bg_map_dict.get(code_str[1:]):
+                    code_str = match
+                # convert to correct form actual coded string
+                if match := self.re_xterm256_fg.search(code_str):
+                    code_str = self.convert_xterm256(match, use_xterm256=xterm256, color_type='fg')
+                elif match := self.re_xterm256_gfg.search(code_str):
+                    code_str = self.convert_xterm256(match, use_xterm256=xterm256, color_type='gfg')
+                elif match := self.re_xterm256_bg.search(code_str):
+                    code_str = self.convert_xterm256(match, use_xterm256=xterm256, color_type='bg')
+                elif match := self.re_xterm256_gbg.search(code_str):
+                    code_str = self.convert_xterm256(match, use_xterm256=xterm256, color_type='gbg')
+                else:
+                    # slice off the markup character for this
+                    code_str = self.ansi_map_dict.get(code_str[1:], '')
+                # by this point it's either converted or unconvertible, so use it
+                output.append(code_str)
+            
+            elif isinstance(chunk, EvLink):
+                link = chunk.data()
+                text = _EVSTRING(link.text, ansi=self).ansi()
+                if mxp:
+                    output.append(self.convert_mxp(text, link_type=link.key, link_value=link.link))
+                else:
+                    output.append(text)
+            
+            else:
+                # it's a normal string
+                text = chunk
+                if strip_ansi:
+                    # remove all ansi codes (including those manually inserted in string)
+                    text = self.ansi_regex.sub("", text)
+                output.append(text)
 
-        def do_xterm256_bg(part):
-            return self.sub_xterm256(part, xterm256, "bg")
-
-        def do_xterm256_gfg(part):
-            return self.sub_xterm256(part, xterm256, "gfg")
-
-        def do_xterm256_gbg(part):
-            return self.sub_xterm256(part, xterm256, "gbg")
-
-        in_string = utils.to_str(string)
-
-        # do string replacement
-        parsed_string = []
-        parts = self.ansi_escapes.split(in_string) + [" "]
-        for part, sep in zip(parts[::2], parts[1::2]):
-            pstring = self.xterm256_fg_sub.sub(do_xterm256_fg, part)
-            pstring = self.xterm256_bg_sub.sub(do_xterm256_bg, pstring)
-            pstring = self.xterm256_gfg_sub.sub(do_xterm256_gfg, pstring)
-            pstring = self.xterm256_gbg_sub.sub(do_xterm256_gbg, pstring)
-            pstring = self.ansi_sub.sub(self.sub_ansi, pstring)
-            parsed_string.append("%s%s" % (pstring, sep[0].strip()))
-        parsed_string = "".join(parsed_string)
-
-        if not mxp:
-            parsed_string = self.strip_mxp(parsed_string)
-        
-        if not rgb:
-            parsed_string = self.strip_hex(parsed_string)
-
-        if strip_ansi:
-            # remove all ansi codes (including those manually
-            # inserted in string)
-            return self.strip_raw_codes(parsed_string)
-
+        parsed_string = ''.join(output)
         # cache and crop old cache
         _PARSE_CACHE[cachekey] = parsed_string
         if len(_PARSE_CACHE) > _PARSE_CACHE_SIZE:
@@ -531,8 +479,27 @@ class ANSIParser(object):
 
         return parsed_string
 
+    def parse(self, string, strip_markup=False, **kwargs):
+        """
+        Parses a string to ANSI format, subbing color codes as needed.
 
-ANSI_PARSER = ANSIParser()
+        Args:
+            string (str): The string to parse.
+
+        Returns:
+            string (str): The parsed string.
+
+        """
+        global _EVSTRING
+        if not _EVSTRING:
+            from evennia.utils.evstring import EvString as _EVSTRING
+        # ensure we use this renderer for conversion
+        string = _EVSTRING(string, ansi=self)
+        if strip_markup:
+            return self.convert_markup( (string.clean(),), **kwargs )
+        return self.convert_markup(string._code_chunks)
+
+ANSI_PARSER = RenderToANSI()
 
 
 #
@@ -540,94 +507,18 @@ ANSI_PARSER = ANSIParser()
 #
 
 
-def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp=False):
+def to_ansi(string, parser=ANSI_PARSER, **kwargs):
     """
-    Parses a string, subbing color codes as needed.
-
+    Access function for parsing a string and substituting Evennia markup with ANSI.
+    
     Args:
-        string (str): The string to parse.
-        strip_ansi (bool, optional): Strip all ANSI sequences.
+        string (str): The string to be processed
         parser (ansi.AnsiParser, optional): A parser instance to use.
-        xterm256 (bool, optional): Support xterm256 or not.
-        mxp (bool, optional): Support MXP markup or not.
 
     Returns:
         string (str): The parsed string.
 
     """
     string = string or ""
-    return parser.parse_markup(string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp)
-
-
-def strip_ansi(string, parser=ANSI_PARSER):
-    """
-    Strip all ansi from the string. This handles the Evennia-specific
-    markup.
-
-    Args:
-        string (str): The string to strip.
-        parser (ansi.AnsiParser, optional): The parser to use.
-
-    Returns:
-        string (str): The stripped string.
-
-    """
-    string = string or ""
-    return parser.parse_markup(string, strip_ansi=True)
-
-
-def strip_raw_ansi(string, parser=ANSI_PARSER):
-    """
-    Remove raw ansi codes from string. This assumes pure
-    ANSI-bytecodes in the string.
-
-    Args:
-        string (str): The string to parse.
-        parser (bool, optional): The parser to use.
-
-    Returns:
-        string (str): the stripped string.
-
-    """
-    string = string or ""
-    return parser.strip_raw_codes(string)
-
-
-def strip_unsafe_tokens(string, parser=ANSI_PARSER):
-    """
-    Strip markup that can be used to create visual exploits
-    (notably linebreaks and tags)
-
-    """
-    return parser.strip_unsafe_tokens(string)
-
-
-def strip_mxp(string, parser=ANSI_PARSER):
-    """
-    Strip MXP markup.
-
-    """
-    string = string or ""
-    return parser.strip_mxp(string)
-
-
-def raw(string):
-    """
-    Escapes a string into a form which won't be colorized by the ansi
-    parser.
-
-    Returns:
-        string (str): The raw, escaped string.
-
-    """
-    string = string or ""
-    return string.replace("{", "{{").replace("|", "||")
-
-
-
-
-
-
-
-
+    return parser.parse(string, **kwargs)
 

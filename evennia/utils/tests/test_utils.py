@@ -108,10 +108,10 @@ class TestMLen(TestCase):
     def test_mxp_string(self):
         self.assertEqual(utils.m_len("|lclook|ltat|le"), 2)
 
-    def test_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(EvString("|lcl|gook|ltat|le|n")), 2)
+    def test_mxp_evstring(self):
+        self.assertEqual(utils.m_len(EvString("|lclook|ltat|le|n")), 2)
 
-    def test_non_mxp_ansi_string(self):
+    def test_non_mxp_evstring(self):
         self.assertEqual(utils.m_len(EvString("|gHello|n")), 5)
 
     def test_list(self):
@@ -133,10 +133,10 @@ class TestDisplayLen(TestCase):
     def test_mxp_string(self):
         self.assertEqual(utils.display_len("|lclook|ltat|le"), 2)
 
-    def test_mxp_ansi_string(self):
-        self.assertEqual(utils.display_len(EvString("|lcl|gook|ltat|le|n")), 2)
+    def test_mxp_evstring(self):
+        self.assertEqual(utils.display_len(EvString("|lclook|ltat|le|n")), 2)
 
-    def test_non_mxp_ansi_string(self):
+    def test_non_mxp_evstring(self):
         self.assertEqual(utils.display_len(EvString("|gHello|n")), 5)
 
     def test_list(self):
@@ -147,30 +147,6 @@ class TestDisplayLen(TestCase):
 
     def test_east_asian(self):
         self.assertEqual(utils.display_len("서서서"), 6)
-
-
-class TestANSIString(TestCase):
-    """
-    Verifies that ANSIString's string-API works as intended.
-    """
-
-    def setUp(self):
-        self.example_raw = "|relectric |cboogaloo|n"
-        self.example_ansi = EvString(self.example_raw)
-        self.example_str = "electric boogaloo"
-        self.example_output = "\x1b[1m\x1b[31melectric \x1b[1m\x1b[36mboogaloo\x1b[0m"
-
-    def test_length(self):
-        self.assertEqual(len(self.example_ansi), 17)
-
-    def test_clean(self):
-        self.assertEqual(self.example_ansi.clean(), self.example_str)
-
-    def test_raw(self):
-        self.assertEqual(self.example_ansi.raw(), self.example_output)
-
-    def test_format(self):
-        self.assertEqual(f"{self.example_ansi:0<20}", self.example_output + "000")
 
 
 class TestTimeformat(TestCase):
@@ -760,19 +736,14 @@ class TestJustify(TestCase):
         result = utils.justify("Task ID", width, align="c", indent=0, fillchar=" ")
         self.assertEqual(expected, result)
 
-    def test_justify_ansi(self):
+    def test_justify_evstring(self):
         """
-        Justify ansistring
+        Ensure markup data is not being lost
 
         """
-
-        from evennia.utils.ansi import ANSI_RED
-
         line = EvString("This is a |rred|n word")
-
         result = utils.justify(line, align="c", width=30)
-
-        self.assertIn(ANSI_RED, str(result))
+        self.assertIn("|r", str(result))
 
 
 class TestMatchIP(TestCase):
