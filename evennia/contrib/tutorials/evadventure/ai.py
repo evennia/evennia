@@ -126,6 +126,11 @@ class AIHandler:
     def __init__(self, obj):
         self.obj = obj
 
+        if hasattr(self, "AI_STATES"):
+            # load AI dict from typeclass core if it exists - allows for setting it
+            # on the typeclass directly.
+            self.add_aidict(self.AI_STATES)
+
     def __str__(self):
         return f"AIHandler for {self.obj}. Current state: {self.state}"
 
@@ -156,7 +161,8 @@ class AIHandler:
             object: Randomly chosen element from choices.
 
         """
-        return random.choices(choices, odds)[0]
+        if choices:
+            return random.choices(choices, odds)[0]
 
     @staticmethod
     def _weighted_choice_dict(choices):
@@ -352,4 +358,7 @@ class AIHandler:
                 return
 
         # perform the action
-        getattr(self.obj, f"ai_{self.state}")(next_action)
+        try:
+            getattr(self.obj, f"ai_{self.state}")(next_action)
+        except AttributeError:
+            logger.log_err(f"AIHandler: {self.obj} has no ai_{self.state} method.")

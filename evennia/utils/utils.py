@@ -27,6 +27,7 @@ from os.path import join as osjoin
 from string import punctuation
 from unicodedata import east_asian_width
 
+import evennia
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -34,8 +35,6 @@ from django.core.validators import validate_email as django_validate_email
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
-
-import evennia
 from evennia.utils import logger
 from simpleeval import simple_eval
 from twisted.internet import reactor, threads
@@ -1064,7 +1063,9 @@ def server_services():
 
     """
 
-    if hasattr(evennia.SESSION_HANDLER, "server") and hasattr(evennia.SESSION_HANDLER.server, "services"):
+    if hasattr(evennia.SESSION_HANDLER, "server") and hasattr(
+        evennia.SESSION_HANDLER.server, "services"
+    ):
         server = evennia.SESSION_HANDLER.server.services.namedServices
     else:
         # This function must be called from inside the evennia process.
@@ -1976,7 +1977,6 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefi
         ic = 0
         row = ""
         for ie, element in enumerate(elements):
-
             wl = wls[ie]
             lrow = display_len((row))
             # debug = row.replace(" ", ".")
