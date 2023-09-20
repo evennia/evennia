@@ -193,7 +193,7 @@
             <span class="p">]</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
             <span class="c1"># this happens only if our cache has gone out of sync with the SessionHandler.</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="o">=</span><span class="n">sessid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sessions</span></div>
 
@@ -1589,7 +1589,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nattributes&quot;</span><span class="p">):</span>
                 <span class="c1"># this should be a dict of nattrname:value</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;nattributes&quot;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;nattributes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_createdict</span>

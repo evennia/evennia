@@ -210,7 +210,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AIHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;AI_STATES&quot;</span><span class="p">):</span>
+            <span class="c1"># load AI dict from typeclass core if it exists - allows for setting it</span>
+            <span class="c1"># on the typeclass directly.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_aidict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AI_STATES</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AIHandler for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="si">}</span><span class="s2">. Current state: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -242,7 +247,8 @@
 <span class="sd">            object: Randomly chosen element from choices.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">choices</span><span class="p">,</span> <span class="n">odds</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">choices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">choices</span><span class="p">,</span> <span class="n">odds</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_weighted_choice_dict</span><span class="p">(</span><span class="n">choices</span><span class="p">):</span>
@@ -438,7 +444,10 @@
                 <span class="k">return</span>
 
         <span class="c1"># perform the action</span>
-        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ai_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="n">next_action</span><span class="p">)</span></div></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ai_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="n">next_action</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AIHandler: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="si">}</span><span class="s2"> has no ai_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2"> method.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
