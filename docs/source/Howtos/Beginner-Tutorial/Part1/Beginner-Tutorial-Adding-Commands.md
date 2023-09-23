@@ -225,7 +225,7 @@ We will add this cmdset in another way, so remove it manually:
 
     > py self.cmdset.remove("commands.mycommands.MyCmdSet")
 
-## Add the echo command to the default cmdset 
+### Add the echo command to the default cmdset 
 
 Above we added the `echo` command to ourselves. It will _only_ be available to us and noone else in the game. But all commands in Evennia are part of command-sets, including the normal `look` and `py` commands we have been using all the while. You can easily extend the default command set with your `echo` command - this way _everyone_ in the game will have access to it! 
 
