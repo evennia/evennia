@@ -225,7 +225,7 @@ We will add this cmdset in another way, so remove it manually:
 
     > py self.cmdset.remove("commands.mycommands.MyCmdSet")
 
-## Add the echo command to the default cmdset 
+### Add the echo command to the default cmdset 
 
 Above we added the `echo` command to ourselves. It will _only_ be available to us and noone else in the game. But all commands in Evennia are part of command-sets, including the normal `look` and `py` commands we have been using all the while. You can easily extend the default command set with your `echo` command - this way _everyone_ in the game will have access to it! 
 
@@ -349,17 +349,15 @@ The full form of the if statement is
 	else:
 	    ...
 
-There can be any number of `elifs` to mark when different branches of the code should run. If
-the `else` condition is given, it will run if none of the other conditions was truthy. In Python
-the `if..elif..else` structure also serves the same function as `case` in some other languages.
+There can be any number of `elifs` to mark when different branches of the code should run. If `else` is provided, it will run if none of the other conditions were truthy. 
 
 ```
 - **Line 15** has our first _conditional_, an `if` statement. This is written on the form `if <condition>:` and only if that condition is 'truthy' will the indented code block under the `if` statement run. To learn what is truthy in Python it's usually easier to learn what is "falsy":
     - `False` - this is a reserved boolean word in Python. The opposite is `True`.
     - `None` - another reserved word. This represents nothing, a null-result or value.
     - `0` or `0.0`
-    - The empty string `""` or `''` or `""""""` or `''''''`
-    - Empty _iterables_ we haven't seen yet, like empty lists `[]`, empty tuples `()` and empty dicts `{}`.
+    - The empty strings `""`, `''`, or empty triple-strings like `""""""`,  `''''''`
+    - Empty _iterables_ we haven't used yet, like empty lists `[]`, empty tuples `()` and empty dicts `{}`.
     - Everything else is "truthy".
 
 - **Line 16**'s condition is `not args`. The `not` _inverses_ the result, so if `args` is the empty string (falsy), the whole conditional becomes truthy. Let's continue in the code:

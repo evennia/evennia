@@ -70,13 +70,11 @@
 <li><a class="reference internal" href="#">8. Adding custom commands</a><ul>
 <li><a class="reference internal" href="#creating-a-custom-command">8.1. Creating a custom command</a><ul>
 <li><a class="reference internal" href="#making-our-cmdset-persistent">8.1.1. Making our cmdset persistent</a></li>
+<li><a class="reference internal" href="#add-the-echo-command-to-the-default-cmdset">8.1.2. Add the echo command to the default cmdset</a></li>
+<li><a class="reference internal" href="#figuring-out-who-to-hit">8.1.3. Figuring out who to hit</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#add-the-echo-command-to-the-default-cmdset">8.2. Add the echo command to the default cmdset</a><ul>
-<li><a class="reference internal" href="#figuring-out-who-to-hit">8.2.1. Figuring out who to hit</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#summary">8.3. Summary</a></li>
+<li><a class="reference internal" href="#summary">8.2. Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -325,9 +323,8 @@ enough to make <code class="docutils literal notranslate"><span class="pre">echo
 </pre></div>
 </div>
 </section>
-</section>
 <section id="add-the-echo-command-to-the-default-cmdset">
-<h2><span class="section-number">8.2. </span>Add the echo command to the default cmdset<a class="headerlink" href="#add-the-echo-command-to-the-default-cmdset" title="Permalink to this headline">¶</a></h2>
+<h3><span class="section-number">8.1.2. </span>Add the echo command to the default cmdset<a class="headerlink" href="#add-the-echo-command-to-the-default-cmdset" title="Permalink to this headline">¶</a></h3>
 <p>Above we added the <code class="docutils literal notranslate"><span class="pre">echo</span></code> command to ourselves. It will <em>only</em> be available to us and noone else in the game. But all commands in Evennia are part of command-sets, including the normal <code class="docutils literal notranslate"><span class="pre">look</span></code> and <code class="docutils literal notranslate"><span class="pre">py</span></code> commands we have been using all the while. You can easily extend the default command set with your <code class="docutils literal notranslate"><span class="pre">echo</span></code> command - this way <em>everyone</em> in the game will have access to it!</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">mygame/commands/</span></code> you’ll find an existing module named <code class="docutils literal notranslate"><span class="pre">default_cmdsets.py</span></code> Open it and you’ll find four empty cmdset-classes:</p>
 <ul class="simple">
@@ -373,8 +370,9 @@ enough to make <code class="docutils literal notranslate"><span class="pre">echo
 <p>This works the same way as when you added <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> to your <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>. The only difference cmdsets are automatically added to all Characters/Accounts etc so you don’t have to do so manually. We must also make sure to import the <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> from your <code class="docutils literal notranslate"><span class="pre">mycommands</span></code> module in order for this module to know about it. The period <code class="docutils literal notranslate"><span class="pre">.</span></code> in  <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.mycommands</span> <span class="pre">import</span> <span class="pre">...</span></code> means that we are telling Python that <code class="docutils literal notranslate"><span class="pre">mycommands.py</span></code> sits in the same directory as this current module.</p>
 <p>Just <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server and your <code class="docutils literal notranslate"><span class="pre">echo</span></code> command will be available again. There is no limit to how many cmdsets a given Command can be a part of.</p>
 <p>To remove, you just comment out or delete the <code class="docutils literal notranslate"><span class="pre">self.add()</span></code> line. Keep it like this for now though - we’ll expand on it below.</p>
+</section>
 <section id="figuring-out-who-to-hit">
-<h3><span class="section-number">8.2.1. </span>Figuring out who to hit<a class="headerlink" href="#figuring-out-who-to-hit" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.1.3. </span>Figuring out who to hit<a class="headerlink" href="#figuring-out-who-to-hit" title="Permalink to this headline">¶</a></h3>
 <p>Let’s try something a little more exciting than just echo. Let’s make a <code class="docutils literal notranslate"><span class="pre">hit</span></code> command, for punching someone in the face! This is how we want it to work:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit &lt;target&gt;
 You hit &lt;target&gt; with full force!
@@ -462,9 +460,7 @@ else:
     ...
 </pre></div>
 </div>
-<p>There can be any number of <code class="docutils literal notranslate"><span class="pre">elifs</span></code> to mark when different branches of the code should run. If
-the <code class="docutils literal notranslate"><span class="pre">else</span></code> condition is given, it will run if none of the other conditions was truthy. In Python
-the <code class="docutils literal notranslate"><span class="pre">if..elif..else</span></code> structure also serves the same function as <code class="docutils literal notranslate"><span class="pre">case</span></code> in some other languages.</p>
+<p>There can be any number of <code class="docutils literal notranslate"><span class="pre">elifs</span></code> to mark when different branches of the code should run. If <code class="docutils literal notranslate"><span class="pre">else</span></code> is provided, it will run if none of the other conditions were truthy.</p>
 </aside>
 <ul class="simple">
 <li><p><strong>Line 15</strong> has our first <em>conditional</em>, an <code class="docutils literal notranslate"><span class="pre">if</span></code> statement. This is written on the form <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">&lt;condition&gt;:</span></code> and only if that condition is ‘truthy’ will the indented code block under the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement run. To learn what is truthy in Python it’s usually easier to learn what is “falsy”:</p>
@@ -472,8 +468,8 @@ the <code class="docutils literal notranslate"><span class="pre">if..elif..else<
 <li><p><code class="docutils literal notranslate"><span class="pre">False</span></code> - this is a reserved boolean word in Python. The opposite is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - another reserved word. This represents nothing, a null-result or value.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></li>
-<li><p>The empty string <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">''</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;&quot;&quot;&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">''''''</span></code></p></li>
-<li><p>Empty <em>iterables</em> we haven’t seen yet, like empty lists <code class="docutils literal notranslate"><span class="pre">[]</span></code>, empty tuples <code class="docutils literal notranslate"><span class="pre">()</span></code> and empty dicts <code class="docutils literal notranslate"><span class="pre">{}</span></code>.</p></li>
+<li><p>The empty strings <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">''</span></code>, or empty triple-strings like <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;&quot;&quot;&quot;</span></code>,  <code class="docutils literal notranslate"><span class="pre">''''''</span></code></p></li>
+<li><p>Empty <em>iterables</em> we haven’t used yet, like empty lists <code class="docutils literal notranslate"><span class="pre">[]</span></code>, empty tuples <code class="docutils literal notranslate"><span class="pre">()</span></code> and empty dicts <code class="docutils literal notranslate"><span class="pre">{}</span></code>.</p></li>
 <li><p>Everything else is “truthy”.</p></li>
 </ul>
 </li>
@@ -520,7 +516,7 @@ You hit Smaug with full force!
 </section>
 </section>
 <section id="summary">
-<h2><span class="section-number">8.3. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">8.2. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves. We also upset a dragon.</p>
 <p>In the next lesson we’ll learn how to hit Smaug with different weapons. We’ll also
 get into how we replace and extend Evennia’s default Commands.</p>
