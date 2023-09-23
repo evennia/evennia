@@ -7,6 +7,8 @@
   instead of 'Custom' (InspectorCaracal)
 - [Fix][pull3274]: Traceback when creating objects with initial nattributes
   (InspectorCaracal)
+- Docs: Typo fixes and starting earlier with explaining how to add to the
+  default cmdsets.
 
 [pull3267]: https://github.com/evennia/evennia/pull/3267
 [pull3270]: https://github.com/evennia/evennia/pull/3270
