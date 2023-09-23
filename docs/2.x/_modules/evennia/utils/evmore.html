@@ -241,7 +241,6 @@
         <span class="n">page_formatter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialization of the EvMore pager.</span>
 
@@ -277,7 +276,11 @@
 <span class="sd">                the caller when the more page exits. Note that this will be using whatever</span>
 <span class="sd">                cmdset the user had *before* the evmore pager was activated (so none of</span>
 <span class="sd">                the evmore commands will be available when this is run).</span>
-<span class="sd">            kwargs (any, optional): These will be passed on to the `caller.msg` method.</span>
+<span class="sd">            kwargs (any, optional): These will be passed on to the `caller.msg` method. Notably,</span>
+<span class="sd">                one can pass additional outputfuncs this way. There is one special kwarg:</span>
+<span class="sd">                - text_kwargs - extra kwargs to pass with the text outputfunc, e.g.</span>
+<span class="sd">                  `text_kwargs={&quot;type&quot;: &quot;help&quot;} would result to each page being sent</span>
+<span class="sd">                  to `msg` as `text=(pagetxt, {&quot;type&quot;: &quot;help&quot;})`.</span>
 
 <span class="sd">        Examples:</span>
 
@@ -319,6 +322,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">exit_on_lastpage</span> <span class="o">=</span> <span class="n">exit_on_lastpage</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exit_cmd</span> <span class="o">=</span> <span class="n">exit_cmd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exit_msg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;|xExited pager.|n&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_text_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;text_kwargs&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
@@ -362,10 +368,11 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sessions</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page_quit</span><span class="p">()</span>
             <span class="k">return</span>
-        <span class="c1"># this must be an &#39;is&#39;, not == check</span>
+        <span class="c1"># this must be an &#39;is&#39; check, not an == check</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">ses</span> <span class="k">for</span> <span class="n">ses</span> <span class="ow">in</span> <span class="n">sessions</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="n">ses</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">sessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">page</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">)</span></div>
+        <span class="n">text_outputfunc</span> <span class="o">=</span> <span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text_outputfunc</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvMore.page_top"><a class="viewcode-back" href="../../../api/evennia.utils.evmore.html#evennia.utils.evmore.EvMore.page_top">[docs]</a>    <span class="k">def</span> <span class="nf">page_top</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

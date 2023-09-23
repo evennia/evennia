@@ -187,11 +187,12 @@
     <span class="c1"># should topics disply their help entry when clicked</span>
     <span class="n">clickable_topics</span> <span class="o">=</span> <span class="n">HELP_CLICKABLE_TOPICS</span>
 
-<div class="viewcode-block" id="CmdHelp.msg_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.msg_help">[docs]</a>    <span class="k">def</span> <span class="nf">msg_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHelp.msg_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.msg_help">[docs]</a>    <span class="k">def</span> <span class="nf">msg_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        messages text to the caller, adding an extra oob argument to indicate</span>
 <span class="sd">        that this is a help command result and could be rendered in a separate</span>
-<span class="sd">        help window</span>
+<span class="sd">        help window.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">help_more</span><span class="p">:</span>
             <span class="n">usemore</span> <span class="o">=</span> <span class="kc">True</span>
@@ -208,7 +209,11 @@
                     <span class="k">pass</span>
 
             <span class="k">if</span> <span class="n">usemore</span><span class="p">:</span>
-                <span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+                <span class="c1"># adding the &#39;text_kwargs&#39; keyword means it will be sent with the text outputfunc</span>
+                <span class="c1"># for every page.</span>
+                <span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">text_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;help&quot;</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
                 <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;help&quot;</span><span class="p">}))</span></div>
@@ -771,7 +776,6 @@
             <span class="c1"># the subtopics is a list describing the path through the subtopic_map.</span>
 
             <span class="k">for</span> <span class="n">subtopic_query</span> <span class="ow">in</span> <span class="n">subtopics</span><span class="p">:</span>
-
                 <span class="k">if</span> <span class="n">subtopic_query</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subtopic_map</span><span class="p">:</span>
                     <span class="c1"># exact match failed. Try startswith-match</span>
                     <span class="n">fuzzy_match</span> <span class="o">=</span> <span class="kc">False</span>

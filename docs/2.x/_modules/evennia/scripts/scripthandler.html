@@ -162,10 +162,14 @@
             <span class="n">script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
                 <span class="n">scriptclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="n">autostart</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># adding to an Object. We wait to autostart so we can differentiate</span>
-            <span class="c1"># a failing creation from a script that immediately starts/stops.</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">):</span>
+            <span class="c1"># a str or class to use create before adding to an Object. We wait to autostart</span>
+            <span class="c1"># so we can differentiate a failing creation from a script that immediately starts/stops.</span>
             <span class="n">script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># already an instantiated class</span>
+            <span class="n">script</span> <span class="o">=</span> <span class="n">scriptclass</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">script</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Script </span><span class="si">{</span><span class="n">scriptclass</span><span class="si">}</span><span class="s2"> failed to be created.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
