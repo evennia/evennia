@@ -2,17 +2,23 @@
 
 ## Main branch
 
+- [Feature][issue3273]: Allow passing `text_kwargs` kwarg to `EvMore.msg` in order to expand
+  the outputfunc used for every evmore page.
 - [Fix][pull3267]: Missing recache step in ObjectSessionHandler (InspectorCaracal)
 - [Fix][pull3270]: Evennia is its own MSSP family now, so we should return that
   instead of 'Custom' (InspectorCaracal)
 - [Fix][pull3274]: Traceback when creating objects with initial nattributes
   (InspectorCaracal)
+- [Fix][issue3272]: Make sure `ScriptHandler.add` does not fail if passed an
+  instantiated script.
 - Docs: Typo fixes and starting earlier with explaining how to add to the
   default cmdsets.
 
 [pull3267]: https://github.com/evennia/evennia/pull/3267
 [pull3270]: https://github.com/evennia/evennia/pull/3270
 [pull3274]: https://github.com/evennia/evennia/pull/3274
+[issue3272]: https://github.com/evennia/evennia/issues/3272
+[issue3273]: https://github.com/evennia/evennia/issues/3273
 
 ## Evennia 2.3.0
 

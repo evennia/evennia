@@ -155,7 +155,6 @@ class EvMore(object):
         page_formatter=str,
         **kwargs,
     ):
-
         """
         Initialization of the EvMore pager.
 
@@ -191,7 +190,11 @@ class EvMore(object):
                 the caller when the more page exits. Note that this will be using whatever
                 cmdset the user had *before* the evmore pager was activated (so none of
                 the evmore commands will be available when this is run).
-            kwargs (any, optional): These will be passed on to the `caller.msg` method.
+            kwargs (any, optional): These will be passed on to the `caller.msg` method. Notably,
+                one can pass additional outputfuncs this way. There is one special kwarg:
+                - text_kwargs - extra kwargs to pass with the text outputfunc, e.g.
+                  `text_kwargs={"type": "help"} would result to each page being sent
+                  to `msg` as `text=(pagetxt, {"type": "help"})`.
 
         Examples:
 
@@ -233,6 +236,9 @@ class EvMore(object):
         self.exit_on_lastpage = exit_on_lastpage
         self.exit_cmd = exit_cmd
         self._exit_msg = _("|xExited pager.|n")
+
+        self._text_kwargs = kwargs.pop("text_kwargs", {})
+
         self._kwargs = kwargs
 
         self._data = None
@@ -276,10 +282,11 @@ class EvMore(object):
         if not sessions:
             self.page_quit()
             return
-        # this must be an 'is', not == check
+        # this must be an 'is' check, not an == check
         if not any(ses for ses in sessions if self._session is ses):
             self._session = sessions[0]
-        self._caller.msg(text=page, session=self._session, **self._kwargs)
+        text_outputfunc = (page, (), self._text_kwargs)
+        self._caller.msg(text=text_outputfunc, session=self._session, **self._kwargs)
 
     def page_top(self):
         """
