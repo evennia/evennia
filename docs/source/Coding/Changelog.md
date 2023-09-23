@@ -1,5 +1,19 @@
 # Changelog
 
+## Main branch
+
+- [Fix][pull3267]: Missing recache step in ObjectSessionHandler (InspectorCaracal)
+- [Fix][pull3270]: Evennia is its own MSSP family now, so we should return that
+  instead of 'Custom' (InspectorCaracal)
+- [Fix][pull3274]: Traceback when creating objects with initial nattributes
+  (InspectorCaracal)
+- Docs: Typo fixes and starting earlier with explaining how to add to the
+  default cmdsets.
+
+[pull3267]: https://github.com/evennia/evennia/pull/3267
+[pull3270]: https://github.com/evennia/evennia/pull/3270
+[pull3274]: https://github.com/evennia/evennia/pull/3274
+
 ## Evennia 2.3.0
 
 Sept 3, 2023
