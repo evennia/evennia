@@ -76,10 +76,14 @@ class ScriptHandler(object):
             script = create.create_script(
                 scriptclass, key=key, account=self.obj, autostart=autostart
             )
-        else:
-            # adding to an Object. We wait to autostart so we can differentiate
-            # a failing creation from a script that immediately starts/stops.
+        elif isinstance(scriptclass, str) or callable(scriptclass):
+            # a str or class to use create before adding to an Object. We wait to autostart
+            # so we can differentiate a failing creation from a script that immediately starts/stops.
             script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=False)
+        else:
+            # already an instantiated class
+            script = scriptclass
+
         if not script:
             logger.log_err(f"Script {scriptclass} failed to be created.")
             return None
