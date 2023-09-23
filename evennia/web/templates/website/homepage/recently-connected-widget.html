@@ -1,0 +1,11 @@
+<div class="card">
+    <h4 class="card-header text-center">Recently Connected</h4>
+
+    <div class="card-body px-0 py-0">
+        <ul class="list-group">
+            {% for account in accounts_connected_recent %}
+            <li class="list-group-item">{{account.username}}&mdash;<em>{{account.last_login|timesince}} ago</em></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
