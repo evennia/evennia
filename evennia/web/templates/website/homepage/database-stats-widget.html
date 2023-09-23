@@ -1,0 +1,13 @@
+<div class="card">
+    <h4 class="card-header text-center">Database Stats</h4>
+
+    <div class="card-body py-0 px-0">
+        <ul class="list-group">
+            <li class="list-group-item">{{num_accounts_registered}} account{{num_accounts_registered|pluralize}} (+
+                {{num_characters}} character{{num_characters|pluralize}})
+            </li>
+            <li class="list-group-item">{{num_rooms}} room{{num_rooms|pluralize}} (+ {{num_exits}} exits)</li>
+            <li class="list-group-item">{{num_others}} other objects</li>
+        </ul>
+    </div>
+</div>
