@@ -66,6 +66,7 @@ Next we need to put this in a CmdSet. It will be a one-command CmdSet for now! C
 
 
 ```python
+# in mygame/commands/mycommands.py
 
 from commands.command import Command
 from evennia import CmdSet
@@ -137,6 +138,7 @@ These are all properties you can access with `.` on the Command instance, such a
 The reason our command doesn't do anything yet is because it's missing a `func` method. This is what Evennia looks for to figure out what a Command actually does. Modify your `CmdEcho` class:
 
 ```python
+# in mygame/commands/mycommands.py
 # ...
 
 class CmdEcho(Command):
@@ -175,14 +177,10 @@ Try to pass an argument:
     > echo Woo Tang!
     Echo: ' Woo Tang!'
 
-Note that there is an extra space before `Woo!`. That is because self.args contains _everything_ after the command name, including spaces. Evennia will happily understand if you skip that space too:
-
-    > echoWoo Tang!
-    Echo: 'Woo Tang!'
-
-There are ways to force Evennia to _require_ an initial space, but right now we want to just ignore it since it looks a bit weird for our echo example. Tweak the code:
+Note that there is an extra space before `Woo`. That is because self.args contains _everything_ after the command name, including spaces. Let's remove that extra space with a small tweak:
 
 ```python
+# in mygame/commands/mycommands.py
 # ...
 
 class CmdEcho(Command):
@@ -221,13 +219,64 @@ enough to make `echo` a _persistent_ change though:
 
     > py self.cmdset.add("commands.mycommands.MyCmdSet", persistent=True)
 
-Now you can `reload` as much as you want and your code changes will be available directly without
-needing to re-add the MyCmdSet again. To remove the cmdset again, you'd do
+Now you can `reload` as much as you want and your code changes will be available directly without needing to re-add the MyCmdSet again. 
+
+We will add this cmdset in another way, so remove it manually: 
 
     > py self.cmdset.remove("commands.mycommands.MyCmdSet")
 
-But for now, keep it around, we'll expand it with some more examples.
+## Add the echo command to the default cmdset 
 
+Above we added the `echo` command to ourselves. It will _only_ be available to us and noone else in the game. But all commands in Evennia are part of command-sets, including the normal `look` and `py` commands we have been using all the while. You can easily extend the default command set with your `echo` command - this way _everyone_ in the game will have access to it! 
+
+In `mygame/commands/` you'll find an existing module named `default_cmdsets.py` Open it and you'll find four empty cmdset-classes: 
+
+- `CharacterCmdSet` - this sits on all Characters (this is the one we usually want to modify)
+- `AccountCmdSet` - this sits on all Accounts (shared between Characters, like `logout` etc)
+- `UnloggedCmdSet` - commands available _before_ you login, like the commands for creating your password and connecting to the game.
+- `SessionCmdSet` - commands unique to your Session (your particular client connection). This is unused by default.
+
+Tweak this file as follows:
+
+```python
+# in mygame/commands/default_cmdsets.py 
+
+# ,.. 
+
+from .mycommands import CmdEcho    # <-------  
+
+class CharacterCmdSet(default_cmds.CharacterCmdSet):
+    """
+    The `CharacterCmdSet` contains general in-game commands like `look`,
+    `get`, etc available on in-game Character objects. It is merged with
+    the `AccountCmdSet` when an Account puppets a Character.
+    """
+ 
+    key = "DefaultCharacter"
+ 
+    def at_cmdset_creation(self):
+        """
+        Populates the cmdset
+        """
+        super().at_cmdset_creation()
+        #
+        # any commands you add below will overload the default ones.
+        #
+        self.add(command.CmdEcho)    # <-----------
+
+# ... 
+```
+
+```{sidebar} super() and overriding defaults
+The `super()` Python keyword means that the _parent_ is called. In this case, the parent adds all default commands to this cmdset.  
+
+Coincidentally, this is also how you replace default commands in Evennia!jj To replace e.g. the command `get`, you just give your replacement command the `key` 'get' and add it here - since it's added after `super()`, it will replace the default version of `get`.
+```
+This works the same way as when you added `CmdEcho` to your `MyCmdSet`. The only difference cmdsets are automatically added to all Characters/Accounts etc so you don't have to do so manually. We must also make sure to import the `CmdEcho` from your `mycommands` module in order for this module to know about it. The period `.` in  `from .mycommands import ...` means that we are telling Python that `mycommands.py` sits in the same directory as this current module. 
+
+Just `reload` the server and your `echo` command will be available again. There is no limit to how many cmdsets a given Command can be a part of. 
+
+To remove, you just comment out or delete the `self.add()` line. Keep it like this for now though - we'll expand on it below. 
 ### Figuring out who to hit
 
 Let's try something a little more exciting than just echo. Let's make a `hit` command, for punching someone in the face! This is how we want it to work:

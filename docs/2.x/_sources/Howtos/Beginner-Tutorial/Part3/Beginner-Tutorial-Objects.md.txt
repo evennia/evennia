@@ -247,10 +247,10 @@ class EvAdventureWeapon(EvAdventureObject):
     inventory_use_slot = AttributeProperty(WieldLocation.WEAPON_HAND, autocreate=False)
     quality = AttributeProperty(3, autocreate=False)
     
-    attack_type = AttibuteProperty(Ability.STR, autocreate=False)
-    defend_type = AttibuteProperty(Ability.ARMOR, autocreate=False)
+    attack_type = AttributeProperty(Ability.STR, autocreate=False)
+    defend_type = AttributeProperty(Ability.ARMOR, autocreate=False)
     
-    damage_roll = AttibuteProperty("1d6", autocreate=False)
+    damage_roll = AttributeProperty("1d6", autocreate=False)
 
 
 def at_pre_use(self, user, target=None, *args, **kwargs):
@@ -386,10 +386,10 @@ class EvAdventureRuneStone(EvAdventureWeapon, EvAdventureConsumable):
     inventory_use_slot = WieldLocation.TWO_HANDS  # always two hands for magic
     quality = AttributeProperty(3, autocreate=False)
 
-    attack_type = AttibuteProperty(Ability.INT, autocreate=False)
-    defend_type = AttibuteProperty(Ability.DEX, autocreate=False)
+    attack_type = AttributeProperty(Ability.INT, autocreate=False)
+    defend_type = AttributeProperty(Ability.DEX, autocreate=False)
     
-    damage_roll = AttibuteProperty("1d8", autocreate=False)
+    damage_roll = AttributeProperty("1d8", autocreate=False)
 
     def at_post_use(self, user, *args, **kwargs):
         """Called after usage/spell was cast""" 

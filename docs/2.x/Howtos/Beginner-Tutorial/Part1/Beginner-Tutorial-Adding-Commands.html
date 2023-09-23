@@ -70,10 +70,13 @@
 <li><a class="reference internal" href="#">8. Adding custom commands</a><ul>
 <li><a class="reference internal" href="#creating-a-custom-command">8.1. Creating a custom command</a><ul>
 <li><a class="reference internal" href="#making-our-cmdset-persistent">8.1.1. Making our cmdset persistent</a></li>
-<li><a class="reference internal" href="#figuring-out-who-to-hit">8.1.2. Figuring out who to hit</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#summary">8.2. Summary</a></li>
+<li><a class="reference internal" href="#add-the-echo-command-to-the-default-cmdset">8.2. Add the echo command to the default cmdset</a><ul>
+<li><a class="reference internal" href="#figuring-out-who-to-hit">8.2.1. Figuring out who to hit</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summary">8.3. Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -172,7 +175,8 @@ database. They are “just” normal Python classes.</p>
 </div>
 <p>This is the simplest form of command you can imagine. It just gives itself a name, “echo”. This is what you will use to call this command later.</p>
 <p>Next we need to put this in a CmdSet. It will be a one-command CmdSet for now! Change your file as such:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
+
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 
@@ -239,7 +243,8 @@ current cmdset (self.cmdset): ChannelCmdSet
 <li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> - this is object on which this Command (and CmdSet) “sits”. So you, in this case.</p></li>
 </ul>
 <p>The reason our command doesn’t do anything yet is because it’s missing a <code class="docutils literal notranslate"><span class="pre">func</span></code> method. This is what Evennia looks for to figure out what a Command actually does. Modify your <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
+<span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -275,13 +280,9 @@ Echo: &#39;&#39;
 Echo: &#39; Woo Tang!&#39;
 </pre></div>
 </div>
-<p>Note that there is an extra space before <code class="docutils literal notranslate"><span class="pre">Woo!</span></code>. That is because self.args contains <em>everything</em> after the command name, including spaces. Evennia will happily understand if you skip that space too:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; echoWoo Tang!
-Echo: &#39;Woo Tang!&#39;
-</pre></div>
-</div>
-<p>There are ways to force Evennia to <em>require</em> an initial space, but right now we want to just ignore it since it looks a bit weird for our echo example. Tweak the code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<p>Note that there is an extra space before <code class="docutils literal notranslate"><span class="pre">Woo</span></code>. That is because self.args contains <em>everything</em> after the command name, including spaces. Let’s remove that extra space with a small tweak:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
+<span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -318,15 +319,62 @@ enough to make <code class="docutils literal notranslate"><span class="pre">echo
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;, persistent=True)
 </pre></div>
 </div>
-<p>Now you can <code class="docutils literal notranslate"><span class="pre">reload</span></code> as much as you want and your code changes will be available directly without
-needing to re-add the MyCmdSet again. To remove the cmdset again, you’d do</p>
+<p>Now you can <code class="docutils literal notranslate"><span class="pre">reload</span></code> as much as you want and your code changes will be available directly without needing to re-add the MyCmdSet again.</p>
+<p>We will add this cmdset in another way, so remove it manually:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)
 </pre></div>
 </div>
-<p>But for now, keep it around, we’ll expand it with some more examples.</p>
 </section>
+</section>
+<section id="add-the-echo-command-to-the-default-cmdset">
+<h2><span class="section-number">8.2. </span>Add the echo command to the default cmdset<a class="headerlink" href="#add-the-echo-command-to-the-default-cmdset" title="Permalink to this headline">¶</a></h2>
+<p>Above we added the <code class="docutils literal notranslate"><span class="pre">echo</span></code> command to ourselves. It will <em>only</em> be available to us and noone else in the game. But all commands in Evennia are part of command-sets, including the normal <code class="docutils literal notranslate"><span class="pre">look</span></code> and <code class="docutils literal notranslate"><span class="pre">py</span></code> commands we have been using all the while. You can easily extend the default command set with your <code class="docutils literal notranslate"><span class="pre">echo</span></code> command - this way <em>everyone</em> in the game will have access to it!</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">mygame/commands/</span></code> you’ll find an existing module named <code class="docutils literal notranslate"><span class="pre">default_cmdsets.py</span></code> Open it and you’ll find four empty cmdset-classes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> - this sits on all Characters (this is the one we usually want to modify)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code> - this sits on all Accounts (shared between Characters, like <code class="docutils literal notranslate"><span class="pre">logout</span></code> etc)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UnloggedCmdSet</span></code> - commands available <em>before</em> you login, like the commands for creating your password and connecting to the game.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SessionCmdSet</span></code> - commands unique to your Session (your particular client connection). This is unused by default.</p></li>
+</ul>
+<p>Tweak this file as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py </span>
+
+<span class="c1"># ,.. </span>
+
+<span class="kn">from</span> <span class="nn">.mycommands</span> <span class="kn">import</span> <span class="n">CmdEcho</span>    <span class="c1"># &lt;-------  </span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
+<span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
+<span class="sd">    the `AccountCmdSet` when an Account puppets a Character.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+ 
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
+ 
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populates the cmdset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="c1"># any commands you add below will overload the default ones.</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">CmdEcho</span><span class="p">)</span>    <span class="c1"># &lt;-----------</span>
+
+<span class="c1"># ... </span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">super() and overriding defaults</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">super()</span></code> Python keyword means that the <em>parent</em> is called. In this case, the parent adds all default commands to this cmdset.</p>
+<p>Coincidentally, this is also how you replace default commands in Evennia!jj To replace e.g. the command <code class="docutils literal notranslate"><span class="pre">get</span></code>, you just give your replacement command the <code class="docutils literal notranslate"><span class="pre">key</span></code> ‘get’ and add it here - since it’s added after <code class="docutils literal notranslate"><span class="pre">super()</span></code>, it will replace the default version of <code class="docutils literal notranslate"><span class="pre">get</span></code>.</p>
+</aside>
+<p>This works the same way as when you added <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> to your <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>. The only difference cmdsets are automatically added to all Characters/Accounts etc so you don’t have to do so manually. We must also make sure to import the <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> from your <code class="docutils literal notranslate"><span class="pre">mycommands</span></code> module in order for this module to know about it. The period <code class="docutils literal notranslate"><span class="pre">.</span></code> in  <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.mycommands</span> <span class="pre">import</span> <span class="pre">...</span></code> means that we are telling Python that <code class="docutils literal notranslate"><span class="pre">mycommands.py</span></code> sits in the same directory as this current module.</p>
+<p>Just <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server and your <code class="docutils literal notranslate"><span class="pre">echo</span></code> command will be available again. There is no limit to how many cmdsets a given Command can be a part of.</p>
+<p>To remove, you just comment out or delete the <code class="docutils literal notranslate"><span class="pre">self.add()</span></code> line. Keep it like this for now though - we’ll expand on it below.</p>
 <section id="figuring-out-who-to-hit">
-<h3><span class="section-number">8.1.2. </span>Figuring out who to hit<a class="headerlink" href="#figuring-out-who-to-hit" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.2.1. </span>Figuring out who to hit<a class="headerlink" href="#figuring-out-who-to-hit" title="Permalink to this headline">¶</a></h3>
 <p>Let’s try something a little more exciting than just echo. Let’s make a <code class="docutils literal notranslate"><span class="pre">hit</span></code> command, for punching someone in the face! This is how we want it to work:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit &lt;target&gt;
 You hit &lt;target&gt; with full force!
@@ -472,7 +520,7 @@ You hit Smaug with full force!
 </section>
 </section>
 <section id="summary">
-<h2><span class="section-number">8.2. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">8.3. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves. We also upset a dragon.</p>
 <p>In the next lesson we’ll learn how to hit Smaug with different weapons. We’ll also
 get into how we replace and extend Evennia’s default Commands.</p>
