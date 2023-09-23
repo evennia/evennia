@@ -212,7 +212,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     objects = ObjectManager()
 
-    # populated by `return_apperance`
+    # populated by `return_appearance`
     appearance_template = """
 {header}
 |c{name}|n
@@ -1201,7 +1201,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
-    # name and return_apperance hooks
+    # name and return_appearance hooks
 
     def get_display_name(self, looker=None, **kwargs):
         """
@@ -2111,7 +2111,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Notes:
             This method shouldn't add extra coloring to the names beyond what is
             already given by the .get_display_name() (and the .name field) already.
-            Per-type coloring can be applied in `return_apperance`.
+            Per-type coloring can be applied in `return_appearance`.
 
         """
         # a mapping {'exits': [...], 'characters': [...], 'things': [...]}
