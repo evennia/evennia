@@ -516,7 +516,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
 
         """
 
-        data = {"nick": text}
+        data = {"content": text}
         data.update(kwargs)
         self._post_json(f"channels/{channel_id}/messages", data)
 
