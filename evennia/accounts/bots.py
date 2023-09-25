@@ -638,6 +638,15 @@ class DiscordBot(Bot):
                 super().msg(channel=(strip_ansi(message.strip()), dc_chan))
 
     def change_nickname(self, new_nickname, guild_id, user_id, **kwargs):
+        """
+        Changes a given user's nickname on the given guild the bot is in.
+
+        Args:
+            new_nickname (str) - The user's new nickname.
+            guild_id (int) - The guild the nickname will be changed in.
+            user_id (int) - The Discord ID of the user who's nickname will be changed.
+
+        """
         super().msg(nickname=(new_nickname, guild_id, user_id))
 
     def direct_msg(self, message, sender, **kwargs):
