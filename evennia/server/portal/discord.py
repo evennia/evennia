@@ -375,6 +375,39 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
 
         d.addCallback(cbResponse)
 
+    def _patch_json(self, url, data, **kwargs):
+        """
+        Post JSON data to a REST API endpoint
+
+        Args:
+            url (str) - The API path which is being posted to
+            data (dict) - Content to be sent
+        """
+        url = f"{DISCORD_API_BASE_URL}/{url}"
+        body = FileBodyProducer(BytesIO(json.dumps(data).encode("utf-8")))
+        d = _AGENT.request(
+            b"PATCH",
+            url.encode("utf-8"),
+            Headers(
+                {
+                    "User-Agent": [DISCORD_USER_AGENT],
+                    "Authorization": [f"Bot {DISCORD_BOT_TOKEN}"],
+                    "Content-Type": ["application/json"],
+                }
+            ),
+            body,
+        )
+
+        def cbResponse(response):
+            if response.code == 200:
+                d = readBody(response)
+                d.addCallback(self.post_response)
+                return d
+            elif should_retry(response.code):
+                delay(300, self._post_json, url, data, **kwargs)
+
+        d.addCallback(cbResponse)
+
     def post_response(self, body, **kwargs):
         """
         Process the response from sending a POST request
@@ -483,9 +516,29 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
 
         """
 
-        data = {"content": text}
+        data = {"nick": text}
         data.update(kwargs)
         self._post_json(f"channels/{channel_id}/messages", data)
+
+    def send_nickname(self, text, guild_id, user_id, **kwargs):
+        """
+        Changes a user's nickname on a Discord server.
+
+        Use with session.msg(nickname=(new_nickname, guild_id, user_id))
+        """
+
+        data = {"nick": text}
+        self._patch_json(f"guilds/{guild_id}/members/{user_id}", data)
+
+    def send_roles(self, current_roles, role, guild_id, user_id, **kwargs):
+        """
+        Assign the user a role on a Discord server.
+        Use with session.msg(roles=(current_roles, role, guild_id, user_id))
+        """
+
+        data = {"roles": current_roles.append(role)}
+        data.update(kwargs)
+        self._post_json(f"guilds/{guild_id}/members/{user_id}", data)
 
     def send_default(self, *args, **kwargs):
         """

@@ -637,6 +637,9 @@ class DiscordBot(Bot):
                 # send outputfunc channel(msg, discord channel)
                 super().msg(channel=(strip_ansi(message.strip()), dc_chan))
 
+    def change_nickname(self, new_nickname, guild_id, user_id, **kwargs):
+        super().msg(nickname=(new_nickname, guild_id, user_id))
+
     def direct_msg(self, message, sender, **kwargs):
         """
         Called when the Discord bot receives a direct message on Discord.
