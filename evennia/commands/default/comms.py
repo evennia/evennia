@@ -1942,7 +1942,6 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
         "list",
         "remove",
         "start",
-        "nickname",
     )
     locks = "cmd:serversetting(DISCORD_ENABLED) and pperm(Developer)"
     help_category = "Comms"
@@ -1980,11 +1979,6 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             else:
                 discord_bot.start()
                 self.msg("Starting the Discord bot session.")
-            return
-
-        if "nickname" in self.switches:
-            discord_bot.change_nickname("Test", 541788744471281700, 124523120668311552)
-            self.msg(f"Changed username")
             return
 
         if "guild" in self.switches:
