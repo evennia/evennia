@@ -1252,6 +1252,76 @@ def funcparser_callable_you_capitalize(
     )
 
 
+def funcparser_callable_your(
+    *args, caller=None, receiver=None, mapping=None, capitalize=False, **kwargs
+):
+    """
+    Usage: $your() or $your(key)
+
+    Replaces with your for the caller of the string, with the display_name +'s
+    of the caller for others.
+
+    Keyword Args:
+        caller (Object): The 'your' in the string. This is used unless another
+            your-key is passed to the callable in combination with `mapping`.
+        receiver (Object): The recipient of the string.
+        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is
+            used to find which object `$you(key)` refers to. If not given, the
+            `caller` kwarg is used.
+        capitalize (bool): Passed by the You helper, to capitalize you.
+
+    Returns:
+        str: The parsed string.
+
+    Raises:
+        ParsingError: If `caller` and `receiver` were not supplied.
+
+    Notes:
+        The kwargs should be passed the to parser directly.
+
+    Examples:
+        This can be used by the say or emote hooks to pass actor stance
+        strings.
+
+        - `$your() pet jumps at $you(tommy).`
+
+        The caller-object will see "Your pet jumps Tommy."
+        Tommy will see "CharName's pet jumps at you."
+        Others will see "CharName's pet jumps at Tommy."
+
+    """
+    if args and mapping:
+        # this would mean a $your(key) form
+        try:
+            caller = mapping.get(args[0])
+        except KeyError:
+            pass
+
+    if not (caller and receiver):
+        raise ParsingError("No caller or receiver supplied to $your callable.")
+
+    capitalize = bool(capitalize)
+    if caller == receiver:
+        return "Your" if capitalize else "your"
+
+    name = caller.get_display_name(looker=receiver) \
+        if hasattr(caller, "get_display_name") else str(caller)
+
+    return name + "'s"
+
+
+def funcparser_callable_your_capitalize(
+    *args, you=None, receiver=None, mapping=None, capitalize=True, **kwargs
+):
+    """
+    Usage: $Your() - capitalizes the 'your' output.
+
+    """
+    return funcparser_callable_your(
+        *args, you=you, receiver=receiver, mapping=mapping, capitalize=capitalize, **kwargs
+    )
+
+
 def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
     """
     Usage: $conj(word, [options])
@@ -1484,6 +1554,8 @@ ACTOR_STANCE_CALLABLES = {
     # requires `you`, `receiver` and `mapping` to be passed into parser
     "you": funcparser_callable_you,
     "You": funcparser_callable_you_capitalize,
+    "your": funcparser_callable_your,
+    "Your": funcparser_callable_your_capitalize,
     "obj": funcparser_callable_you,
     "Obj": funcparser_callable_you_capitalize,
     "conj": funcparser_callable_conjugate,
