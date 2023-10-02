@@ -515,7 +515,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
     def send_role(self, role_id, guild_id, user_id, **kwargs):
 
         data = kwargs
-        self._post_json(f"guilds/{guild_id}/members/{user_id}/roles/{role_id}", put=True)
+        self._post_json(f"guilds/{guild_id}/members/{user_id}/roles/{role_id}", data, put=True)
 
     def send_default(self, *args, **kwargs):
         """
