@@ -76,10 +76,18 @@ class TagField:
         It is called with the component class and the name of the field.
         """
         self._category_key = f"{owner.name}::{name}"
-        tag_fields = getattr(owner, "_tag_fields", None)
+        
+        # Check __dict__ instead of getattr.  TagField could be on an inherited
+        # class from a parent with their own TagField.  We want to be able to
+        # have unique TagFields on each subclass.  Using getattr would instead
+        # get the parent's TagField in an inheritance situation, which is not
+        # what we want here.
+        tag_fields = owner.__dict__.get("_tag_fields", None)
+
         if tag_fields is None:
             tag_fields = {}
             setattr(owner, "_tag_fields", tag_fields)
+
         tag_fields[name] = self
 
     def __get__(self, instance, owner):

@@ -15,9 +15,16 @@ from evennia.contrib.base_systems.components.holder import (
     ComponentProperty,
 )
 
+# Recursively check inheritance chain of the input class.
+def all_component_subclasses(cls):
+    return set(cls.__subclasses__()).union(
+        [s for c in cls.__subclasses__() for s in all_component_subclasses(c)])
+
 
 def get_component_class(component_name):
-    subclasses = Component.__subclasses__()
+    
+    subclasses = all_component_subclasses(Component)
+
     component_class = next((sc for sc in subclasses if sc.name == component_name), None)
     if component_class is None:
         message = (
