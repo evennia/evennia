@@ -650,8 +650,16 @@ class DiscordBot(Bot):
         super().msg(nickname=(new_nickname, guild_id, user_id))
 
     def assign_role(self, role_id, guild_id, user_id, **kwargs):
+        """
+        Assigns a user the role on the given guild the bot is in.
 
-    pass
+        Args:
+            role_id (int) - The Discord role's ID.
+            guild_id (int) - The guild the role will be assigned in.
+            user_id (int) - The user the given role will be assigned to.
+        """
+        
+        super().msg(role=(role_id, guild_id, user_id))
 
     def direct_msg(self, message, sender, **kwargs):
         """
