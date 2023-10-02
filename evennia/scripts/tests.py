@@ -78,26 +78,28 @@ class TestScriptHandler(BaseEvenniaTest):
 
     def setUp(self):
         self.obj, self.errors = DefaultObject.create("test_object")
+        self.obj.scripts.add(TestingListIntervalScript)
 
     def tearDown(self):
         self.obj.delete()
 
     def test_start(self):
         "Check that ScriptHandler start function works correctly"
-        self.obj.scripts.add(TestingListIntervalScript)
         self.num = self.obj.scripts.start(self.obj.scripts.all()[0].key)
-        self.assertTrue(self.num == 1)
+        self.assertEqual(self.num, 1)
 
     def test_list_script_intervals(self):
         "Checks that Scripthandler __str__ function lists script intervals correctly"
-        self.obj.scripts.add(TestingListIntervalScript)
         self.str = str(self.obj.scripts)
         self.assertTrue("None/1" in self.str)
         self.assertTrue("1 repeats" in self.str)
 
+    def test_get_all_scripts(self):
+        "Checks that Scripthandler get_all returns correct number of scripts"
+        self.assertEqual([script.key for script in self.obj.scripts.all()], ["interval_test"])
+
     def test_get_script(self):
         "Checks that Scripthandler get function returns correct script"
-        self.obj.scripts.add(TestingListIntervalScript)
         script = self.obj.scripts.get("interval_test")
         self.assertTrue(bool(script))
 

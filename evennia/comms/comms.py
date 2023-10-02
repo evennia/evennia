@@ -7,7 +7,6 @@ import re
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
-
 from evennia.comms.managers import ChannelManager
 from evennia.comms.models import ChannelDB
 from evennia.typeclasses.models import TypeclassBase
@@ -188,7 +187,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             # display listening subscribers in bold
             string = ", ".join(
                 [
-                    account.key if account not in listening else "|w%s|n" % account.key
+                    account.key if account not in listening else f"|w{account.key}|n"
                     for account in subs
                 ]
             )
