@@ -352,9 +352,19 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         """
         url = f"{DISCORD_API_BASE_URL}/{url}"
         body = FileBodyProducer(BytesIO(json.dumps(data).encode("utf-8")))
-        is_patch_request = kwargs.pop('patch', False)
+        is_patch_request = kwargs.pop("patch", False)
+        is_put_request = kwargs.pop("put", False)
+        request_type = "POST"
+
+        if is_patch_request:
+            request_type = b"PATCH"
+        elif is_put_request:
+            request_type = b"PUT"
+        else:
+            request_type = b"POST"
+        
         d = _AGENT.request(
-            b"PATCH" if is_patch_request else b"POST",
+           request_type,
             url.encode("utf-8"),
             Headers(
                 {
@@ -371,6 +381,9 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
                 d = readBody(response)
                 d.addCallback(self.post_response)
                 return d
+            elif response.code == 204:
+                d = readBody(response)
+                d.addCallback(self.post_response)
             elif should_retry(response.code):
                 delay(300, self._post_json, url, data, **kwargs)
 
@@ -498,6 +511,11 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         data = {"nick": text}
         data.update(kwargs)
         self._post_json(f"guilds/{guild_id}/members/{user_id}", data, patch=True)
+
+    def send_role(self, role_id, guild_id, user_id, **kwargs):
+
+        data = kwargs
+        self._post_json(f"guilds/{guild_id}/members/{user_id}/roles/{role_id}", put=True)
 
     def send_default(self, *args, **kwargs):
         """
