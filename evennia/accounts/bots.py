@@ -649,6 +649,10 @@ class DiscordBot(Bot):
         """
         super().msg(nickname=(new_nickname, guild_id, user_id))
 
+    def assign_role(self, role_id, guild_id, user_id, **kwargs):
+
+    pass
+
     def direct_msg(self, message, sender, **kwargs):
         """
         Called when the Discord bot receives a direct message on Discord.
