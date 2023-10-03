@@ -1,0 +1,14 @@
+<div class="card">
+    <h4 class="card-header text-center">Accounts</h4>
+
+    <div class="card-body">
+        <p>
+            There's currently <strong>{{num_accounts_connected}}</strong> connected out of a total of <strong>{{num_accounts_registered}}</strong>
+            account{{num_accounts_registered|pluralize}} registered.
+        </p>
+        <p>
+            Of these, <strong>{{num_accounts_registered_recent}}</strong> were created this week, and <strong>{{num_accounts_connected_recent}}</strong>
+            have connected within the last seven days.
+        </p>
+    </div>
+</div>
