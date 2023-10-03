@@ -457,7 +457,7 @@ msgstr "{name} entrou no jogo."
 #, fuzzy, python-brace-format
 #| msgid "{name} has left the game."
 msgid "{name} has left the game{reason}."
-msgstr "{name} saiu do jogo."
+msgstr "{name} saiu do jogo{reason}."
 
 #: objects/objects.py:2838
 #, fuzzy
@@ -669,7 +669,7 @@ msgstr "Tempo de inatividade esgotado, desconectando."
 
 #: server/server.py:177
 msgid " (connection lost)"
-msgstr ""
+msgstr " (ligação perdida)"
 
 #: server/sessionhandler.py:41
 msgid "Your client sent an incorrect UTF-8 sequence."
