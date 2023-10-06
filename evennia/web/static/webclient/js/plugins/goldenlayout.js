@@ -3,6 +3,7 @@
  * Golden Layout plugin
  *
  */
+
 let goldenlayout = (function () {
 
     var myLayout; // The actively used GoldenLayout API object.
@@ -583,13 +584,32 @@ let goldenlayout = (function () {
         layoutDiv.append(div);
     }
 
+    // Listener for realtime changes to the layout name input field.
+    // If the layout name is "default", the save button is disabled
+    // to prevent the perception of overwriting the default layout.
 
-    //
-    //
+    $(document).on("input", "#layoutName", function () {
+        if ($(this).val() === "default") {              // Disable the save button if the name is "default"
+            $(".savelayout").prop("disabled", true);    // Disabling the save button
+        } else {                                        // Enable the save button if the name is not "default"
+           $(".savelayout").prop("disabled", false);    // Enabling the save button
+        }
+    });
+
     var onSaveLayout = function () {
         // get the name from the select box
         var name = $("#layoutName").val();
         var layouts = $("#goldenlayouts");
+        var saveButton = $(".savelayout"); // Using the class to select the button
+
+        // Enable the save button in case it was disabled before
+        saveButton.prop("disabled", false);
+
+        // Check if name is "default" and disable saving
+        if (name === "default") {
+            saveButton.prop("disabled", true); // Disabling the save button
+            return; // Prevent further execution of the function
+        }
 
         // make sure we have a valid name
         if( name !== "" ) {
@@ -616,8 +636,6 @@ let goldenlayout = (function () {
             resetUI( evenniaGoldenLayouts.get(name) );
         }
     }
-
-
     //
     // Public
     //
