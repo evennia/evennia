@@ -368,7 +368,6 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         )
 
         def cbResponse(response):
-            logger.log_info(response.code)
             if response.code == 200 or response.code == 204:
                 d = readBody(response)
                 d.addCallback(self.post_response)
