@@ -637,6 +637,30 @@ class DiscordBot(Bot):
                 # send outputfunc channel(msg, discord channel)
                 super().msg(channel=(strip_ansi(message.strip()), dc_chan))
 
+    def change_nickname(self, new_nickname, guild_id, user_id, **kwargs):
+        """
+        Changes a given user's nickname on the given guild the bot is in.
+
+        Args:
+            new_nickname (str) - The user's new nickname.
+            guild_id (int) - The guild the nickname will be changed in.
+            user_id (int) - The Discord ID of the user who's nickname will be changed.
+
+        """
+        super().msg(nickname=(new_nickname, guild_id, user_id))
+
+    def assign_role(self, role_id, guild_id, user_id, **kwargs):
+        """
+        Assigns a user the role on the given guild the bot is in.
+
+        Args:
+            role_id (int) - The Discord role's ID.
+            guild_id (int) - The guild the role will be assigned in.
+            user_id (int) - The user the given role will be assigned to.
+        """
+        
+        super().msg(role=(role_id, guild_id, user_id))
+
     def direct_msg(self, message, sender, **kwargs):
         """
         Called when the Discord bot receives a direct message on Discord.
