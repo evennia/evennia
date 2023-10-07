@@ -6,6 +6,8 @@
   the outputfunc used for every evmore page.
 - [Feature][pull3278]: Refactor home page into multiple sub-parts for easier
   overriding and composition (johnnyvoruz)
+- [Feature][pull3286]: Allow Discord bot to change user's nickname and assign
+  roles for a user on a given server (holl0wstar).
 - [Fix][pull3267]: Missing recache step in ObjectSessionHandler (InspectorCaracal)
 - [Fix][pull3270]: Evennia is its own MSSP family now, so we should return that
   instead of 'Custom' (InspectorCaracal)
@@ -20,6 +22,7 @@
 [pull3270]: https://github.com/evennia/evennia/pull/3270
 [pull3274]: https://github.com/evennia/evennia/pull/3274
 [pull3278]: https://github.com/evennia/evennia/pull/3278
+[pull3286]: https://github.com/evennia/evennia/pull/3286
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 
