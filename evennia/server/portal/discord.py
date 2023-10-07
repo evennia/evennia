@@ -352,8 +352,10 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         """
         url = f"{DISCORD_API_BASE_URL}/{url}"
         body = FileBodyProducer(BytesIO(json.dumps(data).encode("utf-8")))
+        request_type = kwargs.pop("type", "POST")
+        
         d = _AGENT.request(
-            b"POST",
+           request_type.encode("utf-8"),
             url.encode("utf-8"),
             Headers(
                 {
@@ -366,7 +368,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         )
 
         def cbResponse(response):
-            if response.code == 200:
+            if response.code == 200 or response.code == 204:
                 d = readBody(response)
                 d.addCallback(self.post_response)
                 return d
@@ -486,6 +488,22 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         data = {"content": text}
         data.update(kwargs)
         self._post_json(f"channels/{channel_id}/messages", data)
+
+    def send_nickname(self, text, guild_id, user_id, **kwargs):
+        """
+        Changes a user's nickname on a Discord server.
+
+        Use with session.msg(nickname=(new_nickname, guild_id, user_id))
+        """
+
+        data = {"nick": text}
+        data.update(kwargs)
+        self._post_json(f"guilds/{guild_id}/members/{user_id}", data, type="PATCH")
+
+    def send_role(self, role_id, guild_id, user_id, **kwargs):
+
+        data = kwargs
+        self._post_json(f"guilds/{guild_id}/members/{user_id}/roles/{role_id}", data, type="PUT")
 
     def send_default(self, *args, **kwargs):
         """
