@@ -1275,7 +1275,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             target = caller.search(target_str, candidates=banlists)
             if not target:
-                self.msg("Could not find a banned user '{target_str}' in given channel(s).")
+                self.msg(f"Could not find a banned user '{target_str}' in given channel(s).")
                 return
 
             for chan in channels:
