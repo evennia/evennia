@@ -1,0 +1,1624 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>11. Turnbased Combat &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="12. NPC and monster AI" href="Beginner-Tutorial-AI.html" />
+    <link rel="prev" title="10. Twitch Combat" href="Beginner-Tutorial-Combat-Twitch.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-AI.html" title="12. NPC and monster AI"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Combat-Twitch.html" title="10. Twitch Combat"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">11. </span>Turnbased Combat</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">11. Turnbased Combat</a><ul>
+<li><a class="reference internal" href="#general-principle">11.1. General Principle</a></li>
+<li><a class="reference internal" href="#turnbased-combat-handler">11.2. Turnbased combat handler</a><ul>
+<li><a class="reference internal" href="#getting-the-sides-of-combat">11.2.1. Getting the sides of combat</a></li>
+<li><a class="reference internal" href="#tracking-advantage-disadvantage">11.2.2. Tracking Advantage/Disadvantage</a></li>
+<li><a class="reference internal" href="#adding-and-removing-combatants">11.2.3. Adding and removing combatants</a></li>
+<li><a class="reference internal" href="#flee-action">11.2.4. Flee Action</a></li>
+<li><a class="reference internal" href="#queue-action">11.2.5. Queue action</a></li>
+<li><a class="reference internal" href="#execute-an-action-and-tick-the-round">11.2.6. Execute an action and tick the round</a></li>
+<li><a class="reference internal" href="#check-and-stop-combat">11.2.7. Check and stop combat</a></li>
+<li><a class="reference internal" href="#start-combat">11.2.8. Start combat</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-evmenu-for-the-combat-menu">11.3. Using EvMenu for the combat menu</a></li>
+<li><a class="reference internal" href="#menu-for-turnbased-combat">11.4. Menu for Turnbased combat</a><ul>
+<li><a class="reference internal" href="#the-node-index">11.4.1. The node index</a></li>
+<li><a class="reference internal" href="#getting-or-setting-the-combathandler">11.4.2. Getting or setting the combathandler</a></li>
+<li><a class="reference internal" href="#queue-an-action">11.4.3. Queue an action</a></li>
+<li><a class="reference internal" href="#rerun-a-node">11.4.4. Rerun a node</a></li>
+<li><a class="reference internal" href="#stepping-through-the-wizard">11.4.5. Stepping through the wizard</a></li>
+<li><a class="reference internal" href="#choosing-targets-and-recipients">11.4.6. Choosing targets and recipients</a></li>
+<li><a class="reference internal" href="#choose-an-ability">11.4.7. Choose an Ability</a></li>
+<li><a class="reference internal" href="#choose-an-item-to-use-or-wield">11.4.8. Choose an item to use or wield</a></li>
+<li><a class="reference internal" href="#the-main-menu-node">11.4.9. The main menu node</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#attack-command">11.5. Attack Command</a></li>
+<li><a class="reference internal" href="#making-sure-the-menu-stops">11.6. Making sure the menu stops</a></li>
+<li><a class="reference internal" href="#testing">11.7. Testing</a></li>
+<li><a class="reference internal" href="#a-small-combat-test">11.8. A small combat test</a></li>
+<li><a class="reference internal" href="#conclusions">11.9. Conclusions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Combat-Twitch.html"
+                        title="previous chapter"><span class="section-number">10. </span>Twitch Combat</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-AI.html"
+                        title="next chapter"><span class="section-number">12. </span>NPC and monster AI</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Combat-Turnbased.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="Beginner-Tutorial-Combat-Turnbased.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="turnbased-combat">
+<h1><span class="section-number">11. </span>Turnbased Combat<a class="headerlink" href="#turnbased-combat" title="Permalink to this headline">¶</a></h1>
+<p>In this lesson we will be building on the <a class="reference internal" href="Beginner-Tutorial-Combat-Base.html"><span class="doc std std-doc">combat base</span></a> to implement a combat system that works in turns and where you select your actions in a menu, like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>attack<span class="w"> </span>Troll
+______________________________________________________________________________
+
+<span class="w"> </span>You<span class="w"> </span><span class="o">(</span>Perfect<span class="o">)</span><span class="w">  </span>vs<span class="w">  </span>Troll<span class="w"> </span><span class="o">(</span>Perfect<span class="o">)</span><span class="w"> </span>
+<span class="w"> </span>Your<span class="w"> </span>queued<span class="w"> </span>action:<span class="w"> </span><span class="o">[</span>attack<span class="o">]</span><span class="w"> </span><span class="o">(</span>22s<span class="w"> </span><span class="k">until</span><span class="w"> </span>next<span class="w"> </span>round,
+<span class="w"> </span>or<span class="w"> </span><span class="k">until</span><span class="w"> </span>all<span class="w"> </span>combatants<span class="w"> </span>have<span class="w"> </span>chosen<span class="w"> </span>their<span class="w"> </span>next<span class="w"> </span>action<span class="o">)</span>.
+______________________________________________________________________________
+
+<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>attack<span class="w"> </span>an<span class="w"> </span>enemy<span class="w">                                                 </span>
+<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>Stunt<span class="w"> </span>-<span class="w"> </span>gain<span class="w"> </span>a<span class="w"> </span>later<span class="w"> </span>advantage<span class="w"> </span>against<span class="w"> </span>a<span class="w"> </span>target<span class="w">                 </span>
+<span class="w"> </span><span class="m">3</span>:<span class="w"> </span>Stunt<span class="w"> </span>-<span class="w"> </span>give<span class="w"> </span>an<span class="w"> </span>enemy<span class="w"> </span>disadvantage<span class="w"> </span>against<span class="w"> </span>yourself<span class="w"> </span>or<span class="w"> </span>an<span class="w"> </span>ally<span class="w">  </span>
+<span class="w"> </span><span class="m">4</span>:<span class="w"> </span>Use<span class="w"> </span>an<span class="w"> </span>item<span class="w"> </span>on<span class="w"> </span>yourself<span class="w"> </span>or<span class="w"> </span>an<span class="w"> </span>ally<span class="w">                              </span>
+<span class="w"> </span><span class="m">5</span>:<span class="w"> </span>Use<span class="w"> </span>an<span class="w"> </span>item<span class="w"> </span>on<span class="w"> </span>an<span class="w"> </span>enemy<span class="w">                                         </span>
+<span class="w"> </span><span class="m">6</span>:<span class="w"> </span>Wield/swap<span class="w"> </span>with<span class="w"> </span>an<span class="w"> </span>item<span class="w"> </span>from<span class="w"> </span>inventory<span class="w">                          </span>
+<span class="w"> </span><span class="m">7</span>:<span class="w"> </span>flee!<span class="w">                                                           </span>
+<span class="w"> </span><span class="m">8</span>:<span class="w"> </span>hold,<span class="w"> </span>doing<span class="w"> </span>nothing<span class="w"> </span>
+
+&gt;<span class="w"> </span><span class="m">4</span><span class="w"> </span>
+_______________________________________________________________________________
+
+Select<span class="w"> </span>the<span class="w"> </span>item
+_______________________________________________________________________________
+
+<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>Potion<span class="w"> </span>of<span class="w"> </span>Strength
+<span class="w"> </span><span class="m">2</span>.<span class="w"> </span>Potion<span class="w"> </span>of<span class="w"> </span>Dexterity<span class="w"> </span>
+<span class="w"> </span><span class="m">3</span>.<span class="w"> </span>Green<span class="w"> </span>Apple
+<span class="w"> </span><span class="m">4</span>.<span class="w"> </span>Throwing<span class="w"> </span>Daggers<span class="w">         </span>
+<span class="w"> </span>back<span class="w">                </span>
+<span class="w"> </span>abort<span class="w"> </span>
+
+&gt;<span class="w"> </span><span class="m">1</span><span class="w"> </span>
+_______________________________________________________________________________
+
+Choose<span class="w"> </span>an<span class="w"> </span>ally<span class="w"> </span>to<span class="w"> </span>target.
+_______________________________________________________________________________
+
+<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>Yourself
+<span class="w"> </span>back<span class="w">                 </span>
+<span class="w"> </span>abort<span class="w">                </span>
+
+&gt;<span class="w"> </span><span class="m">1</span>
+_______________________________________________________________________________
+
+<span class="w"> </span>You<span class="w"> </span><span class="o">(</span>Perfect<span class="o">)</span><span class="w">  </span>vs<span class="w"> </span>Troll<span class="w"> </span><span class="o">(</span>Perfect<span class="o">)</span><span class="w"> </span>
+<span class="w"> </span>Your<span class="w"> </span>queued<span class="w"> </span>action:<span class="w"> </span><span class="o">[</span>use<span class="o">]</span><span class="w"> </span><span class="o">(</span>6s<span class="w"> </span><span class="k">until</span><span class="w"> </span>next<span class="w"> </span>round,
+<span class="w"> </span>or<span class="w"> </span><span class="k">until</span><span class="w"> </span>all<span class="w"> </span>combatants<span class="w"> </span>have<span class="w"> </span>chosen<span class="w"> </span>their<span class="w"> </span>next<span class="w"> </span>action<span class="o">)</span>.
+_______________________________________________________________________________
+
+<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>attack<span class="w"> </span>an<span class="w"> </span>enemy<span class="w">                                                 </span>
+<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>Stunt<span class="w"> </span>-<span class="w"> </span>gain<span class="w"> </span>a<span class="w"> </span>later<span class="w"> </span>advantage<span class="w"> </span>against<span class="w"> </span>a<span class="w"> </span>target<span class="w">                 </span>
+<span class="w"> </span><span class="m">3</span>:<span class="w"> </span>Stunt<span class="w"> </span>-<span class="w"> </span>give<span class="w"> </span>an<span class="w"> </span>enemy<span class="w"> </span>disadvantage<span class="w"> </span>against<span class="w"> </span>yourself<span class="w"> </span>or<span class="w"> </span>an<span class="w"> </span>ally<span class="w">  </span>
+<span class="w"> </span><span class="m">4</span>:<span class="w"> </span>Use<span class="w"> </span>an<span class="w"> </span>item<span class="w"> </span>on<span class="w"> </span>yourself<span class="w"> </span>or<span class="w"> </span>an<span class="w"> </span>ally<span class="w">                              </span>
+<span class="w"> </span><span class="m">5</span>:<span class="w"> </span>Use<span class="w"> </span>an<span class="w"> </span>item<span class="w"> </span>on<span class="w"> </span>an<span class="w"> </span>enemy<span class="w">                                         </span>
+<span class="w"> </span><span class="m">6</span>:<span class="w"> </span>Wield/swap<span class="w"> </span>with<span class="w"> </span>an<span class="w"> </span>item<span class="w"> </span>from<span class="w"> </span>inventory<span class="w">                          </span>
+<span class="w"> </span><span class="m">7</span>:<span class="w"> </span>flee!<span class="w">                                                           </span>
+<span class="w"> </span><span class="m">8</span>:<span class="w"> </span>hold,<span class="w"> </span>doing<span class="w"> </span>nothing<span class="w">                                             </span>
+
+Troll<span class="w"> </span>attacks<span class="w"> </span>You<span class="w"> </span>with<span class="w"> </span>Claws:<span class="w"> </span>Roll<span class="w"> </span>vs<span class="w"> </span>armor<span class="w"> </span><span class="o">(</span><span class="m">12</span><span class="o">)</span>:
+<span class="w"> </span>rolled<span class="w"> </span><span class="m">4</span><span class="w"> </span>on<span class="w"> </span>d20<span class="w"> </span>+<span class="w"> </span>strength<span class="o">(</span>+3<span class="o">)</span><span class="w"> </span>vs<span class="w"> </span><span class="m">12</span><span class="w"> </span>-&gt;<span class="w"> </span>Fail<span class="w"> </span>
+<span class="w"> </span>Troll<span class="w"> </span>missed<span class="w"> </span>you.<span class="w"> </span>
+<span class="w">  </span>
+You<span class="w"> </span>use<span class="w"> </span>Potion<span class="w"> </span>of<span class="w"> </span>Strength.<span class="w"> </span>
+<span class="w"> </span>Renewed<span class="w"> </span>strength<span class="w"> </span>coarses<span class="w"> </span>through<span class="w"> </span>your<span class="w"> </span>body!<span class="w"> </span>
+<span class="w"> </span>Potion<span class="w"> </span>of<span class="w"> </span>Strength<span class="w"> </span>was<span class="w"> </span>used<span class="w"> </span>up.
+</pre></div>
+</div>
+<blockquote>
+<div><p>Note that this documentation doesn’t show in-game colors. Also, if you interested in an alternative, see the <a class="reference internal" href="Beginner-Tutorial-Combat-Twitch.html"><span class="doc std std-doc">previous lesson</span></a> where we implemented a ‘twitch’-like combat system based on entering direct commands for every action.</p>
+</div></blockquote>
+<p>With ‘turnbased’ combat, we mean combat that ‘ticks’ along at a slower pace, slow enough to allow the participants to select their options in a menu (the menu is not strictly necessary, but it’s a good way to learn how to make menus as well). Their actions are queued and will be executed when the turn timer runs out. To avoid waiting unnecessarily, we will also move on to the next round whenever everyone has made their choices.</p>
+<p>The advantage of a turnbased system is that it removes player speed from the equation; your prowess in combat does not depend on how quickly you can enter a command. For RPG-heavy games you could also allow players time to make RP emotes during the rounds of combat to flesh out the action.</p>
+<p>The advantage of using a menu is that you have all possible actions directly available to you, making it beginner friendly and easy to know what you can do. It also means a lot less writing which can be an advantage to some players.</p>
+<section id="general-principle">
+<h2><span class="section-number">11.1. </span>General Principle<a class="headerlink" href="#general-principle" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>An example of an implemented Turnbased combat system can be found in <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia-contrib-tutorials-evadventure-combat-turnbased"><span class="std std-ref">evennia/contrib/tutorials/evadventure/combat_turnbased.py</span></a>.</p>
+</aside>
+<p>Here is the general principle of the Turnbased combat handler:</p>
+<ul class="simple">
+<li><p>The turnbased version of the CombatHandler will be stored on the <em>current location</em>. That means that there will only be one combat per location. Anyone else starting combat will join the same handler and be assigned a side to fight on.</p></li>
+<li><p>The handler will run a central timer of 30s (in this example). When it fires, all queued actions will be executed. If everyone has submitted their actions, this will happen immediately when the last one submits.</p></li>
+<li><p>While in combat you will not be able to move around - you are stuck in the room. Fleeing combat is a separate action that takes a few turns to complete (we will need to create this).</p></li>
+<li><p>Starting the combat is done via the <code class="docutils literal notranslate"><span class="pre">attack</span> <span class="pre">&lt;target&gt;</span></code> command. After that you are in the combat menu and will use the menu for all subsequent actions.</p></li>
+</ul>
+</section>
+<section id="turnbased-combat-handler">
+<h2><span class="section-number">11.2. </span>Turnbased combat handler<a class="headerlink" href="#turnbased-combat-handler" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">evadventure/combat_turnbased.py</span></code>.</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="kn">from</span> <span class="nn">.combat_base</span> <span class="kn">import</span> <span class="p">(</span>
+   <span class="n">CombatActionAttack</span><span class="p">,</span>
+   <span class="n">CombatActionHold</span><span class="p">,</span>
+   <span class="n">CombatActionStunt</span><span class="p">,</span>
+   <span class="n">CombatActionUseItem</span><span class="p">,</span>
+   <span class="n">CombatActionWield</span><span class="p">,</span>
+   <span class="n">EvAdventureCombatBaseHandler</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.combat_base</span> <span class="kn">import</span> <span class="n">EvAdventureCombatBaseHandler</span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+    <span class="n">action_classes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="n">CombatActionHold</span><span class="p">,</span>
+        <span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="n">CombatActionAttack</span><span class="p">,</span>
+        <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="n">CombatActionStunt</span><span class="p">,</span>
+        <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="n">CombatActionUseItem</span><span class="p">,</span>
+        <span class="s2">&quot;wield&quot;</span><span class="p">:</span> <span class="n">CombatActionWield</span><span class="p">,</span>
+        <span class="s2">&quot;flee&quot;</span><span class="p">:</span> <span class="kc">None</span> <span class="c1"># we will add this soon!</span>
+    <span class="p">}</span>
+
+    <span class="c1"># fallback action if not selecting anything</span>
+    <span class="n">fallback_action_dict</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">},</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+	<span class="c1"># track which turn we are on </span>
+    <span class="n">turn</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># who is involved in combat, and their queued action</span>
+    <span class="c1"># as {combatant: actiondict, ...}</span>
+    <span class="n">combatants</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="c1"># who has advantage against whom. This is a structure </span>
+    <span class="c1"># like {&quot;combatant&quot;: {enemy1: True, enemy2: True}}</span>
+    <span class="n">advantage_matrix</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span>
+    <span class="c1"># same for disadvantages</span>
+    <span class="n">disadvantage_matrix</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span>
+
+    <span class="c1"># how many turns you must be fleeing before escaping</span>
+    <span class="n">flee_timeout</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+	<span class="c1"># track who is fleeing as {combatant: turn_they_started_fleeing}</span>
+    <span class="n">fleeing_combatants</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="c1"># list of who has been defeated so far</span>
+    <span class="n">defeated_combatants</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>We leave a placeholder for the <code class="docutils literal notranslate"><span class="pre">&quot;flee&quot;</span></code> action since we haven’t created it yet.</p>
+<p>Since the turnbased combat handler is shared between all combatants, we need to store references to those combatants on the handler, in the <code class="docutils literal notranslate"><span class="pre">combatants</span></code> <a class="reference internal" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.Attribute" title="evennia.typeclasses.attributes.Attribute"><span class="xref myst py py-class">Attribute</span></a>.  In the same way we must store a <em>matrix</em> of who has advantage/disadvantage against whom. We must also track who is <em>fleeing</em>, in particular how long they have been fleeing, since they will be leaving combat after that time.</p>
+<section id="getting-the-sides-of-combat">
+<h3><span class="section-number">11.2.1. </span>Getting the sides of combat<a class="headerlink" href="#getting-the-sides-of-combat" title="Permalink to this headline">¶</a></h3>
+<p>The two sides are different depending on if we are in an <a class="reference internal" href="Beginner-Tutorial-Rooms.html"><span class="doc std std-doc">PvP room</span></a> or not: In a PvP room everyone else is your enemy. Otherwise only NPCs in combat is your enemy (you are assumed to be teaming up with your fellow players).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+	<span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">           </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Get a listing of the two &#39;sides&#39; of this combat, </span>
+<span class="sd">           m the perspective of the provided combatant.</span>
+<span class="sd">           &quot;&quot;&quot;</span>
+           <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">allow_pvp</span><span class="p">:</span>
+               <span class="c1"># in pvp, everyone else is an ememy</span>
+               <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">combatant</span><span class="p">]</span>
+               <span class="n">enemies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">!=</span> <span class="n">combatant</span><span class="p">]</span>
+           <span class="k">else</span><span class="p">:</span>
+               <span class="c1"># otherwise, enemies/allies depend on who combatant is</span>
+               <span class="n">pcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span> <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">comb</span><span class="p">,</span> <span class="n">EvAdventureCharacter</span><span class="p">)]</span>
+               <span class="n">npcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span> <span class="k">if</span> <span class="n">comb</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">]</span>
+               <span class="k">if</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">:</span>
+                   <span class="c1"># combatant is a PC, so NPCs are all enemies</span>
+                   <span class="n">allies</span> <span class="o">=</span> <span class="n">pcs</span>
+                   <span class="n">enemies</span> <span class="o">=</span> <span class="n">npcs</span>
+               <span class="k">else</span><span class="p">:</span>
+                   <span class="c1"># combatant is an NPC, so PCs are all enemies</span>
+                   <span class="n">allies</span> <span class="o">=</span> <span class="n">npcs</span>
+                   <span class="n">enemies</span> <span class="o">=</span> <span class="n">pcs</span>
+        <span class="k">return</span> <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span>
+</pre></div>
+</div>
+<p>Note that since the <code class="docutils literal notranslate"><span class="pre">EvadventureCombatBaseHandler</span></code> (which our turnbased handler is based on) is a <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a>, it provides many useful features. For example <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> is the entity on which this Script ‘sits’. Since we are planning to put this handler on the current location, then <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> will be that Room.</p>
+<p>All we do here is check if it’s a PvP room or not and use this to figure out who would be an ally or an enemy. Note that the <code class="docutils literal notranslate"><span class="pre">combatant</span></code> is <em>not</em> included in the <code class="docutils literal notranslate"><span class="pre">allies</span></code> return - we’ll need to remember this.</p>
+</section>
+<section id="tracking-advantage-disadvantage">
+<h3><span class="section-number">11.2.2. </span>Tracking Advantage/Disadvantage<a class="headerlink" href="#tracking-advantage-disadvantage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+	<span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">][</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disadvantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">][</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+	        <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleeing_combatants</span> 
+	        <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">advantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disadvantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">advantage/disadvantage_matrix</span></code> Attributes to track who has advantage against whom.</p>
+<aside class="sidebar">
+<p class="sidebar-title">.pop()</p>
+<p>The Python <code class="docutils literal notranslate"><span class="pre">.pop()</span></code> method exists on lists and dicts as well as some other iterables. It ‘pops’ and returns an element from the container. For a list, it’s either popped by index or by popping the last element. For a dict (like here), a specific key must be given to pop. If you don’t provide a default value as a second element, an error will be raised if the key you try to pop is not found.</p>
+</aside>
+<p>In the <code class="docutils literal notranslate"><span class="pre">has</span> <span class="pre">dis/advantage</span></code> methods we <code class="docutils literal notranslate"><span class="pre">pop</span></code> the target from the matrix which will result either in the value <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> (the default value we give to <code class="docutils literal notranslate"><span class="pre">pop</span></code> if the target is not in the matrix). This means that the advantage, once gained, can only be used once.</p>
+<p>We also consider everyone to have advantage against fleeing combatants.</p>
+</section>
+<section id="adding-and-removing-combatants">
+<h3><span class="section-number">11.2.3. </span>Adding and removing combatants<a class="headerlink" href="#adding-and-removing-combatants" title="Permalink to this headline">¶</a></h3>
+<p>Since the combat handler is shared we must be able to add- and remove combatants easily.
+This is new compared to the base handler.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">add_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new combatant to the battle. Can be called multiple times safely.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">combatant</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a combatant from the battle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">combatant</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># clean up menu if it exists</span>
+		<span class="c1"># TODO! </span>
+</pre></div>
+</div>
+<p>We simply add the the combatant with the fallback action-dict to start with. We return a <code class="docutils literal notranslate"><span class="pre">bool</span></code> from <code class="docutils literal notranslate"><span class="pre">add_combatant</span></code> so that the calling function will know if they were actually added anew or not (we may want to do some extra setup if they are new).</p>
+<p>For now we just <code class="docutils literal notranslate"><span class="pre">pop</span></code> the combatant, but in the future we’ll need to do some extra cleanup of the menu when combat ends (we’ll get to that).</p>
+</section>
+<section id="flee-action">
+<h3><span class="section-number">11.2.4. </span>Flee Action<a class="headerlink" href="#flee-action" title="Permalink to this headline">¶</a></h3>
+<p>Since you can’t just move away from the room to flee turnbased combat, we need to add a new <code class="docutils literal notranslate"><span class="pre">CombatAction</span></code> subclass like the ones we created in the <a class="reference internal" href="Beginner-Tutorial-Combat-Base.html#actions"><span class="std std-doc">base combat lesson</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="kn">from</span> <span class="nn">.combat_base</span> <span class="kn">import</span> <span class="n">CombatAction</span> 
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">CombatActionFlee</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start (or continue) fleeing/disengaging from combat.</span>
+<span class="sd">    </span>
+<span class="sd">    action_dict = { </span>
+<span class="sd">           &quot;key&quot;: &quot;flee&quot;,</span>
+<span class="sd">        }</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
+                
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">combathandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span>
+    
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="p">:</span>
+            <span class="c1"># we record the turn on which we started fleeing</span>
+            <span class="n">combathandler</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">turn</span>
+
+        <span class="c1"># show how many turns until successful flight</span>
+        <span class="n">current_turn</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">turn</span>
+        <span class="n">started_fleeing</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">]</span>
+        <span class="n">flee_timeout</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">flee_timeout</span>
+        <span class="n">time_left</span> <span class="o">=</span> <span class="n">flee_timeout</span> <span class="o">-</span> <span class="p">(</span><span class="n">current_turn</span> <span class="o">-</span> <span class="n">started_fleeing</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">time_left</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;$You() $conj(retreat), being exposed to attack while doing so (will escape in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_left</span><span class="si">}</span><span class="s2"> $pluralize(turn, </span><span class="si">{</span><span class="n">time_left</span><span class="si">}</span><span class="s2">)).&quot;</span>
+            <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+	<span class="n">action_classes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="n">CombatActionHold</span><span class="p">,</span>
+        <span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="n">CombatActionAttack</span><span class="p">,</span>
+        <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="n">CombatActionStunt</span><span class="p">,</span>
+        <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="n">CombatActionUseItem</span><span class="p">,</span>
+        <span class="s2">&quot;wield&quot;</span><span class="p">:</span> <span class="n">CombatActionWield</span><span class="p">,</span>
+        <span class="s2">&quot;flee&quot;</span><span class="p">:</span> <span class="n">CombatActionFlee</span> <span class="c1"># &lt; ---- added! </span>
+    <span class="p">}</span>
+
+	<span class="c1"># ... </span>
+</pre></div>
+</div>
+<p>We create the action to make use of the <code class="docutils literal notranslate"><span class="pre">fleeing_combatants</span></code> dict we set up in the combat handler. This dict stores the fleeing combatant along with the  <code class="docutils literal notranslate"><span class="pre">turn</span></code>  its fleeing started. If performing the <code class="docutils literal notranslate"><span class="pre">flee</span></code> action multiple times, we will just display how many turns are remaining.</p>
+<p>Finally, we make sure to add our new <code class="docutils literal notranslate"><span class="pre">CombatActionFlee</span></code> to the <code class="docutils literal notranslate"><span class="pre">action_classes</span></code> registry on the combat handler.</p>
+</section>
+<section id="queue-action">
+<h3><span class="section-number">11.2.5. </span>Queue action<a class="headerlink" href="#queue-action" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="n">action_dict</span>
+
+        <span class="c1"># track who inserted actions this turn (non-persistent)</span>
+        <span class="n">did_action</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">did_action</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="n">did_action</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">did_action</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">):</span>
+            <span class="c1"># everyone has inserted an action. Start next turn without waiting!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<p>To queue an action, we simply store its <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> with the combatant in the <code class="docutils literal notranslate"><span class="pre">combatants</span></code> Attribute.</p>
+<p>We use a Python <code class="docutils literal notranslate"><span class="pre">set()</span></code> to track who has queued an action this turn. If all combatants have entered a new (or renewed) action this turn, we use the <code class="docutils literal notranslate"><span class="pre">.force_repeat()</span></code> method, which is available on all <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a>. When this is called, the next round will fire immediately instead of waiting until it times out.</p>
+</section>
+<section id="execute-an-action-and-tick-the-round">
+<h3><span class="section-number">11.2.6. </span>Execute an action and tick the round<a class="headerlink" href="#execute-an-action-and-tick-the-round" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="kn">import</span> <span class="nn">random</span> 
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+        <span class="c1"># this gets the next dict and rotates the queue</span>
+<span class="hll">        <span class="n">action_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span><span class="p">)</span>
+</span>
+        <span class="c1"># use the action-dict to select and create an action from an action class</span>
+<span class="hll">        <span class="n">action_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_classes</span><span class="p">[</span><span class="n">action_dict</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]]</span>
+</span><span class="hll">        <span class="n">action</span> <span class="o">=</span> <span class="n">action_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">)</span>
+</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">post_execute</span><span class="p">()</span>
+        
+<span class="hll">        <span class="k">if</span> <span class="n">action_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span>            <span class="c1"># queue the action again *without updating the </span>
+            <span class="c1"># *.ndb.did_action list* (otherwise</span>
+            <span class="c1"># we&#39;d always auto-end the turn if everyone used </span>
+            <span class="c1"># repeating actions and there&#39;d be</span>
+            <span class="c1"># no time to change it before the next round)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="n">action_dict</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if not a repeat, set the fallback action</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span>
+
+
+   <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is called every time Script repeats </span>
+<span class="sd">        (every `interval` seconds). Performs a full turn of </span>
+<span class="sd">        combat, performing everyone&#39;s actions in random order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># random turn order</span>
+        <span class="n">combatants</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="hll">        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">combatants</span><span class="p">)</span>  <span class="c1"># shuffles in place</span>
+</span>
+        <span class="c1"># do everyone&#39;s next queued combat action</span>
+        <span class="k">for</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="n">combatants</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_next_action</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">did_action</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span>
+        <span class="c1"># check if one side won the battle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_stop_combat</span><span class="p">()</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>Our action-execution consists of two parts - the <code class="docutils literal notranslate"><span class="pre">execute_next_action</span></code> (which was defined in the parent class for us to implement) and the <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> method which is a part of the <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a></p>
+<p>For <code class="docutils literal notranslate"><span class="pre">execute_next_action</span></code> :</p>
+<ul class="simple">
+<li><p><strong>Line 13</strong>: We get the <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> from the <code class="docutils literal notranslate"><span class="pre">combatants</span></code> Attribute. We return the <code class="docutils literal notranslate"><span class="pre">fallback_action_dict</span></code> if nothing was queued (this defaults to <code class="docutils literal notranslate"><span class="pre">hold</span></code>).</p></li>
+<li><p><strong>Line 16</strong>: We use the <code class="docutils literal notranslate"><span class="pre">key</span></code> of the <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> (which would be something like “attack”, “use”, “wield” etc) to get the class of the matching Action from the <code class="docutils literal notranslate"><span class="pre">action_classes</span></code> dictionary.</p></li>
+<li><p><strong>Line 17</strong>: Here the action class is instantiated with the combatant and action dict, making it ready to execute. This is then executed on the following lines.</p></li>
+<li><p><strong>Line 22</strong>: We introduce a new optional <code class="docutils literal notranslate"><span class="pre">action-dict</span></code> here, the boolean <code class="docutils literal notranslate"><span class="pre">repeat</span></code> key. This allows us to re-queue the action. If not the fallback action will be used.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> is called repeatedly every <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds that the Script fires. This is what we use to track when each round ends.</p>
+<ul class="simple">
+<li><p><strong>Lines 43</strong>: In this example, we have no internal order between actions. So we simply randomize in which order they fire.</p></li>
+<li><p><strong>Line 49</strong>: This <code class="docutils literal notranslate"><span class="pre">set</span></code> was assigned to in the <code class="docutils literal notranslate"><span class="pre">queue_action</span></code> method to know when everyone submitted a new action. We must make sure to unset it here before the next round.</p></li>
+</ul>
+</section>
+<section id="check-and-stop-combat">
+<h3><span class="section-number">11.2.7. </span>Check and stop combat<a class="headerlink" href="#check-and-stop-combat" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="kn">import</span> <span class="nn">random</span> 
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">list_to_string</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+    <span class="c1"># ... </span>
+
+     <span class="k">def</span> <span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the combat immediately.</span>
+<span class="sd">    </span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="k">for</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_combatant</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if it&#39;s time to stop combat&quot;&quot;&quot;</span>
+
+        <span class="c1"># check if anyone is defeated</span>
+        <span class="k">for</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">combatant</span><span class="o">.</span><span class="n">hp</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="hll">                <span class="c1"># PCs roll on the death table here, NPCs die. </span>
+</span>                <span class="c1"># Even if PCs survive, they</span>
+                <span class="c1"># are still out of the fight.</span>
+                <span class="n">combatant</span><span class="o">.</span><span class="n">at_defeat</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">defeated_combatants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r$You() $conj(fall) to the ground, defeated.|n&quot;</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="n">combatant</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span>
+                
+        <span class="c1"># check if anyone managed to flee</span>
+        <span class="n">flee_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flee_timeout</span>
+        <span class="k">for</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">started_fleeing</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="hll">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">-</span> <span class="n">started_fleeing</span> <span class="o">&gt;=</span> <span class="n">flee_timeout</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+</span>                <span class="c1"># if they are still alive/fleeing and have been fleeing long enough, escape</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|y$You() successfully $conj(flee) from combat.|n&quot;</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="n">combatant</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_combatant</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+                
+        <span class="c1"># check if one side won the battle</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">:</span>
+            <span class="c1"># noone left in combat - maybe they killed each other or all fled</span>
+<span class="hll">            <span class="n">surviving_combatant</span> <span class="o">=</span> <span class="kc">None</span>
+</span>            <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="p">(),</span> <span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># grab a random survivor and check of they have any living enemies.</span>
+            <span class="n">surviving_combatant</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">surviving_combatant</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">enemies</span><span class="p">:</span>
+            <span class="c1"># if one way or another, there are no more enemies to fight</span>
+            <span class="n">still_standing</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You(</span><span class="si">{</span><span class="n">comb</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">allies</span><span class="p">)</span>
+            <span class="n">knocked_out</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defeated_combatants</span> <span class="k">if</span> <span class="n">comb</span><span class="o">.</span><span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="hll">            <span class="n">killed</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defeated_combatants</span> <span class="k">if</span> <span class="n">comb</span><span class="o">.</span><span class="n">hp</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+</span>
+            <span class="k">if</span> <span class="n">still_standing</span><span class="p">:</span>
+                <span class="n">txt</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;The combat is over. </span><span class="si">{</span><span class="n">still_standing</span><span class="si">}</span><span class="s2"> are still standing.&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">txt</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;The combat is over. No-one stands as the victor.&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">knocked_out</span><span class="p">:</span>
+                <span class="n">txt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knocked_out</span><span class="si">}</span><span class="s2"> were taken down, but will live.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">killed</span><span class="p">:</span>
+                <span class="n">txt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">killed</span><span class="si">}</span><span class="s2"> were killed.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_combat</span><span class="p">()</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">check_stop_combat</span></code> is called at the end of the round. We want to figure out who is dead and if one of the ‘sides’ won.</p>
+<ul class="simple">
+<li><p><strong>Lines 28-38</strong>: We go over all combatants and determine if they are out of HP. If so we fire the relevant hooks and add them to the <code class="docutils literal notranslate"><span class="pre">defeated_combatants</span></code> Attribute.</p></li>
+<li><p><strong>Line 38</strong>: For all surviving combatants, we make sure give them the <code class="docutils literal notranslate"><span class="pre">fallback_action_dict</span></code>.</p></li>
+<li><p><strong>Lines 41-46</strong>: The <code class="docutils literal notranslate"><span class="pre">fleeing_combatant</span></code> Attribute is a dict on the form <code class="docutils literal notranslate"><span class="pre">{fleeing_combatant:</span> <span class="pre">turn_number}</span></code>, tracking when they first started fleeing. We compare this with the current turn number and the <code class="docutils literal notranslate"><span class="pre">flee_timeout</span></code> to see if they now flee and should be allowed to be removed from combat.</p></li>
+<li><p><strong>Lines 49-56</strong>: Here on we are determining if one ‘side’ of the conflict has defeated the other side.</p></li>
+<li><p><strong>Line 60</strong>: The <code class="docutils literal notranslate"><span class="pre">list_to_string</span></code> Evennia utility converts a list of entries, like <code class="docutils literal notranslate"><span class="pre">[&quot;a&quot;,</span> <span class="pre">&quot;b&quot;,</span> <span class="pre">&quot;c&quot;</span></code> to a nice string <code class="docutils literal notranslate"><span class="pre">&quot;a,</span> <span class="pre">b</span> <span class="pre">and</span> <span class="pre">c&quot;</span></code>. We use this to be able to present some nice ending messages to the combatants.</p></li>
+</ul>
+</section>
+<section id="start-combat">
+<h3><span class="section-number">11.2.8. </span>Start combat<a class="headerlink" href="#start-combat" title="Permalink to this headline">¶</a></h3>
+<p>Since we are using the timer-component of the <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> to tick our combat, we also need a helper method to ‘start’ that.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">list_to_string</span>
+
+<span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">start_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        This actually starts the combat. It&#39;s safe to run this multiple times</span>
+<span class="sd">        since it will only start combat if it isn&#39;t already running.</span>
+<span class="sd">    </span>
+<span class="sd">        &quot;&quot;&quot;</span>     
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">start(**kwargs)</span></code> method is a method on the Script, and will make it start to call <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> every <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds. We will pass that <code class="docutils literal notranslate"><span class="pre">interval</span></code> inside <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> (so for example, we’ll do <code class="docutils literal notranslate"><span class="pre">combathandler.start_combat(interval=30)</span></code> later).</p>
+</section>
+</section>
+<section id="using-evmenu-for-the-combat-menu">
+<h2><span class="section-number">11.3. </span>Using EvMenu for the combat menu<a class="headerlink" href="#using-evmenu-for-the-combat-menu" title="Permalink to this headline">¶</a></h2>
+<p>The <em>EvMenu</em> used to create in-game menues in Evennia. We used a simple EvMenu already in the <a class="reference internal" href="Beginner-Tutorial-Chargen.html"><span class="doc std std-doc">Character Generation Lesson</span></a>. This time we’ll need to be a bit more advanced.  While <a class="reference internal" href="../../../Components/EvMenu.html"><span class="doc std std-doc">The EvMenu documentation</span></a> describe its functionality in more detail, we will give a quick overview of how it works here.</p>
+<p>An EvMenu is made up of <em>nodes</em>, which are regular functions on this form (somewhat simplified here, there are more options):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">node_somenodename</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;some text to show in the node&quot;</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span> 
+           <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Option 1&quot;</span><span class="p">,</span> <span class="c1"># skip this to get a number</span>
+           <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Describing what happens when choosing this option.&quot;</span>
+           <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;name of the node to go to&quot;</span>  <span class="c1"># OR (callable, {kwargs}}) returning said name</span>
+        <span class="p">},</span>
+        <span class="c1"># other options here</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+</pre></div>
+</div>
+<p>So basically each node takes the arguments of <code class="docutils literal notranslate"><span class="pre">caller</span></code> (the one using the menu), <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> (the empty string or what the user input on the <em>previous node</em>) and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> which can be used to pass data from node to node. It returns <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">options</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> is what the user will see when entering this part of the menu, such as “Choose who you want to attack!”. The <code class="docutils literal notranslate"><span class="pre">options</span></code> is a list of dicts describing each option. They will appear as a multi-choice list below the node text (see the example at the top of this lesson page).</p>
+<p>When we create the EvMenu later, we will create a <em>node index</em> - a mapping between a unique name and these “node functions”. So something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># example of a EvMenu node index</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">node_combat_main</span><span class="p">,</span>
+      <span class="s2">&quot;node1&quot;</span><span class="p">:</span> <span class="n">node_func1</span><span class="p">,</span> 
+      <span class="s2">&quot;node2&quot;</span><span class="p">:</span> <span class="n">node_func2</span><span class="p">,</span>
+      <span class="s2">&quot;some name&quot;</span><span class="p">:</span> <span class="n">node_somenodename</span><span class="p">,</span>
+      <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">node_abort_menu</span><span class="p">,</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">option</span></code> dict has a key <code class="docutils literal notranslate"><span class="pre">&quot;goto&quot;</span></code> that determines which node the player should jump to if they choose that option. Inside the menu, each node needs to be referenced with these names (like <code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;node1&quot;</span></code> etc).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&quot;goto&quot;</span></code> value of each option can either specify the name directly (like <code class="docutils literal notranslate"><span class="pre">&quot;node1&quot;</span></code>) <em>or</em> it can be given as a tuple <code class="docutils literal notranslate"><span class="pre">(callable,</span> <span class="pre">{keywords})</span></code>. This <code class="docutils literal notranslate"><span class="pre">callable</span></code> is <em>called</em> and is expected to in turn return the next node-name to use (like <code class="docutils literal notranslate"><span class="pre">&quot;node1&quot;</span></code>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">callable</span></code> (often called a “goto callable”) looks very similar to a node function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_goto_when_choosing_option1</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="c1"># do whatever is needed to determine the next node </span>
+    <span class="k">return</span> <span class="n">nodename</span>  <span class="c1"># also nodename, dict works </span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Separating node-functions from goto callables</p>
+<p>To make node-functions clearly separate from goto-callables, Evennia docs always prefix node-functions with <code class="docutils literal notranslate"><span class="pre">node_</span></code> and menu goto-functions with an underscore <code class="docutils literal notranslate"><span class="pre">_</span></code> (which is also making goto-functions ‘private’ in Python lingo).</p>
+</aside>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">caller</span></code> is still the one using the menu and <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is the actual string you entered to choose this option. <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> is the keywords you added to the <code class="docutils literal notranslate"><span class="pre">(callable,</span> <span class="pre">{keywords})</span></code> tuple.</p>
+<p>The goto-callable must return the name of the next node. Optionally, you can return both  <code class="docutils literal notranslate"><span class="pre">nodename,</span> <span class="pre">{kwargs}</span></code>. If you do the next node will get those kwargs as ingoing <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. This way you can pass information from one node to the next. A special feature is that if <code class="docutils literal notranslate"><span class="pre">nodename</span></code> is returned as <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the <em>current</em> node will be <em>rerun</em> again.</p>
+<p>Here’s a (somewhat contrived) example of how the goto-callable and node-function hang together:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># goto-callable</span>
+<span class="k">def</span> <span class="nf">_my_goto_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="n">info_number</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;info_number&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">info_number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+        <span class="k">return</span> <span class="s2">&quot;node1&quot;</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="k">return</span> <span class="s2">&quot;node2&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;info_number&quot;</span><span class="p">:</span> <span class="n">info_number</span><span class="p">}</span>  <span class="c1"># will be **kwargs when &quot;node2&quot; runs next</span>
+
+
+<span class="c1"># node function</span>
+<span class="k">def</span> <span class="nf">node_somenodename</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Some node text&quot;</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Option one&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_my_goto_callable</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;info_number&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">})</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Option two&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_my_goto_callable</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;info_number&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="menu-for-turnbased-combat">
+<h2><span class="section-number">11.4. </span>Menu for Turnbased combat<a class="headerlink" href="#menu-for-turnbased-combat" title="Permalink to this headline">¶</a></h2>
+<p>Our combat menu will be pretty simple. We will have one central menu node with options indicating all the different actions of combat. When choosing an action in the menu, the player should be asked a series of question, each specifying one piece of information needed for that action. The last step will be the build this information into an <code class="docutils literal notranslate"><span class="pre">action-dict</span></code> we can queue with the combathandler.</p>
+<p>To understand the process, here’s how the action selection will work (read left to right):</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>In base node</p></th>
+<th class="head"><p>step 1</p></th>
+<th class="head"><p>step 2</p></th>
+<th class="head"><p>step 3</p></th>
+<th class="head"><p>step 4</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>select <code class="docutils literal notranslate"><span class="pre">attack</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">target</span></code></p></td>
+<td><p>queue action-dict</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p>select <code class="docutils literal notranslate"><span class="pre">stunt</span> <span class="pre">-</span> <span class="pre">give</span> <span class="pre">advantage</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">Ability</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">allied</span> <span class="pre">recipient</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">enemy</span> <span class="pre">target</span></code></p></td>
+<td><p>queue action-dict</p></td>
+</tr>
+<tr class="row-even"><td><p>select <code class="docutils literal notranslate"><span class="pre">stunt</span> <span class="pre">-</span> <span class="pre">give</span> <span class="pre">disadvantage</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">Ability</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">enemy</span> <span class="pre">recipient</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">allied</span> <span class="pre">target</span></code></p></td>
+<td><p>queue action-dict</p></td>
+</tr>
+<tr class="row-odd"><td><p>select <code class="docutils literal notranslate"><span class="pre">use</span> <span class="pre">item</span> <span class="pre">on</span> <span class="pre">yourself</span> <span class="pre">or</span> <span class="pre">ally</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">item</span></code> from inventory</p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">allied</span> <span class="pre">target</span></code></p></td>
+<td><p>queue action-dict</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-even"><td><p>select <code class="docutils literal notranslate"><span class="pre">use</span> <span class="pre">item</span> <span class="pre">on</span> <span class="pre">enemy</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">item</span></code> from inventory</p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">enemy</span> <span class="pre">target</span></code></p></td>
+<td><p>queue action-dict</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p>select <code class="docutils literal notranslate"><span class="pre">wield/swap</span> <span class="pre">item</span> <span class="pre">from</span> <span class="pre">inventory</span></code></p></td>
+<td><p>select <code class="docutils literal notranslate"><span class="pre">item</span></code> from inventory`</p></td>
+<td><p>queue action-dict</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-even"><td><p>select <code class="docutils literal notranslate"><span class="pre">flee</span></code></p></td>
+<td><p>queue action-dict</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p>select <code class="docutils literal notranslate"><span class="pre">hold,</span> <span class="pre">doing</span> <span class="pre">nothing</span></code></p></td>
+<td><p>queue action-dict</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+</tbody>
+</table>
+<p>Looking at the above table we can see that we have <em>a lot</em> of re-use. The selection of allied/enemy/target/recipient/item represent nodes that can be shared by different actions.</p>
+<p>Each of these actions also follow a linear sequence, like the step-by step ‘wizard’ you see in some software. We want to be able to step back and forth in each sequence, and also abort the action if you change your mind along the way.</p>
+<p>After queueing the action, we should always go back to the base node where we will wait until the round ends and all actions are executed.</p>
+<p>We will create a few helpers to make our particular menu easy to work with.</p>
+<section id="the-node-index">
+<h3><span class="section-number">11.4.1. </span>The node index<a class="headerlink" href="#the-node-index" title="Permalink to this headline">¶</a></h3>
+<p>These are the nodes we need for our menu:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># not coded anywhere yet, just noting for reference </span>
+<span class="n">node_index</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># node names                # callables   # (future callables)</span>
+    <span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># node_choose_enemy_target,</span>
+    <span class="s2">&quot;node_choose_allied_target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># node_choose_allied_target,</span>
+    <span class="s2">&quot;node_choose_enemy_recipient&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># node_choose_enemy_recipient,</span>
+    <span class="s2">&quot;node_choose_allied_recipient&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># node_choose_allied_recipient,</span>
+    <span class="s2">&quot;node_choose_ability&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># node_choose_ability,</span>
+    <span class="s2">&quot;node_choose_use_item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># node_choose_use_item,</span>
+    <span class="s2">&quot;node_choose_wield_item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># node_choose_wield_item,</span>
+    <span class="s2">&quot;node_combat&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># node_combat,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>All callables are left as <code class="docutils literal notranslate"><span class="pre">None</span></code> since we haven’t created them yet. But it’s good to note down the expected names because we need them in order to jump from node to node. The important one to note is that <code class="docutils literal notranslate"><span class="pre">node_combat</span></code> will be the base node we should get back to over and over.</p>
+</section>
+<section id="getting-or-setting-the-combathandler">
+<h3><span class="section-number">11.4.2. </span>Getting or setting the combathandler<a class="headerlink" href="#getting-or-setting-the-combathandler" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">def</span> <span class="nf">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">turn_timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">flee_time</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">combathandler_key</span><span class="o">=</span><span class="s2">&quot;combathandler&quot;</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">EvAdventureTurnbasedCombatHandler</span><span class="o">.</span><span class="n">get_or_create_combathandler</span><span class="p">(</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+        <span class="n">interval</span><span class="o">=</span><span class="n">turn_timeout</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;flee_time&quot;</span><span class="p">,</span> <span class="n">flee_time</span><span class="p">)],</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">combathandler_key</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>We only add this to not have to write as much when calling this later. We pass <code class="docutils literal notranslate"><span class="pre">caller.location</span></code>, which is what retrieves/creates the combathandler on the current location. The <code class="docutils literal notranslate"><span class="pre">interval</span></code> is how often the combathandler (which is a <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a>) will call its <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> method. We set the <code class="docutils literal notranslate"><span class="pre">flee_time</span></code> Attribute at the same time.</p>
+</section>
+<section id="queue-an-action">
+<h3><span class="section-number">11.4.3. </span>Queue an action<a class="headerlink" href="#queue-an-action" title="Permalink to this headline">¶</a></h3>
+<p>This is our first “goto function”. This will be called to actually queue our finished action-dict with the combat handler. After doing that, it should return us to the base  <code class="docutils literal notranslate"><span class="pre">node_combat</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">def</span> <span class="nf">_queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+    <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;node_combat&quot;</span>
+</pre></div>
+</div>
+<p>We make one assumption here - that <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> contains the <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> key with the action-dict ready to go.</p>
+<p>Since this is a goto-callable, we must return the next node to go to. Since this is the last step, we will always go back to the <code class="docutils literal notranslate"><span class="pre">node_combat</span></code> base node, so that’s what we return.</p>
+</section>
+<section id="rerun-a-node">
+<h3><span class="section-number">11.4.4. </span>Rerun a node<a class="headerlink" href="#rerun-a-node" title="Permalink to this headline">¶</a></h3>
+<p>A special feature of goto callables is the ability to rerun the same node by returning <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">def</span> <span class="nf">_rerun_current_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
+</pre></div>
+</div>
+<p>Using this in an option will rerun the current node, but will preserve the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> that were sent in.</p>
+</section>
+<section id="stepping-through-the-wizard">
+<h3><span class="section-number">11.4.5. </span>Stepping through the wizard<a class="headerlink" href="#stepping-through-the-wizard" title="Permalink to this headline">¶</a></h3>
+<p>Our particualr menu is very symmetric - you select an option and then you will just select a series of option before you come back. So we will make another goto-function to help us easily do this. To understand, let’s first show how we plan to use this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in the base combat-node function (just shown as an example)</span>
+
+<span class="n">options</span> <span class="o">=</span> <span class="p">[</span> 
+    <span class="c1"># ...</span>
+    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;use an item on an enemy&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+       <span class="n">_step_wizard</span><span class="p">,</span> 
+       <span class="p">{</span>
+           <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_use_item&quot;</span><span class="p">,</span> <span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">],</span>
+           <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;use&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> 
+       <span class="p">}</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>When the user chooses to use an item on an enemy, we will call <code class="docutils literal notranslate"><span class="pre">_step_wizard</span></code> with two keywords <code class="docutils literal notranslate"><span class="pre">steps</span></code> and <code class="docutils literal notranslate"><span class="pre">action_dict</span></code>. The first is the <em>sequence</em> of menu nodes we need to guide the player through in order to build up our action-dict.</p>
+<p>The latter is the <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> itself. Each node will gradually fill in the <code class="docutils literal notranslate"><span class="pre">None</span></code> places in this dict until we have a complete dict and can send it to the <a class="reference internal" href="#queue-an-action"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">_queue_action</span></code></span></a> goto function we defined earlier.</p>
+<p>Furthermore, we want the ability to go “back” to the previous node like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in some other node (shown only as an example)</span>
+
+<span class="k">def</span> <span class="nf">some_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+
+    <span class="c1"># ... </span>
+    
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span> 
+        <span class="c1"># ... </span>
+        <span class="p">{</span> 
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;back&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span> <span class="n">_step_wizard</span><span class="p">,</span> <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="s2">&quot;back&quot;</span><span class="p">}})</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+
+    <span class="c1"># ... </span>
+</pre></div>
+</div>
+<p>Note the use of <code class="docutils literal notranslate"><span class="pre">**</span></code> here. <code class="docutils literal notranslate"><span class="pre">{**dict1,</span> <span class="pre">**dict2}</span></code> is a powerful one-liner syntax to combine two dicts into one. This preserves (and passes on) the incoming <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> and just adds a new key “step” to it. The end effect is similar to if we had done <code class="docutils literal notranslate"><span class="pre">kwargs[&quot;step&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;back&quot;</span></code> on a separate line (except we end up with a <em>new</em> <code class="docutils literal notranslate"><span class="pre">dict</span></code> when using the <code class="docutils literal notranslate"><span class="pre">**</span></code>-approach).</p>
+<p>So let’s implement a <code class="docutils literal notranslate"><span class="pre">_step_wizard</span></code> goto-function to handle this!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">_step_wizard</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>                            
+
+    <span class="c1"># get the steps and count them </span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">nsteps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+
+    <span class="c1"># track which step we are on </span>
+    <span class="n">istep</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;istep&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>                                        
+
+    <span class="c1"># check if we are going back (forward is default)</span>
+    <span class="n">step_direction</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="s2">&quot;forward&quot;</span><span class="p">)</span>                         
+
+    <span class="k">if</span> <span class="n">step_direction</span> <span class="o">==</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span>
+        <span class="c1"># step back in wizard                                              </span>
+        <span class="k">if</span> <span class="n">istep</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># back to the start </span>
+            <span class="k">return</span> <span class="s2">&quot;node_combat&quot;</span>
+        <span class="n">istep</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;istep&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">istep</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">steps</span><span class="p">[</span><span class="n">istep</span><span class="p">],</span> <span class="n">kwargs</span>                                        
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># step to the next step in wizard</span>
+        <span class="k">if</span> <span class="n">istep</span> <span class="o">&gt;=</span> <span class="n">nsteps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># we are already at end of wizard - queue action!</span>
+            <span class="k">return</span> <span class="n">_queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># step forward</span>
+            <span class="n">istep</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;istep&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">istep</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">steps</span><span class="p">[</span><span class="n">istep</span><span class="p">],</span> <span class="n">kwargs</span>
+
+</pre></div>
+</div>
+<p>This depends on passing around <code class="docutils literal notranslate"><span class="pre">steps</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code> and <code class="docutils literal notranslate"><span class="pre">istep</span></code> with the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>.  If <code class="docutils literal notranslate"><span class="pre">step</span></code> is “back” then we will go back in the sequence of <code class="docutils literal notranslate"><span class="pre">steps</span></code> otherwise forward. We increase/decrease the <code class="docutils literal notranslate"><span class="pre">istep</span></code> key value to track just where we are.</p>
+<p>If we reach the end we call our <code class="docutils literal notranslate"><span class="pre">_queue_action</span></code> helper function directly. If we back up to the beginning we return to the base node.</p>
+<p>We will make one final helper function, to quickly add the <code class="docutils literal notranslate"><span class="pre">back</span></code> (and <code class="docutils literal notranslate"><span class="pre">abort</span></code>) options to the nodes that need it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;back&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_step_wizard</span><span class="p">,</span> <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="s2">&quot;back&quot;</span><span class="p">}})</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;abort&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node_combat&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_rerun_current_node</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p>This is not a goto-function, it’s just a helper that we will call to quickly add these extra options a node’s option list and not have to type it out over and over.</p>
+<p>As we’ve seen before, the <code class="docutils literal notranslate"><span class="pre">back</span></code> option will use the <code class="docutils literal notranslate"><span class="pre">_step_wizard</span></code> to step back in the wizard. The <code class="docutils literal notranslate"><span class="pre">abort</span></code> option will simply jump back to the main node, aborting the wizard.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">_default</span></code> option is special. This option key tells EvMenu: “use this option if none of the other match”. That is, if they enter an empty input or garbage, we will just re-display the node. We make sure pass along the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> though, so we don’t lose any information of where we were in the wizard.</p>
+<p>Finally we are ready to write our menu nodes!</p>
+</section>
+<section id="choosing-targets-and-recipients">
+<h3><span class="section-number">11.4.6. </span>Choosing targets and recipients<a class="headerlink" href="#choosing-targets-and-recipients" title="Permalink to this headline">¶</a></h3>
+<p>These nodes all work the same: They should present a list of suitable targets/recipients to choose from and then put that result in the action-dict as either <code class="docutils literal notranslate"><span class="pre">target</span></code> or <code class="docutils literal notranslate"><span class="pre">recipient</span></code> key.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">node_choose_enemy_target</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose an enemy to target&quot;</span>
+
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+    <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+<span class="hll">    <span class="n">_</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+</span>
+<span class="hll">    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+</span>        <span class="p">{</span>
+<span class="hll">            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+</span>            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+<span class="hll">                <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">}}}},</span>
+</span>            <span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">enemies</span>
+    <span class="p">]</span>
+<span class="hll">    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+</span>    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+
+
+<span class="k">def</span> <span class="nf">node_choose_enemy_recipient</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+     <span class="c1"># almost the same, except storing &quot;recipient&quot;</span>
+
+     
+<span class="k">def</span> <span class="nf">node_choose_allied_target</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+     <span class="c1"># almost the same, except using allies + yourself</span>
+
+
+<span class="k">def</span> <span class="nf">node_choose_allied_recipient</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+     <span class="c1"># almost the same, except using allies + yourself and storing &quot;recipient&quot;</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p><strong>Line 11</strong>: Here we use <code class="docutils literal notranslate"><span class="pre">combathandler.get_sides(caller)</span></code> to get the ‘enemies’ from the perspective of <code class="docutils literal notranslate"><span class="pre">caller</span></code> (the one using the menu).</p></li>
+<li><p><strong>Line 13-31</strong>: This is a loop over all enemies we found.</p>
+<ul>
+<li><p><strong>Line 15</strong>:  We use <code class="docutils literal notranslate"><span class="pre">target.get_display_name(caller)</span></code>. This method (a default method on all Evennia <code class="docutils literal notranslate"><span class="pre">Objects</span></code>) allows the target to return a name while being aware of who’s asking. It’s what makes an admin see <code class="docutils literal notranslate"><span class="pre">Name</span> <span class="pre">(#5)</span></code> while a regular user just sees <code class="docutils literal notranslate"><span class="pre">Name</span></code>. If you didn’t care about that, you could just do <code class="docutils literal notranslate"><span class="pre">target.key</span></code> here.</p></li>
+<li><p><strong>Line 18</strong>: This line looks complex, but remember that <code class="docutils literal notranslate"><span class="pre">{**dict1,</span> <span class="pre">**dict2}</span></code> is a one-line way to merge two dicts together. What this does is to do this in three steps:</p>
+<ul>
+<li><p>First we add <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> together with a dict <code class="docutils literal notranslate"><span class="pre">{&quot;target&quot;:</span> <span class="pre">target}</span></code>. This has the same effect as doing <code class="docutils literal notranslate"><span class="pre">action_dict[&quot;target&quot;]</span> <span class="pre">=</span> <span class="pre">target</span></code>, except we create a new dict out of the merger.</p></li>
+<li><p>Next we take this new merger and creates a new dict <code class="docutils literal notranslate"><span class="pre">{&quot;action_dict&quot;:</span> <span class="pre">new_action_dict}</span></code>.</p></li>
+<li><p>Finally we merge this with the existing <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> dict. The result is a new dict that now has the updated <code class="docutils literal notranslate"><span class="pre">&quot;action_dict&quot;</span></code> key pointing to an action-dict where <code class="docutils literal notranslate"><span class="pre">target</span></code> is set.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Line 23</strong>: We extend the <code class="docutils literal notranslate"><span class="pre">options</span></code> list with the default wizard options (<code class="docutils literal notranslate"><span class="pre">back</span></code>, <code class="docutils literal notranslate"><span class="pre">abort</span></code>). Since we made a helper function for this, this is only one line.</p></li>
+</ul>
+<p>Creating the three other needed nodes <code class="docutils literal notranslate"><span class="pre">node_choose_enemy_recipient</span></code>, <code class="docutils literal notranslate"><span class="pre">node_choose_allied_target</span></code> and <code class="docutils literal notranslate"><span class="pre">node_choose_allied_recipient</span></code> are following the same pattern; they just use either the <code class="docutils literal notranslate"><span class="pre">allies</span></code> or <code class="docutils literal notranslate"><span class="pre">enemies</span></code> return from <code class="docutils literal notranslate"><span class="pre">combathandler.get_sides().</span> <span class="pre">It</span> <span class="pre">then</span> <span class="pre">sets</span> <span class="pre">either</span> <span class="pre">the</span> </code>target<code class="docutils literal notranslate"><span class="pre">or</span></code>recipient<code class="docutils literal notranslate"><span class="pre">field</span> <span class="pre">in</span> <span class="pre">the</span></code>action_dict`. We leave these up to the reader to implement.</p>
+</section>
+<section id="choose-an-ability">
+<h3><span class="section-number">11.4.7. </span>Choose an Ability<a class="headerlink" href="#choose-an-ability" title="Permalink to this headline">¶</a></h3>
+<p>For Stunts, we need to be able to select which <em>Knave</em> Ability (STR, DEX etc) you want to boost/foil.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+
+<span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">node_choose_ability</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose the ability to apply&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                    <span class="o">**</span><span class="p">{</span>
+                        <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;stunt_type&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="p">,</span> <span class="s2">&quot;defense_type&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="p">}},</span> 
+                    <span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">DEX</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">CON</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">WIS</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">CHA</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+
+</pre></div>
+</div>
+<p>The principle is the same as for the target/recipient-setter nodes, except that we just provide a list of the abilities to choose from. We update the <code class="docutils literal notranslate"><span class="pre">stunt_type</span></code> and <code class="docutils literal notranslate"><span class="pre">defense_type</span></code> keys in the <code class="docutils literal notranslate"><span class="pre">action_dict</span></code>, as needed by the Stunt action.</p>
+</section>
+<section id="choose-an-item-to-use-or-wield">
+<h3><span class="section-number">11.4.8. </span>Choose an item to use or wield<a class="headerlink" href="#choose-an-item-to-use-or-wield" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">node_choose_use_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Select the item&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">}}}},</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">caller</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">get_usable_objects_from_backpack</span><span class="p">()</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;There are no usable items in your inventory!&quot;</span>
+
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+
+
+<span class="k">def</span> <span class="nf">node_choose_wield_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+     <span class="c1"># same except using caller.equipment.get_wieldable_objects_from_backpack()</span>
+
+</pre></div>
+</div>
+<p>Our <a class="reference internal" href="Beginner-Tutorial-Equipment.html"><span class="doc std std-doc">equipment handler</span></a> has the very useful help method <code class="docutils literal notranslate"><span class="pre">.get_usable_objects_from_backpack</span></code>. We just call this to get a list of all the items we want to choose. Otherwise this node should look pretty familiar by now.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">node_choose_wiqld_item</span></code> is very similar, except it uses <code class="docutils literal notranslate"><span class="pre">caller.equipment.get_wieldable_objects_from_backpack()</span></code> instead. We’ll leave the implementation of this up to the reader.</p>
+</section>
+<section id="the-main-menu-node">
+<h3><span class="section-number">11.4.9. </span>The main menu node<a class="headerlink" href="#the-main-menu-node" title="Permalink to this headline">¶</a></h3>
+<p>This ties it all together.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">node_combat</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base combat menu&quot;&quot;&quot;</span>
+
+    <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_combat_summary</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;attack an enemy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Stunt - gain a later advantage against a target&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="s2">&quot;node_choose_ability&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;node_choose_allied_recipient&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span> <span class="s2">&quot;advantage&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Stunt - give an enemy disadvantage against yourself or an ally&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="s2">&quot;node_choose_ability&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;node_choose_enemy_recipient&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;node_choose_allied_target&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span> <span class="s2">&quot;advantage&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Use an item on yourself or an ally&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_use_item&quot;</span><span class="p">,</span> <span class="s2">&quot;node_choose_allied_target&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;use&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Use an item on an enemy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_use_item&quot;</span><span class="p">,</span> <span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;use&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Wield/swap with an item from inventory&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_wield_item&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;wield&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;flee!&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_queue_action</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;flee&quot;</span><span class="p">,</span> <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;hold, doing nothing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_queue_action</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}}),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node_combat&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+</pre></div>
+</div>
+<p>This starts off the <code class="docutils literal notranslate"><span class="pre">_step_wizard</span></code> for each action choice. It also lays out the <code class="docutils literal notranslate"><span class="pre">action_dict</span></code> for every action, leaving <code class="docutils literal notranslate"><span class="pre">None</span></code> values for the fields that will be set by the following nodes.</p>
+<p>Note how we add the <code class="docutils literal notranslate"><span class="pre">&quot;repeat&quot;</span></code> key to some actions. Having them automatically repeat means the player don’t have to insert the same action every time.</p>
+</section>
+</section>
+<section id="attack-command">
+<h2><span class="section-number">11.5. </span>Attack Command<a class="headerlink" href="#attack-command" title="Permalink to this headline">¶</a></h2>
+<p>We will only need one single Command to run the Turnbased combat system. This is the <code class="docutils literal notranslate"><span class="pre">attack</span></code> command. Once you use it once, you will be in the menu.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">EvMenu</span> 
+
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">CmdTurnAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start or join combat.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      attack [&lt;target&gt;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hit&quot;</span><span class="p">,</span> <span class="s2">&quot;turnbased combat&quot;</span><span class="p">]</span>
+
+    <span class="n">turn_timeout</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># seconds</span>
+    <span class="n">flee_time</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># rounds</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;What are you attacking?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;hp&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t attack that.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">elif</span> <span class="n">target</span><span class="o">.</span><span class="n">hp</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2"> is already down.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">is_pc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">allow_pvp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;PvP combat is not allowed here!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flee_time</span><span class="p">)</span>
+
+        <span class="c1"># add combatants to combathandler. this can be done safely over and over</span>
+        <span class="n">combathandler</span><span class="o">.</span><span class="n">add_combatant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span>
+        <span class="n">combathandler</span><span class="o">.</span><span class="n">add_combatant</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rYou are attacked by {self.caller.get_display_name(self.caller)}!|n&quot;</span><span class="p">)</span>
+        <span class="n">combathandler</span><span class="o">.</span><span class="n">start_combat</span><span class="p">()</span>
+
+        <span class="c1"># build and start the menu</span>
+        <span class="n">EvMenu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">:</span> <span class="n">node_choose_enemy_target</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_allied_target&quot;</span><span class="p">:</span> <span class="n">node_choose_allied_target</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_enemy_recipient&quot;</span><span class="p">:</span> <span class="n">node_choose_enemy_recipient</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_allied_recipient&quot;</span><span class="p">:</span> <span class="n">node_choose_allied_recipient</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_ability&quot;</span><span class="p">:</span> <span class="n">node_choose_ability</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_use_item&quot;</span><span class="p">:</span> <span class="n">node_choose_use_item</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_wield_item&quot;</span><span class="p">:</span> <span class="n">node_choose_wield_item</span><span class="p">,</span>
+                <span class="s2">&quot;node_combat&quot;</span><span class="p">:</span> <span class="n">node_combat</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_combat&quot;</span><span class="p">,</span>
+            <span class="n">combathandler</span><span class="o">=</span><span class="n">combathandler</span><span class="p">,</span>
+            <span class="n">auto_look</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="c1"># cmdset_mergetype=&quot;Union&quot;,</span>
+            <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TurnCombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    CmdSet for the turn-based combat.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTurnAttack</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">attack</span> <span class="pre">target</span></code> Command will determine if the target has health (only things with health can be attacked) and that the room allows fighting. If the target is a pc, it will check so PvP is allowed.</p>
+<p>It then proceeds to either start up a new command handler or reuse a new one, while adding  the attacker and target to it. If the target was already in combat, this does nothing (same with the <code class="docutils literal notranslate"><span class="pre">.start_combat()</span></code> call).</p>
+<p>As we create the <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>, we pass it the “menu index” we talked to about earlier, now with the actual node functions in every slot.  We make the menu persistent so it survives a reload.</p>
+<p>To make the command available, add the <code class="docutils literal notranslate"><span class="pre">TurnCombatCmdSet</span></code> to the Character’s default cmdset.</p>
+</section>
+<section id="making-sure-the-menu-stops">
+<h2><span class="section-number">11.6. </span>Making sure the menu stops<a class="headerlink" href="#making-sure-the-menu-stops" title="Permalink to this headline">¶</a></h2>
+<p>The combat can end for a bunch of reasons. When that happens, we must make sure to clean up the menu so we go back normal operation. We will add this to the <code class="docutils literal notranslate"><span class="pre">remove_combatant</span></code> method on the combat handler (we left a TODO there before):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># in evadventure/combat_turnbased.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvadventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+
+    <span class="c1"># ... </span>
+    <span class="k">def</span> <span class="nf">remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a combatant from the battle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">combatant</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># clean up menu if it exists</span>
+        <span class="k">if</span> <span class="n">combatant</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="p">:</span>                   <span class="c1"># &lt;--- new</span>
+            <span class="n">combatant</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span>      <span class="c1">#     &#39;&#39; </span>
+
+</pre></div>
+</div>
+<p>When the evmenu is active, it is avaiable on its user as <code class="docutils literal notranslate"><span class="pre">.ndb._evmenu</span></code> (see the EvMenu docs). When we are removed from combat, we use this to get the evmenu and call its <code class="docutils literal notranslate"><span class="pre">close_menu()</span></code> method to shut down the menu.</p>
+<p>Our turnbased combat system is complete!</p>
+</section>
+<section id="testing">
+<h2><span class="section-number">11.7. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>See <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia-contrib-tutorials-evadventure-tests-test-combat"><span class="std std-ref">evennia/contrib/tutorials/evadventure/tests/test_combat.py</span></a></p>
+</aside>
+<p>Unit testing of the Turnbased combat handler is straight forward, you follow the process of earlier lessons to test that each method on the handler returns what you expect with mocked inputs.</p>
+<p>Unit-testing the menu is more complex. You will find examples of doing this in <a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/utils/testss/test_evmenu.py">evennia.utils.tests.test_evmenu</a>.</p>
+</section>
+<section id="a-small-combat-test">
+<h2><span class="section-number">11.8. </span>A small combat test<a class="headerlink" href="#a-small-combat-test" title="Permalink to this headline">¶</a></h2>
+<p>Unit testing the code is not enough to see that combat works. We need to also make a little ‘functional’ test to see how it works in practice.</p>
+<p>​This is what we need for a minimal test:</p>
+<ul class="simple">
+<li><p>A room with combat enabled.</p></li>
+<li><p>An NPC to attack (it won’t do anything back yet since we haven’t added any AI)</p></li>
+<li><p>A weapon we can <code class="docutils literal notranslate"><span class="pre">wield</span></code>.</p></li>
+<li><p>An item (like a potion) we can <code class="docutils literal notranslate"><span class="pre">use</span></code>.</p></li>
+</ul>
+<aside class="sidebar">
+<p>You can find an example batch-code script in <a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.py">evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.py</a></p>
+</aside>
+<p>In <a class="reference internal" href="Beginner-Tutorial-Combat-Twitch.html"><span class="doc std std-doc">The Twitch combat lesson</span></a> we used a <a class="reference internal" href="../../../Components/Batch-Command-Processor.html"><span class="doc std std-doc">batch-command script</span></a> to create the testing environment in game. This runs in-game Evennia commands in sequence. For demonstration  purposes we’ll instead use a  <a class="reference internal" href="../../../Components/Batch-Code-Processor.html"><span class="doc std std-doc">batch-code script</span></a>, which runs raw Python code in a repeatable way. A batch-code script is much more flexible than a batch-command script.</p>
+<blockquote>
+<div><p>Create a new subfolder <code class="docutils literal notranslate"><span class="pre">evadventure/batchscripts/</span></code> (if it doesn’t already exist)</p>
+</div></blockquote>
+<blockquote>
+<div><p>Create a new Python module <code class="docutils literal notranslate"><span class="pre">evadventure/batchscripts/combat_demo.py</span></code></p>
+</div></blockquote>
+<p>A batchcode file is a valid Python module. The only difference is that it has a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">HEADER</span></code> block and one or more <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">CODE</span></code> sections. When the processor runs, the <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">HEADER</span></code> part will be added on top of each <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">CODE</span></code> part before executing that code block in isolation. Since you can run the file from in-game (including refresh it without reloading the server), this gives the ability to run longer Python codes on-demand.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evadventure (Turnbased) combat demo - using a batch-code file.</span>
+<span class="c1">#</span>
+<span class="c1"># Sets up a combat area for testing turnbased combat.</span>
+<span class="c1">#</span>
+<span class="c1"># First add mygame/server/conf/settings.py:</span>
+<span class="c1">#</span>
+<span class="c1">#    BASE_BATCH_PROCESS_PATHS += [&quot;evadventure.batchscripts&quot;]</span>
+<span class="c1">#</span>
+<span class="c1"># Run from in-game as `batchcode turnbased_combat_demo`</span>
+<span class="c1">#</span>
+
+<span class="c1"># HEADER</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.combat_turnbased</span> <span class="kn">import</span> <span class="n">TurnCombatCmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.npcs</span> <span class="kn">import</span> <span class="n">EvAdventureNPC</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.evadventure.rooms</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+
+<span class="c1"># CODE</span>
+
+<span class="c1"># Make the player an EvAdventureCharacter</span>
+<span class="n">player</span> <span class="o">=</span> <span class="n">caller</span>  <span class="c1"># caller is injected by the batchcode runner, it&#39;s the one running this script # E: undefined name &#39;caller&#39;</span>
+<span class="n">player</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="n">EvAdventureCharacter</span><span class="p">)</span>
+
+<span class="c1"># add the Turnbased cmdset</span>
+<span class="n">player</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">TurnCombatCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># create a weapon and an item to use</span>
+<span class="n">create_object</span><span class="p">(</span>
+    <span class="s2">&quot;contrib.tutorials.evadventure.objects.EvAdventureWeapon&quot;</span><span class="p">,</span>
+    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Sword&quot;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="n">player</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="s2">&quot;A sword.&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+
+<span class="n">create_object</span><span class="p">(</span>
+    <span class="s2">&quot;contrib.tutorials.evadventure.objects.EvAdventureConsumable&quot;</span><span class="p">,</span>
+    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Potion&quot;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="n">player</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="s2">&quot;A potion.&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+
+<span class="c1"># start from limbo</span>
+<span class="n">limbo</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;#2&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">arena</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Arena&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="s2">&quot;A large arena.&quot;</span><span class="p">)])</span>
+
+<span class="c1"># Create the exits</span>
+<span class="n">arena_exit</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Arena&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">arena</span><span class="p">)</span>
+<span class="n">back_exit</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Back&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">arena</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">limbo</span><span class="p">)</span>
+
+<span class="c1"># create the NPC dummy</span>
+<span class="n">create_object</span><span class="p">(</span>
+    <span class="n">EvAdventureNPC</span><span class="p">,</span>
+    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Dummy&quot;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="n">arena</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="s2">&quot;A training dummy.&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;hp_max&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)],</span>
+<span class="p">)</span>
+
+</pre></div>
+</div>
+<p>If editing this in an IDE, you may get errors on the <code class="docutils literal notranslate"><span class="pre">player</span> <span class="pre">=</span> <span class="pre">caller</span></code> line. This is because <code class="docutils literal notranslate"><span class="pre">caller</span></code> is not defined anywhere in this file. Instead <code class="docutils literal notranslate"><span class="pre">caller</span></code> (the one running the script) is injected by the <code class="docutils literal notranslate"><span class="pre">batchcode</span></code> runner.</p>
+<p>But apart from the <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">HEADER</span></code> and <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">CODE</span></code> specials, this just a series of normal Evennia api calls.</p>
+<p>Log into the game with a developer/superuser account and run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; batchcmd evadventure.batchscripts.turnbased_combat_demo 
+</pre></div>
+</div>
+<p>This should place you in the arena with the dummy (if not, check for errors in the output! Use <code class="docutils literal notranslate"><span class="pre">objects</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code> commands to list and delete objects if you need to start over.)</p>
+<p>You can now try <code class="docutils literal notranslate"><span class="pre">attack</span> <span class="pre">dummy</span></code> and should be able to pound away at the dummy (lower its health to test destroying it). If you need to fix something, use <code class="docutils literal notranslate"><span class="pre">q</span></code> to exit the menu and get access to the <code class="docutils literal notranslate"><span class="pre">reload</span></code> command (for the final combat, you can disable this ability by passing <code class="docutils literal notranslate"><span class="pre">auto_quit=False</span></code> when you create the <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>).</p>
+</section>
+<section id="conclusions">
+<h2><span class="section-number">11.9. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<p>At this point we have coverered some ideas on how to implement both twitch- and turnbased combat systems. Along the way you have been exposed to many concepts such as classes, scripts and handlers, Commands, EvMenus and more.</p>
+<p>Before our combat system is actually usable, we need our enemies to actually fight back. We’ll get to that next.</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-AI.html" title="12. NPC and monster AI"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Combat-Twitch.html" title="10. Twitch Combat"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">11. </span>Turnbased Combat</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

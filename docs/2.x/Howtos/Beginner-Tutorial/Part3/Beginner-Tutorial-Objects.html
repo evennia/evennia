@@ -1,0 +1,614 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>4. In-game Objects and items &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="5. Handling Equipment" href="Beginner-Tutorial-Equipment.html" />
+    <link rel="prev" title="3. Player Characters" href="Beginner-Tutorial-Characters.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Equipment.html" title="5. Handling Equipment"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Characters.html" title="3. Player Characters"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>In-game Objects and items</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. In-game Objects and items</a><ul>
+<li><a class="reference internal" href="#new-enums">4.1. New Enums</a></li>
+<li><a class="reference internal" href="#the-base-object">4.2. The base object</a><ul>
+<li><a class="reference internal" href="#using-attributes-or-not">4.2.1. Using Attributes or not</a></li>
+<li><a class="reference internal" href="#creating-tags-in-at-object-creation">4.2.2. Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-object-types">4.3. Other object types</a></li>
+<li><a class="reference internal" href="#consumables">4.4. Consumables</a></li>
+<li><a class="reference internal" href="#weapons">4.5. Weapons</a></li>
+<li><a class="reference internal" href="#magic">4.6. Magic</a></li>
+<li><a class="reference internal" href="#armor">4.7. Armor</a></li>
+<li><a class="reference internal" href="#your-bare-hands">4.8. Your Bare hands</a></li>
+<li><a class="reference internal" href="#testing-and-extra-credits">4.9. Testing and Extra credits</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Characters.html"
+                        title="previous chapter"><span class="section-number">3. </span>Player Characters</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Equipment.html"
+                        title="next chapter"><span class="section-number">5. </span>Handling Equipment</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Objects.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="Beginner-Tutorial-Objects.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="in-game-objects-and-items">
+<h1><span class="section-number">4. </span>In-game Objects and items<a class="headerlink" href="#in-game-objects-and-items" title="Permalink to this headline">¶</a></h1>
+<p>In the previous lesson we established what a ‘Character’ is in our game. Before we continue
+we also need to have a notion what an ‘item’ or ‘object’ is.</p>
+<p>Looking at <em>Knave</em>’s item lists, we can get some ideas of what we need to track:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code> - this is how many ‘slots’ the item uses in the character’s inventory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> - a base value if we want to sell or buy the item.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inventory_use_slot</span></code> - some items can be worn or wielded. For example, a helmet needs to be  worn on the head and a shield in the shield hand. Some items can’t be used this way at all, but  only belong in the backpack.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obj_type</span></code> - Which ‘type’ of item this is.</p></li>
+</ul>
+<section id="new-enums">
+<h2><span class="section-number">4.1. </span>New Enums<a class="headerlink" href="#new-enums" title="Permalink to this headline">¶</a></h2>
+<p>We added a few enumberations for Abilities back in the <a class="reference internal" href="Beginner-Tutorial-Utilities.html"><span class="doc std std-doc">Utilities tutorial</span></a>.
+Before we continue, let’s expand with enums for use-slots and object types.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/enums.py</span>
+
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">WieldLocation</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    
+    <span class="n">BACKPACK</span> <span class="o">=</span> <span class="s2">&quot;backpack&quot;</span>
+    <span class="n">WEAPON_HAND</span> <span class="o">=</span> <span class="s2">&quot;weapon_hand&quot;</span>
+    <span class="n">SHIELD_HAND</span> <span class="o">=</span> <span class="s2">&quot;shield_hand&quot;</span>
+    <span class="n">TWO_HANDS</span> <span class="o">=</span> <span class="s2">&quot;two_handed_weapons&quot;</span>
+    <span class="n">BODY</span> <span class="o">=</span> <span class="s2">&quot;body&quot;</span>  <span class="c1"># armor</span>
+    <span class="n">HEAD</span> <span class="o">=</span> <span class="s2">&quot;head&quot;</span>  <span class="c1"># helmets</span>
+
+<span class="k">class</span> <span class="nc">ObjType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    
+    <span class="n">WEAPON</span> <span class="o">=</span> <span class="s2">&quot;weapon&quot;</span>
+    <span class="n">ARMOR</span> <span class="o">=</span> <span class="s2">&quot;armor&quot;</span>
+    <span class="n">SHIELD</span> <span class="o">=</span> <span class="s2">&quot;shield&quot;</span>
+    <span class="n">HELMET</span> <span class="o">=</span> <span class="s2">&quot;helmet&quot;</span>
+    <span class="n">CONSUMABLE</span> <span class="o">=</span> <span class="s2">&quot;consumable&quot;</span>
+    <span class="n">GEAR</span> <span class="o">=</span> <span class="s2">&quot;gear&quot;</span>
+    <span class="n">MAGIC</span> <span class="o">=</span> <span class="s2">&quot;magic&quot;</span>
+    <span class="n">QUEST</span> <span class="o">=</span> <span class="s2">&quot;quest&quot;</span>
+    <span class="n">TREASURE</span> <span class="o">=</span> <span class="s2">&quot;treasure&quot;</span>
+</pre></div>
+</div>
+<p>Once we have these enums, we will use them for referencing things.</p>
+</section>
+<section id="the-base-object">
+<h2><span class="section-number">4.2. </span>The base object<a class="headerlink" href="#the-base-object" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/objects.py</span></code></p>
+</div></blockquote>
+<aside class="sidebar">
+<p><a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.objects.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/objects.py</span></a> has
+a full set of objects implemented.</p>
+</aside>
+<div style="clear: right;"></div>
+<p>We will make a base <code class="docutils literal notranslate"><span class="pre">EvAdventureObject</span></code> class off Evennia’s standard <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>. We will then add child classes to represent the relevant types:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultObject</span> 
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_obj_stats</span> 
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">ObjType</span>
+
+
+<span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Base for all evadventure objects. </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="c1"># this can be either a single type or a list of types (for objects able to be </span>
+    <span class="c1"># act as multiple). This is used to tag this object during creation.</span>
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">GEAR</span>
+
+    <span class="c1"># default evennia hooks</span>
+
+    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when this object is first created. We convert the .obj_type </span>
+<span class="sd">        property to a database tag.&quot;&quot;&quot;</span>
+        
+        <span class="k">for</span> <span class="n">obj_type</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;obj_type&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_display_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">	    </span><span class="sd">&quot;&quot;&quot;The top of the description&quot;&quot;&quot;</span> 
+	    <span class="k">return</span> <span class="s2">&quot;&quot;</span> 
+
+	<span class="k">def</span> <span class="nf">get_display_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;The main display - show object stats&quot;&quot;&quot;</span> 
+		<span class="k">return</span> <span class="n">get_obj_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">looker</span><span class="p">)</span>
+
+    <span class="c1"># custom evadventure methods</span>
+
+	<span class="k">def</span> <span class="nf">has_obj_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objtype</span><span class="p">):</span> 
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Check if object is of a certain type&quot;&quot;&quot;</span> 
+		<span class="k">return</span> <span class="n">objtype</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called before use. If returning False, can&#39;t be used&quot;&quot;&quot;</span> 
+        <span class="k">return</span> <span class="kc">True</span> 
+
+	<span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Use this object, whatever that means&quot;&quot;&quot;</span> 
+		<span class="k">pass</span> 
+
+    <span class="k">def</span> <span class="nf">post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+<span class="w">	    </span><span class="sd">&quot;&quot;&quot;Always called after use.&quot;&quot;&quot;</span> 
+	    <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get any help text for this item&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;No help for this item&quot;</span>
+</pre></div>
+</div>
+<section id="using-attributes-or-not">
+<h3><span class="section-number">4.2.1. </span>Using Attributes or not<a class="headerlink" href="#using-attributes-or-not" title="Permalink to this headline">¶</a></h3>
+<p>In theory, <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code> does not change and <em>could</em> also be just set as a regular Python
+property on the class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span> 
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span> 
+    <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> 
+</pre></div>
+</div>
+<p>The problem with this is that if we want to make a new object of <code class="docutils literal notranslate"><span class="pre">size</span> <span class="pre">3</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">20</span></code>, we have to  make a new class for it. We can’t change it on the fly because the change would only be in memory and  be lost on next server reload.</p>
+<p>Because we use <code class="docutils literal notranslate"><span class="pre">AttributeProperties</span></code>, we can set <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code> to whatever we like when we  create the object (or later), and the Attributes will remember our changes to that object indefinitely.</p>
+<p>To make this a little more efficient, we use <code class="docutils literal notranslate"><span class="pre">autocreate=False</span></code>. Normally when you create a new object with defined <code class="docutils literal notranslate"><span class="pre">AttributeProperties</span></code>, a matching <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> is immediately created at  the same time. So normally, the object would be created along with two Attributes <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code>. With <code class="docutils literal notranslate"><span class="pre">autocreate=False</span></code>, no Attribute will be created <em>unless the default is changed</em>. That is, as  long as your object has <code class="docutils literal notranslate"><span class="pre">size=1</span></code> no database <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> will be created at all. This saves time and  resources when creating large number of objects.</p>
+<p>The drawback is that since no Attribute is created you can’t refer to it with <code class="docutils literal notranslate"><span class="pre">obj.db.size</span></code> or <code class="docutils literal notranslate"><span class="pre">obj.attributes.get(&quot;size&quot;)</span></code> <em>unless you change its default</em>. You also can’t query  the database for all objects with <code class="docutils literal notranslate"><span class="pre">size=1</span></code>, since most objects would not yet have an in-database
+<code class="docutils literal notranslate"><span class="pre">size</span></code> Attribute to search for.</p>
+<p>In our case, we’ll only refer to these properties as <code class="docutils literal notranslate"><span class="pre">obj.size</span></code> etc, and have no need to find
+all objects of a particular size. So we should be safe.</p>
+</section>
+<section id="creating-tags-in-at-object-creation">
+<h3><span class="section-number">4.2.2. </span>Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code><a class="headerlink" href="#creating-tags-in-at-object-creation" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is a method Evennia calls on every child of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> whenever it is first created.</p>
+<p>We do a tricky thing here, converting our <code class="docutils literal notranslate"><span class="pre">.obj_type</span></code> to one or more <a class="reference internal" href="../../../Components/Tags.html"><span class="doc std std-doc">Tags</span></a>. Tagging the  object like this means you can later efficiently find all objects of a given type (or combination of
+types) with Evennia’s search functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">ObjType</span> 
+    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span> 
+    
+    <span class="c1"># get all shields in the game</span>
+    <span class="n">all_shields</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object_by_tag</span><span class="p">(</span><span class="n">ObjType</span><span class="o">.</span><span class="n">SHIELD</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;obj_type&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We allow <code class="docutils literal notranslate"><span class="pre">.obj_type</span></code> to be given as a single value or a list of values. We use <code class="docutils literal notranslate"><span class="pre">make_iter</span></code> from the  evennia utility library to make sure we don’t balk at either. This means you could have a Shield that  is also Magical, for example.</p>
+</section>
+</section>
+<section id="other-object-types">
+<h2><span class="section-number">4.3. </span>Other object types<a class="headerlink" href="#other-object-types" title="Permalink to this headline">¶</a></h2>
+<p>Some of the other object types are very simple so far.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">ObjType</span> 
+
+<span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
+    <span class="c1"># ... </span>
+    
+    
+<span class="k">class</span> <span class="nc">EvAdventureQuestObject</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quest objects should usually not be possible to sell or trade.&quot;&quot;&quot;</span>
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">QUEST</span>
+ 
+<span class="k">class</span> <span class="nc">EvAdventureTreasure</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Treasure is usually just for selling for coin&quot;&quot;&quot;</span>
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">TREASURE</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+</section>
+<section id="consumables">
+<h2><span class="section-number">4.4. </span>Consumables<a class="headerlink" href="#consumables" title="Permalink to this headline">¶</a></h2>
+<p>A ‘consumable’ is an item that has a certain number of ‘uses’. Once fully consumed, it can’t be used  anymore. An example would be a health potion.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventureConsumable</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An item that can be used up&quot;&quot;&quot;</span> 
+    
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">CONSUMABLE</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">uses</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called before using. If returning False, abort use.&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+			<span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not close enough to the target!&quot;</span><span class="p">)</span>
+		    <span class="k">return</span> <span class="kc">False</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+		    <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is used up.|n&quot;</span><span class="p">)</span>
+		    <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when using the item&quot;&quot;&quot;</span> 
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after using the item&quot;&quot;&quot;</span> 
+        <span class="c1"># detract a usage, deleting the item if used up.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> was used up.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">at_pre_use</span></code> we check if we have specified a target (heal someone else or throw a fire bomb at an enemy?), making sure we are in the same location. We also make sure we have <code class="docutils literal notranslate"><span class="pre">usages</span></code> left. In <code class="docutils literal notranslate"><span class="pre">at_post_use</span></code> we make sure to tick off usages.</p>
+<p>What exactly each consumable does will vary - we will need to implement children of this class  later, overriding <code class="docutils literal notranslate"><span class="pre">at_use</span></code> with different effects.</p>
+</section>
+<section id="weapons">
+<h2><span class="section-number">4.5. </span>Weapons<a class="headerlink" href="#weapons" title="Permalink to this headline">¶</a></h2>
+<p>All weapons need properties that describe how efficient they are in battle. To ‘use’ a weapon means to attack with it, so we can let the weapon itself handle all logic around performing an attack. Having the attack code on the weapon also means that if we in the future wanted a weapon doing something special on-attack (for example, a vampiric sword that heals the attacker when hurting the enemy), we could easily add that on the weapon subclass in question without modifying other code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
+
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">ObjType</span><span class="p">,</span> <span class="n">Ability</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventureWeapon</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all weapons&quot;&quot;&quot;</span>
+
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span> 
+    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">quality</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="n">attack_type</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">defend_type</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">Ability</span><span class="o">.</span><span class="n">ARMOR</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="n">damage_roll</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+       <span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+           <span class="c1"># we assume weapons can only be used in the same location</span>
+           <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not close enough to the target!&quot;</span><span class="p">)</span>
+           <span class="k">return</span> <span class="kc">False</span>
+
+       <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+           <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2"> is broken and can&#39;t be used!&quot;</span><span class="p">)</span>
+           <span class="k">return</span> <span class="kc">False</span>
+       <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+   <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">       </span><span class="sd">&quot;&quot;&quot;When a weapon is used, it attacks an opponent&quot;&quot;&quot;</span>
+
+       <span class="n">location</span> <span class="o">=</span> <span class="n">attacker</span><span class="o">.</span><span class="n">location</span>
+
+       <span class="n">is_hit</span><span class="p">,</span> <span class="n">quality</span><span class="p">,</span> <span class="n">txt</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">opposed_saving_throw</span><span class="p">(</span>
+           <span class="n">attacker</span><span class="p">,</span>
+           <span class="n">target</span><span class="p">,</span>
+           <span class="n">attack_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attack_type</span><span class="p">,</span>
+           <span class="n">defense_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">defense_type</span><span class="p">,</span>
+           <span class="n">advantage</span><span class="o">=</span><span class="n">advantage</span><span class="p">,</span>
+           <span class="n">disadvantage</span><span class="o">=</span><span class="n">disadvantage</span><span class="p">,</span>
+       <span class="p">)</span>
+       <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+           <span class="sa">f</span><span class="s2">&quot;$You() $conj(attack) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+           <span class="n">from_obj</span><span class="o">=</span><span class="n">attacker</span><span class="p">,</span>
+           <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">},</span>
+       <span class="p">)</span>
+       <span class="k">if</span> <span class="n">is_hit</span><span class="p">:</span>
+           <span class="c1"># enemy hit, calculate damage</span>
+           <span class="n">dmg</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">damage_roll</span><span class="p">)</span>
+
+           <span class="k">if</span> <span class="n">quality</span> <span class="ow">is</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_SUCCESS</span><span class="p">:</span>
+               <span class="c1"># doble damage roll for critical success</span>
+               <span class="n">dmg</span> <span class="o">+=</span> <span class="n">rules</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">damage_roll</span><span class="p">)</span>
+               <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                   <span class="sa">f</span><span class="s2">&quot; $You() |ycritically|n $conj(hit) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) for |r</span><span class="si">{</span><span class="n">dmg</span><span class="si">}</span><span class="s2">|n damage!&quot;</span>
+               <span class="p">)</span>
+           <span class="k">else</span><span class="p">:</span>
+               <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; $You() $conj(hit) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) for |r</span><span class="si">{</span><span class="n">dmg</span><span class="si">}</span><span class="s2">|n damage!&quot;</span>
+
+           <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">attacker</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span>
+           <span class="c1"># call hook</span>
+           <span class="n">target</span><span class="o">.</span><span class="n">at_damage</span><span class="p">(</span><span class="n">dmg</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="n">attacker</span><span class="p">)</span>
+
+       <span class="k">else</span><span class="p">:</span>
+           <span class="c1"># a miss</span>
+           <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; $You() $conj(miss) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">).&quot;</span>
+           <span class="k">if</span> <span class="n">quality</span> <span class="ow">is</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_FAILURE</span><span class="p">:</span>
+               <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;.. it&#39;s a |rcritical miss!|n, damaging the weapon.&quot;</span>
+			   <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">-=</span> <span class="mi">1</span>
+               <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">attacker</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span>
+
+   <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+       <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+           <span class="n">user</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|r</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2"> breaks and can no longer be used!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In EvAdventure, we will assume all weapons (including bows etc) are used in the same location as the target. Weapons also have a <code class="docutils literal notranslate"><span class="pre">quality</span></code> attribute that gets worn down if the user rolls a critical failure. Once quality is down to 0, the weapon is broken and needs to be repaired.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">quality</span></code> is something we need to track in <em>Knave</em>. When getting critical failures on attacks,  a weapon’s quality will go down. When it reaches 0, it will break. We assume that a <code class="docutils literal notranslate"><span class="pre">quality</span></code> of <code class="docutils literal notranslate"><span class="pre">None</span></code> means that quality doesn’t apply (that is, the item is unbreakable), so we must consider that when checking.</p>
+<p>The attack/defend type tracks how we resolve attacks with the weapon, like <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">+</span> <span class="pre">STR</span> <span class="pre">vs</span> <span class="pre">ARMOR</span> <span class="pre">+</span> <span class="pre">10</span></code>.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">use</span></code> method we make use of the <code class="docutils literal notranslate"><span class="pre">rules</span></code> module we <a class="reference internal" href="Beginner-Tutorial-Rules.html"><span class="doc std std-doc">created earlier</span></a> to perform all the dice rolls needed to resolve the attack.</p>
+<p>This code requires some additional explanation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;$You() $conj(attack) $you(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">from_obj</span><span class="o">=</span><span class="n">attacker</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">target</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">location.msg_contents</span></code> sends a message to everyone in <code class="docutils literal notranslate"><span class="pre">location</span></code>. Since people will usually notice if you swing a sword at somone, this makes sense to tell people about. This message should however look <em>different</em> depending on who sees it.</p>
+<p>I should see:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You attack Grendel with sword: &lt;dice roll results&gt; 
+</pre></div>
+</div>
+<p>Others should see</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Beowulf attacks Grendel with sword: &lt;dice roll results&gt;  
+</pre></div>
+</div>
+<p>And Grendel should see</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Beowulf attacks you with sword: &lt;dice roll results&gt;
+</pre></div>
+</div>
+<p>We provide the following string to <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sa">f</span><span class="s2">&quot;$You() $conj(attack) $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">{...}</span></code> are normal f-string formatting markers like those we have used before. The <code class="docutils literal notranslate"><span class="pre">$func(...)</span></code> bits are <a class="reference internal" href="../../../Components/FuncParser.html"><span class="doc std std-doc">Evennnia FuncParser</span></a> function calls. FuncParser calls are executed as functions and the result replaces their position in the string. As this string is parsed by Evennia, this is what happens:</p>
+<p>First the f-string markers are replaced, so that we get this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;$You() $cobj(attack) $you(Grendel) with sword: </span><span class="se">\n</span><span class="s2"> rolled 8 on d20 ...&quot;</span>
+</pre></div>
+</div>
+<p>Next the funcparser functions are run:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">$You()</span></code> becomes the name or <code class="docutils literal notranslate"><span class="pre">You</span></code> depending on if the string is to be sent to that object or not. It uses the <code class="docutils literal notranslate"><span class="pre">from_obj=</span></code> kwarg to the <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> method to know this. Since <code class="docutils literal notranslate"><span class="pre">msg_contents=attacker</span></code> , this becomes <code class="docutils literal notranslate"><span class="pre">You</span></code> or <code class="docutils literal notranslate"><span class="pre">Beowulf</span></code> in this example.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$you(Grendel)</span></code> looks for the <code class="docutils literal notranslate"><span class="pre">mapping=</span></code> kwarg to <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> to determine who should be addressed here. If will replace this with the display name or the lowercase <code class="docutils literal notranslate"><span class="pre">you</span></code>. We have added <code class="docutils literal notranslate"><span class="pre">mapping={target.key:</span> <span class="pre">target}</span></code> - that is <code class="docutils literal notranslate"><span class="pre">{&quot;Grendel&quot;:</span> <span class="pre">&lt;grendel_obj&gt;}</span></code>. So this will become <code class="docutils literal notranslate"><span class="pre">you</span></code> or <code class="docutils literal notranslate"><span class="pre">Grendel</span></code> depending on who sees the string.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$conj(attack)</span></code> <em>conjugates</em> the verb depending on who sees it. The result will be <code class="docutils literal notranslate"><span class="pre">You</span> <span class="pre">attack</span> <span class="pre">...</span></code> or <code class="docutils literal notranslate"><span class="pre">Beowulf</span> <span class="pre">attacks</span></code> (note the extra <code class="docutils literal notranslate"><span class="pre">s</span></code>).</p></li>
+</ul>
+<p>A few funcparser calls compacts all these points of view into one string!</p>
+</section>
+<section id="magic">
+<h2><span class="section-number">4.6. </span>Magic<a class="headerlink" href="#magic" title="Permalink to this headline">¶</a></h2>
+<p>In <em>Knave</em>, anyone can use magic if they are wielding a rune stone (our name for spell books) in both  hands. You can only use a rune stone once per rest. So a rune stone is an example of a ‘magical weapon’ that is also a ‘consumable’ of sorts.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
+
+<span class="c1"># ... </span>
+<span class="k">class</span> <span class="nc">EvAdventureConsumable</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+    <span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventureWeapon</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+    <span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventureRuneStone</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">EvAdventureConsumable</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base for all magical rune stones&quot;&quot;&quot;</span>
+    
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span><span class="p">,</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">MAGIC</span><span class="p">)</span>
+    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span>  <span class="c1"># always two hands for magic</span>
+    <span class="n">quality</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">attack_type</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">Ability</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">defend_type</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">Ability</span><span class="o">.</span><span class="n">DEX</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="n">damage_roll</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="s2">&quot;1d8&quot;</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">at_post_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after usage/spell was cast&quot;&quot;&quot;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">-=</span> <span class="mi">1</span> 
+        <span class="c1"># we don&#39;t delete the rune stone here, but </span>
+        <span class="c1"># it must be reset on next rest.</span>
+        
+    <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Refresh the rune stone (normally after rest)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>We make the rune stone a mix of weapon and consumable. Note that we don’t have to add <code class="docutils literal notranslate"><span class="pre">.uses</span></code>  again, it’s inherited from <code class="docutils literal notranslate"><span class="pre">EvAdventureConsumable</span></code> parent. The <code class="docutils literal notranslate"><span class="pre">at_pre_use</span></code> and <code class="docutils literal notranslate"><span class="pre">use</span></code> methods  are also inherited; we only override <code class="docutils literal notranslate"><span class="pre">at_post_use</span></code> since we don’t want the runestone to be deleted  when it runs out of uses.</p>
+<p>We add a little convenience method <code class="docutils literal notranslate"><span class="pre">refresh</span></code> - we should call this when the character rests, to  make the runestone active again.</p>
+<p>Exactly what rune stones <em>do</em> will be implemented in the <code class="docutils literal notranslate"><span class="pre">at_use</span></code> methods of subclasses to this  base class. Since magic in <em>Knave</em> tends to be pretty custom, it makes sense that it will lead to a lot  of custom code.</p>
+</section>
+<section id="armor">
+<h2><span class="section-number">4.7. </span>Armor<a class="headerlink" href="#armor" title="Permalink to this headline">¶</a></h2>
+<p>Armor, shields and helmets increase the <code class="docutils literal notranslate"><span class="pre">ARMOR</span></code> stat of the character. In <em>Knave</em>, what is stored is the  defense value of the armor (values 11-20). We will instead store the ‘armor bonus’ (1-10). As we know,  defending is always <code class="docutils literal notranslate"><span class="pre">bonus</span> <span class="pre">+</span> <span class="pre">10</span></code>, so the result will be the same - this means  we can use <code class="docutils literal notranslate"><span class="pre">Ability.ARMOR</span></code> as any other defensive ability without worrying about a special case.</p>
+<p>``</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventureAmor</span><span class="p">(</span><span class="n">EvAdventureObject</span><span class="p">):</span> 
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">ARMOR</span>
+    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span> 
+
+    <span class="n">armor</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">quality</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">EvAdventureShield</span><span class="p">(</span><span class="n">EvAdventureArmor</span><span class="p">):</span>
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">SHIELD</span>
+    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span> 
+
+
+<span class="k">class</span> <span class="nc">EvAdventureHelmet</span><span class="p">(</span><span class="n">EvAdventureArmor</span><span class="p">):</span> 
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">HELMET</span>
+    <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span>
+</pre></div>
+</div>
+</section>
+<section id="your-bare-hands">
+<h2><span class="section-number">4.8. </span>Your Bare hands<a class="headerlink" href="#your-bare-hands" title="Permalink to this headline">¶</a></h2>
+<p>When we don’t have any weapons, we’ll be using our bare fists to fight.</p>
+<p>We will use this in the upcoming  <a class="reference internal" href="Beginner-Tutorial-Equipment.html"><span class="doc std std-doc">Equipment tutorial lesson</span></a> to represent when you have ‘nothing’  in your hands. This way we don’t need to add any special case for this.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span><span class="p">,</span> <span class="n">create_object</span>
+
+<span class="n">_BARE_HANDS</span> <span class="o">=</span> <span class="kc">None</span> 
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">WeaponBareHands</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">)</span>
+     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">ObjType</span><span class="o">.</span><span class="n">WEAPON</span>
+     <span class="n">inventory_use_slot</span> <span class="o">=</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span>
+     <span class="n">attack_type</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span>
+     <span class="n">defense_type</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">ARMOR</span>
+     <span class="n">damage_roll</span> <span class="o">=</span> <span class="s2">&quot;1d4&quot;</span>
+     <span class="n">quality</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># let&#39;s assume fists are indestructible ...</span>
+
+
+<span class="k">def</span> <span class="nf">get_bare_hands</span><span class="p">():</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the bare hands&quot;&quot;&quot;</span> 
+    <span class="k">global</span> <span class="n">_BARE_HANDS</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_BARE_HANDS</span><span class="p">:</span> 
+        <span class="n">_BARE_HANDS</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;Bare hands&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">WeaponBareHands</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_BARE_HANDS</span><span class="p">:</span>
+    	<span class="n">_BARE_HANDS</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">WeaponBareHands</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Bare hands&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_BARE_HANDS</span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p>Creating a single instance of something that is used everywhere is called to create a <em>Singleton</em>.</p>
+</aside>
+<p>Since everyone’s empty hands are the same (in our game), we create <em>one</em> <code class="docutils literal notranslate"><span class="pre">Bare</span> <span class="pre">hands</span></code> weapon object that everyone shares. We do this by searching for the object with <code class="docutils literal notranslate"><span class="pre">search_object</span></code>  (the <code class="docutils literal notranslate"><span class="pre">.first()</span></code> means we grab the first one even if we should by accident have created multiple hands, see <a class="reference internal" href="../Part1/Beginner-Tutorial-Django-queries.html"><span class="doc std std-doc">The Django querying tutorial</span></a> for more info). If we find none, we create it.</p>
+<p>By use of the <code class="docutils literal notranslate"><span class="pre">global</span></code> Python keyword, we cache the bare hands object get/create in a module level property <code class="docutils literal notranslate"><span class="pre">_BARE_HANDS</span></code>. So this acts as a cache to not have to search the database more than necessary.</p>
+<p>From now on, other modules can just import and run this function to get the bare hands.</p>
+</section>
+<section id="testing-and-extra-credits">
+<h2><span class="section-number">4.9. </span>Testing and Extra credits<a class="headerlink" href="#testing-and-extra-credits" title="Permalink to this headline">¶</a></h2>
+<p>Remember the <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> function from the <a class="reference internal" href="Beginner-Tutorial-Utilities.html"><span class="doc std std-doc">Utility Tutorial</span></a> earlier?  We had to use dummy-values since we didn’t yet know how we would store properties on Objects in the game.</p>
+<p>Well, we just figured out all we need! You can go back and update <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> to properly read the data  from the object it receives.</p>
+<p>When you change this function you must also update the related unit test - so your existing test becomes a  nice way to test your new Objects as well! Add more tests showing the output of feeding different object-types to <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code>.</p>
+<p>Try it out yourself. If you need help, a finished utility example is found in <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.utils.html#evennia.contrib.tutorials.evadventure.utils.get_obj_stats" title="evennia.contrib.tutorials.evadventure.utils.get_obj_stats"><span class="xref myst py py-func">evennia/contrib/tutorials/evadventure/utils.py</span></a>.</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Equipment.html" title="5. Handling Equipment"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Characters.html" title="3. Player Characters"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>In-game Objects and items</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

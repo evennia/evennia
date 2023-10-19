@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Large Language Model (“Chat-bot AI”) integration &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Roleplaying base system for Evennia" href="Contrib-RPSystem.html" />
+    <link rel="prev" title="Health Bar" href="Contrib-Health-Bar.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-RPSystem.html" title="Roleplaying base system for Evennia"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Health-Bar.html" title="Health Bar"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Large Language Model (“Chat-bot AI”) integration</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Large Language Model (“Chat-bot AI”) integration</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#llm-server">LLM Server</a></li>
+<li><a class="reference internal" href="#evennia-config">Evennia config</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#primer-on-open-source-llm-models">Primer on open-source LLM models</a></li>
+<li><a class="reference internal" href="#using-an-ai-cloud-service">Using an AI cloud service</a></li>
+<li><a class="reference internal" href="#the-llmnpc-class">The LLMNPC class</a><ul>
+<li><a class="reference internal" href="#prompt-prefix"><code class="docutils literal notranslate"><span class="pre">prompt_prefix</span></code></a></li>
+<li><a class="reference internal" href="#response-template">Response template</a></li>
+<li><a class="reference internal" href="#memory">Memory</a></li>
+<li><a class="reference internal" href="#thinking">Thinking</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#todo">TODO</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Health-Bar.html"
+                        title="previous chapter">Health Bar</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-RPSystem.html"
+                        title="next chapter">Roleplaying base system for Evennia</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Llm.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="Contrib-Llm.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="large-language-model-chat-bot-ai-integration">
+<h1>Large Language Model (“Chat-bot AI”) integration<a class="headerlink" href="#large-language-model-chat-bot-ai-integration" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Griatch 2023</p>
+<p>This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Large Language Model, along the lines of ChatGPT). Example uses a local OSS LLM install. Included is an NPC you can chat with using a new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command. The NPC will respond using the AI responses from the LLM server. All calls are asynchronous, so if the LLM is slow, Evennia is not affected.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop villager:evennia.contrib.rpg.llm.LLMNPC
+You create a new LLMNPC: villager
+
+&gt; talk villager Hello there friend, what&#39;s up?
+You say (to villager): Hello there friend, what&#39;s up?
+villager says (to You): Hello! Not much going on, really.
+
+&gt; talk villager Do you know where we are?
+You say (to villager): Do you know where we are?
+villager says (to You): We are in this strange place called &#39;Limbo&#39;. Not much to do here.
+</pre></div>
+</div>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>You need two components for this contrib - Evennia, and an LLM webserver that operates and provides an API to an LLM AI model.</p>
+<section id="llm-server">
+<h3>LLM Server<a class="headerlink" href="#llm-server" title="Permalink to this headline">¶</a></h3>
+<p>There are many LLM servers, but they can be pretty technical to install and set up. This contrib was tested with <a class="reference external" href="https://github.com/oobabooga/text-generation-webui">text-generation-webui</a>. It has a lot of features while also being easy to install. |</p>
+<ol class="simple">
+<li><p><a class="reference external" href="https://github.com/oobabooga/text-generation-webui#installation">Go to the Installation section</a> and grab the ‘one-click installer’ for your OS.</p></li>
+<li><p>Unzip the files in a folder somewhere on your hard drive (you don’t have to put it next to your evennia stuff if you don’t want to).</p></li>
+<li><p>In a terminal/console, <code class="docutils literal notranslate"><span class="pre">cd</span></code> into the folder and execute the source file in whatever way it’s done for your OS (like <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">start_linux.sh</span></code> for Linux, or <code class="docutils literal notranslate"><span class="pre">.\start_windows</span></code> for Windows). This is an installer that will fetch and install everything in a conda virtual environment. When asked, make sure to select your GPU (NVIDIA/AMD etc) if you have one, otherwise use CPU.</p></li>
+<li><p>Once all is loaded, stop the server with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (or <code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code>) and open the file <code class="docutils literal notranslate"><span class="pre">webui.py</span></code> (it’s one of the top files in the archive you unzipped). Find the text string <code class="docutils literal notranslate"><span class="pre">CMD_FLAGS</span> <span class="pre">=</span> <span class="pre">''</span></code> near the top and change this to <code class="docutils literal notranslate"><span class="pre">CMD_FLAGS</span> <span class="pre">=</span> <span class="pre">'--api'</span></code>. Then save and close. This makes the server activate its api automatically.</p></li>
+<li><p>Now just run that server starting script (<code class="docutils literal notranslate"><span class="pre">start_linux.sh</span></code> etc) again. This is what you’ll use to start the LLM server henceforth.</p></li>
+<li><p>Once the server is running, point your browser to <a class="reference external" href="http://127.0.0.1:7860">http://127.0.0.1:7860</a> to see the running Text generation web ui running. If you turned on the API, you’ll find it’s now active on port 5000. This should not collide with default Evennia ports unless you changed something.</p></li>
+<li><p>At this point you have the server and API, but it’s not actually running any Large-Language-Model (LLM) yet. In the web ui, go to the <code class="docutils literal notranslate"><span class="pre">models</span></code> tab and enter a github-style path in the <code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">custom</span> <span class="pre">model</span> <span class="pre">or</span> <span class="pre">LoRA</span></code> field.  To test so things work, enter <code class="docutils literal notranslate"><span class="pre">DeepPavlov/bart-base-en-persona-chat</span></code> and download. This is a small model (350 million parameters) so should be possible to run on most machines using only CPU. Update the models in the drop-down on the left and select it, then load it with the <code class="docutils literal notranslate"><span class="pre">Transformers</span></code> loader. It should load pretty quickly. If you want to load this every time, you can select the <code class="docutils literal notranslate"><span class="pre">Autoload</span> <span class="pre">the</span> <span class="pre">model</span></code> checkbox; otherwise you’ll need to select and load the model every time you start the LLM server.</p></li>
+<li><p>To experiment, you can find thousands of other open-source text-generation LLM models on <a class="reference external" href="https://huggingface.co/models?pipeline_tag=text-generation&amp;sort=trending">huggingface.co/models</a>. Beware to not download a too huge model; your machine may not be able to load it! If you try large models, <em>don’t</em> set the <code class="docutils literal notranslate"><span class="pre">Autoload</span> <span class="pre">the</span> <span class="pre">model</span></code> checkbox, in case the model crashes your server on startup.</p></li>
+</ol>
+<p>For troubleshooting, you can look at the terminal output of the <code class="docutils literal notranslate"><span class="pre">text-generation-webui</span></code> server; it will show you the requests you do to it and also list any errors. See the text-generation-webui homepage for more details.</p>
+</section>
+<section id="evennia-config">
+<h3>Evennia config<a class="headerlink" href="#evennia-config" title="Permalink to this headline">¶</a></h3>
+<p>To be able to talk to NPCs, import and add the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.rpg.llm.llm_npc.CmdLLMTalk</span></code> to your default cmdset in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
+
+<span class="c1"># ... </span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.llm</span> <span class="kn">import</span> <span class="n">CmdLLMTalk</span>  <span class="c1"># &lt;----</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span> 
+    <span class="c1"># ...</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="c1"># ... </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdLLMTalk</span><span class="p">())</span>     <span class="c1"># &lt;-----</span>
+
+
+</pre></div>
+</div>
+<p>See this <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">the tutorial on adding commands</span></a> for more info.</p>
+<p>The default LLM api config should work with the <code class="docutils literal notranslate"><span class="pre">text-generation-webui</span></code> LLM server running its API on port 5000. You can also customize it via settings (if a setting is not added, the default below is used):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
+
+<span class="c1"># path to the LLM server</span>
+<span class="n">LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:5000&quot;</span>
+<span class="n">LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/api/v1/generate&quot;</span>
+
+<span class="c1"># if you wanted to authenticated to some external service, you could</span>
+<span class="c1"># add an Authenticate header here with a token</span>
+<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+
+<span class="c1"># this key will be inserted in the request, with your user-input</span>
+<span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
+
+<span class="c1"># defaults are set up for text-generation-webui and most models</span>
+<span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>  <span class="c1"># set how many tokens are part of a response</span>
+    <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="c1"># 0-2. higher=more random, lower=predictable</span>
+<span class="p">}</span>
+<span class="c1"># helps guide the NPC AI. See the LLNPC section.</span>
+<span class="n">LLM_PROMPT_PREFIx</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="s2">&quot;You are roleplaying as </span><span class="si">{name}</span><span class="s2">, a </span><span class="si">{desc}</span><span class="s2"> existing in </span><span class="si">{location}</span><span class="s2">. &quot;</span>
+  <span class="s2">&quot;Answer with short sentences. Only respond as </span><span class="si">{name}</span><span class="s2"> would. &quot;</span>
+  <span class="s2">&quot;From here on, the conversation between </span><span class="si">{name}</span><span class="s2"> and </span><span class="si">{character}</span><span class="s2"> begins.&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Don’t forget to reload Evennia (<code class="docutils literal notranslate"><span class="pre">reload</span></code> in game, or <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reload</span></code> from the terminal) if you make any changes.</p>
+<p>It’s also important to note that the <code class="docutils literal notranslate"><span class="pre">PROMPT_PREFIX</span></code> needed by each model depends on how they were trained. There are a bunch of different formats. So you need to look into what should be used for each model you try. Report your findings!</p>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>With the LLM server running and the new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command added, create a new LLM-connected NPC and talk to it in-game.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop girl:evennia.contrib.rpg.llm.LLMNPC
+&gt; talk girl Hello!
+You say (to girl): Hello
+girl ponders ...
+girl says (to You): Hello! How are you?
+</pre></div>
+</div>
+<p>The  conversation will be echoed to everyone in the room. The NPC will show a thinking/pondering message if the server responds slower than 2 seconds (by default).</p>
+</section>
+<section id="primer-on-open-source-llm-models">
+<h2>Primer on open-source LLM models<a class="headerlink" href="#primer-on-open-source-llm-models" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://huggingface.co/models?pipeline_tag=text-generation&amp;sort=trending">Hugging Face</a> is becoming a sort of standard for downloading OSS models. In the <code class="docutils literal notranslate"><span class="pre">text</span> <span class="pre">generation</span></code> category (which is what we want for chat bots), there are some 20k models to choose from (2023). Just to get you started, check out models by <a class="reference external" href="https://huggingface.co/models?pipeline_tag=text-generation&amp;sort=trending&amp;search=TheBloke">TheBloke</a>. TheBloke has taken on ‘quantizing’ (lowering their resolution) models released by others for them to fit on consumer hardware. Models from TheBloke follows roughly this naming standard:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TheBloke/ModelName-ParameterSize-other-GGML/GPTQ
+</pre></div>
+</div>
+<p>For example</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TheBloke/Llama-2-7B-Chat-GGML
+TheBloke/StableBeluga-13B-GPTQ
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">Llama-2</span></code> is a ‘base model’ released open-source by Meta for free (also commercial) use. A base model takes millions of dollars and a supercomputer to train from scratch. Then others “fine tune” that base model. The <code class="docutils literal notranslate"><span class="pre">StableBeluga</span></code> model is created by someone partly retraining the <code class="docutils literal notranslate"><span class="pre">Llama-2</span></code> to make it more focused in some particular area, like chatting in a particular style.</p>
+<p>Models come in sizes, given as number of parameters they have, sort of how many ‘neurons’ they have in their brain. In the two examples above, the top one has <code class="docutils literal notranslate"><span class="pre">7B</span></code> - 7 billion parameters and the second <code class="docutils literal notranslate"><span class="pre">13B</span></code> - 13 billion. The small model we suggested to try during install is only <code class="docutils literal notranslate"><span class="pre">0.35B</span></code> by comparson.</p>
+<p>Running these models in their base form would still not be possible to do without people like TheBloke “quantizing” them, basically reducing their precision. Quantiziation are given in byte precision. So if the original supercomputer version uses 32bit precision, the model you can actually run on your machine often only uses 8bit or 4bit resolution. The common wisdom seems to be that being able to run a model with more parameters at low resolution is better than a smaller one with a higher resolution.</p>
+<p>You will see GPTQ or GGML endings to TheBloke’s quantized models. Simplified, GPTQ are the main quantized models. To run this model, you need to have a beefy enough GPU to be able to fit the entire model in VRAM. GGML, in contrast, allows you to offload some of the model to normal RAM and use your CPU intead. Since you probably have more RAM than VRAM, this means you can run much bigger models this way, but they will run much slower.</p>
+<p>Moreover, you need additional memory space for the <em>context</em> of the model. If you are chatting, this would be the chat history. While this sounds like it would just be some text, the length of the context determines how much the AI must ‘keep in mind’ in order to draw conclusions. This is measured in ‘tokens’ (roughly parts of words). Common context length is 2048 tokens, and a model must be specifically trained to be able to handle longer contexts.</p>
+<p>Here are some rough estimates of hardware requirements for the most common model sizes and 2048 token context. Use GPTQ models if you have enough VRAM on your GPU, otherwise use GMML models to also be able to put some or all data in RAM.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Model size</p></th>
+<th class="head"><p>approx VRAM or RAM needed (4bit / 8bit)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>3B</p></td>
+<td><p>1.5 GB / 3 GB</p></td>
+</tr>
+<tr class="row-odd"><td><p>7B</p></td>
+<td><p>3.5 GB / 7 GB</p></td>
+</tr>
+<tr class="row-even"><td><p>13B</p></td>
+<td><p>7 GB/13 GB</p></td>
+</tr>
+<tr class="row-odd"><td><p>33B</p></td>
+<td><p>14 GB / 33 GB</p></td>
+</tr>
+<tr class="row-even"><td><p>70B</p></td>
+<td><p>35 GB / 70 GB</p></td>
+</tr>
+</tbody>
+</table>
+<p>The results from a 7B or  even a 3B  model can be astounding! But set your expectations. Current (2023) top of the line consumer gaming GPUs have 24GB or VRAM and can at most fit a 33B 4bit quantized model at full speed (GPTQ).</p>
+<p>By comparison, Chat-GPT 3.5 is a 175B model. We don’t know how large Chat-GPT 4 is, but it may be up to 1700B. For this reason you may also consider paying a commercial provider to run the model for you, over an API. This is discussed a little later, but try running locally with a small model first to see everything worls.</p>
+</section>
+<section id="using-an-ai-cloud-service">
+<h2>Using an AI cloud service<a class="headerlink" href="#using-an-ai-cloud-service" title="Permalink to this headline">¶</a></h2>
+<p>You could also call out to an external API, like OpenAI (chat-GPT) or Google. Most cloud-hosted services are commercial and costs money. But since they have the hardware to run bigger models (or their own, proprietary models), they may give better and faster results.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Calling an external API is currently untested, so report any findings. Since the Evennia Server (not the Portal) is doing the calling, you are recommended to put a proxy between you and the internet if you call out like this.</p>
+</div>
+<p>Here is an untested example of the Evennia setting for calling <a class="reference external" href="https://platform.openai.com/docs/api-reference/completions">OpenAI’s v1/completions API</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;https://api.openai.com&quot;</span>
+<span class="n">LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/v1/completions&quot;</span>
+<span class="n">LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_OPENAI_API_KEY&quot;</span><span class="p">}</span>
+<span class="n">LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
+<span class="n">LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+                        <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>
+                   <span class="p">}</span>
+
+</pre></div>
+</div>
+<blockquote>
+<div><p>TODO: OpenAI’s more modern <a class="reference external" href="https://platform.openai.com/docs/api-reference/chat">v1/chat/completions</a> api does currently not work out of the gate since it’s a bit more complex.</p>
+</div></blockquote>
+</section>
+<section id="the-llmnpc-class">
+<h2>The LLMNPC class<a class="headerlink" href="#the-llmnpc-class" title="Permalink to this headline">¶</a></h2>
+<p>The LLM-able NPC class has a new method <code class="docutils literal notranslate"><span class="pre">at_talked_to</span></code> which does the connection to the LLM server and responds. This is called by the new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command. Note that all these calls are asynchronous, meaning a slow response will not block Evennia.</p>
+<p>The NPC’s AI is controlled with a few extra properties and Attributes, most of which can be customized directly in-game by a builder.</p>
+<section id="prompt-prefix">
+<h3><code class="docutils literal notranslate"><span class="pre">prompt_prefix</span></code><a class="headerlink" href="#prompt-prefix" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">prompt_prefix</span></code> is very important. This will be added in front of your prompt and helps the AI know how to respond. Remember that an LLM model is basically an auto-complete mechaniss, so by providing examples and instructions in the prefix, you can help it respond in a better way.</p>
+<p>The prefix string to use for a given NPC is looked up from one of these locations, in order:</p>
+<ol>
+<li><p>An Attribute <code class="docutils literal notranslate"><span class="pre">npc.db.chat_prefix</span></code> stored on the NPC (not set by default)</p></li>
+<li><p>A property <code class="docutils literal notranslate"><span class="pre">chat_prefix</span></code> on the the LLMNPC class (set to <code class="docutils literal notranslate"><span class="pre">None</span></code> by default).</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">LLM_PROMPT_PREFIX</span></code> setting (unset by default)</p></li>
+<li><p>If none of the above locations are set, the following default is used:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&quot;You are roleplaying as {name}, a {desc} existing in {location}.
+Answer with short sentences. Only respond as {name} would.
+From here on, the conversation between {name} and {character} begins.&quot;
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Here, the formatting tag <code class="docutils literal notranslate"><span class="pre">{name}</span></code> is replaced with the NPCs’s name, <code class="docutils literal notranslate"><span class="pre">desc</span></code> by it’s description, the <code class="docutils literal notranslate"><span class="pre">location</span></code> by its current location’s name and <code class="docutils literal notranslate"><span class="pre">character</span></code> by the one talking to it. All names of characters are given by the <code class="docutils literal notranslate"><span class="pre">get_display_name(looker)</span></code> call, so this may be different
+from person to person.</p>
+<p>Depending on the model, it can be very important to extend the prefix both with more information about the character as well as communication examples. A lot of tweaking may be necessary before producing something remniscent of human speech.</p>
+</section>
+<section id="response-template">
+<h3>Response template<a class="headerlink" href="#response-template" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">response_template</span></code> AttributeProperty defaults to being</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$You() $conj(say) (to $You(character)): {response}&quot;
+</pre></div>
+</div>
+<p>following common <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> <a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser</span></a> syntax. The <code class="docutils literal notranslate"><span class="pre">character</span></code> string will be mapped to the one talking to the NPC and the <code class="docutils literal notranslate"><span class="pre">response</span></code> will be what is said by the NPC.</p>
+</section>
+<section id="memory">
+<h3>Memory<a class="headerlink" href="#memory" title="Permalink to this headline">¶</a></h3>
+<p>The NPC remembers what has been said to it by each player. This memory will be included with the prompt to the LLM and helps it understand the context of the conversation. The length of this memory is given by the <code class="docutils literal notranslate"><span class="pre">max_chat_memory_size</span></code> AttributeProperty. Default is 25 messages.  Once the memory is maximum is reached, older messages are forgotten. Memory is stored separately for each player talking to the NPC.</p>
+</section>
+<section id="thinking">
+<h3>Thinking<a class="headerlink" href="#thinking" title="Permalink to this headline">¶</a></h3>
+<p>If the LLM server is slow to respond, the NPC will echo a random ‘thinking message’ to show it has not forgotten about you (something like “The villager ponders your words …”).</p>
+<p>They are controlled by two <code class="docutils literal notranslate"><span class="pre">AttributeProperties</span></code> on the LLMNPC class:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">thinking_timeout</span></code>: How long, in seconds to wait before showing the message. Default is 2 seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thinking_messages</span></code>: A list of messages to randomly pick between. Each message string can contain <code class="docutils literal notranslate"><span class="pre">{name}</span></code>, which will be replaced by the NPCs name.</p></li>
+</ul>
+</section>
+</section>
+<section id="todo">
+<h2>TODO<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
+<p>There is a lot of expansion potential with this contrib. Some ideas:</p>
+<ul class="simple">
+<li><p>Easier support for different cloud LLM provider API structures.</p></li>
+<li><p>More examples of useful prompts and suitable models for MUD use.</p></li>
+</ul>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/rpg/llm/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-RPSystem.html" title="Roleplaying base system for Evennia"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Health-Bar.html" title="Health Bar"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Large Language Model (“Chat-bot AI”) integration</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

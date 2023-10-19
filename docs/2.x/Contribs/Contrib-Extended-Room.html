@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Extended Room &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Basic Map" href="Contrib-Ingame-Map-Display.html" />
+    <link rel="prev" title="Turn based battle system framework" href="Contrib-Turnbattle.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Ingame-Map-Display.html" title="Basic Map"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Turnbattle.html" title="Turn based battle system framework"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Extended Room</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Extended Room</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#features">Features</a><ul>
+<li><a class="reference internal" href="#state-dependent-description-slots">State-dependent description slots</a></li>
+<li><a class="reference internal" href="#changing-parts-of-description-based-on-state">Changing parts of description based on state</a></li>
+<li><a class="reference internal" href="#details">Details</a></li>
+<li><a class="reference internal" href="#random-echoes">Random echoes</a></li>
+<li><a class="reference internal" href="#extra-commands">Extra commands</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Turnbattle.html"
+                        title="previous chapter">Turn based battle system framework</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Ingame-Map-Display.html"
+                        title="next chapter">Basic Map</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Extended-Room.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="Contrib-Extended-Room.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="extended-room">
+<h1>Extended Room<a class="headerlink" href="#extended-room" title="Permalink to this headline">¶</a></h1>
+<p>Contribution - Griatch 2012, vincent-lg 2019, Griatch 2023</p>
+<p>This extends the normal <code class="docutils literal notranslate"><span class="pre">Room</span></code> typeclass to allow its description to change with
+time-of-day and/or season as well as any other state (like flooded or dark).
+Embedding <code class="docutils literal notranslate"><span class="pre">$state(burning,</span> <span class="pre">This</span> <span class="pre">place</span> <span class="pre">is</span> <span class="pre">on</span> <span class="pre">fire!)</span></code> in the description will
+allow for changing the description based on room state. The room also supports
+<code class="docutils literal notranslate"><span class="pre">details</span></code> for the player to look at in the room (without having to create a new
+in-game object for each), as well as support for random echoes. The room
+comes with a set of alternate commands for <code class="docutils literal notranslate"><span class="pre">look</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code>, as well as new
+commands <code class="docutils literal notranslate"><span class="pre">detail</span></code>, <code class="docutils literal notranslate"><span class="pre">roomstate</span></code> and <code class="docutils literal notranslate"><span class="pre">time</span></code>.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Add the <code class="docutils literal notranslate"><span class="pre">ExtendedRoomCmdset</span></code> to the default character cmdset will add all
+new commands for use.</p>
+<p>In more detail, in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.grid</span> <span class="kn">import</span> <span class="n">extended_room</span>   <span class="c1"># &lt;---</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdset</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">ExtendedRoomCmdSet</span><span class="p">)</span>  <span class="c1"># &lt;---</span>
+
+</pre></div>
+</div>
+<p>Then reload to make the new commands available. Note that they only work
+on rooms with the typeclass <code class="docutils literal notranslate"><span class="pre">ExtendedRoom</span></code>. Create new rooms with the right
+typeclass or use the <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> command to swap existing rooms. Note that since
+this contrib overrides the <code class="docutils literal notranslate"><span class="pre">look</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code> commands, you will need to add the
+<code class="docutils literal notranslate"><span class="pre">extended_room.ExtendedRoomCmdSet</span></code> to the default character cmdset <em>after</em>
+<code class="docutils literal notranslate"><span class="pre">super().at_cmdset_creation()</span></code>, or they will be overridden by the default look.</p>
+<p>To dig a new extended room:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dig myroom:evennia.contrib.grid.extended_room.ExtendedRoom = north,south
+</pre></div>
+</div>
+<p>To make all new rooms ExtendedRooms without having to specify it, make your
+<code class="docutils literal notranslate"><span class="pre">Room</span></code> typeclass inherit from the <code class="docutils literal notranslate"><span class="pre">ExtendedRoom</span></code> and then reload:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.grid.extended_room</span> <span class="kn">import</span> <span class="n">ExtendedRoom</span>
+
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">Room</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">ExtendedRoom</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+</pre></div>
+</div>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<section id="state-dependent-description-slots">
+<h3>State-dependent description slots<a class="headerlink" href="#state-dependent-description-slots" title="Permalink to this headline">¶</a></h3>
+<p>By default, the normal <code class="docutils literal notranslate"><span class="pre">room.db.desc</span></code> description is used. You can however
+add new state-ful descriptions with <code class="docutils literal notranslate"><span class="pre">room.add_desc(description,</span> <span class="pre">room_state=roomstate)</span></code> or with the in-game command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@desc</span><span class="o">/</span><span class="n">roomstate</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>@desc/dark This room is pitch black.`.
+
+</pre></div>
+</div>
+<p>These will be stored in Attributes <code class="docutils literal notranslate"><span class="pre">desc_&lt;roomstate&gt;</span></code>. To set the default,
+fallback description, just use <code class="docutils literal notranslate"><span class="pre">&#64;desc</span> <span class="pre">&lt;description&gt;</span></code>.
+To activate a state on the room, use <code class="docutils literal notranslate"><span class="pre">room.add/remove_state(*roomstate)</span></code> or the in-game
+command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">roomstate</span> <span class="o">&lt;</span><span class="n">state</span><span class="o">&gt;</span>      <span class="p">(</span><span class="n">use</span> <span class="n">it</span> <span class="n">again</span> <span class="n">to</span> <span class="n">toggle</span> <span class="n">the</span> <span class="n">state</span> <span class="n">off</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">roomstate</span> <span class="n">dark</span>
+</pre></div>
+</div>
+<p>There is one in-built, time-based state <code class="docutils literal notranslate"><span class="pre">season</span></code>. By default these are ‘spring’,
+‘summer’, ‘autumn’ and ‘winter’. The <code class="docutils literal notranslate"><span class="pre">room.get_season()</span></code> method returns the
+current season based on the in-game time. By default they change with a 12-month
+in-game time schedule. You can control them with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExtendedRoom</span><span class="o">.</span><span class="n">months_per_year</span>      <span class="c1"># default 12</span>
+<span class="n">ExtendedRoom</span><span class="o">.</span><span class="n">seasons_per</span> <span class="n">year</span>     <span class="c1"># a dict of {&quot;season&quot;: (start, end), ...} where</span>
+                                  <span class="c1"># start/end are given in fractions of the whole year</span>
+</pre></div>
+</div>
+<p>To set a seasonal description, just set it as normal, with <code class="docutils literal notranslate"><span class="pre">room.add_desc</span></code> or
+in-game with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@desc</span><span class="o">/</span><span class="n">winter</span> <span class="n">This</span> <span class="n">room</span> <span class="ow">is</span> <span class="n">filled</span> <span class="k">with</span> <span class="n">snow</span><span class="o">.</span>
+<span class="nd">@desc</span><span class="o">/</span><span class="n">autumn</span> <span class="n">Red</span> <span class="ow">and</span> <span class="n">yellow</span> <span class="n">leaves</span> <span class="n">cover</span> <span class="n">the</span> <span class="n">ground</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Normally the season changes with the in-game time, you can also ‘force’ a given
+season by setting its state</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">roomstate</span> <span class="n">winter</span>
+</pre></div>
+</div>
+<p>If you set the season manually like this, it won’t change automatically again
+until you unset it.</p>
+<p>You can get the stateful description from the room with <code class="docutils literal notranslate"><span class="pre">room.get_stateful_desc()</span></code>.</p>
+</section>
+<section id="changing-parts-of-description-based-on-state">
+<h3>Changing parts of description based on state<a class="headerlink" href="#changing-parts-of-description-based-on-state" title="Permalink to this headline">¶</a></h3>
+<p>All descriptions can have embedded <code class="docutils literal notranslate"><span class="pre">$state(roomstate,</span> <span class="pre">description)</span></code>
+<a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser tags</span></a> embedded in them. Here is an example:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">room</span><span class="o">.</span><span class="n">add_desc</span><span class="p">(</span><span class="s2">&quot;This a nice beach. &quot;</span>
+              <span class="s2">&quot;$state(empty, It is completely empty)&quot;</span>
+              <span class="s2">&quot;$state(full, It is full of people).&quot;</span><span class="p">,</span> <span class="n">room_state</span><span class="o">=</span><span class="s2">&quot;summer&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is a summer-description with special embedded strings. If you set the room
+with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; room.add_room_state(&quot;summer&quot;, &quot;empty&quot;)
+&gt; room.get_stateful_desc()
+
+This is a nice beach. It is completely empty
+
+&gt; room.remove_room_state(&quot;empty&quot;)
+&gt; room.add_room_state(&quot;full&quot;)
+&gt; room.get_stateful_desc()
+
+This is a nice beach. It is full of people.
+</pre></div>
+</div>
+<p>There are four time-of-day states that are meant to be used with these tags. The
+room tracks and changes these automatically. By default they are ‘morning’,
+‘afternoon’, ‘evening’ and ‘night’. You can get the current time-slot with
+<code class="docutils literal notranslate"><span class="pre">room.get_time_of_day</span></code>. You can control them with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExtendedRoom</span><span class="o">.</span><span class="n">hours_per_day</span>    <span class="c1"># default 24</span>
+<span class="n">ExtendedRoom</span><span class="o">.</span><span class="n">times_of_day</span>     <span class="c1"># dict of {season: (start, end), ...} where</span>
+                              <span class="c1"># the start/end are given as fractions of the day</span>
+</pre></div>
+</div>
+<p>You use these inside descriptions as normal:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&quot;A glade. $(morning, The morning sun shines down through the branches).&quot;
+</pre></div>
+</div>
+</section>
+<section id="details">
+<h3>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h3>
+<p><em>Details</em> are “virtual” targets to look at in a room, without having to create a
+new database instance for every thing. It’s good to add more information to a
+location. The details are stored as strings in a dictionary.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>detail window = There is a window leading out.
+detail rock = The rock has a text written on it: &#39;Do not dare lift me&#39;.
+</pre></div>
+</div>
+<p>When you are in the room you can then do <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">window</span></code> or <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">rock</span></code> and get
+the matching detail-description. This requires the new custom <code class="docutils literal notranslate"><span class="pre">look</span></code> command.</p>
+</section>
+<section id="random-echoes">
+<h3>Random echoes<a class="headerlink" href="#random-echoes" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">ExtendedRoom</span></code> supports random echoes. Just set them as an Attribute list
+<code class="docutils literal notranslate"><span class="pre">room_messages</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">room</span><span class="o">.</span><span class="n">room_message_rate</span> <span class="o">=</span> <span class="mi">120</span>   <span class="c1"># in seconds. 0 to disable</span>
+<span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">room_messages</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;A car passes by.&quot;</span><span class="p">,</span> <span class="s2">&quot;You hear the sound of car horns.&quot;</span><span class="p">]</span>
+<span class="n">room</span><span class="o">.</span><span class="n">start_repeat_broadcast_messages</span><span class="p">()</span>   <span class="c1"># also a server reload works</span>
+</pre></div>
+</div>
+<p>These will start randomly echoing to the room every 120s.</p>
+</section>
+<section id="extra-commands">
+<h3>Extra commands<a class="headerlink" href="#extra-commands" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CmdExtendedRoomLook</span></code> (<code class="docutils literal notranslate"><span class="pre">look</span></code>) - look command supporting room details</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CmdExtendedRoomDesc</span></code> (<code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code>) - desc command allowing to add stateful descs,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CmdExtendeRoomState</span></code> (<code class="docutils literal notranslate"><span class="pre">roomstate</span></code>) - toggle room states</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CmdExtendedRoomDetail</span></code> (<code class="docutils literal notranslate"><span class="pre">detail</span></code>) - list and manipulate room details</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CmdExtendedRoomGameTime</span></code> (<code class="docutils literal notranslate"><span class="pre">time</span></code>) - Shows the current time and season in the room.</p></li>
+</ul>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/grid/extended_room/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Ingame-Map-Display.html" title="Basic Map"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Turnbattle.html" title="Turn based battle system framework"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Extended Room</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

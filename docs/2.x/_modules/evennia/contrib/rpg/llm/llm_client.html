@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.rpg.llm.llm_client &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.llm.llm_client</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="llm_client.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.rpg.llm.llm_client</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">LLM (Large Language Model) client, for communicating with an LLM backend. This can be used</span>
+<span class="sd">for generating texts for AI npcs, or for fine-tuning the LLM on a given prompt.</span>
+
+<span class="sd">Note that running a LLM locally requires a lot of power, and ideally a powerful GPU. Testing</span>
+<span class="sd">this with CPU mode on a beefy laptop, still takes some 4s just on a very small model.</span>
+
+<span class="sd">The server defaults to output suitable for a local server</span>
+<span class="sd">https://github.com/oobabooga/text-generation-webui, but could be used for other LLM servers too.</span>
+
+<span class="sd">See the LLM instructions on that page for how to set up the server. You&#39;ll also need</span>
+<span class="sd">a model file - there are thousands to try out on https://huggingface.co/models (you want Text</span>
+<span class="sd">Generation models specifically).</span>
+
+<span class="sd"># Optional Evennia settings (if not given, these defaults are used)</span>
+
+<span class="sd">DEFAULT_LLM_HOST = &quot;http://localhost:5000&quot;</span>
+<span class="sd">DEFAULT_LLM_PATH = &quot;/api/v1/generate&quot;</span>
+<span class="sd">DEFAULT_LLM_HEADERS = {&quot;Content-Type&quot;: &quot;application/json&quot;}</span>
+<span class="sd">DEFAULT_LLM_PROMPT_KEYNAME = &quot;prompt&quot;</span>
+<span class="sd">DEFAULT_LLM_REQUEST_BODY = {...}   # see below, this controls how to prompt the LLM server.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span>
+<span class="kn">from</span> <span class="nn">twisted.web.client</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">HTTPConnectionPool</span><span class="p">,</span> <span class="n">_HTTP11ClientFactory</span>
+<span class="kn">from</span> <span class="nn">twisted.web.http_headers</span> <span class="kn">import</span> <span class="n">Headers</span>
+<span class="kn">from</span> <span class="nn">twisted.web.iweb</span> <span class="kn">import</span> <span class="n">IBodyProducer</span>
+<span class="kn">from</span> <span class="nn">zope.interface</span> <span class="kn">import</span> <span class="n">implementer</span>
+
+<span class="n">DEFAULT_LLM_HOST</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:5000&quot;</span>
+<span class="n">DEFAULT_LLM_PATH</span> <span class="o">=</span> <span class="s2">&quot;/api/v1/generate&quot;</span>
+<span class="n">DEFAULT_LLM_HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+<span class="n">DEFAULT_LLM_PROMPT_KEYNAME</span> <span class="o">=</span> <span class="s2">&quot;prompt&quot;</span>
+<span class="n">DEFAULT_LLM_API_TYPE</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># or openai</span>
+<span class="n">DEFAULT_LLM_REQUEST_BODY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>  <span class="c1"># max number of tokens to generate</span>
+    <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>  <span class="c1"># higher = more random, lower = more predictable</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="StringProducer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer">[docs]</a><span class="nd">@implementer</span><span class="p">(</span><span class="n">IBodyProducer</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">StringProducer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used for feeding a request body to the HTTP client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="StringProducer.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StringProducer.startProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.startProducing">[docs]</a>    <span class="k">def</span> <span class="nf">startProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consumer</span><span class="p">):</span>
+        <span class="n">consumer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StringProducer.pauseProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.pauseProducing">[docs]</a>    <span class="k">def</span> <span class="nf">pauseProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="StringProducer.stopProducing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.StringProducer.stopProducing">[docs]</a>    <span class="k">def</span> <span class="nf">stopProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="SimpleResponseReceiver"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver">[docs]</a><span class="k">class</span> <span class="nc">SimpleResponseReceiver</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used for pulling the response body out of an HTTP response.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimpleResponseReceiver.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buf</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="SimpleResponseReceiver.dataReceived"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buf</span> <span class="o">+=</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="SimpleResponseReceiver.connectionLost"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">protocol</span><span class="o">.</span><span class="n">connectionDone</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buf</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="QuietHTTP11ClientFactory"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.QuietHTTP11ClientFactory">[docs]</a><span class="k">class</span> <span class="nc">QuietHTTP11ClientFactory</span><span class="p">(</span><span class="n">_HTTP11ClientFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Silences the obnoxious factory start/stop messages in the default client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="LLMClient"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.LLMClient">[docs]</a><span class="k">class</span> <span class="nc">LLMClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A client for communicating with an LLM server.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LLMClient.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.LLMClient.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_bad_request</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_pool</span> <span class="o">=</span> <span class="n">HTTPConnectionPool</span><span class="p">(</span><span class="n">reactor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_pool</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="n">QuietHTTP11ClientFactory</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_keyname</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;LLM_PROMPT_KEYNAME&quot;</span><span class="p">,</span> <span class="n">DEFAULT_LLM_PROMPT_KEYNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;LLM_HOST&quot;</span><span class="p">,</span> <span class="n">DEFAULT_LLM_HOST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;LLM_PATH&quot;</span><span class="p">,</span> <span class="n">DEFAULT_LLM_PATH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;LLM_HEADERS&quot;</span><span class="p">,</span> <span class="n">DEFAULT_LLM_HEADERS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_body</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;LLM_REQUEST_BODY&quot;</span><span class="p">,</span> <span class="n">DEFAULT_LLM_REQUEST_BODY</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;LLM_API_TYPE&quot;</span><span class="p">,</span> <span class="n">DEFAULT_LLM_API_TYPE</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_conn_pool</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_format_request_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Structure the request body for the LLM server&quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_body</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">prompt</span><span class="p">))</span>
+
+        <span class="n">request_body</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_keyname</span><span class="p">]</span> <span class="o">=</span> <span class="n">prompt</span>
+
+        <span class="k">return</span> <span class="n">request_body</span>
+
+    <span class="k">def</span> <span class="nf">_handle_llm_response_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the response body from the response&quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">defer</span><span class="o">.</span><span class="n">Deferred</span><span class="p">()</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">deliverBody</span><span class="p">(</span><span class="n">SimpleResponseReceiver</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="nf">_handle_llm_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">failure</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Correctly handle server connection errors&quot;&quot;&quot;</span>
+        <span class="n">failure</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">failure</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_get_response_from_llm_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the LLM server and handle the response/failure&quot;&quot;&quot;</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_request_body</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM request body: </span><span class="si">{</span><span class="n">request_body</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="sa">b</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">Headers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">),</span>
+            <span class="n">bodyProducer</span><span class="o">=</span><span class="n">StringProducer</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_body</span><span class="p">)),</span>
+        <span class="p">)</span>
+
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_llm_response_body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_llm_error</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+<div class="viewcode-block" id="LLMClient.get_response"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.llm.llm_client.html#evennia.contrib.rpg.llm.llm_client.LLMClient.get_response">[docs]</a>    <span class="nd">@inlineCallbacks</span>
+    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a response from the LLM server for the given npc.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prompt (str or list): The prompt to send to the LLM server. If a list,</span>
+<span class="sd">                this is assumed to be the chat history so far, and will be added to the</span>
+<span class="sd">                prompt in a way suitable for the api.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The generated text response. Will return an empty string</span>
+<span class="sd">                if there is an issue with the server, in which case the</span>
+<span class="sd">                the caller is expected to handle this gracefully.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">status_code</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_response_from_llm_server</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">)[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM API error (status </span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.llm.llm_client</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

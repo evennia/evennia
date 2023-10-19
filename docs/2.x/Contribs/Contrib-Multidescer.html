@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Evennia Multidescer &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Puzzles System" href="Contrib-Puzzles.html" />
+    <link rel="prev" title="In-Game Mail system" href="Contrib-Mail.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Puzzles.html" title="Puzzles System"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Mail.html" title="In-Game Mail system"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Multidescer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Evennia Multidescer</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Mail.html"
+                        title="previous chapter">In-Game Mail system</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Puzzles.html"
+                        title="next chapter">Puzzles System</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Multidescer.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="Contrib-Multidescer.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-multidescer">
+<h1>Evennia Multidescer<a class="headerlink" href="#evennia-multidescer" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Griatch 2016</p>
+<p>A “multidescer” is a concept from the MUSH world. It allows for
+splitting your descriptions into arbitrary named ‘sections’ which you can
+then swap out at will. It is a way for quickly managing your look (such as when
+changing clothes) in more free-form roleplaying systems. This will also
+work well together with the <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code> contrib.</p>
+<p>This multidescer will not require any changes to the Character class, rather it
+will use the <code class="docutils literal notranslate"><span class="pre">multidescs</span></code> Attribute (a list) and create it if it does not exist.
+It adds a new <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command (where the + is optional in Evennia).</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Like for any custom command, you just add the new <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command to a default
+cmdset: Import the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.multidescer.CmdMultiDesc</span></code> into
+<code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add it to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> class.</p>
+<p>Reload the server and you should have the <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command available (it
+will replace the default <code class="docutils literal notranslate"><span class="pre">desc</span></code> command).</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">+desc</span></code> command in-game:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+desc [key]                - show current desc desc with &lt;key&gt;
++desc &lt;key&gt; = &lt;text&gt;       - add/replace desc with &lt;key&gt;
++desc/list                 - list descriptions (abbreviated)
++desc/list/full            - list descriptions (full texts)
++desc/edit &lt;key&gt;           - add/edit desc &lt;key&gt; in line editor
++desc/del &lt;key&gt;            - delete desc &lt;key&gt;
++desc/swap &lt;key1&gt;-&lt;key2&gt;   - swap positions of &lt;key1&gt; and &lt;key2&gt; in list
++desc/set &lt;key&gt; [+key+...] - set desc as default or combine multiple descs
+</pre></div>
+</div>
+<p>As an example, you can set one description for clothing, another for your boots,
+hairstyle or whatever you like. Use <code class="docutils literal notranslate"><span class="pre">|/</span></code> to add line breaks for multi-line descriptions and
+paragraphs, as well as <code class="docutils literal notranslate"><span class="pre">|_</span></code> to enforce indentations and whitespace (we don’t
+include colors in the example since they don’t show in this documentation).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+desc base = A handsome man.|_
++desc mood = He is cheerful, like all is going his way.|/|/
++desc head = On his head he has a red hat with a feather in it.|_
++desc shirt = His chest is wrapped in a white shirt. It has golden buttons.|_
++desc pants = He wears blue pants with a dragorn pattern on them.|_
++desc boots = His boots are dusty from the road.
++desc/set base + mood + head + shirt + pants + boots
+</pre></div>
+</div>
+<p>When looking at this character, you will now see (assuming auto-linebreaks)</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A hansome man. He is cheerful, like all is going his way.
+
+On his head he has a red hat with a feather in it. His chest is wrapped in a
+white shirt. It has golden buttons. He wears blue pants with a dragon
+pattern on them. His boots are dusty from the road.
+</pre></div>
+</div>
+<p>If you now do</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+desc mood = He looks sullen and forlorn.|/|/
++desc shirt = His formerly white shirt is dirty and has a gash in it.|_
+</pre></div>
+</div>
+<p>Your description will now be</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A handsome man. He looks sullen and forlorn.
+
+On his head he as a red hat with a feathre in it. His formerly white shirt
+is dirty and has a gash in it. He wears blue pants with a pattern on them.
+His boots are dusty from the road.
+</pre></div>
+</div>
+<p>You can use any number of ‘pieces’ to build up your description, and can swap
+and replace them as you like and RP requires.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/multidescer/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Puzzles.html" title="Puzzles System"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Mail.html" title="In-Game Mail system"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Multidescer</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

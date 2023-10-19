@@ -1,0 +1,964 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.tutorials.evadventure.combat_turnbased &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.combat_turnbased</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="combat_turnbased.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.tutorials.evadventure.combat_turnbased</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">EvAdventure Turn-based combat</span>
+
+<span class="sd">This implements a turn-based (Final Fantasy, etc) style of MUD combat.</span>
+
+<span class="sd">In this variation, all combatants are sharing the same combat handler, sitting on the current room.</span>
+<span class="sd">The user will receive a menu of combat options and each combatat has a certain time time (e.g. 30s)</span>
+<span class="sd">to select their next action or do nothing. To speed up play, as soon as everyone in combat selected</span>
+<span class="sd">their next action, the next turn runs immediately, regardless of the timeout.</span>
+
+<span class="sd">With this example, all chosen combat actions are considered to happen at the same time (so you are</span>
+<span class="sd">able to kill and be killed in the same turn).</span>
+
+<span class="sd">Unlike in twitch-like combat, there is no movement while in turn-based combat. Fleeing is a select</span>
+<span class="sd">action that takes several vulnerable turns to complete.</span>
+
+<span class="sd">----</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">EvMenu</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">list_to_string</span>
+
+<span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span> <span class="nn">.combat_base</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CombatAction</span><span class="p">,</span>
+    <span class="n">CombatActionAttack</span><span class="p">,</span>
+    <span class="n">CombatActionHold</span><span class="p">,</span>
+    <span class="n">CombatActionStunt</span><span class="p">,</span>
+    <span class="n">CombatActionUseItem</span><span class="p">,</span>
+    <span class="n">CombatActionWield</span><span class="p">,</span>
+    <span class="n">EvAdventureCombatBaseHandler</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">Ability</span>
+
+
+<span class="c1"># turnbased-combat needs the flee action too</span>
+<div class="viewcode-block" id="CombatActionFlee"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee">[docs]</a><span class="k">class</span> <span class="nc">CombatActionFlee</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start (or continue) fleeing/disengaging from combat.</span>
+
+<span class="sd">    action_dict = {</span>
+<span class="sd">           &quot;key&quot;: &quot;flee&quot;,</span>
+<span class="sd">        }</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Refer to as &#39;flee&#39;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CombatActionFlee.execute"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">combathandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="p">:</span>
+            <span class="c1"># we record the turn on which we started fleeing</span>
+            <span class="n">combathandler</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">turn</span>
+
+        <span class="c1"># show how many turns until successful flight</span>
+        <span class="n">current_turn</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">turn</span>
+        <span class="n">started_fleeing</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">]</span>
+        <span class="n">flee_timeout</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">flee_timeout</span>
+        <span class="n">time_left</span> <span class="o">=</span> <span class="n">flee_timeout</span> <span class="o">-</span> <span class="p">(</span><span class="n">current_turn</span> <span class="o">-</span> <span class="n">started_fleeing</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">time_left</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;$You() $conj(retreat), being exposed to attack while doing so (will escape in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_left</span><span class="si">}</span><span class="s2"> $pluralize(turn, </span><span class="si">{</span><span class="n">time_left</span><span class="si">}</span><span class="s2">)).&quot;</span>
+            <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureTurnbasedCombatHandler</span><span class="p">(</span><span class="n">EvAdventureCombatBaseHandler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A version of the combathandler, handling turn-based combat.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># available actions in combat</span>
+    <span class="n">action_classes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="n">CombatActionHold</span><span class="p">,</span>
+        <span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="n">CombatActionAttack</span><span class="p">,</span>
+        <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="n">CombatActionStunt</span><span class="p">,</span>
+        <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="n">CombatActionUseItem</span><span class="p">,</span>
+        <span class="s2">&quot;wield&quot;</span><span class="p">:</span> <span class="n">CombatActionWield</span><span class="p">,</span>
+        <span class="s2">&quot;flee&quot;</span><span class="p">:</span> <span class="n">CombatActionFlee</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># how many turns you must be fleeing before escaping</span>
+    <span class="n">flee_timeout</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># fallback action if not selecting anything</span>
+    <span class="n">fallback_action_dict</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">},</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># persistent storage</span>
+
+    <span class="n">turn</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># who is involved in combat, and their queued action</span>
+    <span class="c1"># as {combatant: actiondict, ...}</span>
+    <span class="n">combatants</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="c1"># who has advantage against whom</span>
+    <span class="n">advantage_matrix</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span>
+    <span class="n">disadvantage_matrix</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span>
+
+    <span class="n">fleeing_combatants</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">defeated_combatants</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="c1"># usable script properties</span>
+    <span class="c1"># .is_active - show if timer is running</span>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.give_advantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.give_advantage">[docs]</a>    <span class="k">def</span> <span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let a benefiter gain advantage against the target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (Character or NPC): The one to gain the advantage. This may or may not</span>
+<span class="sd">                be the same entity that creates the advantage in the first place.</span>
+<span class="sd">            target (Character or NPC): The one against which the target gains advantage. This</span>
+<span class="sd">                could (in principle) be the same as the benefiter (e.g. gaining advantage on</span>
+<span class="sd">                some future boost)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">][</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.give_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.give_disadvantage">[docs]</a>    <span class="k">def</span> <span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let an affected party gain disadvantage against a target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            recipient (Character or NPC): The one to get the disadvantage.</span>
+<span class="sd">            target (Character or NPC): The one against which the target gains disadvantage, usually</span>
+<span class="sd">                an enemy.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disadvantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">][</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.has_advantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.has_advantage">[docs]</a>    <span class="k">def</span> <span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a given combatant has advantage against a target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (Character or NPC): The one to check if they have advantage</span>
+<span class="sd">            target (Character or NPC): The target to check advantage against.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleeing_combatants</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">advantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.has_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.has_disadvantage">[docs]</a>    <span class="k">def</span> <span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a given combatant has disadvantage against a target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (Character or NPC): The one to check if they have disadvantage</span>
+<span class="sd">            target (Character or NPC): The target to check disadvantage against.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disadvantage_matrix</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.add_combatant"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.add_combatant">[docs]</a>    <span class="k">def</span> <span class="nf">add_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new combatant to the battle. Can be called multiple times safely.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC): Any number of combatants to add to</span>
+<span class="sd">                the combat.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If this combatant was newly added or not (it was already in combat).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">combatant</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.remove_combatant"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.remove_combatant">[docs]</a>    <span class="k">def</span> <span class="nf">remove_combatant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a combatant from the battle. This removes their queue.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC): A combatant to add to</span>
+<span class="sd">                the combat.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">combatant</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># clean up menu if it exists</span>
+        <span class="k">if</span> <span class="n">combatant</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="p">:</span>
+            <span class="n">combatant</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.start_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.start_combat">[docs]</a>    <span class="k">def</span> <span class="nf">start_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This actually starts the combat. It&#39;s safe to run this multiple times</span>
+<span class="sd">        since it will only start combat if it isn&#39;t already running.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.stop_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.stop_combat">[docs]</a>    <span class="k">def</span> <span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the combat immediately.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_combatant</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.get_combat_summary"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.get_combat_summary">[docs]</a>    <span class="k">def</span> <span class="nf">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add your next queued action to summary&quot;&quot;&quot;</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_combat_summary</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+        <span class="n">next_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_action_dict</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}</span>
+        <span class="n">next_repeat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_until_next_repeat</span><span class="p">()</span>
+
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">summary</span><span class="si">}</span><span class="se">\n</span><span class="s2"> Your queued action: [|b</span><span class="si">{</span><span class="n">next_action</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">|n] (|b</span><span class="si">{</span><span class="n">next_repeat</span><span class="si">}</span><span class="s2">s|n until&quot;</span>
+            <span class="s2">&quot; next round,</span><span class="se">\n</span><span class="s2"> or until all combatants have chosen their next action).&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">summary</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.get_sides"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.get_sides">[docs]</a>    <span class="k">def</span> <span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a listing of the two &#39;sides&#39; of this combat, from the perspective of the provided</span>
+<span class="sd">        combatant. The sides don&#39;t need to be balanced.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (Character or NPC): The one whose sides are to determined.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple of lists `(allies, enemies)`, from the perspective of `combatant`.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The sides are found by checking PCs vs NPCs. PCs can normally not attack other PCs, so</span>
+<span class="sd">            are naturally allies. If the current room has the `allow_pvp` Attribute set, then _all_</span>
+<span class="sd">            other combatants (PCs and NPCs alike) are considered valid enemies (one could expand</span>
+<span class="sd">            this with group mechanics).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">allow_pvp</span><span class="p">:</span>
+            <span class="c1"># in pvp, everyone else is an ememy</span>
+            <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="n">combatant</span><span class="p">]</span>
+            <span class="n">enemies</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">!=</span> <span class="n">combatant</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># otherwise, enemies/allies depend on who combatant is</span>
+            <span class="n">pcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span> <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">comb</span><span class="p">,</span> <span class="n">EvAdventureCharacter</span><span class="p">)]</span>
+            <span class="n">npcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span> <span class="k">if</span> <span class="n">comb</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="n">pcs</span><span class="p">:</span>
+                <span class="c1"># combatant is a PC, so NPCs are all enemies</span>
+                <span class="n">allies</span> <span class="o">=</span> <span class="n">pcs</span>
+                <span class="n">enemies</span> <span class="o">=</span> <span class="n">npcs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># combatant is an NPC, so PCs are all enemies</span>
+                <span class="n">allies</span> <span class="o">=</span> <span class="n">npcs</span>
+                <span class="n">enemies</span> <span class="o">=</span> <span class="n">pcs</span>
+        <span class="k">return</span> <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.queue_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.queue_action">[docs]</a>    <span class="k">def</span> <span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Queue an action by adding the new actiondict.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC): A combatant queueing the action.</span>
+<span class="sd">            action_dict (dict): A dict describing the action class by name along with properties.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="n">action_dict</span>
+
+        <span class="c1"># track who inserted actions this turn (non-persistent)</span>
+        <span class="n">did_action</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">did_action</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="n">did_action</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">did_action</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">):</span>
+            <span class="c1"># everyone has inserted an action. Start next turn without waiting!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.get_next_action_dict"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.get_next_action_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_action_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Give the action_dict for the next action that will be executed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant to get the action for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The next action-dict in the queue.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.execute_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.execute_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a combatant&#39;s next queued action. Note that there is _always_ an action queued,</span>
+<span class="sd">        even if this action is &#39;hold&#39;, which means the combatant will do nothing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant performing and action.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># this gets the next dict and rotates the queue</span>
+        <span class="n">action_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span><span class="p">)</span>
+
+        <span class="c1"># use the action-dict to select and create an action from an action class</span>
+        <span class="n">action_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_classes</span><span class="p">[</span><span class="n">action_dict</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]]</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">action_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">)</span>
+
+        <span class="n">action</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">post_execute</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">action_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># queue the action again *without updating the *.ndb.did_action list* (otherwise</span>
+            <span class="c1"># we&#39;d always auto-end the turn if everyone used repeating actions and there&#39;d be</span>
+            <span class="c1"># no time to change it before the next round)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="n">action_dict</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if not a repeat, set the fallback action</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">[</span><span class="n">combatant</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_action_dict</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.check_stop_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.check_stop_combat">[docs]</a>    <span class="k">def</span> <span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if it&#39;s time to stop combat&quot;&quot;&quot;</span>
+
+        <span class="c1"># check if anyone is defeated</span>
+        <span class="k">for</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">combatant</span><span class="o">.</span><span class="n">hp</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># PCs roll on the death table here, NPCs die. Even if PCs survive, they</span>
+                <span class="c1"># are still out of the fight.</span>
+                <span class="n">combatant</span><span class="o">.</span><span class="n">at_defeat</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">defeated_combatants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r$You() $conj(fall) to the ground, defeated.|n&quot;</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="n">combatant</span><span class="p">)</span>
+
+        <span class="c1"># check if anyone managed to flee</span>
+        <span class="n">flee_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flee_timeout</span>
+        <span class="k">for</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">started_fleeing</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fleeing_combatants</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">-</span> <span class="n">started_fleeing</span> <span class="o">&gt;=</span> <span class="n">flee_timeout</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># if they are still alive/fleeing and have been fleeing long enough, escape</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|y$You() successfully $conj(flee) from combat.|n&quot;</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="n">combatant</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_combatant</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+
+        <span class="c1"># check if one side won the battle</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="p">:</span>
+            <span class="c1"># noone left in combat - maybe they killed each other or all fled</span>
+            <span class="n">surviving_combatant</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="p">(),</span> <span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># grab a random survivor and check if they have any living enemies.</span>
+            <span class="n">surviving_combatant</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">surviving_combatant</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">enemies</span><span class="p">:</span>
+            <span class="c1"># if one way or another, there are no more enemies to fight</span>
+            <span class="n">still_standing</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You(</span><span class="si">{</span><span class="n">comb</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">allies</span><span class="p">)</span>
+            <span class="n">knocked_out</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defeated_combatants</span> <span class="k">if</span> <span class="n">comb</span><span class="o">.</span><span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">killed</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">comb</span> <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defeated_combatants</span> <span class="k">if</span> <span class="n">comb</span><span class="o">.</span><span class="n">hp</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">still_standing</span><span class="p">:</span>
+                <span class="n">txt</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;The combat is over. </span><span class="si">{</span><span class="n">still_standing</span><span class="si">}</span><span class="s2"> are still standing.&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">txt</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;The combat is over. No-one stands as the victor.&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">knocked_out</span><span class="p">:</span>
+                <span class="n">txt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knocked_out</span><span class="si">}</span><span class="s2"> were taken down, but will live.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">killed</span><span class="p">:</span>
+                <span class="n">txt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">killed</span><span class="si">}</span><span class="s2"> were killed.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_combat</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EvAdventureTurnbasedCombatHandler.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureTurnbasedCombatHandler.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is called every time Script repeats (every `interval` seconds). Performs a full</span>
+<span class="sd">        turn of combat, performing everyone&#39;s actions in random order.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># random turn order</span>
+        <span class="n">combatants</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatants</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">combatants</span><span class="p">)</span>  <span class="c1"># shuffles in place</span>
+
+        <span class="c1"># do everyone&#39;s next queued combat action</span>
+        <span class="k">for</span> <span class="n">combatant</span> <span class="ow">in</span> <span class="n">combatants</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_next_action</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">did_action</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1"># check if one side won the battle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_stop_combat</span><span class="p">()</span></div></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># Turn-based combat (Final Fantasy style), using a menu</span>
+<span class="c1">#</span>
+<span class="c1"># Activate by adding the CmdTurnCombat command to Character cmdset, then</span>
+<span class="c1"># use it to attack a target.</span>
+<span class="c1">#</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">turn_timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">flee_time</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">combathandler_key</span><span class="o">=</span><span class="s2">&quot;combathandler&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the combat handler for the caller&#39;s location. If it doesn&#39;t exist, create it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        caller (EvAdventureCharacter or EvAdventureNPC): The character/NPC to get the</span>
+<span class="sd">            combat handler for.</span>
+<span class="sd">        turn_timeout (int): After this time, the turn will roll around.</span>
+<span class="sd">        flee_time (int): How many turns it takes to flee.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">EvAdventureTurnbasedCombatHandler</span><span class="o">.</span><span class="n">get_or_create_combathandler</span><span class="p">(</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+        <span class="n">interval</span><span class="o">=</span><span class="n">turn_timeout</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;flee_time&quot;</span><span class="p">,</span> <span class="n">flee_time</span><span class="p">)],</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">combathandler_key</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Goto-function that queue the action with the CombatHandler. This always returns</span>
+<span class="sd">    to the top-level combat menu &quot;node_combat&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+    <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;node_combat&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_rerun_current_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
+
+
+<span class="k">def</span> <span class="nf">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the standard wizard options for moving back/forward/abort. This can be appended to</span>
+<span class="sd">    the end of other options.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;back&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_step_wizard</span><span class="p">,</span> <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="s2">&quot;back&quot;</span><span class="p">}})},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;abort&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node_combat&quot;</span><span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_rerun_current_node</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_step_wizard</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Many options requires stepping through several steps, wizard style. This</span>
+<span class="sd">    will redirect back/forth in the sequence.</span>
+
+<span class="sd">    E.g. Stunt boost -&gt; Choose ability to boost -&gt; Choose recipient -&gt; Choose target -&gt; queue</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">nsteps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+    <span class="n">istep</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;istep&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># one of abort, back, forward</span>
+    <span class="n">step_direction</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="s2">&quot;forward&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">step_direction</span> <span class="o">==</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span>
+        <span class="c1"># step back in wizard</span>
+        <span class="k">if</span> <span class="n">istep</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;node_combat&quot;</span>
+        <span class="n">istep</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;istep&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">istep</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">steps</span><span class="p">[</span><span class="n">istep</span><span class="p">],</span> <span class="n">kwargs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># step to the next step in wizard</span>
+        <span class="k">if</span> <span class="n">istep</span> <span class="o">&gt;=</span> <span class="n">nsteps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># we are already at end of wizard - queue action!</span>
+            <span class="k">return</span> <span class="n">_queue_action</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># step forward</span>
+            <span class="n">istep</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;istep&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">istep</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">steps</span><span class="p">[</span><span class="n">istep</span><span class="p">],</span> <span class="n">kwargs</span>
+
+
+<div class="viewcode-block" id="node_choose_enemy_target"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.node_choose_enemy_target">[docs]</a><span class="k">def</span> <span class="nf">node_choose_enemy_target</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Choose an enemy as a target for an action</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose an enemy to target.&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">}}}},</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">enemies</span>
+    <span class="p">]</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_choose_enemy_recipient"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.node_choose_enemy_recipient">[docs]</a><span class="k">def</span> <span class="nf">node_choose_enemy_recipient</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Choose an enemy as a &#39;recipient&#39; for an action.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose an enemy as a recipient.&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">}}}},</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">enemies</span>
+    <span class="p">]</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_choose_allied_target"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.node_choose_allied_target">[docs]</a><span class="k">def</span> <span class="nf">node_choose_allied_target</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Choose an enemy as a target for an action</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose an ally to target.&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+    <span class="n">allies</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">_step_wizard</span><span class="p">,</span>
+                    <span class="p">{</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                        <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">}}},</span>
+                    <span class="p">},</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">allies</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_choose_allied_recipient"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.node_choose_allied_recipient">[docs]</a><span class="k">def</span> <span class="nf">node_choose_allied_recipient</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Choose an allied recipient for an action</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose an ally as a recipient.&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+    <span class="n">allies</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">_step_wizard</span><span class="p">,</span>
+                    <span class="p">{</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                        <span class="o">**</span><span class="p">{</span>
+                            <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="o">**</span><span class="n">action_dict</span><span class="p">,</span>
+                                <span class="o">**</span><span class="p">{</span><span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">},</span>
+                            <span class="p">}</span>
+                        <span class="p">},</span>
+                    <span class="p">},</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">allies</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_choose_ability"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.node_choose_ability">[docs]</a><span class="k">def</span> <span class="nf">node_choose_ability</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Select an ability to use/boost etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Choose the ability to apply&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                    <span class="o">**</span><span class="p">{</span>
+                        <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;stunt_type&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="p">,</span> <span class="s2">&quot;defense_type&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="p">}},</span>
+                    <span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">DEX</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">CON</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">WIS</span><span class="p">,</span>
+            <span class="n">Ability</span><span class="o">.</span><span class="n">CHA</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_choose_use_item"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.node_choose_use_item">[docs]</a><span class="k">def</span> <span class="nf">node_choose_use_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Choose item to use.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Select the item&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">}}}},</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">caller</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">get_usable_objects_from_backpack</span><span class="p">()</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;There are no usable items in your inventory!&quot;</span>
+
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_choose_wield_item"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.node_choose_wield_item">[docs]</a><span class="k">def</span> <span class="nf">node_choose_wield_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Choose item to use.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Select the item&quot;</span>
+    <span class="n">action_dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;action_dict&quot;</span><span class="p">]</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">action_dict</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">}}}},</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">caller</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">get_wieldable_objects_from_backpack</span><span class="p">()</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;There are no items in your inventory that you can wield!&quot;</span>
+
+    <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_default_wizard_options</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.node_combat">[docs]</a><span class="k">def</span> <span class="nf">node_combat</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base combat menu&quot;&quot;&quot;</span>
+
+    <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_combat_summary</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;attack an enemy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Stunt - gain a later advantage against a target&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="s2">&quot;node_choose_ability&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;node_choose_allied_recipient&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span> <span class="s2">&quot;advantage&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Stunt - give an enemy disadvantage against yourself or an ally&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="s2">&quot;node_choose_ability&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;node_choose_enemy_recipient&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;node_choose_allied_target&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span> <span class="s2">&quot;advantage&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Use an item on yourself or an ally&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_use_item&quot;</span><span class="p">,</span> <span class="s2">&quot;node_choose_allied_target&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;use&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Use an item on an enemy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_use_item&quot;</span><span class="p">,</span> <span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;use&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Wield/swap with an item from inventory&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">_step_wizard</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node_choose_wield_item&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;wield&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;flee!&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_queue_action</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;flee&quot;</span><span class="p">,</span> <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;hold, doing nothing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_queue_action</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;action_dict&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">}}),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node_combat&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<span class="c1"># Add this command to the Character cmdset to make turn-based combat available.</span>
+
+
+<div class="viewcode-block" id="CmdTurnAttack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.CmdTurnAttack">[docs]</a><span class="k">class</span> <span class="nc">CmdTurnAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start or join combat.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      attack [&lt;target&gt;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hit&quot;</span><span class="p">,</span> <span class="s2">&quot;turnbased combat&quot;</span><span class="p">]</span>
+
+    <span class="n">turn_timeout</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># seconds</span>
+    <span class="n">flee_time</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># rounds</span>
+
+<div class="viewcode-block" id="CmdTurnAttack.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.CmdTurnAttack.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CmdTurnAttack.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.CmdTurnAttack.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;What are you attacking?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;hp&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t attack that.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">target</span><span class="o">.</span><span class="n">hp</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2"> is already down.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">is_pc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">allow_pvp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;PvP combat is not allowed here!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">combathandler</span> <span class="o">=</span> <span class="n">_get_combathandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flee_time</span><span class="p">)</span>
+
+        <span class="c1"># add combatants to combathandler. this can be done safely over and over</span>
+        <span class="n">combathandler</span><span class="o">.</span><span class="n">add_combatant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span>
+        <span class="n">combathandler</span><span class="o">.</span><span class="n">add_combatant</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rYou are attacked by {self.caller.get_display_name(self.caller)}!|n&quot;</span><span class="p">)</span>
+        <span class="n">combathandler</span><span class="o">.</span><span class="n">start_combat</span><span class="p">()</span>
+
+        <span class="c1"># build and start the menu</span>
+        <span class="n">EvMenu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;node_choose_enemy_target&quot;</span><span class="p">:</span> <span class="n">node_choose_enemy_target</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_allied_target&quot;</span><span class="p">:</span> <span class="n">node_choose_allied_target</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_enemy_recipient&quot;</span><span class="p">:</span> <span class="n">node_choose_enemy_recipient</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_allied_recipient&quot;</span><span class="p">:</span> <span class="n">node_choose_allied_recipient</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_ability&quot;</span><span class="p">:</span> <span class="n">node_choose_ability</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_use_item&quot;</span><span class="p">:</span> <span class="n">node_choose_use_item</span><span class="p">,</span>
+                <span class="s2">&quot;node_choose_wield_item&quot;</span><span class="p">:</span> <span class="n">node_choose_wield_item</span><span class="p">,</span>
+                <span class="s2">&quot;node_combat&quot;</span><span class="p">:</span> <span class="n">node_combat</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_combat&quot;</span><span class="p">,</span>
+            <span class="n">combathandler</span><span class="o">=</span><span class="n">combathandler</span><span class="p">,</span>
+            <span class="n">auto_look</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="c1"># cmdset_mergetype=&quot;Union&quot;,</span>
+            <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TurnCombatCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.TurnCombatCmdSet">[docs]</a><span class="k">class</span> <span class="nc">TurnCombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    CmdSet for the turn-based combat.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TurnCombatCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_turnbased.html#evennia.contrib.tutorials.evadventure.combat_turnbased.TurnCombatCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTurnAttack</span><span class="p">())</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.combat_turnbased</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

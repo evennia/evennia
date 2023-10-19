@@ -1,0 +1,504 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>7. In-game Rooms &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="8. Non-Player-Characters" href="Beginner-Tutorial-NPCs.html" />
+    <link rel="prev" title="6. Character Generation" href="Beginner-Tutorial-Chargen.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-NPCs.html" title="8. Non-Player-Characters"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Chargen.html" title="6. Character Generation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">7. </span>In-game Rooms</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">7. In-game Rooms</a><ul>
+<li><a class="reference internal" href="#the-base-room">7.1. The base room</a></li>
+<li><a class="reference internal" href="#pvp-room">7.2. PvP room</a></li>
+<li><a class="reference internal" href="#adding-a-room-map">7.3. Adding a room map</a></li>
+<li><a class="reference internal" href="#adding-life-to-a-room">7.4. Adding life to a room</a></li>
+<li><a class="reference internal" href="#testing">7.5. Testing</a></li>
+<li><a class="reference internal" href="#conclusion">7.6. Conclusion</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Chargen.html"
+                        title="previous chapter"><span class="section-number">6. </span>Character Generation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-NPCs.html"
+                        title="next chapter"><span class="section-number">8. </span>Non-Player-Characters</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Rooms.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="Beginner-Tutorial-Rooms.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="in-game-rooms">
+<h1><span class="section-number">7. </span>In-game Rooms<a class="headerlink" href="#in-game-rooms" title="Permalink to this headline">¶</a></h1>
+<p>A <em>room</em> describes a specific location in the game world. Being an abstract concept, it can represent any area of game content that is convenient to group together.  In this lesson we will also create a small in-game automap.</p>
+<p>In EvAdventure, we will have two main types of rooms:</p>
+<ul class="simple">
+<li><p>Normal, above-ground rooms. Based on a fixed map, these will be created once and then don’t change. We’ll cover them in this lesson.</p></li>
+<li><p>Dungeon rooms - these will be examples of <em>procedurally generated</em> rooms, created on the fly as the players explore the underworld. Being subclasses of the normal room, we’ll get to them in the <a class="reference internal" href="Beginner-Tutorial-Dungeon.html"><span class="doc std std-doc">Dungeon generation lesson</span></a>.</p></li>
+</ul>
+<section id="the-base-room">
+<h2><span class="section-number">7.1. </span>The base room<a class="headerlink" href="#the-base-room" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">evadventure/rooms.py</span></code>.</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/rooms.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">DefaultRoom</span>
+
+<span class="k">class</span> <span class="nc">EvAdventureRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple room supporting some EvAdventure-specifics.</span>
+<span class="sd"> </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+ 
+    <span class="n">allow_combat</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">allow_pvp</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">allow_death</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Our <code class="docutils literal notranslate"><span class="pre">EvadventureRoom</span></code> is very simple. We use Evennia’s <code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code> as a base and just add three additional Attributes that defines</p>
+<ul class="simple">
+<li><p>If combat is allowed to start in the room at all.</p></li>
+<li><p>If combat is allowed, if PvP (player vs player) combat is allowed.</p></li>
+<li><p>If combat is allowed, if any side is allowed to die from it.</p></li>
+</ul>
+<p>Later on we must make sure our combat systems honors these values.</p>
+</section>
+<section id="pvp-room">
+<h2><span class="section-number">7.2. </span>PvP room<a class="headerlink" href="#pvp-room" title="Permalink to this headline">¶</a></h2>
+<p>Here’s a room that allows non-lethal PvP (sparring):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/rooms.py</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventurePvPRoom</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Room where PvP can happen, but noone gets killed.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">allow_combat</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">allow_pvp</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Customize footer of description.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;|yNon-lethal PvP combat is allowed here!|n&quot;</span>
+</pre></div>
+</div>
+<p>The return of <code class="docutils literal notranslate"><span class="pre">get_display_footer</span></code> will show after the <a class="reference internal" href="../../../Components/Objects.html#changing-an-objects-appearance"><span class="std std-doc">main room description</span></a>, showing that the room is a sparring room. This means that when a player drops to 0 HP, they will lose the combat, but don’t stand any risk of dying (weapons wear out normally during sparring though).</p>
+</section>
+<section id="adding-a-room-map">
+<h2><span class="section-number">7.3. </span>Adding a room map<a class="headerlink" href="#adding-a-room-map" title="Permalink to this headline">¶</a></h2>
+<p>We want a dynamic map that visualizes the exits you can use at any moment. Here’s how our room will display:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">  </span>o<span class="w"> </span>o<span class="w"> </span>o
+<span class="w">   </span><span class="se">\|</span>/
+<span class="w">  </span>o-@-o
+<span class="w">    </span><span class="p">|</span><span class="w"> </span>
+<span class="w">    </span>o
+The<span class="w"> </span>crossroads<span class="w"> </span>
+A<span class="w"> </span>place<span class="w"> </span>where<span class="w"> </span>many<span class="w"> </span>roads<span class="w"> </span>meet.<span class="w"> </span>
+Exits:<span class="w"> </span>north,<span class="w"> </span>northeast,<span class="w"> </span>south,<span class="w"> </span>west,<span class="w"> </span>and<span class="w"> </span>northwest
+</pre></div>
+</div>
+<blockquote>
+<div><p>Documentation does not show ansi colors.</p>
+</div></blockquote>
+<p>Let’s expand the base <code class="docutils literal notranslate"><span class="pre">EvAdventureRoom</span></code> with the map.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventyre/rooms.py</span>
+
+<span class="c1"># ... </span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+
+<span class="n">CHAR_SYMBOL</span> <span class="o">=</span> <span class="s2">&quot;|w@|n&quot;</span>
+<span class="n">CHAR_ALT_SYMBOL</span> <span class="o">=</span> <span class="s2">&quot;|w&gt;|n&quot;</span>
+<span class="n">ROOM_SYMBOL</span> <span class="o">=</span> <span class="s2">&quot;|bo|n&quot;</span>
+<span class="hll"><span class="n">LINK_COLOR</span> <span class="o">=</span> <span class="s2">&quot;|B&quot;</span>
+</span>
+<span class="n">_MAP_GRID</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">],</span>
+<span class="hll">    <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">],</span>
+</span><span class="p">]</span>
+<span class="n">_EXIT_GRID_SHIFT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;northeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;southeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;southwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;northwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">EvAdventureRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span> 
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">format_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appearance</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Don&#39;t left-strip the appearance string&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">appearance</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+ 
+    <span class="k">def</span> <span class="nf">get_display_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display the current location as a mini-map.</span>
+<span class="sd"> </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># make sure to not show make a map for users of screenreaders.</span>
+        <span class="c1"># for optimization we also don&#39;t show it to npcs/mobs</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">looker</span><span class="o">.</span><span class="n">account</span> <span class="ow">and</span> <span class="n">looker</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">uses_screenreader</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+<span class="hll"> 
+</span><span class="hll">        <span class="c1"># build a map</span>
+</span>        <span class="n">map_grid</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">_MAP_GRID</span><span class="p">)</span>
+        <span class="n">dx0</span><span class="p">,</span> <span class="n">dy0</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span>
+        <span class="n">map_grid</span><span class="p">[</span><span class="n">dy0</span><span class="p">][</span><span class="n">dx0</span><span class="p">]</span> <span class="o">=</span> <span class="n">CHAR_SYMBOL</span>
+        <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
+            <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">symbol</span> <span class="o">=</span> <span class="n">_EXIT_GRID_SHIFT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">exi</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+<span class="hll">            <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span>                <span class="c1"># we have a non-cardinal direction to go to - indicate this</span>
+                <span class="n">map_grid</span><span class="p">[</span><span class="n">dy0</span><span class="p">][</span><span class="n">dx0</span><span class="p">]</span> <span class="o">=</span> <span class="n">CHAR_ALT_SYMBOL</span>
+                <span class="k">continue</span>
+            <span class="n">map_grid</span><span class="p">[</span><span class="n">dy0</span> <span class="o">+</span> <span class="n">dy</span><span class="p">][</span><span class="n">dx0</span> <span class="o">+</span> <span class="n">dx</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LINK_COLOR</span><span class="si">}{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">|n&quot;</span>
+            <span class="k">if</span> <span class="n">exi</span><span class="o">.</span><span class="n">destination</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">map_grid</span><span class="p">[</span><span class="n">dy0</span> <span class="o">+</span> <span class="n">dy</span> <span class="o">+</span> <span class="n">dy</span><span class="p">][</span><span class="n">dx0</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">+</span> <span class="n">dx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ROOM_SYMBOL</span>
+ 
+        <span class="c1"># Note that on the grid, dy is really going *downwards* (origo is</span>
+<span class="hll">        <span class="c1"># in the top left), so we need to reverse the order at the end to mirror it</span>
+</span>        <span class="c1"># vertically and have it come out right.</span>
+        <span class="k">return</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">map_grid</span><span class="p">))</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>The string returned from <code class="docutils literal notranslate"><span class="pre">get_display_header</span></code> will end up at the top of the <span class="xref myst">room description</span>, a good place to have the map appear!</p>
+<ul class="simple">
+<li><p><strong>Line 12</strong>:  The map itself consists of the 2D matrix <code class="docutils literal notranslate"><span class="pre">_MAP_GRID</span></code>. This is a 2D area described by a list of Python lists. To find a given place in the list, you first first need to find which of the nested lists to use, and then which element to use in that list. Indices start from 0 in Python. So to draw the <code class="docutils literal notranslate"><span class="pre">o</span></code> symbol for the southermost room, you’d need to do so at <code class="docutils literal notranslate"><span class="pre">_MAP_GRID[4][2]</span></code>.</p></li>
+<li><p><strong>Line 19</strong>: The <code class="docutils literal notranslate"><span class="pre">_EXIT_GRID_SHIFT</span></code> indicates the direction to go for each cardinal exit, along with the map symbol to draw at that point. So <code class="docutils literal notranslate"><span class="pre">&quot;east&quot;:</span> <span class="pre">(1,</span> <span class="pre">0,</span> <span class="pre">&quot;-&quot;)</span></code> means the east exit will be drawn one step in the positive x direction (to the right), using the “-” symbol. For symbols like <code class="docutils literal notranslate"><span class="pre">|</span></code> and “\” we need to escape with a double-symbol since these would otherwise be interpreted as part of other formatting.</p></li>
+<li><p><strong>Line 51</strong>: We start by making a <code class="docutils literal notranslate"><span class="pre">deepcopy</span></code> of the <code class="docutils literal notranslate"><span class="pre">_MAP_GRID</span></code>. This is so that we don’t modify the original but always have an empty template to work from.</p></li>
+<li><p><strong>Line 52</strong>: We use <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to indicate the location of the player (at coordinate <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2)</span></code>). We then take the actual exits from the room use their names to figure out what symbols to draw out from the center.</p></li>
+<li><p><strong>Line 58</strong>: We want to be able to get on/off the grid if so needed. So if a room has a non-cardinal exit in it (like ‘back’ or up/down), we’ll indicate this by showing the <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> symbol instead of the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> in your current room.</p></li>
+<li><p><strong>Line 67</strong>: Once we have placed all the exit- and room-symbols in the grid, we merge it all together into a single string. At the end we use Python’s standard <a class="reference external" href="https://www.w3schools.com/python/ref_string_join.asp">join</a> to convert the grid into a single string. In doing so we must flip the grid upside down (reverse the outermost list). Why is this? If you think about how a MUD game displays its data - by printing at the bottom and then scrolling upwards - you’ll realize that Evennia has to send out the top of your map <em>first</em> and the bottom of it <em>last</em> for it to show correctly to the user.</p></li>
+</ul>
+</section>
+<section id="adding-life-to-a-room">
+<h2><span class="section-number">7.4. </span>Adding life to a room<a class="headerlink" href="#adding-life-to-a-room" title="Permalink to this headline">¶</a></h2>
+<p>Normally the room is static until you do something in it. But let’s say you are in a room described to be a bustling market. Would it not be nice to occasionally get some random messages like</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&quot;You hear a merchant calling out his wares.&quot;
+&quot;The sound of music drifts over the square from an open tavern door.&quot;
+&quot;The sound of commerse rises and fall in a steady rythm.&quot;
+</pre></div>
+</div>
+<p>Here’s an example of how to accomplish this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/rooms.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">random</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EchoingRoom</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A room that randomly echoes messages to everyone inside it&quot;&quot;&quot;</span>
+
+    <span class="n">echoes</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+	<span class="n">echo_rate</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+	<span class="n">echo_chance</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">send_echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">echoes</span> <span class="ow">and</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo_chance</span><span class="p">:</span> 
+			<span class="bp">self</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echoes</span><span class="p">))</span>
+
+	<span class="k">def</span> <span class="nf">start_echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="hll">		<span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echo_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_echo</span><span class="p">)</span>
+</span>
+	<span class="k">def</span> <span class="nf">stop_echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="hll">		<span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echo_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_echo</span><span class="p">)</span>
+</span></pre></div></td></tr></table></div>
+</div>
+<p>The <a class="reference internal" href="../../../Components/TickerHandler.html"><span class="doc std std-doc">TickerHandler</span></a>. This is acts as a ‘please tick me - subscription service’. In <strong>Line 22</strong> we tell add our <code class="docutils literal notranslate"><span class="pre">.send_echo</span></code> method to the handler and tell the TickerHandler to call that method every <code class="docutils literal notranslate"><span class="pre">.echo_rate</span></code> seconds.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">.send_echo</span></code> method is called, it will use <code class="docutils literal notranslate"><span class="pre">random.random()</span></code> to check if we should <em>actually</em> do anything. In our example we only show a message 10% of the time. In that case we use  Python’s <code class="docutils literal notranslate"><span class="pre">random.choice()</span></code> to grab a random text string from the <code class="docutils literal notranslate"><span class="pre">.echoes</span></code> list to send to everyone inside this room.</p>
+<p>Here’s how you’d use this room in-game:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; dig market:evadventure.EchoingRoom = market,back 
+&gt; market 
+&gt; set here/echoes = [&quot;You hear a merchant shouting&quot;, &quot;You hear the clatter of coins&quot;]
+&gt; py here.start_echo() 
+</pre></div>
+</div>
+<p>If you wait a while you’ll eventually see one of the two echoes show up. Use <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">here.stop_echo()</span></code> if you want.</p>
+<p>It’s a good idea to be able to turn on/off the echoes at will, if nothing else because you’d be surprised how annoying they can be if they show too often.</p>
+<p>In this example we had to resort to <code class="docutils literal notranslate"><span class="pre">py</span></code> to activate/deactivate the echoes, but you could very easily make little utility <a class="reference internal" href="../Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">Commands</span></a> <code class="docutils literal notranslate"><span class="pre">startecho</span></code> and <code class="docutils literal notranslate"><span class="pre">stopecho</span></code> to do it for you. This we leave as a bonus exercise.</p>
+</section>
+<section id="testing">
+<h2><span class="section-number">7.5. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">evadventure/tests/test_rooms.py</span></code>.</p>
+</div></blockquote>
+<aside class="sidebar">
+<p>You can find a ready testing module <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.tests.test_rooms.html#evennia-contrib-tutorials-evadventure-tests-test-rooms"><span class="std std-ref">here in the tutorial folder</span></a>.</p>
+</aside>
+<p>The main thing to test with our new rooms is the map. Here’s the basic principle for how to do this testing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/tests/test_rooms.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTestCase</span>
+<span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span> 
+<span class="kn">from</span> <span class="nn">..rooms</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+
+<span class="k">class</span> <span class="nc">EvAdventureRoomTest</span><span class="p">(</span><span class="n">EvenniaTestCase</span><span class="p">):</span> 
+
+    <span class="k">def</span> <span class="nf">test_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="n">center_room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;room_center&quot;</span><span class="p">)</span>
+        
+        <span class="n">n_room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;room_n)</span>
+        <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">,</span> 
+                      <span class="n">key</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">center_room</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">n_room</span><span class="p">)</span>
+        <span class="n">ne_room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;room=ne&quot;</span><span class="p">)</span>
+        <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">,</span>
+			          <span class="n">key</span><span class="o">=</span><span class="s2">&quot;northeast&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">center_room</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">ne_room</span><span class="p">)</span>
+        <span class="c1"># ... etc for all cardinal directions </span>
+        
+        <span class="n">char</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureCharacter</span><span class="p">,</span> 
+					         <span class="n">key</span><span class="o">=</span><span class="s2">&quot;TestChar&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">center_room</span><span class="p">)</span>					        
+		<span class="n">desc</span> <span class="o">=</span> <span class="n">center_room</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+
+        <span class="c1"># compare the desc we got with the expected description here</span>
+
+</pre></div>
+</div>
+<p>So we create a bunch of rooms, link them to one centr room and then make sure the map in that room looks like we’d expect.</p>
+</section>
+<section id="conclusion">
+<h2><span class="section-number">7.6. </span>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>In this lesson we manipulated strings and made a map. Changing the description of an object is a big part of changing the ‘graphics’ of a text-based game, so checking out the <span class="xref myst">parts making up an object description</span> is good extra reading.</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-NPCs.html" title="8. Non-Player-Characters"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Chargen.html" title="6. Character Generation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">7. </span>In-game Rooms</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

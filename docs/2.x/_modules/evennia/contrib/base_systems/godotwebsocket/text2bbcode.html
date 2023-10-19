@@ -1,0 +1,1079 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.base_systems.godotwebsocket.text2bbcode &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.godotwebsocket.text2bbcode</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="text2bbcode.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.base_systems.godotwebsocket.text2bbcode</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Godot Websocket - ChrisLR 2022</span>
+
+<span class="sd">This file contains the necessary code and data to convert text with color tags to bbcode (For godot)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.text2html</span> <span class="kn">import</span> <span class="n">TextToHTMLparser</span>
+
+<span class="c1"># All xterm256 RGB equivalents</span>
+
+<span class="n">XTERM256_FG</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[38;5;</span><span class="si">{}</span><span class="s2">m&quot;</span>
+<span class="n">XTERM256_BG</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[48;5;</span><span class="si">{}</span><span class="s2">m&quot;</span>
+
+<span class="n">COLOR_INDICE_TO_HEX</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;color-000&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-001&quot;</span><span class="p">:</span> <span class="s2">&quot;#800000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-002&quot;</span><span class="p">:</span> <span class="s2">&quot;#008000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-003&quot;</span><span class="p">:</span> <span class="s2">&quot;#808000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-004&quot;</span><span class="p">:</span> <span class="s2">&quot;#000080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-005&quot;</span><span class="p">:</span> <span class="s2">&quot;#800080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-006&quot;</span><span class="p">:</span> <span class="s2">&quot;#008080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-007&quot;</span><span class="p">:</span> <span class="s2">&quot;#c0c0c0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-008&quot;</span><span class="p">:</span> <span class="s2">&quot;#808080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-009&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-010&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-011&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-012&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-013&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-014&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-015&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-016&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-017&quot;</span><span class="p">:</span> <span class="s2">&quot;#00005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-018&quot;</span><span class="p">:</span> <span class="s2">&quot;#000087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-019&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-020&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-021&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-022&quot;</span><span class="p">:</span> <span class="s2">&quot;#005f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-023&quot;</span><span class="p">:</span> <span class="s2">&quot;#005f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-024&quot;</span><span class="p">:</span> <span class="s2">&quot;#005f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-025&quot;</span><span class="p">:</span> <span class="s2">&quot;#005faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-026&quot;</span><span class="p">:</span> <span class="s2">&quot;#005fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-027&quot;</span><span class="p">:</span> <span class="s2">&quot;#005fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-028&quot;</span><span class="p">:</span> <span class="s2">&quot;#008700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-029&quot;</span><span class="p">:</span> <span class="s2">&quot;#00875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-030&quot;</span><span class="p">:</span> <span class="s2">&quot;#008787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-031&quot;</span><span class="p">:</span> <span class="s2">&quot;#0087af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-032&quot;</span><span class="p">:</span> <span class="s2">&quot;#0087df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-033&quot;</span><span class="p">:</span> <span class="s2">&quot;#0087ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-034&quot;</span><span class="p">:</span> <span class="s2">&quot;#00af00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-035&quot;</span><span class="p">:</span> <span class="s2">&quot;#00af5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-036&quot;</span><span class="p">:</span> <span class="s2">&quot;#00af87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-037&quot;</span><span class="p">:</span> <span class="s2">&quot;#00afaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-038&quot;</span><span class="p">:</span> <span class="s2">&quot;#00afdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-039&quot;</span><span class="p">:</span> <span class="s2">&quot;#00afff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-040&quot;</span><span class="p">:</span> <span class="s2">&quot;#00df00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-041&quot;</span><span class="p">:</span> <span class="s2">&quot;#00df5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-042&quot;</span><span class="p">:</span> <span class="s2">&quot;#00df87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-043&quot;</span><span class="p">:</span> <span class="s2">&quot;#00dfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-044&quot;</span><span class="p">:</span> <span class="s2">&quot;#00dfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-045&quot;</span><span class="p">:</span> <span class="s2">&quot;#00dfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-046&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-047&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-048&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-049&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-050&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-051&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-052&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-053&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-054&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f0087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-055&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f00af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-056&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f00df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-057&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-058&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-059&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-060&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-061&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-062&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-063&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-064&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f8700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-065&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-066&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f8787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-067&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f87af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-068&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f87df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-069&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f87ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-070&quot;</span><span class="p">:</span> <span class="s2">&quot;#5faf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-071&quot;</span><span class="p">:</span> <span class="s2">&quot;#5faf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-072&quot;</span><span class="p">:</span> <span class="s2">&quot;#5faf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-073&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fafaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-074&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fafdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-075&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fafff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-076&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-077&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-078&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-079&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-080&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-081&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-082&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-083&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-084&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-085&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-086&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-087&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-088&quot;</span><span class="p">:</span> <span class="s2">&quot;#870000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-089&quot;</span><span class="p">:</span> <span class="s2">&quot;#87005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-090&quot;</span><span class="p">:</span> <span class="s2">&quot;#870087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-091&quot;</span><span class="p">:</span> <span class="s2">&quot;#8700af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-092&quot;</span><span class="p">:</span> <span class="s2">&quot;#8700df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-093&quot;</span><span class="p">:</span> <span class="s2">&quot;#8700ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-094&quot;</span><span class="p">:</span> <span class="s2">&quot;#875f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-095&quot;</span><span class="p">:</span> <span class="s2">&quot;#875f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-096&quot;</span><span class="p">:</span> <span class="s2">&quot;#875f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-097&quot;</span><span class="p">:</span> <span class="s2">&quot;#875faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-098&quot;</span><span class="p">:</span> <span class="s2">&quot;#875fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-099&quot;</span><span class="p">:</span> <span class="s2">&quot;#875fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-100&quot;</span><span class="p">:</span> <span class="s2">&quot;#878700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-101&quot;</span><span class="p">:</span> <span class="s2">&quot;#87875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-102&quot;</span><span class="p">:</span> <span class="s2">&quot;#878787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-103&quot;</span><span class="p">:</span> <span class="s2">&quot;#8787af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-104&quot;</span><span class="p">:</span> <span class="s2">&quot;#8787df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-105&quot;</span><span class="p">:</span> <span class="s2">&quot;#8787ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-106&quot;</span><span class="p">:</span> <span class="s2">&quot;#87af00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-107&quot;</span><span class="p">:</span> <span class="s2">&quot;#87af5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-108&quot;</span><span class="p">:</span> <span class="s2">&quot;#87af87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-109&quot;</span><span class="p">:</span> <span class="s2">&quot;#87afaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-110&quot;</span><span class="p">:</span> <span class="s2">&quot;#87afdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-111&quot;</span><span class="p">:</span> <span class="s2">&quot;#87afff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-112&quot;</span><span class="p">:</span> <span class="s2">&quot;#87df00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-113&quot;</span><span class="p">:</span> <span class="s2">&quot;#87df5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-114&quot;</span><span class="p">:</span> <span class="s2">&quot;#87df87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-115&quot;</span><span class="p">:</span> <span class="s2">&quot;#87dfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-116&quot;</span><span class="p">:</span> <span class="s2">&quot;#87dfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-117&quot;</span><span class="p">:</span> <span class="s2">&quot;#87dfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-118&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-119&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-120&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-121&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-122&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-123&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-124&quot;</span><span class="p">:</span> <span class="s2">&quot;#af0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-125&quot;</span><span class="p">:</span> <span class="s2">&quot;#af005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-126&quot;</span><span class="p">:</span> <span class="s2">&quot;#af0087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-127&quot;</span><span class="p">:</span> <span class="s2">&quot;#af00af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-128&quot;</span><span class="p">:</span> <span class="s2">&quot;#af00df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-129&quot;</span><span class="p">:</span> <span class="s2">&quot;#af00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-130&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-131&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-132&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-133&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-134&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-135&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-136&quot;</span><span class="p">:</span> <span class="s2">&quot;#af8700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-137&quot;</span><span class="p">:</span> <span class="s2">&quot;#af875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-138&quot;</span><span class="p">:</span> <span class="s2">&quot;#af8787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-139&quot;</span><span class="p">:</span> <span class="s2">&quot;#af87af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-140&quot;</span><span class="p">:</span> <span class="s2">&quot;#af87df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-141&quot;</span><span class="p">:</span> <span class="s2">&quot;#af87ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-142&quot;</span><span class="p">:</span> <span class="s2">&quot;#afaf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-143&quot;</span><span class="p">:</span> <span class="s2">&quot;#afaf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-144&quot;</span><span class="p">:</span> <span class="s2">&quot;#afaf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-145&quot;</span><span class="p">:</span> <span class="s2">&quot;#afafaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-146&quot;</span><span class="p">:</span> <span class="s2">&quot;#afafdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-147&quot;</span><span class="p">:</span> <span class="s2">&quot;#afafff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-148&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-149&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-150&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-151&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-152&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-153&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-154&quot;</span><span class="p">:</span> <span class="s2">&quot;#afff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-155&quot;</span><span class="p">:</span> <span class="s2">&quot;#afff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-156&quot;</span><span class="p">:</span> <span class="s2">&quot;#afff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-157&quot;</span><span class="p">:</span> <span class="s2">&quot;#afffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-158&quot;</span><span class="p">:</span> <span class="s2">&quot;#afffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-159&quot;</span><span class="p">:</span> <span class="s2">&quot;#afffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-160&quot;</span><span class="p">:</span> <span class="s2">&quot;#df0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-161&quot;</span><span class="p">:</span> <span class="s2">&quot;#df005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-162&quot;</span><span class="p">:</span> <span class="s2">&quot;#df0087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-163&quot;</span><span class="p">:</span> <span class="s2">&quot;#df00af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-164&quot;</span><span class="p">:</span> <span class="s2">&quot;#df00df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-165&quot;</span><span class="p">:</span> <span class="s2">&quot;#df00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-166&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-167&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-168&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-169&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-170&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-171&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-172&quot;</span><span class="p">:</span> <span class="s2">&quot;#df8700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-173&quot;</span><span class="p">:</span> <span class="s2">&quot;#df875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-174&quot;</span><span class="p">:</span> <span class="s2">&quot;#df8787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-175&quot;</span><span class="p">:</span> <span class="s2">&quot;#df87af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-176&quot;</span><span class="p">:</span> <span class="s2">&quot;#df87df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-177&quot;</span><span class="p">:</span> <span class="s2">&quot;#df87ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-178&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfaf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-179&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfaf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-180&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfaf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-181&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfafaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-182&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfafdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-183&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfafff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-184&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-185&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-186&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-187&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-188&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-189&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-190&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-191&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-192&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-193&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-194&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-195&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-196&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-197&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-198&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff0087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-199&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff00af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-200&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff00df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-201&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-202&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-203&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-204&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-205&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-206&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-207&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-208&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff8700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-209&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-210&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff8787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-211&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff87af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-212&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff87df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-213&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff87ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-214&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffaf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-215&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffaf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-216&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffaf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-217&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffafaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-218&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffafdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-219&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffafff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-220&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-221&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-222&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-223&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-224&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-225&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-226&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-227&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-228&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-229&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-230&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-231&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-232&quot;</span><span class="p">:</span> <span class="s2">&quot;#080808&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-233&quot;</span><span class="p">:</span> <span class="s2">&quot;#121212&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-234&quot;</span><span class="p">:</span> <span class="s2">&quot;#1c1c1c&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-235&quot;</span><span class="p">:</span> <span class="s2">&quot;#262626&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-236&quot;</span><span class="p">:</span> <span class="s2">&quot;#303030&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-237&quot;</span><span class="p">:</span> <span class="s2">&quot;#3a3a3a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-238&quot;</span><span class="p">:</span> <span class="s2">&quot;#444444&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-239&quot;</span><span class="p">:</span> <span class="s2">&quot;#4e4e4e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-240&quot;</span><span class="p">:</span> <span class="s2">&quot;#585858&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-241&quot;</span><span class="p">:</span> <span class="s2">&quot;#606060&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-242&quot;</span><span class="p">:</span> <span class="s2">&quot;#666666&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-243&quot;</span><span class="p">:</span> <span class="s2">&quot;#767676&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-244&quot;</span><span class="p">:</span> <span class="s2">&quot;#808080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-245&quot;</span><span class="p">:</span> <span class="s2">&quot;#8a8a8a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-246&quot;</span><span class="p">:</span> <span class="s2">&quot;#949494&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-247&quot;</span><span class="p">:</span> <span class="s2">&quot;#9e9e9e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-248&quot;</span><span class="p">:</span> <span class="s2">&quot;#a8a8a8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-249&quot;</span><span class="p">:</span> <span class="s2">&quot;#b2b2b2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-250&quot;</span><span class="p">:</span> <span class="s2">&quot;#bcbcbc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-251&quot;</span><span class="p">:</span> <span class="s2">&quot;#c6c6c6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-252&quot;</span><span class="p">:</span> <span class="s2">&quot;#d0d0d0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-253&quot;</span><span class="p">:</span> <span class="s2">&quot;#dadada&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-254&quot;</span><span class="p">:</span> <span class="s2">&quot;#e4e4e4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;color-255&quot;</span><span class="p">:</span> <span class="s2">&quot;#eeeeee&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-000&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-001&quot;</span><span class="p">:</span> <span class="s2">&quot;#800000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-002&quot;</span><span class="p">:</span> <span class="s2">&quot;#008000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-003&quot;</span><span class="p">:</span> <span class="s2">&quot;#808000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-004&quot;</span><span class="p">:</span> <span class="s2">&quot;#000080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-005&quot;</span><span class="p">:</span> <span class="s2">&quot;#800080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-006&quot;</span><span class="p">:</span> <span class="s2">&quot;#008080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-007&quot;</span><span class="p">:</span> <span class="s2">&quot;#c0c0c0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-008&quot;</span><span class="p">:</span> <span class="s2">&quot;#808080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-009&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-010&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-011&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-012&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-013&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-014&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-015&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-016&quot;</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-017&quot;</span><span class="p">:</span> <span class="s2">&quot;#00005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-018&quot;</span><span class="p">:</span> <span class="s2">&quot;#000087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-019&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-020&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-021&quot;</span><span class="p">:</span> <span class="s2">&quot;#0000ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-022&quot;</span><span class="p">:</span> <span class="s2">&quot;#005f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-023&quot;</span><span class="p">:</span> <span class="s2">&quot;#005f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-024&quot;</span><span class="p">:</span> <span class="s2">&quot;#005f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-025&quot;</span><span class="p">:</span> <span class="s2">&quot;#005faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-026&quot;</span><span class="p">:</span> <span class="s2">&quot;#005fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-027&quot;</span><span class="p">:</span> <span class="s2">&quot;#005fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-028&quot;</span><span class="p">:</span> <span class="s2">&quot;#008700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-029&quot;</span><span class="p">:</span> <span class="s2">&quot;#00875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-030&quot;</span><span class="p">:</span> <span class="s2">&quot;#008787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-031&quot;</span><span class="p">:</span> <span class="s2">&quot;#0087af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-032&quot;</span><span class="p">:</span> <span class="s2">&quot;#0087df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-033&quot;</span><span class="p">:</span> <span class="s2">&quot;#0087ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-034&quot;</span><span class="p">:</span> <span class="s2">&quot;#00af00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-035&quot;</span><span class="p">:</span> <span class="s2">&quot;#00af5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-036&quot;</span><span class="p">:</span> <span class="s2">&quot;#00af87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-037&quot;</span><span class="p">:</span> <span class="s2">&quot;#00afaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-038&quot;</span><span class="p">:</span> <span class="s2">&quot;#00afdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-039&quot;</span><span class="p">:</span> <span class="s2">&quot;#00afff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-040&quot;</span><span class="p">:</span> <span class="s2">&quot;#00df00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-041&quot;</span><span class="p">:</span> <span class="s2">&quot;#00df5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-042&quot;</span><span class="p">:</span> <span class="s2">&quot;#00df87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-043&quot;</span><span class="p">:</span> <span class="s2">&quot;#00dfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-044&quot;</span><span class="p">:</span> <span class="s2">&quot;#00dfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-045&quot;</span><span class="p">:</span> <span class="s2">&quot;#00dfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-046&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-047&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-048&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-049&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-050&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-051&quot;</span><span class="p">:</span> <span class="s2">&quot;#00ffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-052&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-053&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-054&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f0087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-055&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f00af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-056&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f00df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-057&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-058&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-059&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-060&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-061&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-062&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-063&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f5fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-064&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f8700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-065&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-066&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f8787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-067&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f87af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-068&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f87df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-069&quot;</span><span class="p">:</span> <span class="s2">&quot;#5f87ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-070&quot;</span><span class="p">:</span> <span class="s2">&quot;#5faf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-071&quot;</span><span class="p">:</span> <span class="s2">&quot;#5faf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-072&quot;</span><span class="p">:</span> <span class="s2">&quot;#5faf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-073&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fafaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-074&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fafdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-075&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fafff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-076&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-077&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-078&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-079&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-080&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-081&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fdfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-082&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-083&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-084&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-085&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-086&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-087&quot;</span><span class="p">:</span> <span class="s2">&quot;#5fffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-088&quot;</span><span class="p">:</span> <span class="s2">&quot;#870000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-089&quot;</span><span class="p">:</span> <span class="s2">&quot;#87005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-090&quot;</span><span class="p">:</span> <span class="s2">&quot;#870087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-091&quot;</span><span class="p">:</span> <span class="s2">&quot;#8700af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-092&quot;</span><span class="p">:</span> <span class="s2">&quot;#8700df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-093&quot;</span><span class="p">:</span> <span class="s2">&quot;#8700ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-094&quot;</span><span class="p">:</span> <span class="s2">&quot;#875f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-095&quot;</span><span class="p">:</span> <span class="s2">&quot;#875f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-096&quot;</span><span class="p">:</span> <span class="s2">&quot;#875f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-097&quot;</span><span class="p">:</span> <span class="s2">&quot;#875faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-098&quot;</span><span class="p">:</span> <span class="s2">&quot;#875fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-099&quot;</span><span class="p">:</span> <span class="s2">&quot;#875fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-100&quot;</span><span class="p">:</span> <span class="s2">&quot;#878700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-101&quot;</span><span class="p">:</span> <span class="s2">&quot;#87875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-102&quot;</span><span class="p">:</span> <span class="s2">&quot;#878787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-103&quot;</span><span class="p">:</span> <span class="s2">&quot;#8787af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-104&quot;</span><span class="p">:</span> <span class="s2">&quot;#8787df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-105&quot;</span><span class="p">:</span> <span class="s2">&quot;#8787ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-106&quot;</span><span class="p">:</span> <span class="s2">&quot;#87af00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-107&quot;</span><span class="p">:</span> <span class="s2">&quot;#87af5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-108&quot;</span><span class="p">:</span> <span class="s2">&quot;#87af87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-109&quot;</span><span class="p">:</span> <span class="s2">&quot;#87afaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-110&quot;</span><span class="p">:</span> <span class="s2">&quot;#87afdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-111&quot;</span><span class="p">:</span> <span class="s2">&quot;#87afff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-112&quot;</span><span class="p">:</span> <span class="s2">&quot;#87df00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-113&quot;</span><span class="p">:</span> <span class="s2">&quot;#87df5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-114&quot;</span><span class="p">:</span> <span class="s2">&quot;#87df87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-115&quot;</span><span class="p">:</span> <span class="s2">&quot;#87dfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-116&quot;</span><span class="p">:</span> <span class="s2">&quot;#87dfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-117&quot;</span><span class="p">:</span> <span class="s2">&quot;#87dfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-118&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-119&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-120&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-121&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-122&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-123&quot;</span><span class="p">:</span> <span class="s2">&quot;#87ffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-124&quot;</span><span class="p">:</span> <span class="s2">&quot;#af0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-125&quot;</span><span class="p">:</span> <span class="s2">&quot;#af005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-126&quot;</span><span class="p">:</span> <span class="s2">&quot;#af0087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-127&quot;</span><span class="p">:</span> <span class="s2">&quot;#af00af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-128&quot;</span><span class="p">:</span> <span class="s2">&quot;#af00df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-129&quot;</span><span class="p">:</span> <span class="s2">&quot;#af00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-130&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-131&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-132&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-133&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-134&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-135&quot;</span><span class="p">:</span> <span class="s2">&quot;#af5fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-136&quot;</span><span class="p">:</span> <span class="s2">&quot;#af8700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-137&quot;</span><span class="p">:</span> <span class="s2">&quot;#af875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-138&quot;</span><span class="p">:</span> <span class="s2">&quot;#af8787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-139&quot;</span><span class="p">:</span> <span class="s2">&quot;#af87af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-140&quot;</span><span class="p">:</span> <span class="s2">&quot;#af87df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-141&quot;</span><span class="p">:</span> <span class="s2">&quot;#af87ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-142&quot;</span><span class="p">:</span> <span class="s2">&quot;#afaf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-143&quot;</span><span class="p">:</span> <span class="s2">&quot;#afaf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-144&quot;</span><span class="p">:</span> <span class="s2">&quot;#afaf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-145&quot;</span><span class="p">:</span> <span class="s2">&quot;#afafaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-146&quot;</span><span class="p">:</span> <span class="s2">&quot;#afafdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-147&quot;</span><span class="p">:</span> <span class="s2">&quot;#afafff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-148&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-149&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-150&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-151&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-152&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-153&quot;</span><span class="p">:</span> <span class="s2">&quot;#afdfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-154&quot;</span><span class="p">:</span> <span class="s2">&quot;#afff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-155&quot;</span><span class="p">:</span> <span class="s2">&quot;#afff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-156&quot;</span><span class="p">:</span> <span class="s2">&quot;#afff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-157&quot;</span><span class="p">:</span> <span class="s2">&quot;#afffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-158&quot;</span><span class="p">:</span> <span class="s2">&quot;#afffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-159&quot;</span><span class="p">:</span> <span class="s2">&quot;#afffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-160&quot;</span><span class="p">:</span> <span class="s2">&quot;#df0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-161&quot;</span><span class="p">:</span> <span class="s2">&quot;#df005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-162&quot;</span><span class="p">:</span> <span class="s2">&quot;#df0087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-163&quot;</span><span class="p">:</span> <span class="s2">&quot;#df00af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-164&quot;</span><span class="p">:</span> <span class="s2">&quot;#df00df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-165&quot;</span><span class="p">:</span> <span class="s2">&quot;#df00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-166&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-167&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-168&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-169&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-170&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-171&quot;</span><span class="p">:</span> <span class="s2">&quot;#df5fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-172&quot;</span><span class="p">:</span> <span class="s2">&quot;#df8700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-173&quot;</span><span class="p">:</span> <span class="s2">&quot;#df875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-174&quot;</span><span class="p">:</span> <span class="s2">&quot;#df8787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-175&quot;</span><span class="p">:</span> <span class="s2">&quot;#df87af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-176&quot;</span><span class="p">:</span> <span class="s2">&quot;#df87df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-177&quot;</span><span class="p">:</span> <span class="s2">&quot;#df87ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-178&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfaf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-179&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfaf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-180&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfaf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-181&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfafaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-182&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfafdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-183&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfafff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-184&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-185&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-186&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-187&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-188&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-189&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfdfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-190&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-191&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-192&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-193&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-194&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-195&quot;</span><span class="p">:</span> <span class="s2">&quot;#dfffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-196&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff0000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-197&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff005f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-198&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff0087&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-199&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff00af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-200&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff00df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-201&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff00ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-202&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5f00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-203&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5f5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-204&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5f87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-205&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5faf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-206&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5fdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-207&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff5fff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-208&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff8700&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-209&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff875f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-210&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff8787&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-211&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff87af&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-212&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff87df&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-213&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff87ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-214&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffaf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-215&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffaf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-216&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffaf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-217&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffafaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-218&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffafdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-219&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffafff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-220&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdf00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-221&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdf5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-222&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdf87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-223&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdfaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-224&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdfdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-225&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffdfff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-226&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-227&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffff5f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-228&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffff87&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-229&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffaf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-230&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-231&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-232&quot;</span><span class="p">:</span> <span class="s2">&quot;#080808&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-233&quot;</span><span class="p">:</span> <span class="s2">&quot;#121212&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-234&quot;</span><span class="p">:</span> <span class="s2">&quot;#1c1c1c&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-235&quot;</span><span class="p">:</span> <span class="s2">&quot;#262626&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-236&quot;</span><span class="p">:</span> <span class="s2">&quot;#303030&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-237&quot;</span><span class="p">:</span> <span class="s2">&quot;#3a3a3a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-238&quot;</span><span class="p">:</span> <span class="s2">&quot;#444444&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-239&quot;</span><span class="p">:</span> <span class="s2">&quot;#4e4e4e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-240&quot;</span><span class="p">:</span> <span class="s2">&quot;#585858&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-241&quot;</span><span class="p">:</span> <span class="s2">&quot;#606060&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-242&quot;</span><span class="p">:</span> <span class="s2">&quot;#666666&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-243&quot;</span><span class="p">:</span> <span class="s2">&quot;#767676&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-244&quot;</span><span class="p">:</span> <span class="s2">&quot;#808080&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-245&quot;</span><span class="p">:</span> <span class="s2">&quot;#8a8a8a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-246&quot;</span><span class="p">:</span> <span class="s2">&quot;#949494&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-247&quot;</span><span class="p">:</span> <span class="s2">&quot;#9e9e9e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-248&quot;</span><span class="p">:</span> <span class="s2">&quot;#a8a8a8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-249&quot;</span><span class="p">:</span> <span class="s2">&quot;#b2b2b2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-250&quot;</span><span class="p">:</span> <span class="s2">&quot;#bcbcbc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-251&quot;</span><span class="p">:</span> <span class="s2">&quot;#c6c6c6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-252&quot;</span><span class="p">:</span> <span class="s2">&quot;#d0d0d0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-253&quot;</span><span class="p">:</span> <span class="s2">&quot;#dadada&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-254&quot;</span><span class="p">:</span> <span class="s2">&quot;#e4e4e4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bgcolor-255&quot;</span><span class="p">:</span> <span class="s2">&quot;#eeeeee&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The classes below exist to properly encapsulate text and other tag classes</span>
+<span class="sd">because the order of how tags are opened and closed are important to display in godot.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="RootTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.RootTag">[docs]</a><span class="k">class</span> <span class="nc">RootTag</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Root tag class made to contain other tags.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;child&quot;</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="RootTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.RootTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ChildTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag">[docs]</a><span class="k">class</span> <span class="nc">ChildTag</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A node made to be contained.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ChildTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="ChildTag.set_parent"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ChildTag.set_parent">[docs]</a>    <span class="k">def</span> <span class="nf">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="bp">self</span></div></div>
+
+
+<div class="viewcode-block" id="TextTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextTag">[docs]</a><span class="k">class</span> <span class="nc">TextTag</span><span class="p">(</span><span class="n">ChildTag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A BBCodeTag node to output regular text.</span>
+<span class="sd">    Output: SomeText</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;parent&quot;</span><span class="p">,</span> <span class="s2">&quot;child&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TextTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="BBCodeTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BBCodeTag">[docs]</a><span class="k">class</span> <span class="nc">BBCodeTag</span><span class="p">(</span><span class="n">ChildTag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base BBCodeTag node to encapsulate and be encapsulated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;parent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;child&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<div class="viewcode-block" id="BBCodeTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BBCodeTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">[/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">]&quot;</span></div>
+
+
+<div class="viewcode-block" id="UnderlineTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UnderlineTag">[docs]</a><span class="k">class</span> <span class="nc">UnderlineTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A BBCodeTag node for underlined text.</span>
+<span class="sd">    Output: [u]Underlined Text[/u]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;u&quot;</span></div>
+
+
+<div class="viewcode-block" id="BlinkTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BlinkTag">[docs]</a><span class="k">class</span> <span class="nc">BlinkTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A BBCodeTag node for blinking text.</span>
+<span class="sd">    Output: [blink]Blinking Text[/blink]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;blink&quot;</span></div>
+
+
+<div class="viewcode-block" id="ColorTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ColorTag">[docs]</a><span class="k">class</span> <span class="nc">ColorTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A BBCodeTag node for foreground color.</span>
+<span class="sd">    Output: [fgcolor=#000000]Colorized Text[/fgcolor]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;parent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;child&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;color_hex&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;color&quot;</span>
+
+<div class="viewcode-block" id="ColorTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.ColorTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">color_hex</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color_hex</span> <span class="o">=</span> <span class="n">color_hex</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">color_hex</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">[/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">]&quot;</span></div>
+
+
+<div class="viewcode-block" id="BGColorTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.BGColorTag">[docs]</a><span class="k">class</span> <span class="nc">BGColorTag</span><span class="p">(</span><span class="n">ColorTag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A BBCodeTag node for background color.</span>
+<span class="sd">    Output: [bgcolor=#000000]Colorized Text[/bgcolor]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;bgcolor&quot;</span></div>
+
+
+<div class="viewcode-block" id="UrlTag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UrlTag">[docs]</a><span class="k">class</span> <span class="nc">UrlTag</span><span class="p">(</span><span class="n">BBCodeTag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A BBCodeTag node used for urls.</span>
+<span class="sd">    Output: [url=www.example.com]Child Text[/url]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;parent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;child&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;url_data&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;url&quot;</span>
+
+<div class="viewcode-block" id="UrlTag.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.UrlTag.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">url_data</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url_data</span> <span class="o">=</span> <span class="n">url_data</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url_data</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">[/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">]&quot;</span></div>
+
+
+<div class="viewcode-block" id="TextToBBCODEparser"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser">[docs]</a><span class="k">class</span> <span class="nc">TextToBBCODEparser</span><span class="p">(</span><span class="n">TextToHTMLparser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class describes a parser for converting from ANSI to BBCode.</span>
+<span class="sd">    It inherits from the TextToHTMLParser and overrides the specifics for bbcode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TextToBBCODEparser.convert_urls"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.convert_urls">[docs]</a>    <span class="k">def</span> <span class="nf">convert_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts urls within text to bbcode style</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): Text to parse</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">             text (str): Processed text</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Converts to bbcode styled urls</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_url</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[url=\1]\1[/url]\2&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TextToBBCODEparser.sub_mxp_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_mxp_links">[docs]</a>    <span class="k">def</span> <span class="nf">sub_mxp_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to be passed to re.sub,</span>
+<span class="sd">        replaces MXP links with bbcode.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            match (re.Matchobject): Match for substitution.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            text (str): Processed text.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cmd</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="p">[</span><span class="n">grp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&amp;quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()]</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[mxp=send cmd=</span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">[/mxp]&quot;</span>
+
+        <span class="k">return</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="TextToBBCODEparser.sub_mxp_urls"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_mxp_urls">[docs]</a>    <span class="k">def</span> <span class="nf">sub_mxp_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to be passed to re.sub,</span>
+<span class="sd">        replaces MXP links with bbcode.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            match (re.Matchobject): Match for substitution.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            text (str): Processed text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="p">[</span><span class="n">grp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&amp;quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()]</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[url=</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">[/url]&quot;</span>
+
+        <span class="k">return</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="TextToBBCODEparser.sub_text"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.sub_text">[docs]</a>    <span class="k">def</span> <span class="nf">sub_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to be passed to re.sub,</span>
+<span class="sd">        for handling all substitutions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            match (re.Matchobject): Match for substitution.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            text (str): Processed text.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cdict</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;lineend&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TextToBBCODEparser.format_styles"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.format_styles">[docs]</a>    <span class="k">def</span> <span class="nf">format_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes a string with parsed ANSI codes and replaces them with bbcode style tags</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The string to process.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            text (str): Processed text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># split out the ANSI codes and clean out any empty items</span>
+        <span class="n">str_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">substr</span> <span class="k">for</span> <span class="n">substr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_style</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">if</span> <span class="n">substr</span><span class="p">]</span>
+
+        <span class="n">inverse</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># default color is light grey - unhilite + white</span>
+        <span class="n">hilight</span> <span class="o">=</span> <span class="n">ANSI_UNHILITE</span>
+        <span class="n">fg</span> <span class="o">=</span> <span class="n">ANSI_WHITE</span>
+        <span class="c1"># default bg is black</span>
+        <span class="n">bg</span> <span class="o">=</span> <span class="n">ANSI_BACK_BLACK</span>
+        <span class="n">previous_fg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">previous_bg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">blink</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">underline</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">new_style</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">root_tag</span> <span class="o">=</span> <span class="n">RootTag</span><span class="p">()</span>
+        <span class="n">current_tag</span> <span class="o">=</span> <span class="n">root_tag</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">substr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str_list</span><span class="p">):</span>
+            <span class="c1"># reset all current styling</span>
+            <span class="k">if</span> <span class="n">substr</span> <span class="o">==</span> <span class="n">ANSI_NORMAL</span><span class="p">:</span>
+                <span class="c1"># close any existing span if necessary</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">root_tag</span><span class="p">))</span>
+                <span class="n">root_tag</span> <span class="o">=</span> <span class="n">RootTag</span><span class="p">()</span>
+                <span class="n">current_tag</span> <span class="o">=</span> <span class="n">root_tag</span>
+                <span class="c1"># reset to defaults</span>
+                <span class="n">inverse</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">hilight</span> <span class="o">=</span> <span class="n">ANSI_UNHILITE</span>
+                <span class="n">fg</span> <span class="o">=</span> <span class="n">ANSI_WHITE</span>
+                <span class="n">bg</span> <span class="o">=</span> <span class="n">ANSI_BACK_BLACK</span>
+                <span class="n">previous_fg</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">previous_bg</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">blink</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">underline</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">new_style</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># change color</span>
+            <span class="k">elif</span> <span class="n">substr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_color_codes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm_fg_codes</span><span class="p">:</span>
+                <span class="c1"># set new color</span>
+                <span class="n">fg</span> <span class="o">=</span> <span class="n">substr</span>
+                <span class="n">new_style</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># change bg color</span>
+            <span class="k">elif</span> <span class="n">substr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_bg_codes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm_bg_codes</span><span class="p">:</span>
+                <span class="c1"># set new bg</span>
+                <span class="n">bg</span> <span class="o">=</span> <span class="n">substr</span>
+                <span class="n">new_style</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># non-color codes</span>
+            <span class="k">elif</span> <span class="n">substr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">style_codes</span><span class="p">:</span>
+                <span class="n">new_style</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="c1"># hilight codes</span>
+                <span class="k">if</span> <span class="n">substr</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ANSI_HILITE</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span><span class="p">,</span> <span class="n">ANSI_INV_HILITE</span><span class="p">,</span> <span class="n">ANSI_INV_BLINK_HILITE</span><span class="p">):</span>
+                    <span class="c1"># set new hilight status</span>
+                    <span class="n">hilight</span> <span class="o">=</span> <span class="n">ANSI_UNHILITE</span> <span class="k">if</span> <span class="n">substr</span> <span class="o">==</span> <span class="n">ANSI_UNHILITE</span> <span class="k">else</span> <span class="n">ANSI_HILITE</span>
+
+                <span class="c1"># inversion codes</span>
+                <span class="k">if</span> <span class="n">substr</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ANSI_INVERSE</span><span class="p">,</span> <span class="n">ANSI_INV_HILITE</span><span class="p">,</span> <span class="n">ANSI_INV_BLINK_HILITE</span><span class="p">):</span>
+                    <span class="n">inverse</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="c1"># blink codes</span>
+                <span class="k">if</span> <span class="n">substr</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ANSI_BLINK</span><span class="p">,</span> <span class="n">ANSI_BLINK_HILITE</span><span class="p">,</span> <span class="n">ANSI_INV_BLINK_HILITE</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">blink</span><span class="p">:</span>
+                    <span class="n">blink</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">current_tag</span> <span class="o">=</span> <span class="n">BlinkTag</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+
+                <span class="c1"># underline</span>
+                <span class="k">if</span> <span class="n">substr</span> <span class="o">==</span> <span class="n">ANSI_UNDERLINE</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">underline</span><span class="p">:</span>
+                    <span class="n">underline</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">current_tag</span> <span class="o">=</span> <span class="n">UnderlineTag</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">close_tags</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">color_tag</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">bgcolor_tag</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># normal text, add text back to list</span>
+                <span class="k">if</span> <span class="n">new_style</span><span class="p">:</span>
+                    <span class="c1"># prior entry was cleared, which means style change</span>
+                    <span class="c1"># get indices for the fg and bg codes</span>
+                    <span class="n">bg_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bglist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bg</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">color_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorlist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">hilight</span> <span class="o">+</span> <span class="n">fg</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="c1"># xterm256 colors don&#39;t have the hilight codes</span>
+                        <span class="n">color_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorlist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">fg</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">inverse</span><span class="p">:</span>
+                        <span class="c1"># inverse means swap fg and bg indices</span>
+                        <span class="n">bg_class</span> <span class="o">=</span> <span class="s2">&quot;bgcolor-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">color_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                        <span class="n">color_class</span> <span class="o">=</span> <span class="s2">&quot;color-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bg_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># use fg and bg indices for classes</span>
+                        <span class="n">bg_class</span> <span class="o">=</span> <span class="s2">&quot;bgcolor-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bg_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                        <span class="n">color_class</span> <span class="o">=</span> <span class="s2">&quot;color-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">color_index</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+
+                    <span class="c1"># black bg is the default, don&#39;t explicitly style</span>
+                    <span class="k">if</span> <span class="n">bg_class</span> <span class="o">!=</span> <span class="s2">&quot;bgcolor-000&quot;</span><span class="p">:</span>
+                        <span class="n">color_hex</span> <span class="o">=</span> <span class="n">COLOR_INDICE_TO_HEX</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bg_class</span><span class="p">)</span>
+                        <span class="n">bgcolor_tag</span> <span class="o">=</span> <span class="n">BGColorTag</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">color_hex</span><span class="o">=</span><span class="n">color_hex</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">previous_bg</span> <span class="ow">and</span> <span class="n">previous_bg</span> <span class="o">!=</span> <span class="n">color_hex</span><span class="p">:</span>
+                            <span class="n">close_tags</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">previous_bg</span> <span class="o">=</span> <span class="n">color_hex</span>
+
+                    <span class="c1"># light grey text is the default, don&#39;t explicitly style</span>
+                    <span class="k">if</span> <span class="n">color_class</span> <span class="o">!=</span> <span class="s2">&quot;color-007&quot;</span><span class="p">:</span>
+                        <span class="n">color_hex</span> <span class="o">=</span> <span class="n">COLOR_INDICE_TO_HEX</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color_class</span><span class="p">)</span>
+                        <span class="n">color_tag</span> <span class="o">=</span> <span class="n">ColorTag</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">color_hex</span><span class="o">=</span><span class="n">color_hex</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">previous_fg</span> <span class="ow">and</span> <span class="n">previous_fg</span> <span class="o">!=</span> <span class="n">color_hex</span><span class="p">:</span>
+                            <span class="n">close_tags</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">previous_fg</span> <span class="o">=</span> <span class="n">color_hex</span>
+
+                <span class="n">new_tag</span> <span class="o">=</span> <span class="n">TextTag</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">substr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">close_tags</span><span class="p">:</span>
+                    <span class="c1"># Because the order is important, we need to close the tags and reopen those who shouldn&#39;t reset.</span>
+                    <span class="n">new_style</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">root_tag</span><span class="p">))</span>
+                    <span class="n">root_tag</span> <span class="o">=</span> <span class="n">RootTag</span><span class="p">()</span>
+                    <span class="n">current_tag</span> <span class="o">=</span> <span class="n">root_tag</span>
+                    <span class="k">if</span> <span class="n">blink</span><span class="p">:</span>
+                        <span class="n">current_tag</span> <span class="o">=</span> <span class="n">BlinkTag</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">underline</span><span class="p">:</span>
+                        <span class="n">current_tag</span> <span class="o">=</span> <span class="n">UnderlineTag</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">bgcolor_tag</span><span class="p">:</span>
+                        <span class="n">bgcolor_tag</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+                        <span class="n">current_tag</span> <span class="o">=</span> <span class="n">bgcolor_tag</span>
+
+                    <span class="k">if</span> <span class="n">color_tag</span><span class="p">:</span>
+                        <span class="n">color_tag</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+                        <span class="n">current_tag</span> <span class="o">=</span> <span class="n">color_tag</span>
+
+                    <span class="n">new_tag</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+                    <span class="n">current_tag</span> <span class="o">=</span> <span class="n">new_tag</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">bgcolor_tag</span><span class="p">:</span>
+                        <span class="n">bgcolor_tag</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+                        <span class="n">current_tag</span> <span class="o">=</span> <span class="n">bgcolor_tag</span>
+
+                    <span class="k">if</span> <span class="n">color_tag</span><span class="p">:</span>
+                        <span class="n">color_tag</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+                        <span class="n">current_tag</span> <span class="o">=</span> <span class="n">color_tag</span>
+
+                    <span class="n">new_tag</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="n">current_tag</span><span class="p">)</span>
+                    <span class="n">current_tag</span> <span class="o">=</span> <span class="n">new_tag</span>
+
+        <span class="n">any_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_text_tag</span><span class="p">(</span><span class="n">root_tag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">any_text</span><span class="p">:</span>
+            <span class="c1"># Only append tags if text was added.</span>
+            <span class="n">last_part</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">root_tag</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last_part</span><span class="p">)</span>
+
+        <span class="c1"># recombine back into string</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_text_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">child</span>
+        <span class="k">while</span> <span class="n">child</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">TextTag</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">child</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">child</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TextToBBCODEparser.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.TextToBBCODEparser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main access function, converts a text containing ANSI codes</span>
+<span class="sd">        into html statements.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): Text to process.</span>
+<span class="sd">            strip_ansi (bool, optional):</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            text (str): Parsed text.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># parse everything to ansi first</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">parse_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># convert all ansi to html</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_string</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_text</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_mxplink</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_mxp_links</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_mxpurl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_mxp_urls</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_bells</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_styles</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_backspaces</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div></div>
+
+
+<span class="n">BBCODE_PARSER</span> <span class="o">=</span> <span class="n">TextToBBCODEparser</span><span class="p">()</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Access function</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="parse_to_bbcode"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.text2bbcode.html#evennia.contrib.base_systems.godotwebsocket.text2bbcode.parse_to_bbcode">[docs]</a><span class="k">def</span> <span class="nf">parse_to_bbcode</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">BBCODE_PARSER</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses a string, replace ANSI markup with bbcode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.godotwebsocket.text2bbcode</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

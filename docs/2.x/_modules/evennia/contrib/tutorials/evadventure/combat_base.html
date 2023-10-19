@@ -1,0 +1,625 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.tutorials.evadventure.combat_base &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.combat_base</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="combat_base.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.tutorials.evadventure.combat_base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">EvAdventure Base combat utilities.</span>
+
+<span class="sd">This establishes the basic building blocks for combat:</span>
+
+<span class="sd">- `CombatFailure` - exception for combat-specific errors.</span>
+<span class="sd">- `CombatAction` (and subclasses) - classes encompassing all the working around an action.</span>
+<span class="sd">  They are initialized from &#39;action-dicts` - dictionaries with all the relevant data for the</span>
+<span class="sd">  particular invocation</span>
+<span class="sd">- `CombatHandler` - base class for running a combat. Exactly how this is used depends on the</span>
+<span class="sd">  type of combat intended (twitch- or turn-based) so many details of this will be implemented</span>
+<span class="sd">  in child classes.</span>
+
+<span class="sd">----</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rules</span>
+
+
+<div class="viewcode-block" id="CombatFailure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatFailure">[docs]</a><span class="k">class</span> <span class="nc">CombatFailure</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Some failure during combat actions.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="CombatAction"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatAction">[docs]</a><span class="k">class</span> <span class="nc">CombatAction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parent class for all actions.</span>
+
+<span class="sd">    This represents the executable code to run to perform an action. It is initialized from an</span>
+<span class="sd">    &#39;action-dict&#39;, a set of properties stored in the action queue by each combatant.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CombatAction.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatAction.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combathandler</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Each key-value pair in the action-dict is stored as a property on this class</span>
+<span class="sd">        for later access.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant performing</span>
+<span class="sd">                the action.</span>
+<span class="sd">            action_dict (dict): A dict containing all properties to initialize on this</span>
+<span class="sd">                class. This should not be any keys with `_` prefix, since these are</span>
+<span class="sd">                used internally by the class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span> <span class="o">=</span> <span class="n">combathandler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span> <span class="o">=</span> <span class="n">combatant</span>
+
+        <span class="c1"># store the action dicts&#39; keys as properties accessible as e.g. action.target etc</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">action_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CombatAction.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatAction.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience route to the combathandler msg-sender mechanism.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): Message to send; use `$You()` and `$You(other.key)` to refer to</span>
+<span class="sd">                the combatant doing the action and other combatants, respectively.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="n">broadcast</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CombatAction.can_use"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatAction.can_use">[docs]</a>    <span class="k">def</span> <span class="nf">can_use</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called to determine if the action is usable with the current settings. This does not</span>
+<span class="sd">        actually perform the action.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If this action can be used at this time.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="CombatAction.execute"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatAction.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform the action as the combatant. Should normally make use of the properties</span>
+<span class="sd">        stored on the class during initialization.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="CombatAction.post_execute"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatAction.post_execute">[docs]</a>    <span class="k">def</span> <span class="nf">post_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called after execution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="CombatActionHold"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionHold">[docs]</a><span class="k">class</span> <span class="nc">CombatActionHold</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Action that does nothing.</span>
+<span class="sd">    ::</span>
+<span class="sd">        action_dict = {</span>
+<span class="sd">                &quot;key&quot;: &quot;hold&quot;</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="CombatActionAttack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionAttack">[docs]</a><span class="k">class</span> <span class="nc">CombatActionAttack</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A regular attack, using a wielded weapon.</span>
+<span class="sd">    ::</span>
+<span class="sd">        action-dict = {</span>
+<span class="sd">                &quot;key&quot;: &quot;attack&quot;,</span>
+<span class="sd">                &quot;target&quot;: Character/Object</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CombatActionAttack.execute"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionAttack.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">attacker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>
+        <span class="n">weapon</span> <span class="o">=</span> <span class="n">attacker</span><span class="o">.</span><span class="n">weapon</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span>
+
+        <span class="k">if</span> <span class="n">weapon</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+            <span class="n">weapon</span><span class="o">.</span><span class="n">use</span><span class="p">(</span>
+                <span class="n">attacker</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">advantage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">has_advantage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">weapon</span><span class="o">.</span><span class="n">at_post_use</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CombatActionStunt"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionStunt">[docs]</a><span class="k">class</span> <span class="nc">CombatActionStunt</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform a stunt the grants a beneficiary (can be self) advantage on their next action against a</span>
+<span class="sd">    target. Whenever performing a stunt that would affect another negatively (giving them</span>
+<span class="sd">    disadvantage against an ally, or granting an advantage against them, we need to make a check</span>
+<span class="sd">    first. We don&#39;t do a check if giving an advantage to an ally or ourselves.</span>
+<span class="sd">    ::</span>
+<span class="sd">        action_dict = {</span>
+<span class="sd">               &quot;key&quot;: &quot;stunt&quot;,</span>
+<span class="sd">               &quot;recipient&quot;: Character/NPC,</span>
+<span class="sd">               &quot;target&quot;: Character/NPC,</span>
+<span class="sd">               &quot;advantage&quot;: bool,  # if False, it&#39;s a disadvantage</span>
+<span class="sd">               &quot;stunt_type&quot;: Ability,  # what ability (like STR, DEX etc) to use to perform this stunt.</span>
+<span class="sd">               &quot;defense_type&quot;: Ability, # what ability to use to defend against (negative) effects of</span>
+<span class="sd">                this stunt.</span>
+<span class="sd">            }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CombatActionStunt.execute"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionStunt.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">combathandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span>
+        <span class="n">attacker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>
+        <span class="n">recipient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipient</span>  <span class="c1"># the one to receive the effect of the stunt</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span>  <span class="c1"># the affected by the stunt (can be the same as recipient/combatant)</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">recipient</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>
+            <span class="c1"># grant another entity dis/advantage against themselves</span>
+            <span class="n">defender</span> <span class="o">=</span> <span class="n">recipient</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># recipient not same as target; who will defend depends on disadvantage or advantage</span>
+            <span class="c1"># to give.</span>
+            <span class="n">defender</span> <span class="o">=</span> <span class="n">target</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">advantage</span> <span class="k">else</span> <span class="n">recipient</span>
+
+        <span class="c1"># trying to give advantage to recipient against target. Target defends against caller</span>
+        <span class="n">is_success</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">txt</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">opposed_saving_throw</span><span class="p">(</span>
+            <span class="n">attacker</span><span class="p">,</span>
+            <span class="n">defender</span><span class="p">,</span>
+            <span class="n">attack_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stunt_type</span><span class="p">,</span>
+            <span class="n">defense_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">defense_type</span><span class="p">,</span>
+            <span class="n">advantage</span><span class="o">=</span><span class="n">combathandler</span><span class="o">.</span><span class="n">has_advantage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">),</span>
+            <span class="n">disadvantage</span><span class="o">=</span><span class="n">combathandler</span><span class="o">.</span><span class="n">has_disadvantage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() $conj(attempt) stunt on $You(</span><span class="si">{</span><span class="n">defender</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">). </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># deal with results</span>
+        <span class="k">if</span> <span class="n">is_success</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">advantage</span><span class="p">:</span>
+                <span class="n">combathandler</span><span class="o">.</span><span class="n">give_advantage</span><span class="p">(</span><span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">combathandler</span><span class="o">.</span><span class="n">give_disadvantage</span><span class="p">(</span><span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">recipient</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;$You() $conj(gain) </span><span class="si">{</span><span class="s1">&#39;advantage&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">advantage</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;disadvantage&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;against $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">)!&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;$You() $conj(cause) $You(</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;to gain </span><span class="si">{</span><span class="s1">&#39;advantage&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">advantage</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;disadvantage&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;against $You(</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">)!&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You(</span><span class="si">{</span><span class="n">defender</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">) $conj(resist)! $You() $conj(fail) the stunt.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CombatActionUseItem"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionUseItem">[docs]</a><span class="k">class</span> <span class="nc">CombatActionUseItem</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use an item in combat. This is meant for one-off or limited-use items (so things like</span>
+<span class="sd">    scrolls and potions, not swords and shields). If this is some sort of weapon or spell rune,</span>
+<span class="sd">    we refer to the item to determine what to use for attack/defense rolls.</span>
+<span class="sd">    ::</span>
+<span class="sd">        action_dict = {</span>
+<span class="sd">                &quot;key&quot;: &quot;use&quot;,</span>
+<span class="sd">                &quot;item&quot;: Object</span>
+<span class="sd">                &quot;target&quot;: Character/NPC/Object/None</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CombatActionUseItem.execute"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionUseItem.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span>
+
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">use</span><span class="p">(</span>
+                <span class="n">user</span><span class="p">,</span>
+                <span class="n">target</span><span class="p">,</span>
+                <span class="n">advantage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">has_advantage</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">),</span>
+                <span class="n">disadvantage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">has_disadvantage</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">at_post_use</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CombatActionWield"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionWield">[docs]</a><span class="k">class</span> <span class="nc">CombatActionWield</span><span class="p">(</span><span class="n">CombatAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wield a new weapon (or spell) from your inventory. This will swap out the one you are currently</span>
+<span class="sd">    wielding, if any.</span>
+<span class="sd">    ::</span>
+<span class="sd">        action_dict = {</span>
+<span class="sd">                &quot;key&quot;: &quot;wield&quot;,</span>
+<span class="sd">                &quot;item&quot;: Object</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CombatActionWield.execute"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.CombatActionWield.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$You() $conj(wield) $You(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># main combathandler</span>
+
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureCombatBaseHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This script is created when a combat starts. It &#39;ticks&#39; the combat and tracks</span>
+<span class="sd">    all sides of it.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># available actions in combat</span>
+    <span class="n">action_classes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="n">CombatActionHold</span><span class="p">,</span>
+        <span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="n">CombatActionAttack</span><span class="p">,</span>
+        <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="n">CombatActionStunt</span><span class="p">,</span>
+        <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="n">CombatActionUseItem</span><span class="p">,</span>
+        <span class="s2">&quot;wield&quot;</span><span class="p">:</span> <span class="n">CombatActionWield</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># fallback action if not selecting anything</span>
+    <span class="n">fallback_action_dict</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">},</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.get_or_create_combathandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.get_or_create_combathandler">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_or_create_combathandler</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get or create a combathandler on `obj`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (any): The Typeclassed entity to store the CombatHandler Script on. This could be</span>
+<span class="sd">                a location (for turn-based combat) or a Character (for twitch-based combat).</span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            combathandler_key (str): They key name for the script. Will be &#39;combathandler&#39; by</span>
+<span class="sd">                default.</span>
+<span class="sd">            **kwargs: Arguments to the Script, if it is created.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CombatFailure</span><span class="p">(</span><span class="s2">&quot;Cannot start combat without a place to do it!&quot;</span><span class="p">)</span>
+
+        <span class="n">combathandler_key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;combathandler&quot;</span><span class="p">)</span>
+        <span class="n">combathandler</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combathandler</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">combathandler</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="n">combathandler</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">combathandler_key</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">combathandler</span><span class="p">:</span>
+                <span class="c1"># have to create from scratch</span>
+                <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;persistent&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="n">combathandler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span>
+                    <span class="bp">cls</span><span class="p">,</span>
+                    <span class="n">key</span><span class="o">=</span><span class="n">combathandler_key</span><span class="p">,</span>
+                    <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+                    <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">,</span>
+                    <span class="n">autostart</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combathandler</span> <span class="o">=</span> <span class="n">combathandler</span>
+        <span class="k">return</span> <span class="n">combathandler</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.msg"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Central place for sending messages to combatants. This allows</span>
+<span class="sd">        for adding any combat-specific text-decoration in one place.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): The message to send.</span>
+<span class="sd">            combatant (Object): The &#39;You&#39; in the message, if any.</span>
+<span class="sd">            broadcast (bool): If `False`, `combatant` must be included and</span>
+<span class="sd">                will be the only one to see the message. If `True`, send to</span>
+<span class="sd">                everyone in the location.</span>
+<span class="sd">            location (Object, optional): If given, use this as the location to</span>
+<span class="sd">                send broadcast messages to. If not, use `self.obj` as that</span>
+<span class="sd">                location.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            If `combatant` is given, use `$You/you()` markup to create</span>
+<span class="sd">            a message that looks different depending on who sees it. Use</span>
+<span class="sd">            `$You(combatant_key)` to refer to other combatants.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">location</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+
+        <span class="n">location_objs</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">contents</span>
+
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">broadcast</span> <span class="ow">and</span> <span class="n">combatant</span><span class="p">:</span>
+            <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">location_objs</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">combatant</span><span class="p">]</span>
+
+        <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="n">message</span><span class="p">,</span>
+            <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
+            <span class="n">from_obj</span><span class="o">=</span><span class="n">combatant</span><span class="p">,</span>
+            <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="n">locobj</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">locobj</span> <span class="k">for</span> <span class="n">locobj</span> <span class="ow">in</span> <span class="n">location_objs</span><span class="p">},</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.get_combat_summary"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.get_combat_summary">[docs]</a>    <span class="k">def</span> <span class="nf">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a &#39;battle report&#39; - an overview of the current state of combat from the perspective</span>
+<span class="sd">        of one of the sides.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant to get.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            EvTable: A table representing the current state of combat.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">        ::</span>
+
+<span class="sd">                                        Goblin shaman (Perfect)</span>
+<span class="sd">        Gregor (Hurt)                   Goblin brawler(Hurt)</span>
+<span class="sd">        Bob (Perfect)         vs        Goblin grunt 1 (Hurt)</span>
+<span class="sd">                                        Goblin grunt 2 (Perfect)</span>
+<span class="sd">                                        Goblin grunt 3 (Wounded)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+        <span class="n">nallies</span><span class="p">,</span> <span class="n">nenemies</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">allies</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">enemies</span><span class="p">)</span>
+
+        <span class="c1"># prepare colors and hurt-levels</span>
+        <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ally</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ally</span><span class="o">.</span><span class="n">hurt_level</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">ally</span> <span class="ow">in</span> <span class="n">allies</span><span class="p">]</span>
+        <span class="n">enemies</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">enemy</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">enemy</span><span class="o">.</span><span class="n">hurt_level</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">enemy</span> <span class="ow">in</span> <span class="n">enemies</span><span class="p">]</span>
+
+        <span class="c1"># the center column with the &#39;vs&#39;</span>
+        <span class="n">vs_column</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">nallies</span><span class="p">,</span> <span class="n">nenemies</span><span class="p">))]</span>
+        <span class="n">vs_column</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">vs_column</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;|wvs|n&quot;</span>
+
+        <span class="c1"># the two allies / enemies columns should be centered vertically</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">nallies</span> <span class="o">-</span> <span class="n">nenemies</span><span class="p">)</span>
+        <span class="n">top_empty</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">bot_empty</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">-</span> <span class="n">top_empty</span>
+        <span class="n">topfill</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">top_empty</span><span class="p">)]</span>
+        <span class="n">botfill</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bot_empty</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">nallies</span> <span class="o">&gt;=</span> <span class="n">nenemies</span><span class="p">:</span>
+            <span class="n">enemies</span> <span class="o">=</span> <span class="n">topfill</span> <span class="o">+</span> <span class="n">enemies</span> <span class="o">+</span> <span class="n">botfill</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">allies</span> <span class="o">=</span> <span class="n">topfill</span> <span class="o">+</span> <span class="n">allies</span> <span class="o">+</span> <span class="n">botfill</span>
+
+        <span class="c1"># make a table with three columns</span>
+        <span class="k">return</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span>
+            <span class="n">table</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">evtable</span><span class="o">.</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">allies</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">),</span>
+                <span class="n">evtable</span><span class="o">.</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">vs_column</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">),</span>
+                <span class="n">evtable</span><span class="o">.</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">enemies</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">border</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">maxwidth</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.get_sides"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.get_sides">[docs]</a>    <span class="k">def</span> <span class="nf">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a listing of the two &#39;sides&#39; of this combat, from the perspective of the provided</span>
+<span class="sd">        combatant. The sides don&#39;t need to be balanced.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (Character or NPC): The one whose sides are to determined.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple of lists `(allies, enemies)`, from the perspective of `combatant`.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The sides are found by checking PCs vs NPCs. PCs can normally not attack other PCs, so</span>
+<span class="sd">            are naturally allies. If the current room has the `allow_pvp` Attribute set, then _all_</span>
+<span class="sd">            other combatants (PCs and NPCs alike) are considered valid enemies (one could expand</span>
+<span class="sd">            this with group mechanics).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.give_advantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.give_advantage">[docs]</a>    <span class="k">def</span> <span class="nf">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let a benefiter gain advantage against the target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            recipient (Character or NPC): The one to gain the advantage. This may or may not</span>
+<span class="sd">                be the same entity that creates the advantage in the first place.</span>
+<span class="sd">            target (Character or NPC): The one against which the target gains advantage. This</span>
+<span class="sd">                could (in principle) be the same as the benefiter (e.g. gaining advantage on</span>
+<span class="sd">                some future boost)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.give_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.give_disadvantage">[docs]</a>    <span class="k">def</span> <span class="nf">give_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let an affected party gain disadvantage against a target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            recipient (Character or NPC): The one to get the disadvantage.</span>
+<span class="sd">            target (Character or NPC): The one against which the target gains disadvantage, usually</span>
+<span class="sd">            an enemy.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.has_advantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.has_advantage">[docs]</a>    <span class="k">def</span> <span class="nf">has_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a given combatant has advantage against a target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (Character or NPC): The one to check if they have advantage</span>
+<span class="sd">            target (Character or NPC): The target to check advantage against.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.has_disadvantage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.has_disadvantage">[docs]</a>    <span class="k">def</span> <span class="nf">has_disadvantage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a given combatant has disadvantage against a target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (Character or NPC): The one to check if they have disadvantage</span>
+<span class="sd">            target (Character or NPC): The target to check disadvantage against.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.queue_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.queue_action">[docs]</a>    <span class="k">def</span> <span class="nf">queue_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_dict</span><span class="p">,</span> <span class="n">combatant</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Queue an action by adding the new actiondict.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action_dict (dict): A dict describing the action class by name along with properties.</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC, optional): A combatant queueing the</span>
+<span class="sd">                action.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.execute_next_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.execute_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a combatant&#39;s next action.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            combatant (EvAdventureCharacter, EvAdventureNPC): The combatant performing and action.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.start_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.start_combat">[docs]</a>    <span class="k">def</span> <span class="nf">start_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start combat.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.check_stop_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.check_stop_combat">[docs]</a>    <span class="k">def</span> <span class="nf">check_stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this combat should be aborted, whatever this means for the particular</span>
+<span class="sd">        the particular combat type.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            kwargs: Any extra keyword args used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If `True`, the `stop_combat` method should be called.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EvAdventureCombatBaseHandler.stop_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.stop_combat">[docs]</a>    <span class="k">def</span> <span class="nf">stop_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop combat. This should also do all cleanup.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.combat_base</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

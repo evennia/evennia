@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.rpg.llm.llm_client &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.rpg.llm.llm_npc" href="evennia.contrib.rpg.llm.llm_npc.html" />
+    <link rel="prev" title="evennia.contrib.rpg.llm" href="evennia.contrib.rpg.llm.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.llm.llm_npc.html" title="evennia.contrib.rpg.llm.llm_npc"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.llm.html" title="evennia.contrib.rpg.llm"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.rpg.html" >evennia.contrib.rpg</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.rpg.llm.html" accesskey="U">evennia.contrib.rpg.llm</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.llm.llm_client</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.rpg.llm.llm_client</a><ul>
+<li><a class="reference internal" href="#optional-evennia-settings-if-not-given-these-defaults-are-used">Optional Evennia settings (if not given, these defaults are used)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.rpg.llm.html"
+                        title="previous chapter">evennia.contrib.rpg.llm</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.rpg.llm.llm_npc.html"
+                        title="next chapter">evennia.contrib.rpg.llm.llm_npc</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.rpg.llm.llm_client.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="evennia.contrib.rpg.llm.llm_client.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.rpg.llm.llm_client">
+<span id="evennia-contrib-rpg-llm-llm-client"></span><h1>evennia.contrib.rpg.llm.llm_client<a class="headerlink" href="#module-evennia.contrib.rpg.llm.llm_client" title="Permalink to this headline">¶</a></h1>
+<p>LLM (Large Language Model) client, for communicating with an LLM backend. This can be used
+for generating texts for AI npcs, or for fine-tuning the LLM on a given prompt.</p>
+<p>Note that running a LLM locally requires a lot of power, and ideally a powerful GPU. Testing
+this with CPU mode on a beefy laptop, still takes some 4s just on a very small model.</p>
+<p>The server defaults to output suitable for a local server
+<a class="reference external" href="https://github.com/oobabooga/text-generation-webui">https://github.com/oobabooga/text-generation-webui</a>, but could be used for other LLM servers too.</p>
+<p>See the LLM instructions on that page for how to set up the server. You’ll also need
+a model file - there are thousands to try out on <a class="reference external" href="https://huggingface.co/models">https://huggingface.co/models</a> (you want Text
+Generation models specifically).</p>
+<section id="optional-evennia-settings-if-not-given-these-defaults-are-used">
+<h2>Optional Evennia settings (if not given, these defaults are used)<a class="headerlink" href="#optional-evennia-settings-if-not-given-these-defaults-are-used" title="Permalink to this headline">¶</a></h2>
+<p>DEFAULT_LLM_HOST = “<a class="reference external" href="http://localhost:5000">http://localhost:5000</a>”
+DEFAULT_LLM_PATH = “/api/v1/generate”
+DEFAULT_LLM_HEADERS = {“Content-Type”: “application/json”}
+DEFAULT_LLM_PROMPT_KEYNAME = “prompt”
+DEFAULT_LLM_REQUEST_BODY = {…}   # see below, this controls how to prompt the LLM server.</p>
+<dl class="py class">
+<dt id="evennia.contrib.rpg.llm.llm_client.StringProducer">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.llm.llm_client.</code><code class="sig-name descname">StringProducer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#StringProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.StringProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Used for feeding a request body to the HTTP client.</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.StringProducer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#StringProducer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.StringProducer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.StringProducer.startProducing">
+<code class="sig-name descname">startProducing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">consumer</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#StringProducer.startProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.StringProducer.startProducing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.StringProducer.pauseProducing">
+<code class="sig-name descname">pauseProducing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#StringProducer.pauseProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.StringProducer.pauseProducing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.StringProducer.stopProducing">
+<code class="sig-name descname">stopProducing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#StringProducer.stopProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.StringProducer.stopProducing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.llm.llm_client.</code><code class="sig-name descname">SimpleResponseReceiver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">status_code</span></em>, <em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#SimpleResponseReceiver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.Protocol</span></code></p>
+<p>Used for pulling the response body out of an HTTP response.</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">status_code</span></em>, <em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#SimpleResponseReceiver.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.dataReceived">
+<code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#SimpleResponseReceiver.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.dataReceived" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called whenever data is received.</p>
+<p>Use this method to translate to a higher-level message.  Usually, some
+callback will be made upon the receipt of each complete protocol
+message.</p>
+<dl class="simple">
+<dt>&#64;param data: a string of indeterminate length.  Please keep in mind</dt><dd><p>that you will probably need to buffer some data, as partial
+(or multiple) protocol messages may be received!  I recommend
+that unit tests for protocols call through to this method with
+differing chunk sizes, down to one byte at a time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.connectionLost">
+<code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param">reason=&lt;twisted.python.failure.Failure twisted.internet.error.ConnectionDone: Connection was closed cleanly.&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#SimpleResponseReceiver.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.SimpleResponseReceiver.connectionLost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the connection is shut down.</p>
+<p>Clear any circular references here, and any external references
+to this Protocol.  The connection has been closed.</p>
+<p>&#64;type reason: L{twisted.python.failure.Failure}</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.llm.llm_client.QuietHTTP11ClientFactory">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.llm.llm_client.</code><code class="sig-name descname">QuietHTTP11ClientFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quiescentCallback</span></em>, <em class="sig-param"><span class="n">metadata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#QuietHTTP11ClientFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.QuietHTTP11ClientFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.client._HTTP11ClientFactory</span></code></p>
+<p>Silences the obnoxious factory start/stop messages in the default client.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.llm.llm_client.QuietHTTP11ClientFactory.noisy">
+<code class="sig-name descname">noisy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.QuietHTTP11ClientFactory.noisy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.llm.llm_client.LLMClient">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.llm.llm_client.</code><code class="sig-name descname">LLMClient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">on_bad_request</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#LLMClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.LLMClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A client for communicating with an LLM server.</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.LLMClient.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">on_bad_request</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#LLMClient.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.LLMClient.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.llm.llm_client.LLMClient.get_response">
+<code class="sig-name descname">get_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prompt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/llm/llm_client.html#LLMClient.get_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.llm.llm_client.LLMClient.get_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a response from the LLM server for the given npc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prompt</strong> (<em>str</em><em> or </em><em>list</em>) – The prompt to send to the LLM server. If a list,
+this is assumed to be the chat history so far, and will be added to the
+prompt in a way suitable for the api.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>The generated text response. Will return an empty string</dt><dd><p>if there is an issue with the server, in which case the
+the caller is expected to handle this gracefully.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.llm.llm_npc.html" title="evennia.contrib.rpg.llm.llm_npc"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.llm.html" title="evennia.contrib.rpg.llm"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.rpg.html" >evennia.contrib.rpg</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.rpg.llm.html" >evennia.contrib.rpg.llm</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.llm.llm_client</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,730 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.tutorials.evadventure.combat_twitch &#8212; Evennia 2.x documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.tutorials.evadventure.commands" href="evennia.contrib.tutorials.evadventure.commands.html" />
+    <link rel="prev" title="evennia.contrib.tutorials.evadventure.combat_turnbased" href="evennia.contrib.tutorials.evadventure.combat_turnbased.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.commands.html" title="evennia.contrib.tutorials.evadventure.commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.combat_turnbased.html" title="evennia.contrib.tutorials.evadventure.combat_turnbased"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" accesskey="U">evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.combat_twitch</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.combat_turnbased.html"
+                        title="previous chapter">evennia.contrib.tutorials.evadventure.combat_turnbased</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.commands.html"
+                        title="next chapter">evennia.contrib.tutorials.evadventure.commands</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tutorials.evadventure.combat_twitch.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="evennia.contrib.tutorials.evadventure.combat_twitch.html">2.x (main branch)</a></li>
+ <ul>
+    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
+  
+    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tutorials.evadventure.combat_twitch">
+<span id="evennia-contrib-tutorials-evadventure-combat-twitch"></span><h1>evennia.contrib.tutorials.evadventure.combat_twitch<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.combat_twitch" title="Permalink to this headline">¶</a></h1>
+<p>EvAdventure Twitch-based combat</p>
+<p>This implements a ‘twitch’ (aka DIKU or other traditional muds) style of MUD combat.</p>
+<hr class="docutils" />
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">EvAdventureCombatTwitchHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler" title="evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler</span></code></a></p>
+<p>This is created on the combatant when combat starts. It tracks only the combatants
+side of the combat and handles when the next action will happen.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.action_classes">
+<code class="sig-name descname">action_classes</code><em class="property"> = {'attack': &lt;class 'evennia.contrib.tutorials.evadventure.combat_base.CombatActionAttack'&gt;, 'hold': &lt;class 'evennia.contrib.tutorials.evadventure.combat_base.CombatActionHold'&gt;, 'stunt': &lt;class 'evennia.contrib.tutorials.evadventure.combat_base.CombatActionStunt'&gt;, 'use': &lt;class 'evennia.contrib.tutorials.evadventure.combat_base.CombatActionUseItem'&gt;, 'wield': &lt;class 'evennia.contrib.tutorials.evadventure.combat_base.CombatActionWield'&gt;}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.action_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.advantage_against">
+<code class="sig-name descname">advantage_against</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.advantage_against" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.disadvantage_against">
+<code class="sig-name descname">disadvantage_against</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.disadvantage_against" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.action_dict">
+<code class="sig-name descname">action_dict</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.action_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.fallback_action_dict">
+<code class="sig-name descname">fallback_action_dict</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.fallback_action_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.current_ticker_ref">
+<code class="sig-name descname">current_ticker_ref</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.current_ticker_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>AttributeProperty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.msg">
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">broadcast</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Central place for sending messages to combatants. This allows
+for adding any combat-specific text-decoration in one place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>str</em>) – The message to send.</p></li>
+<li><p><strong>combatant</strong> (<em>Object</em>) – The ‘You’ in the message, if any.</p></li>
+<li><p><strong>broadcast</strong> (<em>bool</em>) – If <strong>False</strong>, <strong>combatant</strong> must be included and
+will be the only one to see the message. If <strong>True</strong>, send to
+everyone in the location.</p></li>
+<li><p><strong>location</strong> (<em>Object</em><em>, </em><em>optional</em>) – If given, use this as the location to
+send broadcast messages to. If not, use <strong>self.obj</strong> as that
+location.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <strong>combatant</strong> is given, use <strong>$You/you()</strong> markup to create
+a message that looks different depending on who sees it. Use
+<strong>$You(combatant_key)</strong> to refer to other combatants.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.at_init">
+<code class="sig-name descname">at_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.at_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.at_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the Script is cached in the idmapper. This is usually more reliable
+than overriding <strong>__init__</strong> since the latter can be called at unexpected times.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.get_sides">
+<code class="sig-name descname">get_sides</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.get_sides"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.get_sides" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a listing of the two ‘sides’ of this combat, from the perspective of the provided
+combatant. The sides don’t need to be balanced.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combatant</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The one whose sides are to determined.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>tuple</em> –</p>
+<dl class="simple">
+<dt>A tuple of lists <strong>(allies, enemies)</strong>, from the perspective of <strong>combatant</strong>.</dt><dd><p>Note that combatant itself is not included in either of these.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.give_advantage">
+<code class="sig-name descname">give_advantage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">recipient</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.give_advantage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.give_advantage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Let a benefiter gain advantage against the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recipient</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The one to gain the advantage. This may or may not
+be the same entity that creates the advantage in the first place.</p></li>
+<li><p><strong>target</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The one against which the target gains advantage. This
+could (in principle) be the same as the benefiter (e.g. gaining advantage on
+some future boost)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.give_disadvantage">
+<code class="sig-name descname">give_disadvantage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">recipient</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.give_disadvantage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.give_disadvantage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Let an affected party gain disadvantage against a target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recipient</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The one to get the disadvantage.</p></li>
+<li><p><strong>target</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The one against which the target gains disadvantage, usually
+an enemy.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.has_advantage">
+<code class="sig-name descname">has_advantage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.has_advantage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.has_advantage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a given combatant has advantage against a target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combatant</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The one to check if they have advantage</p></li>
+<li><p><strong>target</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The target to check advantage against.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.has_disadvantage">
+<code class="sig-name descname">has_disadvantage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.has_disadvantage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.has_disadvantage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a given combatant has disadvantage against a target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combatant</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The one to check if they have disadvantage</p></li>
+<li><p><strong>target</strong> (<em>Character</em><em> or </em><em>NPC</em>) – The target to check disadvantage against.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.queue_action">
+<code class="sig-name descname">queue_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">action_dict</span></em>, <em class="sig-param"><span class="n">combatant</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.queue_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.queue_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Schedule the next action to fire.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>action_dict</strong> (<em>dict</em>) – The new action-dict to initialize.</p></li>
+<li><p><strong>combatant</strong> – Unused.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.execute_next_action">
+<code class="sig-name descname">execute_next_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.execute_next_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.execute_next_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggered after a delay by the command</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.check_stop_combat">
+<code class="sig-name descname">check_stop_combat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.check_stop_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.check_stop_combat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the combat is over.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.stop_combat">
+<code class="sig-name descname">stop_combat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#EvAdventureCombatTwitchHandler.stop_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.stop_combat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop combat immediately.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.DoesNotExist" title="evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorials.evadventure.combat_base.html#evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_base.EvAdventureCombatBaseHandler.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureCombatTwitchHandler'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.EvAdventureCombatTwitchHandler.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">CmdAttack</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_twitch._BaseTwitchCombatCommand</span></code></p>
+<p>Attack a target. Will keep attacking the target until
+combat ends or another combat action is taken.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>attack/hit &lt;target&gt;</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.key">
+<code class="sig-name descname">key</code><em class="property"> = 'attack'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['hit']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdAttack.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hit', 'category': 'combat', 'key': 'attack', 'no_prefix': ' hit', 'tags': '', 'text': '\n    Attack a target. Will keep attacking the target until\n    combat ends or another combat action is taken.\n\n    Usage:\n        attack/hit &lt;target&gt;\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdAttack.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">CmdLook</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdLook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.general.html#evennia.commands.default.general.CmdLook" title="evennia.commands.default.general.CmdLook"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.general.CmdLook</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_twitch._BaseTwitchCombatCommand</span></code></p>
+<p>look at location or object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>look
+look &lt;obj&gt;
+look <a href="#id1"><span class="problematic" id="id2">*</span></a>&lt;account&gt;</p>
+</dd>
+</dl>
+<p>Observes your location or objects in your vicinity.</p>
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdLook.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle the looking.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.key">
+<code class="sig-name descname">key</code><em class="property"> = 'look'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'general', 'key': 'look', 'no_prefix': ' l ls', 'tags': '', 'text': '\n    look at location or object\n\n    Usage:\n      look\n      look &lt;obj&gt;\n      look *&lt;account&gt;\n\n    Observes your location or objects in your vicinity.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">CmdHold</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdHold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_twitch._BaseTwitchCombatCommand</span></code></p>
+<p>Hold back your blows, doing nothing.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>hold</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.key">
+<code class="sig-name descname">key</code><em class="property"> = 'hold'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdHold.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'hold', 'no_prefix': ' ', 'tags': '', 'text': '\n    Hold back your blows, doing nothing.\n\n    Usage:\n        hold\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdHold.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">CmdStunt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdStunt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_twitch._BaseTwitchCombatCommand</span></code></p>
+<p>Perform a combat stunt, that boosts an ally against a target, or
+foils an enemy, giving them disadvantage against an ally.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>boost [ability] &lt;recipient&gt; &lt;target&gt;
+foil [ability] &lt;recipient&gt; &lt;target&gt;
+boost [ability] &lt;target&gt;       (same as boost me &lt;target&gt;)
+foil [ability] &lt;target&gt;        (same as foil &lt;target&gt; me)</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>boost STR me Goblin
+boost DEX Goblin
+foil STR Goblin me
+foil INT Goblin
+boost INT Wizard Goblin</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.key">
+<code class="sig-name descname">key</code><em class="property"> = 'stunt'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['foil', 'boost']</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdStunt.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle parsing of most supported combat syntaxes (except stunts).</p>
+<p>&lt;action&gt; [&lt;target&gt;|&lt;item&gt;]
+or
+&lt;action&gt; &lt;item&gt; [on] &lt;target&gt;</p>
+<p>Use ‘on’ to differentiate if names/items have spaces in the name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdStunt.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'foil boost', 'category': 'combat', 'key': 'stunt', 'no_prefix': ' foil boost', 'tags': '', 'text': '\n    Perform a combat stunt, that boosts an ally against a target, or\n    foils an enemy, giving them disadvantage against an ally.\n\n    Usage:\n        boost [ability] &lt;recipient&gt; &lt;target&gt;\n        foil [ability] &lt;recipient&gt; &lt;target&gt;\n        boost [ability] &lt;target&gt;       (same as boost me &lt;target&gt;)\n        foil [ability] &lt;target&gt;        (same as foil &lt;target&gt; me)\n\n    Example:\n        boost STR me Goblin\n        boost DEX Goblin\n        foil STR Goblin me\n        foil INT Goblin\n        boost INT Wizard Goblin\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdStunt.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">CmdUseItem</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdUseItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_twitch._BaseTwitchCombatCommand</span></code></p>
+<p>Use an item in combat. The item must be in your inventory to use.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>use &lt;item&gt;
+use &lt;item&gt; [on] &lt;target&gt;</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>use potion
+use throwing knife on goblin
+use bomb goblin</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.key">
+<code class="sig-name descname">key</code><em class="property"> = 'use'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdUseItem.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle parsing of most supported combat syntaxes (except stunts).</p>
+<p>&lt;action&gt; [&lt;target&gt;|&lt;item&gt;]
+or
+&lt;action&gt; &lt;item&gt; [on] &lt;target&gt;</p>
+<p>Use ‘on’ to differentiate if names/items have spaces in the name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdUseItem.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'use', 'no_prefix': ' ', 'tags': '', 'text': '\n    Use an item in combat. The item must be in your inventory to use.\n\n    Usage:\n        use &lt;item&gt;\n        use &lt;item&gt; [on] &lt;target&gt;\n\n    Examples:\n        use potion\n        use throwing knife on goblin\n        use bomb goblin\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdUseItem.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">CmdWield</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdWield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_twitch._BaseTwitchCombatCommand</span></code></p>
+<p>Wield a weapon or spell-rune. You will the wield the item, swapping with any other item(s) you
+were wielded before.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>wield &lt;weapon or spell&gt;</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>wield sword
+wield shield
+wield fireball</p>
+<p>Note that wielding a shield will not replace the sword in your hand, while wielding a two-handed
+weapon (or a spell-rune) will take two hands and swap out what you were carrying.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.key">
+<code class="sig-name descname">key</code><em class="property"> = 'wield'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdWield.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle parsing of most supported combat syntaxes (except stunts).</p>
+<p>&lt;action&gt; [&lt;target&gt;|&lt;item&gt;]
+or
+&lt;action&gt; &lt;item&gt; [on] &lt;target&gt;</p>
+<p>Use ‘on’ to differentiate if names/items have spaces in the name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#CmdWield.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'wield', 'no_prefix': ' ', 'tags': '', 'text': '\n    Wield a weapon or spell-rune. You will the wield the item, swapping with any other item(s) you\n    were wielded before.\n\n    Usage:\n      wield &lt;weapon or spell&gt;\n\n    Examples:\n      wield sword\n      wield shield\n      wield fireball\n\n    Note that wielding a shield will not replace the sword in your hand, while wielding a two-handed\n    weapon (or a spell-rune) will take two hands and swap out what you were carrying.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.CmdWield.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">TwitchCombatCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#TwitchCombatCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Add to character, to be able to attack others in a twitch-style way.</p>
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#TwitchCombatCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchCombatCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_twitch.</code><code class="sig-name descname">TwitchLookCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#TwitchLookCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>This will be added/removed dynamically when in combat.</p>
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_twitch.html#TwitchLookCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_twitch.TwitchLookCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.commands.html" title="evennia.contrib.tutorials.evadventure.commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.combat_turnbased.html" title="evennia.contrib.tutorials.evadventure.combat_turnbased"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" >evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.combat_twitch</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
