@@ -5,7 +5,7 @@ Documentation for the Evennia MUD creation system.
 > WARNING: This system is still WIP and many things are bound to change!
 > Contributing is still primarily to be done in the wiki.
 
-The live documentation is (will in the future be) available at `https://evennia.github.io/evennia/`.
+The live documentation is available at `https://www.evennia.com/docs/latest/index.html/`.
 
 # Editing the docs
 
