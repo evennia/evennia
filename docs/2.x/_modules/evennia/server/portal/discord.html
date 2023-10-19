@@ -438,8 +438,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISCORD_API_BASE_URL</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">body</span> <span class="o">=</span> <span class="n">FileBodyProducer</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)))</span>
+        <span class="n">request_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">)</span>
+        
         <span class="n">d</span> <span class="o">=</span> <span class="n">_AGENT</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-            <span class="sa">b</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+           <span class="n">request_type</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
             <span class="n">url</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
             <span class="n">Headers</span><span class="p">(</span>
                 <span class="p">{</span>
@@ -452,7 +454,7 @@
         <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">cbResponse</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">200</span> <span class="ow">or</span> <span class="n">response</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">204</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">readBody</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">post_response</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">d</span>
@@ -572,6 +574,22 @@
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">}</span>
         <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_json</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;channels/</span><span class="si">{</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">/messages&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DiscordClient.send_nickname"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_nickname">[docs]</a>    <span class="k">def</span> <span class="nf">send_nickname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes a user&#39;s nickname on a Discord server.</span>
+
+<span class="sd">        Use with session.msg(nickname=(new_nickname, guild_id, user_id))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;nick&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">}</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_json</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;guilds/</span><span class="si">{</span><span class="n">guild_id</span><span class="si">}</span><span class="s2">/members/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;PATCH&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DiscordClient.send_role"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_role">[docs]</a>    <span class="k">def</span> <span class="nf">send_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_json</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;guilds/</span><span class="si">{</span><span class="n">guild_id</span><span class="si">}</span><span class="s2">/members/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/roles/</span><span class="si">{</span><span class="n">role_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;PUT&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscordClient.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.discord.html#evennia.server.portal.discord.DiscordClient.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

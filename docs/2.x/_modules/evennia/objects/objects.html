@@ -298,7 +298,7 @@
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">ObjectManager</span><span class="p">()</span>
 
-    <span class="c1"># populated by `return_apperance`</span>
+    <span class="c1"># populated by `return_appearance`</span>
     <span class="n">appearance_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="si">{header}</span>
 <span class="s2">|c</span><span class="si">{name}</span><span class="s2">|n</span>
@@ -1287,7 +1287,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">at_access</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-    <span class="c1"># name and return_apperance hooks</span>
+    <span class="c1"># name and return_appearance hooks</span>
 
 <div class="viewcode-block" id="DefaultObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2197,7 +2197,7 @@
 <span class="sd">        Notes:</span>
 <span class="sd">            This method shouldn&#39;t add extra coloring to the names beyond what is</span>
 <span class="sd">            already given by the .get_display_name() (and the .name field) already.</span>
-<span class="sd">            Per-type coloring can be applied in `return_apperance`.</span>
+<span class="sd">            Per-type coloring can be applied in `return_appearance`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># a mapping {&#39;exits&#39;: [...], &#39;characters&#39;: [...], &#39;things&#39;: [...]}</span>

@@ -107,7 +107,6 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
-
 <span class="kn">from</span> <span class="nn">evennia.comms</span> <span class="kn">import</span> <span class="n">managers</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
@@ -190,8 +189,10 @@
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Identifier for single external sender, for use with senders &quot;</span>
-        <span class="s2">&quot;not represented by a regular database model.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Identifier for single external sender, for use with senders &quot;</span>
+            <span class="s2">&quot;not represented by a regular database model.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">db_receivers_accounts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
@@ -223,8 +224,10 @@
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Identifier for single external receiver, for use with recievers &quot;</span>
-        <span class="s2">&quot;not represented by a regular database model.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Identifier for single external receiver, for use with recievers &quot;</span>
+            <span class="s2">&quot;not represented by a regular database model.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="c1"># header could be used for meta-info about the message if your system needs</span>
@@ -253,8 +256,10 @@
     <span class="n">db_tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Tag</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this message. Tags are simple string markers to &quot;</span>
-        <span class="s2">&quot;identify, group and alias messages.&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;tags on this message. Tags are simple string markers to &quot;</span>
+            <span class="s2">&quot;identify, group and alias messages.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="c1"># Database manager</span>
@@ -604,7 +609,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="SubscriptionHandler"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler">[docs]</a><span class="k">class</span> <span class="nc">SubscriptionHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler">[docs]</a><span class="k">class</span> <span class="nc">SubscriptionHandler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This handler manages subscriptions to the</span>
 <span class="sd">    channel and hides away which type of entity is</span>
@@ -626,13 +631,13 @@
     <span class="k">def</span> <span class="nf">_recache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">account</span><span class="p">:</span> <span class="kc">True</span>
-            <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;pk&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;pk&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">account</span><span class="o">.</span><span class="n">pk</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="n">obj</span><span class="p">:</span> <span class="kc">True</span>
-                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;pk&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;pk&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span>
             <span class="p">}</span>
         <span class="p">)</span>

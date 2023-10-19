@@ -566,6 +566,36 @@ triggered by the bot_data_in Inputfunc.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.accounts.bots.DiscordBot.change_nickname">
+<code class="sig-name descname">change_nickname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_nickname</span></em>, <em class="sig-param"><span class="n">guild_id</span></em>, <em class="sig-param"><span class="n">user_id</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/bots.html#DiscordBot.change_nickname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.bots.DiscordBot.change_nickname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes a given user’s nickname on the given guild the bot is in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_nickname</strong> (<em>str</em>) – </p></li>
+<li><p><strong>guild_id</strong> (<em>int</em>) – </p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.bots.DiscordBot.assign_role">
+<code class="sig-name descname">assign_role</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">role_id</span></em>, <em class="sig-param"><span class="n">guild_id</span></em>, <em class="sig-param"><span class="n">user_id</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/bots.html#DiscordBot.assign_role"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.bots.DiscordBot.assign_role" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns a user the role on the given guild the bot is in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role_id</strong> (<em>int</em>) – </p></li>
+<li><p><strong>guild_id</strong> (<em>int</em>) – </p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.accounts.bots.DiscordBot.direct_msg">
 <code class="sig-name descname">direct_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">sender</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/bots.html#DiscordBot.direct_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.bots.DiscordBot.direct_msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the Discord bot receives a direct message on Discord.</p>

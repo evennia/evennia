@@ -723,6 +723,30 @@
                 <span class="c1"># send outputfunc channel(msg, discord channel)</span>
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">(</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="n">dc_chan</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="DiscordBot.change_nickname"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.change_nickname">[docs]</a>    <span class="k">def</span> <span class="nf">change_nickname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_nickname</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes a given user&#39;s nickname on the given guild the bot is in.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_nickname (str) - The user&#39;s new nickname.</span>
+<span class="sd">            guild_id (int) - The guild the nickname will be changed in.</span>
+<span class="sd">            user_id (int) - The Discord ID of the user who&#39;s nickname will be changed.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">nickname</span><span class="o">=</span><span class="p">(</span><span class="n">new_nickname</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DiscordBot.assign_role"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.assign_role">[docs]</a>    <span class="k">def</span> <span class="nf">assign_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns a user the role on the given guild the bot is in.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            role_id (int) - The Discord role&#39;s ID.</span>
+<span class="sd">            guild_id (int) - The guild the role will be assigned in.</span>
+<span class="sd">            user_id (int) - The user the given role will be assigned to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="p">(</span><span class="n">role_id</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="DiscordBot.direct_msg"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.direct_msg">[docs]</a>    <span class="k">def</span> <span class="nf">direct_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the Discord bot receives a direct message on Discord.</span>

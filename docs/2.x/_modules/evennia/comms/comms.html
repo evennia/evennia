@@ -93,7 +93,6 @@
 <span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-
 <span class="kn">from</span> <span class="nn">evennia.comms.managers</span> <span class="kn">import</span> <span class="n">ChannelManager</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
@@ -274,7 +273,7 @@
             <span class="c1"># display listening subscribers in bold</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="n">account</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="n">account</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">listening</span> <span class="k">else</span> <span class="s2">&quot;|w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="o">.</span><span class="n">key</span>
+                    <span class="n">account</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="n">account</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">listening</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
                     <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">subs</span>
                 <span class="p">]</span>
             <span class="p">)</span>
