@@ -547,7 +547,7 @@ A python _for-loop_ allows us to loop over something. Above, we made a _list_ of
 For our list, we want to loop over all Characters, and want to call `.at_object_creation` on each. This is how  this is done (still in python multi-line mode): 
 
     > from typeclasses.characters import Character
-    > for char in Character.objects.all()
+    > for char in Character.objects.all():
     >     char.at_object_creation()
     
 ```{sidebar} Database queries
