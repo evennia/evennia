@@ -17,7 +17,7 @@ class Room(ObjectParent, DefaultRoom):
     add locks so they cannot be puppeted or picked up.
     (to change that, use at_object_creation instead)
 
-    See examples/object.py for a list of
+    See mygame/typeclasses/objects.py for a list of
     properties and methods available on all Objects.
     """
 
