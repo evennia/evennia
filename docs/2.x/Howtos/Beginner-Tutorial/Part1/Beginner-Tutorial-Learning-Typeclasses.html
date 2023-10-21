@@ -671,7 +671,7 @@ foo
 <p>A python <em>for-loop</em> allows us to loop over something. Above, we made a <em>list</em> of two numbers and a string. In every iteration of the loop, the variable <code class="docutils literal notranslate"><span class="pre">a</span></code> becomes one element in turn, and we print that.</p>
 <p>For our list, we want to loop over all Characters, and want to call <code class="docutils literal notranslate"><span class="pre">.at_object_creation</span></code> on each. This is how  this is done (still in python multi-line mode):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from typeclasses.characters import Character
-&gt; for char in Character.objects.all()
+&gt; for char in Character.objects.all():
 &gt;     char.at_object_creation()
 </pre></div>
 </div>
