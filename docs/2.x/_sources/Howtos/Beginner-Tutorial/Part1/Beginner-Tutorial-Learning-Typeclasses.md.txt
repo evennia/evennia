@@ -560,7 +560,7 @@ of all of them that we then immediately loop over. Boom, we just updated all Cha
 
     > quit()
     Closing the Python console.
-    > self.get_stats()
+    > py self.get_stats()
     (3, 18, 10)
 
 ## Extra Credits
