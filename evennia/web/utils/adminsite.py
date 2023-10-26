@@ -8,6 +8,7 @@ of that folder for Django to find them).
 
 """
 
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin import apps
 
@@ -30,20 +31,11 @@ class EvenniaAdminSite(admin.AdminSite):
 
     site_header = "Evennia web admin"
 
-    app_order = [
-        "accounts",
-        "objects",
-        "scripts",
-        "comms",
-        "help",
-        "typeclasses",
-        "server",
-        "sites",
-        "flatpages",
-        "auth",
-    ]
-
-    def get_app_list(self, request):
-        app_list = super().get_app_list(request)
+    def get_app_list(self, request, app_label=None):
+        app_list = super().get_app_list(request, app_label=app_label)
         app_mapping = {app["app_label"]: app for app in app_list}
-        return [app_mapping.get(app_label) for app_label in self.app_order]
+        out = [app_mapping.pop(app_label) for app_label in settings.DJANGO_ADMIN_APP_ORDER if app_label in app_mapping]
+        for app in settings.DJANGO_ADMIN_APP_EXCLUDE:
+            app_mapping.pop(app, None)
+        out += app_mapping.values()
+        return out
