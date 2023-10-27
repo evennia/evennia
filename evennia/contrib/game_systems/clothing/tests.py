@@ -86,6 +86,10 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         # change the scarf to a hat for convenience
         # since the "hat" type is limited to 1 by default
         self.test_scarf.db.clothing_type = "hat"
+        # move to wearer to be wearable
+        self.test_scarf.location = self.wearer
+        self.test_hat.location = self.wearer
+        # try wearing the hat and scarf-hat
         self.call(clothing.CmdWear(), "hat", "You put on test hat.", caller=self.wearer)
         self.call(
             clothing.CmdWear(),
