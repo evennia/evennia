@@ -158,15 +158,15 @@ class Sittable(DefaultObject):
         current = self.db.sitter
         if current:
             if current == sitter:
-                sitter.msg(f"You are already sitting {adjective} {self.key}.")
+                sitter.msg(f"You are already sitting {self.db.adjective} {self.key}.")
             else:
                 sitter.msg(
-                    f"You can't sit {adjective} {self.key} "
+                    f"You can't sit {self.db.adjective} {self.key} "
                     f"- {current.key} is already sitting there!")
             return
         self.db.sitter = sitter
         sitter.db.is_sitting = self
-        sitter.msg(f"You sit {adjective} {self.key}")
+        sitter.msg(f"You sit {self.db.adjective} {self.key}")
 
     def do_stand(self, stander):
         """
