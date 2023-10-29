@@ -487,12 +487,12 @@ class CmdWear(MuxCommand):
             return
 
         # Apply individual clothing type limits.
-        if clothing_type := clothing.db.type:
+        if clothing_type := clothing.db.clothing_type:
             if clothing_type in CLOTHING_TYPE_LIMIT:
                 type_count = single_type_count(already_worn, clothing_type)
                 if type_count >= CLOTHING_TYPE_LIMIT[clothing_type]:
                     self.caller.msg(
-                        "You can't wear any more clothes of the type '{clothing_type}'."
+                        f"You can't wear any more clothes of the type '{clothing_type}'."
                     )
                     return
 

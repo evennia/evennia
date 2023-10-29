@@ -79,6 +79,25 @@ class TestClothingCmd(BaseEvenniaCommandTest):
         )
         self.call(clothing.CmdUncover(), "hat", "You uncover test hat.", caller=self.wearer)
 
+    def test_clothing_limits(self):
+        """
+        make sure clothing type limits are being enforced
+        """
+        # change the scarf to a hat for convenience
+        # since the "hat" type is limited to 1 by default
+        self.test_scarf.db.clothing_type = "hat"
+        # move to wearer to be wearable
+        self.test_scarf.location = self.wearer
+        self.test_hat.location = self.wearer
+        # try wearing the hat and scarf-hat
+        self.call(clothing.CmdWear(), "hat", "You put on test hat.", caller=self.wearer)
+        self.call(
+            clothing.CmdWear(),
+            "scarf",
+            "You can't wear any more clothes of the type 'hat'.",
+            caller=self.wearer,
+        )
+
 
 class TestClothingFunc(BaseEvenniaTest):
     def setUp(self):
