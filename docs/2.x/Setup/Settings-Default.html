@@ -1152,6 +1152,24 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
     <span class="s2">&quot;evennia.web.utils.middleware.SharedLoginMiddleware&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
+<span class="c1"># A list of Django apps (see INSTALLED_APPS) that will be listed first (if present)</span>
+<span class="c1"># in the Django web Admin page.</span>
+<span class="n">DJANGO_ADMIN_APP_ORDER</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;accounts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;objects&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;scripts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;comms&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;help&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sites&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;flatpages&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;auth&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+<span class="c1"># The following apps will be excluded from the Django web Admin page.</span>
+<span class="n">DJANGO_ADMIN_APP_EXCLUDE</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
 <span class="c1">######################################################################</span>
 <span class="c1"># Evennia components</span>
 <span class="c1">######################################################################</span>
