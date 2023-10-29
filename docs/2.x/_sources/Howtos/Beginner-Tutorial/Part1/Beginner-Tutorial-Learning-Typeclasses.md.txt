@@ -157,9 +157,9 @@ called `create_object`. Let's recreate Cuddly this time:
 Boom, Cuddly should now be in the room with you, a little less scary than Smaug. You specify the 
 python-path to the code you want and then set the key and location (if you had the `Monster` class already imported, you could have passed that too). Evennia sets things up and saves for you. 
 
-If you want to find Smaug from anywhere (not just in the same room), you can use Evennia's `search_object` function: 
+If you want to find Cuddly from anywhere (not just in the same room), you can use Evennia's `search_object` function: 
 
-    > cuddly = evennia.search_object("Cuddly")[0] ; cuddly.move_around()
+    > py cuddly = evennia.search_object("Cuddly")[0] ; cuddly.move_around()
     Cuddly is moving!
 
 > The `[0]` is because `search_object` always returns a _list_ of zero, one or more found objects. The `[0]` means that we want the first element of this list (counting in Python always starts from 0). If there were  multiple Cuddlies we could get the second one with `[1]`.
