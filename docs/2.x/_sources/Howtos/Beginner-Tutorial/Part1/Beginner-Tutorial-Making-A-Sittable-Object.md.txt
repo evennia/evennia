@@ -138,7 +138,7 @@ We _could_ make a child class of `Sittable` named `SittableIn` that makes this c
 
 ```{code-block} python 
 :linenos:
-:emphasize-lines: 15,22,43
+:emphasize-lines: 15,19,22,27,39,43
 
 # in mygame/typeclasses/sittables.py
 
@@ -186,7 +186,7 @@ class Sittable(DefaultObject):
 ```
 
 - **Line 15**: We grab the `adjective` Attribute. Using `self.db.adjective or "on"` here means that if the Attribute is not set (is `None`/falsy) the default "on" string will be assumed.
-- **Lines 22 and 43**: We use this adjective to modify the return text we see.  
+- **Lines 19,22,27,39, and 43**: We use this adjective to modify the return text we see.  
 
 `reload`  the server. An advantage of using Attributes like this is that they can be modified on the fly, in-game. Let's look at a builder could use this by normal building commands (no need for `py`): 
 
