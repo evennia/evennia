@@ -1,4 +1,5 @@
 # make sure to skip the build dir
 
 docs/build
+docs/*/.doctrees/
 *.swp
