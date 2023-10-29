@@ -108,7 +108,7 @@ Let's continue:
         else:
             self.db.sitter = None
             del stander.db.is_sitting
-            stander.msg(f"You stand up from {self.key}")
+            stander.msg(f"You stand up from {self.key}.")
 ```
 
 This is the inverse of sitting down; we need to do some cleanup. 
@@ -182,7 +182,7 @@ class Sittable(DefaultObject):
         else:
             self.db.sitter = None
             del stander.db.is_sitting
-            stander.msg(f"You stand up from {self.key}")
+            stander.msg(f"You stand up from {self.key}.")
 ```
 
 - **Line 15**: We grab the `adjective` Attribute. Using `self.db.adjective or "on"` here means that if the Attribute is not set (is `None`/falsy) the default "on" string will be assumed.
