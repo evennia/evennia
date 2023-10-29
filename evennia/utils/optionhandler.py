@@ -142,7 +142,7 @@ class OptionHandler:
         op_found = self.options.get(key) or self._load_option(key)
         return op_found if return_obj else op_found.value
 
-    def set(self, key, value, **kwargs):
+    def set(self, key, value, **kwargs) -> "BaseOption":
         """
         Change an individual option.
 
@@ -153,7 +153,8 @@ class OptionHandler:
                 save function and display function and allows to customize either.
 
         Returns:
-            value (any): Value stored in option, after validation.
+            BaseOption: The matched object. Its new value can be accessed with
+                op.value or op.display().
 
         """
         if not key:
@@ -168,7 +169,7 @@ class OptionHandler:
         match = match[0]
         op = self.get(match, return_obj=True)
         op.set(value, **kwargs)
-        return op.value
+        return op
 
     def all(self, return_objs=False):
         """
