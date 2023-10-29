@@ -276,9 +276,9 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 <section id="sitting-on-or-in">
 <h3><span class="section-number">13.2.1. </span>Sitting on or in?<a class="headerlink" href="#sitting-on-or-in" title="Permalink to this headline">¶</a></h3>
 <p>It’s fine to sit ‘on’ a chair. But what if our Sittable is an armchair?</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">armchair</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.sittables.Sittable&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;armchair&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">armchair</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">You</span> <span class="n">sit</span> <span class="n">on</span> <span class="n">armchair</span><span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">armchair</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.sittables.Sittable&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;armchair&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">py</span> <span class="n">armchair</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
+<span class="n">You</span> <span class="n">sit</span> <span class="n">on</span> <span class="n">armchair</span><span class="o">.</span>
 </pre></div>
 </div>
 <p>This is not grammatically correct, you actually sit “in” an armchair rather than “on” it. It’s also possible to both sit ‘in’ or ‘on’ a chair depending on the type of chair (English is weird). We want to be able to control this.</p>

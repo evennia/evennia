@@ -127,9 +127,9 @@ We let the typeclass handle the logic, and also let it do all the return messagi
 It's fine to sit 'on' a chair. But what if our Sittable is an armchair? 
 
 ```
-> armchair = evennia.create_object("typeclasses.sittables.Sittable", key="armchair", location=here)
-> armchair.do_sit(me)
-> You sit on armchair.
+> py armchair = evennia.create_object("typeclasses.sittables.Sittable", key="armchair", location=here)
+> py armchair.do_sit(me)
+You sit on armchair.
 ```
 
 This is not grammatically correct, you actually sit "in" an armchair rather than "on" it. It's also possible to both sit 'in' or 'on' a chair depending on the type of chair (English is weird). We want to be able to control this.

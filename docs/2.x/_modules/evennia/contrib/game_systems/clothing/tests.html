@@ -163,7 +163,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">clothing</span><span class="o">.</span><span class="n">CmdUncover</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: uncover &lt;worn clothing object&gt;&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdUncover</span><span class="p">(),</span> <span class="s2">&quot;hat&quot;</span><span class="p">,</span> <span class="s2">&quot;You uncover test hat.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdUncover</span><span class="p">(),</span> <span class="s2">&quot;hat&quot;</span><span class="p">,</span> <span class="s2">&quot;You uncover test hat.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestClothingCmd.test_clothing_limits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothing_limits">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothing_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make sure clothing type limits are being enforced</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># change the scarf to a hat for convenience</span>
+        <span class="c1"># since the &quot;hat&quot; type is limited to 1 by default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;hat&quot;</span>
+        <span class="c1"># move to wearer to be wearable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_scarf</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wearer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_hat</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wearer</span>
+        <span class="c1"># try wearing the hat and scarf-hat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdWear</span><span class="p">(),</span> <span class="s2">&quot;hat&quot;</span><span class="p">,</span> <span class="s2">&quot;You put on test hat.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdWear</span><span class="p">(),</span>
+            <span class="s2">&quot;scarf&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;You can&#39;t wear any more clothes of the type &#39;hat&#39;.&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wearer</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TestClothingFunc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc">[docs]</a><span class="k">class</span> <span class="nc">TestClothingFunc</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
