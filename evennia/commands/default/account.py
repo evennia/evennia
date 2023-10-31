@@ -1049,4 +1049,4 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
         except ValueError as e:
             self.msg(str(e))
             return
-        self.msg(f"Style {self.lhs} set to {result}")
+        self.msg(f"Style {result.key} set to {result.display()}")
