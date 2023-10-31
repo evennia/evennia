@@ -114,26 +114,13 @@ class GlobalScriptContainer(Container):
         initialized before Scripts are actually initialized.
 
         """
-        self.typeclass_storage = None
+        self.typeclass_storage = dict()
         self.loaded_data = {
             key: {} if data is None else data for key, data in settings.GLOBAL_SCRIPTS.items()
         }
-
-    def _get_scripts(self, key=None, default=None):
-        global SCRIPTDB
-        if not SCRIPTDB:
-            from evennia.scripts.models import ScriptDB as SCRIPTDB
-        if key:
-            try:
-                return SCRIPTDB.objects.get(db_key__exact=key, db_obj__isnull=True)
-            except SCRIPTDB.DoesNotExist:
-                return default
-        else:
-            return SCRIPTDB.objects.filter(db_obj__isnull=True)
+        self.loaded = False
 
     def _load_script(self, key):
-        self.load_data()
-
         typeclass = self.typeclass_storage[key]
         script = typeclass.objects.filter(
             db_key=key, db_account__isnull=True, db_obj__isnull=True
@@ -168,7 +155,7 @@ class GlobalScriptContainer(Container):
                 return None
 
             # store a hash representation of the setup
-            script.attributes.add("_global_script_settings", compare_hash, category="settings_hash")
+            script.attributes.add("global_script_settings", compare_hash, category="settings_hash")
 
         return script
 
@@ -182,14 +169,18 @@ class GlobalScriptContainer(Container):
 
         """
         # populate self.typeclass_storage
-        self.load_data()
+        if not self.loaded:
+            self.load_data()
 
         # make sure settings-defined scripts are loaded
+        scripts_to_run = []
         for key in self.loaded_data:
-            self._load_script(key)
+            script = self._load_script(key)
+            if script:
+                scripts_to_run.append(script)
         # start all global scripts
         try:
-            for script in self._get_scripts():
+            for script in scripts_to_run:
                 script.start()
         except (OperationalError, ProgrammingError):
             # this can happen if db is not loaded yet (such as when building docs)
@@ -201,13 +192,15 @@ class GlobalScriptContainer(Container):
         initialized.
 
         """
-        if self.typeclass_storage is None:
-            self.typeclass_storage = {}
+        if self.loaded:
+            return
+        if not self.typeclass_storage:
             for key, data in list(self.loaded_data.items()):
                 typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
                 self.typeclass_storage[key] = class_from_module(
                     typeclass, fallback=settings.BASE_SCRIPT_TYPECLASS
                 )
+        self.loaded = True
 
     def get(self, key, default=None):
         """
@@ -223,20 +216,23 @@ class GlobalScriptContainer(Container):
         Returns:
             any (any): The data loaded on this container.
         """
-        res = self._get_scripts(key)
-        if not res:
-            if key in self.loaded_data:
-                if key not in self.typeclass_storage:
-                    # this means we are trying to load in a loop
-                    raise RuntimeError(
-                        f"Trying to access `GLOBAL_SCRIPTS.{key}` before scripts have finished "
-                        "initializing. This can happen if accessing GLOBAL_SCRIPTS from the same "
-                        "module the script is defined in."
-                    )
-                # recreate if we have the info
-                return self._load_script(key) or default
-            return default
-        return res
+        if not self.loaded:
+            self.load_data()
+        out_value = default
+        if key in self.loaded_data:
+            if key not in self.typeclass_storage:
+                # this means we are trying to load in a loop
+                raise RuntimeError(
+                    f"Trying to access `GLOBAL_SCRIPTS.{key}` before scripts have finished "
+                    "initializing. This can happen if accessing GLOBAL_SCRIPTS from the same "
+                    "module the script is defined in."
+                )
+            # recreate if we have the info
+            script_found = self._load_script(key)
+            if script_found:
+                out_value = script_found
+
+        return out_value
 
     def all(self):
         """
@@ -247,11 +243,9 @@ class GlobalScriptContainer(Container):
             scripts (list): All global script objects stored on the container.
 
         """
-        self.typeclass_storage = None
-        self.load_data()
-        for key in self.loaded_data:
-            self._load_script(key)
-        return self._get_scripts(None)
+        if not self.loaded:
+            self.load_data()
+        return self.scripts.values()
 
 
 # Create all singletons

@@ -106,6 +106,9 @@ MONITOR_HANDLER = None
 GLOBAL_SCRIPTS = None
 OPTION_CLASSES = None
 
+# variables
+PORTAL_MODE = False
+
 
 def _create_version():
     """
@@ -160,6 +163,8 @@ def _init(portal_mode=False):
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString, FuncParser
     global AttributeProperty, TagProperty, TagCategoryProperty
+    global PORTAL_MODE
+    PORTAL_MODE = portal_mode
 
     # Parent typeclasses
     # utilities
@@ -187,8 +192,9 @@ def _init(portal_mode=False):
     from .utils import ansi, gametime, logger
     from .utils.ansi import ANSIString
 
-    # containers
-    from .utils.containers import GLOBAL_SCRIPTS, OPTION_CLASSES
+    if not PORTAL_MODE:
+        # containers
+        from .utils.containers import GLOBAL_SCRIPTS, OPTION_CLASSES
 
     # create functions
     from .utils.create import (
@@ -218,7 +224,7 @@ def _init(portal_mode=False):
     )
     from .utils.utils import class_from_module
 
-    if portal_mode:
+    if PORTAL_MODE:
         # Set up the PortalSessionHandler
         from evennia.server.portal import portalsessionhandler
 
@@ -227,6 +233,7 @@ def _init(portal_mode=False):
     else:
         # Create the ServerSesssionHandler
         from evennia.server import sessionhandler
+
         sess_handler_class = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
         sessionhandler.SESSIONS = sess_handler_class()
         sessionhandler.SESSION_HANDLER = sessionhandler.SESSIONS
@@ -374,11 +381,6 @@ def _init(portal_mode=False):
     syscmdkeys = SystemCmds()
     del SystemCmds
     del _EvContainer
-
-    # delayed starts - important so as to not back-access evennia before it has
-    # finished initializing
-    if not portal_mode:
-        GLOBAL_SCRIPTS.start()
 
 
 def set_trace(term_size=(140, 80), debugger="auto"):
