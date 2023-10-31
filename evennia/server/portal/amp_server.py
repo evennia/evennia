@@ -11,6 +11,7 @@ from subprocess import STDOUT, Popen
 from django.conf import settings
 from twisted.internet import protocol
 
+import evennia
 from evennia.server.portal import amp
 from evennia.utils import logger
 from evennia.utils.utils import class_from_module
@@ -379,9 +380,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         try:
             sessid, kwargs = self.data_in(packed_data)
-            session = self.factory.portal.sessions.get(sessid, None)
+            session = evennia.PORTAL_SESSION_HANDLER.get(sessid, None)
             if session:
-                self.factory.portal.sessions.data_out(session, **kwargs)
+                evennia.PORTAL_SESSION_HANDLER.data_out(session, **kwargs)
         except Exception:
             logger.log_trace("packed_data len {}".format(len(packed_data)))
         return {}
@@ -405,7 +406,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         # logger.log_msg("Evennia Server->Portal admin data %s:%s received" % (sessid, kwargs))
 
         operation = kwargs.pop("operation")
-        portal_sessionhandler = self.factory.portal.sessions
+        portal_sessionhandler = evennia.PORTAL_SESSION_HANDLER
 
         if operation == amp.SLOGIN:  # server_session_login
             # a session has authenticated; sync it.
@@ -449,7 +450,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             # this defaults to 'shutdown' or whatever value set in server_stop
             server_restart_mode = self.factory.portal.server_restart_mode
 
-            sessdata = self.factory.portal.sessions.get_all_sync_data()
+            sessdata = evennia.PORTAL_SESSION_HANDLER.get_all_sync_data()
             self.send_AdminPortal2Server(
                 amp.DUMMYSESSION,
                 amp.PSYNC,
@@ -457,7 +458,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 sessiondata=sessdata,
                 portal_start_time=self.factory.portal.start_time,
             )
-            self.factory.portal.sessions.at_server_connection()
+            evennia.PORTAL_SESSION_HANDLER.at_server_connection()
 
             if self.factory.server_connection:
                 # this is an indication the server has successfully connected, so

@@ -21,6 +21,7 @@ from twisted.internet.base import DelayedCall
 from twisted.test import proto_helpers
 from twisted.trial.unittest import TestCase as TwistedTestCase
 
+import evennia
 from evennia.server.portal import irc
 from evennia.utils.test_resources import BaseEvenniaTest
 
@@ -35,7 +36,6 @@ from .mccp import MCCP
 from .mssp import MSSP
 from .mxp import MXP
 from .naws import DEFAULT_HEIGHT, DEFAULT_WIDTH
-from .portal import PORTAL_SESSIONS
 from .suppress_ga import SUPPRESS_GA
 from .telnet import TelnetProtocol, TelnetServerFactory
 from .telnet_oob import MSDP, MSDP_VAL, MSDP_VAR
@@ -223,7 +223,7 @@ class TestTelnet(TwistedTestCase):
         super().setUp()
         factory = TelnetServerFactory()
         factory.protocol = TelnetProtocol
-        factory.sessionhandler = PORTAL_SESSIONS
+        factory.sessionhandler = evennia.PORTAL_SESSION_HANDLER
         factory.sessionhandler.portal = Mock()
         self.proto = factory.buildProtocol(("localhost", 0))
         self.transport = proto_helpers.StringTransport()
@@ -289,8 +289,8 @@ class TestWebSocket(BaseEvenniaTest):
         super().setUp()
         self.proto = WebSocketClient()
         self.proto.factory = WebSocketServerFactory()
-        self.proto.factory.sessionhandler = PORTAL_SESSIONS
-        self.proto.sessionhandler = PORTAL_SESSIONS
+        self.proto.factory.sessionhandler = evennia.PORTAL_SESSION_HANDLER
+        self.proto.sessionhandler = evennia.PORTAL_SESSION_HANDLER
         self.proto.sessionhandler.portal = Mock()
         self.proto.transport = proto_helpers.StringTransport()
         # self.proto.transport = proto_helpers.FakeDatagramTransport()
