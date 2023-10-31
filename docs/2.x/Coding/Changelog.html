@@ -186,12 +186,22 @@
 <section id="main-branch">
 <h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3313">Feature</a> (Backwards incompatible): <code class="docutils literal notranslate"><span class="pre">OptionHandler.set</span></code> now returns
+<code class="docutils literal notranslate"><span class="pre">BaseOption</span></code> rather than its <code class="docutils literal notranslate"><span class="pre">.value</span></code>. Instead access <code class="docutils literal notranslate"><span class="pre">.value</span></code> or <code class="docutils literal notranslate"><span class="pre">.display()</span></code>
+on this return for more control. (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3273">Feature</a>: Allow passing <code class="docutils literal notranslate"><span class="pre">text_kwargs</span></code> kwarg to <code class="docutils literal notranslate"><span class="pre">EvMore.msg</span></code> in order to expand
 the outputfunc used for every evmore page.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3278">Feature</a>: Refactor home page into multiple sub-parts for easier
 overriding and composition (johnnyvoruz)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3286">Feature</a>: Allow Discord bot to change user’s nickname and assign
 roles for a user on a given server (holl0wstar).</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3301">Feature</a>: Make EvenniaAdminSite include custom models better; adds
+<code class="docutils literal notranslate"><span class="pre">DJANGO_ADMIN_APP_ORDER</span></code> and <code class="docutils literal notranslate"><span class="pre">DJANGO_ADMIN_APP_EXCLUDE</span></code> as modifable
+settings.(Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3179">Feature</a>: Handling of the <code class="docutils literal notranslate"><span class="pre">.db._playable_characters</span></code> helper
+methods. Also adds events hooks to modify effects when this list changes (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3197">Feature</a>: Make sure Global scripts only start in one place,
+avoiding race conditions until server starts (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3267">Fix</a>: Missing recache step in ObjectSessionHandler (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3270">Fix</a>: Evennia is its own MSSP family now, so we should return that
 instead of ‘Custom’ (InspectorCaracal)</p></li>
@@ -199,8 +209,9 @@ instead of ‘Custom’ (InspectorCaracal)</p></li>
 (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3272">Fix</a>: Make sure <code class="docutils literal notranslate"><span class="pre">ScriptHandler.add</span></code> does not fail if passed an
 instantiated script.</p></li>
-<li><p>Docs: Typo fixes and starting earlier with explaining how to add to the
-default cmdsets.</p></li>
+<li><p>Docs: Lots of Typo fixes (iLPdev)</p></li>
+<li><p>Beginner tutorial: Cleanup and starting earlier with explaining how to add to
+the default cmdsets.</p></li>
 </ul>
 </section>
 <section id="evennia-2-3-0">
