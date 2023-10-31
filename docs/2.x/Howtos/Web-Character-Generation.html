@@ -338,7 +338,7 @@ specific web page. We will use three views and three pages here:</p>
                 <span class="c1"># create the character</span>
                 <span class="n">char</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">home</span><span class="o">=</span><span class="n">home</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">perms</span><span class="p">)</span>
-                <span class="n">user</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
                 <span class="c1"># add the right locks for the character so the account can</span>
                 <span class="c1">#  puppet it</span>
                 <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
@@ -420,7 +420,7 @@ specific web page. We will use three views and three pages here:</p>
                 <span class="c1"># create the character</span>
                 <span class="n">char</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">home</span><span class="o">=</span><span class="n">home</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">perms</span><span class="p">)</span>
-                <span class="n">user</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
                 <span class="c1"># add the right locks for the character so the account can</span>
                 <span class="c1">#  puppet it</span>
                 <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>

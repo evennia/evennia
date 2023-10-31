@@ -245,10 +245,34 @@ at_account_creation()</p>
 <code class="sig-name descname">options</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt id="evennia.accounts.accounts.DefaultAccount.characters">
-<em class="property">property </em><code class="sig-name descname">characters</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.characters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">characters</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.characters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.characters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_post_add_character">
+<code class="sig-name descname">at_post_add_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span><span class="p">:</span> <span class="n">DefaultCharacter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_add_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_add_character" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after a character is added to this account’s list of playable characters.</p>
+<p>Use it to easily implement custom logic when a character is added to an account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>character</strong> (<a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><em>DefaultCharacter</em></a>) – The character that was added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_post_remove_character">
+<code class="sig-name descname">at_post_remove_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount">evennia.accounts.accounts.DefaultAccount</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_remove_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_remove_character" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after a character is removed from this account’s list of playable characters.</p>
+<p>Use it to easily implement custom logic when a character is removed from an account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>character</strong> (<a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><em>DefaultCharacter</em></a>) – The character that was removed.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.uses_screenreader">

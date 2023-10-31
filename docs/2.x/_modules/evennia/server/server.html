@@ -733,9 +733,8 @@
             <span class="k">for</span> <span class="n">guest</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_GUEST_TYPECLASS</span>
             <span class="p">):</span>
-                <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">guest</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
-                        <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">guest</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
+                    <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
                 <span class="n">guest</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">SERVER_STARTSTOP_MODULES</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;at_server_cold_start&quot;</span><span class="p">):</span>

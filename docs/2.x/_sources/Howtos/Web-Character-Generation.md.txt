@@ -206,7 +206,7 @@ def creating(request):
                 # create the character
                 char = create.create_object(typeclass=typeclass, key=name,
                     home=home, permissions=perms)
-                user.db._playable_characters.append(char)
+                user.add_character(char)
                 # add the right locks for the character so the account can
                 #  puppet it
                 char.locks.add(" or ".join([
@@ -290,7 +290,7 @@ def creating(request):
                 # create the character
                 char = create.create_object(typeclass=typeclass, key=name,
                     home=home, permissions=perms)
-                user.db._playable_characters.append(char)
+                user.add_character(char)
                 # add the right locks for the character so the account can
                 #  puppet it
                 char.locks.add(" or ".join([

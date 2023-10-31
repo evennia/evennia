@@ -696,7 +696,7 @@ we use <code class="docutils literal notranslate"><span class="pre">caller.msg()
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
     <span class="n">new_character</span> <span class="o">=</span> <span class="n">tmp_character</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>      
     
-    <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_character</span><span class="p">]</span> 
+    <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span> 
     
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Character created!&quot;</span>
     

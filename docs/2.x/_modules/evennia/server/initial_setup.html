@@ -184,16 +184,15 @@
 
     <span class="c1"># Create the in-game god-character for account #1 and set</span>
     <span class="c1"># it to exist in Limbo.</span>
-    <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">superuser_character</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-        <span class="n">superuser_character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-            <span class="n">character_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">superuser</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">superuser_character</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">superuser</span><span class="o">.</span><span class="n">create_character</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">superuser</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is User #1.&quot;</span><span class="p">)</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
 
-    <span class="n">superuser_character</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">character_typeclass</span>
-    <span class="n">superuser_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is User #1.&quot;</span><span class="p">)</span>
     <span class="n">superuser_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="s2">&quot;examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()&quot;</span>
     <span class="p">)</span>
@@ -203,11 +202,6 @@
 
     <span class="n">superuser</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_first_login&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">superuser</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_last_puppet&quot;</span><span class="p">,</span> <span class="n">superuser_character</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">superuser</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">superuser_character</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">superuser</span><span class="o">.</span><span class="n">db_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">superuser_character</span><span class="p">]</span>
 
     <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span>
     <span class="k">try</span><span class="p">:</span>
