@@ -54,7 +54,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
         session = self.session
 
         # only one character should be in progress at a time, so we check for WIPs first
-        in_progress = [chara for chara in account.db._playable_characters if chara.db.chargen_step]
+        in_progress = [chara for chara in account.characters if chara.db.chargen_step]
 
         if len(in_progress):
             # we're continuing chargen for a WIP character
@@ -64,7 +64,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
             charmax = settings.MAX_NR_CHARACTERS
 
             if not account.is_superuser and (
-                account.db._playable_characters and len(account.db._playable_characters) >= charmax
+                account.characters and len(account.characters) >= charmax
             ):
                 plural = "" if charmax == 1 else "s"
                 self.msg(f"You may only create a maximum of {charmax} character{plural}.")
@@ -90,7 +90,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
             )
             # initalize the new character to the beginning of the chargen menu
             new_character.db.chargen_step = "menunode_welcome"
-            account.db._playable_characters.append(new_character)
+            account.characters.add(new_character)
 
         # set the menu node to start at to the character's last saved step
         startnode = new_character.db.chargen_step

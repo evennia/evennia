@@ -310,7 +310,7 @@ class ObjectAdmin(admin.ModelAdmin):
         This will:
 
         - Set account.db._last_puppet to this object
-        - Add object to account.db._playable_characters
+        - Add object to account.characters
         - Change object locks to allow puppeting by account
 
         """
@@ -319,10 +319,7 @@ class ObjectAdmin(admin.ModelAdmin):
 
         if account:
             account.db._last_puppet = obj
-            if not account.db._playable_characters:
-                account.db._playable_characters = []
-            if obj not in account.db._playable_characters:
-                account.db._playable_characters.append(obj)
+            account.characters.add(obj)
             if not obj.access(account, "puppet"):
                 lock = obj.locks.get("puppet")
                 lock += f" or pid({account.id})"
@@ -331,7 +328,7 @@ class ObjectAdmin(admin.ModelAdmin):
                 request,
                 "Did the following (where possible): "
                 f"Set Account.db._last_puppet = {obj}, "
-                f"Added {obj} to Account.db._playable_characters list, "
+                f"Added {obj} to Account.characters list, "
                 f"Added 'puppet:pid({account.id})' lock to {obj}.",
             )
         else:

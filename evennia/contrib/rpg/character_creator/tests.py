@@ -17,7 +17,7 @@ class TestCharacterCreator(BaseEvenniaCommandTest):
         self.account.swap_typeclass(character_creator.ContribChargenAccount)
 
     def test_ooc_look(self):
-        self.account.db._playable_characters = [self.char1]
+        self.account.characters.add(self.char1)
         self.account.unpuppet_all()
 
         self.char1.db.chargen_step = "start"

@@ -102,7 +102,7 @@ def collect_topics(account):
     cmd_help_topics = []
     if not str(account) == "AnonymousUser":
         # create list of account and account's puppets
-        puppets = account.db._playable_characters + [account]
+        puppets = account.characters.all() + [account]
         # add the account's and puppets' commands to cmd_help_topics list
         for puppet in puppets:
             for cmdset in puppet.cmdset.get():

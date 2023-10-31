@@ -198,8 +198,8 @@ def index(request):
 def index(request):
     """The 'index' view."""
     user = request.user
-    if not user.is_anonymous() and user.db._playable_characters:
-        character = user.db._playable_characters[0]
+    if not user.is_anonymous() and user.characters:
+        character = user.characters[0]
 ```
 
 In this second case, it will select the first character of the account.

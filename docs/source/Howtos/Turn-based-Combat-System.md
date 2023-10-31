@@ -311,11 +311,11 @@ Our rock-paper-scissor setup works like this:
 - `defend` does nothing but has a chance to beat `hit`.
 - `flee/disengage` must succeed two times in a row (i.e. not beaten by a `hit` once during the turn). If so the character leaves combat.
 
-
 ```python
 # mygame/world/rules.py
 
 import random
+
 
 # messages 
 
@@ -326,7 +326,7 @@ def resolve_combat(combat_handler, actiondict):
     for each character:
     {char.id:[(action1, char, target), (action2, char, target)], ...}
     """
-    flee = {} # track number of flee commands per character
+    flee = {}  # track number of flee commands per character
     for isub in range(2):
         # loop over sub-turns
         messages = []
@@ -403,6 +403,7 @@ This is the last component we need, a command to initiate combat. This will tie 
 
 from evennia import create_script
 
+
 class CmdAttack(Command):
     """
     initiates combat
@@ -419,7 +420,7 @@ class CmdAttack(Command):
     def func(self):
         "Handle command"
         if not self.args:
-            self.caller.msg("Usage: attack <target>")            
+            self.caller.msg("Usage: attack <target>")
             return
         target = self.caller.search(self.args)
         if not target:

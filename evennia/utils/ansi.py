@@ -72,7 +72,6 @@ from evennia.utils.utils import to_str
 
 MXP_ENABLED = settings.MXP_ENABLED
 
-
 # ANSI definitions
 
 ANSI_BEEP = "\07"

@@ -2941,3 +2941,4 @@ def str2int(number):
             # invalid number-word, raise ValueError
             raise ValueError(f"String {original_input} cannot be converted to int.")
     return sum(sums)
+

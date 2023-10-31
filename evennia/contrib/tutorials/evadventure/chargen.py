@@ -316,7 +316,7 @@ def node_apply_character(caller, raw_string, **kwargs):
     """
     tmp_character = kwargs["tmp_character"]
     new_character = tmp_character.apply(caller)
-    caller.db._playable_characters.append(new_character)
+    caller.characters.add(new_character)
 
     text = "Character created!"
 

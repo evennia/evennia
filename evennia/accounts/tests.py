@@ -105,14 +105,14 @@ class TestDefaultGuest(BaseEvenniaTest):
     def test_at_server_shutdown(self):
         account, errors = DefaultGuest.create(ip=self.ip)
         self.char1.delete = MagicMock()
-        account.db._playable_characters = [self.char1]
+        account.characters.add(self.char1)
         account.at_server_shutdown()
         self.char1.delete.assert_called()
 
     def test_at_post_disconnect(self):
         account, errors = DefaultGuest.create(ip=self.ip)
         self.char1.delete = MagicMock()
-        account.db._playable_characters = [self.char1]
+        account.characters.add(self.char1)
         account.at_post_disconnect()
         self.char1.delete.assert_called()
 
@@ -358,19 +358,19 @@ class TestAccountPuppetDeletion(BaseEvenniaTest):
     def test_puppet_deletion(self):
         # Check for existing chars
         self.assertFalse(
-            self.account.db._playable_characters, "Account should not have any chars by default."
+            self.account.characters, "Account should not have any chars by default."
         )
 
         # Add char1 to account's playable characters
-        self.account.db._playable_characters.append(self.char1)
-        self.assertTrue(self.account.db._playable_characters, "Char was not added to account.")
+        self.account.characters.add(self.char1)
+        self.assertTrue(self.account.characters, "Char was not added to account.")
 
         # See what happens when we delete char1.
         self.char1.delete()
         # Playable char list should be empty.
         self.assertFalse(
-            self.account.db._playable_characters,
-            f"Playable character list is not empty! {self.account.db._playable_characters}",
+            self.account.characters,
+            f"Playable character list is not empty! {self.account.characters}",
         )
 
 
@@ -383,9 +383,19 @@ class TestDefaultAccountEv(BaseEvenniaTest):
     def test_characters_property(self):
         "test existence of None in _playable_characters Attr"
         self.account.db._playable_characters = [self.char1, None]
-        chars = self.account.characters
-        self.assertEqual(chars, [self.char1])
+        self.assertEqual(self.account.characters.all(), [self.char1])
         self.assertEqual(self.account.db._playable_characters, [self.char1])
+
+    def test_add_character_to_playable_list(self):
+        self.assertEqual(self.account.characters.all(), [])
+        self.account.characters.add(self.char1)
+        self.assertEqual(self.account.characters.all(), [self.char1])
+
+    def test_remove_character_from_playable_list(self):
+        self.account.characters.add(self.char1)
+        self.assertEqual(self.account.characters.all(), [self.char1])
+        self.account.characters.remove(self.char1)
+        self.assertEqual(self.account.characters.all(), [])
 
     def test_puppet_success(self):
         self.account.msg = MagicMock()

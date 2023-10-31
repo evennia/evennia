@@ -444,3 +444,4 @@ class ServerSession(_BASE_SESSION_CLASS):
             return self.account.get_display_name(*args, **kwargs)
         else:
             return f"{self.protocol_key}({self.address})"
+
