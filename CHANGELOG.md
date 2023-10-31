@@ -2,12 +2,22 @@
 
 ## Main branch
 
+- [Feature][pull3313] (Backwards incompatible): `OptionHandler.set` now returns
+  `BaseOption` rather than its `.value`. Instead access `.value` or `.display()`
+  on this return for more control. (Volund)
 - [Feature][issue3273]: Allow passing `text_kwargs` kwarg to `EvMore.msg` in order to expand
   the outputfunc used for every evmore page.
 - [Feature][pull3278]: Refactor home page into multiple sub-parts for easier
   overriding and composition (johnnyvoruz)
 - [Feature][pull3286]: Allow Discord bot to change user's nickname and assign
   roles for a user on a given server (holl0wstar).
+- [Feature][pull3301]: Make EvenniaAdminSite include custom models better; adds
+  `DJANGO_ADMIN_APP_ORDER` and `DJANGO_ADMIN_APP_EXCLUDE` as modifable
+  settings.(Volund)
+- [Feature][pull3179]: Handling of the `.db._playable_characters` helper
+  methods. Also adds events hooks to modify effects when this list changes (Volund)
+- [Feature][pull3197]: Make sure Global scripts only start in one place,
+  avoiding race conditions until server starts (Volund)
 - [Fix][pull3267]: Missing recache step in ObjectSessionHandler (InspectorCaracal)
 - [Fix][pull3270]: Evennia is its own MSSP family now, so we should return that
   instead of 'Custom' (InspectorCaracal)
@@ -15,14 +25,19 @@
   (InspectorCaracal)
 - [Fix][issue3272]: Make sure `ScriptHandler.add` does not fail if passed an
   instantiated script.
-- Docs: Typo fixes and starting earlier with explaining how to add to the
-  default cmdsets.
+- Docs: Lots of Typo fixes (iLPdev)
+- Beginner tutorial: Cleanup and starting earlier with explaining how to add to
+  the default cmdsets.
 
 [pull3267]: https://github.com/evennia/evennia/pull/3267
 [pull3270]: https://github.com/evennia/evennia/pull/3270
 [pull3274]: https://github.com/evennia/evennia/pull/3274
 [pull3278]: https://github.com/evennia/evennia/pull/3278
 [pull3286]: https://github.com/evennia/evennia/pull/3286
+[pull3301]: https://github.com/evennia/evennia/pull/3301
+[pull3179]: https://github.com/evennia/evennia/pull/3179
+[pull3197]: https://github.com/evennia/evennia/pull/3197
+[pull3313]: https://github.com/evennia/evennia/pull/3313
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 
