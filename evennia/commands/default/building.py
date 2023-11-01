@@ -579,10 +579,6 @@ class CmdCreate(ObjManipCommand):
     locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
 
-    # lockstring of newly created objects, for easy overloading.
-    # Will be formatted with the {id} of the creating object.
-    new_obj_lockstring = "control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)"
-
     def func(self):
         """
         Creates the object.
@@ -600,26 +596,26 @@ class CmdCreate(ObjManipCommand):
             string = ""
             name = objdef["name"]
             aliases = objdef["aliases"]
-            typeclass = objdef["option"]
 
-            # create object (if not a valid typeclass, the default
-            # object typeclass will automatically be used)
-            lockstring = self.new_obj_lockstring.format(id=caller.id)
-            if (err := caller.can_build_object()):
-                caller.msg(err)
-                return
-            obj = create.create_object(
-                typeclass,
+            obj_typeclass, errors = caller.get_object_typeclass(obj_type="object", typeclass=objdef["option"])
+            if errors:
+                self.msg(errors)
+            if not obj_typeclass:
+                continue
+
+            obj, errors = obj_typeclass.create(
                 name,
                 caller,
                 home=caller,
                 aliases=aliases,
-                locks=lockstring,
                 report_to=caller,
+                creator=caller
             )
+            if errors:
+                self.msg(errors)
             if not obj:
                 continue
-            obj.at_object_constructed(caller)
+
             if aliases:
                 string = (
                     f"You create a new {obj.typename}: {obj.name} (aliases: {', '.join(aliases)})."
@@ -928,25 +924,27 @@ class CmdDig(ObjManipCommand):
         location = caller.location
 
         # Create the new room
-        typeclass = room["option"]
-        if not typeclass:
-            typeclass = settings.BASE_ROOM_TYPECLASS
+        room_typeclass, errors = caller.get_object_typeclass(obj_type="room", typeclass=room["option"], method="dig")
+        if errors:
+            self.msg("|rError creating room:|n %s" % errors)
+        if not room_typeclass:
+            return
 
         # create room
-        if (err := caller.can_build_object()):
-            caller.msg(err)
-            return
-        new_room = create.create_object(
-            typeclass, room["name"], aliases=room["aliases"], report_to=caller
+        new_room, errors = room_typeclass.create(
+            room["name"], aliases=room["aliases"], report_to=caller, creator=caller, method="dig"
         )
-        lockstring = self.new_room_lockstring.format(id=caller.id)
-        new_room.locks.add(lockstring)
+        if errors:
+            self.msg("|rError creating room:|n %s" % errors)
+        if not new_room:
+            return
+
         alias_string = ""
         if new_room.aliases.all():
             alias_string = " (%s)" % ", ".join(new_room.aliases.all())
-        new_room.at_object_constructed(caller)
+
         room_string = (
-            f"Created room {new_room}({new_room.dbref}){alias_string} of type {typeclass}."
+            f"Created room {new_room}({new_room.dbref}){alias_string} of type {new_room}."
         )
 
         # create exit to room
@@ -962,21 +960,27 @@ class CmdDig(ObjManipCommand):
                 exit_to_string = "\nYou cannot create an exit from a None-location."
             else:
                 # Build the exit to the new room from the current one
-                typeclass = to_exit["option"]
-                if not typeclass:
-                    typeclass = settings.BASE_EXIT_TYPECLASS
-                if (err := caller.can_build_object()):
-                    caller.msg(err)
+                exit_typeclass, errors = caller.get_object_typeclass(obj_type="exit", typeclass=to_exit["option"],
+                                                                     method="dig")
+                if errors:
+                    self.msg("|rError creating exit:|n %s" % errors)
+                if not exit_typeclass:
                     return
-                new_to_exit = create.create_object(
-                    typeclass,
+
+                new_to_exit, errors = exit_typeclass.create(
                     to_exit["name"],
-                    location,
-                    aliases=to_exit["aliases"],
-                    locks=lockstring,
+                    location=location,
                     destination=new_room,
+                    aliases=to_exit["aliases"],
                     report_to=caller,
+                    creator=caller,
+                    method="dig"
                 )
+                if errors:
+                    self.msg("|rError creating exit:|n %s" % errors)
+                if not new_to_exit:
+                    return
+
                 alias_string = ""
                 if new_to_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_to_exit.aliases.all())
@@ -984,7 +988,6 @@ class CmdDig(ObjManipCommand):
                     f"\nCreated Exit from {location.name} to {new_room.name}:"
                     f" {new_to_exit}({new_to_exit.dbref}){alias_string}."
                 )
-                new_to_exit.at_object_constructed(caller)
 
         # Create exit back from new room
 
@@ -996,21 +999,25 @@ class CmdDig(ObjManipCommand):
             elif not location:
                 exit_back_string = "\nYou cannot create an exit back to a None-location."
             else:
-                typeclass = back_exit["option"]
-                if not typeclass:
-                    typeclass = settings.BASE_EXIT_TYPECLASS
-                if (err := caller.can_build_object()):
-                    caller.msg(err)
+                exit_typeclass, errors = caller.get_object_typeclass(obj_type="exit", typeclass=back_exit["option"],
+                                                                     method="dig")
+                if errors:
+                    self.msg("|rError creating exit:|n %s" % errors)
+                if not exit_typeclass:
                     return
-                new_back_exit = create.create_object(
-                    typeclass,
+                new_back_exit, errors = exit_typeclass.create(
                     back_exit["name"],
-                    new_room,
-                    aliases=back_exit["aliases"],
-                    locks=lockstring,
+                    location=new_room,
                     destination=location,
+                    aliases=back_exit["aliases"],
                     report_to=caller,
+                    creator=caller,
+                    method="dig"
                 )
+                if errors:
+                    self.msg("|rError creating exit:|n %s" % errors)
+                if not new_back_exit:
+                    return
                 alias_string = ""
                 if new_back_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_back_exit.aliases.all())
@@ -1018,7 +1025,6 @@ class CmdDig(ObjManipCommand):
                     f"\nCreated Exit back from {new_room.name} to {location.name}:"
                     f" {new_back_exit}({new_back_exit.dbref}){alias_string}."
                 )
-                new_back_exit.at_object_constructed(caller)
         caller.msg(f"{room_string}{exit_to_string}{exit_back_string}")
         if new_room and "teleport" in self.switches:
             caller.move_to(new_room, move_type="teleport")
@@ -1489,20 +1495,23 @@ class CmdOpen(ObjManipCommand):
 
         else:
             # exit does not exist before. Create a new one.
-            lockstring = self.new_obj_lockstring.format(id=caller.id)
-            if not typeclass:
-                typeclass = settings.BASE_EXIT_TYPECLASS
-            if (err := caller.can_build_object()):
-                caller.msg(err)
+            exit_typeclass, errors = caller.get_object_typeclass(obj_type="exit", typeclass=typeclass, method="open")
+            if errors:
+                self.msg("|rError creating exit:|n %s" % errors)
+            if not exit_typeclass:
                 return
-            exit_obj = create.create_object(
-                typeclass,
-                key=exit_name,
+            exit_obj, errors = exit_typeclass.create(
+                exit_name,
                 location=location,
                 aliases=exit_aliases,
-                locks=lockstring,
                 report_to=caller,
+                creator=caller,
+                method="open"
             )
+            if errors:
+                self.msg("|rError creating exit:|n %s" % errors)
+            if not exit_obj:
+                return
             if exit_obj:
                 # storing a destination is what makes it an exit!
                 exit_obj.destination = destination
@@ -1515,7 +1524,6 @@ class CmdOpen(ObjManipCommand):
                     f"Created new Exit '{exit_name}' from {location.name} to"
                     f" {destination.name}{string}."
                 )
-                exit_obj.at_object_constructed(caller)
             else:
                 string = f"Error: Exit '{exit.name}' not created."
         # emit results
