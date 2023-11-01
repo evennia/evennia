@@ -1222,10 +1222,7 @@ def funcparser_callable_you(
     """
     if args and mapping:
         # this would mean a $you(key) form
-        try:
-            caller = mapping.get(args[0])
-        except KeyError:
-            pass
+        caller = mapping.get(args[0], None)
 
     if not (caller and receiver):
         raise ParsingError("No caller or receiver supplied to $you callable.")
@@ -1292,10 +1289,7 @@ def funcparser_callable_your(
     """
     if args and mapping:
         # this would mean a $your(key) form
-        try:
-            caller = mapping.get(args[0])
-        except KeyError:
-            pass
+        caller = mapping.get(args[0], None)
 
     if not (caller and receiver):
         raise ParsingError("No caller or receiver supplied to $your callable.")
