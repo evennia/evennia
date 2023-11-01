@@ -1275,7 +1275,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             target = caller.search(target_str, candidates=banlists)
             if not target:
-                self.msg("Could not find a banned user '{target_str}' in given channel(s).")
+                self.msg(f"Could not find a banned user '{target_str}' in given channel(s).")
                 return
 
             for chan in channels:
@@ -1801,7 +1801,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             # re-use existing bot
             bot = bot[0]
             if not bot.is_bot:
-                self.msg("Account '{botname}' already exists and is not a bot.")
+                self.msg(f"Account '{botname}' already exists and is not a bot.")
                 return
         else:
             # create a new bot
