@@ -128,7 +128,6 @@ class TestValidatorFuncs(TestCase):
                 validatorfuncs.boolean(b)
 
     def test_timezone_ok(self):
-
         for tz in ["America/Chicago", "GMT", "UTC"]:
             self.assertEqual(tz, validatorfuncs.timezone(tz).zone)
 

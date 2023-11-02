@@ -511,7 +511,6 @@ class CmdCast(Command):
             self.target = self.caller
 
     def func(self):
-
         # all items carried by the caller could work
         possible_tools = self.caller.contents
 

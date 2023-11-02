@@ -84,7 +84,6 @@ class TestCreateScript(BaseEvenniaTest):
 
 
 class TestCreateHelpEntry(TestCase):
-
     help_entry = """
     Qui laborum voluptas quis commodi ipsum quo temporibus eum. Facilis
     assumenda facilis architecto in corrupti. Est placeat eum amet qui beatae
@@ -130,7 +129,6 @@ class TestCreateHelpEntry(TestCase):
 
 
 class TestCreateMessage(BaseEvenniaTest):
-
     msgtext = """
     Qui laborum voluptas quis commodi ipsum quo temporibus eum. Facilis
     assumenda facilis architecto in corrupti. Est placeat eum amet qui beatae

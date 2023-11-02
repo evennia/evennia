@@ -26,7 +26,6 @@ import evennia
 
 evennia._init(portal_mode=True)
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
-
 from evennia.server.webserver import EvenniaReverseProxyResource
 from evennia.utils import logger
 from evennia.utils.utils import (
@@ -264,11 +263,9 @@ if "--nodaemon" not in sys.argv and "test" not in sys.argv:
 PORTAL = Portal(application)
 
 if LOCKDOWN_MODE:
-
     INFO_DICT["lockdown_mode"] = "  LOCKDOWN_MODE active: Only local connections."
 
 if AMP_ENABLED:
-
     # The AMP protocol handles the communication between
     # the portal and the mud server. Only reason to ever deactivate
     # it would be during testing and debugging.
@@ -287,7 +284,6 @@ if AMP_ENABLED:
 # These will gradually be started as they are initialized below.
 
 if TELNET_ENABLED:
-
     # Start telnet game connections
 
     from evennia.server.portal import telnet
@@ -312,7 +308,6 @@ if TELNET_ENABLED:
 
 
 if SSL_ENABLED:
-
     # Start Telnet+SSL game connection (requires PyOpenSSL).
 
     from evennia.server.portal import telnet_ssl
@@ -346,7 +341,6 @@ if SSL_ENABLED:
 
 
 if SSH_ENABLED:
-
     # Start SSH game connections. Will create a keypair in
     # evennia/game if necessary.
 

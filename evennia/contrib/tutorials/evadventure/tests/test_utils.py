@@ -12,7 +12,6 @@ from ..objects import EvAdventureObject
 
 class TestUtils(BaseEvenniaTest):
     def test_get_obj_stats(self):
-
         obj = create.create_object(
             EvAdventureObject, key="testobj", attributes=(("desc", "A test object"),)
         )

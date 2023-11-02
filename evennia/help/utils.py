@@ -190,7 +190,6 @@ def parse_entry_for_subcategories(entry):
 
     # from evennia import set_trace;set_trace()
     for part in _RE_HELP_SUBTOPIC_SPLIT.split(subtopics.strip()):
-
         subtopic_match = _RE_HELP_SUBTOPIC_PARSE.match(part.strip())
         if subtopic_match:
             # a new sub(-sub..) category starts.

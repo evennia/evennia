@@ -318,7 +318,6 @@ class CraftingRecipeBase:
         """
         craft_result = None
         if self.allow_craft:
-
             # override/extend craft_kwargs from initialization.
             craft_kwargs = copy(self.craft_kwargs)
             craft_kwargs.update(kwargs)
@@ -626,7 +625,6 @@ class CraftingRecipe(CraftingRecipeBase):
         self.allow_reuse = not bool(self.consumable_tags)
 
     def _format_message(self, message, **kwargs):
-
         missing = iter_to_str(kwargs.get("missing", ""))
         excess = iter_to_str(kwargs.get("excess", ""))
         involved_tools = iter_to_str(kwargs.get("tools", ""))
@@ -702,7 +700,6 @@ class CraftingRecipe(CraftingRecipeBase):
 
         tools = []
         for itag, tag in enumerate(cls.tool_tags):
-
             tools.append(
                 create_object(
                     key=tool_key or (cls.tool_names[itag] if cls.tool_names else tag.capitalize()),

@@ -451,7 +451,6 @@ class ObjectDBManager(TypedObjectManager):
             return query
 
         if not searchdata and searchdata != 0:
-
             if tags:
                 return _search_by_tag(make_iter(tags))
 

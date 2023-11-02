@@ -1,6 +1,7 @@
 from evennia import create_object
-from evennia.utils.test_resources import BaseEvenniaTest, BaseEvenniaCommandTest  # noqa
-from .containers import ContribContainer, CmdContainerGet, CmdContainerLook, CmdPut
+from evennia.utils.test_resources import BaseEvenniaCommandTest, BaseEvenniaTest  # noqa
+
+from .containers import CmdContainerGet, CmdContainerLook, CmdPut, ContribContainer
 
 
 class TestContainer(BaseEvenniaTest):
@@ -52,7 +53,7 @@ class TestContainerCmds(BaseEvenniaCommandTest):
         # move object to character to try putting
         self.obj1.location = self.char1
         self.call(CmdPut(), "obj in box", "You can't put things in that.")
-        
+
     def test_at_capacity_put(self):
         # set container capacity
         self.container.capacity = 1
@@ -61,5 +62,3 @@ class TestContainerCmds(BaseEvenniaCommandTest):
         # move object to character to try putting
         self.obj1.location = self.char1
         self.call(CmdPut(), "obj in box", "You can't fit anything else in a Box.")
-
-        

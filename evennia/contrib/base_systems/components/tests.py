@@ -58,7 +58,7 @@ class TestComponents(EvenniaTest):
             InheritedTCWithComponents, key="char_with_c", location=self.room1, home=self.room1
         )
         assert self.char1.test_a
-        assert not self.char1.cmp.get('test_c')
+        assert not self.char1.cmp.get("test_c")
         assert char_with_c.test_c
 
     def test_character_instances_components_properly(self):

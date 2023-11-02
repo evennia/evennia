@@ -14,10 +14,11 @@ from collections import defaultdict
 from random import choice
 
 from django.conf import settings
-from evennia import AttributeProperty, Command, DefaultCharacter
-from evennia.utils.utils import make_iter
 from twisted.internet import reactor, task
 from twisted.internet.defer import CancelledError, inlineCallbacks
+
+from evennia import AttributeProperty, Command, DefaultCharacter
+from evennia.utils.utils import make_iter
 
 from .llm_client import LLMClient
 

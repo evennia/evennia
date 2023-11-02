@@ -15,6 +15,7 @@ from collections import defaultdict
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import smart_str
+
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.dbserialize import from_pickle, to_pickle
 from evennia.utils.idmapper.models import SharedMemoryModel

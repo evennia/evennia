@@ -14,7 +14,6 @@ from .room import EvscapeRoom
 
 class CleanupScript(DefaultScript):
     def at_script_creation(self):
-
         self.key = "evscaperoom_cleanup"
         self.desc = "Cleans up empty evscaperooms"
 
@@ -23,7 +22,6 @@ class CleanupScript(DefaultScript):
         self.persistent = True
 
     def at_repeat(self):
-
         for room in EvscapeRoom.objects.all():
             if not room.get_all_characters():
                 # this room is empty

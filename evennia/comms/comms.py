@@ -7,6 +7,7 @@ import re
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.text import slugify
+
 from evennia.comms.managers import ChannelManager
 from evennia.comms.models import ChannelDB
 from evennia.typeclasses.models import TypeclassBase

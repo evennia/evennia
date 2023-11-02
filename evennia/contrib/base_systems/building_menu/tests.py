@@ -98,6 +98,7 @@ class TestBuildingMenu(BaseEvenniaCommandTest):
 
     def test_multi_level(self):
         """Test multi-level choices."""
+
         # Creaste three succeeding menu (t2 is contained in t1, t3 is contained in t2)
         def on_nomatch_t1(caller, menu):
             menu.move("whatever")  # this will be valid since after t1 is a joker

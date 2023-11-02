@@ -318,7 +318,6 @@ class LatinifyTest(TestCase):
 
 
 class TestFormatGrid(TestCase):
-
     maxDiff = None
 
     def setUp(self):

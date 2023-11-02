@@ -353,9 +353,9 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         url = f"{DISCORD_API_BASE_URL}/{url}"
         body = FileBodyProducer(BytesIO(json.dumps(data).encode("utf-8")))
         request_type = kwargs.pop("type", "POST")
-        
+
         d = _AGENT.request(
-           request_type.encode("utf-8"),
+            request_type.encode("utf-8"),
             url.encode("utf-8"),
             Headers(
                 {
@@ -501,7 +501,6 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         self._post_json(f"guilds/{guild_id}/members/{user_id}", data, type="PATCH")
 
     def send_role(self, role_id, guild_id, user_id, **kwargs):
-
         data = kwargs
         self._post_json(f"guilds/{guild_id}/members/{user_id}/roles/{role_id}", data, type="PUT")
 

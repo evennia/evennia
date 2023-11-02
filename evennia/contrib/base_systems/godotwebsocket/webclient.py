@@ -70,6 +70,7 @@ def start_plugin_services(portal):
     factory.noisy = False
     factory.protocol = GodotWebSocketClient
     from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
+
     factory.sessionhandler = PORTAL_SESSIONS
 
     interface = "127.0.0.1" if LOCKDOWN_MODE else settings.GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE

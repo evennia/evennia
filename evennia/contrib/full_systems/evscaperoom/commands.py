@@ -296,7 +296,6 @@ class CmdWho(CmdEvscapeRoom, default_cmds.CmdWho):
     obj2_search = False
 
     def func(self):
-
         caller = self.caller
 
         if self.args == "all":
@@ -344,7 +343,6 @@ class CmdSpeak(Command):
     arg_regex = r"\w|\s|$"
 
     def func(self):
-
         args = self.args.strip()
         caller = self.caller
         action = self.cmdname
@@ -584,7 +582,6 @@ class CmdFocusInteraction(CmdEvscapeRoom):
         self.room = self.caller.location
 
     def func(self):
-
         focused = self.focus
         action = self.action
 
@@ -604,7 +601,6 @@ class CmdStand(CmdEvscapeRoom):
     key = "stand"
 
     def func(self):
-
         # Positionable objects will set this flag on you.
         pos = self.caller.attributes.get("position", category=self.room.tagcategory)
 
@@ -710,7 +706,6 @@ class CmdSetFlag(CmdEvscapeRoom):
     obj2_search = False
 
     def func(self):
-
         if not self.arg2:
             self.caller.msg("Usage: flag <obj> with <flagname>")
             return

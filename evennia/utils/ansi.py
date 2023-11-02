@@ -335,7 +335,6 @@ class ANSIParser(object):
             red, green, blue = gray, gray, gray
 
         if use_xterm256:
-
             if not grayscale:
                 colval = 16 + (red * 36) + (green * 6) + blue
 
@@ -347,56 +346,55 @@ class ANSIParser(object):
         else:
             # xterm256 not supported, convert the rgb value to ansi instead
             rgb = (red, green, blue)
-	
+
             def _convert_for_ansi(val):
-                return int((val+1)//2)
+                return int((val + 1) // 2)
 
             # greys
             if (max(rgb) - min(rgb)) <= 1:
                 match rgb:
-                    case (0,0,0):
+                    case (0, 0, 0):
                         return ANSI_BACK_BLACK if background else ANSI_NORMAL + ANSI_BLACK
-                    case ((1|2), (1|2), (1|2)):
+                    case ((1 | 2), (1 | 2), (1 | 2)):
                         return ANSI_BACK_BLACK if background else ANSI_HILITE + ANSI_BLACK
-                    case ((2|3), (2|3), (2|3)):
+                    case ((2 | 3), (2 | 3), (2 | 3)):
                         return ANSI_BACK_WHITE if background else ANSI_NORMAL + ANSI_WHITE
-                    case ((3|4), (3|4), (3|4)):
+                    case ((3 | 4), (3 | 4), (3 | 4)):
                         return ANSI_BACK_WHITE if background else ANSI_NORMAL + ANSI_WHITE
-                    case ((4|5), (4|5), (4|5)):
+                    case ((4 | 5), (4 | 5), (4 | 5)):
                         return ANSI_BACK_WHITE if background else ANSI_HILITE + ANSI_WHITE
 
             match tuple(_convert_for_ansi(c) for c in rgb):
                 # red
-                case ((2|3), (0|1), (0|1)):
+                case ((2 | 3), (0 | 1), (0 | 1)):
                     return ANSI_BACK_RED if background else ANSI_HILITE + ANSI_RED
-                case ((1|2), 0, 0):
+                case ((1 | 2), 0, 0):
                     return ANSI_BACK_RED if background else ANSI_NORMAL + ANSI_RED
                 # green
-                case ((0|1), (2|3), (0|1)):
+                case ((0 | 1), (2 | 3), (0 | 1)):
                     return ANSI_BACK_GREEN if background else ANSI_HILITE + ANSI_GREEN
                 case ((0 | 1), 1, 0) if green > red:
                     return ANSI_BACK_GREEN if background else ANSI_NORMAL + ANSI_GREEN
                 # blue
-                case ((0|1), (0|1), (2|3)):
+                case ((0 | 1), (0 | 1), (2 | 3)):
                     return ANSI_BACK_BLUE if background else ANSI_HILITE + ANSI_BLUE
                 case (0, 0, 1):
                     return ANSI_BACK_BLUE if background else ANSI_NORMAL + ANSI_BLUE
                 # cyan
-                case ((0|1|2), (2|3), (2|3)) if red == min(rgb):
+                case ((0 | 1 | 2), (2 | 3), (2 | 3)) if red == min(rgb):
                     return ANSI_BACK_CYAN if background else ANSI_HILITE + ANSI_CYAN
-                case (0, (1|2), (1|2)):
+                case (0, (1 | 2), (1 | 2)):
                     return ANSI_BACK_CYAN if background else ANSI_NORMAL + ANSI_CYAN
                 # yellow
-                case ((2|3), (2|3), (0|1|2)) if blue == min(rgb):
+                case ((2 | 3), (2 | 3), (0 | 1 | 2)) if blue == min(rgb):
                     return ANSI_BACK_YELLOW if background else ANSI_HILITE + ANSI_YELLOW
-                case ((2|1), (2|1), (0|1)):
+                case ((2 | 1), (2 | 1), (0 | 1)):
                     return ANSI_BACK_YELLOW if background else ANSI_NORMAL + ANSI_YELLOW
                 # magenta
-                case ((2|3), (0|1|2), (2|3)) if green == min(rgb):
+                case ((2 | 3), (0 | 1 | 2), (2 | 3)) if green == min(rgb):
                     return ANSI_BACK_MAGENTA if background else ANSI_HILITE + ANSI_MAGENTA
-                case ((1|2), 0, (1|2)):
+                case ((1 | 2), 0, (1 | 2)):
                     return ANSI_BACK_MAGENTA if background else ANSI_NORMAL + ANSI_MAGENTA
-                
 
     def strip_raw_codes(self, string):
         """

@@ -563,7 +563,6 @@ class XYMap:
         def _scan_neighbors(
             start_node, points, dist=2, xmin=BIGVAL, ymin=BIGVAL, xmax=0, ymax=0, depth=0
         ):
-
             x0, y0 = start_node.x, start_node.y
             points.append((x0, y0))
             xmin, xmax = min(xmin, x0), max(xmax, x0)
@@ -930,7 +929,7 @@ class XYMap:
             # now different from the original for future cropping
             width, height = xmax - xmin + 1, ymax - ymin + 1
             gridmap = [[" "] * width for _ in range(height)]
-            for (ix0, iy0) in points:
+            for ix0, iy0 in points:
                 gridmap[iy0 - ymin][ix0 - xmin] = display_map[iy0][ix0]
 
         elif mode == "scan":

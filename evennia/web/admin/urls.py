@@ -19,7 +19,6 @@ urlpatterns = [
 ]
 
 if settings.EVENNIA_ADMIN:
-
     urlpatterns += [
         # Our override for the admin.
         path("", frontpage.evennia_admin, name="evennia_admin"),

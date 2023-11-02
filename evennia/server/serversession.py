@@ -10,10 +10,15 @@ import time
 
 from django.conf import settings
 from django.utils import timezone
+
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.comms.models import ChannelDB
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
-from evennia.typeclasses.attributes import AttributeHandler, DbHolder, InMemoryAttributeBackend
+from evennia.typeclasses.attributes import (
+    AttributeHandler,
+    DbHolder,
+    InMemoryAttributeBackend,
+)
 from evennia.utils import logger
 from evennia.utils.utils import class_from_module, lazy_property, make_iter
 
@@ -444,4 +449,3 @@ class ServerSession(_BASE_SESSION_CLASS):
             return self.account.get_display_name(*args, **kwargs)
         else:
             return f"{self.protocol_key}({self.address})"
-

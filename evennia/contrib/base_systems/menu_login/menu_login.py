@@ -167,7 +167,6 @@ def node_enter_password(caller, raw_string, **kwargs):
 
     username = kwargs["username"]
     if kwargs["new_user"]:
-
         if kwargs.get("retry_password"):
             # Attempting to fix password
             text = "Enter a new password:"

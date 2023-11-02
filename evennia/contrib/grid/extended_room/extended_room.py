@@ -47,6 +47,7 @@ from collections import deque
 
 from django.conf import settings
 from django.db.models import Q
+
 from evennia import (
     CmdSet,
     DefaultRoom,

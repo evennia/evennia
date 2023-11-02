@@ -357,9 +357,7 @@ class TestAccountPuppetDeletion(BaseEvenniaTest):
     @override_settings(MULTISESSION_MODE=2)
     def test_puppet_deletion(self):
         # Check for existing chars
-        self.assertFalse(
-            self.account.characters, "Account should not have any chars by default."
-        )
+        self.assertFalse(self.account.characters, "Account should not have any chars by default.")
 
         # Add char1 to account's playable characters
         self.account.characters.add(self.char1)
@@ -410,9 +408,7 @@ class TestDefaultAccountEv(BaseEvenniaTest):
         self.assertEqual(idle, 10)
 
         # test no sessions
-        with patch(
-            "evennia.SESSION_HANDLER.sessions_from_account", return_value=[]
-        ) as mock_sessh:
+        with patch("evennia.SESSION_HANDLER.sessions_from_account", return_value=[]) as mock_sessh:
             idle = self.account.idle_time
             self.assertEqual(idle, None)
 
@@ -423,9 +419,7 @@ class TestDefaultAccountEv(BaseEvenniaTest):
         self.assertEqual(conn, 10)
 
         # test no sessions
-        with patch(
-            "evennia.SESSION_HANDLER.sessions_from_account", return_value=[]
-        ) as mock_sessh:
+        with patch("evennia.SESSION_HANDLER.sessions_from_account", return_value=[]) as mock_sessh:
             idle = self.account.connection_time
             self.assertEqual(idle, None)
 

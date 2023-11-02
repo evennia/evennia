@@ -150,7 +150,6 @@ class XYZGrid(DefaultScript):
         # generate all Maps - this will also initialize their components
         # and bake any pathfinding paths (or load from disk-cache)
         for zcoord, old_mapdata in mapdata.items():
-
             self.log(f"Loading map '{zcoord}'...")
 
             # we reload the map from module

@@ -22,6 +22,7 @@ import time
 from codecs import lookup as codecs_lookup
 
 from django.conf import settings
+
 import evennia
 from evennia.utils import create, logger, search, utils
 
@@ -73,6 +74,7 @@ class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
 # Obs - these are all intended to be stored on the Account, and as such,
 # use self.account instead of self.caller, just to be sure. Also self.msg()
 # is used to make sure returns go to the right session
+
 
 # note that this is inheriting from MuxAccountLookCommand,
 # and has the .playable property.
@@ -307,7 +309,7 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
         else:
             # argument given
 
-            if (playables := account.characters):
+            if playables := account.characters:
                 # look at the playable_characters list first
                 character_candidates.extend(
                     utils.make_iter(

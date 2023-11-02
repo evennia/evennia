@@ -33,7 +33,7 @@ or implement the same locks/hooks in your own typeclasses.
 from django.conf import settings
 
 from evennia import AttributeProperty, CmdSet, DefaultObject
-from evennia.commands.default.general import CmdLook, CmdGet, CmdDrop
+from evennia.commands.default.general import CmdDrop, CmdGet, CmdLook
 from evennia.utils import class_from_module
 
 # establish the right inheritance for container objects

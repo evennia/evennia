@@ -748,7 +748,6 @@ class TutorialEvMenu(EvMenu):
             self.caller.account.execute_cmd("unquell")
 
     def options_formatter(self, optionslist):
-
         navigation_keys = ("next", "back", "back to start")
 
         other = []

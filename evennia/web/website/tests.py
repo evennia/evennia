@@ -12,7 +12,6 @@ _FILE_HELP_ENTRIES = None
 
 
 class EvenniaWebTest(BaseEvenniaTest):
-
     # Use the same classes the views are expecting
     account_typeclass = settings.BASE_ACCOUNT_TYPECLASS
     object_typeclass = settings.BASE_OBJECT_TYPECLASS

@@ -416,7 +416,6 @@ class Rotatable(EvscaperoomObject):
             self.set_flag("rotatable")
 
     def at_focus_rotate(self, caller, **kwargs):
-
         if self.check_flag("rotatable"):
             self.at_rotate(caller)
         else:
@@ -501,7 +500,6 @@ class Readable(EvscaperoomObject):
             self.set_flag(self.read_flag)
 
     def at_focus_read(self, caller, **kwargs):
-
         if self.read_flag is None or self.check_flag(self.read_flag):
             self.at_read(caller)
         else:
@@ -525,7 +523,6 @@ class IndexReadable(Readable):
     index = {"page1": "This is page1", "page2": "This is page2", "page two": "page2"}  # alias
 
     def at_focus_read(self, caller, **kwargs):
-
         topic = kwargs.get("args").strip().lower()
 
         entry = self.index.get(topic, None)
@@ -931,7 +928,6 @@ class CodeInput(EvscaperoomObject):
     infinitely_locked = False
 
     def at_focus_code(self, caller, **kwargs):
-
         args = self.parse(kwargs["args"].strip())
 
         if not args:

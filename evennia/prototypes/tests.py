@@ -10,6 +10,7 @@ from time import time
 import mock
 from anything import Something
 from django.test.utils import override_settings
+
 from evennia.commands.default import building
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
@@ -135,7 +136,6 @@ class TestUtils(BaseEvenniaTest):
         )
 
     def test_update_objects_from_prototypes(self):
-
         self.maxDiff = None
         self.obj1.attributes.add("oldtest", "to_keep")
 
@@ -438,7 +438,6 @@ class TestPrototypeStorage(BaseEvenniaTest):
         self.prot3["prototype_tags"] = [("foo1", _PROTOTYPE_TAG_META_CATEGORY)]
 
     def test_prototype_storage(self):
-
         # from evennia import set_trace;set_trace(term_size=(180, 50))
         prot1 = protlib.create_prototype(self.prot1)
 
@@ -500,7 +499,6 @@ class _MockMenu(object):
 
 
 class TestMenuModule(BaseEvenniaTest):
-
     maxDiff = None
 
     def setUp(self):
@@ -518,7 +516,6 @@ class TestMenuModule(BaseEvenniaTest):
         }
 
     def test_helpers(self):
-
         caller = self.caller
 
         # general helpers
@@ -579,7 +576,6 @@ class TestMenuModule(BaseEvenniaTest):
         self.assertEqual(olc_menus._default_parse("f5", choices, *actions), (None, None))
 
     def test_node_helpers(self):
-
         caller = self.caller
 
         with mock.patch(
@@ -820,7 +816,6 @@ class TestMenuModule(BaseEvenniaTest):
     new=mock.MagicMock(return_value={"TypeclassTest": None}),
 )
 class TestOLCMenu(TestEvMenu):
-
     maxDiff = None
     menutree = "evennia.prototypes.menus"
     startnode = "node_index"
@@ -941,7 +936,6 @@ class TestOLCMenu(TestEvMenu):
 
 
 class PrototypeCrashTest(BaseEvenniaTest):
-
     # increase this to 1000 for optimization testing
     num_prototypes = 10
 
@@ -1038,7 +1032,6 @@ class TestIssue2908(BaseEvenniaTest):
     """
 
     def test_spawn_with_protfunc(self):
-
         self.room1.tags.add("beach", category="zone")
 
         prot = {

@@ -14,13 +14,14 @@ import re
 import time
 from random import getrandbits
 
-import evennia
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -38,7 +39,13 @@ from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.optionhandler import OptionHandler
-from evennia.utils.utils import is_iter, lazy_property, make_iter, to_str, variable_from_module
+from evennia.utils.utils import (
+    is_iter,
+    lazy_property,
+    make_iter,
+    to_str,
+    variable_from_module,
+)
 
 __all__ = ("DefaultAccount", "DefaultGuest")
 
@@ -1565,9 +1572,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         else:
             # In this mode we don't auto-connect but by default end up at a character selection
             # screen. We execute look on the account.
-            self.msg(
-                self.at_look(target=self.characters, session=session), session=session
-            )
+            self.msg(self.at_look(target=self.characters, session=session), session=session)
 
     def at_failed_login(self, session, **kwargs):
         """

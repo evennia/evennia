@@ -302,8 +302,7 @@ class CmdDice(default_cmds.MuxCommand):
         except ValueError:
             self.caller.msg(
                 "You need to enter valid integer numbers, modifiers and operators."
-                " |w%s|n was not understood."
-                % self.args
+                " |w%s|n was not understood." % self.args
             )
             return
         # format output

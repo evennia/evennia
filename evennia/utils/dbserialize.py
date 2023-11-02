@@ -30,6 +30,7 @@ except ImportError:
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import SafeString
+
 import evennia
 from evennia.utils import logger
 from evennia.utils.utils import is_iter, to_bytes, uses_database
@@ -129,6 +130,7 @@ def _init_globals():
         for src_key, dst_key in settings.ATTRIBUTE_STORED_MODEL_RENAME:
             _TO_MODEL_MAP[src_key] = _TO_MODEL_MAP.get(dst_key, None)
             _IGNORE_DATETIME_MODELS.append(src_key)
+
 
 #
 # SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions

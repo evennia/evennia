@@ -8,7 +8,14 @@ This implements a 'twitch' (aka DIKU or other traditional muds) style of MUD com
 """
 from evennia import AttributeProperty, CmdSet, default_cmds
 from evennia.commands.command import Command, InterruptCommand
-from evennia.utils.utils import display_len, inherits_from, list_to_string, pad, repeat, unrepeat
+from evennia.utils.utils import (
+    display_len,
+    inherits_from,
+    list_to_string,
+    pad,
+    repeat,
+    unrepeat,
+)
 
 from .characters import EvAdventureCharacter
 from .combat_base import (

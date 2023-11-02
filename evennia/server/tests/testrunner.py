@@ -38,7 +38,6 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
         super().setup_test_environment(**kwargs)
 
     def teardown_test_environment(self, **kwargs):
-
         # remove testing flag after suite has run
         from django.conf import settings
 

@@ -14,7 +14,6 @@ from .tags import TagInline
 
 
 class ScriptForm(forms.ModelForm):
-
     db_key = forms.CharField(
         label="Name/Key", help_text="Script identifier, shown in listings etc."
     )

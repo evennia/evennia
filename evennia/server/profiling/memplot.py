@@ -53,7 +53,6 @@ class Memplot(evennia.DefaultScript):
 
 
 if __name__ == "__main__":
-
     # plot output from the file
 
     import numpy

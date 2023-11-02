@@ -410,7 +410,9 @@ class RSSBot(Bot):
         # instruct the server and portal to create a new session with
         # the stored configuration
         configdict = {"uid": self.dbid, "url": self.db.rss_url, "rate": self.db.rss_rate}
-        evennia.SESSION_HANDLER.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
+        evennia.SESSION_HANDLER.start_bot_session(
+            "evennia.server.portal.rss.RSSBotFactory", configdict
+        )
 
     def execute_cmd(self, txt=None, session=None, **kwargs):
         """
@@ -658,7 +660,7 @@ class DiscordBot(Bot):
             guild_id (int) - The guild the role will be assigned in.
             user_id (int) - The user the given role will be assigned to.
         """
-        
+
         super().msg(role=(role_id, guild_id, user_id))
 
     def direct_msg(self, message, sender, **kwargs):

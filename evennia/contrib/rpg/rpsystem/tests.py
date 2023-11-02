@@ -5,6 +5,7 @@ Tests for RP system
 import time
 
 from anything import Anything
+
 from evennia import create_object
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import BaseEvenniaTest
@@ -329,7 +330,6 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         self.char2.swap_typeclass(rpsystem.ContribRPCharacter)
 
     def test_commands(self):
-
         self.call(
             rpsystem.CmdSdesc(), "Foobar Character", "Char's sdesc was set to 'Foobar Character'."
         )

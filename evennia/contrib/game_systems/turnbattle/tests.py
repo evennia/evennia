@@ -14,7 +14,6 @@ from . import tb_basic, tb_equip, tb_items, tb_magic, tb_range
 
 
 class TestTurnBattleBasicCmd(BaseEvenniaCommandTest):
-
     # Test basic combat commands
     def test_turnbattlecmd(self):
         self.call(tb_basic.CmdFight(), "", "You can't start a fight if you've been defeated!")
@@ -81,7 +80,6 @@ class TestTurnBattleItemsCmd(BaseEvenniaCommandTest):
 
 
 class TestTurnBattleMagicCmd(BaseEvenniaCommandTest):
-
     # Test magic commands
     def test_turnbattlemagiccmd(self):
         self.call(tb_magic.CmdStatus(), "", "You have 100 / 100 HP and 20 / 20 MP.")

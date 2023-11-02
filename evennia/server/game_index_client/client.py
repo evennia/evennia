@@ -8,16 +8,17 @@ import urllib.parse
 import urllib.request
 
 import django
-import evennia
 from django.conf import settings
-from evennia.accounts.models import AccountDB
-from evennia.utils import get_evennia_version, logger
 from twisted.internet import defer, protocol, reactor
 from twisted.internet.defer import inlineCallbacks
 from twisted.web.client import Agent, HTTPConnectionPool, _HTTP11ClientFactory
 from twisted.web.http_headers import Headers
 from twisted.web.iweb import IBodyProducer
 from zope.interface import implementer
+
+import evennia
+from evennia.accounts.models import AccountDB
+from evennia.utils import get_evennia_version, logger
 
 _EGI_HOST = "http://evennia-game-index.appspot.com"
 _EGI_REPORT_PATH = "/api/v1/game/check_in"

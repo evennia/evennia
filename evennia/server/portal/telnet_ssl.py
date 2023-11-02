@@ -103,7 +103,6 @@ def verify_or_create_SSL_key_and_cert(keyfile, certfile):
             return False
 
         else:
-
             try:
                 # create certificate
                 cert = crypto.X509()

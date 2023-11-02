@@ -47,7 +47,6 @@ class RestartingWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnec
     maxDelay = 60
 
     def __init__(self, sessionhandler, *args, **kwargs):
-
         self.uid = kwargs.pop("uid")
         self.channel = kwargs.pop("grapevine_channel")
         self.sessionhandler = sessionhandler

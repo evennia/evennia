@@ -25,14 +25,15 @@ DEFAULT_LLM_REQUEST_BODY = {...}   # see below, this controls how to prompt the 
 import json
 
 from django.conf import settings
-from evennia import logger
-from evennia.utils.utils import make_iter
 from twisted.internet import defer, protocol, reactor
 from twisted.internet.defer import inlineCallbacks
 from twisted.web.client import Agent, HTTPConnectionPool, _HTTP11ClientFactory
 from twisted.web.http_headers import Headers
 from twisted.web.iweb import IBodyProducer
 from zope.interface import implementer
+
+from evennia import logger
+from evennia.utils.utils import make_iter
 
 DEFAULT_LLM_HOST = "http://127.0.0.1:5000"
 DEFAULT_LLM_PATH = "/api/v1/generate"

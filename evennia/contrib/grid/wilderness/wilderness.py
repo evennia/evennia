@@ -123,7 +123,13 @@ create a new wilderness (with the name "default") but using our new map provider
 
 """
 
-from evennia import DefaultExit, DefaultRoom, DefaultScript, create_object, create_script
+from evennia import (
+    DefaultExit,
+    DefaultRoom,
+    DefaultScript,
+    create_object,
+    create_script,
+)
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils import inherits_from
 

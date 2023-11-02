@@ -48,6 +48,7 @@ import inspect
 import random
 
 from django.conf import settings
+
 from evennia.utils import logger, search
 from evennia.utils.utils import (
     callables_from_module,
@@ -333,7 +334,6 @@ class FuncParser:
         literal_infuncstr = False
 
         for char in string:
-
             if escaped:
                 # always store escaped characters verbatim
                 if curr_func:
@@ -1298,8 +1298,11 @@ def funcparser_callable_your(
     if caller == receiver:
         return "Your" if capitalize else "your"
 
-    name = caller.get_display_name(looker=receiver) \
-        if hasattr(caller, "get_display_name") else str(caller)
+    name = (
+        caller.get_display_name(looker=receiver)
+        if hasattr(caller, "get_display_name")
+        else str(caller)
+    )
 
     return name + "'s"
 

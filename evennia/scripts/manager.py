@@ -4,6 +4,7 @@ The custom manager for Scripts.
 
 from django.conf import settings
 from django.db.models import Q
+
 from evennia.server import signals
 from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
 from evennia.utils.utils import class_from_module, dbid_to_obj, make_iter

@@ -9,9 +9,8 @@ import time
 
 from django.conf import settings
 
-from evennia.server.models import ServerConfig
-
 import evennia
+from evennia.server.models import ServerConfig
 from evennia.utils import class_from_module, evtable, logger, search
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -512,7 +511,6 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
             permissions = obj.permissions.all()
 
             for perm in self.rhslist:
-
                 # don't allow to set a permission higher in the hierarchy than
                 # the one the caller has (to prevent self-escalation)
                 if perm.lower() in PERMISSION_HIERARCHY and not obj.locks.check_lockstring(

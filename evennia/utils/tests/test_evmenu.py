@@ -21,9 +21,10 @@ import copy
 
 from anything import Anything
 from django.test import TestCase
+from mock import MagicMock
+
 from evennia.utils import ansi, evmenu
 from evennia.utils.test_resources import BaseEvenniaTest
-from mock import MagicMock
 
 
 class TestEvMenu(TestCase):

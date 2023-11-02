@@ -17,6 +17,7 @@ a certain object type.
 from ast import literal_eval
 
 from django.conf import settings
+
 from evennia.utils import utils
 
 _PERMISSION_HIERARCHY = [pe.lower() for pe in settings.PERMISSION_HIERARCHY]

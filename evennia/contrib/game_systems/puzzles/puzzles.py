@@ -646,7 +646,6 @@ class CmdUsePuzzleParts(MuxCommand):
                 return
 
             if not part.tags.get(_PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY):
-
                 # not a puzzle part ... abort
                 caller.msg("You have no idea how %s can be used" % (many))
                 return

@@ -342,7 +342,6 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
 
 
 class ExtraInfoAuthServer(SSHUserAuthServer):
-
     noisy = False
 
     def auth_password(self, packet):

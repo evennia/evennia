@@ -168,7 +168,8 @@ class BaseBuff:
         Args:
             handler:    The handler this buff is attached to
             buffkey:    The key this buff uses on the cache
-            cache:      The cache dictionary (what you get if you use `handler.buffcache.get(key)`)"""
+            cache:      The cache dictionary (what you get if you use `handler.buffcache.get(key)`)
+        """
         required = {"handler": handler, "buffkey": buffkey, "cache": cache}
         self.__dict__.update(cache)
         self.__dict__.update(required)
@@ -196,7 +197,8 @@ class BaseBuff:
             loud:   (optional) Whether to call at_remove or not (default: True)
             expire: (optional) Whether to call at_expire or not (default: False)
             delay:  (optional) How long you want to delay the remove call for
-            context:    (optional) A dictionary you wish to pass to the at_remove/at_expire method as kwargs"""
+            context:    (optional) A dictionary you wish to pass to the at_remove/at_expire method as kwargs
+        """
         if not context:
             context = {}
         self.handler.remove(self.buffkey, loud=loud, expire=expire, context=context)
@@ -207,7 +209,8 @@ class BaseBuff:
         Args:
             loud:   (optional) Whether to call at_remove or not (default: True)
             delay:  (optional) How long you want to delay the remove call for
-            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel method as kwargs"""
+            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel method as kwargs
+        """
         if not context:
             context = {}
         self.handler.remove(self.buffkey, loud=loud, dispel=True, delay=delay, context=context)
@@ -225,7 +228,8 @@ class BaseBuff:
         """Helper method which unpauses this buff on its handler.
 
         Args:
-            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs"""
+            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs
+        """
         if not context:
             context = {}
         self.handler.unpause(self.buffkey, context)
@@ -322,7 +326,6 @@ class Mod:
 
 
 class BuffHandler:
-
     ownerref = None
     dbkey = "buffs"
     autopause = False
@@ -333,7 +336,8 @@ class BuffHandler:
         Args:
             owner:  The object this handler is attached to
             dbkey:  (optional) The string key of the db attribute to use for the buff cache
-            autopause:  (optional) Whether this handler autopauses playtime buffs on owning object's unpuppet"""
+            autopause:  (optional) Whether this handler autopauses playtime buffs on owning object's unpuppet
+        """
         self.ownerref = owner.dbref
         self.dbkey = dbkey
         self.autopause = autopause
@@ -434,7 +438,6 @@ class BuffHandler:
         *args,
         **kwargs,
     ):
-
         """Add a buff to this object, respecting all stacking/refresh/reapplication rules. Takes
         a number of optional parameters to allow for customization.
 
@@ -702,7 +705,8 @@ class BuffHandler:
             buff:       The buff class to search for
             to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
 
-        Returns a dictionary of instanced buffs of the specified type in the format {buffkey: instance}."""
+        Returns a dictionary of instanced buffs of the specified type in the format {buffkey: instance}.
+        """
         _cache = self.get_all() if not to_filter else to_filter
         return {k: _buff for k, _buff in _cache.items() if isinstance(_buff, buff)}
 
@@ -713,7 +717,8 @@ class BuffHandler:
             stat:       The string identifier to find relevant mods
             to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
 
-        Returns a dictionary of instanced buffs which modify the specified stat in the format {buffkey: instance}."""
+        Returns a dictionary of instanced buffs which modify the specified stat in the format {buffkey: instance}.
+        """
         _cache = self.traits if not to_filter else to_filter
         buffs = {k: buff for k, buff in _cache.items() for m in buff.mods if m.stat == stat}
         return buffs
@@ -725,7 +730,8 @@ class BuffHandler:
             trigger:    The string identifier to find relevant buffs
             to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
 
-        Returns a dictionary of instanced buffs which fire off the designated trigger, in the format {buffkey: instance}."""
+        Returns a dictionary of instanced buffs which fire off the designated trigger, in the format {buffkey: instance}.
+        """
         _cache = self.effects if not to_filter else to_filter
         buffs = {k: buff for k, buff in _cache.items() if trigger in buff.triggers}
         return buffs
@@ -737,7 +743,8 @@ class BuffHandler:
             source: The source you want to filter buffs by
             to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
 
-        Returns a dictionary of instanced buffs which came from the provided source, in the format {buffkey: instance}."""
+        Returns a dictionary of instanced buffs which came from the provided source, in the format {buffkey: instance}.
+        """
         _cache = self.all if not to_filter else to_filter
         buffs = {k: buff for k, buff in _cache.items() if buff.source == source}
         return buffs
@@ -750,7 +757,8 @@ class BuffHandler:
             value:  (optional) The value to match to. If None, merely checks to see if the value exists
             to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
 
-        Returns a dictionary of instanced buffs with cache values matching the specified value, in the format {buffkey: instance}."""
+        Returns a dictionary of instanced buffs with cache values matching the specified value, in the format {buffkey: instance}.
+        """
         _cache = self.all if not to_filter else to_filter
         if not value:
             buffs = {k: buff for k, buff in _cache.items() if buff.cache.get(key)}
@@ -907,7 +915,8 @@ class BuffHandler:
 
         Args:
             key:    The key for the buff you wish to pause
-            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs"""
+            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs
+        """
         if key in self.buffcache.keys():
             # Mark the buff as unpaused
             buff = dict(self.buffcache.get(key))
@@ -945,7 +954,8 @@ class BuffHandler:
         """Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.
 
         Args:
-            to_filter:  (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)"""
+            to_filter:  (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)
+        """
         if not isinstance(to_filter, dict):
             raise TypeError
         self.cleanup()
@@ -1156,7 +1166,8 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
         handler:    The handler managing the ticking buff
         buffkey:    The key of the ticking buff
         context:    (optional) A dictionary you wish to pass to the at_tick method as kwargs
-        initial:    (optional) Whether this tick_buff call is the first one. Starts True, changes to False for future ticks"""
+        initial:    (optional) Whether this tick_buff call is the first one. Starts True, changes to False for future ticks
+    """
     # Cache a reference and find the buff on the object
     if buffkey not in handler.buffcache.keys():
         return

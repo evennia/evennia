@@ -9,6 +9,7 @@ used as stand-alone XYZ-coordinate-aware rooms.
 
 from django.conf import settings
 from django.db.models import Q
+
 from evennia.objects.manager import ObjectManager
 from evennia.objects.objects import DefaultExit, DefaultRoom
 
@@ -440,7 +441,6 @@ class XYZRoom(DefaultRoom):
         xymap = self.xyzgrid.get_map(xyz[2])
 
         if xymap and kwargs.get("map_display", xymap.options.get("map_display", self.map_display)):
-
             # show the near-area map.
             map_character_symbol = kwargs.get(
                 "map_character_symbol",

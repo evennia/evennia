@@ -462,7 +462,6 @@ def _search_object(caller):
     is_account = searchstring.startswith("*")
 
     if is_dbref or is_account:
-
         if is_dbref:
             # a dbref search
             results = caller.search(searchstring, global_search=True, quiet=True)
@@ -508,14 +507,12 @@ def _object_search_actions(caller, raw_inp, **kwargs):
     raw_inp = raw_inp.strip()
 
     if obj_entry:
-
         num = choices.index(obj_entry)
         matches = caller.ndb._menutree.olc_search_object_matches
         obj = matches[num]
         prot = spawner.prototype_from_object(obj)
 
         if action == "examine":
-
             if not obj.access(caller, "examine"):
                 caller.msg("\n|rYou don't have 'examine' access on this object.|n")
                 del caller.ndb._menutree.olc_search_object_term
@@ -738,7 +735,6 @@ def _check_prototype_key(caller, key):
 
 
 def node_prototype_key(caller):
-
     text = """
         The |cPrototype-Key|n uniquely identifies the prototype and is |wmandatory|n. It is used to
         find and use the prototype to spawn new entities. It is not case sensitive.
@@ -840,7 +836,6 @@ def _prototype_parent_actions(caller, raw_inp, **kwargs):
 
 
 def _prototype_parent_select(caller, new_parent):
-
     ret = None
     prototype_parent = protlib.search_prototype(new_parent)
     try:
@@ -1090,7 +1085,6 @@ def _aliases_actions(caller, raw_inp, **kwargs):
 
 @list_node(_all_aliases, _aliases_select)
 def node_aliases(caller):
-
     text = """
         |cAliases|n are alternative ways to address an object, next to its |cKey|n.  Aliases are not
         case sensitive.
@@ -1393,7 +1387,6 @@ def _add_tag(caller, tag_string, **kwargs):
         old_tag = _get_tup_by_tagname(caller, tag)
 
         if "delete" in kwargs:
-
             if old_tag:
                 tags.pop(tags.index(old_tag))
                 text = "Removed Tag '{}'.".format(tag)
@@ -1745,7 +1738,6 @@ def node_permissions(caller):
 
 
 def node_location(caller):
-
     text = """
         The |cLocation|n of this object in the world. If not given, the object will spawn in the
         inventory of |c{caller}|n by default.
@@ -1782,7 +1774,6 @@ def node_location(caller):
 
 
 def node_home(caller):
-
     text = """
         The |cHome|n location of an object is often only used as a backup - this is where the object
         will be moved to if its location is deleted. The home location can also be used as an actual
@@ -1823,7 +1814,6 @@ def node_home(caller):
 
 
 def node_destination(caller):
-
     text = """
         The object's |cDestination|n is generally only used by Exit-like objects to designate where
         the exit 'leads to'. It's usually unset for all other types of objects.
@@ -1859,7 +1849,6 @@ def node_destination(caller):
 
 
 def node_prototype_desc(caller):
-
     text = """
         The |cPrototype-Description|n briefly describes the prototype when it's viewed in listings.
 
@@ -1967,7 +1956,6 @@ def _prototype_tags_actions(caller, raw_inp, **kwargs):
 
 @list_node(_caller_prototype_tags, _prototype_tag_select)
 def node_prototype_tags(caller):
-
     text = """
         |cPrototype-Tags|n can be used to classify and find prototypes in listings Tag names are not
         case-sensitive and can have not have a custom category.
@@ -2067,7 +2055,6 @@ def _prototype_locks_actions(caller, raw_inp, **kwargs):
 
 @list_node(_caller_prototype_locks, _prototype_lock_select)
 def node_prototype_locks(caller):
-
     text = """
         |cPrototype-Locks|n are used to limit access to this prototype when someone else is trying
         to access it. By default any prototype can be edited only by the creator and by Admins while
@@ -2608,7 +2595,6 @@ def _prototype_load_actions(caller, raw_inp, **kwargs):
     )
 
     if prototype:
-
         # which action to apply on the selection
         if action == "examine":
             # examine the prototype

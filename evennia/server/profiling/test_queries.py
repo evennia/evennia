@@ -30,7 +30,6 @@ def count_queries(exec_string, setup_string):
 
 
 if __name__ == "__main__":
-
     # setup tests here
 
     setup_string = """

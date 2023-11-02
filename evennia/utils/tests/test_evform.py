@@ -10,7 +10,6 @@ from evennia.utils import ansi, evform, evtable
 
 
 class TestEvForm(TestCase):
-
     maxDiff = None
 
     def _parse_form(self):
@@ -275,7 +274,6 @@ class TestEvFormErrors(TestCase):
     maxDiff = None
 
     def _form(self, form, **kwargs):
-
         formdict = {
             "form": form,
             "formchar": "x",

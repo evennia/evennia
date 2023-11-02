@@ -259,7 +259,6 @@ class ItemCombatRules(tb_basic.BasicCombatRules):
             user.msg("%s has %i uses remaining." % (item.key.capitalize(), item.db.item_uses))
 
         else:  # All uses spent
-
             if not item.db.item_consumable:  # Item isn't consumable
                 # Just inform the player that the uses are gone
                 user.msg("%s has no uses remaining." % item.key.capitalize())

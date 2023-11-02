@@ -73,7 +73,7 @@ class MonitorHandler(object):
         restored_monitors = ServerConfig.objects.conf(key=self.savekey)
         if restored_monitors:
             restored_monitors = dbunserialize(restored_monitors)
-            for (obj, fieldname, idstring, path, persistent, kwargs) in restored_monitors:
+            for obj, fieldname, idstring, path, persistent, kwargs in restored_monitors:
                 try:
                     if not server_reload and not persistent:
                         # this monitor will not be restarted
@@ -120,7 +120,7 @@ class MonitorHandler(object):
                     to_delete.append((obj, fieldname, idstring))
                     logger.log_trace("Monitor callback was removed.")
         # we cleanup non-found monitors (has to be done after loop)
-        for (obj, fieldname, idstring) in to_delete:
+        for obj, fieldname, idstring in to_delete:
             del self.monitors[obj][fieldname][idstring]
 
     def add(self, obj, fieldname, callback, idstring="", persistent=False, category=None, **kwargs):

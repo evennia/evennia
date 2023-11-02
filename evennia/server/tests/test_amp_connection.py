@@ -17,6 +17,7 @@ from evennia.utils import create
 
 DelayedCall.debug = True
 
+
 # @patch("evennia.server.initial_setup.get_god_account",
 #        MagicMock(return_value=create.account("TestAMPAccount", "test@test.com", "testpassword")))
 class _TestAMP(TwistedTestCase):

@@ -6,10 +6,11 @@ Testing of ExtendedRoom contrib
 import datetime
 
 from django.conf import settings
-from evennia import create_object
-from evennia.utils.test_resources import BaseEvenniaCommandTest, EvenniaTestCase
 from mock import Mock, patch
 from parameterized import parameterized
+
+from evennia import create_object
+from evennia.utils.test_resources import BaseEvenniaCommandTest, EvenniaTestCase
 
 from . import extended_room
 

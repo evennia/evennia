@@ -24,7 +24,6 @@ class TestEvscaperoomCommands(BaseEvenniaCommandTest):
         self.obj1.location = self.room1
 
     def test_base_search(self):
-
         cmd = commands.CmdEvscapeRoom()
         cmd.caller = self.char1
 
@@ -35,7 +34,6 @@ class TestEvscaperoomCommands(BaseEvenniaCommandTest):
         self.assertRaises(InterruptCommand, cmd._search, "Foo", True)
 
     def test_base_parse(self):
-
         cmd = commands.CmdEvscapeRoom()
         cmd.caller = self.char1
 
@@ -211,7 +209,6 @@ class TestUtils(BaseEvenniaTest):
         self.assertTrue(bool(obj2.pk))
 
     def test_parse_for_perspectives(self):
-
         second, third = utils.parse_for_perspectives("~You ~look at the nice book", "TestGuy")
         self.assertTrue(second, "You look at the nice book")
         self.assertTrue(third, "TestGuy looks at the nice book")
@@ -221,7 +218,6 @@ class TestUtils(BaseEvenniaTest):
         self.assertTrue(third, "With a smile, TestGuy was gone")
 
     def test_parse_for_things(self):
-
         string = "Looking at *book and *key."
         self.assertEqual(utils.parse_for_things(string, 0), "Looking at book and key.")
         self.assertEqual(utils.parse_for_things(string, 1), "Looking at |ybook|n and |ykey|n.")
@@ -240,7 +236,6 @@ class TestEvScapeRoom(BaseEvenniaTest):
         self.room.delete()
 
     def test_room_methods(self):
-
         room = self.room
         self.char1.location = room
 
@@ -279,7 +274,6 @@ class TestStates(BaseEvenniaTest):
         return states
 
     def test_base_state(self):
-
         st = basestate.BaseState(self.room.statehandler, self.room)
         st.init()
         obj = st.create_object(objects.Edible, key="apple")
@@ -291,7 +285,6 @@ class TestStates(BaseEvenniaTest):
         "Tick through all defined states"
 
         for mod in self._get_all_state_modules():
-
             state = mod.State(self.room.statehandler, self.room)
             state.init()
 

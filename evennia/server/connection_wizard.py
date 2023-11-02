@@ -217,7 +217,6 @@ def node_game_index_start(wizard, **kwargs):
 
 
 def node_game_index_fields(wizard, status=None):
-
     # reset the listing if needed
     if not hasattr(wizard, "game_index_listing"):
         wizard.game_index_listing = settings.GAME_INDEX_LISTING
@@ -420,7 +419,6 @@ def node_game_index_fields(wizard, status=None):
 
 
 def node_mssp_start(wizard):
-
     mssp_module = mod_import(settings.MSSP_META_MODULE or "server.conf.mssp")
     try:
         filename = mssp_module.__file__

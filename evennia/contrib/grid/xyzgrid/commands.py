@@ -10,6 +10,7 @@ the commands with XYZ-aware equivalents.
 from collections import namedtuple
 
 from django.conf import settings
+
 from evennia import CmdSet, InterruptCommand, default_cmds
 from evennia.commands.default import building
 from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
@@ -227,7 +228,6 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
         step_sequence=None,
         step=True,
     ):
-
         path_data = caller.ndb.xy_path_data
 
         if target:
@@ -244,7 +244,6 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
             )
 
         if step and path_data:
-
             step_sequence = path_data.step_sequence
 
             try:

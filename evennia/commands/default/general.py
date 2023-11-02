@@ -173,7 +173,6 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         )
 
         if "list" in switches or self.cmdstring in ("nicks",):
-
             if not nicklist:
                 string = "|wNo nicks defined.|n"
             else:

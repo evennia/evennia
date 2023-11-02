@@ -137,9 +137,10 @@ import copy
 import hashlib
 import time
 
-import evennia
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.prototypes import (
@@ -396,7 +397,6 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implici
     _unset = Unset()
 
     def _recursive_diff(old, new, depth=0):
-
         old_type = type(old)
         new_type = type(new)
 
@@ -693,7 +693,6 @@ def batch_update_objects_with_prototype(
 
         try:
             for key, directive in diff.items():
-
                 if key not in new_prototype and not exact:
                     # we don't update the object if the prototype does not actually
                     # contain the key (the diff will report REMOVE but we ignore it
@@ -701,7 +700,6 @@ def batch_update_objects_with_prototype(
                     continue
 
                 if directive in ("UPDATE", "REPLACE"):
-
                     if key in _PROTOTYPE_META_NAMES:
                         # prototype meta keys are not stored on-object
                         continue
@@ -855,7 +853,6 @@ def batch_create_object(*objparams):
 
     objs = []
     for objparam in objparams:
-
         obj = ObjectDB(**objparam[0])
 
         # setup
@@ -930,7 +927,6 @@ def spawn(*prototypes, caller=None, **kwargs):
 
     objsparams = []
     for prototype in prototypes:
-
         # run validation and homogenization of provided prototypes
         protlib.validate_prototype(
             prototype, None, protparents=custom_protparents, is_prototype_base=True
@@ -996,7 +992,7 @@ def spawn(*prototypes, caller=None, **kwargs):
 
         val = prot.pop("tags", [])
         tags = []
-        for (tag, category, *data) in val:
+        for tag, category, *data in val:
             tags.append(
                 (
                     init_spawn_value(tag, str, **init_spawn_kwargs),
@@ -1026,7 +1022,7 @@ def spawn(*prototypes, caller=None, **kwargs):
         # the rest are attribute tuples (attrname, value, category, locks)
         val = make_iter(prot.pop("attrs", []))
         attributes = []
-        for (attrname, value, *rest) in val:
+        for attrname, value, *rest in val:
             attributes.append(
                 (
                     attrname,

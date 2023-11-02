@@ -43,7 +43,6 @@ class EvAdventureCharacterGenerationTest(BaseEvenniaTest):
 
     @patch("evennia.contrib.tutorials.evadventure.chargen.spawn")
     def test_apply(self, mock_spawn):
-
         gambeson = create_object(objects.EvAdventureArmor, key="gambeson")
         mock_spawn.return_value = [gambeson]
         account = MagicMock()

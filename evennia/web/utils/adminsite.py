@@ -34,7 +34,11 @@ class EvenniaAdminSite(admin.AdminSite):
     def get_app_list(self, request, app_label=None):
         app_list = super().get_app_list(request, app_label=app_label)
         app_mapping = {app["app_label"]: app for app in app_list}
-        out = [app_mapping.pop(app_label) for app_label in settings.DJANGO_ADMIN_APP_ORDER if app_label in app_mapping]
+        out = [
+            app_mapping.pop(app_label)
+            for app_label in settings.DJANGO_ADMIN_APP_ORDER
+            if app_label in app_mapping
+        ]
         for app in settings.DJANGO_ADMIN_APP_EXCLUDE:
             app_mapping.pop(app, None)
         out += app_mapping.values()

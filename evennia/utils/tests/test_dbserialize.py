@@ -5,9 +5,10 @@ Tests for dbserialize module
 from collections import defaultdict, deque
 
 from django.test import TestCase
+from parameterized import parameterized
+
 from evennia.objects.objects import DefaultObject
 from evennia.utils import dbserialize
-from parameterized import parameterized
 
 
 class TestDbSerialize(TestCase):
@@ -203,7 +204,6 @@ class DbObjWrappers(TestCase):
         self.assertEqual(self.dbobj1.db.dict["key2"].hidden_obj, self.dbobj2)
 
     def test_dbobj_hidden_defaultdict(self):
-
         con1 = _ValidContainer(self.dbobj2)
         con2 = _ValidContainer(self.dbobj2)
 

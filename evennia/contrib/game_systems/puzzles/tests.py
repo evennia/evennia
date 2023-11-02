@@ -184,7 +184,6 @@ class TestPuzzles(BaseEvenniaCommandTest):
         return msg
 
     def test_cmd_use(self):
-
         self._use("", "Use what?")
         self._use("something", "There is no something around.")
         self._use("steel", "You have no idea how this can be used")

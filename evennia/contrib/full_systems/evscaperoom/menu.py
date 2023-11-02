@@ -66,7 +66,6 @@ def _move_to_room(caller, raw_string, **kwargs):
 
 
 def _create_new_room(caller, raw_string, **kwargs):
-
     # create a random name, retrying until we find
     # a unique one
     key = create_fantasy_word(length=5, capitalize=True)
@@ -147,7 +146,6 @@ def node_start(caller, raw_string, **kwargs):
 
 
 def node_set_desc(caller, raw_string, **kwargs):
-
     current_desc = kwargs.get("desc", caller.db.desc)
 
     text = (
@@ -176,7 +174,6 @@ def node_set_desc(caller, raw_string, **kwargs):
 
 
 def node_create_room(caller, raw_string, **kwargs):
-
     text = _CREATE_ROOM_TEXT
 
     options = (
@@ -188,7 +185,6 @@ def node_create_room(caller, raw_string, **kwargs):
 
 
 def node_join_room(caller, raw_string, **kwargs):
-
     room = kwargs["room"]
     stats = room.db.stats or {"progress": 0}
 
@@ -282,7 +278,6 @@ def _set_thing_style(caller, raw_string, **kwargs):
 
 
 def _toggle_screen_reader(caller, raw_string, **kwargs):
-
     session = kwargs["session"]
     # flip old setting
     session.protocol_flags["SCREENREADER"] = not session.protocol_flags.get("SCREENREADER", False)

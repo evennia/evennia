@@ -116,7 +116,6 @@ class TestServer(TestCase):
 
     def test_evennia_start(self):
         with patch.multiple("evennia.server.server", time=DEFAULT, service=DEFAULT) as mocks:
-
             mocks["time"].time = MagicMock(return_value=1000)
             evennia = self.server.Evennia(MagicMock())
             self.assertEqual(evennia.start_time, 1000)
@@ -127,7 +126,6 @@ class TestServer(TestCase):
     @patch("evennia.comms.models.ChannelDB")
     def test_update_defaults(self, mockchan, mockscript, mockacct, mockobj):
         with patch.multiple("evennia.server.server", ServerConfig=DEFAULT) as mocks:
-
             mockchan.objects.filter = MagicMock()
             mockscript.objects.filter = MagicMock()
             mockacct.objects.filter = MagicMock()
@@ -199,7 +197,6 @@ class TestServer(TestCase):
 
 class TestInitHooks(TestCase):
     def setUp(self):
-
         from evennia.server import server
         from evennia.utils import create
 
@@ -235,7 +232,6 @@ class TestInitHooks(TestCase):
 
     @override_settings(_TEST_ENVIRONMENT=True)
     def test_run_init_hooks(self):
-
         evennia = self.server.Evennia(MagicMock())
 
         evennia.at_server_reload_start = MagicMock()

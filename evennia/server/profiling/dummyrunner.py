@@ -600,7 +600,6 @@ def start_all_dummy_clients(nclients):
 
 
 if __name__ == "__main__":
-
     try:
         settings.DUMMYRUNNER_MIXIN
     except AttributeError:

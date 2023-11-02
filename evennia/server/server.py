@@ -31,6 +31,7 @@ from django.conf import settings
 from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext as _
+
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
 from evennia.server.models import ServerConfig

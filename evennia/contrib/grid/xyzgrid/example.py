@@ -172,6 +172,7 @@ MAP2 = r"""
 
 """
 
+
 # custom map node
 class TransitionToLargeTree(xymap_legend.TransitionMapNode):
     """

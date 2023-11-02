@@ -20,6 +20,7 @@ import uuid
 from collections import defaultdict
 
 from django.core import exceptions as django_exceptions
+
 from evennia.prototypes import spawner
 from evennia.utils.utils import class_from_module
 
@@ -182,7 +183,6 @@ class MapNode:
 
         # scan in all directions for links
         for direction, (dx, dy) in MAPSCAN.items():
-
             lx, ly = x + dx, y + dy
 
             if lx in xygrid and ly in xygrid[lx]:
@@ -273,7 +273,6 @@ class MapNode:
         return self.X, self.Y, self.Z
 
     def get_exit_spawn_name(self, direction, return_aliases=True):
-
         """
         Retrieve the spawn name for the exit being created by this link.
 
@@ -365,7 +364,6 @@ class MapNode:
 
         maplinks = {}
         for direction, link in self.first_links.items():
-
             key, *aliases = self.get_exit_spawn_name(direction)
             if not link.prototype.get("prototype_key"):
                 # generate a deterministic prototype_key if it doesn't exist
@@ -389,7 +387,6 @@ class MapNode:
         # build all exits first run)
         differing_keys = set(maplinks.keys()).symmetric_difference(set(linkobjs.keys()))
         for differing_key in differing_keys:
-
             if differing_key not in maplinks:
                 # an exit without a maplink - delete the exit-object
                 self.log(f"  deleting exit at xyz={xyz}, direction={differing_key}")

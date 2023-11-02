@@ -1036,17 +1036,17 @@ MIDDLEWARE = [
 # A list of Django apps (see INSTALLED_APPS) that will be listed first (if present)
 # in the Django web Admin page.
 DJANGO_ADMIN_APP_ORDER = [
-        "accounts",
-        "objects",
-        "scripts",
-        "comms",
-        "help",
-        "typeclasses",
-        "server",
-        "sites",
-        "flatpages",
-        "auth",
-    ]
+    "accounts",
+    "objects",
+    "scripts",
+    "comms",
+    "help",
+    "typeclasses",
+    "server",
+    "sites",
+    "flatpages",
+    "auth",
+]
 
 # The following apps will be excluded from the Django web Admin page.
 DJANGO_ADMIN_APP_EXCLUDE = list()
