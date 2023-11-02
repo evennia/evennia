@@ -154,55 +154,55 @@ class TestFuncParser(TestCase):
             (r'Test args10 $foo(",")', "Test args10 _test(,)"),
             ("Test args11 $foo(()", "Test args11 $foo(()"),  # invalid syntax
             (
-                r'Test kwarg1 $bar(foo=1, bar="foo", too=ere)',
-                "Test kwarg1 _test(foo=1, bar=foo, too=ere)",
+                    r'Test kwarg1 $bar(foo=1, bar="foo", too=ere)',
+                    "Test kwarg1 _test(foo=1, bar=foo, too=ere)",
             ),
             ("Test kwarg2 $bar(foo,bar,too=ere)", "Test kwarg2 _test(foo, bar, too=ere)"),
             ("test kwarg3 $foo(foo = bar, bar = ere )", "test kwarg3 _test(foo=bar, bar=ere)"),
             (
-                r"test kwarg4 $foo(foo =' bar ',\" bar \"= ere )",
-                "test kwarg4 _test(foo=' bar ', \" bar \"=ere)",
+                    r"test kwarg4 $foo(foo =' bar ',\" bar \"= ere )",
+                    "test kwarg4 _test(foo=' bar ', \" bar \"=ere)",
             ),
             (
-                "Test nest1 $foo($bar(foo,bar,too=ere))",
-                "Test nest1 _test(_test(foo, bar, too=ere))",
+                    "Test nest1 $foo($bar(foo,bar,too=ere))",
+                    "Test nest1 _test(_test(foo, bar, too=ere))",
             ),
             (
-                "Test nest2 $foo(bar,$repl(a),$repl()=$repl(),a=b) etc",
-                "Test nest2 _test(bar, rar, rr=rr, a=b) etc",
+                    "Test nest2 $foo(bar,$repl(a),$repl()=$repl(),a=b) etc",
+                    "Test nest2 _test(bar, rar, rr=rr, a=b) etc",
             ),
             ("Test nest3 $foo(bar,$repl($repl($repl(c))))", "Test nest3 _test(bar, rrrcrrr)"),
             (
-                "Test nest4 $foo($bar(a,b),$bar(a,$repl()),$bar())",
-                "Test nest4 _test(_test(a, b), _test(a, rr), _test())",
+                    "Test nest4 $foo($bar(a,b),$bar(a,$repl()),$bar())",
+                    "Test nest4 _test(_test(a, b), _test(a, rr), _test())",
             ),
             ("Test escape1 \\$repl(foo)", "Test escape1 $repl(foo)"),
             (
-                'Test escape2 "This is $foo() and $bar($bar())", $repl()',
-                'Test escape2 "This is _test() and _test(_test())", rr',
+                    'Test escape2 "This is $foo() and $bar($bar())", $repl()',
+                    'Test escape2 "This is _test() and _test(_test())", rr',
             ),
             (
-                "Test escape3 'This is $foo() and $bar($bar())', $repl()",
-                "Test escape3 'This is _test() and _test(_test())', rr",
+                    "Test escape3 'This is $foo() and $bar($bar())', $repl()",
+                    "Test escape3 'This is _test() and _test(_test())', rr",
             ),
             (
-                "Test escape4 $$foo() and $$bar(a,b), $repl()",
-                "Test escape4 $foo() and $bar(a,b), rr",
+                    "Test escape4 $$foo() and $$bar(a,b), $repl()",
+                    "Test escape4 $foo() and $bar(a,b), rr",
             ),
             ("Test with color |r$foo(a,b)|n is ok", "Test with color |r_test(a, b)|n is ok"),
             ("Test malformed1 This is $foo( and $bar(", "Test malformed1 This is $foo( and $bar("),
             (
-                "Test malformed2 This is $foo( and  $bar()",
-                "Test malformed2 This is $foo( and  _test()",
+                    "Test malformed2 This is $foo( and  $bar()",
+                    "Test malformed2 This is $foo( and  _test()",
             ),
             ("Test malformed3 $", "Test malformed3 $"),
             (
-                "Test malformed4 This is $foo(a=b and $bar(",
-                "Test malformed4 This is $foo(a=b and $bar(",
+                    "Test malformed4 This is $foo(a=b and $bar(",
+                    "Test malformed4 This is $foo(a=b and $bar(",
             ),
             (
-                "Test malformed5 This is $foo(a=b, and $repl()",
-                "Test malformed5 This is $foo(a=b, and rr",
+                    "Test malformed5 This is $foo(a=b, and $repl()",
+                    "Test malformed5 This is $foo(a=b, and rr",
             ),
             ("Test nonstr 4x2 = $double(4)", "Test nonstr 4x2 = 8"),
             ("Test nonstr 4x2 = $double(foo)", "Test nonstr 4x2 = N/A"),
@@ -212,8 +212,8 @@ class TestFuncParser(TestCase):
             ("Test eval3 $eval(\"'21' + 'foo' + 'bar'\")", "Test eval3 21foobar"),
             (r"Test eval4 $eval('21' + '$repl()' + \"\" + str(10 // 2))", "Test eval4 21rr5"),
             (
-                r"Test eval5 $eval(\'21\' + \'\$repl()\' + \'\' + str(10 // 2))",
-                "Test eval5 21$repl()5",
+                    r"Test eval5 $eval(\'21\' + \'\$repl()\' + \'\' + str(10 // 2))",
+                    "Test eval5 21$repl()5",
             ),
             ("Test eval6 $eval(\"'$repl(a)' + '$repl(b)'\")", "Test eval6 rarrbr"),
             ("Test type1 $typ([1,2,3,4])", "Test type1 <class 'list'>"),
@@ -222,8 +222,8 @@ class TestFuncParser(TestCase):
             ("Test type4 $typ({1:2,3:4})", "Test type4 <class 'dict'>"),
             ("Test type5 $typ(1), $typ(1.0)", "Test type5 <class 'int'>, <class 'float'>"),
             (
-                "Test type6 $typ(\"'1'\"), $typ('\"1.0\"')",
-                "Test type6 <class 'str'>, <class 'str'>",
+                    "Test type6 $typ(\"'1'\"), $typ('\"1.0\"')",
+                    "Test type6 <class 'str'>, <class 'str'>",
             ),
             ("Test add1 $add(1, 2)", "Test add1 3"),
             ("Test add2 $add([1,2,3,4], [5,6])", "Test add2 [1, 2, 3, 4, 5, 6]"),
@@ -248,8 +248,8 @@ class TestFuncParser(TestCase):
 
     @parameterized.expand(
         (
-            "Test malformed This is $dummy(a, b) and $bar(",
-            "Test $funcNotFound()",
+                "Test malformed This is $dummy(a, b) and $bar(",
+                "Test $funcNotFound()",
         )
     )
     def test_parse_raise_unparseable(self, unparseable):
@@ -437,20 +437,25 @@ class TestDefaultCallables(TestCase):
             ("$You() $conj(smile) at $You(char1).", "You smile at You.", "Char1 smiles at Char1."),
             ("$You() $conj(smile) at $You(char2).", "You smile at Char2.", "Char1 smiles at You."),
             (
-                "$You(char2) $conj(smile) at $you(char1).",
-                "Char2 smile at you.",
-                "You smiles at Char1.",
+                    "$You(char2) $conj(smile) at $you(char1).",
+                    "Char2 smile at you.",
+                    "You smiles at Char1.",
             ),
             (
-                "$You() $conj(smile) to $pron(yourself,m).",
-                "You smile to yourself.",
-                "Char1 smiles to himself.",
+                    "$You() $conj(smile) to $pron(yourself,m).",
+                    "You smile to yourself.",
+                    "Char1 smiles to himself.",
             ),
             (
-                "$You() $conj(smile) to $pron(herself).",
-                "You smile to yourself.",
-                "Char1 smiles to herself.",
+                    "$You() $conj(smile) to $pron(herself).",
+                    "You smile to yourself.",
+                    "Char1 smiles to herself.",
             ),  # reverse reference
+            (
+                    "$Your() smile is the greatest ever.",
+                    "Your smile is the greatest ever.",
+                    "Char1's smile is the greatest ever."
+            ),
         ]
     )
     def test_conjugate(self, string, expected_you, expected_them):
@@ -511,8 +516,8 @@ class TestDefaultCallables(TestCase):
         [
             ("Test $pad(Hello, 20, c, -) there", "Test -------Hello-------- there"),
             (
-                "Test $pad(Hello, width=20, align=c, fillchar=-) there",
-                "Test -------Hello-------- there",
+                    "Test $pad(Hello, width=20, align=c, fillchar=-) there",
+                    "Test -------Hello-------- there",
             ),
             ("Test $crop(This is a long test, 12)", "Test This is[...]"),
             ("Some $space(10) here", "Some            here"),
@@ -528,16 +533,16 @@ class TestDefaultCallables(TestCase):
             ("Some $rjust(Hello, width=30)", "Some                          Hello"),
             ("Some $cjust(Hello, 30)", "Some             Hello             "),
             (
-                "There $pluralize(is, 1, are) one $pluralize(goose, 1, geese) here.",
-                "There is one goose here.",
+                    "There $pluralize(is, 1, are) one $pluralize(goose, 1, geese) here.",
+                    "There is one goose here.",
             ),
             (
-                "There $pluralize(is, 2, are) two $pluralize(goose, 2, geese) here.",
-                "There are two geese here.",
+                    "There $pluralize(is, 2, are) two $pluralize(goose, 2, geese) here.",
+                    "There are two geese here.",
             ),
             (
-                "There is $int2str(1) murderer, but $int2str(12) suspects.",
-                "There is one murderer, but twelve suspects.",
+                    "There is $int2str(1) murderer, but $int2str(12) suspects.",
+                    "There is one murderer, but twelve suspects.",
             ),
             ("There is $an(thing) here", "There is a thing here"),
             ("Some $eval(\"'-'*20\")Hello", "Some --------------------Hello"),
