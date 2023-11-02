@@ -116,6 +116,7 @@
 <span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
 <span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">SafeString</span>
+
 <span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">uses_database</span>
@@ -215,6 +216,7 @@
         <span class="k">for</span> <span class="n">src_key</span><span class="p">,</span> <span class="n">dst_key</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">ATTRIBUTE_STORED_MODEL_RENAME</span><span class="p">:</span>
             <span class="n">_TO_MODEL_MAP</span><span class="p">[</span><span class="n">src_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_TO_MODEL_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dst_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">_IGNORE_DATETIME_MODELS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_key</span><span class="p">)</span>
+
 
 <span class="c1">#</span>
 <span class="c1"># SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions</span>

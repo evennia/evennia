@@ -100,7 +100,6 @@
 
 
 <div class="viewcode-block" id="TestTurnBattleBasicCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleBasicCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-
     <span class="c1"># Test basic combat commands</span>
 <div class="viewcode-block" id="TestTurnBattleBasicCmd.test_turnbattlecmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicCmd.test_turnbattlecmd">[docs]</a>    <span class="k">def</span> <span class="nf">test_turnbattlecmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">CmdFight</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You can&#39;t start a fight if you&#39;ve been defeated!&quot;</span><span class="p">)</span>
@@ -167,7 +166,6 @@
 
 
 <div class="viewcode-block" id="TestTurnBattleMagicCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleMagicCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-
     <span class="c1"># Test magic commands</span>
 <div class="viewcode-block" id="TestTurnBattleMagicCmd.test_turnbattlemagiccmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicCmd.test_turnbattlemagiccmd">[docs]</a>    <span class="k">def</span> <span class="nf">test_turnbattlemagiccmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">tb_magic</span><span class="o">.</span><span class="n">CmdStatus</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You have 100 / 100 HP and 20 / 20 MP.&quot;</span><span class="p">)</span>

@@ -112,7 +112,6 @@
 
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="n">portal_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal.portalsessionhandler</span> <span class="kn">import</span> <span class="n">PORTAL_SESSIONS</span>
-
 <span class="kn">from</span> <span class="nn">evennia.server.webserver</span> <span class="kn">import</span> <span class="n">EvenniaReverseProxyResource</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -350,11 +349,9 @@
 <span class="n">PORTAL</span> <span class="o">=</span> <span class="n">Portal</span><span class="p">(</span><span class="n">application</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">LOCKDOWN_MODE</span><span class="p">:</span>
-
     <span class="n">INFO_DICT</span><span class="p">[</span><span class="s2">&quot;lockdown_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;  LOCKDOWN_MODE active: Only local connections.&quot;</span>
 
 <span class="k">if</span> <span class="n">AMP_ENABLED</span><span class="p">:</span>
-
     <span class="c1"># The AMP protocol handles the communication between</span>
     <span class="c1"># the portal and the mud server. Only reason to ever deactivate</span>
     <span class="c1"># it would be during testing and debugging.</span>
@@ -373,7 +370,6 @@
 <span class="c1"># These will gradually be started as they are initialized below.</span>
 
 <span class="k">if</span> <span class="n">TELNET_ENABLED</span><span class="p">:</span>
-
     <span class="c1"># Start telnet game connections</span>
 
     <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">telnet</span>
@@ -398,7 +394,6 @@
 
 
 <span class="k">if</span> <span class="n">SSL_ENABLED</span><span class="p">:</span>
-
     <span class="c1"># Start Telnet+SSL game connection (requires PyOpenSSL).</span>
 
     <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">telnet_ssl</span>
@@ -432,7 +427,6 @@
 
 
 <span class="k">if</span> <span class="n">SSH_ENABLED</span><span class="p">:</span>
-
     <span class="c1"># Start SSH game connections. Will create a keypair in</span>
     <span class="c1"># evennia/game if necessary.</span>
 

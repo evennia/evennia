@@ -93,7 +93,11 @@
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">,</span> <span class="n">EvenniaTestCase</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseEvenniaTest</span><span class="p">,</span>
+    <span class="n">EvenniaCommandTestMixin</span><span class="p">,</span>
+    <span class="n">EvenniaTestCase</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">combat_base</span><span class="p">,</span> <span class="n">combat_turnbased</span><span class="p">,</span> <span class="n">combat_twitch</span>
 <span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>

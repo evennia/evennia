@@ -254,7 +254,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            handler:    The handler this buff is attached to</span>
 <span class="sd">            buffkey:    The key this buff uses on the cache</span>
-<span class="sd">            cache:      The cache dictionary (what you get if you use `handler.buffcache.get(key)`)&quot;&quot;&quot;</span>
+<span class="sd">            cache:      The cache dictionary (what you get if you use `handler.buffcache.get(key)`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">required</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;handler&quot;</span><span class="p">:</span> <span class="n">handler</span><span class="p">,</span> <span class="s2">&quot;buffkey&quot;</span><span class="p">:</span> <span class="n">buffkey</span><span class="p">,</span> <span class="s2">&quot;cache&quot;</span><span class="p">:</span> <span class="n">cache</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">required</span><span class="p">)</span>
@@ -282,7 +283,8 @@
 <span class="sd">            loud:   (optional) Whether to call at_remove or not (default: True)</span>
 <span class="sd">            expire: (optional) Whether to call at_expire or not (default: False)</span>
 <span class="sd">            delay:  (optional) How long you want to delay the remove call for</span>
-<span class="sd">            context:    (optional) A dictionary you wish to pass to the at_remove/at_expire method as kwargs&quot;&quot;&quot;</span>
+<span class="sd">            context:    (optional) A dictionary you wish to pass to the at_remove/at_expire method as kwargs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="n">loud</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="n">expire</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span></div>
@@ -293,7 +295,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            loud:   (optional) Whether to call at_remove or not (default: True)</span>
 <span class="sd">            delay:  (optional) How long you want to delay the remove call for</span>
-<span class="sd">            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel method as kwargs&quot;&quot;&quot;</span>
+<span class="sd">            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel method as kwargs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="n">loud</span><span class="p">,</span> <span class="n">dispel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="n">delay</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span></div>
@@ -311,7 +314,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method which unpauses this buff on its handler.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs&quot;&quot;&quot;</span>
+<span class="sd">            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">unpause</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
@@ -408,7 +412,6 @@
 
 
 <div class="viewcode-block" id="BuffHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler">[docs]</a><span class="k">class</span> <span class="nc">BuffHandler</span><span class="p">:</span>
-
     <span class="n">ownerref</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">dbkey</span> <span class="o">=</span> <span class="s2">&quot;buffs&quot;</span>
     <span class="n">autopause</span> <span class="o">=</span> <span class="kc">False</span>
@@ -419,7 +422,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            owner:  The object this handler is attached to</span>
 <span class="sd">            dbkey:  (optional) The string key of the db attribute to use for the buff cache</span>
-<span class="sd">            autopause:  (optional) Whether this handler autopauses playtime buffs on owning object&#39;s unpuppet&quot;&quot;&quot;</span>
+<span class="sd">            autopause:  (optional) Whether this handler autopauses playtime buffs on owning object&#39;s unpuppet</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownerref</span> <span class="o">=</span> <span class="n">owner</span><span class="o">.</span><span class="n">dbref</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbkey</span> <span class="o">=</span> <span class="n">dbkey</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">autopause</span> <span class="o">=</span> <span class="n">autopause</span>
@@ -520,7 +524,6 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a buff to this object, respecting all stacking/refresh/reapplication rules. Takes</span>
 <span class="sd">        a number of optional parameters to allow for customization.</span>
 
@@ -788,7 +791,8 @@
 <span class="sd">            buff:       The buff class to search for</span>
 <span class="sd">            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.</span>
 
-<span class="sd">        Returns a dictionary of instanced buffs of the specified type in the format {buffkey: instance}.&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of instanced buffs of the specified type in the format {buffkey: instance}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">to_filter</span> <span class="k">else</span> <span class="n">to_filter</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_buff</span><span class="p">,</span> <span class="n">buff</span><span class="p">)}</span></div>
 
@@ -799,7 +803,8 @@
 <span class="sd">            stat:       The string identifier to find relevant mods</span>
 <span class="sd">            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.</span>
 
-<span class="sd">        Returns a dictionary of instanced buffs which modify the specified stat in the format {buffkey: instance}.&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of instanced buffs which modify the specified stat in the format {buffkey: instance}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">to_filter</span> <span class="k">else</span> <span class="n">to_filter</span>
         <span class="n">buffs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">buff</span><span class="o">.</span><span class="n">mods</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">stat</span> <span class="o">==</span> <span class="n">stat</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">buffs</span></div>
@@ -811,7 +816,8 @@
 <span class="sd">            trigger:    The string identifier to find relevant buffs</span>
 <span class="sd">            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.</span>
 
-<span class="sd">        Returns a dictionary of instanced buffs which fire off the designated trigger, in the format {buffkey: instance}.&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of instanced buffs which fire off the designated trigger, in the format {buffkey: instance}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">effects</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">to_filter</span> <span class="k">else</span> <span class="n">to_filter</span>
         <span class="n">buffs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">trigger</span> <span class="ow">in</span> <span class="n">buff</span><span class="o">.</span><span class="n">triggers</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">buffs</span></div>
@@ -823,7 +829,8 @@
 <span class="sd">            source: The source you want to filter buffs by</span>
 <span class="sd">            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.</span>
 
-<span class="sd">        Returns a dictionary of instanced buffs which came from the provided source, in the format {buffkey: instance}.&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of instanced buffs which came from the provided source, in the format {buffkey: instance}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">to_filter</span> <span class="k">else</span> <span class="n">to_filter</span>
         <span class="n">buffs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">source</span> <span class="o">==</span> <span class="n">source</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">buffs</span></div>
@@ -836,7 +843,8 @@
 <span class="sd">            value:  (optional) The value to match to. If None, merely checks to see if the value exists</span>
 <span class="sd">            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.</span>
 
-<span class="sd">        Returns a dictionary of instanced buffs with cache values matching the specified value, in the format {buffkey: instance}.&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of instanced buffs with cache values matching the specified value, in the format {buffkey: instance}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">to_filter</span> <span class="k">else</span> <span class="n">to_filter</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
             <span class="n">buffs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>
@@ -993,7 +1001,8 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            key:    The key for the buff you wish to pause</span>
-<span class="sd">            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs&quot;&quot;&quot;</span>
+<span class="sd">            context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffcache</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="c1"># Mark the buff as unpaused</span>
             <span class="n">buff</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
@@ -1031,7 +1040,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            to_filter:  (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)&quot;&quot;&quot;</span>
+<span class="sd">            to_filter:  (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_filter</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
@@ -1242,7 +1252,8 @@
 <span class="sd">        handler:    The handler managing the ticking buff</span>
 <span class="sd">        buffkey:    The key of the ticking buff</span>
 <span class="sd">        context:    (optional) A dictionary you wish to pass to the at_tick method as kwargs</span>
-<span class="sd">        initial:    (optional) Whether this tick_buff call is the first one. Starts True, changes to False for future ticks&quot;&quot;&quot;</span>
+<span class="sd">        initial:    (optional) Whether this tick_buff call is the first one. Starts True, changes to False for future ticks</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Cache a reference and find the buff on the object</span>
     <span class="k">if</span> <span class="n">buffkey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">return</span>

@@ -106,6 +106,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">exceptions</span> <span class="k">as</span> <span class="n">django_exceptions</span>
+
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
@@ -268,7 +269,6 @@
 
         <span class="c1"># scan in all directions for links</span>
         <span class="k">for</span> <span class="n">direction</span><span class="p">,</span> <span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span> <span class="ow">in</span> <span class="n">MAPSCAN</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
             <span class="n">lx</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">dy</span>
 
             <span class="k">if</span> <span class="n">lx</span> <span class="ow">in</span> <span class="n">xygrid</span> <span class="ow">and</span> <span class="n">ly</span> <span class="ow">in</span> <span class="n">xygrid</span><span class="p">[</span><span class="n">lx</span><span class="p">]:</span>
@@ -359,7 +359,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Z</span></div>
 
 <div class="viewcode-block" id="MapNode.get_exit_spawn_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.get_exit_spawn_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_exit_spawn_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">return_aliases</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve the spawn name for the exit being created by this link.</span>
 
@@ -451,7 +450,6 @@
 
         <span class="n">maplinks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">direction</span><span class="p">,</span> <span class="n">link</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_links</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
             <span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">aliases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_exit_spawn_name</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">link</span><span class="o">.</span><span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">):</span>
                 <span class="c1"># generate a deterministic prototype_key if it doesn&#39;t exist</span>
@@ -475,7 +473,6 @@
         <span class="c1"># build all exits first run)</span>
         <span class="n">differing_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">maplinks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">linkobjs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
         <span class="k">for</span> <span class="n">differing_key</span> <span class="ow">in</span> <span class="n">differing_keys</span><span class="p">:</span>
-
             <span class="k">if</span> <span class="n">differing_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">maplinks</span><span class="p">:</span>
                 <span class="c1"># an exit without a maplink - delete the exit-object</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  deleting exit at xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2">, direction=</span><span class="si">{</span><span class="n">differing_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

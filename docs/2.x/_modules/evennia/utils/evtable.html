@@ -204,6 +204,7 @@
 <span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">TextWrapper</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">display_len</span> <span class="k">as</span> <span class="n">d_len</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">justify</span>
@@ -306,7 +307,6 @@
         <span class="n">chunks</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
 
         <span class="k">while</span> <span class="n">chunks</span><span class="p">:</span>
-
             <span class="c1"># Start the list of chunks that will make up the current line.</span>
             <span class="c1"># cur_len is just the length of all the chunks in cur_line.</span>
             <span class="n">cur_line</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1487,7 +1487,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">:</span>
             <span class="c1"># if we are fixing the table height, it means cells must crop text instead of resizing.</span>
             <span class="k">if</span> <span class="n">nrowmax</span><span class="p">:</span>
-
                 <span class="c1"># get minimum possible cell heights for each column</span>
                 <span class="n">cheights_min</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="nb">max</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">get_min_height</span><span class="p">()</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worktable</span><span class="p">))</span>

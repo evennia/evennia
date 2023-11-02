@@ -502,7 +502,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="s2">&quot;rotatable&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Rotatable.at_focus_rotate"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.objects.html#evennia.contrib.full_systems.evscaperoom.objects.Rotatable.at_focus_rotate">[docs]</a>    <span class="k">def</span> <span class="nf">at_focus_rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_flag</span><span class="p">(</span><span class="s2">&quot;rotatable&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_rotate</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -587,7 +586,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_flag</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Readable.at_focus_read"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.objects.html#evennia.contrib.full_systems.evscaperoom.objects.Readable.at_focus_read">[docs]</a>    <span class="k">def</span> <span class="nf">at_focus_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_flag</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_flag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_flag</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_read</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -611,7 +609,6 @@
     <span class="n">index</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;page1&quot;</span><span class="p">:</span> <span class="s2">&quot;This is page1&quot;</span><span class="p">,</span> <span class="s2">&quot;page2&quot;</span><span class="p">:</span> <span class="s2">&quot;This is page2&quot;</span><span class="p">,</span> <span class="s2">&quot;page two&quot;</span><span class="p">:</span> <span class="s2">&quot;page2&quot;</span><span class="p">}</span>  <span class="c1"># alias</span>
 
 <div class="viewcode-block" id="IndexReadable.at_focus_read"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.objects.html#evennia.contrib.full_systems.evscaperoom.objects.IndexReadable.at_focus_read">[docs]</a>    <span class="k">def</span> <span class="nf">at_focus_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
         <span class="n">topic</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;args&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
         <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1017,7 +1014,6 @@
     <span class="n">infinitely_locked</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="CodeInput.at_focus_code"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.objects.html#evennia.contrib.full_systems.evscaperoom.objects.CodeInput.at_focus_code">[docs]</a>    <span class="k">def</span> <span class="nf">at_focus_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;args&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>

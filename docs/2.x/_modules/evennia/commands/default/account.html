@@ -108,6 +108,7 @@
 <span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">lookup</span> <span class="k">as</span> <span class="n">codecs_lookup</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
 <span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
 
@@ -159,6 +160,7 @@
 <span class="c1"># Obs - these are all intended to be stored on the Account, and as such,</span>
 <span class="c1"># use self.account instead of self.caller, just to be sure. Also self.msg()</span>
 <span class="c1"># is used to make sure returns go to the right session</span>
+
 
 <span class="c1"># note that this is inheriting from MuxAccountLookCommand,</span>
 <span class="c1"># and has the .playable property.</span>
@@ -393,7 +395,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># argument given</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">playables</span> <span class="o">:=</span> <span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">playables</span> <span class="o">:=</span> <span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
                 <span class="c1"># look at the playable_characters list first</span>
                 <span class="n">character_candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                     <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span>

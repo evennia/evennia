@@ -134,6 +134,7 @@
 <span class="kn">import</span> <span class="nn">random</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">callables_from_module</span><span class="p">,</span>
@@ -419,7 +420,6 @@
         <span class="n">literal_infuncstr</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span>
-
             <span class="k">if</span> <span class="n">escaped</span><span class="p">:</span>
                 <span class="c1"># always store escaped characters verbatim</span>
                 <span class="k">if</span> <span class="n">curr_func</span><span class="p">:</span>
@@ -1308,10 +1308,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">mapping</span><span class="p">:</span>
         <span class="c1"># this would mean a $you(key) form</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">caller</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caller</span> <span class="ow">and</span> <span class="n">receiver</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">ParsingError</span><span class="p">(</span><span class="s2">&quot;No caller or receiver supplied to $you callable.&quot;</span><span class="p">)</span>
@@ -1334,6 +1331,76 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">funcparser_callable_you</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="n">you</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="n">capitalize</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="funcparser_callable_your"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_your">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_your</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $your() or $your(key)</span>
+
+<span class="sd">    Replaces with your for the caller of the string, with the display_name +&#39;s</span>
+<span class="sd">    of the caller for others.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        caller (Object): The &#39;your&#39; in the string. This is used unless another</span>
+<span class="sd">            your-key is passed to the callable in combination with `mapping`.</span>
+<span class="sd">        receiver (Object): The recipient of the string.</span>
+<span class="sd">        mapping (dict, optional): This is a mapping `{key:Object, ...}` and is</span>
+<span class="sd">            used to find which object `$you(key)` refers to. If not given, the</span>
+<span class="sd">            `caller` kwarg is used.</span>
+<span class="sd">        capitalize (bool): Passed by the You helper, to capitalize you.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The parsed string.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ParsingError: If `caller` and `receiver` were not supplied.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The kwargs should be passed the to parser directly.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        This can be used by the say or emote hooks to pass actor stance</span>
+<span class="sd">        strings.</span>
+
+<span class="sd">        - `$your() pet jumps at $you(tommy).`</span>
+
+<span class="sd">        The caller-object will see &quot;Your pet jumps Tommy.&quot;</span>
+<span class="sd">        Tommy will see &quot;CharName&#39;s pet jumps at you.&quot;</span>
+<span class="sd">        Others will see &quot;CharName&#39;s pet jumps at Tommy.&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">mapping</span><span class="p">:</span>
+        <span class="c1"># this would mean a $your(key) form</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caller</span> <span class="ow">and</span> <span class="n">receiver</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">ParsingError</span><span class="p">(</span><span class="s2">&quot;No caller or receiver supplied to $your callable.&quot;</span><span class="p">)</span>
+
+    <span class="n">capitalize</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">capitalize</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">receiver</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Your&quot;</span> <span class="k">if</span> <span class="n">capitalize</span> <span class="k">else</span> <span class="s2">&quot;your&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span>
+        <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;s&quot;</span></div>
+
+
+<div class="viewcode-block" id="funcparser_callable_your_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_your_capitalize">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_your_capitalize</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $Your() - capitalizes the &#39;your&#39; output.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">funcparser_callable_your</span><span class="p">(</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="n">you</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="n">capitalize</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span></div>
 
@@ -1570,6 +1637,8 @@
     <span class="c1"># requires `you`, `receiver` and `mapping` to be passed into parser</span>
     <span class="s2">&quot;you&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you</span><span class="p">,</span>
     <span class="s2">&quot;You&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you_capitalize</span><span class="p">,</span>
+    <span class="s2">&quot;your&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_your</span><span class="p">,</span>
+    <span class="s2">&quot;Your&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_your_capitalize</span><span class="p">,</span>
     <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you</span><span class="p">,</span>
     <span class="s2">&quot;Obj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you_capitalize</span><span class="p">,</span>
     <span class="s2">&quot;conj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_conjugate</span><span class="p">,</span>

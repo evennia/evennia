@@ -18,6 +18,7 @@
   methods. Also adds events hooks to modify effects when this list changes (Volund)
 - [Feature][pull3197]: Make sure Global scripts only start in one place,
   avoiding race conditions until server starts (Volund)
+- [Feature][pull3281]: Add `$your()` and `$Your()` for actor stance emoting (Volund)
 - [Fix][pull3267]: Missing recache step in ObjectSessionHandler (InspectorCaracal)
 - [Fix][pull3270]: Evennia is its own MSSP family now, so we should return that
   instead of 'Custom' (InspectorCaracal)
@@ -38,6 +39,7 @@
 [pull3179]: https://github.com/evennia/evennia/pull/3179
 [pull3197]: https://github.com/evennia/evennia/pull/3197
 [pull3313]: https://github.com/evennia/evennia/pull/3313
+[pull3281]: https://github.com/evennia/evennia/pull/3281
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 

@@ -152,7 +152,6 @@
 
 
 <span class="k">def</span> <span class="nf">_create_new_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
     <span class="c1"># create a random name, retrying until we find</span>
     <span class="c1"># a unique one</span>
     <span class="n">key</span> <span class="o">=</span> <span class="n">create_fantasy_word</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -233,7 +232,6 @@
 
 
 <div class="viewcode-block" id="node_set_desc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_set_desc">[docs]</a><span class="k">def</span> <span class="nf">node_set_desc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
     <span class="n">current_desc</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
@@ -262,7 +260,6 @@
 
 
 <div class="viewcode-block" id="node_create_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_create_room">[docs]</a><span class="k">def</span> <span class="nf">node_create_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
     <span class="n">text</span> <span class="o">=</span> <span class="n">_CREATE_ROOM_TEXT</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
@@ -274,7 +271,6 @@
 
 
 <div class="viewcode-block" id="node_join_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.menu.html#evennia.contrib.full_systems.evscaperoom.menu.node_join_room">[docs]</a><span class="k">def</span> <span class="nf">node_join_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
     <span class="n">room</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;room&quot;</span><span class="p">]</span>
     <span class="n">stats</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats</span> <span class="ow">or</span> <span class="p">{</span><span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 
@@ -368,7 +364,6 @@
 
 
 <span class="k">def</span> <span class="nf">_toggle_screen_reader</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
     <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span>
     <span class="c1"># flip old setting</span>
     <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
