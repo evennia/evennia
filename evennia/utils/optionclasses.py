@@ -170,7 +170,7 @@ class BaseOption:
         """
         return validatorfuncs.text(value, option_key=self.key, **kwargs)
 
-    def display(self, **kwargs):
+    def display(self, **kwargs) -> str:
         """
         Renders the Option's value as something pretty to look at.
 
@@ -183,7 +183,7 @@ class BaseOption:
                 timedelta is pretty ugly).
 
         """
-        return self.value
+        return self.value if isinstance(self.value, str) else str(self.value)
 
 
 # Option classes
