@@ -222,14 +222,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 {exits}{characters}{things}
 {footer}
     """
-
-    default_typeclasses = {
-        "object": settings.BASE_OBJECT_TYPECLASS,
-        "character": settings.BASE_CHARACTER_TYPECLASS,
-        "room": settings.BASE_ROOM_TYPECLASS,
-        "exit": settings.BASE_EXIT_TYPECLASS,
-    }
-
     # on-object properties
 
     @lazy_property
@@ -272,9 +264,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         return (
-                self.db_account
-                and self.db_account.is_superuser
-                and not self.db_account.attributes.get("_quell")
+            self.db_account
+            and self.db_account.is_superuser
+            and not self.db_account.attributes.get("_quell")
         )
 
     def contents_get(self, exclude=None, content_type=None):
@@ -320,22 +312,22 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     # main methods
 
     def search(
-            self,
-            searchdata,
-            global_search=False,
-            use_nicks=True,
-            typeclass=None,
-            location=None,
-            attribute_name=None,
-            quiet=False,
-            exact=False,
-            candidates=None,
-            use_locks=True,
-            nofound_string=None,
-            multimatch_string=None,
-            use_dbref=None,
-            tags=None,
-            stacked=0,
+        self,
+        searchdata,
+        global_search=False,
+        use_nicks=True,
+        typeclass=None,
+        location=None,
+        attribute_name=None,
+        quiet=False,
+        exact=False,
+        candidates=None,
+        use_locks=True,
+        nofound_string=None,
+        multimatch_string=None,
+        use_dbref=None,
+        tags=None,
+        stacked=0,
     ):
         """
         Returns an Object matching a search string/condition
@@ -439,10 +431,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             )
 
         if global_search or (
-                is_string
-                and searchdata.startswith("#")
-                and len(searchdata) > 1
-                and searchdata[1:].isdigit()
+            is_string
+            and searchdata.startswith("#")
+            and len(searchdata) > 1
+            and searchdata[1:].isdigit()
         ):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs
@@ -677,13 +669,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             func(obj, **kwargs)
 
     def msg_contents(
-            self,
-            text=None,
-            exclude=None,
-            from_obj=None,
-            mapping=None,
-            raise_funcparse_errors=False,
-            **kwargs,
+        self,
+        text=None,
+        exclude=None,
+        from_obj=None,
+        mapping=None,
+        raise_funcparse_errors=False,
+        **kwargs,
     ):
         """
         Emits a message to all objects inside this object.
@@ -796,15 +788,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             receiver.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
 
     def move_to(
-            self,
-            destination,
-            quiet=False,
-            emit_to_obj=None,
-            use_destination=True,
-            to_none=False,
-            move_hooks=True,
-            move_type="move",
-            **kwargs,
+        self,
+        destination,
+        quiet=False,
+        emit_to_obj=None,
+        use_destination=True,
+        to_none=False,
+        move_hooks=True,
+        move_type="move",
+        **kwargs,
     ):
         """
         Moves this object to a new location.
@@ -895,7 +887,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # check if source location lets us go
             try:
                 if source_location and not source_location.at_pre_object_leave(
-                        self, destination, **kwargs
+                    self, destination, **kwargs
                 ):
                     return False
             except Exception as err:
@@ -904,7 +896,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # check if destination accepts us
             try:
                 if destination and not destination.at_pre_object_receive(
-                        self, source_location, **kwargs
+                    self, source_location, **kwargs
                 ):
                     return False
             except Exception as err:
@@ -1020,8 +1012,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             obj.move_to(home, move_type="teleport")
 
     @classmethod
-    def create(cls, key: str, account: "DefaultAccount" = None, creator: "DefaultObject" = None, method: str = "create",
-               **kwargs):
+    def create(
+        cls,
+        key: str,
+        account: "DefaultAccount" = None,
+        caller: "DefaultObject" = None,
+        method: str = "create",
+        **kwargs,
+    ):
         """
         Creates a basic object with default parameters, unless otherwise
         specified or extended.
@@ -1034,7 +1032,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Keyword Args:
             account (Account): Account to attribute this object to.
-            creator (DefaultObject): The object which is creating this one.
+            caller (DefaultObject): The object which is creating this one.
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
             method (str): The method of creation. Defaults to "create".
@@ -1185,7 +1183,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         return True
 
     def access(
-            self, accessing_obj, access_type="read", default=False, no_superuser_bypass=False, **kwargs
+        self, accessing_obj, access_type="read", default=False, no_superuser_bypass=False, **kwargs
     ):
         """
         Determines if another object has permission to access this object
@@ -1609,43 +1607,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         pass
-
-    def get_object_typeclass(self, obj_type: str = "object", typeclass: str = None, method: str = "create", **kwargs) -> tuple[
-        typing.Optional["Builder"], list[str]]:
-        """
-        This hook is called by build commands to determine which typeclass to use for a specific purpose. For instance,
-        when using dig, the system can use this to autodetect which kind of Room typeclass to use based on where the
-        builder is currently located.
-
-        Note: Although intended to be used with typeclasses, as long as this hook returns a class with a create method,
-            which accepts the same API as DefaultObject.create(), build commands and other places should take it.
-
-        Args:
-            obj_type (str, optional): The type of object that is being created. Defaults to "object". Evennia provides
-                "room", "exit", and "character" by default, but this can be extended.
-            typeclass (str, optional): The typeclass that was requested by the player. Defaults to None.
-                Can also be an actual class.
-            method (str, optional): The method that is calling this hook. Defaults to "create". Others are "dig", "open",
-                "tunnel", etc.
-
-        Returns:
-            results_tuple (tuple[Optional[Builder], list[str]]): A tuple containing the typeclass to use and a list of
-                errors. (which might be empty.)
-        """
-
-        found_typeclass = typeclass or self.default_typeclasses.get(obj_type, None)
-        if not found_typeclass:
-            return None, [f"No typeclass found for object type '{obj_type}'."]
-
-        try:
-            type_class = class_from_module(found_typeclass) if isinstance(found_typeclass, str) else found_typeclass
-        except ImportError:
-            return None, [f"Typeclass '{found_typeclass}' could not be imported."]
-
-        if not hasattr(type_class, "create"):
-            return None, [f"Typeclass '{found_typeclass}' is not creatable."]
-
-        return type_class, []
 
     def at_pre_puppet(self, account, session=None, **kwargs):
         """
@@ -2128,8 +2089,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 obj
                 for obj in obj_list
                 if obj != looker
-                   and obj.access(looker, "view")
-                   and obj.access(looker, "search", default=True)
+                and obj.access(looker, "view")
+                and obj.access(looker, "search", default=True)
             ]
 
         return {
@@ -2386,13 +2347,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     at_before_say = at_pre_say
 
     def at_say(
-            self,
-            message,
-            msg_self=None,
-            msg_location=None,
-            receivers=None,
-            msg_receivers=None,
-            **kwargs,
+        self,
+        message,
+        msg_self=None,
+        msg_location=None,
+        receivers=None,
+        msg_receivers=None,
+        **kwargs,
     ):
         """
         Display the actual say (or whisper) of self.
@@ -2768,6 +2729,7 @@ class DefaultCharacter(DefaultObject):
         if not self.sessions.count():
             # only remove this char from grid if no sessions control it anymore.
             if self.location:
+
                 def message(obj, from_obj):
                     obj.msg(
                         _("{name} has left the game{reason}.").format(
@@ -2829,8 +2791,14 @@ class DefaultRoom(DefaultObject):
     )
 
     @classmethod
-    def create(cls, key: str, account: "DefaultAccount" = None, creator: DefaultObject = None, method: str = "create",
-               **kwargs):
+    def create(
+        cls,
+        key: str,
+        account: "DefaultAccount" = None,
+        caller: DefaultObject = None,
+        method: str = "create",
+        **kwargs,
+    ):
         """
         Creates a basic Room with default parameters, unless otherwise
         specified or extended.
@@ -2844,7 +2812,7 @@ class DefaultRoom(DefaultObject):
             account (DefaultAccount, optional): Account to associate this Room with. If
                 given, it will be given specific control/edit permissions to this
                 object (along with normal Admin perms). If not given, default
-            creator (DefaultObject): The object which is creating this one.
+            caller (DefaultObject): The object which is creating this one.
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
             method (str): The method used to create the room. Defaults to "create".
@@ -3038,8 +3006,16 @@ class DefaultExit(DefaultObject):
     # Command hooks
 
     @classmethod
-    def create(cls, key: str, location: DefaultRoom = None, destination: DefaultRoom = None, account: "DefaultAccount" = None, creator: DefaultObject = None,
-               method: str = "create", **kwargs) -> tuple[typing.Optional["DefaultExit"], list[str]]:
+    def create(
+        cls,
+        key: str,
+        location: DefaultRoom = None,
+        destination: DefaultRoom = None,
+        account: "DefaultAccount" = None,
+        caller: DefaultObject = None,
+        method: str = "create",
+        **kwargs,
+    ) -> tuple[typing.Optional["DefaultExit"], list[str]]:
         """
         Creates a basic Exit with default parameters, unless otherwise
         specified or extended.
@@ -3053,7 +3029,7 @@ class DefaultExit(DefaultObject):
 
         Keyword Args:
             account (obj): Account to associate this Exit with.
-            creator (ObjectDB): the Object creating this Object.
+            caller (ObjectDB): the Object creating this Object.
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
             destination (Room): The room to which this exit should go.
