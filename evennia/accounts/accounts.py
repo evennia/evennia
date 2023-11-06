@@ -33,6 +33,7 @@ from evennia.server.signals import (
     SIGNAL_ACCOUNT_POST_CREATE,
     SIGNAL_OBJECT_POST_PUPPET,
     SIGNAL_OBJECT_POST_UNPUPPET,
+    SIGNAL_ACCOUNT_POST_LOGIN_FAIL,
 )
 from evennia.server.throttle import Throttle
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
@@ -673,6 +674,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if session:
                 account = AccountDB.objects.get_account_from_name(username)
                 if account:
+                    SIGNAL_ACCOUNT_POST_LOGIN_FAIL.send(sender=account, session=session)
                     account.at_failed_login(session)
 
             return None, errors

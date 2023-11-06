@@ -21,6 +21,7 @@ without necessitating a full takeover of hooks that may be in high demand.
 
 """
 from django.dispatch import Signal
+from collections import defaultdict
 
 # The sender is the created Account. This is triggered at the very end of
 # Account.create() after the Account is created. Note that this will *not* fire
@@ -90,6 +91,9 @@ SIGNAL_CHANNEL_POST_CREATE = Signal()
 # The sender is the exit used when traversing, as well as 'traverser', for the one traversing
 # Called just after at_traverse hook.
 SIGNAL_EXIT_TRAVERSED = Signal()
+
+# Used as a generic event emitter. Use to make your own signals easily in one place!
+SIGNALS_CUSTOM: dict[str, Signal] = defaultdict(Signal)
 
 # Django default signals (https://docs.djangoproject.com/en/4.1/topics/signals/)
 
