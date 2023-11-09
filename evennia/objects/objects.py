@@ -612,25 +612,56 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 (which can be a string or a tuple).
 
         Notes:
-            `at_msg_receive` will be called on this Object.
+            `at_msg_receive`and at_post_msg_receive will be called on this Object.
             All extra kwargs will be passed on to the protocol.
 
         """
-        # try send hooks
-        if from_obj:
-            for obj in make_iter(from_obj):
-                try:
-                    obj.at_msg_send(text=text, to_obj=self, **kwargs)
-                except Exception:
-                    logger.log_trace()
         kwargs["options"] = options
-        try:
-            if not self.at_msg_receive(text=text, from_obj=from_obj, **kwargs):
-                # if at_msg_receive returns false, we abort message to this object
-                return
-        except Exception:
-            logger.log_trace()
+        self._msg_helper_text_format(text, kwargs)
 
+        # try send hooks
+        self._msg_helper_from_obj(text=text, from_obj=from_obj, **kwargs)
+
+        if not self._msg_helper_receive(text=text, from_obj=from_obj, **kwargs):
+            return
+
+        # relay to session(s)
+        self._msg_helper_session_relay(session=session, **kwargs)
+
+        self.at_post_msg_receive(from_obj=from_obj, **kwargs)
+
+    def at_post_msg_receive(self, from_obj=None, **kwargs):
+        """
+        Overloadable hook which receives the kwargs that exist at the tail end of self.msg()'s processing.
+
+        This might be used for logging and similar purposes.
+
+        Kwargs:
+            from_obj (DefaultObject or list[DefaultObject]): The objects that sent the message.
+            **kwargs: The kwargs from the end of message, using the Evennia outputfunc format.
+        """
+        pass
+
+    def _msg_helper_session_relay(self, session=None, **kwargs):
+        """
+        Helper method for object.msg() to send output to sessions.
+
+        Kwargs:
+            session (Session or list[Session], optional): Sessions to specifically send the message to, if any.
+            **kwargs: The message being sent, as evennia outputfuncs. this will be passed directly to session.data_out()
+        """
+        sessions = make_iter(session) if session else self.sessions.all()
+        for session in sessions:
+            session.data_out(**kwargs)
+
+    def _msg_helper_text_format(self, text, kwargs: dict):
+        """
+        Helper method that formats the text kwarg for sending.
+
+        Args:
+            text (str or None): A string object or something that can be coerced into a string.
+            kwargs: The outputfuncs dictionary being built up for this .msg() operation.
+        """
         if text is not None:
             if not (isinstance(text, str) or isinstance(text, tuple)):
                 # sanitize text before sending across the wire
@@ -640,10 +671,41 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     text = repr(text)
             kwargs["text"] = text
 
-        # relay to session(s)
-        sessions = make_iter(session) if session else self.sessions.all()
-        for session in sessions:
-            session.data_out(**kwargs)
+    def _msg_helper_from_obj(self, text=None, from_obj=None, **kwargs):
+        """
+        Helper method for .msg() that handles calling at_msg_send on the from_obj.
+
+        Kwargs:
+            text (str or None): A string object or something that can be coerced into a string.
+            from_obj (DefaultObject or list[DefaultObject]): The objects to call the hook on.
+            **kwargs: The outputfuncs being sent by this .msg() call.
+        """
+        if from_obj:
+            for obj in make_iter(from_obj):
+                try:
+                    obj.at_msg_send(text=text, to_obj=self, **kwargs)
+                except Exception:
+                    logger.log_trace()
+
+    def _msg_helper_receive(self, text=None, from_obj=None, **kwargs) -> bool:
+        """
+        Helper method for .msg() that handles calling at_msg_receive on this object.
+
+        Kwargs:
+            text (str or None): A string object or something that can be coerced into a string.
+            from_obj (DefaultObject or list[DefaultObject]): The objects to call the hook on.
+            **kwargs: The outputfuncs being sent by this .msg() call.
+
+        Returns:
+            result (bool): True if the message should be sent, False if it should be aborted.
+        """
+        try:
+            if not self.at_msg_receive(text=text, from_obj=from_obj, **kwargs):
+                # if at_msg_receive returns false, we abort message to this object
+                return False
+        except Exception:
+            logger.log_trace()
+        return True
 
     def for_contents(self, func, exclude=None, **kwargs):
         """
