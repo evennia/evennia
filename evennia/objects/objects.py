@@ -620,9 +620,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self._msg_helper_text_format(text, kwargs)
 
         # try send hooks
-        self._msg_helper_from_obj(text=text, from_obj=from_obj, **kwargs)
+        self._msg_helper_from_obj(from_obj=from_obj, **kwargs)
 
-        if not self._msg_helper_receive(text=text, from_obj=from_obj, **kwargs):
+        if not self._msg_helper_receive(from_obj=from_obj, **kwargs):
             return
 
         # relay to session(s)
@@ -671,7 +671,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     text = repr(text)
             kwargs["text"] = text
 
-    def _msg_helper_from_obj(self, text=None, from_obj=None, **kwargs):
+    def _msg_helper_from_obj(self, from_obj=None, **kwargs):
         """
         Helper method for .msg() that handles calling at_msg_send on the from_obj.
 
@@ -683,11 +683,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if from_obj:
             for obj in make_iter(from_obj):
                 try:
-                    obj.at_msg_send(text=text, to_obj=self, **kwargs)
+                    obj.at_msg_send(text=kwargs.pop("text", None), to_obj=self, **kwargs)
                 except Exception:
                     logger.log_trace()
 
-    def _msg_helper_receive(self, text=None, from_obj=None, **kwargs) -> bool:
+    def _msg_helper_receive(self, from_obj=None, **kwargs) -> bool:
         """
         Helper method for .msg() that handles calling at_msg_receive on this object.
 
@@ -700,7 +700,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             result (bool): True if the message should be sent, False if it should be aborted.
         """
         try:
-            if not self.at_msg_receive(text=text, from_obj=from_obj, **kwargs):
+            if not self.at_msg_receive(text=kwargs.pop("text", None), from_obj=from_obj, **kwargs):
                 # if at_msg_receive returns false, we abort message to this object
                 return False
         except Exception:
