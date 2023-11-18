@@ -115,6 +115,9 @@ class AIHandler:
     Add to typeclass with @lazyproperty:
 
         class NPC(DefaultCharacter):
+
+            ai_states = {...}
+
             # ...
 
             @lazyproperty
@@ -126,10 +129,10 @@ class AIHandler:
     def __init__(self, obj):
         self.obj = obj
 
-        if hasattr(self, "AI_STATES"):
-            # load AI dict from typeclass core if it exists - allows for setting it
-            # on the typeclass directly.
-            self.add_aidict(self.AI_STATES)
+        if hasattr(self, "ai_states"):
+            # since we're not setting `force=True` here, we won't overwrite any existing /
+            # customized dicts.
+            self.add_aidict(self.ai_states)
 
     def __str__(self):
         return f"AIHandler for {self.obj}. Current state: {self.state}"
@@ -282,14 +285,19 @@ class AIHandler:
             )
         return self.obj.attributes.add("ai_transitions", value, category="ai")
 
-    def add_aidict(self, aidict):
+    def add_aidict(self, aidict, force=False):
         """
-        Add an AI dictionary to the AI handler.
+        Add an AI dictionary to the AI handler, if one doesn't already exist.
 
         Args:
             aidict (dict): AI dictionary to add.
+            force (bool, optional): Force adding the AI dictionary, even if one already exists on
+            this handler.
 
         """
+        if not force and self.states and self.transitions:
+            return
+
         aidict = self._validate_ai_dict(aidict)
         self.states = aidict["states"]
         self.transitions = aidict["transitions"]

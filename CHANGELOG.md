@@ -25,8 +25,9 @@
 - [Fix][pull3274]: Traceback when creating objects with initial nattributes
   (InspectorCaracal)
 - [Fix][issue3272]: Make sure `ScriptHandler.add` does not fail if passed an
-  instantiated script.
-- Docs: Lots of Typo fixes (iLPdev)
+  instantiated script. (Volund)
+- [Fix][pull3322]: Fix `BaseOption.display` to always return a string.
+- Docs: Lots of Typo fixes (iLPdev, InspectorCaracal)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
   the default cmdsets.
 
@@ -40,6 +41,7 @@
 [pull3197]: https://github.com/evennia/evennia/pull/3197
 [pull3313]: https://github.com/evennia/evennia/pull/3313
 [pull3281]: https://github.com/evennia/evennia/pull/3281
+[pull3322]: https://github.com/evennia/evennia/pull/3322
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 
