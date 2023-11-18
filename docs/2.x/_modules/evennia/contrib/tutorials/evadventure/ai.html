@@ -201,6 +201,9 @@
 <span class="sd">    Add to typeclass with @lazyproperty:</span>
 
 <span class="sd">        class NPC(DefaultCharacter):</span>
+
+<span class="sd">            ai_states = {...}</span>
+
 <span class="sd">            # ...</span>
 
 <span class="sd">            @lazyproperty</span>
@@ -212,10 +215,10 @@
 <div class="viewcode-block" id="AIHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;AI_STATES&quot;</span><span class="p">):</span>
-            <span class="c1"># load AI dict from typeclass core if it exists - allows for setting it</span>
-            <span class="c1"># on the typeclass directly.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_aidict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AI_STATES</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;ai_states&quot;</span><span class="p">):</span>
+            <span class="c1"># since we&#39;re not setting `force=True` here, we won&#39;t overwrite any existing /</span>
+            <span class="c1"># customized dicts.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_aidict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ai_states</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AIHandler for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="si">}</span><span class="s2">. Current state: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -368,14 +371,19 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;ai_transitions&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AIHandler.add_aidict"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.add_aidict">[docs]</a>    <span class="k">def</span> <span class="nf">add_aidict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aidict</span><span class="p">):</span>
+<div class="viewcode-block" id="AIHandler.add_aidict"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.ai.html#evennia.contrib.tutorials.evadventure.ai.AIHandler.add_aidict">[docs]</a>    <span class="k">def</span> <span class="nf">add_aidict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aidict</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add an AI dictionary to the AI handler.</span>
+<span class="sd">        Add an AI dictionary to the AI handler, if one doesn&#39;t already exist.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            aidict (dict): AI dictionary to add.</span>
+<span class="sd">            force (bool, optional): Force adding the AI dictionary, even if one already exists on</span>
+<span class="sd">            this handler.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="n">aidict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_ai_dict</span><span class="p">(</span><span class="n">aidict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="o">=</span> <span class="n">aidict</span><span class="p">[</span><span class="s2">&quot;transitions&quot;</span><span class="p">]</span></div>
