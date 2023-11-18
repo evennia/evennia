@@ -212,7 +212,7 @@ When the `.send_echo` method is called, it will use `random.random()` to check i
 
 Here's how you'd use this room in-game: 
 
-    > dig market:evadventure.EchoingRoom = market,back 
+    > dig market:evadventure.rooms.EchoingRoom = market,back 
     > market 
     > set here/echoes = ["You hear a merchant shouting", "You hear the clatter of coins"]
     > py here.start_echo() 
