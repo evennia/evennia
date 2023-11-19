@@ -4,7 +4,7 @@
 #
 # First add mygame/server/conf/settings.py:
 #
-#    BASE_BATCH_PROCESS_PATHS += ["evadventure.batchscripts"]
+#    BASE_BATCHPROCESS_PATHS += ["evadventure.batchscripts"]
 #
 # Run from in-game as `batchcode turnbased_combat_demo`
 #
