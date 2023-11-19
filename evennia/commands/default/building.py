@@ -203,7 +203,7 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
 
         try:
             type_class = (
-                class_from_module(found_typeclass)
+                class_from_module(found_typeclass, settings.TYPECLASS_PATHS)
                 if isinstance(found_typeclass, str)
                 else found_typeclass
             )

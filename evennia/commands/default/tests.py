@@ -725,16 +725,17 @@ class TestAccount(BaseEvenniaCommandTest):
 
 class TestBuilding(BaseEvenniaCommandTest):
     def test_create(self):
-        name = settings.BASE_OBJECT_TYPECLASS.rsplit(".", 1)[1]
+        typeclass = settings.BASE_OBJECT_TYPECLASS
+        name = typeclass.rsplit(".", 1)[1]
         self.call(
             building.CmdCreate(),
-            "/d TestObj1",  # /d switch is abbreviated form of /drop
+            f"/d TestObj1:{typeclass}",  # /d switch is abbreviated form of /drop
             "You create a new %s: TestObj1." % name,
         )
         self.call(building.CmdCreate(), "", "Usage: ")
         self.call(
             building.CmdCreate(),
-            "TestObj1;foo;bar",
+            f"TestObj1;foo;bar:{typeclass}",
             "You create a new %s: TestObj1 (aliases: foo, bar)." % name,
         )
 
@@ -2082,7 +2083,7 @@ class TestBatchProcess(BaseEvenniaCommandTest):
         # cannot test batchcode here, it must run inside the server process
         self.call(
             batchprocess.CmdBatchCommands(),
-            "batchprocessor.example_batch_cmds",
+            "batchprocessor.example_batch_cmds_test",
             "Running Batch-command processor - Automatic mode for"
             " batchprocessor.example_batch_cmds",
         )
