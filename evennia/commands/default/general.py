@@ -723,6 +723,6 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
 
         string += "\n|wYour access|n:"
         string += f"\nCharacter |c{caller.key}|n: {cperms}"
-        if hasattr(caller, "account"):
+        if hasattr(caller, "has_account"):
             string += f"\nAccount |c{caller.account.key}|n: {pperms}"
         caller.msg(string)

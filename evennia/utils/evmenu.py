@@ -423,7 +423,7 @@ class CmdEvMenuNode(Command):
             if _restore(caller):
                 return
             orig_caller = caller
-            caller = caller.account if hasattr(caller, "account") else None
+            caller = caller.account if hasattr(caller, "has_account") else None
             menu = caller.ndb._evmenu if caller else None
             if not menu:
                 if caller and _restore(caller):
@@ -1497,7 +1497,7 @@ class CmdGetInput(Command):
         caller = self.caller
         try:
             getinput = caller.ndb._getinput
-            if not getinput and hasattr(caller, "account"):
+            if not getinput and (hasattr(caller, "has_account")):
                 getinput = caller.account.ndb._getinput
                 if getinput:
                     caller = caller.account
@@ -1618,7 +1618,7 @@ class CmdYesNoQuestion(Command):
 
     def _clean(self, caller):
         del caller.ndb._yes_no_question
-        if not caller.cmdset.has(YesNoQuestionCmdSet) and hasattr(caller, "account"):
+        if not caller.cmdset.has(YesNoQuestionCmdSet) and hasattr(caller, "has_account"):
             caller.account.cmdset.remove(YesNoQuestionCmdSet)
         else:
             caller.cmdset.remove(YesNoQuestionCmdSet)
@@ -1628,7 +1628,7 @@ class CmdYesNoQuestion(Command):
         caller = self.caller
         try:
             yes_no_question = caller.ndb._yes_no_question
-            if not yes_no_question and hasattr(caller, "account"):
+            if not yes_no_question and hasattr(caller, "has_account"):
                 yes_no_question = caller.account.ndb._yes_no_question
                 caller = caller.account
 

@@ -553,7 +553,7 @@ class LockHandler:
             if not no_superuser_bypass and (
                 (hasattr(accessing_obj, "is_superuser") and accessing_obj.is_superuser)
                 or (
-                    hasattr(accessing_obj, "account")
+                    hasattr(accessing_obj, "has_account")
                     and hasattr(accessing_obj.account, "is_superuser")
                     and accessing_obj.account.is_superuser
                 )
@@ -627,7 +627,7 @@ class LockHandler:
             if no_superuser_bypass and (
                 (hasattr(accessing_obj, "is_superuser") and accessing_obj.is_superuser)
                 or (
-                    hasattr(accessing_obj, "account")
+                    hasattr(accessing_obj, "has_account")
                     and hasattr(accessing_obj.account, "is_superuser")
                     and accessing_obj.account.is_superuser
                 )

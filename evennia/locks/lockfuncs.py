@@ -515,7 +515,7 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     function will still return True.
     """
     obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
-    account = obj.account if hasattr(obj, "account") else obj
+    account = obj.account if hasattr(obj, "has_account") else obj
     if not account:
         return True
     try:

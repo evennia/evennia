@@ -78,7 +78,7 @@ class CmdMore(Command):
         Implement the command
         """
         more = self.caller.ndb._more
-        if not more and hasattr(self.caller, "account"):
+        if not more and hasattr(self.caller, "has_account"):
             more = self.caller.account.ndb._more
         if not more:
             self.caller.msg("Error in loading the pager. Contact an admin.")

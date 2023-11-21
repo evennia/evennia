@@ -165,7 +165,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         has_sub = self.subscriptions.has(subscriber)
-        if not has_sub and hasattr(subscriber, "account"):
+        if not has_sub and hasattr(subscriber, "has_account"):
             # it's common to send an Object when we
             # by default only allow Accounts to subscribe.
             has_sub = self.subscriptions.has(subscriber.account)

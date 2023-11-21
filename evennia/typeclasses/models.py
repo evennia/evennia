@@ -700,7 +700,7 @@ class TypedObject(SharedMemoryModel):
             result (bool): If the permstring is passed or not.
 
         """
-        if hasattr(self, "account"):
+        if hasattr(self, "has_account"):
             if (
                 self.account
                 and self.account.is_superuser

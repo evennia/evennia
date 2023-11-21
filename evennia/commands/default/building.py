@@ -2739,7 +2739,7 @@ class CmdExamine(ObjManipCommand):
         all_cmdsets = [(cmdset.key, cmdset) for cmdset in current_cmdset.merged_from]
         # we always at least try to add account- and session sets since these are ignored
         # if we merge on the object level.
-        if hasattr(obj, "account") and obj.account:
+        if hasattr(obj, "has_account") and obj.account:
             # get Attribute-cmdsets if they exist
             all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.account.cmdset.all()])
             if obj.sessions.count():
