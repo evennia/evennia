@@ -230,23 +230,23 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             # force a resync of sessions from the portal side. This happens on
             # first server-connect.
             server_restart_mode = kwargs.get("server_restart_mode", "shutdown")
-            evennia.EVENNIA_SERVICE.run_init_hooks(server_restart_mode)
+            evennia.EVENNIA_SERVER_SERVICE.run_init_hooks(server_restart_mode)
             evennia.SERVER_SESSION_HANDLER.portal_sessions_sync(kwargs.get("sessiondata"))
             evennia.SERVER_SESSION_HANDLER.portal_start_time = kwargs.get("portal_start_time")
 
         elif operation == amp.SRELOAD:  # server reload
             # shut down in reload mode
             evennia.SERVER_SESSION_HANDLER.all_sessions_portal_sync()
-            evennia.EVENNIA_SERVICE.shutdown(mode="reload")
+            evennia.EVENNIA_SERVER_SERVICE.shutdown(mode="reload")
 
         elif operation == amp.SRESET:
             # shut down in reset mode
             evennia.SERVER_SESSION_HANDLER.all_sessions_portal_sync()
-            evennia.EVENNIA_SERVICE.shutdown(mode="reset")
+            evennia.EVENNIA_SERVER_SERVICE.shutdown(mode="reset")
 
         elif operation == amp.SSHUTD:  # server shutdown
             # shutdown in stop mode
-            evennia.EVENNIA_SERVICE.shutdown(mode="shutdown")
+            evennia.EVENNIA_SERVER_SERVICE.shutdown(mode="shutdown")
 
         else:
             raise Exception("operation %(op)s not recognized." % {"op": operation})

@@ -113,7 +113,8 @@ OPTION_CLASSES = None
 PROCESS_ID = None
 
 TWISTED_APPLICATION = None
-EVENNIA_SERVICE = None
+EVENNIA_PORTAL_SERVICE = None
+EVENNIA_SERVER_SERVICE = None
 
 
 def _create_version():
@@ -150,6 +151,7 @@ _LOADED = False
 
 PORTAL_MODE = False
 
+
 def _init(portal_mode=False):
     """
     This function is called automatically by the launcher only after
@@ -172,7 +174,7 @@ def _init(portal_mode=False):
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, PROCESS_ID
     global TASK_HANDLER, PORTAL_SESSION_HANDLER, SERVER_SESSION_HANDLER
-    global GLOBAL_SCRIPTS, OPTION_CLASSES, EVENNIA_SERVICE, TWISTED_APPLICATION
+    global GLOBAL_SCRIPTS, OPTION_CLASSES, EVENNIA_PORTAL_SERVICE, EVENNIA_SERVER_SERVICE, TWISTED_APPLICATION
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString, FuncParser
     global AttributeProperty, TagProperty, TagCategoryProperty, ServerConfig
@@ -247,6 +249,7 @@ def _init(portal_mode=False):
     PROCESS_ID = os.getpid()
 
     from twisted.application.service import Application
+
     TWISTED_APPLICATION = Application("Evennia")
 
     _evennia_service_class = None
@@ -254,13 +257,17 @@ def _init(portal_mode=False):
     if portal_mode:
         # Set up the PortalSessionHandler
         from evennia.server.portal import portalsessionhandler
+
         portal_sess_handler_class = class_from_module(settings.PORTAL_SESSION_HANDLER_CLASS)
         portalsessionhandler.PORTAL_SESSIONS = portal_sess_handler_class()
         SESSION_HANDLER = portalsessionhandler.PORTAL_SESSIONS
         evennia.PORTAL_SESSION_HANDLER = evennia.SESSION_HANDLER
         _evennia_service_class = class_from_module(settings.EVENNIA_PORTAL_SERVICE_CLASS)
+        EVENNIA_PORTAL_SERVICE = _evennia_service_class()
+        EVENNIA_PORTAL_SERVICE.setServiceParent(TWISTED_APPLICATION)
 
         from django.db import connection
+
         # we don't need a connection to the database so close it right away
         try:
             connection.close()
@@ -277,9 +284,8 @@ def _init(portal_mode=False):
         SESSION_HANDLER = sessionhandler.SESSIONS
         SERVER_SESSION_HANDLER = SESSION_HANDLER
         _evennia_service_class = class_from_module(settings.EVENNIA_SERVER_SERVICE_CLASS)
-
-    EVENNIA_SERVICE = _evennia_service_class()
-    EVENNIA_SERVICE.setServiceParent(TWISTED_APPLICATION)
+        EVENNIA_SERVER_SERVICE = _evennia_service_class()
+        EVENNIA_SERVER_SERVICE.setServiceParent(TWISTED_APPLICATION)
 
     # API containers
 

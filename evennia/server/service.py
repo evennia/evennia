@@ -26,9 +26,7 @@ _SA = object.__setattr__
 
 
 class EvenniaServerService(MultiService):
-
     def _wrap_sigint_handler(self, *args):
-
         if hasattr(self, "web_root"):
             d = self.web_root.empty_threadpool()
             d.addCallback(lambda _: self.shutdown("reload", _reactor_stopping=True))
@@ -41,6 +39,7 @@ class EvenniaServerService(MultiService):
         super().__init__(*args, **kwargs)
         self.maintenance_count = 0
         self.amp_protocol = None  # set by amp factory
+        self.amp_service = None
         self.info_dict = {
             "servername": settings.SERVERNAME,
             "version": get_evennia_version(),
@@ -72,8 +71,6 @@ class EvenniaServerService(MultiService):
             if isinstance(mod, str)
         ]
 
-    # Server startup methods
-
     def server_maintenance(self):
         """
         This maintenance function handles repeated checks and updates that
@@ -81,6 +78,7 @@ class EvenniaServerService(MultiService):
         """
         if not self._flush_cache:
             from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
+
             self._flush_cache = _FLUSH_CACHE
 
         self.maintenance_count += 1
@@ -89,7 +87,9 @@ class EvenniaServerService(MultiService):
         if self.maintenance_count == 1:
             # first call after a reload
             evennia.gametime.SERVER_START_TIME = now
-            evennia.gametime.SERVER_RUNTIME = evennia.ServerConfig.objects.conf("runtime", default=0.0)
+            evennia.gametime.SERVER_RUNTIME = evennia.ServerConfig.objects.conf(
+                "runtime", default=0.0
+            )
             _LAST_SERVER_TIME_SNAPSHOT = now
         else:
             # adjust the runtime not with 60s but with the actual elapsed time
@@ -109,20 +109,7 @@ class EvenniaServerService(MultiService):
             # (see https://github.com/evennia/evennia/issues/1376)
             connection.close()
 
-        # handle idle timeouts
-        if settings.IDLE_TIMEOUT > 0:
-            reason = _("idle timeout exceeded")
-            to_disconnect = []
-            for session in (
-                    sess for sess in evennia.SESSION_HANDLER.values() if (now - sess.cmd_last) > settings.IDLE_TIMEOUT
-            ):
-                if not session.account or not session.account.access(
-                        session.account, "noidletimeout", default=False
-                ):
-                    to_disconnect.append(session)
-
-            for session in to_disconnect:
-                evennia.SESSION_HANDLER.disconnect(session, reason=reason)
+        self.process_idle_timeouts()
 
         # run unpuppet hooks for objects that are marked as being puppeted,
         # but which lacks an account (indicates a broken unpuppet operation
@@ -138,6 +125,26 @@ class EvenniaServerService(MultiService):
             if unpuppet_count:
                 logger.log_msg(f"Ran unpuppet-hooks for {unpuppet_count} link-dead puppets.")
 
+    def process_idle_timeouts(self):
+        # handle idle timeouts
+        if settings.IDLE_TIMEOUT > 0:
+            now = time.time()
+            reason = _("idle timeout exceeded")
+            to_disconnect = []
+            for session in (
+                sess
+                for sess in evennia.SESSION_HANDLER.values()
+                if (now - sess.cmd_last) > settings.IDLE_TIMEOUT
+            ):
+                if not session.account or not session.account.access(
+                    session.account, "noidletimeout", default=False
+                ):
+                    to_disconnect.append(session)
+
+            for session in to_disconnect:
+                evennia.SESSION_HANDLER.disconnect(session, reason=reason)
+
+    # Server startup methods
     def privilegedStartService(self):
         self.start_time = time.time()
 
@@ -209,9 +216,9 @@ class EvenniaServerService(MultiService):
         from evennia.server import amp_client
 
         factory = amp_client.AMPClientFactory(self)
-        amp_service = internet.TCPClient(settings.AMP_HOST, settings.AMP_PORT, factory)
-        amp_service.setName("ServerAMPClient")
-        amp_service.setServiceParent(self)
+        self.amp_service = internet.TCPClient(settings.AMP_HOST, settings.AMP_PORT, factory)
+        self.amp_service.setName("ServerAMPClient")
+        self.amp_service.setServiceParent(self)
 
     def register_webserver(self):
         # Start a django-compatible webserver.
@@ -269,12 +276,12 @@ class EvenniaServerService(MultiService):
         can't save it to the database.
         """
         if (
-                ".".join(str(i) for i in django.VERSION) < "1.2"
-                and settings.DATABASES.get("default", {}).get("ENGINE") == "sqlite3"
+            ".".join(str(i) for i in django.VERSION) < "1.2"
+            and settings.DATABASES.get("default", {}).get("ENGINE") == "sqlite3"
         ) or (
-                hasattr(settings, "DATABASES")
-                and settings.DATABASES.get("default", {}).get("ENGINE", None)
-                == "django.db.backends.sqlite3"
+            hasattr(settings, "DATABASES")
+            and settings.DATABASES.get("default", {}).get("ENGINE", None)
+            == "django.db.backends.sqlite3"
         ):
             cursor = connection.cursor()
             cursor.execute("PRAGMA cache_size=10000")
@@ -291,7 +298,6 @@ class EvenniaServerService(MultiService):
         already existing objects.
 
         """
-        
 
         # setting names
         settings_names = (
@@ -316,14 +322,14 @@ class EvenniaServerService(MultiService):
             i for i, tup in enumerate(settings_compare) if tup[0] and tup[1] and tup[0] != tup[1]
         ]
         if len(
-                mismatches
+            mismatches
         ):  # can't use any() since mismatches may be [0] which reads as False for any()
             # we have a changed default. Import relevant objects and
             # run the update
 
             # from evennia.accounts.models import AccountDB
             for i, prev, curr in (
-                    (i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches
+                (i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches
             ):
                 # update the database
                 self.info_dict[
@@ -380,7 +386,7 @@ class EvenniaServerService(MultiService):
         Once finished the last_initial_setup_step is set to 'done'
 
         """
-        
+
         initial_setup = importlib.import_module(settings.INITIAL_SETUP_MODULE)
         last_initial_setup_step = evennia.ServerConfig.objects.conf("last_initial_setup_step")
         try:
@@ -401,8 +407,9 @@ class EvenniaServerService(MultiService):
         except Exception:
             # stop server if this happens.
             print(traceback.format_exc())
-            print("Error in initial setup. Stopping Server + Portal.")
-            evennia.SESSION_HANDLER.portal_shutdown()
+            if not settings._TEST_ENVIRONMENT or not evennia.SESSION_HANDLER:
+                print("Error in initial setup. Stopping Server + Portal.")
+                evennia.SESSION_HANDLER.portal_shutdown()
 
     def create_default_channels(self):
         """
@@ -424,7 +431,7 @@ class EvenniaServerService(MultiService):
         # connectinfo
         connectinfo_chan = settings.CHANNEL_CONNECTINFO
         if connectinfo_chan and not ChannelDB.objects.filter(
-                db_key__iexact=connectinfo_chan["key"]
+            db_key__iexact=connectinfo_chan["key"]
         ):
             channel = create_channel(**connectinfo_chan)
         # default channels
@@ -523,7 +530,10 @@ class EvenniaServerService(MultiService):
                 if self.amp_protocol:
                     yield evennia.SESSION_HANDLER.all_sessions_portal_sync()
             else:  # shutdown
-                yield [_SA(p, "is_connected", False) for p in evennia.AccountDB.get_all_cached_instances()]
+                yield [
+                    _SA(p, "is_connected", False)
+                    for p in evennia.AccountDB.get_all_cached_instances()
+                ]
                 yield [o.at_server_shutdown() for o in evennia.ObjectDB.get_all_cached_instances()]
                 yield [
                     (p.unpuppet_all(), p.at_server_shutdown())
@@ -575,7 +585,7 @@ class EvenniaServerService(MultiService):
 
         """
         for mod in self.start_stop_modules:
-            if (hook := getattr(mod, hookname, None)):
+            if hook := getattr(mod, hookname, None):
                 hook()
 
     def at_server_init(self):
@@ -667,7 +677,7 @@ class EvenniaServerService(MultiService):
 
         if settings.GUEST_ENABLED:
             for guest in evennia.AccountDB.objects.all().filter(
-                    db_typeclass_path=settings.BASE_GUEST_TYPECLASS
+                db_typeclass_path=settings.BASE_GUEST_TYPECLASS
             ):
                 for character in guest.db._playable_characters:
                     if character:

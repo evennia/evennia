@@ -78,7 +78,7 @@ class _TestAMP(TwistedTestCase):
         return all_sent
 
 
-@patch("evennia.server.server.LoopingCall", MagicMock())
+@patch("evennia.server.service.LoopingCall", MagicMock())
 @patch("evennia.server.portal.amp.amp.BinaryBoxProtocol.transport")
 class TestAMPClientSend(_TestAMP):
     """Test amp client sending data"""
@@ -90,7 +90,9 @@ class TestAMPClientSend(_TestAMP):
 
         self._connect_server(mocktransport)
         self.amp_server.dataReceived(wire_data)
-        self.portal.sessions.data_out.assert_called_with(self.portalsession, text={"foo": "bar"})
+        evennia.PORTAL_SESSION_HANDLER.data_out.assert_called_with(
+            self.portalsession, text={"foo": "bar"}
+        )
 
     def test_adminserver2portal(self, mocktransport):
         self._connect_client(mocktransport)
@@ -117,7 +119,7 @@ class TestAMPClientRecv(_TestAMP):
 
         self._connect_client(mocktransport)
         self.amp_client.dataReceived(wire_data)
-        self.server.sessions.data_in.assert_called_with(self.session, text={"foo": "bar"})
+        evennia.SERVER_SESSION_HANDLER.data_in.assert_called_with(self.session, text={"foo": "bar"})
 
     def test_adminportal2server(self, mocktransport):
         self._connect_server(mocktransport)
@@ -126,6 +128,6 @@ class TestAMPClientRecv(_TestAMP):
         wire_data = self._catch_wire_read(mocktransport)[0]
 
         self._connect_client(mocktransport)
-        self.server.sessions.portal_disconnect_all = MagicMock()
+        evennia.SERVER_SESSION_HANDLER.portal_disconnect_all = MagicMock()
         self.amp_client.dataReceived(wire_data)
-        self.server.sessions.portal_disconnect_all.assert_called()
+        evennia.SERVER_SESSION_HANDLER.portal_disconnect_all.assert_called()

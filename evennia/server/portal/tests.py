@@ -24,6 +24,8 @@ from twisted.trial.unittest import TestCase as TwistedTestCase
 import evennia
 from evennia.server.portal import irc
 from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.server.portal.service import EvenniaPortalService
+from evennia.server.portal.portalsessionhandler import PortalSessionHandler
 
 from .amp import (
     AMP_MAXLEN,
@@ -221,8 +223,13 @@ class TestIRC(TestCase):
 class TestTelnet(TwistedTestCase):
     def setUp(self):
         super().setUp()
+        self.portal = EvenniaPortalService()
+        evennia.EVENNIA_PORTAL_SERVICE = self.portal
+        self.amp_server_factory = AMPServerFactory(self.portal)
+        self.amp_server = self.amp_server_factory.buildProtocol("127.0.0.1")
         factory = TelnetServerFactory()
         factory.protocol = TelnetProtocol
+        evennia.PORTAL_SESSION_HANDLER = PortalSessionHandler()
         factory.sessionhandler = evennia.PORTAL_SESSION_HANDLER
         factory.sessionhandler.portal = Mock()
         self.proto = factory.buildProtocol(("localhost", 0))
@@ -287,8 +294,13 @@ class TestTelnet(TwistedTestCase):
 class TestWebSocket(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
+        self.portal = EvenniaPortalService()
+        evennia.EVENNIA_PORTAL_SERVICE = self.portal
+        self.amp_server_factory = AMPServerFactory(self.portal)
+        self.amp_server = self.amp_server_factory.buildProtocol("127.0.0.1")
         self.proto = WebSocketClient()
         self.proto.factory = WebSocketServerFactory()
+        evennia.PORTAL_SESSION_HANDLER = PortalSessionHandler()
         self.proto.factory.sessionhandler = evennia.PORTAL_SESSION_HANDLER
         self.proto.sessionhandler = evennia.PORTAL_SESSION_HANDLER
         self.proto.sessionhandler.portal = Mock()
