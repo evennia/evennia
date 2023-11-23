@@ -5,12 +5,18 @@
 
 In this tutorial we will create a web page that displays the stats of a game character. For this, and all other pages we want to make specific to our game, we'll need to create our own Django "app". We'll call our app `character`, since it will be dealing with character information. From your game dir, run
 
-    cd web 
     evennia startapp character
 
-This will create a new directory named `character` inside `mygame/web/`. We put it in `web/` to keep things tidy, but you could place it wherever you like. It contains all basic files that a Django app needs. 
+This will create a new directory named `character` inside `mygame`. To keep
+things tidy, let's move it into the `web/` subdirectory.
 
-Note that we will not edit all files in this new directory, many of the generated files are outside the scope of this tutorial.  
+    mv character web  (linux/mac)
+    move character web  (windows)
+
+We put it in `web/` to keep things tidy, but you could place it wherever you
+like. It contains all basic files that a Django app needs.
+
+Note that we will not edit all files in this new directory, many of the generated files are outside the scope of this tutorial.
 
 In order for Django to find our new web app, we'll need to add it to the `INSTALLED_APPS` setting. Evennia's default installed apps are already set, so in `server/conf/settings.py`, we'll just extend them:
 
