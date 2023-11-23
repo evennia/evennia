@@ -243,7 +243,7 @@ Tweak this file as follows:
 
 # ,.. 
 
-from .mycommands import CmdEcho    # <-------  
+from . import mycommands    # <-------  
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -262,7 +262,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
-        self.add(command.CmdEcho)    # <-----------
+        self.add(mycommands.CmdEcho)    # <-----------
 
 # ... 
 ```
@@ -272,7 +272,9 @@ The `super()` Python keyword means that the _parent_ is called. In this case, th
 
 Coincidentally, this is also how you replace default commands in Evennia!jj To replace e.g. the command `get`, you just give your replacement command the `key` 'get' and add it here - since it's added after `super()`, it will replace the default version of `get`.
 ```
-This works the same way as when you added `CmdEcho` to your `MyCmdSet`. The only difference cmdsets are automatically added to all Characters/Accounts etc so you don't have to do so manually. We must also make sure to import the `CmdEcho` from your `mycommands` module in order for this module to know about it. The period `.` in  `from .mycommands import ...` means that we are telling Python that `mycommands.py` sits in the same directory as this current module. 
+This works the same way as when you added `CmdEcho` to your `MyCmdSet`. The only difference cmdsets are automatically added to all Characters/Accounts etc so you don't have to do so manually. We must also make sure to import the `CmdEcho` from your `mycommands` module in order for this module to know about it. The period ''`.`'' in  `from . import mycommands` means that we are telling Python that `mycommands.py` sits in the same directory as this current module. We want to import the entire module. Further down we access `mycommands.CmdEcho` to add it to the character cmdset.
+
+> Hint: You can add all commands in another cmdset to your cmdset, by simply importing that cmdset and do `self.add(TheOtherCmdSet)`! This is an easy way to add a lot of commands to your default cmdset with minimal code. Evennia contribs usually distribute new commands this way, so you can easily add them in one go.
 
 Just `reload` the server and your `echo` command will be available again. There is no limit to how many cmdsets a given Command can be a part of. 
 
@@ -300,6 +302,8 @@ And Bob would see
 Still in `mygame/commands/mycommands.py`, add a new class, between `CmdEcho` and `MyCmdSet`.
 
 ```{code-block} python
+# in mygame/commands/mycommands.py
+
 :linenos:
 :emphasize-lines: 3,4,11,14,15,17,18,19,21
 
@@ -370,8 +374,9 @@ There can be any number of `elifs` to mark when different branches of the code s
 Finally we must also add this to a CmdSet. Let's add it to `MyCmdSet` which we made persistent earlier.
 
 ```python
-# ...
+# in mygame/commands/mycommands.py
 
+# ...
 class MyCmdSet(CmdSet):
 
     def at_cmdset_creation(self):
