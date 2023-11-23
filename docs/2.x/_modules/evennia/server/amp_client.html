@@ -95,6 +95,7 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
@@ -274,9 +275,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sessid</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">packed_data</span><span class="p">)</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{}</span>
 
     <span class="nd">@amp</span><span class="o">.</span><span class="n">AdminPortal2Server</span><span class="o">.</span><span class="n">responder</span>
@@ -293,46 +294,45 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sessid</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">packed_data</span><span class="p">)</span>
         <span class="n">operation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;operation&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">server_sessionhandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">sessions</span>
 
         <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PCONN</span><span class="p">:</span>  <span class="c1"># portal_session_connect</span>
             <span class="c1"># create a new session and sync it</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_connect</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_connect</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PCONNSYNC</span><span class="p">:</span>  <span class="c1"># portal_session_sync</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_session_sync</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_session_sync</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PDISCONN</span><span class="p">:</span>  <span class="c1"># portal_session_disconnect</span>
             <span class="c1"># session closed from portal sid</span>
-            <span class="n">session</span> <span class="o">=</span> <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="p">)</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
-                <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+                <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PDISCONNALL</span><span class="p">:</span>  <span class="c1"># portal_disconnect_all</span>
             <span class="c1"># portal orders all sessions to close</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_disconnect_all</span><span class="p">()</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_disconnect_all</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PSYNC</span><span class="p">:</span>  <span class="c1"># portal_session_sync</span>
             <span class="c1"># force a resync of sessions from the portal side. This happens on</span>
             <span class="c1"># first server-connect.</span>
             <span class="n">server_restart_mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;server_restart_mode&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">run_init_hooks</span><span class="p">(</span><span class="n">server_restart_mode</span><span class="p">)</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_sessions_sync</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_start_time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;portal_start_time&quot;</span><span class="p">)</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_SERVER_SERVICE</span><span class="o">.</span><span class="n">run_init_hooks</span><span class="p">(</span><span class="n">server_restart_mode</span><span class="p">)</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_sessions_sync</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_start_time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;portal_start_time&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SRELOAD</span><span class="p">:</span>  <span class="c1"># server reload</span>
             <span class="c1"># shut down in reload mode</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">)</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_SERVER_SERVICE</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SRESET</span><span class="p">:</span>
             <span class="c1"># shut down in reset mode</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reset&quot;</span><span class="p">)</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">SERVER_SESSION_HANDLER</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_SERVER_SERVICE</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reset&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SSHUTD</span><span class="p">:</span>  <span class="c1"># server shutdown</span>
             <span class="c1"># shutdown in stop mode</span>
-            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_SERVER_SERVICE</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;operation </span><span class="si">%(op)s</span><span class="s2"> not recognized.&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">operation</span><span class="p">})</span>

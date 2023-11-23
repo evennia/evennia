@@ -260,6 +260,8 @@
 <span class="sd">    also checks so the warm-reset mechanism works as it should.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_TEST_ENVIRONMENT</span><span class="p">:</span>
+        <span class="k">return</span>
     <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_epoch&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Initial setup complete. Restarting Server once.&quot;</span><span class="p">)</span>
@@ -277,12 +279,6 @@
 <span class="sd">            the function will exit immediately.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">last_step</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="c1"># this means we don&#39;t need to handle setup since</span>
-        <span class="c1"># it already ran sucessfully once. -1 is the legacy</span>
-        <span class="c1"># value for existing databases.</span>
-        <span class="k">return</span>
-
     <span class="c1"># setup sequence</span>
     <span class="n">setup_sequence</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;create_objects&quot;</span><span class="p">:</span> <span class="n">create_objects</span><span class="p">,</span>
@@ -290,6 +286,12 @@
         <span class="s2">&quot;collectstatic&quot;</span><span class="p">:</span> <span class="n">collectstatic</span><span class="p">,</span>
         <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="n">reset_server</span><span class="p">,</span>
     <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">last_step</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># this means we don&#39;t need to handle setup since</span>
+        <span class="c1"># it already ran sucessfully once. -1 is the legacy</span>
+        <span class="c1"># value for existing databases.</span>
+        <span class="k">return</span>
 
     <span class="c1"># determine the sequence so we can skip ahead</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">setup_sequence</span><span class="p">)</span>

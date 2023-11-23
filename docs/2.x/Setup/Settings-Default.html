@@ -246,6 +246,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># operating between two processes on the same machine. You usually don&#39;t need to</span>
 <span class="c1"># change this unless you cannot use the default AMP port/host for</span>
 <span class="c1"># whatever reason.</span>
+<span class="n">AMP_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">AMP_HOST</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
 <span class="n">AMP_PORT</span> <span class="o">=</span> <span class="mi">4006</span>
 <span class="n">AMP_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
@@ -1273,6 +1274,10 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># This allows for replacing the very core of the infrastructure holding Evennia</span>
 <span class="c1"># together with your own variations. You should usually never have to touch</span>
 <span class="c1"># this, and if so, you really need to know what you are doing.</span>
+
+<span class="c1"># The primary Twisted Services used to start up Evennia.</span>
+<span class="n">EVENNIA_SERVER_SERVICE_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.service.EvenniaServerService&quot;</span>
+<span class="n">EVENNIA_PORTAL_SERVICE_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.service.EvenniaPortalService&quot;</span>
 
 <span class="c1"># The Base Session Class is used as a parent class for all Protocols such as</span>
 <span class="c1"># Telnet and SSH.) Changing this could be really dangerous. It will cascade</span>

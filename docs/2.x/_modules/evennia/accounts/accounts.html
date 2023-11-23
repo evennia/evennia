@@ -119,6 +119,7 @@
     <span class="n">SIGNAL_ACCOUNT_POST_CREATE</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_PUPPET</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_UNPUPPET</span><span class="p">,</span>
+    <span class="n">SIGNAL_ACCOUNT_POST_LOGIN_FAIL</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.server.throttle</span> <span class="kn">import</span> <span class="n">Throttle</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">ModelAttributeBackend</span><span class="p">,</span> <span class="n">NickHandler</span>
@@ -762,6 +763,7 @@
             <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
                 <span class="n">account</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_account_from_name</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+                    <span class="n">SIGNAL_ACCOUNT_POST_LOGIN_FAIL</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
                     <span class="n">account</span><span class="o">.</span><span class="n">at_failed_login</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">errors</span>
