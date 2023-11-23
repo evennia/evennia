@@ -5,10 +5,12 @@
 - [Feature][pull3313] (Backwards incompatible): `OptionHandler.set` now returns
   `BaseOption` rather than its `.value`. Instead access `.value` or `.display()`
   on this return for more control. (Volund)
+- [Feature][pull3278]: (Backwards incompatible): Refactor home page into multiple sub-parts for easier
+  overriding and composition (johnnyvoruz)
+- [Feature][pull3180]: (Can be backwards incompatible): Make build commands easier to override, with new utility
+  hooks (Volund)
 - [Feature][issue3273]: Allow passing `text_kwargs` kwarg to `EvMore.msg` in order to expand
   the outputfunc used for every evmore page.
-- [Feature][pull3278]: Refactor home page into multiple sub-parts for easier
-  overriding and composition (johnnyvoruz)
 - [Feature][pull3286]: Allow Discord bot to change user's nickname and assign
   roles for a user on a given server (holl0wstar).
 - [Feature][pull3301]: Make EvenniaAdminSite include custom models better; adds
@@ -16,17 +18,27 @@
   settings.(Volund)
 - [Feature][pull3179]: Handling of the `.db._playable_characters` helper
   methods. Also adds events hooks to modify effects when this list changes (Volund)
-- [Feature][pull3197]: Make sure Global scripts only start in one place,
   avoiding race conditions until server starts (Volund)
 - [Feature][pull3281]: Add `$your()` and `$Your()` for actor stance emoting (Volund)
+- [Feature][pull3177]: Add `Account.get_character_slots()`,
+  `.get_available_character_slots()`, `.check_available_slots` and
+  `at_post_create_character` methods to allow better customization of character creation (Volund)
+- [Feature][pull3319]: Refactor/cleanup of Evennia server/portal startup files
+  into services for easier overriding (Volund)
+- [Fix][pull3197]: Make sure Global scripts only start in one place,
+- [Fix][pull3324]: Make account-post-login-fail signal fire properly. Add
+  `CUSTOM_SIGNAL` for adding one's own signals (Volund)
 - [Fix][pull3267]: Missing recache step in ObjectSessionHandler (InspectorCaracal)
 - [Fix][pull3270]: Evennia is its own MSSP family now, so we should return that
   instead of 'Custom' (InspectorCaracal)
 - [Fix][pull3274]: Traceback when creating objects with initial nattributes
   (InspectorCaracal)
 - [Fix][issue3272]: Make sure `ScriptHandler.add` does not fail if passed an
-  instantiated script.
-- Docs: Lots of Typo fixes (iLPdev)
+  instantiated script. (Volund)
+- [Fix][pull3338]: Resolve if/elif bug in XYZGrid contrib launch command
+  (jaborsh)
+- [Fix][pull3322]: Fix `BaseOption.display` to always return a string.
+- Docs: Lots of Typo fixes (iLPdev, InspectorCaracal, jaborsh)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
   the default cmdsets.
 
@@ -40,6 +52,12 @@
 [pull3197]: https://github.com/evennia/evennia/pull/3197
 [pull3313]: https://github.com/evennia/evennia/pull/3313
 [pull3281]: https://github.com/evennia/evennia/pull/3281
+[pull3322]: https://github.com/evennia/evennia/pull/3322
+[pull3177]: https://github.com/evennia/evennia/pull/3177
+[pull3180]: https://github.com/evennia/evennia/pull/3180
+[pull3319]: https://github.com/evennia/evennia/pull/3319
+[pull3324]: https://github.com/evennia/evennia/pull/3324
+[pull3338]: https://github.com/evennia/evennia/pull/3338
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 

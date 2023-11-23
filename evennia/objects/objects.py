@@ -3033,8 +3033,8 @@ class DefaultExit(DefaultObject):
             location (Room): The room to create this exit in.
 
         Keyword Args:
-            account (obj): Account to associate this Exit with.
-            caller (ObjectDB): the Object creating this Object.
+            account (AccountDB): Account to associate this Exit with.
+            caller (ObjectDB): The Object creating this Object.
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
             destination (Room): The room to which this exit should go.
