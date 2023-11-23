@@ -352,6 +352,32 @@ class TestDefaultAccount(TestCase):
         )
         self.assertIsNone(obj.at_post_puppet.call_args)
 
+    @override_settings(MAX_NR_CHARACTERS=5)
+    def test_get_character_slots(self):
+        "Check get_character_slots method"
+
+        account = create.create_account(
+            f"TestAccount{randint(0, 999999)}",
+            email="test@test.com",
+            password="testpassword",
+            typeclass=DefaultAccount,
+        )
+
+        self.assertEqual(account.get_character_slots(), 5)
+        account.delete()
+
+    @override_settings(MAX_NR_CHARACTERS=5)
+    def test_get_available_character_slots(self):
+        "Check get_available_character_slots method"
+        account = create.create_account(
+            f"TestAccount{randint(0, 999999)}",
+            email="test@test.com",
+            password="testpassword",
+            typeclass=DefaultAccount,
+        )
+        self.assertEqual(account.get_available_character_slots(), 5)
+        account.delete()
+
 
 class TestAccountPuppetDeletion(BaseEvenniaTest):
     @override_settings(MULTISESSION_MODE=2)

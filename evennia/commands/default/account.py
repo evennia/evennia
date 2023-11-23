@@ -146,53 +146,20 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
             self.msg("Usage: charcreate <charname> [= description]")
             return
         key = self.lhs
-        desc = self.rhs
+        description = self.rhs or "This is a character."
 
-        if _MAX_NR_CHARACTERS is not None:
-            if (
-                not account.is_superuser
-                and not account.check_permstring("Developer")
-                and account.characters
-                and len(account.characters) >= _MAX_NR_CHARACTERS
-            ):
-                plural = "" if _MAX_NR_CHARACTERS == 1 else "s"
-                self.msg(f"You may only have a maximum of {_MAX_NR_CHARACTERS} character{plural}.")
-                return
-        from evennia.objects.models import ObjectDB
+        new_character, errors = self.account.create_character(key=key, description=description, ip=self.session.address)
 
-        typeclass = settings.BASE_CHARACTER_TYPECLASS
-
-        if ObjectDB.objects.filter(db_typeclass_path=typeclass, db_key__iexact=key):
-            # check if this Character already exists. Note that we are only
-            # searching the base character typeclass here, not any child
-            # classes.
-            self.msg(f"|rA character named '|w{key}|r' already exists.|n")
+        if errors:
+            self.msg(errors)
+        if not new_character:
             return
 
-        # create the character
-        start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
-        default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
-        new_character = create.create_object(
-            typeclass, key=key, location=start_location, home=default_home, permissions=permissions
-        )
-        # only allow creator (and developers) to puppet this char
-        new_character.locks.add(
-            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"
-            " perm(Admin)" % (new_character.id, account.id, account.id)
-        )
-        account.characters.add(new_character)
-        if desc:
-            new_character.db.desc = desc
-        elif not new_character.db.desc:
-            new_character.db.desc = "This is a character."
         self.msg(
             f"Created new character {new_character.key}. Use |wic {new_character.key}|n to enter"
             " the game as this character."
         )
-        logger.log_sec(
-            f"Character Created: {new_character} (Caller: {account}, IP: {self.session.address})."
-        )
+
 
 
 class CmdCharDelete(COMMAND_DEFAULT_CLASS):

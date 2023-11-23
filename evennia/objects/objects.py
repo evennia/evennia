@@ -9,6 +9,7 @@ This is the v1.0 develop version (for ref in doc building).
 """
 import time
 from collections import defaultdict
+import typing
 
 import inflect
 from django.conf import settings
@@ -2529,8 +2530,8 @@ class DefaultCharacter(DefaultObject):
         # Normalize to latin characters and validate, if necessary, the supplied key
         key = cls.normalize_name(key)
 
-        if not cls.validate_name(key):
-            errors.append(_("Invalid character name."))
+        if (val_err := cls.validate_name(key, account=account)):
+            errors.append(val_err)
             return obj, errors
 
         # Set the supplied key as the name of the intended object
@@ -2548,8 +2549,9 @@ class DefaultCharacter(DefaultObject):
         try:
             # Check to make sure account does not have too many chars
             if account:
-                if len(account.characters) >= settings.MAX_NR_CHARACTERS:
-                    errors.append(_("There are too many characters associated with this account."))
+                avail = account.check_available_slots()
+                if avail:
+                    errors.append(avail)
                     return obj, errors
 
             # Create the Character
@@ -2603,17 +2605,20 @@ class DefaultCharacter(DefaultObject):
         return latin_name
 
     @classmethod
-    def validate_name(cls, name):
-        """Validate the character name prior to creating. Overload this function to add custom validators
+    def validate_name(cls, name, account=None) -> typing.Optional[str]:
+        """
+        Validate the character name prior to creating. Overload this function to add custom validators
 
         Args:
             name (str) : The name of the character
+        Kwargs:
+            account (DefaultAccount, optional) : The account creating the character.
         Returns:
-            valid (bool) : True if character creation should continue; False if it should fail
+            error (str, optional) : A non-empty error message if there is a problem, otherwise False.
 
         """
-
-        return True  # Default validator does not perform any operations
+        if account and cls.objects.filter_family(db_key__iexact=name):
+            return f"|rA character named '|w{name}|r' already exists.|n"
 
     def basetype_setup(self):
         """
