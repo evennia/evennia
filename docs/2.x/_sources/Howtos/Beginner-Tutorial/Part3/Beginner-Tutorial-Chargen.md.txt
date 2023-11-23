@@ -650,7 +650,6 @@ This is a start point for spinning up the chargen from a command later.
         
     # this generates all random components of the character
     tmp_character = TemporaryCharacterSheet()
-    tmp_character.generate()
 
     EvMenu(caller, menutree, session=session, 
            startnode="node_chargen",   # <----- 
