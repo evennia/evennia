@@ -268,8 +268,9 @@
 
     <span class="c1"># Parent typeclasses</span>
     <span class="c1"># utilities</span>
-    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
     <span class="kn">import</span> <span class="nn">os</span>
+
+    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">contrib</span>
     <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span><span class="p">,</span> <span class="n">DefaultGuest</span>
@@ -296,7 +297,7 @@
     <span class="kn">from</span> <span class="nn">.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
     <span class="kn">from</span> <span class="nn">.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
     <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="kn">import</span> <span class="n">TagCategoryProperty</span><span class="p">,</span> <span class="n">TagProperty</span>
-    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">class_from_module</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span>
     <span class="kn">from</span> <span class="nn">.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">PORTAL_MODE</span><span class="p">:</span>

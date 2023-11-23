@@ -2403,8 +2403,8 @@ source room.</p></li>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>account</strong> (<a class="reference internal" href="evennia.contrib.base_systems.ingame_python.callbackhandler.html#evennia.contrib.base_systems.ingame_python.callbackhandler.Callback.obj" title="evennia.contrib.base_systems.ingame_python.callbackhandler.Callback.obj"><em>obj</em></a>) – Account to associate this Exit with.</p></li>
-<li><p><strong>caller</strong> (<a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><em>ObjectDB</em></a>) – the Object creating this Object.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – Account to associate this Exit with.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><em>ObjectDB</em></a>) – The Object creating this Object.</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – Brief description for this object.</p></li>
 <li><p><strong>ip</strong> (<em>str</em>) – IP address of creator (for object auditing).</p></li>
 <li><p><strong>destination</strong> (<em>Room</em>) – The room to which this exit should go.</p></li>
@@ -2485,18 +2485,6 @@ Attribute <strong>err_traverse</strong> is defined - this will in that case be
 read for an error string instead.</p>
 </dd></dl>
 
-<dl class="py exception">
-<dt id="evennia.objects.objects.DefaultExit.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.objects.objects.DefaultExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.objects.objects.DefaultExit.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
-</dd></dl>
-
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultExit.get_return_exit">
 <code class="sig-name descname">get_return_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">return_all</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultExit.get_return_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultExit.get_return_exit" title="Permalink to this definition">¶</a></dt>
@@ -2511,6 +2499,18 @@ list or single matching exit.</p>
 <dd class="field-even"><p><em>queryset or exit (Exit)</em> – The matching exit(s).</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.objects.objects.DefaultExit.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.objects.objects.DefaultExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.objects.objects.DefaultExit.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">

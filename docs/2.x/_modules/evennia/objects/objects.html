@@ -96,7 +96,6 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
@@ -2626,7 +2625,7 @@
         <span class="c1"># Normalize to latin characters and validate, if necessary, the supplied key</span>
         <span class="n">key</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">normalize_name</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">val_err</span> <span class="o">:=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">validate_name</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="n">account</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">val_err</span> <span class="o">:=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">validate_name</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="n">account</span><span class="p">):</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_err</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span>
 
@@ -3119,8 +3118,8 @@
 <span class="sd">            location (Room): The room to create this exit in.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            account (obj): Account to associate this Exit with.</span>
-<span class="sd">            caller (ObjectDB): the Object creating this Object.</span>
+<span class="sd">            account (AccountDB): Account to associate this Exit with.</span>
+<span class="sd">            caller (ObjectDB): The Object creating this Object.</span>
 <span class="sd">            description (str): Brief description for this object.</span>
 <span class="sd">            ip (str): IP address of creator (for object auditing).</span>
 <span class="sd">            destination (Room): The room to which this exit should go.</span>

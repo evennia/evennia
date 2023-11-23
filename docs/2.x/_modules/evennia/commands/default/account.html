@@ -234,7 +234,9 @@
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
         <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">or</span> <span class="s2">&quot;This is a character.&quot;</span>
 
-        <span class="n">new_character</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">create_character</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="n">new_character</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">create_character</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
@@ -245,7 +247,6 @@
             <span class="sa">f</span><span class="s2">&quot;Created new character </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. Use |wic </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n to enter&quot;</span>
             <span class="s2">&quot; the game as this character.&quot;</span>
         <span class="p">)</span></div></div>
-
 
 
 <div class="viewcode-block" id="CmdCharDelete"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdCharDelete">[docs]</a><span class="k">class</span> <span class="nc">CmdCharDelete</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
