@@ -436,7 +436,7 @@ def xyzcommand(*args):
 
     if option in ("help", "h"):
         _option_help(*suboptions)
-    if option in ("list", "show"):
+    elif option in ("list", "show"):
         _option_list(*suboptions)
     elif option == "init":
         _option_init(*suboptions)
