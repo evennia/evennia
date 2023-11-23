@@ -522,7 +522,7 @@
 
     <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span>
         <span class="n">_option_help</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">):</span>
         <span class="n">_option_list</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;init&quot;</span><span class="p">:</span>
         <span class="n">_option_init</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
