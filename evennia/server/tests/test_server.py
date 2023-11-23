@@ -2,14 +2,14 @@
 Test the main server component
 
 """
-
+import evennia
 from unittest import TestCase
 
 from django.test import override_settings
 from mock import DEFAULT, MagicMock, call, patch
 
 
-@patch("evennia.server.server.LoopingCall", new=MagicMock())
+@patch("evennia.server.service.LoopingCall", new=MagicMock())
 class TestServer(TestCase):
     """
     Test server module.
@@ -17,78 +17,76 @@ class TestServer(TestCase):
     """
 
     def setUp(self):
+        # Running this first line ensures that the EVENNIA_SERVICE is instantiated.
         from evennia.server import server
 
-        self.server = server
+        self.server = evennia.EVENNIA_SERVER_SERVICE
 
+    @override_settings(IDMAPPER_CACHE_MAXSIZE=1000)
     def test__server_maintenance_reset(self):
-        with patch.multiple(
-            "evennia.server.server",
+        with patch.object(self.server, "_flush_cache", new=MagicMock()) as mockflush, patch.object(
+            evennia, "ServerConfig", new=MagicMock()
+        ) as mockconf, patch.multiple(
+            "evennia.server.service",
             LoopingCall=DEFAULT,
-            Evennia=DEFAULT,
-            _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
-            _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=0,
-            ServerConfig=DEFAULT,
         ) as mocks:
+            self.server.maintenance_count = 0
+
             mocks["connection"].close = MagicMock()
-            mocks["ServerConfig"].objects.conf = MagicMock(return_value=456)
+            mockconf.objects.conf = MagicMock(return_value=456)
 
             # flush cache
-            self.server._server_maintenance()
-            mocks["ServerConfig"].objects.conf.assert_called_with("runtime", 456)
+            self.server.server_maintenance()
+            mockconf.objects.conf.assert_called_with("runtime", 456)
 
+    @override_settings(IDMAPPER_CACHE_MAXSIZE=1000)
     def test__server_maintenance_flush(self):
         with patch.multiple(
-            "evennia.server.server",
+            "evennia.server.service",
             LoopingCall=DEFAULT,
-            Evennia=DEFAULT,
-            _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
-            _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=5 - 1,
-            ServerConfig=DEFAULT,
-        ) as mocks:
+        ) as mocks, patch.object(
+            evennia, "ServerConfig", new=MagicMock()
+        ) as mockconf, patch.object(
+            self.server, "_flush_cache", new=MagicMock()
+        ) as mockflush:
             mocks["connection"].close = MagicMock()
-            mocks["ServerConfig"].objects.conf = MagicMock(return_value=100)
-
+            mockconf.objects.conf = MagicMock(return_value=100)
+            self.server.maintenance_count = 5 - 1
             # flush cache
-            self.server._server_maintenance()
-            mocks["_FLUSH_CACHE"].assert_called_with(1000)
+            self.server.server_maintenance()
+            self.server._flush_cache.assert_called_with(1000)
 
+    @override_settings(IDMAPPER_CACHE_MAXSIZE=1000)
     def test__server_maintenance_close_connection(self):
         with patch.multiple(
-            "evennia.server.server",
+            "evennia.server.service",
             LoopingCall=DEFAULT,
-            Evennia=DEFAULT,
-            _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
-            _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=(60 * 7) - 1,
-            _LAST_SERVER_TIME_SNAPSHOT=0,
-            ServerConfig=DEFAULT,
-        ) as mocks:
+        ) as mocks, patch.object(evennia, "ServerConfig", new=MagicMock()) as mockconf:
+            self.server._flush_cache = MagicMock()
+            self.server.maintenance_count = (60 * 7) - 1
+            self.server._last_server_time_snapshot = 0
             mocks["connection"].close = MagicMock()
-            mocks["ServerConfig"].objects.conf = MagicMock(return_value=100)
-            self.server._server_maintenance()
+            mockconf.objects.conf = MagicMock(return_value=100)
+            self.server.server_maintenance()
             mocks["connection"].close.assert_called()
 
+    @override_settings(IDLE_TIMEOUT=10)
     def test__server_maintenance_idle_time(self):
         with patch.multiple(
-            "evennia.server.server",
+            "evennia.server.service",
             LoopingCall=DEFAULT,
-            Evennia=DEFAULT,
-            _FLUSH_CACHE=DEFAULT,
             connection=DEFAULT,
-            _IDMAPPER_CACHE_MAXSIZE=1000,
-            _MAINTENANCE_COUNT=(3600 * 7) - 1,
-            _LAST_SERVER_TIME_SNAPSHOT=0,
-            SESSIONS=DEFAULT,
-            _IDLE_TIMEOUT=10,
             time=DEFAULT,
-            ServerConfig=DEFAULT,
-        ) as mocks:
+        ) as mocks, patch.object(
+            evennia, "ServerConfig", new=MagicMock()
+        ) as mockconf, patch.object(
+            evennia, "SESSION_HANDLER", new=MagicMock()
+        ) as mocksess:
+            self.server.maintenance_count = (3600 * 7) - 1
+            self.server._last_server_time_snapshot = 0
             sess1 = MagicMock()
             sess2 = MagicMock()
             sess3 = MagicMock()
@@ -105,31 +103,25 @@ class TestServer(TestCase):
 
             mocks["time"].time = MagicMock(return_value=1000)
 
-            mocks["ServerConfig"].objects.conf = MagicMock(return_value=100)
-            mocks["SESSIONS"].values = MagicMock(return_value=[sess1, sess2, sess3, sess4])
-            mocks["SESSIONS"].disconnect = MagicMock()
+            mockconf.objects.conf = MagicMock(return_value=100)
+            mocksess.values = MagicMock(return_value=[sess1, sess2, sess3, sess4])
+            mocksess.disconnect = MagicMock()
 
-            self.server._server_maintenance()
+            self.server.server_maintenance()
             reason = "idle timeout exceeded"
             calls = [call(sess1, reason=reason), call(sess4, reason=reason)]
-            mocks["SESSIONS"].disconnect.assert_has_calls(calls, any_order=True)
+            mocksess.disconnect.assert_has_calls(calls, any_order=True)
 
-    def test_evennia_start(self):
-        with patch.multiple("evennia.server.server", time=DEFAULT, service=DEFAULT) as mocks:
-            mocks["time"].time = MagicMock(return_value=1000)
-            evennia = self.server.Evennia(MagicMock())
-            self.assertEqual(evennia.start_time, 1000)
-
-    @patch("evennia.objects.models.ObjectDB")
-    @patch("evennia.server.server.AccountDB")
-    @patch("evennia.server.server.ScriptDB")
-    @patch("evennia.comms.models.ChannelDB")
-    def test_update_defaults(self, mockchan, mockscript, mockacct, mockobj):
-        with patch.multiple("evennia.server.server", ServerConfig=DEFAULT) as mocks:
-            mockchan.objects.filter = MagicMock()
-            mockscript.objects.filter = MagicMock()
-            mockacct.objects.filter = MagicMock()
-            mockobj.objects.filter = MagicMock()
+    def test_update_defaults(self):
+        with patch.object(evennia, "ObjectDB", new=MagicMock()) as mockobj, patch.object(
+            evennia, "AccountDB", new=MagicMock()
+        ) as mockacc, patch.object(evennia, "ScriptDB", new=MagicMock()) as mockscr, patch.object(
+            evennia, "ChannelDB", new=MagicMock()
+        ) as mockchan, patch.object(
+            evennia, "ServerConfig", new=MagicMock()
+        ) as mockconf:
+            for m in (mockscr, mockobj, mockacc, mockchan):
+                m.objects.filter = MagicMock()
 
             # fake mismatches
             settings_names = (
@@ -148,16 +140,14 @@ class TestServer(TestCase):
             def _mock_conf(key, *args):
                 return fakes[key]
 
-            mocks["ServerConfig"].objects.conf = _mock_conf
+            mockconf.objects.conf = _mock_conf
 
-            evennia = self.server.Evennia(MagicMock())
-            evennia.update_defaults()
+            self.server.update_defaults()
 
-            mockchan.objects.filter.assert_called()
-            mockscript.objects.filter.assert_called()
-            mockacct.objects.filter.assert_called()
-            mockobj.objects.filter.assert_called()
+            for m in (mockscr, mockobj, mockacc, mockchan):
+                m.objects.filter.assert_called()
 
+    @override_settings(_TEST_ENVIRONMENT=True)
     def test_initial_setup(self):
         from evennia.utils.create import create_account
 
@@ -167,10 +157,10 @@ class TestServer(TestCase):
             "evennia.server.initial_setup", reset_server=DEFAULT, AccountDB=DEFAULT
         ) as mocks:
             mocks["AccountDB"].objects.get = MagicMock(return_value=acct)
-            evennia = self.server.Evennia(MagicMock())
-            evennia.run_initial_setup()
+            self.server.run_initial_setup()
         acct.delete()
 
+    @override_settings(_TEST_ENVIRONMENT=True)
     def test_initial_setup_retry(self):
         from evennia.utils.create import create_account
 
@@ -185,14 +175,12 @@ class TestServer(TestCase):
             mocks["AccountDB"].objects.get = MagicMock(return_value=acct)
             # a last_initial_setup_step > 0
             mocks["ServerConfig"].objects.conf = MagicMock(return_value=4)
-            evennia = self.server.Evennia(MagicMock())
-            evennia.run_initial_setup()
+            self.server.run_initial_setup()
         acct.delete()
 
-    @patch("evennia.server.server.INFO_DICT", {"test": "foo"})
     def test_get_info_dict(self):
-        evennia = self.server.Evennia(MagicMock())
-        self.assertEqual(evennia.get_info_dict(), {"test": "foo"})
+        with patch.object(self.server, "get_info_dict", return_value={"test": "foo"}) as mocks:
+            self.assertEqual(self.server.get_info_dict(), {"test": "foo"})
 
 
 class TestInitHooks(TestCase):
@@ -200,7 +188,7 @@ class TestInitHooks(TestCase):
         from evennia.server import server
         from evennia.utils import create
 
-        self.server = server
+        self.server = evennia.EVENNIA_SERVER_SERVICE
 
         self.obj1 = create.object(key="HookTestObj1")
         self.obj2 = create.object(key="HookTestObj2")
@@ -211,44 +199,35 @@ class TestInitHooks(TestCase):
         self.script1 = create.script(key="script1")
         self.script2 = create.script(key="script2")
 
-        self.obj1.at_init = MagicMock()
-        self.obj2.at_init = MagicMock()
-        self.acct1.at_init = MagicMock()
-        self.acct2.at_init = MagicMock()
-        self.chan1.at_init = MagicMock()
-        self.chan2.at_init = MagicMock()
-        self.script1.at_init = MagicMock()
-        self.script2.at_init = MagicMock()
+        self.objects = [
+            self.obj1,
+            self.obj2,
+            self.acct1,
+            self.acct2,
+            self.chan1,
+            self.chan2,
+            self.script1,
+            self.script2,
+        ]
+
+        for obj in self.objects:
+            obj.at_init = MagicMock()
 
     def tearDown(self):
-        self.obj1.delete()
-        self.obj2.delete()
-        self.acct1.delete()
-        self.acct2.delete()
-        self.chan1.delete()
-        self.chan2.delete()
-        self.script1.delete()
-        self.script2.delete()
+        for obj in self.objects:
+            obj.delete()
 
     @override_settings(_TEST_ENVIRONMENT=True)
     def test_run_init_hooks(self):
-        evennia = self.server.Evennia(MagicMock())
+        with patch.object(
+            self.server, "at_server_reload_start", new=MagicMock()
+        ) as reload, patch.object(self.server, "at_server_cold_start", new=MagicMock()) as cold:
+            self.server.run_init_hooks("reload")
+            self.server.run_init_hooks("reset")
+            self.server.run_init_hooks("shutdown")
 
-        evennia.at_server_reload_start = MagicMock()
-        evennia.at_server_cold_start = MagicMock()
+            for obj in self.objects:
+                obj.at_init.assert_called()
 
-        evennia.run_init_hooks("reload")
-        evennia.run_init_hooks("reset")
-        evennia.run_init_hooks("shutdown")
-
-        self.acct1.at_init.assert_called()
-        self.acct2.at_init.assert_called()
-        self.obj1.at_init.assert_called()
-        self.obj2.at_init.assert_called()
-        self.chan1.at_init.assert_called()
-        self.chan2.at_init.assert_called()
-        self.script1.at_init.assert_called()
-        self.script2.at_init.assert_called()
-
-        evennia.at_server_reload_start.assert_called()
-        evennia.at_server_cold_start.assert_called()
+            for hook in (reload, cold):
+                hook.assert_called()

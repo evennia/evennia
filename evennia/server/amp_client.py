@@ -9,6 +9,7 @@ import os
 from django.conf import settings
 from twisted.internet import protocol
 
+import evennia
 from evennia.server.portal import amp
 from evennia.utils import logger
 from evennia.utils.utils import class_from_module
@@ -188,9 +189,9 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         sessid, kwargs = self.data_in(packed_data)
-        session = self.factory.server.sessions.get(sessid, None)
+        session = evennia.SERVER_SESSION_HANDLER.get(sessid, None)
         if session:
-            self.factory.server.sessions.data_in(session, **kwargs)
+            evennia.SERVER_SESSION_HANDLER.data_in(session, **kwargs)
         return {}
 
     @amp.AdminPortal2Server.responder
@@ -207,46 +208,45 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         """
         sessid, kwargs = self.data_in(packed_data)
         operation = kwargs.pop("operation", "")
-        server_sessionhandler = self.factory.server.sessions
 
         if operation == amp.PCONN:  # portal_session_connect
             # create a new session and sync it
-            server_sessionhandler.portal_connect(kwargs.get("sessiondata"))
+            evennia.SERVER_SESSION_HANDLER.portal_connect(kwargs.get("sessiondata"))
 
         elif operation == amp.PCONNSYNC:  # portal_session_sync
-            server_sessionhandler.portal_session_sync(kwargs.get("sessiondata"))
+            evennia.SERVER_SESSION_HANDLER.portal_session_sync(kwargs.get("sessiondata"))
 
         elif operation == amp.PDISCONN:  # portal_session_disconnect
             # session closed from portal sid
-            session = server_sessionhandler.get(sessid)
+            session = evennia.SERVER_SESSION_HANDLER.get(sessid)
             if session:
-                server_sessionhandler.portal_disconnect(session)
+                evennia.SERVER_SESSION_HANDLER.portal_disconnect(session)
 
         elif operation == amp.PDISCONNALL:  # portal_disconnect_all
             # portal orders all sessions to close
-            server_sessionhandler.portal_disconnect_all()
+            evennia.SERVER_SESSION_HANDLER.portal_disconnect_all()
 
         elif operation == amp.PSYNC:  # portal_session_sync
             # force a resync of sessions from the portal side. This happens on
             # first server-connect.
             server_restart_mode = kwargs.get("server_restart_mode", "shutdown")
-            self.factory.server.run_init_hooks(server_restart_mode)
-            server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
-            server_sessionhandler.portal_start_time = kwargs.get("portal_start_time")
+            evennia.EVENNIA_SERVER_SERVICE.run_init_hooks(server_restart_mode)
+            evennia.SERVER_SESSION_HANDLER.portal_sessions_sync(kwargs.get("sessiondata"))
+            evennia.SERVER_SESSION_HANDLER.portal_start_time = kwargs.get("portal_start_time")
 
         elif operation == amp.SRELOAD:  # server reload
             # shut down in reload mode
-            server_sessionhandler.all_sessions_portal_sync()
-            server_sessionhandler.server.shutdown(mode="reload")
+            evennia.SERVER_SESSION_HANDLER.all_sessions_portal_sync()
+            evennia.EVENNIA_SERVER_SERVICE.shutdown(mode="reload")
 
         elif operation == amp.SRESET:
             # shut down in reset mode
-            server_sessionhandler.all_sessions_portal_sync()
-            server_sessionhandler.server.shutdown(mode="reset")
+            evennia.SERVER_SESSION_HANDLER.all_sessions_portal_sync()
+            evennia.EVENNIA_SERVER_SERVICE.shutdown(mode="reset")
 
         elif operation == amp.SSHUTD:  # server shutdown
             # shutdown in stop mode
-            server_sessionhandler.server.shutdown(mode="shutdown")
+            evennia.EVENNIA_SERVER_SERVICE.shutdown(mode="shutdown")
 
         else:
             raise Exception("operation %(op)s not recognized." % {"op": operation})

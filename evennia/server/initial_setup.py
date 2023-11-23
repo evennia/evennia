@@ -174,6 +174,8 @@ def reset_server():
     also checks so the warm-reset mechanism works as it should.
 
     """
+    if settings._TEST_ENVIRONMENT:
+        return
     ServerConfig.objects.conf("server_epoch", time.time())
 
     logger.log_info("Initial setup complete. Restarting Server once.")
@@ -191,12 +193,6 @@ def handle_setup(last_step=None):
             the function will exit immediately.
 
     """
-    if last_step in ("done", -1):
-        # this means we don't need to handle setup since
-        # it already ran sucessfully once. -1 is the legacy
-        # value for existing databases.
-        return
-
     # setup sequence
     setup_sequence = {
         "create_objects": create_objects,
@@ -204,6 +200,12 @@ def handle_setup(last_step=None):
         "collectstatic": collectstatic,
         "done": reset_server,
     }
+
+    if last_step in ("done", -1):
+        # this means we don't need to handle setup since
+        # it already ran sucessfully once. -1 is the legacy
+        # value for existing databases.
+        return
 
     # determine the sequence so we can skip ahead
     steps = list(setup_sequence)

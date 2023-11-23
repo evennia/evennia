@@ -127,6 +127,7 @@ EVENNIA_ADMIN = True
 # operating between two processes on the same machine. You usually don't need to
 # change this unless you cannot use the default AMP port/host for
 # whatever reason.
+AMP_ENABLED = True
 AMP_HOST = "localhost"
 AMP_PORT = 4006
 AMP_INTERFACE = "127.0.0.1"
@@ -1154,6 +1155,10 @@ REST_API_ENABLED = False
 # This allows for replacing the very core of the infrastructure holding Evennia
 # together with your own variations. You should usually never have to touch
 # this, and if so, you really need to know what you are doing.
+
+# The primary Twisted Services used to start up Evennia.
+EVENNIA_SERVER_SERVICE_CLASS = "evennia.server.service.EvenniaServerService"
+EVENNIA_PORTAL_SERVICE_CLASS = "evennia.server.portal.service.EvenniaPortalService"
 
 # The Base Session Class is used as a parent class for all Protocols such as
 # Telnet and SSH.) Changing this could be really dangerous. It will cascade
