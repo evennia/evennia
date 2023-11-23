@@ -10,15 +10,17 @@ evennia/server/server_runner.py).
 import os
 import sys
 
+import django
 from twisted.logger import globalLogPublisher
 
-import django
 django.setup()
 
 import evennia
+
 evennia._init()
 
 from django.conf import settings
+
 from evennia.utils import logger
 
 # twistd requires us to define the variable 'application' so it knows
@@ -36,5 +38,3 @@ if "--nodaemon" not in sys.argv and "test" not in sys.argv:
         max_size=settings.SERVER_LOG_MAX_SIZE,
     )
     globalLogPublisher.addObserver(logger.GetServerLogObserver()(logfile))
-
-

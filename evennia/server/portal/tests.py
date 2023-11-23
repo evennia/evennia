@@ -23,9 +23,9 @@ from twisted.trial.unittest import TestCase as TwistedTestCase
 
 import evennia
 from evennia.server.portal import irc
-from evennia.utils.test_resources import BaseEvenniaTest
-from evennia.server.portal.service import EvenniaPortalService
 from evennia.server.portal.portalsessionhandler import PortalSessionHandler
+from evennia.server.portal.service import EvenniaPortalService
+from evennia.utils.test_resources import BaseEvenniaTest
 
 from .amp import (
     AMP_MAXLEN,

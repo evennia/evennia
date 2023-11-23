@@ -18,6 +18,7 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
 
     def setup_test_environment(self, **kwargs):
         import evennia
+
         evennia._init()
 
         from django.conf import settings

@@ -183,8 +183,9 @@ def _init(portal_mode=False):
 
     # Parent typeclasses
     # utilities
-    from django.conf import settings
     import os
+
+    from django.conf import settings
 
     from . import contrib
     from .accounts.accounts import DefaultAccount, DefaultGuest
@@ -211,7 +212,7 @@ def _init(portal_mode=False):
     from .server.models import ServerConfig
     from .typeclasses.attributes import AttributeProperty
     from .typeclasses.tags import TagCategoryProperty, TagProperty
-    from .utils import ansi, gametime, logger, class_from_module
+    from .utils import ansi, class_from_module, gametime, logger
     from .utils.ansi import ANSIString
 
     if not PORTAL_MODE:

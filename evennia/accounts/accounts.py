@@ -15,13 +15,14 @@ import time
 import typing
 from random import getrandbits
 
-import evennia
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -31,9 +32,9 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.server.models import ServerConfig
 from evennia.server.signals import (
     SIGNAL_ACCOUNT_POST_CREATE,
+    SIGNAL_ACCOUNT_POST_LOGIN_FAIL,
     SIGNAL_OBJECT_POST_PUPPET,
     SIGNAL_OBJECT_POST_UNPUPPET,
-    SIGNAL_ACCOUNT_POST_LOGIN_FAIL,
 )
 from evennia.server.throttle import Throttle
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
@@ -855,7 +856,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         # check character slot usage.
-        if (slot_check := self.check_available_slots()):
+        if slot_check := self.check_available_slots():
             return None, [slot_check]
 
         # parse inputs

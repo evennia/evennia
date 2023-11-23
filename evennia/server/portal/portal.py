@@ -10,15 +10,17 @@ by game/evennia.py).
 import os
 import sys
 
+import django
 from twisted.logger import globalLogPublisher
 
-import django
 django.setup()
 
 import evennia
+
 evennia._init(portal_mode=True)
 
 from django.conf import settings
+
 from evennia.utils import logger
 
 # twistd requires us to define the variable 'application' so it knows

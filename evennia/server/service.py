@@ -2,25 +2,24 @@
 This module contains the main EvenniaService class, which is the very core of the
 Evennia server. It is instantiated by the evennia/server/server.py module.
 """
+import importlib
 import time
 import traceback
-import importlib
 
+import django
+from django.conf import settings
+from django.db import connection
+from django.db.utils import OperationalError
+from django.utils.translation import gettext as _
 from twisted.application import internet
 from twisted.application.service import MultiService
 from twisted.internet import defer, reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.task import LoopingCall
 
-import django
-from django.db import connection
-from django.db.utils import OperationalError
-from django.conf import settings
-from django.utils.translation import gettext as _
-
 import evennia
-from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 from evennia.utils import logger
+from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 
 _SA = object.__setattr__
 
@@ -417,8 +416,7 @@ class EvenniaServerService(MultiService):
 
         """
 
-        from evennia import AccountDB
-        from evennia import ChannelDB
+        from evennia import AccountDB, ChannelDB
         from evennia.utils.create import create_channel
 
         superuser = AccountDB.objects.get(id=1)

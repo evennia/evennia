@@ -148,7 +148,9 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         key = self.lhs
         description = self.rhs or "This is a character."
 
-        new_character, errors = self.account.create_character(key=key, description=description, ip=self.session.address)
+        new_character, errors = self.account.create_character(
+            key=key, description=description, ip=self.session.address
+        )
 
         if errors:
             self.msg(errors)
@@ -159,7 +161,6 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
             f"Created new character {new_character.key}. Use |wic {new_character.key}|n to enter"
             " the game as this character."
         )
-
 
 
 class CmdCharDelete(COMMAND_DEFAULT_CLASS):

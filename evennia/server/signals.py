@@ -20,8 +20,9 @@ This is used on top of hooks to make certain features easier to add to contribs
 without necessitating a full takeover of hooks that may be in high demand.
 
 """
-from django.dispatch import Signal
 from collections import defaultdict
+
+from django.dispatch import Signal
 
 # The sender is the created Account. This is triggered at the very end of
 # Account.create() after the Account is created. Note that this will *not* fire

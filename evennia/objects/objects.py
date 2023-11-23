@@ -10,7 +10,6 @@ This is the v1.0 develop version (for ref in doc building).
 import time
 import typing
 from collections import defaultdict
-import typing
 
 import inflect
 from django.conf import settings
@@ -2540,7 +2539,7 @@ class DefaultCharacter(DefaultObject):
         # Normalize to latin characters and validate, if necessary, the supplied key
         key = cls.normalize_name(key)
 
-        if (val_err := cls.validate_name(key, account=account)):
+        if val_err := cls.validate_name(key, account=account):
             errors.append(val_err)
             return obj, errors
 

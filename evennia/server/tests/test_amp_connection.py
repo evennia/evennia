@@ -14,11 +14,11 @@ from twisted.trial.unittest import TestCase as TwistedTestCase
 import evennia
 from evennia.server import amp_client, server, serversession, session
 from evennia.server.portal import amp, amp_server, portal
-from evennia.utils import create
-from evennia.server.service import EvenniaServerService
-from evennia.server.portal.service import EvenniaPortalService
-from evennia.server.sessionhandler import ServerSessionHandler
 from evennia.server.portal.portalsessionhandler import PortalSessionHandler
+from evennia.server.portal.service import EvenniaPortalService
+from evennia.server.service import EvenniaServerService
+from evennia.server.sessionhandler import ServerSessionHandler
+from evennia.utils import create
 
 DelayedCall.debug = True
 

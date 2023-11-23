@@ -2,12 +2,14 @@ import os
 import sys
 import time
 from os.path import abspath, dirname
-from twisted.application.service import MultiService
+
 from django.conf import settings
 from django.db import connection
 from twisted.application import internet, service
+from twisted.application.service import MultiService
 from twisted.internet import protocol, reactor
 from twisted.internet.task import LoopingCall
+
 import evennia
 from evennia.utils.utils import (
     class_from_module,
@@ -18,7 +20,6 @@ from evennia.utils.utils import (
 
 
 class EvenniaPortalService(MultiService):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.amp_protocol = None
@@ -80,10 +81,10 @@ class EvenniaPortalService(MultiService):
 
         if settings.SSL_ENABLED and settings.SSL_PORTS and settings.SSL_INTERFACES:
             self.register_ssl()
-        
+
         if settings.SSH_ENABLED and settings.SSH_PORTS and settings.SSH_INTERFACES:
             self.register_ssh()
-            
+
         if settings.WEBSERVER_ENABLED:
             self.register_webserver()
 
@@ -105,17 +106,16 @@ class EvenniaPortalService(MultiService):
         if settings.LOCKDOWN_MODE:
             return ["127.0.0.1"]
         return interfaces
-    
-    def register_ssl(self):
 
+    def register_ssl(self):
         # Start Telnet+SSL game connection (requires PyOpenSSL).
 
         from evennia.server.portal import telnet_ssl
 
         _ssl_protocol = class_from_module(settings.SSL_PROTOCOL_CLASS)
-        
+
         interfaces = self.check_lockdown(settings.SSL_INTERFACES)
-        
+
         for interface in interfaces:
             ifacestr = ""
             if interface not in ("0.0.0.0", "::") or len(interfaces) > 1:
@@ -148,9 +148,9 @@ class EvenniaPortalService(MultiService):
         from evennia.server.portal import ssh
 
         _ssh_protocol = class_from_module(settings.SSH_PROTOCOL_CLASS)
-        
+
         interfaces = self.check_lockdown(settings.SSH_INTERFACES)
-        
+
         for interface in interfaces:
             ifacestr = ""
             if interface not in ("0.0.0.0", "::") or len(interfaces) > 1:
@@ -158,7 +158,11 @@ class EvenniaPortalService(MultiService):
             for port in settings.SSH_PORTS:
                 pstring = "%s:%s" % (ifacestr, port)
                 factory = ssh.makeFactory(
-                    {"protocolFactory": _ssh_protocol, "protocolArgs": (), "sessions": evennia.PORTAL_SESSION_HANDLER}
+                    {
+                        "protocolFactory": _ssh_protocol,
+                        "protocolArgs": (),
+                        "sessions": evennia.PORTAL_SESSION_HANDLER,
+                    }
                 )
                 factory.noisy = False
                 ssh_service = internet.TCPServer(port, factory, interface=interface)
@@ -168,7 +172,7 @@ class EvenniaPortalService(MultiService):
                 self.info_dict["ssh"].append("ssh%s: %s" % (ifacestr, port))
 
     def register_webserver(self):
-        from evennia.server.webserver import Website, EvenniaReverseProxyResource
+        from evennia.server.webserver import EvenniaReverseProxyResource, Website
 
         # Start a reverse proxy to relay data to the Server-side webserver
         interfaces = self.check_lockdown(settings.WEBSERVER_INTERFACES)
@@ -178,7 +182,7 @@ class EvenniaPortalService(MultiService):
             ifacestr = ""
             if interface not in ("0.0.0.0", "::") or len(interfaces) > 1:
                 ifacestr = "-%s" % interface
-                
+
             for proxyport, serverport in settings.WEBSERVER_PORTS:
                 web_root = EvenniaReverseProxyResource("127.0.0.1", serverport, "")
                 webclientstr = ""
@@ -191,17 +195,27 @@ class EvenniaPortalService(MultiService):
                     web_root.putChild(b"webclientdata", ajax_webclient)
                     webclientstr = "webclient (ajax only)"
 
-                    if (settings.WEBSOCKET_CLIENT_ENABLED and settings.WEBSOCKET_CLIENT_PORT and 
-                        settings.WEBSOCKET_CLIENT_INTERFACE) and not websocket_started:
+                    if (
+                        settings.WEBSOCKET_CLIENT_ENABLED
+                        and settings.WEBSOCKET_CLIENT_PORT
+                        and settings.WEBSOCKET_CLIENT_INTERFACE
+                    ) and not websocket_started:
                         # start websocket client port for the webclient
                         # we only support one websocket client
                         from autobahn.twisted.websocket import WebSocketServerFactory
 
                         from evennia.server.portal import webclient  # noqa
 
-                        w_interface = "127.0.0.1" if settings.LOCKDOWN_MODE else settings.WEBSOCKET_CLIENT_INTERFACE
+                        w_interface = (
+                            "127.0.0.1"
+                            if settings.LOCKDOWN_MODE
+                            else settings.WEBSOCKET_CLIENT_INTERFACE
+                        )
                         w_ifacestr = ""
-                        if w_interface not in ("0.0.0.0", "::") or len(settings.WEBSERVER_INTERFACES) > 1:
+                        if (
+                            w_interface not in ("0.0.0.0", "::")
+                            or len(settings.WEBSERVER_INTERFACES) > 1
+                        ):
                             w_ifacestr = "-%s" % w_interface
                         port = settings.WEBSOCKET_CLIENT_PORT
 
@@ -246,7 +260,9 @@ class EvenniaPortalService(MultiService):
                 proxy_service = internet.TCPServer(proxyport, web_root, interface=interface)
                 proxy_service.setName("EvenniaWebProxy%s:%s" % (ifacestr, proxyport))
                 proxy_service.setServiceParent(self)
-                self.info_dict["webserver_proxy"].append("webserver-proxy%s: %s" % (ifacestr, proxyport))
+                self.info_dict["webserver_proxy"].append(
+                    "webserver-proxy%s: %s" % (ifacestr, proxyport)
+                )
                 self.info_dict["webserver_internal"].append("webserver: %s" % serverport)
 
     def register_telnet(self):
@@ -284,7 +300,9 @@ class EvenniaPortalService(MultiService):
         self.info_dict["amp"] = "amp: %s" % settings.AMP_PORT
 
         factory = amp_server.AMPServerFactory(self)
-        amp_service = internet.TCPServer(settings.AMP_PORT, factory, interface=settings.AMP_INTERFACE)
+        amp_service = internet.TCPServer(
+            settings.AMP_PORT, factory, interface=settings.AMP_INTERFACE
+        )
         amp_service.setName("PortalAMPServer")
         amp_service.setServiceParent(self)
 
