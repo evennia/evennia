@@ -1,0 +1,36 @@
+#
+# This is an example batch build file for Evennia.
+#
+# This version is stripped down to work better with the test system.
+# It avoids teleporting the button. For the full version look at the
+# other example_batch_cmds.ev file.
+
+# This creates a red button
+
+create/drop button:red_button.RedButton
+
+# This comment ends input for @create
+# Next command:
+
+set button/desc =
+  This is a large red button. Now and then
+  it flashes in an evil, yet strangely tantalizing way.
+
+  A big sign sits next to it. It says:
+
+
+-----------
+
+ Press me!
+
+-----------
+
+
+  ... It really begs to be pressed, doesn't it? You
+know you want to!
+
+# This ends the @set command. Note that line breaks and extra spaces
+# in the argument are not considered. A completely empty line
+# translates to a \n newline in the command; two empty lines will thus
+# create a new paragraph. (note that few commands support it though, you
+# mainly want to use it for descriptions).

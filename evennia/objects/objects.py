@@ -8,6 +8,7 @@ This is the v1.0 develop version (for ref in doc building).
 
 """
 import time
+import typing
 from collections import defaultdict
 import typing
 
@@ -222,7 +223,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 {exits}{characters}{things}
 {footer}
     """
-
     # on-object properties
 
     @lazy_property
@@ -1013,7 +1013,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             obj.move_to(home, move_type="teleport")
 
     @classmethod
-    def create(cls, key, account=None, **kwargs):
+    def create(
+        cls,
+        key: str,
+        account: "DefaultAccount" = None,
+        caller: "DefaultObject" = None,
+        method: str = "create",
+        **kwargs,
+    ):
         """
         Creates a basic object with default parameters, unless otherwise
         specified or extended.
@@ -1022,11 +1029,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Args:
             key (str): Name of the new object.
-            account (Account): Account to attribute this object to.
+
 
         Keyword Args:
+            account (Account): Account to attribute this object to.
+            caller (DefaultObject): The object which is creating this one.
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
+            method (str): The method of creation. Defaults to "create".
 
         Returns:
             object (Object): A newly created object of the given typeclass.
@@ -2786,7 +2796,14 @@ class DefaultRoom(DefaultObject):
     )
 
     @classmethod
-    def create(cls, key, account=None, **kwargs):
+    def create(
+        cls,
+        key: str,
+        account: "DefaultAccount" = None,
+        caller: DefaultObject = None,
+        method: str = "create",
+        **kwargs,
+    ):
         """
         Creates a basic Room with default parameters, unless otherwise
         specified or extended.
@@ -2795,13 +2812,15 @@ class DefaultRoom(DefaultObject):
 
         Args:
             key (str): Name of the new Room.
-            account (obj, optional): Account to associate this Room with. If
-                given, it will be given specific control/edit permissions to this
-                object (along with normal Admin perms). If not given, default
 
         Keyword Args:
+            account (DefaultAccount, optional): Account to associate this Room with. If
+                given, it will be given specific control/edit permissions to this
+                object (along with normal Admin perms). If not given, default
+            caller (DefaultObject): The object which is creating this one.
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
+            method (str): The method used to create the room. Defaults to "create".
 
         Returns:
             room (Object): A newly created Room of the given typeclass.
@@ -2992,7 +3011,16 @@ class DefaultExit(DefaultObject):
     # Command hooks
 
     @classmethod
-    def create(cls, key, source, dest, account=None, **kwargs):
+    def create(
+        cls,
+        key: str,
+        location: DefaultRoom = None,
+        destination: DefaultRoom = None,
+        account: "DefaultAccount" = None,
+        caller: DefaultObject = None,
+        method: str = "create",
+        **kwargs,
+    ) -> tuple[typing.Optional["DefaultExit"], list[str]]:
         """
         Creates a basic Exit with default parameters, unless otherwise
         specified or extended.
@@ -3002,13 +3030,14 @@ class DefaultExit(DefaultObject):
         Args:
             key (str): Name of the new Exit, as it should appear from the
                 source room.
-            account (obj): Account to associate this Exit with.
-            source (Room): The room to create this exit in.
-            dest (Room): The room to which this exit should go.
+            location (Room): The room to create this exit in.
 
         Keyword Args:
+            account (obj): Account to associate this Exit with.
+            caller (ObjectDB): the Object creating this Object.
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
+            destination (Room): The room to which this exit should go.
 
         Returns:
             exit (Object): A newly created Room of the given typeclass.
@@ -3031,8 +3060,8 @@ class DefaultExit(DefaultObject):
         kwargs["report_to"] = kwargs.pop("report_to", account)
 
         # Set to/from rooms
-        kwargs["location"] = source
-        kwargs["destination"] = dest
+        kwargs["location"] = location
+        kwargs["destination"] = destination
 
         description = kwargs.pop("description", "")
 
