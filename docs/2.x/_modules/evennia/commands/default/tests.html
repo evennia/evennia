@@ -811,16 +811,17 @@
 
 <div class="viewcode-block" id="TestBuilding"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding">[docs]</a><span class="k">class</span> <span class="nc">TestBuilding</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestBuilding.test_create"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_create">[docs]</a>    <span class="k">def</span> <span class="nf">test_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">typeclass</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdCreate</span><span class="p">(),</span>
-            <span class="s2">&quot;/d TestObj1&quot;</span><span class="p">,</span>  <span class="c1"># /d switch is abbreviated form of /drop</span>
+            <span class="sa">f</span><span class="s2">&quot;/d TestObj1:</span><span class="si">{</span><span class="n">typeclass</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># /d switch is abbreviated form of /drop</span>
             <span class="s2">&quot;You create a new </span><span class="si">%s</span><span class="s2">: TestObj1.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdCreate</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdCreate</span><span class="p">(),</span>
-            <span class="s2">&quot;TestObj1;foo;bar&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;TestObj1;foo;bar:</span><span class="si">{</span><span class="n">typeclass</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;You create a new </span><span class="si">%s</span><span class="s2">: TestObj1 (aliases: foo, bar).&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -2168,7 +2169,7 @@
         <span class="c1"># cannot test batchcode here, it must run inside the server process</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">batchprocess</span><span class="o">.</span><span class="n">CmdBatchCommands</span><span class="p">(),</span>
-            <span class="s2">&quot;batchprocessor.example_batch_cmds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;batchprocessor.example_batch_cmds_test&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Running Batch-command processor - Automatic mode for&quot;</span>
             <span class="s2">&quot; batchprocessor.example_batch_cmds&quot;</span><span class="p">,</span>
         <span class="p">)</span>

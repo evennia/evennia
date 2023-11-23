@@ -232,53 +232,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: charcreate &lt;charname&gt; [= description]&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
-        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">or</span> <span class="s2">&quot;This is a character.&quot;</span>
 
-        <span class="k">if</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>
-                <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">check_permstring</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">account</span><span class="o">.</span><span class="n">characters</span>
-                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_MAX_NR_CHARACTERS</span>
-            <span class="p">):</span>
-                <span class="n">plural</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;s&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You may only have a maximum of </span><span class="si">{</span><span class="n">_MAX_NR_CHARACTERS</span><span class="si">}</span><span class="s2"> character</span><span class="si">{</span><span class="n">plural</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-                <span class="k">return</span>
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+        <span class="n">new_character</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">create_character</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
 
-        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
-
-        <span class="k">if</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">db_key__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">):</span>
-            <span class="c1"># check if this Character already exists. Note that we are only</span>
-            <span class="c1"># searching the base character typeclass here, not any child</span>
-            <span class="c1"># classes.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rA character named &#39;|w</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">|r&#39; already exists.|n&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_character</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="c1"># create the character</span>
-        <span class="n">start_location</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">START_LOCATION</span><span class="p">)</span>
-        <span class="n">default_home</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">)</span>
-        <span class="n">permissions</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_ACCOUNT_DEFAULT</span>
-        <span class="n">new_character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-            <span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">start_location</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="n">default_home</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span>
-        <span class="p">)</span>
-        <span class="c1"># only allow creator (and developers) to puppet this char</span>
-        <span class="n">new_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developer) or pperm(Developer);delete:id(</span><span class="si">%i</span><span class="s2">) or&quot;</span>
-            <span class="s2">&quot; perm(Admin)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">new_character</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a character.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Created new character </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. Use |wic </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n to enter&quot;</span>
             <span class="s2">&quot; the game as this character.&quot;</span>
-        <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Character Created: </span><span class="si">{</span><span class="n">new_character</span><span class="si">}</span><span class="s2"> (Caller: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2">, IP: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">).&quot;</span>
         <span class="p">)</span></div></div>
+
 
 
 <div class="viewcode-block" id="CmdCharDelete"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdCharDelete">[docs]</a><span class="k">class</span> <span class="nc">CmdCharDelete</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>

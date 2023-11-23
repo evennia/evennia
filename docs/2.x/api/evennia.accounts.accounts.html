@@ -221,6 +221,11 @@ at_account_creation()</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.default_character_typeclass">
+<code class="sig-name descname">default_character_typeclass</code><em class="property"> = 'typeclasses.characters.Character'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.default_character_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.accounts.accounts.DefaultAccount.cmdset">
 <code class="sig-name descname">cmdset</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.cmdset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.cmdset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -264,7 +269,7 @@ at_account_creation()</p>
 
 <dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.at_post_remove_character">
-<code class="sig-name descname">at_post_remove_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount">evennia.accounts.accounts.DefaultAccount</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_remove_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_remove_character" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_post_remove_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span><span class="p">:</span> <span class="n">DefaultCharacter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_remove_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_remove_character" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called after a character is removed from this account’s list of playable characters.</p>
 <p>Use it to easily implement custom logic when a character is removed from an account.</p>
 <dl class="field-list simple">
@@ -566,6 +571,59 @@ could get invalidated.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.get_character_slots">
+<code class="sig-name descname">get_character_slots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>int<span class="p">, </span>None<span class="p">]</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_character_slots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_character_slots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of character slots this account has, or
+None if there are no limits.</p>
+<p>By default, that’s settings.MAX_NR_CHARACTERS but this makes it easy to override.
+Maybe for your game, players can be rewarded with more slots, somehow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>int (optional)</em> –</p>
+<dl class="simple">
+<dt>The number of character slots this account has, or None</dt><dd><p>if there are no limits.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.get_available_character_slots">
+<code class="sig-name descname">get_available_character_slots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>int<span class="p">, </span>None<span class="p">]</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_available_character_slots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_available_character_slots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of character slots this account has available, or None if
+there are no limits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>int (optional)</em> –</p>
+<dl class="simple">
+<dt>The number of open character slots this account has, or None</dt><dd><p>if there are no limits.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.check_available_slots">
+<code class="sig-name descname">check_available_slots</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>str<span class="p">, </span>None<span class="p">]</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.check_available_slots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.check_available_slots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method used to determine if an account can create additional characters using
+the character slot system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>str (optional)</em> –</p>
+<dl class="simple">
+<dt>An error message regarding the status of slots. If present, this</dt><dd><p>will halt character creation. If not, character creation can proceed.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.create_character">
 <code class="sig-name descname">create_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.create_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.create_character" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a character linked to this account.</p>
@@ -574,7 +632,7 @@ could get invalidated.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – If not given, use the same name as the account.</p></li>
 <li><p><strong>typeclass</strong> (<em>str</em><em>, </em><em>optional</em>) – Typeclass to use for this character. If
-not given, use settings.BASE_CHARACTER_TYPECLASS.</p></li>
+not given, use self.default_character_class.</p></li>
 <li><p><strong>permissions</strong> (<em>list</em><em>, </em><em>optional</em>) – If not given, use the account’s permissions.</p></li>
 <li><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – The client IP creating this character. Will fall back to the
 one stored for the account if not given.</p></li>
@@ -586,6 +644,12 @@ one stored for the account if not given.</p></li>
 list or None: A list of errors, or None.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_post_create_character">
+<code class="sig-name descname">at_post_create_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_create_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_create_character" title="Permalink to this definition">¶</a></dt>
+<dd><p>An overloadable hook method that allows for further customization of newly created characters.</p>
 </dd></dl>
 
 <dl class="py method">

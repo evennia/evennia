@@ -712,21 +712,21 @@ to default home.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.create">
-<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">account</span><span class="p">:</span> <span class="n">DefaultAccount</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject">DefaultObject</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'create'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a basic object with default parameters, unless otherwise
 specified or extended.</p>
 <p>Provides a friendlier interface to the utils.create_object() function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – Name of the new object.</p></li>
-<li><p><strong>account</strong> (<em>Account</em>) – Account to attribute this object to.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Name of the new object.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
+<li><p><strong>account</strong> (<em>Account</em>) – Account to attribute this object to.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which is creating this one.</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – Brief description for this object.</p></li>
 <li><p><strong>ip</strong> (<em>str</em>) – IP address of creator (for object auditing).</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – The method of creation. Defaults to “create”.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -2079,14 +2079,20 @@ acceptable option.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultCharacter.validate_name">
-<em class="property">classmethod </em><code class="sig-name descname">validate_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.validate_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.validate_name" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">validate_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>str<span class="p">, </span>None<span class="p">]</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.validate_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.validate_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate the character name prior to creating. Overload this function to add custom validators</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the character</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>valid (bool)</em> – True if character creation should continue; False if it should fail</p>
+</dl>
+<dl class="simple">
+<dt>Kwargs:</dt><dd><p>account (DefaultAccount, optional) : The account creating the character.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>error (str, optional)</em> – A non-empty error message if there is a problem, otherwise False.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2220,23 +2226,23 @@ location is always <strong>None</strong>.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultRoom.create">
-<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultRoom.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultRoom.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">account</span><span class="p">:</span> <span class="n">DefaultAccount</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject">evennia.objects.objects.DefaultObject</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'create'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultRoom.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultRoom.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a basic Room with default parameters, unless otherwise
 specified or extended.</p>
 <p>Provides a friendlier interface to the utils.create_object() function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – Name of the new Room.</p></li>
-<li><p><strong>account</strong> (<em>obj</em><em>, </em><em>optional</em>) – Account to associate this Room with. If
-given, it will be given specific control/edit permissions to this
-object (along with normal Admin perms). If not given, default</p></li>
-</ul>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Name of the new Room.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a><em>, </em><em>optional</em>) – Account to associate this Room with. If
+given, it will be given specific control/edit permissions to this
+object (along with normal Admin perms). If not given, default</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which is creating this one.</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – Brief description for this object.</p></li>
 <li><p><strong>ip</strong> (<em>str</em>) – IP address of creator (for object auditing).</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – The method used to create the room. Defaults to “create”.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -2383,7 +2389,7 @@ exit’s name, triggering the movement between rooms.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultExit.create">
-<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultExit.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultExit.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">location</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom">evennia.objects.objects.DefaultRoom</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">destination</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom">evennia.objects.objects.DefaultRoom</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">account</span><span class="p">:</span> <span class="n">DefaultAccount</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject">evennia.objects.objects.DefaultObject</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'create'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultExit.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultExit.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a basic Exit with default parameters, unless otherwise
 specified or extended.</p>
 <p>Provides a friendlier interface to the utils.create_object() function.</p>
@@ -2392,15 +2398,16 @@ specified or extended.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em>) – Name of the new Exit, as it should appear from the
 source room.</p></li>
-<li><p><strong>account</strong> (<em>obj</em>) – Account to associate this Exit with.</p></li>
-<li><p><strong>source</strong> (<em>Room</em>) – The room to create this exit in.</p></li>
-<li><p><strong>dest</strong> (<em>Room</em>) – The room to which this exit should go.</p></li>
+<li><p><strong>location</strong> (<em>Room</em>) – The room to create this exit in.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.contrib.base_systems.ingame_python.callbackhandler.html#evennia.contrib.base_systems.ingame_python.callbackhandler.Callback.obj" title="evennia.contrib.base_systems.ingame_python.callbackhandler.Callback.obj"><em>obj</em></a>) – Account to associate this Exit with.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><em>ObjectDB</em></a>) – the Object creating this Object.</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – Brief description for this object.</p></li>
 <li><p><strong>ip</strong> (<em>str</em>) – IP address of creator (for object auditing).</p></li>
+<li><p><strong>destination</strong> (<em>Room</em>) – The room to which this exit should go.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -2478,6 +2485,18 @@ Attribute <strong>err_traverse</strong> is defined - this will in that case be
 read for an error string instead.</p>
 </dd></dl>
 
+<dl class="py exception">
+<dt id="evennia.objects.objects.DefaultExit.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.objects.objects.DefaultExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.objects.objects.DefaultExit.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultExit.get_return_exit">
 <code class="sig-name descname">get_return_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">return_all</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultExit.get_return_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultExit.get_return_exit" title="Permalink to this definition">¶</a></dt>
@@ -2492,18 +2511,6 @@ list or single matching exit.</p>
 <dd class="field-even"><p><em>queryset or exit (Exit)</em> – The matching exit(s).</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.objects.objects.DefaultExit.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.objects.objects.DefaultExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
-</dd></dl>
-
-<dl class="py exception">
-<dt id="evennia.objects.objects.DefaultExit.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">

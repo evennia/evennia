@@ -88,6 +88,7 @@
 <span class="sd">Building and world design commands</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
@@ -196,6 +197,14 @@
     <span class="c1"># OBS - this is just a parent - it&#39;s not intended to actually be</span>
     <span class="c1"># included in a commandset on its own!</span>
 
+    <span class="c1"># used by get_object_typeclass as defaults.</span>
+    <span class="n">default_typeclasses</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
+        <span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">,</span>
+        <span class="s2">&quot;room&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span><span class="p">,</span>
+        <span class="s2">&quot;exit&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span><span class="p">,</span>
+    <span class="p">}</span>
+
 <div class="viewcode-block" id="ObjManipCommand.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.ObjManipCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We need to expand the default parsing to get all</span>
@@ -248,7 +257,49 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objs</span> <span class="o">=</span> <span class="n">obj_defs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rhs_objs</span> <span class="o">=</span> <span class="n">obj_defs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objattr</span> <span class="o">=</span> <span class="n">obj_attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rhs_objattr</span> <span class="o">=</span> <span class="n">obj_attrs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rhs_objattr</span> <span class="o">=</span> <span class="n">obj_attrs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObjManipCommand.get_object_typeclass"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.ObjManipCommand.get_object_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">get_object_typeclass</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">obj_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cmd_create&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Builder&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This hook is called by build commands to determine which typeclass to use for a specific purpose. For instance,</span>
+<span class="sd">        when using dig, the system can use this to autodetect which kind of Room typeclass to use based on where the</span>
+<span class="sd">        builder is currently located.</span>
+
+<span class="sd">        Note: Although intended to be used with typeclasses, as long as this hook returns a class with a create method,</span>
+<span class="sd">            which accepts the same API as DefaultObject.create(), build commands and other places should take it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj_type (str, optional): The type of object that is being created. Defaults to &quot;object&quot;. Evennia provides</span>
+<span class="sd">                &quot;room&quot;, &quot;exit&quot;, and &quot;character&quot; by default, but this can be extended.</span>
+<span class="sd">            typeclass (str, optional): The typeclass that was requested by the player. Defaults to None.</span>
+<span class="sd">                Can also be an actual class.</span>
+<span class="sd">            method (str, optional): The method that is calling this hook. Defaults to &quot;cmd_create&quot;.</span>
+<span class="sd">                Others are &quot;cmd_dig&quot;, &quot;cmd_open&quot;, &quot;cmd_tunnel&quot;, etc.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            results_tuple (tuple[Optional[Builder], list[str]]): A tuple containing the typeclass to use and a list of</span>
+<span class="sd">                errors. (which might be empty.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">found_typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_typeclasses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found_typeclass</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;No typeclass found for object type &#39;</span><span class="si">{</span><span class="n">obj_type</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">type_class</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">class_from_module</span><span class="p">(</span><span class="n">found_typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">found_typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">found_typeclass</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Typeclass &#39;</span><span class="si">{</span><span class="n">found_typeclass</span><span class="si">}</span><span class="s2">&#39; could not be imported.&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">type_class</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Typeclass &#39;</span><span class="si">{</span><span class="n">found_typeclass</span><span class="si">}</span><span class="s2">&#39; is not creatable.&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">type_class</span><span class="p">,</span> <span class="p">[]</span></div></div>
 
 
 <div class="viewcode-block" id="CmdSetObjAlias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetObjAlias">[docs]</a><span class="k">class</span> <span class="nc">CmdSetObjAlias</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -279,6 +330,8 @@
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">,)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(setobjalias) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
+
+    <span class="n">method_type</span> <span class="o">=</span> <span class="s2">&quot;cmd_create&quot;</span>
 
 <div class="viewcode-block" id="CmdSetObjAlias.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetObjAlias.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the aliases.&quot;&quot;&quot;</span>
@@ -665,10 +718,6 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(create) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
-    <span class="c1"># lockstring of newly created objects, for easy overloading.</span>
-    <span class="c1"># Will be formatted with the {id} of the creating object.</span>
-    <span class="n">new_obj_lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin);delete:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin)&quot;</span>
-
 <div class="viewcode-block" id="CmdCreate.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates the object.</span>
@@ -686,22 +735,23 @@
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">objdef</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
             <span class="n">aliases</span> <span class="o">=</span> <span class="n">objdef</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span>
-            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">objdef</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
 
-            <span class="c1"># create object (if not a valid typeclass, the default</span>
-            <span class="c1"># object typeclass will automatically be used)</span>
-            <span class="n">lockstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_obj_lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-                <span class="n">typeclass</span><span class="p">,</span>
-                <span class="n">name</span><span class="p">,</span>
-                <span class="n">caller</span><span class="p">,</span>
-                <span class="n">home</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
-                <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
-                <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span>
-                <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+            <span class="n">obj_typeclass</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object_typeclass</span><span class="p">(</span>
+                <span class="n">obj_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">objdef</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_typeclass</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">obj_typeclass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">continue</span>
+
             <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;You create a new </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (aliases: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -982,6 +1032,8 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(dig) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
+    <span class="n">method_type</span> <span class="o">=</span> <span class="s2">&quot;cmd_dig&quot;</span>
+
     <span class="c1"># lockstring of newly created rooms, for easy overloading.</span>
     <span class="c1"># Will be formatted with the {id} of the creating object.</span>
     <span class="n">new_room_lockstring</span> <span class="o">=</span> <span class="p">(</span>
@@ -1010,22 +1062,32 @@
         <span class="n">location</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>
 
         <span class="c1"># Create the new room</span>
-        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">room</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">typeclass</span><span class="p">:</span>
-            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span>
+        <span class="n">room_typeclass</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object_typeclass</span><span class="p">(</span>
+            <span class="n">obj_type</span><span class="o">=</span><span class="s2">&quot;room&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">room</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method_type</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError creating room:|n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">room_typeclass</span><span class="p">:</span>
+            <span class="k">return</span>
 
         <span class="c1"># create room</span>
-        <span class="n">new_room</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-            <span class="n">typeclass</span><span class="p">,</span> <span class="n">room</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">aliases</span><span class="o">=</span><span class="n">room</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">],</span> <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span>
+        <span class="n">new_room</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">room_typeclass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">room</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="n">aliases</span><span class="o">=</span><span class="n">room</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">],</span>
+            <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method_type</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">lockstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_room_lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="n">new_room</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError creating room:|n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_room</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">new_room</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_room</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-        <span class="n">room_string</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Created room </span><span class="si">{</span><span class="n">new_room</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">new_room</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)</span><span class="si">{</span><span class="n">alias_string</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">typeclass</span><span class="si">}</span><span class="s2">.&quot;</span>
-        <span class="p">)</span>
+
+        <span class="n">room_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Created room </span><span class="si">{</span><span class="n">new_room</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">new_room</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)</span><span class="si">{</span><span class="n">alias_string</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">new_room</span><span class="si">}</span><span class="s2">.&quot;</span>
 
         <span class="c1"># create exit to room</span>
 
@@ -1040,19 +1102,28 @@
                 <span class="n">exit_to_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">You cannot create an exit from a None-location.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Build the exit to the new room from the current one</span>
-                <span class="n">typeclass</span> <span class="o">=</span> <span class="n">to_exit</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">typeclass</span><span class="p">:</span>
-                    <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span>
-
-                <span class="n">new_to_exit</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-                    <span class="n">typeclass</span><span class="p">,</span>
-                    <span class="n">to_exit</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                    <span class="n">location</span><span class="p">,</span>
-                    <span class="n">aliases</span><span class="o">=</span><span class="n">to_exit</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">],</span>
-                    <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span>
-                    <span class="n">destination</span><span class="o">=</span><span class="n">new_room</span><span class="p">,</span>
-                    <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                <span class="n">exit_typeclass</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object_typeclass</span><span class="p">(</span>
+                    <span class="n">obj_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">to_exit</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method_type</span>
                 <span class="p">)</span>
+                <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError creating exit:|n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errors</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">exit_typeclass</span><span class="p">:</span>
+                    <span class="k">return</span>
+
+                <span class="n">new_to_exit</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">exit_typeclass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">to_exit</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+                    <span class="n">destination</span><span class="o">=</span><span class="n">new_room</span><span class="p">,</span>
+                    <span class="n">aliases</span><span class="o">=</span><span class="n">to_exit</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">],</span>
+                    <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                    <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method_type</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError creating exit:|n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errors</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">new_to_exit</span><span class="p">:</span>
+                    <span class="k">return</span>
+
                 <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">new_to_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                     <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_to_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
@@ -1071,18 +1142,26 @@
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">location</span><span class="p">:</span>
                 <span class="n">exit_back_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">You cannot create an exit back to a None-location.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">typeclass</span> <span class="o">=</span> <span class="n">back_exit</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">typeclass</span><span class="p">:</span>
-                    <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span>
-                <span class="n">new_back_exit</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-                    <span class="n">typeclass</span><span class="p">,</span>
-                    <span class="n">back_exit</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                    <span class="n">new_room</span><span class="p">,</span>
-                    <span class="n">aliases</span><span class="o">=</span><span class="n">back_exit</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">],</span>
-                    <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span>
-                    <span class="n">destination</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
-                    <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                <span class="n">exit_typeclass</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object_typeclass</span><span class="p">(</span>
+                    <span class="n">obj_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">back_exit</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method_type</span>
                 <span class="p">)</span>
+                <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError creating exit:|n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errors</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">exit_typeclass</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="n">new_back_exit</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">exit_typeclass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">back_exit</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="n">location</span><span class="o">=</span><span class="n">new_room</span><span class="p">,</span>
+                    <span class="n">destination</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+                    <span class="n">aliases</span><span class="o">=</span><span class="n">back_exit</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">],</span>
+                    <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                    <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method_type</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError creating exit:|n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errors</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">new_back_exit</span><span class="p">:</span>
+                    <span class="k">return</span>
                 <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">new_back_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                     <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_back_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
@@ -1127,6 +1206,8 @@
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;oneway&quot;</span><span class="p">,</span> <span class="s2">&quot;tel&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: perm(tunnel) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
+
+    <span class="n">method_type</span> <span class="o">=</span> <span class="s2">&quot;cmd_tunnel&quot;</span>
 
     <span class="c1"># store the direction, full name and its opposite</span>
     <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span>
@@ -1514,6 +1595,8 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(open) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
+    <span class="n">method_type</span> <span class="o">=</span> <span class="s2">&quot;cmd_open&quot;</span>
+
     <span class="n">new_obj_lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin);delete:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin)&quot;</span>
 
     <span class="c1"># a custom member method to chug out exits and do checks</span>
@@ -1560,17 +1643,25 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># exit does not exist before. Create a new one.</span>
-            <span class="n">lockstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_obj_lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">typeclass</span><span class="p">:</span>
-                <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span>
-            <span class="n">exit_obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-                <span class="n">typeclass</span><span class="p">,</span>
-                <span class="n">key</span><span class="o">=</span><span class="n">exit_name</span><span class="p">,</span>
+            <span class="n">exit_typeclass</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object_typeclass</span><span class="p">(</span>
+                <span class="n">obj_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method_type</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError creating exit:|n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errors</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exit_typeclass</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">exit_obj</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">exit_typeclass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">exit_name</span><span class="p">,</span>
                 <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
                 <span class="n">aliases</span><span class="o">=</span><span class="n">exit_aliases</span><span class="p">,</span>
-                <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span>
                 <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method_type</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError creating exit:|n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errors</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exit_obj</span><span class="p">:</span>
+                <span class="k">return</span>
             <span class="k">if</span> <span class="n">exit_obj</span><span class="p">:</span>
                 <span class="c1"># storing a destination is what makes it an exit!</span>
                 <span class="n">exit_obj</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">destination</span>
