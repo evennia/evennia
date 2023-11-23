@@ -274,8 +274,6 @@ Coincidentally, this is also how you replace default commands in Evennia!jj To r
 ```
 This works the same way as when you added `CmdEcho` to your `MyCmdSet`. The only difference cmdsets are automatically added to all Characters/Accounts etc so you don't have to do so manually. We must also make sure to import the `CmdEcho` from your `mycommands` module in order for this module to know about it. The period ''`.`'' in  `from . import mycommands` means that we are telling Python that `mycommands.py` sits in the same directory as this current module. We want to import the entire module. Further down we access `mycommands.CmdEcho` to add it to the character cmdset.
 
-> Hint: You can add all commands in another cmdset to your cmdset, by simply importing that cmdset and do `self.add(TheOtherCmdSet)`! This is an easy way to add a lot of commands to your default cmdset with minimal code. Evennia contribs usually distribute new commands this way, so you can easily add them in one go.
-
 Just `reload` the server and your `echo` command will be available again. There is no limit to how many cmdsets a given Command can be a part of. 
 
 To remove, you just comment out or delete the `self.add()` line. Keep it like this for now though - we'll expand on it below. 
@@ -371,7 +369,7 @@ There can be any number of `elifs` to mark when different branches of the code s
 - **Lines 19-20**: A feature of `.search` is that it will already inform `self.caller` if it couldn't find the target. In that case, `target` will be `None` and we should just directly `return`.
 - **Lines 21-22**: At this point we have a suitable target and can send our punching strings to each.
 
-Finally we must also add this to a CmdSet. Let's add it to `MyCmdSet` which we made persistent earlier.
+Finally we must also add this to a CmdSet. Let's add it to `MyCmdSet`.
 
 ```python
 # in mygame/commands/mycommands.py
@@ -392,6 +390,38 @@ make an error and get a `traceback` when you reload. This will either appear
 directly in-game or in your log (view it with `evennia -l` in a terminal).
 Don't panic; tracebacks are your friends - they are to be read bottom-up and usually describe exactly where your problem is. Refer to [The Python introduction lesson](./Beginner-Tutorial-Python-basic-introduction.md) for more hints. If you get stuck, reach out to the Evennia community for help.
 ```
+
+Note that since we did `py self.cmdset.remove("commands.mycommands.MyCmdSet")` earlier, this cmdset is no longer available on our Character. Instead we will add these commands directly to our default cmdset.
+
+```python
+# in mygame/commands/default_cmdsets.py 
+
+# ,.. 
+
+from . import mycommands    
+
+class CharacterCmdSet(default_cmds.CharacterCmdSet):
+    """
+    The `CharacterCmdSet` contains general in-game commands like `look`,
+    `get`, etc available on in-game Character objects. It is merged with
+    the `AccountCmdSet` when an Account puppets a Character.
+    """
+ 
+    key = "DefaultCharacter"
+ 
+    def at_cmdset_creation(self):
+        """
+        Populates the cmdset
+        """
+        super().at_cmdset_creation()
+        #
+        # any commands you add below will overload the default ones.
+        #
+        self.add(mycommands.MyCmdSet)    # <-----------
+# ... 
+```
+
+We changed from adding the individual `echo` command to adding the entire `MyCmdSet` in one go! This will add all commands in that cmdset to the `CharacterCmdSet` and is a practical way to add a lot of command in one go. Once you explore Evennia further, you'll find that [Evennia contribs](../../../Contribs/Contribs-Overview.md) all distribute their new commands in cmdsets, so you can easily add them to your game like this.
 
 Next we reload to let Evennia know of these code changes and try it out:
 
