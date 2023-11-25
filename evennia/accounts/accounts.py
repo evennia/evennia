@@ -272,6 +272,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     """
 
+    # Determines which order command sets begin to be assembled from.
+    # Accounts are usually second.
+    cmd_order = 50
+    cmd_order_error = 0
+    cmd_type = "account"
+
     objects = AccountManager()
 
     # Used by account.create_character() to choose default typeclass for characters.
@@ -308,6 +314,20 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     @lazy_property
     def characters(self):
         return CharactersHandler(self)
+
+    def get_command_objects(self) -> dict[str, "CommandObject"]:
+        """
+        Overrideable method which returns a dictionary of all the kinds of CommandObjects
+        linked to this Account.
+
+        In all normal cases, that's just the account itself.
+
+        The cmdhandler uses this to determine available cmdsets when executing a command.
+
+        Returns:
+            dict[str, CommandObject]: The CommandObjects linked to this Account.
+        """
+        return {"account": self}
 
     def at_post_add_character(self, character: "DefaultCharacter"):
         """
@@ -1514,16 +1534,34 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     def at_cmdset_get(self, **kwargs):
         """
-        Called just *before* cmdsets on this account are requested by
-        the command handler. The cmdsets are available as
-        `self.cmdset`. If changes need to be done on the fly to the
+        Called just before cmdsets on this object are requested by the
+        command handler. If changes need to be done on the fly to the
         cmdset before passing them on to the cmdhandler, this is the
-        place to do it.  This is called also if the account currently
-        have no cmdsets. kwargs are usually not used unless the
-        cmdset is generated dynamically.
+        place to do it. This is called also if the object currently
+        have no cmdsets.
+
+        Keyword Args:
+            caller (obj): The object requesting the cmdsets.
+            current (cmdset): The current merged cmdset.
+            force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)
+            **kwargs: Arbitrary input for overloads.
 
         """
         pass
+
+    def get_cmdsets(self, caller, current, **kwargs):
+        """
+        Called by the CommandHandler to get a list of cmdsets to merge.
+
+        Args:
+            caller (obj): The object requesting the cmdsets.
+            current (cmdset): The current merged cmdset.
+            **kwargs: Arbitrary input for overloads.
+
+        Returns:
+            tuple: A tuple of (current, cmdsets), which is probably self.cmdset.current and self.cmdset.cmdset_stack
+        """
+        return self.cmdset.current, list(self.cmdset.cmdset_stack)
 
     def at_first_login(self, **kwargs):
         """
