@@ -1011,6 +1011,26 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             obj.move_to(home, move_type="teleport")
 
     @classmethod
+    def generate_default_locks(
+        cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
+    ):
+        """
+        Classmethod called during .create() to determine default locks for the object.
+
+        Args:
+            account (Account): Account to attribute this object to.
+            caller (DefaultObject): The object which is creating this one.
+            **kwargs: Arbitrary input.
+
+        Returns:
+            lockstring (str): A lockstring to use for this object.
+        """
+        if cls.lockstring:
+            account_id = account.id if account else -1
+            return cls.lockstring.format(account_id=account_id)
+        return ""
+
+    @classmethod
     def create(
         cls,
         key: str,
@@ -1058,8 +1078,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # Create a sane lockstring if one wasn't supplied
         lockstring = kwargs.get("locks")
-        if account and not lockstring:
-            lockstring = cls.lockstring.format(account_id=account.id)
+        if (account or caller) and not lockstring:
+            lockstring = cls.generate_default_locks(account=account, caller=caller, **kwargs)
             kwargs["locks"] = lockstring
 
         # Create object
@@ -1078,7 +1098,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 obj.db.desc = desc
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object." % key)
+            errors.append(f"An error occurred while creating this '{key}' object: {e}")
             logger.log_err(e)
 
         return obj, errors
@@ -2504,6 +2524,28 @@ class DefaultCharacter(DefaultObject):
     )
 
     @classmethod
+    def generate_default_locks(
+        cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
+    ):
+        """
+        Classmethod called during .create() to determine default locks for the object.
+
+        Args:
+            account (Account): Account to attribute this object to.
+            caller (DefaultObject): The object which is creating this one.
+            **kwargs: Arbitrary input.
+
+        Returns:
+            lockstring (str): A lockstring to use for this object.
+        """
+        if cls.lockstring:
+            account_id = account.id if account else -1
+            character = kwargs.get("character", None)
+            character_id = character.id if character else -1
+            return cls.lockstring.format(character_id=character.id, account_id=account_id)
+        return ""
+
+    @classmethod
     def create(cls, key, account=None, **kwargs):
         """
         Creates a basic Character with default parameters, unless otherwise
@@ -2573,21 +2615,20 @@ class DefaultCharacter(DefaultObject):
                 account.characters.add(obj)
 
             # Add locks
-            if not locks and account:
+            if not locks:
                 # Allow only the character itself and the creator account to puppet this character
                 # (and Developers).
-                locks = cls.lockstring.format(character_id=obj.id, account_id=account.id)
-            elif not locks and not account:
-                locks = cls.lockstring.format(character_id=obj.id, account_id=-1)
+                locks = cls.generate_default_locks(account=account, character=obj)
 
-            obj.locks.add(locks)
+            if locks:
+                obj.locks.add(locks)
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
                 obj.db.desc = description if description else _("This is a character.")
 
         except Exception as e:
-            errors.append(f"An error occurred while creating object '{key} object.")
+            errors.append(f"An error occurred while creating object '{key} object: {e}")
             logger.log_err(e)
 
         return obj, errors
@@ -2794,6 +2835,27 @@ class DefaultRoom(DefaultObject):
     )
 
     @classmethod
+    def generate_default_locks(
+        cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
+    ):
+        """
+        Classmethod called during .create() to determine default locks for the object.
+
+        Args:
+            account (Account): Account to attribute this object to.
+            caller (DefaultObject): The object which is creating this one.
+            **kwargs: Arbitrary input.
+
+        Returns:
+            lockstring (str): A lockstring to use for this object.
+        """
+        if cls.lockstring:
+            room = kwargs.get("room")
+            id = account.id if account else caller.id if caller else room.id
+            return cls.lockstring.format(id=id)
+        return ""
+
+    @classmethod
     def create(
         cls,
         key: str,
@@ -2851,12 +2913,10 @@ class DefaultRoom(DefaultObject):
             obj = create.create_object(**kwargs)
 
             # Add locks
-            if not locks and account:
-                locks = cls.lockstring.format(id=account.id)
-            elif not locks and not account:
-                locks = cls.lockstring.format(id=obj.id)
-
-            obj.locks.add(locks)
+            if not locks:
+                locks = cls.generate_default_locks(account=account, caller=caller, room=obj)
+            if locks:
+                obj.locks.add(locks)
 
             # Record creator id and creation IP
             if ip:
@@ -2869,7 +2929,7 @@ class DefaultRoom(DefaultObject):
                 obj.db.desc = description if description else _("This is a room.")
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object." % key)
+            errors.append(f"An error occurred while creating this '{key}' object: {e}")
             logger.log_err(e)
 
         return obj, errors
@@ -3009,6 +3069,27 @@ class DefaultExit(DefaultObject):
     # Command hooks
 
     @classmethod
+    def generate_default_locks(
+        cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
+    ):
+        """
+        Classmethod called during .create() to determine default locks for the object.
+
+        Args:
+            account (Account): Account to attribute this object to.
+            caller (DefaultObject): The object which is creating this one.
+            **kwargs: Arbitrary input.
+
+        Returns:
+            lockstring (str): A lockstring to use for this object.
+        """
+        if cls.lockstring:
+            room = kwargs.get("room", None)
+            id = account.id if account else caller.id if caller else room.id if room else -1
+            return cls.lockstring.format(id=id)
+        return ""
+
+    @classmethod
     def create(
         cls,
         key: str,
@@ -3070,11 +3151,10 @@ class DefaultExit(DefaultObject):
             obj = create.create_object(**kwargs)
 
             # Set appropriate locks
-            if not locks and account:
-                locks = cls.lockstring.format(id=account.id)
-            elif not locks and not account:
-                locks = cls.lockstring.format(id=obj.id)
-            obj.locks.add(locks)
+            if not locks:
+                locks = cls.generate_default_locks(account=account, caller=caller, exit=obj)
+            if locks:
+                obj.locks.add(locks)
 
             # Record creator id and creation IP
             if ip:
@@ -3087,7 +3167,7 @@ class DefaultExit(DefaultObject):
                 obj.db.desc = description if description else _("This is an exit.")
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object." % key)
+            errors.append(f"An error occurred while creating this '{key}' object: {e}")
             logger.log_err(e)
 
         return obj, errors

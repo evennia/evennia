@@ -338,9 +338,16 @@ class LockHandler:
 
         """
         if isinstance(lockstring, str):
-            lockdefs = lockstring.split(";")
+            lockdefs = [
+                stripped for lockdef in lockstring.split(";") if (stripped := lockdef.strip())
+            ]
         else:
-            lockdefs = [lockdef for locks in lockstring for lockdef in locks.split(";")]
+            lockdefs = [
+                stripped
+                for locks in lockstring
+                for lockdef in locks.split(";")
+                if (stripped := lockdef.strip())
+            ]
             lockstring = ";".join(lockdefs)
 
         err = ""
