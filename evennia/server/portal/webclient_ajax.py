@@ -197,17 +197,6 @@ class AjaxWebClient(resource.Resource):
         csessid = self.get_client_sessid(request)
         browserstr = self.get_browserstr(request)
 
-        remote_addr = request.getClientIP()
-
-        if remote_addr in settings.UPSTREAM_IPS and request.getHeader("x-forwarded-for"):
-            addresses = [x.strip() for x in request.getHeader("x-forwarded-for").split(",")]
-            addresses.reverse()
-
-            for addr in addresses:
-                if addr not in settings.UPSTREAM_IPS:
-                    remote_addr = addr
-                    break
-
         host_string = "%s (%s:%s)" % (
             _SERVERNAME,
             request.getRequestHostname(),
@@ -216,7 +205,7 @@ class AjaxWebClient(resource.Resource):
 
         sess = AjaxWebClientSession()
         sess.client = self
-        sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
+        sess.init_session("ajax/comet", request.origin_ip, self.sessionhandler)
 
         sess.csessid = csessid
         sess.browserstr = browserstr
