@@ -91,6 +91,7 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickTemplateInvalid</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
@@ -809,7 +810,7 @@
 
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wYour access|n:&quot;</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Character |c</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n: </span><span class="si">{</span><span class="n">cperms</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span><span class="p">):</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Account |c</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n: </span><span class="si">{</span><span class="n">pperms</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 </pre></div>

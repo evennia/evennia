@@ -142,9 +142,9 @@ We _could_ make a child class of `Sittable` named `SittableIn` that makes this c
 
 # in mygame/typeclasses/sittables.py
 
-from evennia import DefaultObject
+from typeclasses.objects import Object
 
-class Sittable(DefaultObject):
+class Sittable(Object):
 
     def do_sit(self, sitter):
         """
@@ -306,10 +306,10 @@ We also need to make a change to our `Sittable` typeclass. Open `mygame/typeclas
 
 # in mygame/typeclasses/sittables.py
 
-from evennia import DefaultObject
+from typeclasses.objects import Object
 from commands.sittables import CmdSetSit 
 
-class Sittable(DefaultObject):
+class Sittable(Object):
     """
     (docstring)
     """

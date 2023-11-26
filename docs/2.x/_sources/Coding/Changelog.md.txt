@@ -25,6 +25,8 @@
   `at_post_create_character` methods to allow better customization of character creation (Volund)
 - [Feature][pull3319]: Refactor/cleanup of Evennia server/portal startup files
   into services for easier overriding (Volund)
+- [Feature][issue3307]: Add support for Attribute-categories when using the monitorhandler
+  with input funcs to monitor Attribute changes.
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
 - [Fix][pull3324]: Make account-post-login-fail signal fire properly. Add
   `CUSTOM_SIGNAL` for adding one's own signals (Volund)
@@ -60,6 +62,7 @@
 [pull3338]: https://github.com/evennia/evennia/pull/3338
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
+[issue3308]: https://github.com/evennia/evennia/issues/3307
 
 ## Evennia 2.3.0
 
