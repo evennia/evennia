@@ -319,6 +319,8 @@ Most users will want to just treat each map as a location, and name the
 "Z-coordinate" things like `Dungeon of Doom`, `The ice queen's palace` or `City
 of Blackhaven`. But you could also name it -1, 0, 1, 2, 3 if you wanted.
 
+> Note that the Zcoord is searched *non-case senstively* in the
+
 Pathfinding happens only within each XYMap (up/down is normally 'faked' by moving
 sideways to a new area of the XY plane).
 

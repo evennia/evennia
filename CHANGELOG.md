@@ -41,6 +41,7 @@
   instantiated script. (Volund)
 - [Fix][pull3338]: Resolve if/elif bug in XYZGrid contrib launch command
   (jaborsh)
+- [fix][issue3331]: Made XYZGrid query zcoords in a case-insensitive manner.
 - [Fix][pull3322]: Fix `BaseOption.display` to always return a string.
 - Docs: Lots of Typo fixes (iLPdev, InspectorCaracal, jaborsh)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
@@ -65,6 +66,7 @@
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307
+[issue3331]: https://github.com/evennia/evennia/issues/3331
 
 ## Evennia 2.3.0
 
