@@ -366,6 +366,10 @@ testing <code class="docutils literal notranslate"><span class="pre">get_obj_sta
 </pre></div>
 </div>
 <p>What happens here is that we create a new test-class <code class="docutils literal notranslate"><span class="pre">TestUtils</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BaseEvenniaTest</span></code>.  This inheritance is what makes this a testing class.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>It’s useful for any game dev to know how to effectively test their code. So we’ll try to include a <em>Testing</em> section at the end of each of the implementation lessons to follow. Writing tests for your code is optional but highly recommended. It can feel a little cumbersome or time-consuming at first … but you’ll thank yourself later.</p>
+</div>
 <p>We can have any number of methods on this class. To have a method recognized as one containing  code to test, its name <em>must</em> start with <code class="docutils literal notranslate"><span class="pre">test_</span></code>. We have one - <code class="docutils literal notranslate"><span class="pre">test_get_obj_stats</span></code>.</p>
 <p>In this method we create a dummy <code class="docutils literal notranslate"><span class="pre">obj</span></code> and gives it a <code class="docutils literal notranslate"><span class="pre">key</span></code> “testobj”. Note how we add the  <code class="docutils literal notranslate"><span class="pre">desc</span></code> <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> directly in the <code class="docutils literal notranslate"><span class="pre">create_object</span></code> call by specifying the attribute as a  tuple <code class="docutils literal notranslate"><span class="pre">(name,</span> <span class="pre">value)</span></code>!</p>
 <p>We then get the result of passing this dummy-object through <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> we imported earlier.</p>
@@ -381,10 +385,9 @@ testing <code class="docutils literal notranslate"><span class="pre">get_obj_sta
 </pre></div>
 </div>
 <p>If all goes well, you should get an <code class="docutils literal notranslate"><span class="pre">OK</span></code> back. Otherwise you need to check the failure, maybe  your return string doesn’t quite match what you expected.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>It’s useful for any game dev to know how to effectively test their code. So we’ll try to include a <em>Testing</em> section at the end of each of the implementation lessons to follow. Writing tests for your code is optional but highly recommended. It can feel a little cumbersome or time-consuming at first … but you’ll thank yourself later.</p>
-</div>
+<blockquote>
+<div><p>Hint: The example unit test code above contains a deliberate error in capitalization. See if you can interpret the error and fix it!</p>
+</div></blockquote>
 </section>
 </section>
 <section id="summary">
