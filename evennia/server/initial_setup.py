@@ -9,10 +9,9 @@ Everything starts at handle_setup()
 
 import time
 
+import evennia
 from django.conf import settings
 from django.utils.translation import gettext as _
-
-import evennia
 from evennia.accounts.models import AccountDB
 from evennia.server.models import ServerConfig
 from evennia.utils import create, logger
@@ -174,7 +173,7 @@ def reset_server():
     also checks so the warm-reset mechanism works as it should.
 
     """
-    if settings._TEST_ENVIRONMENT:
+    if settings.TEST_ENVIRONMENT:
         return
     ServerConfig.objects.conf("server_epoch", time.time())
 

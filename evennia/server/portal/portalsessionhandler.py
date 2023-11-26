@@ -7,15 +7,14 @@ Sessionhandler for portal sessions.
 import time
 from collections import deque, namedtuple
 
+import evennia
 from django.conf import settings
 from django.utils.translation import gettext as _
-from twisted.internet import reactor
-
-import evennia
 from evennia.server.portal.amp import PCONN, PCONNSYNC, PDISCONN, PDISCONNALL
 from evennia.server.sessionhandler import SessionHandler
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import class_from_module
+from twisted.internet import reactor
 
 # module import
 _MOD_IMPORT = None
@@ -41,7 +40,7 @@ DUMMYSESSION = namedtuple("DummySession", ["sessid"])(0)
 # -------------------------------------------------------------
 
 DOS_PROTECTION_MSG = _(
-    "{servername} DoS protection is active." "You are queued to connect in {num} seconds ..."
+    "{servername} DoS protection is active.You are queued to connect in {num} seconds ..."
 )
 
 
@@ -231,7 +230,7 @@ class PortalSessionHandler(SessionHandler):
         Disconnect all sessions, informing the Server.
 
         """
-        if settings._TEST_ENVIRONMENT:
+        if settings.TEST_ENVIRONMENT:
             return
 
         def _callback(result, sessionhandler):

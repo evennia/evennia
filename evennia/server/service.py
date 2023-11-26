@@ -7,19 +7,18 @@ import time
 import traceback
 
 import django
+import evennia
 from django.conf import settings
 from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext as _
+from evennia.utils import logger
+from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 from twisted.application import internet
 from twisted.application.service import MultiService
 from twisted.internet import defer, reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.task import LoopingCall
-
-import evennia
-from evennia.utils import logger
-from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 
 _SA = object.__setattr__
 
@@ -406,7 +405,7 @@ class EvenniaServerService(MultiService):
         except Exception:
             # stop server if this happens.
             print(traceback.format_exc())
-            if not settings._TEST_ENVIRONMENT or not evennia.SESSION_HANDLER:
+            if not settings.TEST_ENVIRONMENT or not evennia.SESSION_HANDLER:
                 print("Error in initial setup. Stopping Server + Portal.")
                 evennia.SESSION_HANDLER.portal_shutdown()
 

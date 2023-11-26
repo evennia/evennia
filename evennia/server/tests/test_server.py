@@ -4,10 +4,9 @@ Test the main server component
 """
 from unittest import TestCase
 
+import evennia
 from django.test import override_settings
 from mock import DEFAULT, MagicMock, call, patch
-
-import evennia
 
 
 @patch("evennia.server.service.LoopingCall", new=MagicMock())
@@ -148,7 +147,7 @@ class TestServer(TestCase):
             for m in (mockscr, mockobj, mockacc, mockchan):
                 m.objects.filter.assert_called()
 
-    @override_settings(_TEST_ENVIRONMENT=True)
+    @override_settings(TEST_ENVIRONMENT=True)
     def test_initial_setup(self):
         from evennia.utils.create import create_account
 
@@ -161,7 +160,7 @@ class TestServer(TestCase):
             self.server.run_initial_setup()
         acct.delete()
 
-    @override_settings(_TEST_ENVIRONMENT=True)
+    @override_settings(TEST_ENVIRONMENT=True)
     def test_initial_setup_retry(self):
         from evennia.utils.create import create_account
 
@@ -218,7 +217,7 @@ class TestInitHooks(TestCase):
         for obj in self.objects:
             obj.delete()
 
-    @override_settings(_TEST_ENVIRONMENT=True)
+    @override_settings(TEST_ENVIRONMENT=True)
     def test_run_init_hooks(self):
         with patch.object(
             self.server, "at_server_reload_start", new=MagicMock()

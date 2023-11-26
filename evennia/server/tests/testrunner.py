@@ -24,13 +24,13 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
         from django.conf import settings
 
         # set testing flag while suite runs
-        settings._TEST_ENVIRONMENT = True
+        settings.TEST_ENVIRONMENT = True
         super().setup_test_environment(**kwargs)
 
     def teardown_test_environment(self, **kwargs):
         # remove testing flag after suite has run
         from django.conf import settings
 
-        settings._TEST_ENVIRONMENT = False
+        settings.TEST_ENVIRONMENT = False
 
         super().teardown_test_environment(**kwargs)

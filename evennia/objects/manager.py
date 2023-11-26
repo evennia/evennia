@@ -6,7 +6,6 @@ import re
 from django.conf import settings
 from django.db.models import Q
 from django.db.models.fields import exceptions
-
 from evennia.server import signals
 from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
 from evennia.utils.utils import (
@@ -721,7 +720,7 @@ class ObjectDBManager(TypedObjectManager):
         try:
             home = dbid_to_obj(home_obj_or_dbref, self.model)
         except self.model.DoesNotExist:
-            if settings._TEST_ENVIRONMENT:
+            if settings.TEST_ENVIRONMENT:
                 # this happens for databases where the #1 location is flushed during tests
                 home = None
             else:

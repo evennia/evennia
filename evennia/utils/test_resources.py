@@ -26,27 +26,21 @@ import re
 import sys
 import types
 
+import evennia
 from django.conf import settings
 from django.test import TestCase, override_settings
-from mock import MagicMock, Mock, patch
-from twisted.internet.defer import Deferred
-
-import evennia
 from evennia import settings_default
 from evennia.accounts.accounts import DefaultAccount
 from evennia.commands.command import InterruptCommand
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.objects.objects import (
-    DefaultCharacter,
-    DefaultExit,
-    DefaultObject,
-    DefaultRoom,
-)
+from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.scripts.scripts import DefaultScript
 from evennia.server.serversession import ServerSession
 from evennia.utils import ansi, create
 from evennia.utils.idmapper.models import flush_cache
 from evennia.utils.utils import all_from_module, to_str
+from mock import MagicMock, Mock, patch
+from twisted.internet.defer import Deferred
 
 _RE_STRIP_EVMENU = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 
@@ -101,7 +95,7 @@ DEFAULT_SETTING_RESETS = dict(
         "evennia.game_template.server.conf.prototypefuncs",
     ],
     BASE_GUEST_TYPECLASS="evennia.accounts.accounts.DefaultGuest",
-    # a special setting boolean _TEST_ENVIRONMENT is set by the test runner
+    # a special setting boolean TEST_ENVIRONMENT is set by the test runner
     # while the test suite is running.
 )
 
