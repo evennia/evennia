@@ -191,9 +191,8 @@ class EvenniaPortalService(MultiService):
                 webclientstr = ""
                 if settings.WEBCLIENT_ENABLED:
                     # create ajax client processes at /webclientdata
-                    from evennia.server.portal import webclient_ajax
-
-                    ajax_webclient = webclient_ajax.AjaxWebClient()
+                    ajax_class = class_from_module(settings.AJAX_CLIENT_CLASS)
+                    ajax_webclient = ajax_class()
                     ajax_webclient.sessionhandler = evennia.PORTAL_SESSION_HANDLER
                     web_root.putChild(b"webclientdata", ajax_webclient)
                     webclientstr = "webclient (ajax only)"
