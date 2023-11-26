@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
 
+import evennia
 from evennia import InterruptCommand
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
@@ -2739,7 +2740,7 @@ class CmdExamine(ObjManipCommand):
         all_cmdsets = [(cmdset.key, cmdset) for cmdset in current_cmdset.merged_from]
         # we always at least try to add account- and session sets since these are ignored
         # if we merge on the object level.
-        if hasattr(obj, "account") and obj.account:
+        if inherits_from(obj, evennia.DefaultObject) and obj.account:
             # get Attribute-cmdsets if they exist
             all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.account.cmdset.all()])
             if obj.sessions.count():
@@ -2924,7 +2925,7 @@ class CmdExamine(ObjManipCommand):
         objdata["Sessions"] = self.format_sessions(obj)
         objdata["Email"] = self.format_email(obj)
         objdata["Last Login"] = self.format_last_login(obj)
-        if hasattr(obj, "has_account") and obj.has_account:
+        if inherits_from(obj, evennia.DefaultObject) and obj.has_account:
             objdata["Account"] = self.format_account_key(obj.account)
             objdata["  Account Typeclass"] = self.format_account_typeclass(obj.account)
             objdata["  Account Permissions"] = self.format_account_permissions(obj.account)

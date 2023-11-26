@@ -646,8 +646,6 @@ class SubscriptionHandler:
             from django.core.exceptions import ObjectDoesNotExist
 
             try:
-                if hasattr(obj, "account") and obj.account:
-                    obj = obj.account
                 if not obj.is_connected:
                     continue
             except ObjectDoesNotExist:

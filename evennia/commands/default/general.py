@@ -5,6 +5,7 @@ import re
 
 from django.conf import settings
 
+import evennia
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
 
@@ -723,6 +724,6 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
 
         string += "\n|wYour access|n:"
         string += f"\nCharacter |c{caller.key}|n: {cperms}"
-        if hasattr(caller, "account"):
+        if utils.inherits_from(caller, evennia.DefaultObject):
             string += f"\nAccount |c{caller.account.key}|n: {pperms}"
         caller.msg(string)

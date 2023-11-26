@@ -109,6 +109,7 @@ import re
 from django.conf import settings
 from django.utils.translation import gettext as _
 
+import evennia
 from evennia.utils import logger, utils
 
 __all__ = ("LockHandler", "LockException")
@@ -553,7 +554,7 @@ class LockHandler:
             if not no_superuser_bypass and (
                 (hasattr(accessing_obj, "is_superuser") and accessing_obj.is_superuser)
                 or (
-                    hasattr(accessing_obj, "account")
+                    utils.inherits_from(accessing_obj, evennia.DefaultObject)
                     and hasattr(accessing_obj.account, "is_superuser")
                     and accessing_obj.account.is_superuser
                 )
@@ -627,7 +628,7 @@ class LockHandler:
             if no_superuser_bypass and (
                 (hasattr(accessing_obj, "is_superuser") and accessing_obj.is_superuser)
                 or (
-                    hasattr(accessing_obj, "account")
+                    utils.inherits_from(accessing_obj, evennia.DefaultObject)
                     and hasattr(accessing_obj.account, "is_superuser")
                     and accessing_obj.account.is_superuser
                 )

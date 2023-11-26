@@ -18,6 +18,7 @@ from ast import literal_eval
 
 from django.conf import settings
 
+import evennia
 from evennia.utils import utils
 
 _PERMISSION_HIERARCHY = [pe.lower() for pe in settings.PERMISSION_HIERARCHY]
@@ -515,7 +516,7 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     function will still return True.
     """
     obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
-    account = obj.account if hasattr(obj, "account") else obj
+    account = obj.account if utils.inherits_from(obj, evennia.DefaultObject) else obj
     if not account:
         return True
     try:
@@ -657,7 +658,7 @@ def has_account(accessing_obj, accessed_obj, *args, **kwargs):
     This is a useful lock for traverse-locking Exits to restrain NPC
     mobiles from moving outside their areas.
     """
-    return hasattr(accessing_obj, "has_account") and accessing_obj.has_account
+    return utils.inherits_from(accessing_obj, evennia.DefaultObject) and accessing_obj.has_account
 
 
 def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
