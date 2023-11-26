@@ -104,9 +104,8 @@
 
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pathjoin</span>
 
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
 <span class="kn">import</span> <span class="nn">evennia</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> <span class="n">get_xyzgrid</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
 
@@ -476,8 +475,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Deleting grid ...&quot;</span><span class="p">)</span>
         <span class="n">grid</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;... done.</span><span class="se">\n</span><span class="s2">Please reload the server now; otherwise &quot;</span>
-            <span class="s2">&quot;removed rooms may linger in cache.&quot;</span>
+            <span class="s2">&quot;... done.</span><span class="se">\n</span><span class="s2">Please reload the server now; otherwise removed rooms may linger in cache.&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span>
 
@@ -488,7 +486,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mapname/zcoord </span><span class="si">{</span><span class="n">zcoord</span><span class="si">}</span><span class="s2"> is not a part of the grid.&quot;</span><span class="p">)</span>
             <span class="n">err</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid mapnames/zcoords are</span><span class="se">\n</span><span class="s2">:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">Z</span> <span class="k">for</span> <span class="n">xymap</span> <span class="ow">in</span> <span class="n">grid</span><span class="o">.</span><span class="n">all_rooms</span><span class="p">()))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid mapnames/zcoords are</span><span class="se">\n</span><span class="s2">:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">Z</span> <span class="k">for</span> <span class="n">xymap</span> <span class="ow">in</span> <span class="n">grid</span><span class="o">.</span><span class="n">all_maps</span><span class="p">()))</span>
         <span class="k">return</span>
     <span class="n">repl</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
         <span class="s2">&quot;This will delete map(s) {&#39;, &#39;.join(zcoords)} and wipe all corresponding</span><span class="se">\n</span><span class="s2">&quot;</span>
