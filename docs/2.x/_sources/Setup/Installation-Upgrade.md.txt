@@ -1,25 +1,21 @@
 # Upgrading an existing installation
 
-This is relevant to you already having code in an older Evennia version. If you are new, or don't have much code yet, it may be easier to just start fresh with the [Installation](./Installation.md) instructions and copy 
-over things manually.
+This is relevant to you already having code in an older Evennia version. If you are new, or don't have much code yet, it may be easier to just start fresh with the [Installation](./Installation.md) instructions and copy over things manually.
 
-## Evennia v0.9.5 to 1.0
+## Evennia v0.9.5 to 1.0+
 
 ### Upgrading the Evennia library
 
-Prior to 1.0, all Evennia installs were [Git-installs](./Installation-Git.md). These instructions assume that you already have a cloned `evennia` repo and use a virtualenv (best practices).
+Prior to 1.0, all Evennia installs were [Git-installs](./Installation-Git.md). These instructions assume that you already have a cloned `evennia` repo, and use a virtualenv (best practices). 
 
 - Make sure to stop Evennia 0.9.5 entirely with `evennia stop` from your game dir.
 - `deactivate` to leave your active virtualenv.
-- Install Python 3.11 (recommended). Follow the [Git-installation](./Installation-Git.md) for your OS if needed.
 - Delete the old virtualenv `evenv` folder, or rename it (in case you want to keep using 0.9.5 for a while).
-- Make a _new_ `evenv` virtualenv (see the [virtualenv instructions](./Installation-Git.md#virtualenv) for help) and make sure it's active
 - `cd` into your `evennia/` root folder (you want to be where you see the `docs/` and  `bin/` directories as well as a nested `evennia/` folder)
 - `git pull`
 - `git checkout main` (instead of `master` which was used for `0.9.5`)
-- `pip install --upgrade -e .`
-- If you want the optional extra libs (needed by some contribs), do `pip install --upgrade -e .[extra]`
-- Test that you can run the `evennia` command.
+
+From here on, proceed with the [Git Installation](./Installation-Git.md), except skip cloning Evennia (since you already have the repo). Note that you can also follow the normal [pip install](./Installation.md) if you don't need or want to use git to track bleeding edge changes nor want to be able to help contribute to Evennia itself. 
 
 ### Upgrading your game dir
 
