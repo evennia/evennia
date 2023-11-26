@@ -277,6 +277,11 @@ Damage roll: |w1d6|n
 
 What happens here is that we create a new test-class `TestUtils` that inherits from `BaseEvenniaTest`.  This inheritance is what makes this a testing class.
 
+
+```{important}
+It's useful for any game dev to know how to effectively test their code. So we'll try to include a *Testing* section at the end of each of the implementation lessons to follow. Writing tests for your code is optional but highly recommended. It can feel a little cumbersome or time-consuming at first ... but you'll thank yourself later.
+```
+
 We can have any number of methods on this class. To have a method recognized as one containing  code to test, its name _must_ start with `test_`. We have one - `test_get_obj_stats`. 
 
 In this method we create a dummy `obj` and gives it a `key` "testobj". Note how we add the  `desc` [Attribute](../../../Components/Attributes.md) directly in the `create_object` call by specifying the attribute as a  tuple `(name, value)`!  
@@ -295,11 +300,9 @@ This will run all your `evadventure` tests (if you had more of them). To only ru
 
     evennia test --settings settings.py evadventure.tests.test_utils
 
-If all goes well, you should get an `OK` back. Otherwise you need to check the failure, maybe  your return string doesn't quite match what you expected.
+If all goes well, you should get an `OK` back. Otherwise you need to check the failure, maybe  your return string doesn't quite match what you expected. 
 
-```{important}
-It's useful for any game dev to know how to effectively test their code. So we'll try to include a *Testing* section at the end of each of the implementation lessons to follow. Writing tests for your code is optional but highly recommended. It can feel a little cumbersome or time-consuming at first ... but you'll thank yourself later.
-```
+> Hint: The example unit test code above contains a deliberate error in capitalization. See if you can interpret the error and fix it!
 
 ## Summary 
 
