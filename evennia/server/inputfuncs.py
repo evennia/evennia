@@ -445,6 +445,7 @@ def monitor(session, *args, **kwargs):
 
     name = kwargs.get("name", None)
     outputfunc_name = kwargs("outputfunc_name", "monitor")
+    category = kwargs.get("category", None)
     if name and name in _monitorable and session.puppet:
         field_name = _monitorable[name]
         obj = session.puppet
@@ -461,6 +462,7 @@ def monitor(session, *args, **kwargs):
                 name=name,
                 session=session,
                 outputfunc_name=outputfunc_name,
+                category=category,
             )
 
 

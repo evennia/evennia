@@ -153,7 +153,7 @@ class MonitorHandler(object):
         """
         if not fieldname.startswith("db_") or not hasattr(obj, fieldname):
             # an Attribute - we track its db_value field
-            obj = obj.attributes.get(fieldname, return_obj=True)
+            obj = obj.attributes.get(fieldname, category=category, return_obj=True)
             if not obj:
                 return
             fieldname = self._attr_category_fieldname("db_value", category)
