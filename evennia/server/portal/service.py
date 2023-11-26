@@ -26,6 +26,7 @@ class EvenniaPortalService(MultiService):
         self.server_process_id = None
         self.server_restart_mode = "shutdown"
         self.server_info_dict = dict()
+        self.plugins = list()
 
         self.start_time = 0
         self._maintenance_count = 0
@@ -91,13 +92,15 @@ class EvenniaPortalService(MultiService):
         if settings.LOCKDOWN_MODE:
             self.info_dict["lockdown_mode"] = "  LOCKDOWN_MODE active: Only local connections."
 
+        self.register_plugins()
+
         super().privilegedStartService()
 
     def register_plugins(self):
-        PORTAL_SERVICES_PLUGIN_MODULES = [
+        self.plugins.extend(
             mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)
-        ]
-        for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
+        )
+        for plugin_module in self.plugins:
             # external plugin services to start
             if plugin_module:
                 plugin_module.start_plugin_services(self)
