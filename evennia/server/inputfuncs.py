@@ -444,7 +444,7 @@ def monitor(session, *args, **kwargs):
     from evennia.scripts.monitorhandler import MONITOR_HANDLER
 
     name = kwargs.get("name", None)
-    outputfunc_name = kwargs("outputfunc_name", "monitor")
+    outputfunc_name = kwargs.get("outputfunc_name", "monitor")
     category = kwargs.get("category", None)
     if name and name in _monitorable and session.puppet:
         field_name = _monitorable[name]
