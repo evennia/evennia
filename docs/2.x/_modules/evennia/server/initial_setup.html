@@ -95,10 +95,9 @@
 
 <span class="kn">import</span> <span class="nn">time</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
@@ -260,7 +259,7 @@
 <span class="sd">    also checks so the warm-reset mechanism works as it should.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_TEST_ENVIRONMENT</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEST_ENVIRONMENT</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_epoch&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
 

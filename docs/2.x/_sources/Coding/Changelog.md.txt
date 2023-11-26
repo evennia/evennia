@@ -27,6 +27,8 @@
   into services for easier overriding (Volund)
 - [Feature][issue3307]: Add support for Attribute-categories when using the monitorhandler
   with input funcs to monitor Attribute changes.
+- [Fix] (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
+  `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
 - [Fix][pull3324]: Make account-post-login-fail signal fire properly. Add
   `CUSTOM_SIGNAL` for adding one's own signals (Volund)

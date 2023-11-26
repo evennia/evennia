@@ -211,6 +211,8 @@ avoiding race conditions until server starts (Volund)</p></li>
 into services for easier overriding (Volund)</p></li>
 <li><p>[Feature][issue3307]: Add support for Attribute-categories when using the monitorhandler
 with input funcs to monitor Attribute changes.</p></li>
+<li><p>[Fix] (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
+<code class="docutils literal notranslate"><span class="pre">settings.TEST_ENVIRONMENT</span></code> to address issues during refactored startup sequence.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3197">Fix</a>: Make sure Global scripts only start in one place,</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3324">Fix</a>: Make account-post-login-fail signal fire properly. Add
 <code class="docutils literal notranslate"><span class="pre">CUSTOM_SIGNAL</span></code> for adding one’s own signals (Volund)</p></li>

@@ -93,19 +93,18 @@
 <span class="kn">import</span> <span class="nn">traceback</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
 <span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">mod_import</span>
 <span class="kn">from</span> <span class="nn">twisted.application</span> <span class="kn">import</span> <span class="n">internet</span>
 <span class="kn">from</span> <span class="nn">twisted.application.service</span> <span class="kn">import</span> <span class="n">MultiService</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">reactor</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">mod_import</span>
 
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
 
@@ -492,7 +491,7 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="c1"># stop server if this happens.</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">_TEST_ENVIRONMENT</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEST_ENVIRONMENT</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error in initial setup. Stopping Server + Portal.&quot;</span><span class="p">)</span>
                 <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">portal_shutdown</span><span class="p">()</span></div>
 
