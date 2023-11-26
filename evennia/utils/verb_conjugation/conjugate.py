@@ -130,7 +130,7 @@ def verb_conjugate(verb, tense="infinitive", negate=False):
         ind += len(verb_tenses_keys)
     try:
         return verb_tenses[verb][ind]
-    except IndexError:
+    except (IndexError, KeyError):
         # TODO implement simple algorithm here with +s for certain tenses?
         return verb
 
@@ -257,7 +257,9 @@ def verb_tense(verb):
 
     """
     infinitive = verb_infinitive(verb)
-    data = verb_tenses[infinitive]
+    data = verb_tenses.get(infinitive)
+    if not data:
+        return infinitive
     for tense in verb_tenses_keys:
         if data[verb_tenses_keys[tense]] == verb:
             return tense
