@@ -450,6 +450,9 @@ the name of the map. The Z-coordinate can be either a string or an integer, and 
 be unique across the entire grid. It is added as the key ‘zcoord’ to <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code>.</p>
 <p>Most users will want to just treat each map as a location, and name the
 “Z-coordinate” things like <code class="docutils literal notranslate"><span class="pre">Dungeon</span> <span class="pre">of</span> <span class="pre">Doom</span></code>, <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">ice</span> <span class="pre">queen's</span> <span class="pre">palace</span></code> or <code class="docutils literal notranslate"><span class="pre">City</span> <span class="pre">of</span> <span class="pre">Blackhaven</span></code>. But you could also name it -1, 0, 1, 2, 3 if you wanted.</p>
+<blockquote>
+<div><p>Note that the Zcoord is searched <em>non-case senstively</em> in the</p>
+</div></blockquote>
 <p>Pathfinding happens only within each XYMap (up/down is normally ‘faked’ by moving
 sideways to a new area of the XY plane).</p>
 <section id="a-true-3d-map">

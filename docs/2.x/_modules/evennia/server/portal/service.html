@@ -112,6 +112,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">server_process_id</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_restart_mode</span> <span class="o">=</span> <span class="s2">&quot;shutdown&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_info_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maintenance_count</span> <span class="o">=</span> <span class="mi">0</span>
@@ -177,13 +178,15 @@
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOCKDOWN_MODE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;lockdown_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;  LOCKDOWN_MODE active: Only local connections.&quot;</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_plugins</span><span class="p">()</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">privilegedStartService</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="EvenniaPortalService.register_plugins"><a class="viewcode-back" href="../../../../api/evennia.server.portal.service.html#evennia.server.portal.service.EvenniaPortalService.register_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">register_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="n">mod_import</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="k">for</span> <span class="n">plugin_module</span> <span class="ow">in</span> <span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span><span class="p">:</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">plugin_module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="p">:</span>
             <span class="c1"># external plugin services to start</span>
             <span class="k">if</span> <span class="n">plugin_module</span><span class="p">:</span>
                 <span class="n">plugin_module</span><span class="o">.</span><span class="n">start_plugin_services</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
