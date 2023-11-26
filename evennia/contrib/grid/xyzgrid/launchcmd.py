@@ -18,9 +18,8 @@ Use `evennia xyzgrid help` for usage help.
 
 from os.path import join as pathjoin
 
-from django.conf import settings
-
 import evennia
+from django.conf import settings
 from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 from evennia.utils import ansi
 
@@ -390,8 +389,7 @@ def _option_delete(*suboptions):
         print("Deleting grid ...")
         grid.delete()
         print(
-            "... done.\nPlease reload the server now; otherwise "
-            "removed rooms may linger in cache."
+            "... done.\nPlease reload the server now; otherwise removed rooms may linger in cache."
         )
         return
 
@@ -402,7 +400,7 @@ def _option_delete(*suboptions):
             print(f"Mapname/zcoord {zcoord} is not a part of the grid.")
             err = True
     if err:
-        print("Valid mapnames/zcoords are\n:", "\n ".join(xymap.Z for xymap in grid.all_rooms()))
+        print("Valid mapnames/zcoords are\n:", "\n ".join(xymap.Z for xymap in grid.all_maps()))
         return
     repl = input(
         "This will delete map(s) {', '.join(zcoords)} and wipe all corresponding\n"
