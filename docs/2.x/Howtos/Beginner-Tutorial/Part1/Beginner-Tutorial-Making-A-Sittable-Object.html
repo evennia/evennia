@@ -418,13 +418,13 @@ You sit down and a whoopie cushion makes a loud fart noise!
 <p>This way to implement <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> puts new cmdsets on the Sittable itself.
 As we’ve learned before, commands on objects are made available to others in the room.
 This makes the command easy but instead adds some complexity in the management of the CmdSet.</p>
-<p>This is how it could look if <code class="docutils literal notranslate"><span class="pre">armchair</span></code> is in the room (if you overrode the sit message):</p>
+<p>This is how it could look if <code class="docutils literal notranslate"><span class="pre">armchair</span></code> is in the room (Extra credits: Change the sit message on the armchair to match this output instead of getting the default <code class="docutils literal notranslate"><span class="pre">You</span> <span class="pre">sit</span> <span class="pre">in</span> <span class="pre">armchair</span></code>!):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit
 As you sit down in armchair, life feels easier.
 </pre></div>
 </div>
-<p>What happens if there are sittables <code class="docutils literal notranslate"><span class="pre">sofa</span></code> and <code class="docutils literal notranslate"><span class="pre">barstool</span></code> also in the room? Evennia will automatically
-handle this for us and allow us to specify which one we want:</p>
+<p>What happens if there are sittables <code class="docutils literal notranslate"><span class="pre">sofa</span></code> and <code class="docutils literal notranslate"><span class="pre">barstool</span></code> also in the room? Evennia will
+automatically handle this for us and allow us to specify which one we want:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit
 More than one match for &#39;sit&#39; (please narrow target):
  sit-1 (armchair)

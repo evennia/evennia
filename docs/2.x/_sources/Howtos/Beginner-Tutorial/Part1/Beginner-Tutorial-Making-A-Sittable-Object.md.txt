@@ -237,13 +237,13 @@ This way to implement `sit` and `stand` puts new cmdsets on the Sittable itself.
 As we've learned before, commands on objects are made available to others in the room.
 This makes the command easy but instead adds some complexity in the management of the CmdSet.
 
-This is how it could look if `armchair` is in the room (if you overrode the sit message):
+This is how it could look if `armchair` is in the room (Extra credits: Change the sit message on the armchair to match this output instead of getting the default `You sit in armchair`!):
 
     > sit
     As you sit down in armchair, life feels easier.
 
-What happens if there are sittables `sofa` and `barstool` also in the room? Evennia will automatically
-handle this for us and allow us to specify which one we want:
+What happens if there are sittables `sofa` and `barstool` also in the room? Evennia will
+automatically handle this for us and allow us to specify which one we want:
 
     > sit
     More than one match for 'sit' (please narrow target):
