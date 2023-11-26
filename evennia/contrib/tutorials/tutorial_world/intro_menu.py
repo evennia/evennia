@@ -32,9 +32,11 @@ def send_testing_tagged(caller, raw_string, **kwargs):
     """
     caller.msg(
         (
-            "This is a message tagged with 'testing' and "
-            "should appear in the pane you selected!\n "
-            f"You wrote: '{raw_string}'",
+            (
+                "This is a message tagged with 'testing' and "
+                "should appear in the pane you selected!\n "
+                f"You wrote: '{raw_string}'"
+            ),
             {"type": "testing"},
         )
     )
@@ -691,12 +693,12 @@ Evennia you are wise to take a look at the |wEvennia documentation|n at
 
 - You can start by trying to build some stuff by following the |wBuilder quick-start|n:
 
-    |yhttps://www.evennia.com/docs/latest/Building-Quickstart|n
+    |yhttps://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Building-Quickstart|n
 
 - The tutorial-world may or may not be your cup of tea, but it does show off
   several |wuseful tools|n of Evennia. You may want to check out how it works:
 
-    |yhttps://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part1/Tutorial-World|n
+    |yhttps://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Tutorial-World|n
 
 - You can then continue looking through the |wTutorials|n and pick one that
   fits your level of understanding.
