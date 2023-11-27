@@ -2618,7 +2618,7 @@ class CmdExamine(ObjManipCommand):
             text (str): The text to send.
 
         """
-        self.msg(text=(text, {"type": "examine"}))
+        super().msg(text=(text, {"type": "examine"}))
 
     def format_key(self, obj):
         return f"{obj.name} ({obj.dbref})"
