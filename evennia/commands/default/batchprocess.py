@@ -398,7 +398,7 @@ class CmdStateAbort(_COMMAND_DEFAULT_CLASS):
     def func(self):
         """Exit back to default."""
         purge_processor(self.caller)
-        self.caller.msg("Exited processor and reset out active cmdset back to the default one.")
+        self.msg("Exited processor and reset out active cmdset back to the default one.")
 
 
 class CmdStateLL(_COMMAND_DEFAULT_CLASS):
@@ -729,7 +729,7 @@ class CmdStateQQ(_COMMAND_DEFAULT_CLASS):
 
     def func(self):
         purge_processor(self.caller)
-        self.caller.msg("Aborted interactive batch mode.")
+        self.msg("Aborted interactive batch mode.")
 
 
 class CmdStateHH(_COMMAND_DEFAULT_CLASS):
@@ -765,7 +765,7 @@ class CmdStateHH(_COMMAND_DEFAULT_CLASS):
               batch-command processing. It immediately shuts down
               the processor and returns us to the default cmdset.
     """
-        self.caller.msg(string)
+        self.msg(string)
 
 
 # -------------------------------------------------------------

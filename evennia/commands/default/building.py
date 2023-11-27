@@ -255,7 +255,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
         if not self.lhs:
             string = "Usage: alias <obj> [= [alias[,alias ...]]]"
-            self.caller.msg(string)
+            self.msg(string)
             return
         objname = self.lhs
 
@@ -471,7 +471,7 @@ class CmdCpAttr(ObjManipCommand):
         required and verify an object has an attribute.
         """
         if not obj.attributes.has(attr):
-            self.caller.msg(f"{obj.name} doesn't have an attribute {attr}.")
+            self.msg(f"{obj.name} doesn't have an attribute {attr}.")
             return False
         return True
 
@@ -525,7 +525,7 @@ class CmdCpAttr(ObjManipCommand):
                 return
 
         if (len(from_obj_attrs) != len(set(from_obj_attrs))) and clear:
-            self.caller.msg("|RCannot have duplicate source names when moving!")
+            self.msg("|RCannot have duplicate source names when moving!")
             return
 
         result = []
@@ -594,7 +594,7 @@ class CmdMvAttr(ObjManipCommand):
       mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
       mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         # simply use cpattr for all the functionality
@@ -734,7 +734,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             return
 
         if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
-            self.caller.msg(f"You don't have permission to edit the description of {obj.key}.")
+            self.msg(f"You don't have permission to edit the description of {obj.key}.")
             return
 
         self.caller.db.evmenu_target = obj
@@ -881,7 +881,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                 obj = caller.search(objname)
 
             if obj is None:
-                self.caller.msg(
+                self.msg(
                     " (Objects to destroy must either be local or specified with a unique #dbref.)"
                 )
             elif obj not in objs:
@@ -1148,7 +1148,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
                 "Usage: tunnel[/switch] <direction>[:typeclass] [= <roomname>"
                 "[;alias;alias;...][:typeclass]]"
             )
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         # If we get a typeclass, we need to get just the exitname
@@ -1159,7 +1159,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
                 sorted(self.directions.keys())
             )
             string += "\n(use dig for more freedom)"
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         # retrieve all input and parse it
@@ -1245,7 +1245,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                 return
 
             if target == obj:
-                self.caller.msg("Cannot link an object to itself.")
+                self.msg("Cannot link an object to itself.")
                 return
 
             string = ""
@@ -1261,7 +1261,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                         f"To create a two-way link, {obj} and {target} must both have a location"
                     )
                     string += " (i.e. they cannot be rooms, but should be exits)."
-                    self.caller.msg(string)
+                    self.msg(string)
                     return
                 if not target.destination:
                     string += note % (target.name, target.dbref)
@@ -1357,7 +1357,7 @@ class CmdSetHome(CmdLink):
         """implement the command"""
         if not self.args:
             string = "Usage: sethome <obj> [= <home_location>]"
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         obj = self.caller.search(self.lhs, global_search=True)
@@ -1384,7 +1384,7 @@ class CmdSetHome(CmdLink):
                 )
             else:
                 string = f"Home location of {obj} was set to {new_home}({new_home.dbref})."
-        self.caller.msg(string)
+        self.msg(string)
 
 
 class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
@@ -1599,14 +1599,14 @@ class CmdOpen(ObjManipCommand):
         super().parse()
         self.location = self.caller.location
         if not self.args or not self.rhs:
-            self.caller.msg(
+            self.msg(
                 "Usage: open <new exit>[;alias...][:typeclass]"
                 "[,<return exit>[;alias..][:typeclass]]] "
                 "= <destination>"
             )
             raise InterruptCommand
         if not self.location:
-            self.caller.msg("You cannot create an exit from a None-location.")
+            self.msg("You cannot create an exit from a None-location.")
             raise InterruptCommand
         self.destination = self.caller.search(self.rhs, global_search=True)
         if not self.destination:
@@ -1941,7 +1941,7 @@ class CmdSetAttribute(ObjManipCommand):
                     "Continue? [Y]/N?"
                 )
                 if answer.lower() in ("n", "no"):
-                    self.caller.msg("Aborted edit.")
+                    self.msg("Aborted edit.")
                     return
         except AttributeError:
             pass
@@ -2618,7 +2618,7 @@ class CmdExamine(ObjManipCommand):
             text (str): The text to send.
 
         """
-        self.caller.msg(text=(text, {"type": "examine"}))
+        self.msg(text=(text, {"type": "examine"}))
 
     def format_key(self, obj):
         return f"{obj.name} ({obj.dbref})"
@@ -3009,11 +3009,11 @@ class CmdExamine(ObjManipCommand):
         else:
             obj = getattr(search, f"search_{objtype}")(obj_name)
             if not obj:
-                self.caller.msg(f"No {objtype} found with key {obj_name}.")
+                self.msg(f"No {objtype} found with key {obj_name}.")
                 obj = None
             elif len(obj) > 1:
                 err = "Multiple {objtype} found with key {obj_name}:\n{matches}"
-                self.caller.msg(
+                self.msg(
                     err.format(
                         obj_name=obj_name, matches=", ".join(f"{ob.key}(#{ob.id})" for ob in obj)
                     )
@@ -3747,7 +3747,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         if self.rhs:
             self.obj_to_teleport = self.caller.search(self.lhs, global_search=True)
             if not self.obj_to_teleport:
-                self.caller.msg("Did not find object to teleport.")
+                self.msg("Did not find object to teleport.")
                 raise InterruptCommand
             self.destination = self.caller.search(self.rhs, global_search=True)
         elif self.lhs:
@@ -3876,7 +3876,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
         """Implement the tag functionality"""
 
         if not self.args:
-            self.caller.msg("Usage: tag[/switches] <obj> [= <tag>[:<category>]]")
+            self.msg("Usage: tag[/switches] <obj> [= <tag>[:<category>]]")
             return
         if "search" in self.switches:
             # search by tag
@@ -3906,7 +3906,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                     tag,
                     " (category: %s)" % category if category else "",
                 )
-            self.caller.msg(string)
+            self.msg(string)
             return
         if "del" in self.switches:
             # remove one or all tags
@@ -3943,7 +3943,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                     string = "Cleared all tags from %s: %s" % (obj, ", ".join(sorted(old_tags)))
                 else:
                     string = "No Tags to clear on %s." % obj
-            self.caller.msg(string)
+            self.msg(string)
             return
         # no search/deletion
         if self.rhs:
@@ -3967,7 +3967,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                 " (category: %s)" % category if category else "",
                 obj,
             )
-            self.caller.msg(string)
+            self.msg(string)
         else:
             # no = found - list tags on object
             # first search locally, then global
@@ -3990,7 +3990,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                 )
             else:
                 string = f"No tags attached to {obj}."
-            self.caller.msg(string)
+            self.msg(string)
 
 
 # helper functions for spawn
@@ -4114,7 +4114,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         if err:
             # return None on any error
             if not quiet:
-                self.caller.msg(err)
+                self.msg(err)
             return
         return prototype
 
@@ -4153,7 +4153,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     )
                 else:
                     string = f"Expected {expect}, got {type(prototype)}."
-                self.caller.msg(string)
+                self.msg(string)
                 return
 
         if expect == dict:
@@ -4161,15 +4161,13 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # so don't allow exec.
             # TODO: Exec support is deprecated. Remove completely for 1.0.
             if "exec" in prototype and not self.caller.check_permstring("Developer"):
-                self.caller.msg(
-                    "Spawn aborted: You are not allowed to use the 'exec' prototype key."
-                )
+                self.msg("Spawn aborted: You are not allowed to use the 'exec' prototype key.")
                 return
             try:
                 # we homogenize the prototype first, to be more lenient with free-form
                 protlib.validate_prototype(protlib.homogenize_prototype(prototype))
             except RuntimeError as err:
-                self.caller.msg(str(err))
+                self.msg(str(err))
                 return
         return prototype
 
@@ -4196,9 +4194,9 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         if prototypes:
             return "\n".join(protlib.prototype_to_str(prot) for prot in prototypes)
         elif query:
-            self.caller.msg(f"No prototype named '{query}' was found.")
+            self.msg(f"No prototype named '{query}' was found.")
         else:
-            self.caller.msg("No prototypes found.")
+            self.msg("No prototypes found.")
 
     def _list_prototypes(self, key=None, tags=None):
         """Display prototypes as a list, optionally limited by key/tags."""
@@ -4501,7 +4499,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         # proceed to spawning
         try:
             for obj in spawner.spawn(prototype, caller=self.caller):
-                self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
+                self.msg("Spawned %s." % obj.get_display_name(self.caller))
                 if not prototype.get("location") and not noloc:
                     # we don't hardcode the location in the prototype (unless the user
                     # did so manually) - that would lead to it having to be 'removed' every

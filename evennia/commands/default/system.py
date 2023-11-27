@@ -698,7 +698,7 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
             twisted=twisted.version.short(),
             django=django.get_version(),
         )
-        self.caller.msg(string)
+        self.msg(string)
 
 
 class CmdTime(COMMAND_DEFAULT_CLASS):
@@ -740,7 +740,7 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
             "Current time ", datetime.datetime.fromtimestamp(gametime.gametime(absolute=True))
         )
         table2.reformat_column(0, width=30)
-        self.caller.msg(str(table1) + "\n" + str(table2))
+        self.msg(str(table1) + "\n" + str(table2))
 
 
 class CmdServerLoad(COMMAND_DEFAULT_CLASS):
@@ -802,7 +802,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
                 "The Idmapper cache freed |w{idmapper}|n database objects.\n"
                 "The Python garbage collector freed |w{gc}|n Python instances total."
             )
-            self.caller.msg(string.format(idmapper=(prev - now), gc=nflushed))
+            self.msg(string.format(idmapper=(prev - now), gc=nflushed))
             return
 
         # display active processes
@@ -829,7 +829,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
 
                 if "mem" in self.switches:
                     string = "Total computer memory usage: |w%g|n MB (%g%%)"
-                    self.caller.msg(string % (rmem, pmem))
+                    self.msg(string % (rmem, pmem))
                     return
                 # Display table
                 loadtable = self.styled_table("property", "statistic", align="l")
@@ -863,7 +863,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
 
             if "mem" in self.switches:
                 string = "Memory usage: RMEM: |w%g|n MB (%g%%), VMEM (res+swap+cache): |w%g|n MB."
-                self.caller.msg(string % (rmem, pmem, vmem))
+                self.msg(string % (rmem, pmem, vmem))
                 return
 
             loadtable = self.styled_table("property", "statistic", align="l")
@@ -913,7 +913,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
         string += "\n|w Entity idmapper cache:|n %i items\n%s" % (total_num, memtable)
 
         # return to caller
-        self.caller.msg(string)
+        self.msg(string)
 
 
 class CmdTickers(COMMAND_DEFAULT_CLASS):
@@ -938,7 +938,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
 
         all_subs = TICKER_HANDLER.all_display()
         if not all_subs:
-            self.caller.msg("No tickers are currently active.")
+            self.msg("No tickers are currently active.")
             return
         table = self.styled_table("interval (s)", "object", "path/methodname", "idstring", "db")
         for sub in all_subs:
@@ -953,7 +953,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
                 sub[4] or "[Unset]",
                 "*" if sub[5] else "-",
             )
-        self.caller.msg("|wActive tickers|n:\n" + str(table))
+        self.msg("|wActive tickers|n:\n" + str(table))
 
 
 class CmdTasks(COMMAND_DEFAULT_CLASS):
