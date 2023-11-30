@@ -21,6 +21,7 @@ _COLOR_LIST = [
     ] + [
         f'={x}' for x in 'abcdefghijklmnopqrstuvwxyz'
     ]
+_GREYS = "abcdefghijklmnopqrstuvwxyz"
 _RE_COLORS = re.compile(r'([rRgGbBcCyYwWxXmM]|[0-5]{3}|\=[a-z]|#[0-9a-f]{6})')
 _RE_URL = re.compile(
         r'(?<!=")(\b(?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
@@ -244,6 +245,16 @@ class RenderToHTML(object):
                     classes.add("blink")
                 elif code_str == "*":
                     inverse = True
+                # special handling for the "highlight" codes
+                elif code_str == "h":
+                    # "hilight" dark ANSI
+                    if 0 >= int(color) >= 7:
+                        code = "{:03d}".format(self.color_list.index(int(color)+8))
+                elif code_str == "H":
+                    # "unhilight" bright ANSI
+                    if 8 >= int(color) >= 15:
+                        code = "{:03d}".format(self.color_list.index(int(color)-8))
+
                 # check if it's a reset
                 elif code_str.startswith('n'):
                     if not clean:

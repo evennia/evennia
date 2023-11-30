@@ -1,7 +1,7 @@
 
 # ------------------------------------------------------------
 #
-# EvString - ANSI-aware string class
+# EvString - markup-aware string class
 #
 # ------------------------------------------------------------
 
@@ -28,9 +28,9 @@ _RE_XTERM = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}([0-5][0-5][0-5]|\=
 _RE_XTERM_BG = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}\[([0-5][0-5][0-5]|\=[a-z])')
 _GREYS = "abcdefghijklmnopqrstuvwxyz"
 _RE_WHITESPACE = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}\[?([\/\-\_\>])')
-# ALL evennia markup, except for links
-_RE_STYLES = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}(\[?[rRgGbBcCyYwWxXmMu\*n\/\-\_\>\^]|#[0-9a-fA-F]{6}|[0-5]{3}|\=[a-z])')
-
+# ALL evennia markup, except for links and escapes
+_RE_STYLES = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}(\[?[rRgGbBcCyYwWxXmMhHu\*n\/\-\_\>\^]|#[0-9a-fA-F]{6}|[0-5]{3}|\=[a-z])')
+_RE_ESCAPED = re.compile(fr'\{_MARKUP_CHAR}(\{_MARKUP_CHAR})')
 _RE_MXP = re.compile(fr"(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}l([uc])(.*?)\{_MARKUP_CHAR}lt(.*?)\{_MARKUP_CHAR}le", re.DOTALL)
 _RE_LINE = re.compile(r'^(-+|_+)$', re.MULTILINE)
 
@@ -46,6 +46,8 @@ def strip_markup(text, mxp=MXP_ENABLED):
     # replaces whitespace-format tags with single spaces
     text = _RE_WHITESPACE.sub(' ',text)
     text = _RE_STYLES.sub('', text)
+    # replace escapes
+    text = _RE_ESCAPED.sub(_MARKUP_CHAR, text)
     if mxp:
         text = _RE_MXP.sub(r'\g<3>', text)
     return text
@@ -186,7 +188,7 @@ def _spacing_preflight(func):
 # 
 def _to_evstring(obj):
     """
-    convert to ANSIString.
+    convert to EvString.
 
     Args:
         obj (str): Convert incoming text to markup-aware EvStrings.
@@ -218,20 +220,15 @@ class EvTextWrapper(TextWrapper):
           'use', ' ', 'the', ' ', '-b', ' ', option!'
         otherwise.
         """
-        text = EvString(text)
         if self.break_on_hyphens is True:
             chunks = self.wordsep_re.split(text)
         else:
             chunks = self.wordsep_simple_re.split(text)
-        chunks = [c for c in chunks if c]
-        return chunks
-
-        # chunks = [chunk + " " for chunk in chunks if chunk]  # remove empty chunks
-
-        # if len(chunks) > 1:
-        #     chunks[-1] = chunks[-1][0:-1]
-
-        # return chunks
+        newchunks = []
+        for ch in chunks:
+            if ch:
+                newchunks += [c for c in EvString(ch)._code_chunks if c]
+        return newchunks
 
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]
@@ -305,6 +302,46 @@ class EvTextWrapper(TextWrapper):
                 lines.append(indent + ln)
         return lines
 
+    # def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
+    #     """_handle_long_word(chunks : [string],
+    #                          cur_line : [string],
+    #                          cur_len : int, width : int)
+
+    #     Handle a chunk of text (most likely a word, not whitespace) that
+    #     is too long to fit in any line.
+    #     """
+    #     # Figure out when indent is larger than the specified width, and make
+    #     # sure at least one character is stripped off on every pass
+    #     if width < 1:
+    #         space_left = 1
+    #     else:
+    #         space_left = width - cur_len
+
+    #     # If we're allowed to break long words, then do so: put as much
+    #     # of the next chunk onto the current line as will fit.
+    #     if self.break_long_words:
+    #         end = space_left
+    #         chunk = reversed_chunks[-1]
+    #         if self.break_on_hyphens and display_len(chunk) > space_left:
+    #             # break after last hyphen, but only if there are
+    #             # non-hyphens before it
+    #             hyphen = chunk.rfind('-', 0, space_left)
+    #             if hyphen > 0 and any(c != '-' for c in chunk[:hyphen]):
+    #                 end = hyphen + 1
+    #         cur_line.append(chunk[:end])
+    #         reversed_chunks[-1] = chunk[end:]
+
+    #     # Otherwise, we have to preserve the long word intact.  Only add
+    #     # it to the current line if there's nothing already there --
+    #     # that minimizes how much we violate the width constraint.
+    #     elif not cur_line:
+    #         cur_line.append(reversed_chunks.pop())
+
+    #     # If we're not allowed to break long words, and there's already
+    #     # text on the current line, do nothing.  Next time through the
+    #     # main loop of _wrap_chunks(), we'll wind up here again, but
+    #     # cur_len will be zero, so the next line will be entirely
+    #     # devoted to the long word that we can't handle right now.
 
 class EvCode(str):
     """
@@ -477,7 +514,7 @@ class EvString(str, metaclass=EvStringMeta):
         if kwargs.get('chunks'):
             raw_string = text
             code_chunks = tuple(kwargs['chunks'])
-            clean_string = kwargs.get('clean') or strip_markup(text)
+            clean_string = kwargs.get('clean') or "".join(c for c in code_chunks if len(c))
 
         elif hasattr(text, "_clean_string"):
             # It's already an EvString
@@ -693,8 +730,9 @@ class EvString(str, metaclass=EvStringMeta):
                         code_chunks.append(chunk_iter[code_index])
                         code_index -= 1
 
-                    if not slice_chunks or slice_chunks[-1] != code_chunks[-1]:
-                        slice_chunks += code_chunks
+                    if code_chunks:
+                        if not slice_chunks or slice_chunks[-1] != code_chunks[-1]:
+                            slice_chunks += code_chunks
 
                     slice_chunks.append(chunk_slice)
                     # slice off however many indices we used; we know 1 index = 1 character length
@@ -898,15 +936,17 @@ class EvString(str, metaclass=EvStringMeta):
                     # convert the code into an EvCode
                     # but first, check if it's a whitespace marker
                     if text in '-_/':
-                        # whitespace markup counts as a length of 1
+                        # these markup count as a length of 1
                         code = EvCode(text, 1)
                     else:
                         code = EvCode(text)
 
                     final_chunks.append(code)
                 else:
-                    # text items are zero and even indices, so just add it as-is
-                    final_chunks.append(text)
+                    # text items are zero and even indices
+                    # this solution for escaped codes isn't ideal, but it's the best i got
+                    split_chunk = [EvCode(i, 1) if i == _MARKUP_CHAR else i for i in _RE_ESCAPED.split(text)]
+                    final_chunks += split_chunk
 
         return tuple(final_chunks)
 
@@ -966,7 +1006,7 @@ class EvString(str, metaclass=EvStringMeta):
                 this string.
 
         """
-        if len(by) == 0:
+        if len(sep) == 0:
             raise ValueError("empty separator")
 
         res = []
@@ -1000,6 +1040,12 @@ class EvString(str, metaclass=EvStringMeta):
                 relevant characters.
 
         """
+        if len(self._code_chunks) == 1:
+            if not len(self._code_chunks[0]):
+                return EvString(self._raw_string, chunks=self.code_chunks)
+            else:
+                return EvString(str(self._code_chunks[0]).strip())
+
         left_chunks = []
         stripped = None
         # iterate through from the start until we find a chunk that's not an EvCode
@@ -1024,7 +1070,10 @@ class EvString(str, metaclass=EvStringMeta):
         stripped = None
         # iterate through from the end until we find a chunk that's not an EvCode
         reversed_chunks =  reversed(self._code_chunks)
+        end = len(self._code_chunks) - left_index
         for i, item in enumerate(reversed_chunks):
+            if i >= end:
+                break
             if not len(item):
                 right_chunks.append(item)
                 continue
@@ -1060,6 +1109,12 @@ class EvString(str, metaclass=EvStringMeta):
                 the relevant characters.
 
         """
+        if len(self._code_chunks) == 1:
+            if not len(self._code_chunks[0]):
+                return EvString(self._raw_string, chunks=self.code_chunks)
+            else:
+                return EvString(str(self._code_chunks[0]).lstrip())
+
         left_chunks = []
         stripped = None
         # iterate through until we find a chunk that's not an EvCode
@@ -1095,6 +1150,12 @@ class EvString(str, metaclass=EvStringMeta):
                 the relevant characters.
 
         """
+        if len(self._code_chunks) == 1:
+            if not len(self._code_chunks[0]):
+                return EvString(self._raw_string, chunks=self.code_chunks)
+            else:
+                return EvString(str(self._code_chunks[0]).rstrip())
+
         right_chunks = []
         stripped = None
         # iterate through from the end until we find a chunk that's not an EvCode

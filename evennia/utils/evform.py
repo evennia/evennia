@@ -216,13 +216,13 @@ class EvForm(EvStringContainer):
         self.options = self._parse_inkwargs(**kwargs)
 
         self.cells_mapping = (
-            dict((to_str(key), value) for key, value in cells.items()) if cells else {}
+            dict((to_str(key), EvForm._to_evstring(value)) for key, value in cells.items()) if cells else {}
         )
         self.tables_mapping = (
             dict((to_str(key), value) for key, value in tables.items()) if tables else {}
         )
         self.literals_mapping = (
-            dict((to_str(key), to_str(value)) for key, value in literals.items())
+            dict((to_str(key), EvForm._to_evstring(value)) for key, value in literals.items())
             if literals
             else {}
         )
@@ -365,10 +365,10 @@ class EvForm(EvStringContainer):
             regex = re.compile(rf"{char}+([^{INVALID_FORMCHARS}{char}]+){char}+")
 
             # find the start/width of rectangles for each line
-            for iy, line in enumerate(EvForm._to_evstring(matrix, regexable=True)):
+            for iy, line in enumerate(EvForm._to_evstring(matrix)):
                 ix0 = 0
                 while True:
-                    match = regex.search(line, ix0)
+                    match = regex.search(line.clean(), ix0)
                     if match:
                         # get the width of the rectangle directly from the match
                         coords[match.group(1)] = [iy, match.start(), match.end()]
@@ -400,7 +400,7 @@ class EvForm(EvStringContainer):
                 width = rightix - leftix
                 height = abs(iyup - iydown) + 1
 
-                # store (key, y, x, width, height) of triangle
+                # store (key, y, x, width, height) of rectangle
                 rects.append((key, iyup, leftix, width, height))
             return rects
 
@@ -447,7 +447,7 @@ class EvForm(EvStringContainer):
         the final result.
 
         """
-        form = copy(self.matrix)
+        form = EvForm._to_evstring(copy(self.matrix))
         mapping = self.mapping
 
         for key, (y, x, width, height, cell_or_table) in mapping.items():
@@ -482,7 +482,7 @@ class EvForm(EvStringContainer):
         self.mapping = self._rectangles_to_mapping()
         # combine mapping with form template into a final result
         self.form = self._build_form()
-
+    
     def map(self, cells=None, tables=None, data=None, literals=None, **kwargs):
         """
         Add mapping for form. This allows for updating an existing
@@ -515,7 +515,7 @@ class EvForm(EvStringContainer):
         new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
         self.tables_mapping.update(new_tables)
         new_literals = (
-            dict((to_str(key), to_str(value)) for key, value in literals.items())
+            dict((to_str(key), EvForm._to_evstring(value)) for key, value in literals.items())
             if literals
             else {}
         )

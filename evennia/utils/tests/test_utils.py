@@ -738,12 +738,20 @@ class TestJustify(TestCase):
 
     def test_justify_evstring(self):
         """
-        Ensure markup data is not being lost
+        Ensure markup data is not being lost and text is being justified.
 
         """
         line = EvString("This is a |rred|n word")
         result = utils.justify(line, align="c", width=30)
         self.assertIn("|r", str(result))
+        # verify text is centered
+        self.assertEqual(len(result), 30)
+        self.assertTrue(str(result).startswith(" "*6))
+        self.assertTrue(str(result).endswith(" "*6))
+        # verify right-align indents at the beginning
+        result = utils.justify(line, align="r", width=20)
+        self.assertTrue(str(result).startswith("  "))
+
 
 
 class TestMatchIP(TestCase):

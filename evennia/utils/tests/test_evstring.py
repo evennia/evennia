@@ -61,11 +61,21 @@ class TestEvString(TestCase):
         Test the ansi-aware .strip() methods
         """
         a = EvString("   |r   Test of stuff |b with spaces   |n   ")
-        b = EvString("|r|b")
         self.assertEqual(a.strip(), EvString("|rTest of stuff |b with spaces|n"))
+        self.assertEqual(a.strip(" "), EvString("|rTest of stuff |b with spaces|n"))
         self.assertEqual(a.lstrip(), EvString("|rTest of stuff |b with spaces   |n   "))
         self.assertEqual(a.rstrip(), EvString("   |r   Test of stuff |b with spaces|n"))
+
+        b = EvString("|r|b")
         self.assertEqual(b.strip(), b)
+
+        c = EvString("  A normal string with spaces  ")
+        self.assertEqual(c.strip(), "A normal string with spaces")
+
+        d = EvString("|rI have no closing tag")
+        e = EvString("I have no open tag|n")
+        self.assertEqual(d, d.strip())
+        self.assertEqual(e, e.strip())
 
     def test_split(self):
         """

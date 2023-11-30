@@ -48,16 +48,20 @@ class TestEvForm(TestCase):
         )
         # add the tables to the proper ids in the form
         form.map(tables={"A": tableA, "B": tableB})
-        return "\n".join(line.rstrip() for line in str(form).split("\n"))
+        # normally you could just call form.clean(), but this is necessary
+        # since auto formatters/black tend to strip lines spaces
+        # from the end of lines for the comparison strings.
+        return "\n".join([line.clean().rstrip() for line in form.collect_evstring()])
 
     def _simple_form(self, form, literals=None):
         cellsdict = {1: "Apple", 2: "Banana", 3: "Citrus", 4: "Durian"}
         formdict = {"FORMCHAR": "x", "TABLECHAR": "c", "FORM": form}
         form = evform.EvForm(formdict, literals=literals)
         form.map(cells=cellsdict)
-        # this is necessary since editors/black tend to strip lines spaces
+        # normally you could just call form.clean(), but this is necessary
+        # since auto formatters/black tend to strip lines spaces
         # from the end of lines for the comparison strings.
-        return "\n".join(line.rstrip() for line in str(form).split("\n"))
+        return "\n".join([line.clean().rstrip() for line in form.collect_evstring()])
 
     def test_form_consistency(self):
         """
@@ -253,7 +257,7 @@ class TestEvFormParallelTables(TestCase):
             },
             tables={"2": self.table2, "3": self.table3},
         )
-        self.assertEqual(str(form).strip(), _EXPECTED.strip())
+        self.assertEqual(form.clean().strip(), _EXPECTED.strip())
 
 
 class TestEvFormErrors(TestCase):
@@ -271,19 +275,16 @@ class TestEvFormErrors(TestCase):
             "tablechar": "c",
         }
         form = evform.EvForm(formdict, **kwargs)
-        # this is necessary since editors/black tend to strip lines spaces
+        # normally you could just call form.clean(), but this is necessary
+        # since auto formatters/black tend to strip lines spaces
         # from the end of lines for the comparison strings.
-        form = str(form)
-        form = "\n".join(line.rstrip() for line in form.split("\n"))
-
-        return form
+        return "\n".join([line.clean().rstrip() for line in form.collect_evstring()])
 
     def _validate(self, expected, result):
         """easier debug"""
         err = f"\n{'expected':-^60}\n{expected}\n{'result':-^60}\n{result}\n{'':-^60}"
         self.assertEqual(expected.lstrip(), result.lstrip(), err)
 
-    @skip("Pending rebuild of markup")
     def test_2757(self):
         """
         Testing https://github.com/evennia/evennia/issues/2757

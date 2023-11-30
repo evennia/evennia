@@ -102,7 +102,8 @@ def make_iter(obj):
 
 def wrap(text, width=None, indent=0):
     """
-    Safely wrap text to a certain number of characters.
+    Safely wrap text to a certain number of characters. Supports wrapping formatted
+    EvString as well as regular strings.
 
     Args:
         text (str): The text to wrap.
@@ -117,6 +118,8 @@ def wrap(text, width=None, indent=0):
     if not text:
         return ""
     indent = " " * indent
+    # w = EvTextWrapper(width=width, initial_indent=indent, subsequent_indent=indent)
+    # return w.wrap(text)
     return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
 
 
@@ -258,8 +261,8 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
 
         if line_rest > 0:
             if align == "l":
-                if line[-1] == "\n\n":
-                    line[-1] = sp * (line_rest - 1) + "\n" + sp * width + "\n" + sp * width
+                if line[-1] == lb + lb:
+                    line[-1] = lb.join([sp * (line_rest - 1), sp * width, sp * width])
                 else:
                     line[-1] += sp * line_rest
             elif align == "r":
@@ -298,6 +301,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         return lb.join(abs_lines)
 
     # all other aligns requires splitting into paragraphs and words
+    text = text.strip(" ")
 
     # split into paragraphs and words
     paragraphs = [text]  # re.split("\n\s*?\n", text, re.MULTILINE)
@@ -341,7 +345,6 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     if line:  # catch any line left behind
         lines.append(_process_line(line))
     indentstring = sp * indent
-    out = lb.join([indentstring + line for line in lines])
     return lb.join([indentstring + line for line in lines])
 
 

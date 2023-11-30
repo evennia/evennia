@@ -368,14 +368,13 @@ class EvCell(EvStringContainer):
         """
         width = self.width
         adjusted_data = []
+
         for line in data:
             if 0 < width < d_len(line):
-                # replace_whitespace=False, expand_tabs=False is a
-                # fix for ANSIString not supporting expand_tabs/translate
                 adjusted_data.extend(
                     [
                         EvString(part) + EvString("|n")
-                        for part in wrap(line, width=width, drop_whitespace=False)
+                        for part in wrap(line, width=width)
                     ]
                 )
             else:
@@ -404,8 +403,7 @@ class EvCell(EvStringContainer):
     def _align(self, data):
         """
         Align list of rows of cell. Whitespace characters will be stripped
-        if there is only one whitespace character - otherwise, it's assumed
-        the caller may be trying some manual formatting in the text.
+        unless the alignment type is absolute.
 
         Args:
             data (str): Text to align.

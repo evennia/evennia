@@ -14,7 +14,7 @@ import re as _re
 import pytz as _pytz
 from django.utils.translation import gettext as _
 
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 from evennia.utils.utils import string_partial_matching as _partial
 from evennia.utils.utils import validate_email_address
 
@@ -35,7 +35,7 @@ def color(entry, option_key="Color", **kwargs):
     """
     if not entry:
         raise ValueError(_("Nothing entered for a {option_key}!").format(option_key=option_key))
-    test_str = strip_ansi(f"|{entry}|n")
+    test_str = strip_markup(f"|{entry}|n")
     if test_str:
         raise ValueError(
             _("'{entry}' is not a valid {option_key}.").format(entry=entry, option_key=option_key)
