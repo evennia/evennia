@@ -642,7 +642,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             if service.running:
                 caller.msg("That service is already running.")
                 return
-            caller.msg(f"Beginner-Tutorial service '{self.args}' ...")
+            caller.msg(f"Starting service '{self.args}' ...")
             try:
                 service.startService()
             except Exception as err:

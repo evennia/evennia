@@ -132,7 +132,7 @@ with
     > room.add_room_state("summer", "empty")
     > room.get_stateful_desc()
 
-    This is a nice beach. It is completely empty
+    This is a nice beach. It is completely empty.
 
     > room.remove_room_state("empty")
     > room.add_room_state("full")
@@ -140,7 +140,7 @@ with
 
     This is a nice beach. It is full of people.
 
-There are four time-of-day states that are meant to be used with these tags. The
+There are four default time-of-day states that are meant to be used with these tags. The
 room tracks and changes these automatically. By default they are 'morning',
 'afternoon', 'evening' and 'night'. You can get the current time-slot with
 `room.get_time_of_day`. You can control them with
@@ -148,7 +148,7 @@ room tracks and changes these automatically. By default they are 'morning',
 ```
 ExtendedRoom.hours_per_day    # default 24
 ExtendedRoom.times_of_day     # dict of {season: (start, end), ...} where
-                              # the start/end are given as fractions of the day
+                              # the start/end are given as fractions of the day.
 ```
 
 You use these inside descriptions as normal:

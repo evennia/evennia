@@ -1628,7 +1628,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             irc_port=irc_port,
             irc_ssl=irc_ssl,
         )
-        self.msg("Connection created. Beginner-Tutorial IRC bot.")
+        self.msg("Connection created. Starting IRC bot.")
 
 
 class CmdIRCStatus(COMMAND_DEFAULT_CLASS):

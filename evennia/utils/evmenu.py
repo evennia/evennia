@@ -216,7 +216,7 @@ callable must be a module-global function on the form
 
     ## options
 
-        # Beginner-Tutorial the option-line with >
+        # Beginning the option-line with >
         # allows to perform different actions depending on
         # what is inserted.
 
