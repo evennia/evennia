@@ -245,14 +245,11 @@ The Evennia documentation supports some special reference shortcuts in links:
 #### Github online repository
 
 - `github:` - a shortcut for the full path to the Evennia repository on github. This will refer to
-  the `master` branch by default:
+  the `main` branch by default:
 
         [link to objects.py](github:evennia/objects/objects.py)
 
-    This will remap to https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py.
-- To refer to the `develop` branch, start the url with `develop/`:
-
-        [link to objects.py](github:develop/evennia/objects/objects.py)
+    This will remap to https://github.com/evennia/evennia/blob/main/evennia/objects/objects.py.
 
 #### API
 
