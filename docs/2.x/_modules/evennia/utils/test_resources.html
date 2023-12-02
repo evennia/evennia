@@ -183,7 +183,7 @@
     <span class="n">BASE_GUEST_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.accounts.accounts.DefaultGuest&quot;</span><span class="p">,</span>
     <span class="c1"># a special setting boolean TEST_ENVIRONMENT is set by the test runner</span>
     <span class="c1"># while the test suite is running.</span>
-    <span class="n">TEST_ENVIRONMENT</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">TEST_ENVIRONMENT</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">all_from_module</span><span class="p">(</span><span class="n">settings_default</span><span class="p">),</span> <span class="o">**</span><span class="n">DEFAULT_SETTING_RESETS</span><span class="p">}</span>
@@ -632,7 +632,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base test (with no default objects) but with enforced default settings.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseEvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flush_cache</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="EvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
