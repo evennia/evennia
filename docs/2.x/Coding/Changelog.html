@@ -186,13 +186,17 @@
 <section id="main-branch">
 <h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Dependency: Twisted 23.10 (&lt;24) to address upstream CVE alert.</p></li>
+<li><p>Dependency (potentially Backwards incompatible): Django 4.2 (&lt;4.3). Increases
+minimum supported versions of MariaDB, MySQL and PostgreSQL,
+see <a class="reference external" href="https://docs.djangoproject.com/en/4.2/releases/4.2/#backwards-incompatible-changes-in-4-2">django release nodes</a></p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3313">Feature</a> (Backwards incompatible): <code class="docutils literal notranslate"><span class="pre">OptionHandler.set</span></code> now returns
 <code class="docutils literal notranslate"><span class="pre">BaseOption</span></code> rather than its <code class="docutils literal notranslate"><span class="pre">.value</span></code>. Instead access <code class="docutils literal notranslate"><span class="pre">.value</span></code> or <code class="docutils literal notranslate"><span class="pre">.display()</span></code>
 on this return for more control. (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3278">Feature</a>: (Backwards incompatible): Refactor home page into multiple sub-parts for easier
 overriding and composition (johnnyvoruz)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3180">Feature</a>: (Can be backwards incompatible): Make build commands easier to override, with new utility
-hooks (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3180">Feature</a>: (Potentially Backwards incompatible): Make build commands
+easier to override, with new utility hooks (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3273">Feature</a>: Allow passing <code class="docutils literal notranslate"><span class="pre">text_kwargs</span></code> kwarg to <code class="docutils literal notranslate"><span class="pre">EvMore.msg</span></code> in order to expand
 the outputfunc used for every evmore page.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3286">Feature</a>: Allow Discord bot to change user’s nickname and assign
@@ -218,7 +222,7 @@ command was originally pulled from (Volund)</p></li>
 tools <code class="docutils literal notranslate"><span class="pre">evennia.utils.match_ip</span></code> and <code class="docutils literal notranslate"><span class="pre">utils.ip_from_request</span></code> to help. (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3349">Feature</a>: Refactored almost all default commands to use
 <code class="docutils literal notranslate"><span class="pre">Command.msg</span></code> over the <code class="docutils literal notranslate"><span class="pre">command.caller.msg</span></code> direct call (more flexible) (Volund)</p></li>
-<li><p>[Fix] (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
+<li><p>Fix (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
 <code class="docutils literal notranslate"><span class="pre">settings.TEST_ENVIRONMENT</span></code> to address issues during refactored startup sequence.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3197">Fix</a>: Make sure Global scripts only start in one place,</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3324">Fix</a>: Make account-post-login-fail signal fire properly. Add

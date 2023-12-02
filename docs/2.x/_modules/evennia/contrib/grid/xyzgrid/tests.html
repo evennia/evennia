@@ -93,9 +93,8 @@
 <span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
 
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
-
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">commands</span><span class="p">,</span> <span class="n">xymap</span><span class="p">,</span> <span class="n">xymap_legend</span><span class="p">,</span> <span class="n">xyzgrid</span><span class="p">,</span> <span class="n">xyzroom</span>
 
@@ -1426,6 +1425,14 @@
     <span class="n">zcoord</span> <span class="o">=</span> <span class="s2">&quot;map1&quot;</span>
 
 <div class="viewcode-block" id="TestXYZGrid.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGrid.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+        <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+
+        <span class="c1"># we need to create a home room for the grid to be able to be properly deleted</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.rooms.Room&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Home&quot;</span><span class="p">)</span>
+        <span class="n">home</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+        <span class="n">home</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">XYZGrid</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;testgrid&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">map_data1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAP1</span><span class="p">,</span> <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">zcoord</span><span class="p">}</span>

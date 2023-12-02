@@ -99,7 +99,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">twisted.conch.interfaces</span> <span class="kn">import</span> <span class="n">IConchUser</span>
-<span class="kn">from</span> <span class="nn">twisted.cred.checkers</span> <span class="kn">import</span> <span class="n">credentials</span>
+<span class="kn">from</span> <span class="nn">twisted.cred</span> <span class="kn">import</span> <span class="n">checkers</span>
 <span class="kn">from</span> <span class="nn">twisted.cred.portal</span> <span class="kn">import</span> <span class="n">Portal</span>
 
 <span class="n">_SSH_IMPORT_ERROR</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -120,6 +120,9 @@
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">_SSH_IMPORT_ERROR</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">to_str</span>
 <span class="kn">from</span> <span class="nn">twisted.conch</span> <span class="kn">import</span> <span class="n">interfaces</span> <span class="k">as</span> <span class="n">iconch</span>
 <span class="kn">from</span> <span class="nn">twisted.conch.insults</span> <span class="kn">import</span> <span class="n">insults</span>
 <span class="kn">from</span> <span class="nn">twisted.conch.manhole</span> <span class="kn">import</span> <span class="n">Manhole</span><span class="p">,</span> <span class="n">recvline</span>
@@ -128,10 +131,6 @@
 <span class="kn">from</span> <span class="nn">twisted.conch.ssh.userauth</span> <span class="kn">import</span> <span class="n">SSHUserAuthServer</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span>
 <span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">components</span>
-
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">to_str</span>
 
 <span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
 <span class="n">_RE_SCREENREADER_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
@@ -442,7 +441,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">password</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">getNS</span><span class="p">(</span><span class="n">packet</span><span class="p">[</span><span class="mi">1</span><span class="p">:])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">UsernamePassword</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">checkers</span><span class="o">.</span><span class="n">UsernamePassword</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
         <span class="n">c</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">IConchUser</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebPassword</span><span class="p">)</span></div></div>
 
@@ -456,7 +455,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">credentialInterfaces</span> <span class="o">=</span> <span class="p">(</span><span class="n">credentials</span><span class="o">.</span><span class="n">IUsernamePassword</span><span class="p">,)</span>
+    <span class="n">credentialInterfaces</span> <span class="o">=</span> <span class="p">(</span><span class="n">checkers</span><span class="o">.</span><span class="n">IUsernamePassword</span><span class="p">,)</span>
 
 <div class="viewcode-block" id="AccountDBPasswordChecker.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.AccountDBPasswordChecker.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -474,7 +473,7 @@
 <span class="sd">        Generic credentials.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">up</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">IUsernamePassword</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">up</span> <span class="o">=</span> <span class="n">checkers</span><span class="o">.</span><span class="n">IUsernamePassword</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">username</span> <span class="o">=</span> <span class="n">up</span><span class="o">.</span><span class="n">username</span>
         <span class="n">password</span> <span class="o">=</span> <span class="n">up</span><span class="o">.</span><span class="n">password</span>
         <span class="n">account</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_account_from_name</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
