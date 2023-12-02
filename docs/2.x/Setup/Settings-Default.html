@@ -209,7 +209,8 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
 <span class="n">WEBSERVER_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
 <span class="c1"># IP addresses that may talk to the server in a reverse proxy configuration,</span>
-<span class="c1"># like NginX.</span>
+<span class="c1"># like NginX or Varnish. These can be either specific IPv4 or IPv6 addresses,</span>
+<span class="c1"># or subnets in CIDR format - like 192.168.0.0/24 or 2001:db8::/32.</span>
 <span class="n">UPSTREAM_IPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">]</span>
 <span class="c1"># The webserver uses threadpool for handling requests. This will scale</span>
 <span class="c1"># with server load. Set the minimum and maximum number of threads it</span>
@@ -1150,6 +1151,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
     <span class="s2">&quot;django.middleware.csrf.CsrfViewMiddleware&quot;</span><span class="p">,</span>
     <span class="s2">&quot;django.contrib.admindocs.middleware.XViewMiddleware&quot;</span><span class="p">,</span>
     <span class="s2">&quot;django.contrib.flatpages.middleware.FlatpageFallbackMiddleware&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.web.utils.middleware.OriginIpMiddleware&quot;</span><span class="p">,</span>
     <span class="s2">&quot;evennia.web.utils.middleware.SharedLoginMiddleware&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 

@@ -111,6 +111,20 @@
   <section id="module-evennia.web.utils.middleware">
 <span id="evennia-web-utils-middleware"></span><h1>evennia.web.utils.middleware<a class="headerlink" href="#module-evennia.web.utils.middleware" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt id="evennia.web.utils.middleware.OriginIpMiddleware">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.middleware.</code><code class="sig-name descname">OriginIpMiddleware</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">get_response</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/middleware.html#OriginIpMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.middleware.OriginIpMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This Django Middleware simply sets the request.origin_ip attribute to what is
+respected by the Evennia Server, taking into account settings.UPSTREAM_IPS.</p>
+<dl class="py method">
+<dt id="evennia.web.utils.middleware.OriginIpMiddleware.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">get_response</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/middleware.html#OriginIpMiddleware.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.middleware.OriginIpMiddleware.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.web.utils.middleware.SharedLoginMiddleware">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.middleware.</code><code class="sig-name descname">SharedLoginMiddleware</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">get_response</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/middleware.html#SharedLoginMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.middleware.SharedLoginMiddleware" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>

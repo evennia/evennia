@@ -97,6 +97,7 @@
 <span class="kn">import</span> <span class="nn">importlib.machinery</span>
 <span class="kn">import</span> <span class="nn">importlib.util</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">ipaddress</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
@@ -3028,6 +3029,81 @@
             <span class="c1"># invalid number-word, raise ValueError</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;String </span><span class="si">{</span><span class="n">original_input</span><span class="si">}</span><span class="s2"> cannot be converted to int.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sums</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="match_ip"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.match_ip">[docs]</a><span class="k">def</span> <span class="nf">match_ip</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if an IP address matches a given pattern. The pattern can be a single IP address</span>
+<span class="sd">    such as 8.8.8.8 or a CIDR-formatted subnet like 10.0.0.0/8</span>
+
+<span class="sd">    IPv6 is supported to, with CIDR-subnets looking like 2001:db8::/48</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        address (str): The source address being checked.</span>
+<span class="sd">        pattern (str): The single IP address or subnet to check against.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        result (bool): Whether it was a match or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Convert the given IP address to an IPv4Address or IPv6Address object</span>
+        <span class="n">ip_obj</span> <span class="o">=</span> <span class="n">ipaddress</span><span class="o">.</span><span class="n">ip_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># Invalid IP address format</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Check if pattern is a single IP or a subnet</span>
+        <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">pattern</span><span class="p">:</span>
+            <span class="c1"># It&#39;s (hopefully) a subnet in CIDR notation</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">ipaddress</span><span class="o">.</span><span class="n">ip_network</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ip_obj</span> <span class="ow">in</span> <span class="n">network</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># It&#39;s a single IP address</span>
+            <span class="k">if</span> <span class="n">ip_obj</span> <span class="o">==</span> <span class="n">ipaddress</span><span class="o">.</span><span class="n">ip_address</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ip_from_request"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.ip_from_request">[docs]</a><span class="k">def</span> <span class="nf">ip_from_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the IP address from a web Request, while respecting X-Forwarded-For and</span>
+<span class="sd">    settings.UPSTREAM_IPS.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        request (django Request or twisted.web.http.Request): The web request.</span>
+<span class="sd">        exclude: (list, optional): A list of IP addresses to exclude from the check. If left none,</span>
+<span class="sd">            then settings.UPSTREAM_IPS will be used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ip (str): The IP address the request originated from.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">UPSTREAM_IPS</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;getClientIP&quot;</span><span class="p">):</span>
+        <span class="c1"># It&#39;s a twisted request.</span>
+        <span class="n">remote_addr</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getClientIP</span><span class="p">()</span>
+        <span class="n">forwarded</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getHeader</span><span class="p">(</span><span class="s2">&quot;x-forwarded-for&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># it&#39;s a Django request.</span>
+        <span class="n">remote_addr</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;REMOTE_ADDR&quot;</span><span class="p">)</span>
+        <span class="n">forwarded</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HTTP_X_FORWARDED_FOR&quot;</span><span class="p">)</span>
+
+    <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote_addr</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">forwarded</span><span class="p">:</span>
+        <span class="n">addresses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">forwarded</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">addresses</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="ow">not</span> <span class="n">match_ip</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span> <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">addr</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;ip_from_request: No valid IP address found in request. Using remote_addr.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">remote_addr</span></div>
 </pre></div>
 
           </div>
