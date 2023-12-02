@@ -23,7 +23,7 @@ runs:
       if: ${{ inputs.database == 'postgresql' }}
       uses: harmon758/postgresql-action@v1
       with:
-        postgresql version: "11"
+        postgresql version: "12"
         postgresql db: "evennia"
         postgresql user: "evennia"
         postgresql password: "password"
