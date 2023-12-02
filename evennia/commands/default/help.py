@@ -119,8 +119,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             usemore = True
 
             if self.session and self.session.protocol_key in (
-                "websocket",
-                "ajax/comet",
+                "webclient/websocket",
+                "webclient/ajax",
             ):
                 try:
                     options = self.account.db._saved_webclient_options
