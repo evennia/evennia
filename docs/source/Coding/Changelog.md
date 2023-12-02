@@ -27,6 +27,11 @@
   into services for easier overriding (Volund)
 - [Feature][issue3307]: Add support for Attribute-categories when using the monitorhandler
   with input funcs to monitor Attribute changes.
+- [Feature][pull3342]: Add `Command.cmdset_source`, referring to the cmdset each
+  command was originally pulled from (Volund)
+- [Feature][pull3343]: Add `access_type` as optional kwarg to lockfuncs (Volund)
+- [Fix] (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
+  `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
 - [Fix][pull3324]: Make account-post-login-fail signal fire properly. Add
   `CUSTOM_SIGNAL` for adding one's own signals (Volund)
@@ -39,6 +44,7 @@
   instantiated script. (Volund)
 - [Fix][pull3338]: Resolve if/elif bug in XYZGrid contrib launch command
   (jaborsh)
+- [fix][issue3331]: Made XYZGrid query zcoords in a case-insensitive manner.
 - [Fix][pull3322]: Fix `BaseOption.display` to always return a string.
 - Docs: Lots of Typo fixes (iLPdev, InspectorCaracal, jaborsh)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
@@ -60,9 +66,12 @@
 [pull3319]: https://github.com/evennia/evennia/pull/3319
 [pull3324]: https://github.com/evennia/evennia/pull/3324
 [pull3338]: https://github.com/evennia/evennia/pull/3338
+[pull3342]: https://github.com/evennia/evennia/pull/3342
+[pull3343]: https://github.com/evennia/evennia/pull/3343
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307
+[issue3331]: https://github.com/evennia/evennia/issues/3331
 
 ## Evennia 2.3.0
 
