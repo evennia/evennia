@@ -51,7 +51,7 @@ As explained on the [Webserver](./Webserver.md) page, the process for getting a 
    the HTML page requires static resources are requested, the browser will
    fetch those separately before displaying it to the user.
 
-If you look at the [evennia/web/](github:develop/evennia/web) directory you'll find the following structure (leaving out stuff not relevant to the website):
+If you look at the [evennia/web/](github:evennia/web) directory you'll find the following structure (leaving out stuff not relevant to the website):
 
 ```
   evennia/web/
