@@ -13,17 +13,25 @@ from .llm_npc import LLMNPC
 
 
 class TestLLMClient(BaseEvenniaTestCase):
-    @override_settings(LLM_PROMPT_PREFIX="You are a test bot.", TEST_ENVIRONMENT=True)
+    @override_settings(LLM_PROMPT_PREFIX="You are a test bot.")
     @patch("evennia.contrib.rpg.llm.llm_npc.task.deferLater")
+    def setUp(self):
+        self.npc = create_object(LLMNPC, key="Test NPC")
+        self.npc.db_home = None  # fix a bug in test suite
+        self.npc.save()
+
+    def tearDown(self):
+        self.npc.delete()
+        super().tearDown()
+
     def test_npc_at_talked_to(self, mock_deferLater):
         """
         Test the LLMNPC class.
         """
-        npc = create_object(LLMNPC, key="Test NPC")
         mock_LLMClient = Mock()
-        npc.ndb.llm_client = mock_LLMClient
+        self.npc.ndb.llm_client = mock_LLMClient
 
-        npc.at_talked_to("Hello", npc)
+        self.npc.at_talked_to("Hello", self.npc)
 
-        mock_deferLater.assert_called_with(Something, npc.thinking_timeout, Something)
+        mock_deferLater.assert_called_with(Something, self.npc.thinking_timeout, Something)
         mock_LLMClient.get_response.assert_called_with("You are a test bot.\nTest NPC: Hello")
