@@ -213,7 +213,7 @@ class MuxCommand(Command):
 Command {self} has no defined `func()` - showing on-command variables: No child func() defined for {self} - available variables:
 {variables}
         """
-        self.caller.msg(string)
+        self.msg(string)
         # a simple test command to show the available properties
         string = "-" * 50
         string += f"\n|w{self.key}|n - Command variables from evennia:\n"
@@ -241,7 +241,7 @@ Command {self} has no defined `func()` - showing on-command variables: No child 
         string += f"rhs, right-hand side of '=' (self.rhs): |w{self.rhs}|n\n"
         string += f"rhs, comma separated (self.rhslist): |w{self.rhslist}|n\n"
         string += "-" * 50
-        self.caller.msg(string)
+        self.msg(string)
 
     def func(self):
         """

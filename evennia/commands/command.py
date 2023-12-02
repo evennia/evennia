@@ -511,7 +511,7 @@ Command {self} has no defined `func()` - showing on-command variables:
             % (self.cmdset.key if self.cmdset.key else self.cmdset.__class__)
         )
 
-        self.caller.msg(string)
+        self.msg(string)
 
     def func(self):
         """

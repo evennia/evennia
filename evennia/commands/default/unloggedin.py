@@ -292,7 +292,7 @@ class CmdUnconnectedLook(COMMAND_DEFAULT_CLASS):
             connection_screen = utils.random_string_from_module(CONNECTION_SCREEN_MODULE)
             if not connection_screen:
                 connection_screen = "No connection screen found. Please contact an admin."
-        self.caller.msg(connection_screen)
+        self.msg(connection_screen)
 
 
 class CmdUnconnectedHelp(COMMAND_DEFAULT_CLASS):
@@ -334,7 +334,7 @@ You can use the |wlook|n command if you want to see the connect screen again.
 
         if settings.STAFF_CONTACT_EMAIL:
             string += "For support, please contact: %s" % settings.STAFF_CONTACT_EMAIL
-        self.caller.msg(string)
+        self.msg(string)
 
 
 class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
@@ -418,7 +418,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
                 sync = True
         if sync:
             self.session.sessionhandler.session_portal_sync(self.session)
-        self.caller.msg(string.strip())
+        self.msg(string.strip())
 
 
 class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
@@ -439,7 +439,7 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
         new_setting = not self.session.protocol_flags.get("SCREENREADER", False)
         self.session.protocol_flags["SCREENREADER"] = new_setting
         string = "Screenreader mode turned |w%s|n." % ("on" if new_setting else "off")
-        self.caller.msg(string)
+        self.msg(string)
         self.session.sessionhandler.session_portal_sync(self.session)
 
 
@@ -456,7 +456,7 @@ class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
     locks = "cmd:all()"
 
     def func(self):
-        self.caller.msg(
+        self.msg(
             "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END"
             " INFO"
             % (
