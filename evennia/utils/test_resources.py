@@ -97,7 +97,7 @@ DEFAULT_SETTING_RESETS = dict(
     BASE_GUEST_TYPECLASS="evennia.accounts.accounts.DefaultGuest",
     # a special setting boolean TEST_ENVIRONMENT is set by the test runner
     # while the test suite is running.
-    TEST_ENVIRONMENT=True
+    TEST_ENVIRONMENT=True,
 )
 
 DEFAULT_SETTINGS = {**all_from_module(settings_default), **DEFAULT_SETTING_RESETS}
@@ -547,6 +547,9 @@ class BaseEvenniaTestCase(TestCase):
     Base test (with no default objects) but with enforced default settings.
 
     """
+
+    def tearDown(self) -> None:
+        flush_cache()
 
 
 class EvenniaTestCase(TestCase):
