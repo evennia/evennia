@@ -40,6 +40,15 @@ JQuery available.
       })
     </script>
 
+    <!-- Generate a low-quality UID to uniquely identify client tabs -->
+    <script language="javascript" type="text/javascript">
+        function generateUID() {
+            return Math.random().toString(36).substring(2, 15) +
+                Math.random().toString(36).substring(2, 15);
+        }
+        var cuid = generateUID();
+    </script>
+
     <!-- Set up Websocket url and load the evennia.js library-->
     <script language="javascript" type="text/javascript">
         {% if websocket_enabled %}
