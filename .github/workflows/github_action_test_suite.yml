@@ -29,7 +29,8 @@ jobs:
     timeout-minutes: 35
 
     env:
-      UNIT_TEST_SETTINGS: "--settings=settings --parallel 4 --timing"
+      # UNIT_TEST_SETTINGS: "--settings=settings --keepdb --parallel 4 --timing"
+      UNIT_TEST_SETTINGS: "--settings=settings --timing"
       COVERAGE_TEST_SETTINGS: "--settings=settings --timing"
 
     steps:
