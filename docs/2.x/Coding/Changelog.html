@@ -216,6 +216,8 @@ command was originally pulled from (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3343">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">access_type</span></code> as optional kwarg to lockfuncs (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3344">Feature</a>: New middleware for checking IP/subnets from requests. New
 tools <code class="docutils literal notranslate"><span class="pre">evennia.utils.match_ip</span></code> and <code class="docutils literal notranslate"><span class="pre">utils.ip_from_request</span></code> to help. (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3349">Feature</a>: Refactored almost all default commands to use
+<code class="docutils literal notranslate"><span class="pre">Command.msg</span></code> over the <code class="docutils literal notranslate"><span class="pre">command.caller.msg</span></code> direct call (more flexible) (Volund)</p></li>
 <li><p>[Fix] (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
 <code class="docutils literal notranslate"><span class="pre">settings.TEST_ENVIRONMENT</span></code> to address issues during refactored startup sequence.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3197">Fix</a>: Make sure Global scripts only start in one place,</p></li>
@@ -228,11 +230,13 @@ instead of ‘Custom’ (InspectorCaracal)</p></li>
 (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3272">Fix</a>: Make sure <code class="docutils literal notranslate"><span class="pre">ScriptHandler.add</span></code> does not fail if passed an
 instantiated script. (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3350">Fix</a>: <code class="docutils literal notranslate"><span class="pre">CmdHelp</span></code> was using the wrong protocol-key identifier when
+routing to the ajax web client.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3338">Fix</a>: Resolve if/elif bug in XYZGrid contrib launch command
 (jaborsh)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3331">fix</a>: Made XYZGrid query zcoords in a case-insensitive manner.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3322">Fix</a>: Fix <code class="docutils literal notranslate"><span class="pre">BaseOption.display</span></code> to always return a string.</p></li>
-<li><p>Docs: Lots of Typo fixes (iLPdev, InspectorCaracal, jaborsh)</p></li>
+<li><p>Docs: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh)</p></li>
 <li><p>Beginner tutorial: Cleanup and starting earlier with explaining how to add to
 the default cmdsets.</p></li>
 </ul>
