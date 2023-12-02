@@ -5,16 +5,15 @@ Unit tests for the LLM Client and npc.
 
 from anything import Something
 from django.test import override_settings
-from mock import Mock, patch
-
 from evennia.utils.create import create_object
 from evennia.utils.test_resources import EvenniaTestCase
+from mock import Mock, patch
 
 from .llm_npc import LLMNPC
 
 
 class TestLLMClient(EvenniaTestCase):
-    @override_settings(LLM_PROMPT_PREFIX="You are a test bot.")
+    @override_settings(LLM_PROMPT_PREFIX="You are a test bot.", TEST_ENVIRONMENT=True)
     @patch("evennia.contrib.rpg.llm.llm_npc.task.deferLater")
     def test_npc_at_talked_to(self, mock_deferLater):
         """

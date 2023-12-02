@@ -30,6 +30,8 @@
 - [Feature][pull3342]: Add `Command.cmdset_source`, referring to the cmdset each
   command was originally pulled from (Volund)
 - [Feature][pull3343]: Add `access_type` as optional kwarg to lockfuncs (Volund)
+- [Feature][pull3344]: New middleware for checking IP/subnets from requests. New
+  tools `evennia.utils.match_ip` and `utils.ip_from_request` to help. (Volund)
 - [Fix] (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
   `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
@@ -68,6 +70,7 @@
 [pull3338]: https://github.com/evennia/evennia/pull/3338
 [pull3342]: https://github.com/evennia/evennia/pull/3342
 [pull3343]: https://github.com/evennia/evennia/pull/3343
+[pull3344]: https://github.com/evennia/evennia/pull/3344
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307
