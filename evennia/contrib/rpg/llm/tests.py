@@ -13,8 +13,11 @@ from .llm_npc import LLMNPC
 
 
 class TestLLMClient(BaseEvenniaTestCase):
-    @override_settings(LLM_PROMPT_PREFIX="You are a test bot.")
-    @patch("evennia.contrib.rpg.llm.llm_npc.task.deferLater")
+    """
+    Test the LLMNPC class.
+
+    """
+
     def setUp(self):
         self.npc = create_object(LLMNPC, key="Test NPC")
         self.npc.db_home = None  # fix a bug in test suite
@@ -24,9 +27,11 @@ class TestLLMClient(BaseEvenniaTestCase):
         self.npc.delete()
         super().tearDown()
 
+    @override_settings(LLM_PROMPT_PREFIX="You are a test bot.")
+    @patch("evennia.contrib.rpg.llm.llm_npc.task.deferLater")
     def test_npc_at_talked_to(self, mock_deferLater):
         """
-        Test the LLMNPC class.
+        Test the npc's at_talked_to method.
         """
         mock_LLMClient = Mock()
         self.npc.ndb.llm_client = mock_LLMClient
