@@ -2,13 +2,17 @@
 
 ## Main branch
 
+- Dependency: Twisted 23.10 (<24) to address upstream CVE alert.
+- Dependency (potentially Backwards incompatible): Django 4.2 (<4.3). Increases
+  minimum supported versions of MariaDB, MySQL and PostgreSQL,
+  see [django release nodes][django-release-notes]
 - [Feature][pull3313] (Backwards incompatible): `OptionHandler.set` now returns
   `BaseOption` rather than its `.value`. Instead access `.value` or `.display()`
   on this return for more control. (Volund)
 - [Feature][pull3278]: (Backwards incompatible): Refactor home page into multiple sub-parts for easier
   overriding and composition (johnnyvoruz)
-- [Feature][pull3180]: (Can be backwards incompatible): Make build commands easier to override, with new utility
-  hooks (Volund)
+- [Feature][pull3180]: (Potentially Backwards incompatible): Make build commands
+  easier to override, with new utility hooks (Volund)
 - [Feature][issue3273]: Allow passing `text_kwargs` kwarg to `EvMore.msg` in order to expand
   the outputfunc used for every evmore page.
 - [Feature][pull3286]: Allow Discord bot to change user's nickname and assign
@@ -34,7 +38,7 @@
   tools `evennia.utils.match_ip` and `utils.ip_from_request` to help. (Volund)
 - [Feature][pull3349]: Refactored almost all default commands to use
   `Command.msg` over the `command.caller.msg` direct call (more flexible) (Volund)
-- [Fix] (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
+- Fix (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
   `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
 - [Fix][pull3324]: Make account-post-login-fail signal fire properly. Add
@@ -81,6 +85,7 @@
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307
 [issue3331]: https://github.com/evennia/evennia/issues/3331
+[django-release-notes]: https://docs.djangoproject.com/en/4.2/releases/4.2/#backwards-incompatible-changes-in-4-2
 
 ## Evennia 2.3.0
 

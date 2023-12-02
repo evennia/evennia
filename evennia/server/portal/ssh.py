@@ -13,7 +13,7 @@ import os
 import re
 
 from twisted.conch.interfaces import IConchUser
-from twisted.cred.checkers import credentials
+from twisted.cred import checkers
 from twisted.cred.portal import Portal
 
 _SSH_IMPORT_ERROR = """
@@ -34,6 +34,9 @@ except ImportError:
     raise ImportError(_SSH_IMPORT_ERROR)
 
 from django.conf import settings
+from evennia.accounts.models import AccountDB
+from evennia.utils import ansi
+from evennia.utils.utils import class_from_module, to_str
 from twisted.conch import interfaces as iconch
 from twisted.conch.insults import insults
 from twisted.conch.manhole import Manhole, recvline
@@ -42,10 +45,6 @@ from twisted.conch.ssh import common
 from twisted.conch.ssh.userauth import SSHUserAuthServer
 from twisted.internet import defer, protocol
 from twisted.python import components
-
-from evennia.accounts.models import AccountDB
-from evennia.utils import ansi
-from evennia.utils.utils import class_from_module, to_str
 
 _RE_N = re.compile(r"\|n$")
 _RE_SCREENREADER_REGEX = re.compile(
@@ -356,7 +355,7 @@ class ExtraInfoAuthServer(SSHUserAuthServer):
 
         """
         password = common.getNS(packet[1:])[0]
-        c = credentials.UsernamePassword(self.user, password)
+        c = checkers.UsernamePassword(self.user, password)
         c.transport = self.transport
         return self.portal.login(c, None, IConchUser).addErrback(self._ebPassword)
 
@@ -370,7 +369,7 @@ class AccountDBPasswordChecker(object):
     """
 
     noisy = False
-    credentialInterfaces = (credentials.IUsernamePassword,)
+    credentialInterfaces = (checkers.IUsernamePassword,)
 
     def __init__(self, factory):
         """
@@ -388,7 +387,7 @@ class AccountDBPasswordChecker(object):
         Generic credentials.
 
         """
-        up = credentials.IUsernamePassword(c, None)
+        up = checkers.IUsernamePassword(c, None)
         username = up.username
         password = up.password
         account = AccountDB.objects.get_account_from_name(username)
