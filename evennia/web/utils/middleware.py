@@ -1,7 +1,21 @@
 from django.contrib.auth import authenticate, login
 
 from evennia.accounts.models import AccountDB
-from evennia.utils import logger
+from evennia.utils import logger, ip_from_request
+
+
+class OriginIpMiddleware:
+    """
+    This Django Middleware simply sets the request.origin_ip attribute to what is
+    respected by the Evennia Server, taking into account settings.UPSTREAM_IPS.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request.origin_ip = ip_from_request(request)
+        return self.get_response(request)
 
 
 class SharedLoginMiddleware(object):

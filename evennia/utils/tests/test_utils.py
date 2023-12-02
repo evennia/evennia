@@ -773,3 +773,15 @@ class TestJustify(TestCase):
         result = utils.justify(line, align="c", width=30)
 
         self.assertIn(ANSI_RED, str(result))
+
+
+class TestMatchIP(TestCase):
+    """
+    test utils.match_ip
+    """
+
+    def test_match_ip(self):
+        self.assertFalse(utils.match_ip("192.168.0.1", "10.0.0.0/24"))
+        self.assertTrue(utils.match_ip("192.168.0.1", "192.168.0.0/24"))
+        self.assertTrue(utils.match_ip("192.168.0.1", "192.168.0.1"))
+        self.assertFalse(utils.match_ip("192.168.0.1", "10.0.0.1"))

@@ -31,7 +31,7 @@ from evennia.server import session
 from evennia.utils import utils
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
-from evennia.utils.utils import to_bytes
+from evennia.utils.utils import to_bytes, ip_from_request
 
 _CLIENT_SESSIONS = utils.mod_import(settings.SESSION_ENGINE).SessionStore
 _RE_SCREENREADER_REGEX = re.compile(
@@ -197,16 +197,7 @@ class AjaxWebClient(resource.Resource):
         csessid = self.get_client_sessid(request)
         browserstr = self.get_browserstr(request)
 
-        remote_addr = request.getClientIP()
-
-        if remote_addr in settings.UPSTREAM_IPS and request.getHeader("x-forwarded-for"):
-            addresses = [x.strip() for x in request.getHeader("x-forwarded-for").split(",")]
-            addresses.reverse()
-
-            for addr in addresses:
-                if addr not in settings.UPSTREAM_IPS:
-                    remote_addr = addr
-                    break
+        remote_addr = ip_from_request(request)
 
         host_string = "%s (%s:%s)" % (
             _SERVERNAME,
