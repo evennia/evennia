@@ -109,7 +109,8 @@ WEBSERVER_PORTS = [(4001, 4005)]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSERVER_INTERFACES = ["0.0.0.0"]
 # IP addresses that may talk to the server in a reverse proxy configuration,
-# like NginX.
+# like NginX or Varnish. These can be either specific IPv4 or IPv6 addresses,
+# or subnets in CIDR format - like 192.168.0.0/24 or 2001:db8::/32.
 UPSTREAM_IPS = ["127.0.0.1"]
 # The webserver uses threadpool for handling requests. This will scale
 # with server load. Set the minimum and maximum number of threads it
@@ -1050,6 +1051,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
     "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
+    "evennia.web.utils.middleware.OriginIpMiddleware",
     "evennia.web.utils.middleware.SharedLoginMiddleware",
 ]
 

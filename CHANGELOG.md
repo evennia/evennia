@@ -32,6 +32,8 @@
 - [Feature][pull3343]: Add `access_type` as optional kwarg to lockfuncs (Volund)
 - [Feature][pull3344]: New middleware for checking IP/subnets from requests. New
   tools `evennia.utils.match_ip` and `utils.ip_from_request` to help. (Volund)
+- [Feature][pull3349]: Refactored almost all default commands to use
+  `Command.msg` over the `command.caller.msg` direct call (more flexible) (Volund)
 - [Fix] (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
   `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
@@ -44,11 +46,13 @@
   (InspectorCaracal)
 - [Fix][issue3272]: Make sure `ScriptHandler.add` does not fail if passed an
   instantiated script. (Volund)
+- [Fix][pull3350]: `CmdHelp` was using the wrong protocol-key identifier when
+  routing to the ajax web client.
 - [Fix][pull3338]: Resolve if/elif bug in XYZGrid contrib launch command
   (jaborsh)
 - [fix][issue3331]: Made XYZGrid query zcoords in a case-insensitive manner.
 - [Fix][pull3322]: Fix `BaseOption.display` to always return a string.
-- Docs: Lots of Typo fixes (iLPdev, InspectorCaracal, jaborsh)
+- Docs: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
   the default cmdsets.
 
@@ -71,6 +75,8 @@
 [pull3342]: https://github.com/evennia/evennia/pull/3342
 [pull3343]: https://github.com/evennia/evennia/pull/3343
 [pull3344]: https://github.com/evennia/evennia/pull/3344
+[pull3349]: https://github.com/evennia/evennia/pull/3349
+[pull3350]: https://github.com/evennia/evennia/pull/3350
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307
