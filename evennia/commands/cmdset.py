@@ -541,6 +541,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         system_commands = self.system_commands
 
         for cmd in cmds:
+            # Ensure commands know their source cmdset.
+            cmd.cmdset_source = self
             # add all commands
             if not hasattr(cmd, "obj") or cmd.obj is None:
                 cmd.obj = self.cmdsetobj
