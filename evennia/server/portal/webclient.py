@@ -82,9 +82,12 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             logger.log_trace(str(self))
             return None
 
-        self.csessid, *browserstr = webarg.split("&", 1)
-        if browserstr:
-            self.browserstr = str(browserstr[0])
+        self.csessid, *cargs = webarg.split("&", 2)
+        if len(cargs) == 1:
+            self.browserstr = str(cargs[0])
+        elif len(cargs) == 2:
+            self.cuid = str(cargs[0])
+            self.browserstr = str(cargs[1])
 
         if self.csessid:
             return _CLIENT_SESSIONS(session_key=self.csessid)
