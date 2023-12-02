@@ -242,9 +242,10 @@
 <span class="sd">                     you to know which alias was used, for example)</span>
 <span class="sd">    self.args - everything supplied to the command following the cmdstring</span>
 <span class="sd">               (this is usually what is parsed in self.parse())</span>
-<span class="sd">    self.cmdset - the cmdset from which this command was matched (useful only</span>
+<span class="sd">    self.cmdset - the merged cmdset from which this command was matched (useful only</span>
 <span class="sd">                  seldomly, notably for help-type commands, to create dynamic</span>
 <span class="sd">                  help entries and lists)</span>
+<span class="sd">    self.cmdset_source - the specific cmdset this command was matched from.</span>
 <span class="sd">    self.obj - the object on which this command is defined. If a default command,</span>
 <span class="sd">               this is usually the same as caller.</span>
 <span class="sd">    self.raw_string - the full raw string input, including the command name,</span>

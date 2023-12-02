@@ -27,6 +27,9 @@
   into services for easier overriding (Volund)
 - [Feature][issue3307]: Add support for Attribute-categories when using the monitorhandler
   with input funcs to monitor Attribute changes.
+- [Feature][pull3342]: Add `Command.cmdset_source`, referring to the cmdset each
+  command was originally pulled from (Volund)
+- [Feature][pull3343]: Add `access_type` as optional kwarg to lockfuncs (Volund)
 - [Fix] (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
   `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
@@ -63,6 +66,8 @@
 [pull3319]: https://github.com/evennia/evennia/pull/3319
 [pull3324]: https://github.com/evennia/evennia/pull/3324
 [pull3338]: https://github.com/evennia/evennia/pull/3338
+[pull3342]: https://github.com/evennia/evennia/pull/3342
+[pull3343]: https://github.com/evennia/evennia/pull/3343
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307
