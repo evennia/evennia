@@ -216,7 +216,7 @@ class EvForm(EvStringContainer):
         self.options = self._parse_inkwargs(**kwargs)
 
         self.cells_mapping = (
-            dict((to_str(key), EvForm._to_evstring(value)) for key, value in cells.items()) if cells else {}
+            dict((to_str(key), value) for key, value in cells.items()) if cells else {}
         )
         self.tables_mapping = (
             dict((to_str(key), value) for key, value in tables.items()) if tables else {}
@@ -419,7 +419,7 @@ class EvForm(EvStringContainer):
                 cell.reformat(
                     width=width,
                     height=height,
-                    **{**cell_options, **{"align": custom_align, "valign": custom_valign}},
+                    **(cell_options | {"align": custom_align, "valign": custom_valign}),
                 )
             else:
                 # generating cell on the fly

@@ -47,7 +47,7 @@ from django.utils.translation import gettext as _
 from evennia import CmdSet
 from evennia.commands import cmdhandler
 from evennia.utils import dedent, fill, is_iter, justify, logger, to_str, utils
-from evennia.utils.evstring import escape_markup
+from evennia.utils.evstring import EvString, escape_markup
 
 # we use cmdhandler instead of evennia.syscmdkeys to
 # avoid some cases of loading before evennia init'd
@@ -412,9 +412,9 @@ class CmdLineInput(CmdEditorBase):
                 if indent < 0:
                     indent = "off"
 
-                self.caller.msg("|b%02i|||n (|g%s|n) %s" % (cline, indent, escape_markup(line)))
+                self.caller.msg(f"|b{cline:02}|||n (|g{indent}|n) {escape_markup(line)}")
             else:
-                self.caller.msg("|b%02i|||n %s" % (cline, escape_markup(self.args)))
+                self.caller.msg(f"|b{cline:02}|||n {escape_markup(line)}")
 
 
 class CmdEditorGroup(CmdEditorBase):
@@ -1103,8 +1103,8 @@ class EvEditor:
             + sep * (_DEFAULT_WIDTH - 54)
         )
         if linenums:
-            main = "\n".join(
-                "|b%02i|||n %s" % (iline + 1 + offset, escape_markup(line))
+            main = EvString("\n").join(
+                EvString(f"|b{iline + 1 + offset:02}|||n {escape_markup(line)}")
                 for iline, line in enumerate(lines)
             )
         else:

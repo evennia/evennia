@@ -40,6 +40,7 @@ class TestEvString(TestCase):
     def test_escapes(self):
         escape_code = EvString("This is ||r not red")
         self.assertIn("|r", escape_code.clean())
+        self.assertNotIn("||", escape_code.clean())
 
     def test_inequality(self):
         """Make sure equality comparison includes codes"""

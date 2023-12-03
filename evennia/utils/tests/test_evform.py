@@ -107,9 +107,7 @@ class TestEvForm(TestCase):
         self.assertEqual(expected, form)
 
     def test_ansi_escape(self):
-        # note that in a msg() call, the result would be the  correct |-----,
-        # in a print, ansi only gets called once, so ||----- is the result
-        self.assertEqual(str(evform.EvForm({"FORM": "\n||-----"})), "||-----")
+        self.assertEqual(str(evform.EvForm({"FORM": "\n||-----"})), "|-----")
 
     def test_stacked_form(self):
         """
@@ -291,9 +289,9 @@ class TestEvFormErrors(TestCase):
 
         Using || ansi escaping messes with rectangle width
 
-        This should be delayed until refactor of markup.
-
         """
+
+        # NOTE: this correctly identifies the whole box when placing the 1 in the top line, but not the second
         form = """
        xxxxxx
 ||---|  xx1xxx
@@ -306,6 +304,7 @@ class TestEvFormErrors(TestCase):
 |---|  Monty
 
         """
+
         self._validate(expected, self._form(form, cells=cell_mapping))
 
     def test_2759(self):
@@ -355,6 +354,7 @@ class TestEvFormErrors(TestCase):
 |                       |
  -----------------------
 """
+
         self._validate(expected, self._form(form, cells=cell_mapping))
 
         # test with absolute alignment (pass cells directly)
@@ -376,7 +376,6 @@ class TestEvFormErrors(TestCase):
 """
         self._validate(expected, self._form(form, cells=cell_mapping))
 
-    @skip("Awaiting rework of markup")
     def test_2763(self):
         """
         Testing https://github.com/evennia/evennia/issues/2763
@@ -391,4 +390,4 @@ class TestEvFormErrors(TestCase):
         cell_mapping = {1: "test"}
         expected = "|R A |n _ |ntest|n"
         form = evform.EvForm(formdict, cells=cell_mapping)
-        self._validate(expected, str(form))
+        self.assertEqual(expected, form.raw())

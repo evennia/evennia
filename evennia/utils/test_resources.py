@@ -501,24 +501,29 @@ class EvenniaCommandTestMixin:
 
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [
-                str(smsg[0]) if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg
+                smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg
             ]
+            stored_msg = [msg.clean() if hasattr(msg, "clean") else evstring.strip_markup(msg) for msg in stored_msg]
             if expected_msg is None:
                 # no expected_msg; just build the returned_msgs dict
 
-                returned_msg = "\n".join(str(msg) for msg in stored_msg)
                 if nocolor:
-                    returned_msg = evstring.strip_markup(returned_msg)
+                    sep = "\n"
+                else:
+                    sep = evstring.EvString("\n")
+
+                returned_msg = sep.join(msg for msg in stored_msg)
                 returned_msgs[receiver] = returned_msg.strip()
             else:
                 # compare messages to expected
 
                 # set our separator for returned messages based on parsing markup or not
-                msg_sep = "|" if nocolor else "||"
+                msg_sep = "|" if nocolor else evstring.EvString("||")
 
                 # We remove Evmenu decorations since that just makes it harder
                 # to write the comparison string. We also strip markup before this
                 # comparison since otherwise it would mess with the regex.
+                # FIXME: stripping markup here makes the "nocolor" flag pointless
                 returned_msg = msg_sep.join(
                     _RE_STRIP_EVMENU.sub("", evstring.strip_markup(mess))
                     for mess in stored_msg

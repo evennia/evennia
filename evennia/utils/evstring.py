@@ -29,28 +29,20 @@ _RE_XTERM_BG = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}\[([0-5][0-5][0-
 _GREYS = "abcdefghijklmnopqrstuvwxyz"
 _RE_WHITESPACE = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}\[?([\/\-\_\>])')
 # ALL evennia markup, except for links and escapes
-_RE_STYLES = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}(\[?[rRgGbBcCyYwWxXmMhHu\*n\/\-\_\>\^]|#[0-9a-fA-F]{6}|[0-5]{3}|\=[a-z])')
-_RE_ESCAPED = re.compile(fr'\{_MARKUP_CHAR}(\{_MARKUP_CHAR})')
+_RE_STYLES = re.compile(fr'\{_MARKUP_CHAR}(\[?[rRgGbBcCyYwWxXmMhHu\*n\/\-\_\>\^\{_MARKUP_CHAR}]|#[0-9a-fA-F]{6}|[0-5]{3}|\=[a-z])')
 _RE_MXP = re.compile(fr"(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}l([uc])(.*?)\{_MARKUP_CHAR}lt(.*?)\{_MARKUP_CHAR}le", re.DOTALL)
 _RE_LINE = re.compile(r'^(-+|_+)$', re.MULTILINE)
 
 LinkData = namedtuple('LinkData', 'text link key')
 
-def strip_markup(text, mxp=MXP_ENABLED):
+def strip_markup(text):
     """
     Removes all Evennia markup codes from the text.
     """
     # handle EvStrings too
-    if hasattr(text, 'clean'):
-        return text.clean()
-    # replaces whitespace-format tags with single spaces
-    text = _RE_WHITESPACE.sub(' ',text)
-    text = _RE_STYLES.sub('', text)
-    # replace escapes
-    text = _RE_ESCAPED.sub(_MARKUP_CHAR, text)
-    if mxp:
-        text = _RE_MXP.sub(r'\g<3>', text)
-    return text
+    if not hasattr(text, 'clean'):
+        text = EvString(text)
+    return text.clean()
 
 def strip_mxp(text):
     """
@@ -370,6 +362,18 @@ class EvCode(str):
         code_string._visible_length = length
 
         return code_string
+    
+    def clean(self):
+        """Returns a "clean" version of itself for markup-stripping"""
+        if not self._visible_length:
+            # style markup
+            return ''
+        elif self.endswith(_MARKUP_CHAR):
+            # escaped markup character
+            return _MARKUP_CHAR
+        else:
+            # everything else is whitespace
+            return ' '
 
     def __len__(self):
         """Overrides the default length calculation to return the visible display length"""
@@ -524,7 +528,7 @@ class EvString(str, metaclass=EvStringMeta):
         else:
             # we need to convert it
             raw_string = text
-            clean_string = strip_markup(text)
+            clean_string = None
             code_chunks = None
             
 
@@ -601,6 +605,7 @@ class EvString(str, metaclass=EvStringMeta):
         super().__init__()
         if self._code_chunks is None:
             self._code_chunks = self._split_codes()
+            self._clean_string = strip_markup(self)
 
     @staticmethod
     def _shifter(iterable, offset):
@@ -787,6 +792,14 @@ class EvString(str, metaclass=EvStringMeta):
             clean_string (str): A unicode object with no Evennia markup.
 
         """
+        if self._clean_string is None:
+            self._clean_string = ''
+            for c in self._code_chunks:
+                if hasattr(c, 'clean'):
+                    self._clean_string += c.clean()
+                else:
+                    self._clean_string += c
+
         return self._clean_string
 
     def raw(self):
@@ -935,9 +948,11 @@ class EvString(str, metaclass=EvStringMeta):
                 if i % 2:
                     # convert the code into an EvCode
                     # but first, check if it's a whitespace marker
-                    if text in '-_/':
+                    if text in '-_/|':
                         # these markup count as a length of 1
                         code = EvCode(text, 1)
+                    elif text == '>':
+                        code = EvCode(text, settings.TAB_STOP)
                     else:
                         code = EvCode(text)
 
@@ -945,8 +960,9 @@ class EvString(str, metaclass=EvStringMeta):
                 else:
                     # text items are zero and even indices
                     # this solution for escaped codes isn't ideal, but it's the best i got
-                    split_chunk = [EvCode(i, 1) if i == _MARKUP_CHAR else i for i in _RE_ESCAPED.split(text)]
-                    final_chunks += split_chunk
+                    # split_chunk = [EvCode(i, 1) if i == _MARKUP_CHAR else i for i in _RE_ESCAPED.split(text)]
+                    # final_chunks += split_chunk
+                    final_chunks.append(text)
 
         return tuple(final_chunks)
 
