@@ -207,10 +207,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     # Used for sorting / filtering in inventories / room contents.
     _content_types = ("object",)
 
-    # lockstring of newly created objects, for easy overloading.
-    # Will be formatted with the appropriate attributes.
-    lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
-
     objects = ObjectManager()
 
     # populated by `return_appearance`
@@ -1011,7 +1007,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             obj.move_to(home, move_type="teleport")
 
     @classmethod
-    def generate_default_locks(
+    def get_default_lockstring(
         cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
     ):
         """
@@ -1025,10 +1021,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Returns:
             lockstring (str): A lockstring to use for this object.
         """
-        if cls.lockstring:
-            account_id = account.id if account else -1
-            return cls.lockstring.format(account_id=account_id)
-        return ""
+        pid = f"pid({account.id})" if account else None
+        cid = f"id({caller.id})" if caller else None
+        admin = "perm(Admin)"
+        trio = " or ".join([x for x in [pid, cid, admin] if x])
+        return ";".join([f"{x}:{trio}" for x in ["control", "delete", "edit"]])
 
     @classmethod
     def create(
@@ -1079,7 +1076,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Create a sane lockstring if one wasn't supplied
         lockstring = kwargs.get("locks")
         if (account or caller) and not lockstring:
-            lockstring = cls.generate_default_locks(account=account, caller=caller, **kwargs)
+            lockstring = cls.get_default_lockstring(account=account, caller=caller, **kwargs)
             kwargs["locks"] = lockstring
 
         # Create object
@@ -2524,7 +2521,7 @@ class DefaultCharacter(DefaultObject):
     )
 
     @classmethod
-    def generate_default_locks(
+    def get_default_lockstring(
         cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
     ):
         """
@@ -2538,12 +2535,17 @@ class DefaultCharacter(DefaultObject):
         Returns:
             lockstring (str): A lockstring to use for this object.
         """
-        if cls.lockstring:
-            account_id = account.id if account else -1
-            character = kwargs.get("character", None)
-            character_id = character.id if character else -1
-            return cls.lockstring.format(character_id=character.id, account_id=account_id)
-        return ""
+        pid = f"pid({account.id})" if account else None
+        character = kwargs.get("character", None)
+        cid = f"id({character})" if character else None
+
+        puppet = "puppet:" + " or ".join(
+            [x for x in [pid, cid, "perm(Developer)", "pperm(Developer)"] if x]
+        )
+        delete = "delete:" + " or ".join([x for x in [pid, "perm(Admin)"] if x])
+        edit = "edit:" + " or ".join([x for x in [pid, "perm(Admin)"] if x])
+
+        return ";".join([puppet, delete, edit])
 
     @classmethod
     def create(cls, key, account=None, **kwargs):
@@ -2618,7 +2620,7 @@ class DefaultCharacter(DefaultObject):
             if not locks:
                 # Allow only the character itself and the creator account to puppet this character
                 # (and Developers).
-                locks = cls.generate_default_locks(account=account, character=obj)
+                locks = cls.get_default_lockstring(account=account, character=obj)
 
             if locks:
                 obj.locks.add(locks)
@@ -2826,35 +2828,6 @@ class DefaultRoom(DefaultObject):
     # Generally, a room isn't expected to HAVE a location, but maybe in some games?
     _content_types = ("room",)
 
-    # lockstring of newly created rooms, for easy overloading.
-    # Will be formatted with the {id} of the creating object.
-    lockstring = (
-        "control:id({id}) or perm(Admin); "
-        "delete:id({id}) or perm(Admin); "
-        "edit:id({id}) or perm(Admin)"
-    )
-
-    @classmethod
-    def generate_default_locks(
-        cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
-    ):
-        """
-        Classmethod called during .create() to determine default locks for the object.
-
-        Args:
-            account (Account): Account to attribute this object to.
-            caller (DefaultObject): The object which is creating this one.
-            **kwargs: Arbitrary input.
-
-        Returns:
-            lockstring (str): A lockstring to use for this object.
-        """
-        if cls.lockstring:
-            room = kwargs.get("room")
-            id = account.id if account else caller.id if caller else room.id
-            return cls.lockstring.format(id=id)
-        return ""
-
     @classmethod
     def create(
         cls,
@@ -2914,7 +2887,7 @@ class DefaultRoom(DefaultObject):
 
             # Add locks
             if not locks:
-                locks = cls.generate_default_locks(account=account, caller=caller, room=obj)
+                locks = cls.get_default_lockstring(account=account, caller=caller, room=obj)
             if locks:
                 obj.locks.add(locks)
 
@@ -3020,14 +2993,6 @@ class DefaultExit(DefaultObject):
     exit_command = ExitCommand
     priority = 101
 
-    # lockstring of newly created exits, for easy overloading.
-    # Will be formatted with the {id} of the creating object.
-    lockstring = (
-        "control:id({id}) or perm(Admin); "
-        "delete:id({id}) or perm(Admin); "
-        "edit:id({id}) or perm(Admin)"
-    )
-
     # Helper classes and methods to implement the Exit. These need not
     # be overloaded unless one want to change the foundation for how
     # Exits work. See the end of the class for hook methods to overload.
@@ -3067,27 +3032,6 @@ class DefaultExit(DefaultObject):
         return exit_cmdset
 
     # Command hooks
-
-    @classmethod
-    def generate_default_locks(
-        cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
-    ):
-        """
-        Classmethod called during .create() to determine default locks for the object.
-
-        Args:
-            account (Account): Account to attribute this object to.
-            caller (DefaultObject): The object which is creating this one.
-            **kwargs: Arbitrary input.
-
-        Returns:
-            lockstring (str): A lockstring to use for this object.
-        """
-        if cls.lockstring:
-            room = kwargs.get("room", None)
-            id = account.id if account else caller.id if caller else room.id if room else -1
-            return cls.lockstring.format(id=id)
-        return ""
 
     @classmethod
     def create(
@@ -3152,7 +3096,7 @@ class DefaultExit(DefaultObject):
 
             # Set appropriate locks
             if not locks:
-                locks = cls.generate_default_locks(account=account, caller=caller, exit=obj)
+                locks = cls.get_default_lockstring(account=account, caller=caller, exit=obj)
             if locks:
                 obj.locks.add(locks)
 
