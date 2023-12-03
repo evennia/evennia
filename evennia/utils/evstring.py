@@ -12,13 +12,15 @@ from textwrap import TextWrapper
 from django.conf import settings
 from evennia.server.portal.mxp import mxp_parse
 from evennia.utils import logger
-from evennia.utils.ansi import ANSI_PARSER
-from evennia.utils.html import HTML_PARSER
-from evennia.utils.utils import display_len, is_iter, to_str
+# from evennia.utils.ansi import ANSI_PARSER
+# from evennia.utils.html import HTML_PARSER
+from evennia.utils.utils import class_from_module, display_len, is_iter, to_str
 
 import re
 
 MXP_ENABLED = settings.MXP_ENABLED
+_ANSI_RENDERER = class_from_module(settings.ANSI_RENDERER)
+_HTML_RENDERER = class_from_module(settings.HTML_RENDERER)
 
 _MARKUP_CHAR = settings.MARKUP_CHAR
 
@@ -511,8 +513,8 @@ class EvString(str, metaclass=EvStringMeta):
         if not isinstance(text, str):
             text = to_str(text)
         
-        ansi_render = kwargs.get("ansi", ANSI_PARSER)
-        html_render = kwargs.get("html", HTML_PARSER)
+        ansi_render = kwargs.get("ansi", _ANSI_RENDERER)
+        html_render = kwargs.get("html", _HTML_RENDERER)
         
         # check if the attributes are being passed in, for internal EvString operations 
         if kwargs.get('chunks'):

@@ -637,7 +637,7 @@ class DiscordBot(Bot):
             channel_name = channel.name
             for dc_chan in [dcid for evchan, dcid in channel_list if evchan == channel_name]:
                 # send outputfunc channel(msg, discord channel)
-                super().msg(channel=(strip_ansi(message.strip()), dc_chan))
+                super().msg(channel=(strip_markup(message.strip()), dc_chan))
 
     def change_nickname(self, new_nickname, guild_id, user_id, **kwargs):
         """

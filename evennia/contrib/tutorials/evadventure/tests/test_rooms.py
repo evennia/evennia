@@ -4,7 +4,7 @@ Test of EvAdventure Rooms
 """
 
 from evennia import DefaultExit, create_object
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 from evennia.utils.test_resources import EvenniaTestCase
 
 from ..characters import EvAdventureCharacter
@@ -46,7 +46,7 @@ room_center
 You see nothing special.
 Exits: north, northeast, east, southeast, south, southwest, west, and northwest"""
 
-        result = "\n".join(part.rstrip() for part in strip_ansi(desc).split("\n"))
+        result = "\n".join(part.rstrip() for part in strip_markup(desc).split("\n"))
         expected = "\n".join(part.rstrip() for part in expected.split("\n"))
         # print(result)
         # print(expected)

@@ -503,11 +503,11 @@ class EvenniaCommandTestMixin:
             stored_msg = [
                 smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg
             ]
-            stored_msg = [msg.clean() if hasattr(msg, "clean") else evstring.strip_markup(msg) for msg in stored_msg]
             if expected_msg is None:
                 # no expected_msg; just build the returned_msgs dict
 
                 if nocolor:
+                    stored_msg = [evstring.strip_markup(msg) for msg in stored_msg]
                     sep = "\n"
                 else:
                     sep = evstring.EvString("\n")

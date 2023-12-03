@@ -2,7 +2,7 @@
 ANSI - Gives colour to text.
 
 Use the codes defined in the *ANSIParser* class to apply colour to text. The
-`parse_ansi` function in this module parses text for markup and `strip_ansi`
+`parse_ansi` function in this module parses text for markup and `strip_markup`
 removes it.
 
 You should usually not need to call `parse_ansi` explicitly; it is run by
@@ -400,13 +400,13 @@ class RenderToANSI(object):
         """
         return self.unsafe_tokens.sub("", string)
 
-    def convert_markup(self, chunks, strip_ansi=False, xterm256=False, rgb=False, mxp=False):
+    def convert_markup(self, chunks, strip_markup=False, xterm256=False, rgb=False, mxp=False):
         """
         Replaces any evennia markup elements with ANSI codes
 
         Args:
             chunks (iter): The chunked string/code data to process
-            strip_ansi (bool, optional): Strip all ANSI sequences.
+            strip_markup (bool, optional): Strip all ANSI sequences.
             rgb (bool, optional): Support full RGB color or not.
             xterm256 (bool, optional): Support xterm256 or not.
             mxp (bool, optional): Support MXP markup or not.
@@ -421,7 +421,7 @@ class RenderToANSI(object):
 
         # check cached parsings
         global _PARSE_CACHE
-        cachekey = "%s-%s-%s-%s" % (''.join(chunks), strip_ansi, xterm256, mxp)
+        cachekey = "%s-%s-%s-%s" % (''.join(chunks), strip_markup, xterm256, mxp)
         if cachekey in _PARSE_CACHE:
             return _PARSE_CACHE[cachekey]
 
@@ -466,7 +466,7 @@ class RenderToANSI(object):
             else:
                 # it's a normal string
                 text = chunk
-                if strip_ansi:
+                if strip_markup:
                     # remove all ansi codes (including those manually inserted in string)
                     text = self.ansi_regex.sub("", text)
                 output.append(text)
@@ -522,3 +522,5 @@ def to_ansi(string, parser=ANSI_PARSER, **kwargs):
     string = string or ""
     return parser.parse(string, **kwargs)
 
+def strip_unsafe_tokens(string):
+    ANSI_PARSER.strip_unsafe_tokens(string)

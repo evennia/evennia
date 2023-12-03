@@ -2180,7 +2180,7 @@ class lazy_property:
         )
 
 
-_STRIP_ANSI = None
+_strip_markup = None
 _RE_CONTROL_CHAR = re.compile(
     "[%s]" % re.escape("".join([chr(c) for c in range(0, 32)]))
 )  # + range(127,160)])))
@@ -2197,10 +2197,10 @@ def strip_control_sequences(string):
         text (str): Stripped text.
 
     """
-    global _STRIP_ANSI
-    if not _STRIP_ANSI:
-        from evennia.utils.ansi import strip_raw_ansi as _STRIP_ANSI
-    return _RE_CONTROL_CHAR.sub("", _STRIP_ANSI(string))
+    global _strip_markup
+    if not _strip_markup:
+        from evennia.utils.ansi import strip_raw_ansi as _strip_markup
+    return _RE_CONTROL_CHAR.sub("", _strip_markup(string))
 
 
 def calledby(callerdepth=1):

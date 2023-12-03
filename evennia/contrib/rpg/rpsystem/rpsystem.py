@@ -159,7 +159,7 @@ from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultObject
-from evennia.utils import ansi, logger
+from evennia.utils.evstring import strip_markup
 from evennia.utils.utils import (
     iter_to_str,
     lazy_property,
@@ -712,7 +712,7 @@ class SdescHandler:
         )
 
         # make an sdesc clean of ANSI codes
-        cleaned_sdesc = ansi.strip_ansi(sdesc)
+        cleaned_sdesc = strip_markup(sdesc)
 
         if not cleaned_sdesc:
             raise SdescError("Short desc cannot be empty.")
@@ -815,7 +815,7 @@ class RecogHandler:
         )
 
         # make an recog clean of ANSI codes
-        cleaned_recog = ansi.strip_ansi(recog)
+        cleaned_recog = strip_markup(recog)
 
         if not cleaned_recog:
             raise SdescError("Recog string cannot be empty.")

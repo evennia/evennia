@@ -6,7 +6,7 @@ Test EvAdventure combat.
 from unittest.mock import Mock, call, patch
 
 from evennia.utils import create
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 from evennia.utils.test_resources import (
     BaseEvenniaTest,
     EvenniaCommandTestMixin,
@@ -91,7 +91,7 @@ class TestEvAdventureCombatBaseHandler(_CombatTestBase):
         result = str(self.combathandler.get_combat_summary(self.combatant))
 
         self.assertEqual(
-            strip_ansi(result),
+            strip_markup(result),
             " testchar (Perfect)  vs  testmonster (Perfect) ",
         )
 
@@ -100,7 +100,7 @@ class TestEvAdventureCombatBaseHandler(_CombatTestBase):
         result = str(self.combathandler.get_combat_summary(self.target))
 
         self.assertEqual(
-            strip_ansi(result),
+            strip_markup(result),
             " testmonster (Perfect)  vs  testchar (Perfect) ",
         )
 

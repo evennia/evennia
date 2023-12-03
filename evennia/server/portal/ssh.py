@@ -315,7 +315,7 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
 
         if screenreader:
             # screenreader mode cleans up output
-            text = ansi.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
+            text = ansi.parse_ansi(text, strip_markup=True, xterm256=False, mxp=False)
             text = _RE_SCREENREADER_REGEX.sub("", text)
 
         if raw:
@@ -327,7 +327,7 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
             # to match the webclient output.
             linetosend = ansi.parse_ansi(
                 _RE_N.sub("", text) + ("||n" if text.endswith("|") else "|n"),
-                strip_ansi=nocolor,
+                strip_markup=nocolor,
                 xterm256=xterm256,
                 mxp=False,
             )

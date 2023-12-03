@@ -793,7 +793,7 @@ class PrototypeEvMore(EvMore):
                 prototype.get("prototype_desc", "<unset>"),
             )
 
-        return str(table)
+        return table
 
 
 def list_prototypes(

@@ -7,7 +7,6 @@ from datetime import datetime
 from django.conf import settings
 
 from evennia.contrib.base_systems.ingame_python.utils import get_event_handler
-from evennia.utils.ansi import raw
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import class_from_module, time_format
@@ -219,7 +218,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
                         msg += "\nThis callback |rhasn't been|n accepted yet."
 
                 msg += "\nCallback code:\n"
-                msg += raw(callback["code"])
+                msg += callback["code"]
                 self.msg(msg)
                 return
 
@@ -284,7 +283,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
 
         definition = types.get(callback_name, (None, "Chained event."))
         description = definition[1]
-        self.msg(raw(description.strip("\n")))
+        self.msg(description.strip("\n"))
 
         # Open the editor
         callback = self.handler.add_callback(
@@ -363,7 +362,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         # Check the definition of the callback
         definition = types.get(callback_name, (None, "Chained event."))
         description = definition[1]
-        self.msg(raw(description.strip("\n")))
+        self.msg(description.strip("\n"))
 
         # Open the editor
         callback = dict(callback)

@@ -17,7 +17,7 @@ from evennia.contrib.base_systems.ingame_python.utils import (
     InterruptEvent,
     get_next_wait,
 )
-from evennia.utils.ansi import raw
+from evennia.utils.evstring import escape_markup
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay, pypath_to_realpath
@@ -508,13 +508,13 @@ class EventHandler(DefaultScript):
 
                     # Try to extract the line
                     try:
-                        line = raw(callback["code"].splitlines()[lineno - 1])
+                        line = escape_markup(callback["code"].splitlines()[lineno - 1])
                     except IndexError:
                         continue
                     else:
                         break
 
-        exc = raw(trace[-1].strip("\n").splitlines()[-1])
+        exc = escape_markup(trace[-1].strip("\n").splitlines()[-1])
         err_msg = "Error in {} of {} (#{})[{}], line {}:" " {}\n{}".format(
             callback_name, obj, oid, number + 1, lineno, line, exc
         )

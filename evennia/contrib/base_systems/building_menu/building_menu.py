@@ -129,7 +129,7 @@ from django.conf import settings
 
 from evennia import CmdSet, Command
 from evennia.commands import cmdhandler
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.logger import log_err, log_trace
 from evennia.utils.utils import class_from_module
@@ -727,7 +727,7 @@ class BuildingMenu:
         # If choices have been added without keys, try to guess them
         for choice in self.choices:
             if not choice.key:
-                title = strip_ansi(choice.title.strip()).lower()
+                title = strip_markup(choice.title.strip()).lower()
                 length = self.min_shortcut
                 while length <= len(title):
                     i = 0

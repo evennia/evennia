@@ -3392,7 +3392,7 @@ class ScriptEvMore(EvMore):
                 crop(script.desc, width=20),
             )
 
-        return str(table)
+        return table
 
 
 class CmdScripts(COMMAND_DEFAULT_CLASS):

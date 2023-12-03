@@ -4,7 +4,7 @@ Godot Websocket - ChrisLR 2022
 This file contains the necessary code and data to convert text with color tags to bbcode (For godot)
 """
 from evennia.utils.ansi import *
-from evennia.utils.text2html import TextToHTMLparser
+from evennia.utils.html import RenderToHTML
 
 # All xterm256 RGB equivalents
 
@@ -671,8 +671,8 @@ class UrlTag(BBCodeTag):
     def __str__(self):
         return f"[{self.code}={self.url_data}]{self.child or ''}[/{self.code}]"
 
-
-class TextToBBCODEparser(TextToHTMLparser):
+# FIXME: this needs to be redone to still be usable, assess what changes are needed
+class TextToBBCODEparser(RenderToHTML):
     """
     This class describes a parser for converting from ANSI to BBCode.
     It inherits from the TextToHTMLParser and overrides the specifics for bbcode.
@@ -920,21 +920,21 @@ class TextToBBCODEparser(TextToHTMLparser):
 
         return None
 
-    def parse(self, text, strip_ansi=False):
+    def parse(self, text, strip_markup=False):
         """
         Main access function, converts a text containing ANSI codes
         into html statements.
 
         Args:
             text (str): Text to process.
-            strip_ansi (bool, optional):
+            strip_markup (bool, optional):
 
         Returns:
             text (str): Parsed text.
 
         """
         # parse everything to ansi first
-        text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=True, mxp=True)
+        text = parse_ansi(text, strip_markup=strip_markup, xterm256=True, mxp=True)
         # convert all ansi to html
         result = re.sub(self.re_string, self.sub_text, text)
         result = re.sub(self.re_mxplink, self.sub_mxp_links, result)
@@ -955,8 +955,8 @@ BBCODE_PARSER = TextToBBCODEparser()
 #
 
 
-def parse_to_bbcode(string, strip_ansi=False, parser=BBCODE_PARSER):
+def parse_to_bbcode(string, strip_markup=False, parser=BBCODE_PARSER):
     """
     Parses a string, replace ANSI markup with bbcode
     """
-    return parser.parse(string, strip_ansi=strip_ansi)
+    return parser.parse(string, strip_markup=strip_markup)

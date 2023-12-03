@@ -52,7 +52,7 @@ from django.conf import settings  # noqa
 from evennia.commands.cmdset import CmdSet  # noqa
 from evennia.commands.command import Command  # noqa
 from evennia.utils import mod_import, time_format  # noqa
-from evennia.utils.ansi import strip_ansi  # noqa
+from evennia.utils.evstring import strip_markup  # noqa
 
 # Load the dummyrunner settings module
 
@@ -432,7 +432,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
                     TOTAL_ACTIONS += 1
 
                     try:
-                        data = strip_ansi(str(data, "utf-8").strip())
+                        data = strip_markup(str(data, "utf-8").strip())
                         if data.startswith("dummyrunner_echo_response:"):
                             # handle special lag-measuring command. This returns
                             # dummyrunner_echo_response:<starttime>,<midpointtime>

@@ -211,6 +211,12 @@ SCREENREADER_REGEX_STRIP = r"\+-+|\+$|\+~|--+|~~+|==+"
 # Define the character used to indicate style markup and MXP tags. By default, it
 # is set to |
 MARKUP_CHAR = '|'
+# Define the default renderer class used to convert internal Evennia markup to ANSI,
+# primarily used by the telnet protocol.
+ANSI_RENDERER = "evennia.utils.ansi.ANSI_PARSER"
+# Define the default renderer class used to convert internal Evennia markup to HTML,
+# primarily used by the webclient protocols.
+HTML_RENDERER = "evennia.utils.html.HTML_PARSER"
 # MXP support means the ability to show clickable links in the client. Clicking
 # the link will execute a game command. It's a way to add mouse input to the game.
 MXP_ENABLED = True

@@ -9,7 +9,7 @@ that particular escaperoom challenge should be gone.
 
 from evennia import DefaultCharacter, DefaultObject, DefaultRoom, logger, utils
 from evennia.locks.lockhandler import check_lockstring
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 from evennia.utils.utils import lazy_property, list_to_string
 
 from .commands import CmdSetEvScapeRoom
@@ -68,7 +68,7 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
         caller = f"[caller.key]: " if caller else ""
 
         logger.log_file(
-            strip_ansi(f"{caller}{message.strip()}"), filename=self.tagcategory + ".log"
+            strip_markup(f"{caller}{message.strip()}"), filename=self.tagcategory + ".log"
         )
 
     def score(self, new_score, reason):
