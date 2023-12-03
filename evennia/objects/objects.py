@@ -32,6 +32,7 @@ from evennia.utils.utils import (
     make_iter,
     to_str,
     variable_from_module,
+    msg_to_sendables,
 )
 
 _INFLECT = inflect.engine()
@@ -659,8 +660,23 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # relay to session(s)
         sessions = make_iter(session) if session else self.sessions.all()
-        for session in sessions:
-            session.data_out(**kwargs)
+
+        sendables, metadata = msg_to_sendables(**kwargs)
+        self.send(sendables, metadata=metadata, sessions=sessions)
+
+    def send(self, sendables: list["Any"], metadata: dict = None, sessions: list = None, **kwargs):
+        metadata = metadata or {}
+
+        # No reason to send if there's nothing to send.
+        if not sendables:
+            return
+
+        # no reason to send if nothing can hear it...
+        if not (to_sessions := sessions or self.sessions.all()):
+            return
+
+        if not settings.TEST_ENVIRONMENT:
+            evennia.SERVER_SESSION_HANDLER.sendables_out(to_sessions, sendables, metadata)
 
     def for_contents(self, func, exclude=None, **kwargs):
         """

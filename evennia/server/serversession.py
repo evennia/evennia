@@ -10,12 +10,14 @@ import time
 
 from django.conf import settings
 from django.utils import timezone
+
+import evennia
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.comms.models import ChannelDB
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
 from evennia.typeclasses.attributes import AttributeHandler, DbHolder, InMemoryAttributeBackend
 from evennia.utils import logger
-from evennia.utils.utils import class_from_module, lazy_property, make_iter
+from evennia.utils.utils import class_from_module, make_iter, msg_to_sendables, to_str
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -317,10 +319,28 @@ class ServerSession(_BASE_SESSION_CLASS):
         # that auto-adds the session, we'd get a kwarg collision.
         kwargs.pop("session", None)
         kwargs.pop("from_obj", None)
+
         if text is not None:
-            self.data_out(text=text, **kwargs)
-        else:
-            self.data_out(**kwargs)
+            if not (isinstance(text, str) or isinstance(text, tuple)):
+                # sanitize text before sending across the wire
+                try:
+                    text = to_str(text)
+                except Exception:
+                    text = repr(text)
+            kwargs["text"] = text
+
+        sendables, metadata = msg_to_sendables(**kwargs)
+        self.send(sendables, metadata)
+
+    def send(self, sendables: list["Any"], metadata: dict = None, **kwargs):
+        metadata = metadata or {}
+
+        # No reason to send if there's nothing to send.
+        if not sendables:
+            return
+
+        if not settings.TEST_ENVIRONMENT:
+            evennia.SERVER_SESSION_HANDLER.sendables_out([self], sendables, metadata)
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """
@@ -407,7 +427,6 @@ class ServerSession(_BASE_SESSION_CLASS):
             current (CmdSet): The current merged cmdset.
             force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)
             **kwargs: Arbitrary input for overloads.
-
         """
         pass
 

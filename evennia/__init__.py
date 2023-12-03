@@ -116,6 +116,8 @@ TWISTED_APPLICATION = None
 EVENNIA_PORTAL_SERVICE = None
 EVENNIA_SERVER_SERVICE = None
 
+SENDABLES = dict()
+
 
 def _create_version():
     """

@@ -3018,3 +3018,32 @@ def ip_from_request(request, exclude=None) -> str:
 
     logger.log_warn("ip_from_request: No valid IP address found in request. Using remote_addr.")
     return remote_addr
+
+
+def split_oob(data) -> ["any", dict]:
+    if isinstance(data, (tuple, list)) and len(data) == 2:
+        return data
+    return data, dict()
+
+
+def msg_to_sendables(**kwargs) -> (list["Any"], dict):
+    options = kwargs.pop("options", None)
+    metadata = kwargs.pop("metadata", dict())
+    text = kwargs.pop("text", None)
+    text_class = evennia.SENDABLES.get("text")
+    oob_class = evennia.SENDABLES.get("oob")
+
+    out = list()
+
+    if text is not None:
+        data, kw = split_oob(text)
+        out.append(text_class(data, **kw))
+
+    for k, v in kwargs.items():
+        data, kw = split_oob(v)
+        out.append(oob_class(k, make_iter(data), **kw))
+
+    if options:
+        metadata["options"] = options
+
+    return out, metadata

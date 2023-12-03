@@ -15,13 +15,15 @@ import time
 import typing
 from random import getrandbits
 
-import evennia
+
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -40,7 +42,14 @@ from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.optionhandler import OptionHandler
-from evennia.utils.utils import is_iter, lazy_property, make_iter, to_str, variable_from_module
+from evennia.utils.utils import (
+    is_iter,
+    lazy_property,
+    make_iter,
+    to_str,
+    variable_from_module,
+    msg_to_sendables,
+)
 
 __all__ = ("DefaultAccount", "DefaultGuest")
 
@@ -1151,8 +1160,23 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
-        for session in sessions:
-            session.data_out(**kwargs)
+
+        sendables, metadata = msg_to_sendables(**kwargs)
+        self.send(sendables, metadata=metadata, sessions=sessions)
+
+    def send(self, sendables: list["Any"], metadata: dict = None, **kwargs):
+        metadata = metadata or {}
+
+        # No reason to send if there's nothing to send.
+        if not sendables:
+            return
+
+        # no reason to send if nothing can hear it...
+        if not (sessions := self.sessions.all()):
+            return
+
+        if not settings.TEST_ENVIRONMENT:
+            evennia.SERVER_SESSION_HANDLER.sendables_out(sessions, sendables, metadata)
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """

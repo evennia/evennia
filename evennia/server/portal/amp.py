@@ -224,6 +224,18 @@ class MsgServer2Portal(amp.Command):
     response = []
 
 
+class MsgSendables2Portal(amp.Command):
+    """
+    Message Server -> Portal
+
+    """
+
+    key = "MsgSendables2Portal"
+    arguments = [(b"packed_data", Compressed())]
+    errors = {Exception: b"EXCEPTION"}
+    response = []
+
+
 class AdminPortal2Server(amp.Command):
     """
     Administration Portal -> Server

@@ -432,6 +432,10 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs")
 # will be loaded in order, meaning functions in later modules may overload
 # previous ones if having the same name.
 INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
+# Modules which contain 'Sendable' class objects. These are used for containing
+# and rendering output that reaches the portal. Classes defined in later modules
+# can override ones from earlier modules. Be careful.
+SENDABLE_CLASS_MODULES = ["evennia.server.sendables"]
 # Modules that contain prototypes for use with the spawner mechanism.
 PROTOTYPE_MODULES = ["world.prototypes"]
 # Modules containining Prototype functions able to be embedded in prototype
@@ -1167,7 +1171,10 @@ EVENNIA_PORTAL_SERVICE_CLASS = "evennia.server.portal.service.EvenniaPortalServi
 # to tons of classes. You generally shouldn't need to touch protocols.
 BASE_SESSION_CLASS = "evennia.server.session.Session"
 
-# Telnet Protocol inherits from whatever above BASE_SESSION_CLASS is specified.
+# The base Portal Session class, which by default inherits from BASE_SESSION_CLASS.
+BASE_PORTAL_SESSION_CLASS = "evennia.server.portal.portalsession.PortalSession"
+
+# Telnet Protocol inherits from whatever above BASE_SERVER_SESSION_CLASS is specified.
 # It is used for all telnet connections, and is also inherited by the SSL Protocol
 # (which is just TLS + Telnet).
 TELNET_PROTOCOL_CLASS = "evennia.server.portal.telnet.TelnetProtocol"

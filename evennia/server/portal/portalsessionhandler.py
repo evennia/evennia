@@ -393,6 +393,19 @@ class PortalSessionHandler(SessionHandler):
         for session in self.values():
             self.data_out(session, text=[[message], {}])
 
+    def sendables_out(self, sessions, data):
+        """
+        Send a list of sendables to a list of sessions.
+
+        Args:
+            sessions (list): List of sessions to relay to.
+            data (list): List of tuples on the form `(sendable, kwargs)`.
+
+        """
+        sendables, metadata = data
+        for session in sessions:
+            session.sendables_out(sendables.copy(), metadata.copy())
+
     def data_in(self, session, **kwargs):
         """
         Called by portal sessions for relaying data coming

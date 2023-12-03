@@ -13,7 +13,7 @@ from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext as _
 from evennia.utils import logger
-from evennia.utils.utils import get_evennia_version, make_iter, mod_import
+from evennia.utils.utils import get_evennia_version, make_iter, mod_import, callables_from_module
 from twisted.application import internet
 from twisted.application.service import MultiService
 from twisted.internet import defer, reactor
@@ -68,6 +68,8 @@ class EvenniaServerService(MultiService):
             for mod in make_iter(settings.AT_SERVER_STARTSTOP_MODULE)
             if isinstance(mod, str)
         ]
+
+        self.register_imports()
 
     def server_maintenance(self):
         """
@@ -141,6 +143,15 @@ class EvenniaServerService(MultiService):
 
             for session in to_disconnect:
                 evennia.SESSION_HANDLER.disconnect(session, reason=reason)
+
+    def register_imports(self):
+        self.register_sendables()
+
+    def register_sendables(self):
+        # Register SENDABLE classes.
+        for module_path in settings.SENDABLE_CLASS_MODULES:
+            for k, v in callables_from_module(module_path).items():
+                evennia.SENDABLES[getattr(v, "sendable_name", v.__name__)] = v
 
     # Server startup methods
     def privilegedStartService(self):

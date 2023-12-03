@@ -142,6 +142,14 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             self.errback, command.key
         )
 
+    def data_multi_to_portal(self, command, sessions, data):
+        return self.callRemote(command, packed_data=amp.dumps((sessions, data))).addErrback(
+            self.errback, command.key
+        )
+
+    def send_MsgSendablesToPortal(self, sessions, data):
+        return self.data_multi_to_portal(amp.MsgSendables2Portal, sessions, data)
+
     def send_MsgServer2Portal(self, session, **kwargs):
         """
         Access method - executed on the Server for sending data

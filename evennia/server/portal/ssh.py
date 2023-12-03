@@ -70,7 +70,7 @@ and put them here:
     {_PUBLIC_KEY_FILE}
 """
 
-_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
+_BASE_PORTAL_SESSION_CLASS = class_from_module(settings.BASE_PORTAL_SESSION_CLASS)
 
 
 # not used atm
@@ -86,7 +86,7 @@ class SSHServerFactory(protocol.ServerFactory):
         return "SSH"
 
 
-class SshProtocol(Manhole, _BASE_SESSION_CLASS):
+class SshProtocol(Manhole, _BASE_PORTAL_SESSION_CLASS):
     """
     Each account connecting over ssh gets this protocol assigned to
     them.  All communication between game and account goes through

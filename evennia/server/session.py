@@ -7,6 +7,14 @@ import time
 
 from django.conf import settings
 
+from evennia.typeclasses.attributes import (
+    AttributeHandler,
+    DbHolder,
+    InMemoryAttributeBackend,
+)
+
+from evennia.utils.utils import lazy_property
+
 # ------------------------------------------------------------
 # Server Session
 # ------------------------------------------------------------
@@ -173,3 +181,54 @@ class Session:
 
         """
         pass
+
+    # Mock db/ndb properties for allowing easy storage on the session
+    # (note that no databse is involved at all here. session.db.attr =
+    # value just saves a normal property in memory, just like ndb).
+
+    @lazy_property
+    def nattributes(self):
+        return AttributeHandler(self, InMemoryAttributeBackend)
+
+    @lazy_property
+    def attributes(self):
+        return self.nattributes
+
+    # @property
+    def ndb_get(self):
+        """
+        A non-persistent store (ndb: NonDataBase). Everything stored
+        to this is guaranteed to be cleared when a server is shutdown.
+        Syntax is same as for the _get_db_holder() method and
+        property, e.g. obj.ndb.attr = value etc.
+
+        """
+        try:
+            return self._ndb_holder
+        except AttributeError:
+            self._ndb_holder = DbHolder(self, "nattrhandler", manager_name="nattributes")
+            return self._ndb_holder
+
+    # @ndb.setter
+    def ndb_set(self, value):
+        """
+        Stop accidentally replacing the db object
+
+        Args:
+            value (any): A value to store in the ndb.
+
+        """
+        string = "Cannot assign directly to ndb object! "
+        string += "Use ndb.attr=value instead."
+        raise Exception(string)
+
+    # @ndb.deleter
+    def ndb_del(self):
+        """
+        Stop accidental deletion.
+
+        """
+        raise Exception("Cannot delete the ndb object!")
+
+    ndb = property(ndb_get, ndb_set, ndb_del)
+    db = property(ndb_get, ndb_set, ndb_del)

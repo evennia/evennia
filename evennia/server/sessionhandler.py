@@ -818,6 +818,31 @@ class ServerSessionHandler(SessionHandler):
         # send across AMP
         evennia.EVENNIA_SERVER_SERVICE.amp_protocol.send_MsgServer2Portal(session, **kwargs)
 
+    def sendables_out(
+        self,
+        sessions: list[int],
+        sendables: list["Any"],
+        metadata: dict = None,
+        **kwargs,
+    ):
+        """
+        Send data Server -> Portal
+
+        Args:
+            sessions (list): Sessions to relay to.
+            sendables (list): List of sendables to send.
+            metadata (dict, optional): Metadata to send.
+        """
+        metadata = metadata or {}
+
+        # Convert sessions to list of ints.
+        sessions = [getattr(session, "sessid", session) for session in sessions]
+
+        # Send across AMP.
+        evennia.EVENNIA_SERVER_SERVICE.amp_protocol.send_MsgSendablesToPortal(
+            sessions, (sendables, metadata)
+        )
+
     def get_inputfuncs(self):
         """
         Get all registered inputfuncs (access function)
