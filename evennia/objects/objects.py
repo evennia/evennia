@@ -206,9 +206,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # Determines which order command sets begin to be assembled from.
     # Objects are usually third.
-    cmd_order = 100
-    cmd_order_error = 100
-    cmd_type = "object"
+    cmdset_provider_order = 100
+    cmdset_provider_error_order = 100
+    cmdset_provider_type = "object"
 
     # Used for sorting / filtering in inventories / room contents.
     _content_types = ("object",)
@@ -262,18 +262,16 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         return self.sessions.count()
 
-    def get_command_objects(self) -> dict[str, "CommandObject"]:
+    def get_cmdset_providers(self) -> dict[str, "CmdSetProvider"]:
         """
-        Overrideable method which returns a dictionary of all the kinds of CommandObjects
-        linked to this Object.
+        Overrideable method which returns a dictionary of every kind of object which
+        has a cmdsethandler linked to this Object, and should participate in cmdset
+        merging.
 
-        In all normal cases, that's the Object itself, and maybe an Account if the Object
-        is being puppeted.
-
-        The cmdhandler uses this to determine available cmdsets when executing a command.
+        Objects might be aware of an Account. Otherwise, just themselves, by default.
 
         Returns:
-            dict[str, CommandObject]: The CommandObjects linked to this Object.
+            dict[str, CmdSetProvider]: The CmdSetProviders linked to this Object.
         """
         out = {"object": self}
         if self.account:

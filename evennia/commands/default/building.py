@@ -10,7 +10,7 @@ from django.db.models import Max, Min, Q
 
 import evennia
 from evennia import InterruptCommand
-from evennia.commands.cmdhandler import get_and_merge_cmdsets, generate_command_objects
+from evennia.commands.cmdhandler import get_and_merge_cmdsets, generate_cmdset_providers
 from evennia.locks.lockhandler import LockException
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import menus as olc_menus
@@ -3128,7 +3128,7 @@ class CmdExamine(ObjManipCommand):
                     command_objects_list_error,
                     caller,
                     error_to,
-                ) = generate_command_objects(obj, session=session)
+                ) = generate_cmdset_providers(obj, session=session)
 
                 get_and_merge_cmdsets(
                     obj, command_objects_list, mergemode, self.raw_string, error_to

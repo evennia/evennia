@@ -274,9 +274,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     # Determines which order command sets begin to be assembled from.
     # Accounts are usually second.
-    cmd_order = 50
-    cmd_order_error = 0
-    cmd_type = "account"
+    cmdset_provider_order = 50
+    cmdset_provider_error_order = 0
+    cmdset_provider_type = "account"
 
     objects = AccountManager()
 
@@ -315,17 +315,16 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     def characters(self):
         return CharactersHandler(self)
 
-    def get_command_objects(self) -> dict[str, "CommandObject"]:
+    def get_cmdset_providers(self) -> dict[str, "CmdSetProvider"]:
         """
-        Overrideable method which returns a dictionary of all the kinds of CommandObjects
-        linked to this Account.
+        Overrideable method which returns a dictionary of every kind of object which
+        has a cmdsethandler linked to this Account, and should participate in cmdset
+        merging.
 
-        In all normal cases, that's just the account itself.
-
-        The cmdhandler uses this to determine available cmdsets when executing a command.
+        Accounts have no way of being aware of anything besides themselves, unfortunately.
 
         Returns:
-            dict[str, CommandObject]: The CommandObjects linked to this Account.
+            dict[str, CmdSetProvider]: The CmdSetProviders linked to this Object.
         """
         return {"account": self}
 

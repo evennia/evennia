@@ -48,9 +48,9 @@ class ServerSession(_BASE_SESSION_CLASS):
 
     # Determines which order command sets begin to be assembled from.
     # Sessions are usually first.
-    cmd_order = 0
-    cmd_order_error = 50
-    cmd_type = "session"
+    cmdset_provider_order = 0
+    cmdset_provider_error_order = 50
+    cmdset_provider_type = "session"
 
     def __init__(self):
         """
@@ -70,24 +70,23 @@ class ServerSession(_BASE_SESSION_CLASS):
 
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
 
-    def get_command_objects(self) -> dict[str, "CommandObject"]:
+    def get_cmdset_providers(self) -> dict[str, "CmdSetProvider"]:
         """
-        Overrideable method which returns a dictionary of all the kinds of CommandObjects
-        linked to this ServerSession.
+        Overrideable method which returns a dictionary of every kind of object which
+        has a cmdsethandler linked to this ServerSession, and should participate in cmdset
+        merging.
 
         In all normal cases, that's the Session itself, and possibly an account and puppeted
          object.
 
-        The cmdhandler uses this to determine available cmdsets when executing a command.
-
         Returns:
-            dict[str, CommandObject]: The CommandObjects linked to this Object.
+            dict[str, CmdSetProvider]: The CmdSetProviders linked to this Object.
         """
         out = {"session": self}
         if self.account:
             out["account"] = self.account
         if self.puppet:
-            out["puppet"] = self.puppet
+            out["object"] = self.puppet
         return out
 
     @property

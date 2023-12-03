@@ -1026,7 +1026,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
             command_objects_list_error,
             caller,
             error_to,
-        ) = cmdhandler.generate_command_objects(self.session)
+        ) = cmdhandler.generate_cmdset_providers(self.session)
 
         deferred = cmdhandler.get_and_merge_cmdsets(
             self.session, [self.session], "session", "", error_to
@@ -1050,7 +1050,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
             command_objects_list_error,
             caller,
             error_to,
-        ) = cmdhandler.generate_command_objects(self.account)
+        ) = cmdhandler.generate_cmdset_providers(self.account)
 
         deferred = cmdhandler.get_and_merge_cmdsets(
             self.account, command_objects_list, "account", "", error_to
@@ -1075,7 +1075,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
             command_objects_list_error,
             caller,
             error_to,
-        ) = cmdhandler.generate_command_objects(self.obj1)
+        ) = cmdhandler.generate_cmdset_providers(self.obj1)
 
         deferred = cmdhandler.get_and_merge_cmdsets(
             self.obj1, command_objects_list, "object", "", error_to
@@ -1101,7 +1101,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
             command_objects_list_error,
             caller,
             error_to,
-        ) = cmdhandler.generate_command_objects(self.obj1)
+        ) = cmdhandler.generate_cmdset_providers(self.obj1)
         deferred = cmdhandler.get_and_merge_cmdsets(
             self.obj1, command_objects_list, "object", "", error_to
         )
@@ -1127,7 +1127,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
             command_objects_list_error,
             caller,
             error_to,
-        ) = cmdhandler.generate_command_objects(self.obj1, session=None)
+        ) = cmdhandler.generate_cmdset_providers(self.obj1, session=None)
 
         deferred = cmdhandler.get_and_merge_cmdsets(
             self.obj1, command_objects_list, "object", "", error_to
