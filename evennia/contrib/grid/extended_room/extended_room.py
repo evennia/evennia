@@ -974,7 +974,7 @@ class CmdExtendedRoomGameTime(default_cmds.MuxCommand):
         season = location.get_season()
         timeslot = location.get_time_of_day()
 
-        prep = "a" if season == "autumn" else "an"
+        prep = "an" if season == "autumn" else "a"
         self.caller.msg(f"It's {prep} {season} day, in the {timeslot}.")
 
 
