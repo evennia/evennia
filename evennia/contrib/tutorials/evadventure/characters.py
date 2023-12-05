@@ -230,7 +230,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 
     def at_pre_object_leave(self, leaving_object, destination, **kwargs):
         """
-        Hook called when dropping an item. We don't allow to drop weilded/worn items
+        Hook called when dropping an item. We don't allow to drop wielded/worn items
         (need to unwield/remove them first). Return False to
 
         """
