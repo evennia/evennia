@@ -359,7 +359,7 @@ The room Room(#{self.room1.id}) doesn't have any details.
         mock_gametime.return_value = _get_timestamp("autumn", "afternoon")
 
         self.call(
-            extended_room.CmdExtendedRoomGameTime(), "", "It's a autumn day, in the afternoon."
+            extended_room.CmdExtendedRoomGameTime(), "", "It's an autumn day, in the afternoon."
         )
 
     @patch("evennia.utils.gametime.gametime")
