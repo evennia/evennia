@@ -197,6 +197,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         if process and not _is_windows():
             # avoid zombie-process on Unix/BSD
             process.wait()
+        # unset the reset-mode flag on the portal
+        self.factory.portal.server_restart_mode = None
         return
 
     def wait_for_disconnect(self, callback, *args, **kwargs):
