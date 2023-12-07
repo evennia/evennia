@@ -118,12 +118,12 @@ from copy import copy, deepcopy
 from textwrap import TextWrapper
 
 from django.conf import settings
-from evennia.utils.evstring import EvString, EvStringContainer, EvTextWrapper
+from evennia.utils.evstring import EvString, EvStringContainer, EvTextWrapper, escape_markup
 from evennia.utils.utils import display_len as d_len
 from evennia.utils.utils import is_iter, justify
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
-
+_HTML_ELEMENTS = settings.MARKUP_HTML_STRUCTURES
 
 _whitespace = "\t\n\x0b\x0c\r "
 
@@ -336,8 +336,12 @@ class EvCell(EvStringContainer):
         Apply all EvCells' formatting operations.
 
         """
-        data = self._border(self._pad(self._valign(self._align(self._fit_width(self.data)))))
-        return data
+        data = self._fit_width(self.data)
+        data = self._align(data)
+        data = self._valign(data)
+        data = self._pad(data)
+        data = self._border(data)
+        return EvCell._to_evstring(data)
 
     def _split_lines(self, text):
         """
@@ -349,7 +353,7 @@ class EvCell(EvStringContainer):
         Returns:
             split (list): split text.
         """
-        return text.split("\n")
+        return text.split(EvString("\n"))
 
     def _fit_width(self, data):
         """
@@ -373,7 +377,7 @@ class EvCell(EvStringContainer):
             if 0 < width < d_len(line):
                 adjusted_data.extend(
                     [
-                        EvString(part) + EvString("|n")
+                        EvString(part)
                         for part in wrap(line, width=width)
                     ]
                 )
@@ -483,9 +487,21 @@ class EvCell(EvStringContainer):
             text (str): Text with borders.
 
         """
+        def _extend_border(border_char, length):
+            # make sure any color codes around the border characters aren't duplicated by inserting
+            # the multiplied visible character back into it
+            if length == 0:
+                return ''
+            if not (clean_char := escape_markup(border_char.clean())):
+                return ''
+            return EvString(border_char.replace(clean_char, clean_char * length))
 
-        left = self.border_left_char * self.border_left + EvString("|n")
-        right = EvString("|n") + self.border_right_char * self.border_right
+        left = _extend_border(self.border_left_char, self.border_left)
+        if left:
+            left = left + EvString("|n")
+        right = _extend_border(self.border_left_char, self.border_right)
+        if right:
+            right = EvString("|n") + right
 
         cwidth = (
             self.width
@@ -495,17 +511,18 @@ class EvCell(EvStringContainer):
             + max(0, self.border_right - 1)
         )
 
-        vfill = self.corner_top_left_char if left else ""
-        vfill += cwidth * self.border_top_char
-        vfill += self.corner_top_right_char if right else ""
+        vfill = self.corner_top_left_char if self.border_left else ''
+        vfill += _extend_border(self.border_top_char, cwidth)
+        vfill += self.corner_top_right_char if self.border_right else ''
         top = [vfill for _ in range(self.border_top)]
 
-        vfill = self.corner_bottom_left_char if left else ""
-        vfill += cwidth * self.border_bottom_char
-        vfill += self.corner_bottom_right_char if right else ""
+        vfill = self.corner_bottom_left_char if self.border_left else ''
+        vfill += _extend_border(self.border_bottom_char, cwidth)
+        vfill += self.corner_bottom_right_char if self.border_right else ''
         bottom = [vfill for _ in range(self.border_bottom)]
-
         return top + [left + line + right for line in data] + bottom
+
+
 
     def get_min_height(self):
         """
@@ -547,7 +564,7 @@ class EvCell(EvStringContainer):
             natural_width (int): Width of cell.
 
         """
-        return d_len(self.formatted[0]) if self.formatted else 0
+        return self.width + self.pad_left + self.pad_right + self.border_left + self.border_right
 
     def replace_data(self, data, **kwargs):
         """
@@ -667,8 +684,7 @@ class EvCell(EvStringContainer):
             setattr(self, key, value)
 
         # Handle sizes
-        if "width" in kwargs:
-            width = kwargs.pop("width")
+        if width := kwargs.pop("width", None):
             self.width = (
                 width
                 - self.pad_left
@@ -680,8 +696,7 @@ class EvCell(EvStringContainer):
             # if self.width <= 0 and self.raw_width > 0:
             if self.width <= 0 < self.raw_width:
                 raise Exception("Cell width too small, no room for data.")
-        if "height" in kwargs:
-            height = kwargs.pop("height")
+        if height := kwargs.pop("height", None):
             self.height = (
                 height
                 - self.pad_top
@@ -706,9 +721,16 @@ class EvCell(EvStringContainer):
         return self.formatted
 
     def collect_evstring(self):
-        if not self.formatted:
-            self.formatted = self._reformat()
-        return self.formatted
+        return [d for d in self.data]
+
+    def ansi(self, **kwargs):
+        return "\n".join([EvString(line).ansi() for line in self.get()])
+    
+    def html(self, **kwargs):
+        if _HTML_ELEMENTS:
+            return "<td>"+"<br>".join([EvString(line).html() for line in self.collect_evstring()]) + "</td>"
+        else:
+            return "\n".join([EvString(line).html(**kwargs) for line in self.get()])
 
     def __repr__(self):
         if not self.formatted:
@@ -748,7 +770,7 @@ class EvColumn(EvStringContainer):
 
         """
         self.options = kwargs  # column-specific options
-        self.column = [EvCell(data, **kwargs) for data in args]
+        self.column = [EvCell(data, **kwargs) if not isinstance(data, EvCell) else data for data in args]
 
     def _balance(self, **kwargs):
         """
@@ -830,6 +852,7 @@ class EvColumn(EvStringContainer):
 
         """
         # column-level options take precedence here
+        # NOTE: but should they?
         kwargs.update(self.options)
         self.column[index].reformat(**kwargs)
 
@@ -1017,6 +1040,7 @@ class EvTable(EvStringContainer):
                     f" strings. Found {type(col)}."
                 )
 
+
         # self.table = [EvColumn(*col, **kwargs) for col in table]
 
         # this is the actual working table
@@ -1155,6 +1179,7 @@ class EvTable(EvStringContainer):
         # actual table. This allows us to add columns/rows
         # and re-balance over and over without issue.
         self.worktable = deepcopy(self.table)
+        # print(self.table)
         #        self._borders()
         #        return
         options = copy(self.options)
@@ -1176,6 +1201,7 @@ class EvTable(EvStringContainer):
         # add borders - these add to the width/height, so we must do this before calculating
         # width/height
         self._borders()
+
 
         # equalize widths within each column
         cwidths = [max(cell.get_width() for cell in col) for col in self.worktable]
@@ -1534,14 +1560,36 @@ class EvTable(EvStringContainer):
             table_lines (list): The lines of the table, in order.
 
         """
-        return [line for line in self._generate_lines()]
+        outp = [line for line in self._generate_lines()]
+        return outp
     
     def collect_evstring(self):
         return self.get()
     
     # TODO: this SHOULD mean we can support custom table rendering for HTML now, if I code it up
 
+    def html(self, **kwargs):
+        if _HTML_ELEMENTS:
+            widths = [col.width for col in self.table]
+            output = f"<table style=\"width:{self.width + 'em' if self.width else '100%'}\">\n"
+            output += "<colgroup>"
+            for width in widths:
+                width_style = f'style="width: {width}em"' if width else ''
+                output += f"<col span=1 {width_style}>"
+            output += "</colgroup>"
+
+            # header
+            output += "<tbody>\n"
+            for iy in range(self.nrows):
+                cell_row = [col[iy] for col in self.table]
+                row_els = [cell.html() for cell in cell_row]
+                output += "<tr>" + "".join(row_els) + "</tr>"
+
+        else:
+            return super().html()
+        
+
     def __str__(self):
         """print table (this also balances it)"""
         # h = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
-        return str(str(EvString("\n").join([line for line in self._generate_lines()])))
+        return str(EvString("\n").join([line for line in self._generate_lines()]))

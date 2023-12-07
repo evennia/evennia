@@ -291,7 +291,7 @@ class TestEvFormErrors(TestCase):
 
         """
 
-        # NOTE: this correctly identifies the whole box when placing the 1 in the top line, but not the second
+        # NOTE: currently this correctly identifies the whole box when placing the 1 in the top line, but not the second
         form = """
        xxxxxx
 ||---|  xx1xxx
@@ -388,6 +388,6 @@ class TestEvFormErrors(TestCase):
 
         formdict = {"form": "|R A |n _ x1xx"}
         cell_mapping = {1: "test"}
-        expected = "|R A |n _ |ntest|n"
+        expected = "|R A |n _ test"
         form = evform.EvForm(formdict, cells=cell_mapping)
         self.assertEqual(expected, form.raw())

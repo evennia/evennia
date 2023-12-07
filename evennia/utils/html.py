@@ -158,13 +158,14 @@ class RenderToHTML(object):
         """
         text = self.re_string.sub(self.sub_text, text)
         # escape escaped pipes
-        text = text.replace("||","&#124;")
-        # replace ---- with hr element
-        text = self.re_line.sub("<hr/>",text)
-        text = text.replace("<hr/>\n","<hr/>")
+#        text = text.replace("||","&#124;")
+        # replace ---- with hr element'
+        # commented out for now because the core webclient doesn't support hr elements
+        # text = self.re_line.sub("<hr/>",text)
+        # text = text.replace("<hr/>\n","<hr/>")
         return text
 
-    def create_link(text, link_type="c", link_value=''):
+    def create_link(self, text, link_type="c", link_value=''):
         """Create an anchor link with the given text, either to a URL or as an MXP command"""
         val = text
         if link_type == 'c':
@@ -267,12 +268,17 @@ class RenderToHTML(object):
                     continue
 
             elif isinstance(chunk, EvCode):
-                # we're processing a whitespace code
+                # we're processing a visible code
                 code_str = str(chunk)[1:]
+                if not code_str:
+                    continue
                 if code_str in ">-":
                     output.append("\t")
                 elif code_str == "_":
                     output.append(" ")
+                else:
+                    # add anything else as-is
+                    output.append(code_str)
 
             elif isinstance(chunk, EvLink):
                 # we're processing a link

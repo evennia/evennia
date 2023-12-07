@@ -356,8 +356,8 @@ class EvCode(str):
         if len(args) > 1:
             length = int(args[1])
 
-        # Since EvString consumes the style tag marker when splitting out codes, we add it back for rendering if necessary.
-        if text and not text.startswith(_MARKUP_CHAR):
+        # Since EvString consumes the style tag marker when splitting out codes, we add it back if necessary.
+        if len(text) == 1 or not text.startswith(_MARKUP_CHAR):
             text = _MARKUP_CHAR + text
         
         code_string = super().__new__(EvCode, to_str(text))
@@ -520,7 +520,7 @@ class EvString(str, metaclass=EvStringMeta):
         if kwargs.get('chunks'):
             raw_string = text
             code_chunks = tuple(kwargs['chunks'])
-            clean_string = kwargs.get('clean') or "".join(c for c in code_chunks if len(c))
+            clean_string = kwargs.get('clean')
 
         elif hasattr(text, "_clean_string"):
             # It's already an EvString
@@ -626,8 +626,8 @@ class EvString(str, metaclass=EvStringMeta):
         Joins two EvStrings, preserving calculated info.
 
         """
-        raw_string = first._raw_string + second._raw_string
-        clean_string = first._clean_string + second._clean_string
+        raw_string = first.raw() + second.raw()
+        clean_string = first.clean() + second.clean()
         # if either evstring is empty, just combine them
         if not len(first._code_chunks) or not len(second._code_chunks):
             code_chunks = first._code_chunks + second._code_chunks
@@ -692,7 +692,7 @@ class EvString(str, metaclass=EvStringMeta):
             reverse = True
 
         indices = list(range(start, stop, step))
-      # we walk through our chunks to find the indices
+        # we walk through our chunks to find the indices
         slice_chunks = []
         if not indices:
             # this can happen when getting an "empty" head or tail of a string
@@ -795,12 +795,13 @@ class EvString(str, metaclass=EvStringMeta):
 
         """
         if self._clean_string is None:
-            self._clean_string = ''
+            clean_string = ''
             for c in self._code_chunks:
                 if hasattr(c, 'clean'):
-                    self._clean_string += c.clean()
+                    clean_string += c.clean()
                 else:
-                    self._clean_string += c
+                    clean_string += c
+            self._clean_string = clean_string
 
         return self._clean_string
 
@@ -944,28 +945,31 @@ class EvString(str, metaclass=EvStringMeta):
                 continue
             # the style splitter will always have the pattern of text, then code
             for i, text in enumerate(_RE_STYLES.split(chunk)):
-                # clean out empty items here, too
-                if not text:
-                    continue
+                # if it's empty, then it was a single pipe - add it back
                 if i % 2:
                     # convert the code into an EvCode
                     # but first, check if it's a whitespace marker
-                    if text in '-_/|':
+                    if text in '_/|':
                         # these markup count as a length of 1
                         code = EvCode(text, 1)
-                    elif text == '>':
+                    elif text in '>-':
                         code = EvCode(text, settings.TAB_STOP)
+                    elif not text:
+                        code = EvCode(_MARKUP_CHAR, 1)
                     else:
                         code = EvCode(text)
 
                     final_chunks.append(code)
                 else:
                     # text items are zero and even indices
-                    # this solution for escaped codes isn't ideal, but it's the best i got
-                    # split_chunk = [EvCode(i, 1) if i == _MARKUP_CHAR else i for i in _RE_ESCAPED.split(text)]
-                    # final_chunks += split_chunk
-                    final_chunks.append(text)
+                    split_chunk = [EvCode(i, 1) if i == _MARKUP_CHAR else i for i in re.split(f"(\{_MARKUP_CHAR})", text) if i]
+                    final_chunks += split_chunk
+                    # if text:
+                    #     final_chunks.append(text)
 
+        # since this may have escaped markup characters, we re-generate the raw and clean strings
+        self._raw_string = ''.join([str(c) for c in final_chunks])
+        self._clean_string = None # clear it to be regenerated when next needed
         return tuple(final_chunks)
 
     def split(self, sep=' ', maxsplit=-1):

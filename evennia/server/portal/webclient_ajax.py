@@ -463,7 +463,7 @@ class AjaxWebClientSession(session.Session):
         args[0] = text
         cmd = "prompt" if prompt else "text"
         # send to client on required form [cmdname, args, kwargs]
-        self.sendLine(json.dumps([cmd, args, kwargs]))
+        self.client.lineSend(self.csessid,[cmd, args, kwargs])
 
     def send_prompt(self, *args, **kwargs):
         kwargs["options"].update({"send_prompt": True})

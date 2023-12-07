@@ -457,7 +457,7 @@ class EvForm(EvStringContainer):
                 formline = form[y + il]
                 # insert new content, replacing old
                 form[y + il] = formline[:x] + rectline + formline[x + width :]
-
+        
         return form
 
     def reload(self):

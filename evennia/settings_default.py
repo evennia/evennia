@@ -217,6 +217,10 @@ ANSI_RENDERER = "evennia.utils.ansi.ANSI_PARSER"
 # Define the default renderer class used to convert internal Evennia markup to HTML,
 # primarily used by the webclient protocols.
 HTML_RENDERER = "evennia.utils.html.HTML_PARSER"
+# By default, the webclient will receive data from supporting objects such as EvTable
+# as whitespace-aligned string output. Setting this to True will allow the webclient
+# to receive HTML-structured entities instead
+MARKUP_HTML_STRUCTURES = False
 # MXP support means the ability to show clickable links in the client. Clicking
 # the link will execute a game command. It's a way to add mouse input to the game.
 MXP_ENABLED = True

@@ -171,14 +171,18 @@ def crop(text, width=None, suffix="[...]"):
         text (str): The cropped text.
 
     """
+    global _EVSTRING
+    if not _EVSTRING:
+        from evennia.utils.evstring import EvString as _EVSTRING
+
     width = width if width else settings.CLIENT_DEFAULT_WIDTH
     ltext = len(text)
     if ltext <= width:
         return text
     else:
         lsuffix = len(suffix)
-        text = text[:width] if lsuffix >= width else "%s%s" % (text[: width - lsuffix], suffix)
-        return to_str(text)
+        text = text[:width] if lsuffix >= width else text[: width - lsuffix] + suffix
+        return text
 
 
 def dedent(text, baseline_index=None, indent=None):

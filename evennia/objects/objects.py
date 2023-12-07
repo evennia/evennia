@@ -631,12 +631,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             logger.log_trace()
 
         if text is not None:
-            if not (isinstance(text, str) or isinstance(text, tuple)):
-                # sanitize text before sending across the wire
-                try:
-                    text = to_str(text)
-                except Exception:
-                    text = repr(text)
+            # if not (isinstance(text, str) or isinstance(text, tuple)):
+            #     # sanitize text before sending across the wire
+            #     try:
+            #         text = to_str(text)
+            #     except Exception:
+            #         text = repr(text)
             kwargs["text"] = text
 
         # relay to session(s)
@@ -1231,8 +1231,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
-            return "{}(#{})".format(self.name, self.id)
-        return self.name
+            return evstring.EvString("{}(#{})".format(self.name, self.id))
+        return evstring.EvString(self.name)
 
     def get_numbered_name(self, count, looker, **kwargs):
         """

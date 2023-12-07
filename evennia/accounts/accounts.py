@@ -40,6 +40,7 @@ from evennia.server.throttle import Throttle
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import class_from_module, create, logger
+from evennia.utils.evstring import EvString
 from evennia.utils.optionhandler import OptionHandler
 from evennia.utils.utils import (
     is_iter,
@@ -360,7 +361,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             str: The name, possibly modified.
 
         """
-        return f"|c{self.key}|n"
+        return EvString(f"|c{self.key}|n")
 
     # session-related methods
 
