@@ -147,13 +147,17 @@ class GenderCharacter(DefaultCharacter):
             super().msg(from_obj=from_obj, session=session, **kwargs)
             return
 
-        try:
-            if text and isinstance(text, tuple):
-                text = (_RE_GENDER_PRONOUN.sub(self._get_pronoun, text[0]), *text[1:])
-            else:
-                text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text)
-        except TypeError:
-            pass
-        except Exception as e:
-            logger.log_trace(e)
+        gender_source = from_obj if from_obj else self
+
+        if hasattr(gender_source, "_get_pronoun"):
+            try:
+                if text and isinstance(text, tuple):
+                    text = (_RE_GENDER_PRONOUN.sub(gender_source._get_pronoun, text[0]), *text[1:])
+                else:
+                    text = _RE_GENDER_PRONOUN.sub(gender_source._get_pronoun, text)
+            except TypeError:
+                pass
+            except Exception as e:
+                logger.log_trace(e)
+
         super().msg(text, from_obj=from_obj, session=session, **kwargs)
