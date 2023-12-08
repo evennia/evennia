@@ -101,7 +101,7 @@ class GenderCharacter(DefaultCharacter):
         super().at_object_creation()
         self.db.gender = "ambiguous"
 
-    def _get_pronoun(self, regex_match):
+    def _get_pronoun(self, regex_match, source=None):
         """
         Get pronoun from the pronoun marker in the text. This is used as
         the callable for the re.sub function.
@@ -116,8 +116,10 @@ class GenderCharacter(DefaultCharacter):
             - `|a`, `|A`: Absolute Possessive form: his, hers, its, His, Hers, Its, Theirs
 
         """
+        if not source:
+            source = self
         typ = regex_match.group()[1]  # "s", "O" etc
-        gender = self.attributes.get("gender", default="ambiguous")
+        gender = source.attributes.get("gender", default="ambiguous")
         gender = gender if gender in ("male", "female", "neutral") else "ambiguous"
         pronoun = _GENDER_PRONOUN_MAP[gender][typ.lower()]
         return pronoun.capitalize() if typ.isupper() else pronoun
@@ -147,17 +149,19 @@ class GenderCharacter(DefaultCharacter):
             super().msg(from_obj=from_obj, session=session, **kwargs)
             return
 
-        gender_source = from_obj if from_obj else self
-
-        if hasattr(gender_source, "_get_pronoun"):
-            try:
-                if text and isinstance(text, tuple):
-                    text = (_RE_GENDER_PRONOUN.sub(gender_source._get_pronoun, text[0]), *text[1:])
-                else:
-                    text = _RE_GENDER_PRONOUN.sub(gender_source._get_pronoun, text)
-            except TypeError:
-                pass
-            except Exception as e:
-                logger.log_trace(e)
+        try:
+            if text and isinstance(text, tuple):
+                text = (
+                    _RE_GENDER_PRONOUN.sub(
+                        lambda x: self._get_pronoun(x, source=from_obj), text[0]
+                    ),
+                    *text[1:],
+                )
+            else:
+                text = _RE_GENDER_PRONOUN.sub(lambda x: self._get_pronoun(x, source=from_obj), text)
+        except TypeError:
+            pass
+        except Exception as e:
+            logger.log_trace(e)
 
         super().msg(text, from_obj=from_obj, session=session, **kwargs)
