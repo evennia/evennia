@@ -1343,7 +1343,7 @@ class TestXYZGrid(BaseEvenniaTest):
         from evennia import create_object
 
         # we need to create a home room for the grid to be able to be properly deleted
-        home = create_object(typeclass="typeclasses.rooms.Room", key="Home")
+        home = create_object(typeclass="typeclasses.rooms.Room", key="Home", nohome=True)
         home.id = settings.DEFAULT_HOME.strip("#")
         home.save()
 

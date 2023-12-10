@@ -608,6 +608,7 @@ class EvenniaTest(EvenniaTestMixin, TestCase):
 @patch("evennia.commands.syscommands.COMMAND_DEFAULT_CLASS", MuxCommand)
 @patch("evennia.commands.system.COMMAND_DEFAULT_CLASS", MuxCommand)
 @patch("evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS", MuxCommand)
+@override_settings(**DEFAULT_SETTINGS)
 class BaseEvenniaCommandTest(BaseEvenniaTest, EvenniaCommandTestMixin):
     """
     Commands only using the default settings.
