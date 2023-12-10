@@ -101,14 +101,13 @@
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">authenticate</span><span class="p">,</span> <span class="n">password_validation</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span><span class="p">,</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.module_loading</span> <span class="kn">import</span> <span class="n">import_string</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.manager</span> <span class="kn">import</span> <span class="n">AccountManager</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
@@ -127,13 +126,7 @@
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.optionhandler</span> <span class="kn">import</span> <span class="n">OptionHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">is_iter</span><span class="p">,</span>
-    <span class="n">lazy_property</span><span class="p">,</span>
-    <span class="n">make_iter</span><span class="p">,</span>
-    <span class="n">to_str</span><span class="p">,</span>
-    <span class="n">variable_from_module</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">variable_from_module</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DefaultAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;DefaultGuest&quot;</span><span class="p">)</span>
 
@@ -1002,8 +995,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="n">character</span>
 
         <span class="n">character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;puppet:id(</span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or pid(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or perm(Developer) or pperm(Developer);delete:id(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or&quot;</span>
-            <span class="s2">&quot; perm(Admin)&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;puppet:id(</span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or pid(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or perm(Developer) or&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; pperm(Developer);delete:id(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or perm(Admin)&quot;</span>
         <span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
@@ -1626,8 +1619,8 @@
 <span class="sd">        have no cmdsets.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            caller (obj): The object requesting the cmdsets.</span>
-<span class="sd">            current (cmdset): The current merged cmdset.</span>
+<span class="sd">            caller (Object, Account or Session): The object requesting the cmdsets.</span>
+<span class="sd">            current (CmdSet): The current merged cmdset.</span>
 <span class="sd">            force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)</span>
 <span class="sd">            **kwargs: Arbitrary input for overloads.</span>
 

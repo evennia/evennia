@@ -1709,8 +1709,8 @@
 <span class="sd">        have no cmdsets.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            caller (obj): The object requesting the cmdsets.</span>
-<span class="sd">            current (cmdset): The current merged cmdset.</span>
+<span class="sd">            caller (Object, Account or Session): The object requesting the cmdsets.</span>
+<span class="sd">            current (CmdSet): The current merged cmdset.</span>
 <span class="sd">            force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)</span>
 <span class="sd">            **kwargs: Arbitrary input for overloads.</span>
 
@@ -3252,8 +3252,10 @@
 <span class="sd">        has no cmdsets.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">          force_init (bool): If `True`, force a re-build of the cmdset</span>
-<span class="sd">            (for example to update aliases).</span>
+<span class="sd">            caller (Object, Account or Session): The object requesting the cmdsets.</span>
+<span class="sd">            current (CmdSet): The current merged cmdset.</span>
+<span class="sd">            force_init (bool): If `True`, force a re-build of the cmdset</span>
+<span class="sd">                (for example to update aliases).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 

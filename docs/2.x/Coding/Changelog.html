@@ -222,6 +222,10 @@ command was originally pulled from (Volund)</p></li>
 tools <code class="docutils literal notranslate"><span class="pre">evennia.utils.match_ip</span></code> and <code class="docutils literal notranslate"><span class="pre">utils.ip_from_request</span></code> to help. (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3349">Feature</a>: Refactored almost all default commands to use
 <code class="docutils literal notranslate"><span class="pre">Command.msg</span></code> over the <code class="docutils literal notranslate"><span class="pre">command.caller.msg</span></code> direct call (more flexible) (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3346">Feature</a>: Refactor cmdhandler to be more extensible; make cmd merge
+a bit more deterministic (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3348">Feature</a>: Make Fallback AJAX web client more customizable (same as
+the websocket client) (Volund)</p></li>
 <li><p>Fix (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
 <code class="docutils literal notranslate"><span class="pre">settings.TEST_ENVIRONMENT</span></code> to address issues during refactored startup sequence.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3197">Fix</a>: Make sure Global scripts only start in one place,</p></li>
@@ -240,7 +244,12 @@ routing to the ajax web client.</p></li>
 (jaborsh)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3331">fix</a>: Made XYZGrid query zcoords in a case-insensitive manner.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3322">Fix</a>: Fix <code class="docutils literal notranslate"><span class="pre">BaseOption.display</span></code> to always return a string.</p></li>
-<li><p>Docs: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3358">Fix</a>: Fix so Portal resets <code class="docutils literal notranslate"><span class="pre">server_restart_mode</span></code> flag when having
+successfully reconnected to the Server after a restart. (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3359">Fix</a>: Fix gendersub contrib to use proper pronoun when referencing
+other objects than oneself (InspectorCaracal)</p></li>
+<li><p>Docs &amp; docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
+HouseOfPoe etc)</p></li>
 <li><p>Beginner tutorial: Cleanup and starting earlier with explaining how to add to
 the default cmdsets.</p></li>
 </ul>

@@ -122,12 +122,11 @@
 <span class="sd">----</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
 <span class="kn">from</span> <span class="nn">django.db.models.query</span> <span class="kn">import</span> <span class="n">QuerySet</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
@@ -280,9 +279,9 @@
 <span class="sd">                the evmore commands will be available when this is run).</span>
 <span class="sd">            kwargs (any, optional): These will be passed on to the `caller.msg` method. Notably,</span>
 <span class="sd">                one can pass additional outputfuncs this way. There is one special kwarg:</span>
-<span class="sd">                - text_kwargs - extra kwargs to pass with the text outputfunc, e.g.</span>
-<span class="sd">                  `text_kwargs={&quot;type&quot;: &quot;help&quot;} would result to each page being sent</span>
-<span class="sd">                  to `msg` as `text=(pagetxt, {&quot;type&quot;: &quot;help&quot;})`.</span>
+<span class="sd">                - `text_kwargs` - extra kwargs to pass with the text outputfunc, e.g.</span>
+<span class="sd">                `text_kwargs={&quot;type&quot;: &quot;help&quot;}` would result to each page being sent</span>
+<span class="sd">                to `msg` as `text=(pagetxt, {&quot;type&quot;: &quot;help&quot;})`.</span>
 
 <span class="sd">        Examples:</span>
 
