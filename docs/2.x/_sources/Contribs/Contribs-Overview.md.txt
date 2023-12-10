@@ -619,13 +619,7 @@ This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Lar
 
 _Contribution by Griatch, 2015_
 
-A full roleplaying emote system. Short-descriptions and recognition (only
-know people by their looks until you assign a name to them). Room poses. Masks/disguises
-(hide your description). Speak directly in emote, with optional language obscuration
-(words get garbled if you don't know the language, you can also have different languages
-with different 'sounding' garbling). Whispers can be partly overheard from a distance. A 
-very powerful in-emote reference system, for referencing and differentiate targets 
-(including objects).
+A full roleplaying emote system. Short-descriptions and recognition (only know people by their looks until you assign a name to them). Room poses. Masks/disguises (hide your description). Speak directly in emote, with optional language obscuration (words get garbled if you don't know the language, you can also have different languages with different 'sounding' garbling). Whispers can be partly overheard from a distance. A very powerful in-emote reference system, for referencing and differentiate targets (including objects).
 
 [Read the documentation](./Contrib-RPSystem.md) - [Browse the Code](evennia.contrib.rpg.rpsystem)
 

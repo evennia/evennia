@@ -349,7 +349,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_session</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvenniaTestMixin.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.tearDown">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span>
+        <span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">],</span> <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">flush_cache</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">data_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>

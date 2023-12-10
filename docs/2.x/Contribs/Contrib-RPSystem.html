@@ -123,57 +123,23 @@
   <section class="tex2jax_ignore mathjax_ignore" id="roleplaying-base-system-for-evennia">
 <h1>Roleplaying base system for Evennia<a class="headerlink" href="#roleplaying-base-system-for-evennia" title="Permalink to this headline">¶</a></h1>
 <p>Contribution by Griatch, 2015</p>
-<p>A full roleplaying emote system. Short-descriptions and recognition (only
-know people by their looks until you assign a name to them). Room poses. Masks/disguises
-(hide your description). Speak directly in emote, with optional language obscuration
-(words get garbled if you don’t know the language, you can also have different languages
-with different ‘sounding’ garbling). Whispers can be partly overheard from a distance. A
-very powerful in-emote reference system, for referencing and differentiate targets
-(including objects).</p>
-<p>The system contains of two main modules - the roleplaying emote system and the language
-obscuration module.</p>
+<p>A full roleplaying emote system. Short-descriptions and recognition (only know people by their looks until you assign a name to them). Room poses. Masks/disguises (hide your description). Speak directly in emote, with optional language obscuration (words get garbled if you don’t know the language, you can also have different languages with different ‘sounding’ garbling). Whispers can be partly overheard from a distance. A very powerful in-emote reference system, for referencing and differentiate targets (including objects).</p>
+<p>The system contains of two main modules - the roleplaying emote system and the language obscuration module.</p>
 <section id="roleplaying-emotes">
 <h2>Roleplaying emotes<a class="headerlink" href="#roleplaying-emotes" title="Permalink to this headline">¶</a></h2>
-<p>This module contains the ContribRPObject, ContribRPRoom and
-ContribRPCharacter typeclasses.  If you inherit your
-objects/rooms/character from these (or make them the defaults) from
-these you will get the following features:</p>
+<p>This module contains the ContribRPObject, ContribRPRoom and ContribRPCharacter typeclasses.  If you inherit your objects/rooms/character from these (or make them the defaults) from these you will get the following features:</p>
 <ul class="simple">
-<li><p>Objects/Rooms will get the ability to have poses and will report
-the poses of items inside them (the latter most useful for Rooms).</p></li>
-<li><p>Characters will get poses and also sdescs (short descriptions)
-that will be used instead of their keys. They will gain commands
-for managing recognition (custom sdesc-replacement), masking
-themselves as well as an advanced free-form emote command.</p></li>
+<li><p>Objects/Rooms will get the ability to have poses and will report the poses of items inside them (the latter most useful for Rooms).</p></li>
+<li><p>Characters will get poses and also sdescs (short descriptions) that will be used instead of their keys. They will gain commands for managing recognition (custom sdesc-replacement), masking themselves as well as an advanced free-form emote command.</p></li>
 </ul>
-<p>In more detail, This RP base system introduces the following features
-to a game, common to many RP-centric games:</p>
+<p>In more detail, This RP base system introduces the following features to a game, common to many RP-centric games:</p>
 <ul class="simple">
-<li><p>emote system using director stance emoting (names/sdescs).
-This uses a customizable replacement noun (/me, &#64; etc) to
-represent you in the emote. You can use /sdesc, /nick, /key or
-/alias to reference objects in the room. You can use any
-number of sdesc sub-parts to differentiate a local sdesc, or
-use /1-sdesc etc to differentiate them. The emote also
-identifies nested says and separates case.</p></li>
-<li><p>sdesc obscuration of real character names for use in emotes
-and in any referencing such as object.search().  This relies
-on an SdescHandler <code class="docutils literal notranslate"><span class="pre">sdesc</span></code> being set on the Character and
-makes use of a custom Character.get_display_name hook. If
-sdesc is not set, the character’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is used instead. This
-is particularly used in the emoting system.</p></li>
-<li><p>recog system to assign your own nicknames to characters, can then
-be used for referencing. The user may recog a user and assign
-any personal nick to them. This will be shown in descriptions
-and used to reference them. This is making use of the nick
-functionality of Evennia.</p></li>
+<li><p>emote system using director stance emoting (names/sdescs).  This uses a customizable replacement noun (/me, &#64; etc) to represent you in the emote. You can use /sdesc, /nick, /key or /alias to reference objects in the room. You can use any number of sdesc sub-parts to differentiate a local sdesc, or use /1-sdesc etc to differentiate them. The emote also identifies nested says and separates case.</p></li>
+<li><p>sdesc obscuration of real character names for use in emotes and in any referencing such as object.search().  This relies on an SdescHandler <code class="docutils literal notranslate"><span class="pre">sdesc</span></code> being set on the Character and makes use of a custom Character.get_display_name hook. If sdesc is not set, the character’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is used instead. This is particularly used in the emoting system.</p></li>
+<li><p>recog system to assign your own nicknames to characters, can then be used for referencing. The user may recog a user and assign any personal nick to them. This will be shown in descriptions and used to reference them. This is making use of the nick functionality of Evennia.</p></li>
 <li><p>masks to hide your identity (using a simple lock).</p></li>
-<li><p>pose system to set room-persistent poses, visible in room
-descriptions and when looking at the person/object.  This is a
-simple Attribute that modifies how the characters is viewed when
-in a room as sdesc + pose.</p></li>
-<li><p>in-emote says, including seamless integration with language
-obscuration routine (such as contrib/rplanguage.py)</p></li>
+<li><p>pose system to set room-persistent poses, visible in room descriptions and when looking at the person/object.  This is a simple Attribute that modifies how the characters is viewed when in a room as sdesc + pose.</p></li>
+<li><p>in-emote says, including seamless integration with language obscuration routine (such as contrib/rplanguage.py)</p></li>
 </ul>
 <section id="installation">
 <h3>Installation:<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
@@ -196,7 +162,7 @@ obscuration routine (such as contrib/rplanguage.py)</p></li>
 the typeclasses in this module:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPCharacter</span>
 
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ContribRPCharacter</span><span class="p">):</span>
     <span class="c1"># ...</span>
@@ -205,7 +171,7 @@ the typeclasses in this module:</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPObject</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPObject</span>
 
 <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
     <span class="c1"># ...</span>
@@ -214,7 +180,7 @@ the typeclasses in this module:</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPRoom</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPRoom</span>
 
 <span class="k">class</span> <span class="nc">Room</span><span class="p">(</span><span class="n">ContribRPRoom</span><span class="p">):</span>
     <span class="c1"># ...</span>
@@ -228,44 +194,35 @@ your objects, if you originally created them without this.</p>
 </pre></div>
 </div>
 <p>Examples:</p>
-<blockquote>
-<div><p>look
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; look
+
 Tavern
-The tavern is full of nice people</p>
-</div></blockquote>
-<p><em>A tall man</em> is standing by the bar.</p>
-<p>Above is an example of a player with an sdesc “a tall man”. It is also
-an example of a static <em>pose</em>: The “standing by the bar” has been set
-by the player of the tall man, so that people looking at him can tell
-at a glance what is going on.</p>
-<blockquote>
-<div><p>emote /me looks at /Tall and says “Hello!”</p>
-</div></blockquote>
-<p>I see:
-Griatch looks at Tall man and says “Hello”.
-Tall man (assuming his name is Tom) sees:
-The godlike figure looks at Tom and says “Hello”.</p>
-<p>Note that by default, the case of the tag matters, so <code class="docutils literal notranslate"><span class="pre">/tall</span></code> will
-lead to ‘tall man’ while <code class="docutils literal notranslate"><span class="pre">/Tall</span></code> will become ‘Tall man’ and /TALL
-becomes /TALL MAN. If you don’t want this behavior, you can pass
-case_sensitive=False to the <code class="docutils literal notranslate"><span class="pre">send_emote</span></code> function.</p>
+The tavern is full of nice people
+
+*A tall man* is standing by the bar.
+</pre></div>
+</div>
+<p>Above is an example of a player with an sdesc “a tall man”. It is also an example of a static <em>pose</em>: The “standing by the bar” has been set by the player of the tall man, so that people looking at him can tell at a glance what is going on.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; emote /me looks at /Tall and says &quot;Hello!&quot;
+</pre></div>
+</div>
+<p>I see:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Griatch looks at Tall man and says &quot;Hello&quot;.
+</pre></div>
+</div>
+<p>Tall man (assuming his name is Tom) sees:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The godlike figure looks at Tom and says &quot;Hello&quot;.
+</pre></div>
+</div>
+<p>Note that by default, the case of the tag matters, so <code class="docutils literal notranslate"><span class="pre">/tall</span></code> will lead to ‘tall man’ while <code class="docutils literal notranslate"><span class="pre">/Tall</span></code> will become ‘Tall man’ and /TALL becomes /TALL MAN. If you don’t want this behavior, you can pass case_sensitive=False to the <code class="docutils literal notranslate"><span class="pre">send_emote</span></code> function.</p>
 </section>
 </section>
 <section id="language-and-whisper-obfuscation-system">
 <h2>Language and whisper obfuscation system<a class="headerlink" href="#language-and-whisper-obfuscation-system" title="Permalink to this headline">¶</a></h2>
-<p>This module is intented to be used with an emoting system (such as
-<code class="docutils literal notranslate"><span class="pre">contrib/rpg/rpsystem.py</span></code>). It offers the ability to obfuscate spoken words
-in the game in various ways:</p>
+<p>This module is intented to be used with an emoting system (such as <code class="docutils literal notranslate"><span class="pre">contrib/rpg/rpsystem.py</span></code>). It offers the ability to obfuscate spoken words in the game in various ways:</p>
 <ul class="simple">
-<li><p>Language: The language functionality defines a pseudo-language map
-to any number of languages.  The string will be obfuscated depending
-on a scaling that (most likely) will be input as a weighted average of
-the language skill of the speaker and listener.</p></li>
-<li><p>Whisper: The whisper functionality will gradually “fade out” a
-whisper along as scale 0-1, where the fading is based on gradually
-removing sections of the whisper that is (supposedly) easier to
-overhear (for example “s” sounds tend to be audible even when no other
-meaning can be determined).</p></li>
+<li><p>Language: The language functionality defines a pseudo-language map to any number of languages.  The string will be obfuscated depending on a scaling that (most likely) will be input as a weighted average of the language skill of the speaker and listener.</p></li>
+<li><p>Whisper: The whisper functionality will gradually “fade out” a whisper along as scale 0-1, where the fading is based on gradually removing sections of the whisper that is (supposedly) easier to overhear (for example “s” sounds tend to be audible even when no other meaning can be determined).</p></li>
 </ul>
 <section id="id1">
 <h3>Installation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
@@ -301,13 +258,7 @@ meaning can be determined).</p></li>
 
 </pre></div>
 </div>
-<p>To set up new languages, import and use the <code class="docutils literal notranslate"><span class="pre">add_language()</span></code>
-helper method in this module. This allows you to customize the
-“feel” of the semi-random language you are creating. Especially
-the <code class="docutils literal notranslate"><span class="pre">word_length_variance</span></code> helps vary the length of translated
-words compared to the original and can help change the “feel” for
-the language you are creating. You can also add your own
-dictionary and “fix” random words for a list of input words.</p>
+<p>To set up new languages, import and use the <code class="docutils literal notranslate"><span class="pre">add_language()</span></code> helper method in this module. This allows you to customize the “feel” of the semi-random language you are creating. Especially the <code class="docutils literal notranslate"><span class="pre">word_length_variance</span></code> helps vary the length of translated words compared to the original and can help change the “feel” for the language you are creating. You can also add your own dictionary and “fix” random words for a list of input words.</p>
 <p>Below is an example of “elvish”, using “rounder” vowels and sounds:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># vowel/consonant grammar possibilities</span>
 <span class="n">grammar</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc &quot;</span>
@@ -353,20 +304,9 @@ dictionary and “fix” random words for a list of input words.</p>
 
 </pre></div>
 </div>
-<p>This will produce a decicively more “rounded” and “soft” language than the
-default one. The few <code class="docutils literal notranslate"><span class="pre">manual_translations</span></code> also make sure to make it at least
-look superficially “reasonable”.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">auto_translations</span></code> keyword is useful, this accepts either a
-list or a path to a text-file (with one word per line). This listing
-of words is used to ‘fix’ translations for those words according to the
-grammatical rules. These translations are stored persistently as long as the
-language exists.</p>
-<p>This allows to quickly build a large corpus of translated words
-that never change. This produces a language that seem moderately
-consistent, since words like ‘the’ will always be translated to the same thing.
-The disadvantage (or advantage, depending on your game) is that players can
-end up learn what words mean even if their characters don’t know the
-langauge.</p>
+<p>This will produce a decicively more “rounded” and “soft” language than the default one. The few <code class="docutils literal notranslate"><span class="pre">manual_translations</span></code> also make sure to make it at least look superficially “reasonable”.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">auto_translations</span></code> keyword is useful, this accepts either a list or a path to a text-file (with one word per line). This listing of words is used to ‘fix’ translations for those words according to the grammatical rules. These translations are stored persistently as long as the language exists.</p>
+<p>This allows to quickly build a large corpus of translated words that never change. This produces a language that seem moderately consistent, since words like ‘the’ will always be translated to the same thing.  The disadvantage (or advantage, depending on your game) is that players can end up learn what words mean even if their characters don’t know the langauge.</p>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/rpg/rpsystem/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
