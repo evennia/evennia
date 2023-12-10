@@ -31,7 +31,7 @@ from evennia.server import session
 from evennia.utils import utils
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
-from evennia.utils.utils import to_bytes, ip_from_request
+from evennia.utils.utils import to_bytes, class_from_module, ip_from_request
 
 _CLIENT_SESSIONS = utils.mod_import(settings.SESSION_ENGINE).SessionStore
 _RE_SCREENREADER_REGEX = re.compile(
@@ -69,6 +69,8 @@ class AjaxWebClient(resource.Resource):
     An ajax/comet long-polling transport
 
     """
+
+    client_protocol = class_from_module(settings.AJAX_PROTOCOL_CLASS)
 
     isLeaf = True
     allowedMethods = ("POST",)
@@ -205,7 +207,7 @@ class AjaxWebClient(resource.Resource):
             request.getHost().port,
         )
 
-        sess = AjaxWebClientSession()
+        sess = self.client_protocol()
         sess.client = self
         sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
 
