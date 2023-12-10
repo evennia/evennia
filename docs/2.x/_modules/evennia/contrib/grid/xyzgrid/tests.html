@@ -1429,7 +1429,7 @@
         <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 
         <span class="c1"># we need to create a home room for the grid to be able to be properly deleted</span>
-        <span class="n">home</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.rooms.Room&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Home&quot;</span><span class="p">)</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.rooms.Room&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Home&quot;</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">home</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
         <span class="n">home</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 

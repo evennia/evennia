@@ -694,6 +694,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.syscommands.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.system.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseEvenniaCommandTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Commands only using the default settings.</span>
