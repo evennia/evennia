@@ -36,12 +36,11 @@ the `caller.msg()` construct every time the page is updated.
 ----
 
 """
+import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext as _
-
-import evennia
 from evennia.commands import cmdhandler
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
@@ -194,9 +193,9 @@ class EvMore(object):
                 the evmore commands will be available when this is run).
             kwargs (any, optional): These will be passed on to the `caller.msg` method. Notably,
                 one can pass additional outputfuncs this way. There is one special kwarg:
-                - text_kwargs - extra kwargs to pass with the text outputfunc, e.g.
-                  `text_kwargs={"type": "help"} would result to each page being sent
-                  to `msg` as `text=(pagetxt, {"type": "help"})`.
+                - `text_kwargs` - extra kwargs to pass with the text outputfunc, e.g.
+                `text_kwargs={"type": "help"}` would result to each page being sent
+                to `msg` as `text=(pagetxt, {"type": "help"})`.
 
         Examples:
 

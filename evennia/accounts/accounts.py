@@ -15,14 +15,13 @@ import time
 import typing
 from random import getrandbits
 
+import evennia
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
-
-import evennia
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -41,13 +40,7 @@ from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.optionhandler import OptionHandler
-from evennia.utils.utils import (
-    is_iter,
-    lazy_property,
-    make_iter,
-    to_str,
-    variable_from_module,
-)
+from evennia.utils.utils import is_iter, lazy_property, make_iter, to_str, variable_from_module
 
 __all__ = ("DefaultAccount", "DefaultGuest")
 
@@ -916,8 +909,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             self.db._last_puppet = character
 
         character.locks.add(
-            f"puppet:id({character.id}) or pid({self.id}) or perm(Developer) or pperm(Developer);delete:id({self.id}) or"
-            " perm(Admin)"
+            f"puppet:id({character.id}) or pid({self.id}) or perm(Developer) or"
+            f" pperm(Developer);delete:id({self.id}) or perm(Admin)"
         )
 
         logger.log_sec(
@@ -1540,8 +1533,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         have no cmdsets.
 
         Keyword Args:
-            caller (obj): The object requesting the cmdsets.
-            current (cmdset): The current merged cmdset.
+            caller (Object, Account or Session): The object requesting the cmdsets.
+            current (CmdSet): The current merged cmdset.
             force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)
             **kwargs: Arbitrary input for overloads.
 

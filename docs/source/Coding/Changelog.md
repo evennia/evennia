@@ -38,6 +38,10 @@
   tools `evennia.utils.match_ip` and `utils.ip_from_request` to help. (Volund)
 - [Feature][pull3349]: Refactored almost all default commands to use
   `Command.msg` over the `command.caller.msg` direct call (more flexible) (Volund)
+- [Feature][pull3346]: Refactor cmdhandler to be more extensible; make cmd merge
+  a bit more deterministic (Volund)
+- [Feature][pull3348]: Make Fallback AJAX web client more customizable (same as
+  the websocket client) (Volund)
 - Fix (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
   `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
@@ -56,7 +60,12 @@
   (jaborsh)
 - [fix][issue3331]: Made XYZGrid query zcoords in a case-insensitive manner.
 - [Fix][pull3322]: Fix `BaseOption.display` to always return a string.
-- Docs: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh)
+- [Fix][pull3358]: Fix so Portal resets `server_restart_mode` flag when having
+  successfully reconnected to the Server after a restart. (InspectorCaracal)
+- [Fix][pull3359]: Fix gendersub contrib to use proper pronoun when referencing
+  other objects than oneself (InspectorCaracal)
+- Docs & docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
+  HouseOfPoe etc)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
   the default cmdsets.
 
@@ -81,6 +90,10 @@
 [pull3344]: https://github.com/evennia/evennia/pull/3344
 [pull3349]: https://github.com/evennia/evennia/pull/3349
 [pull3350]: https://github.com/evennia/evennia/pull/3350
+[pull3346]: https://github.com/evennia/evennia/pull/3346
+[pull3348]: https://github.com/evennia/evennia/pull/3348
+[pull3358]: https://github.com/evennia/evennia/pull/3358
+[pull3359]: https://github.com/evennia/evennia/pull/3359
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307

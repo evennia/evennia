@@ -1196,6 +1196,16 @@ SSL_PROTOCOL_CLASS = "evennia.server.portal.ssl.SSLProtocol"
 # for all webclient connections.
 WEBSOCKET_PROTOCOL_CLASS = "evennia.server.portal.webclient.WebSocketClient"
 
+# Ajax Web Client classes. Evennia uses AJAX as a fallback for the webclient by
+# default. AJAX may in general be more useful for mobile clients as it's
+# resilient to IP address changes.
+
+# The Ajax Client Class is used to manage all AJAX sessions.
+AJAX_CLIENT_CLASS = "evennia.server.portal.webclient.ajax.AjaxWebClient"
+
+# Ajax Protocol Class is used for all AJAX client connections.
+AJAX_PROTOCOL_CLASS = "evennia.server.portal.webclient_ajax.AjaxWebClientSession"
+
 # Protocol for the SSH interface. This inherits from BASE_SESSION_CLASS.
 SSH_PROTOCOL_CLASS = "evennia.server.portal.ssh.SshProtocol"
 

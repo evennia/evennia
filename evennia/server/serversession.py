@@ -10,15 +10,10 @@ import time
 
 from django.conf import settings
 from django.utils import timezone
-
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.comms.models import ChannelDB
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
-from evennia.typeclasses.attributes import (
-    AttributeHandler,
-    DbHolder,
-    InMemoryAttributeBackend,
-)
+from evennia.typeclasses.attributes import AttributeHandler, DbHolder, InMemoryAttributeBackend
 from evennia.utils import logger
 from evennia.utils.utils import class_from_module, lazy_property, make_iter
 
@@ -408,8 +403,8 @@ class ServerSession(_BASE_SESSION_CLASS):
         have no cmdsets.
 
         Keyword Args:
-            caller (obj): The object requesting the cmdsets.
-            current (cmdset): The current merged cmdset.
+            caller (Object, Account or Session): The object requesting the cmdsets.
+            current (CmdSet): The current merged cmdset.
             force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)
             **kwargs: Arbitrary input for overloads.
 

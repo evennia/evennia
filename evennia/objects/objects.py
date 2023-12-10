@@ -1623,8 +1623,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         have no cmdsets.
 
         Keyword Args:
-            caller (obj): The object requesting the cmdsets.
-            current (cmdset): The current merged cmdset.
+            caller (Object, Account or Session): The object requesting the cmdsets.
+            current (CmdSet): The current merged cmdset.
             force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)
             **kwargs: Arbitrary input for overloads.
 
@@ -3166,8 +3166,10 @@ class DefaultExit(DefaultObject):
         has no cmdsets.
 
         Keyword Args:
-          force_init (bool): If `True`, force a re-build of the cmdset
-            (for example to update aliases).
+            caller (Object, Account or Session): The object requesting the cmdsets.
+            current (CmdSet): The current merged cmdset.
+            force_init (bool): If `True`, force a re-build of the cmdset
+                (for example to update aliases).
 
         """
 
