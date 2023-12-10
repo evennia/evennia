@@ -89,13 +89,12 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.base</span> <span class="kn">import</span> <span class="n">DelayedCall</span>
-<span class="kn">from</span> <span class="nn">twisted.trial.unittest</span> <span class="kn">import</span> <span class="n">TestCase</span> <span class="k">as</span> <span class="n">TwistedTestCase</span>
-
 <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">mockdeferLater</span><span class="p">,</span> <span class="n">mockdelay</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.base</span> <span class="kn">import</span> <span class="n">DelayedCall</span>
+<span class="kn">from</span> <span class="nn">twisted.trial.unittest</span> <span class="kn">import</span> <span class="n">TestCase</span> <span class="k">as</span> <span class="n">TwistedTestCase</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mob</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">objects</span> <span class="k">as</span> <span class="n">tutobjects</span>
@@ -121,6 +120,10 @@
 
 
 <div class="viewcode-block" id="TestTutorialWorldObjects"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects">[docs]</a><span class="k">class</span> <span class="nc">TestTutorialWorldObjects</span><span class="p">(</span><span class="n">TwistedTestCase</span><span class="p">,</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTutorialWorldObjects.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="TestTutorialWorldObjects.test_tutorialobj"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_tutorialobj">[docs]</a>    <span class="k">def</span> <span class="nf">test_tutorialobj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">obj1</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">tutobjects</span><span class="o">.</span><span class="n">TutorialObject</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;tutobj&quot;</span><span class="p">)</span>
         <span class="n">obj1</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
@@ -189,15 +192,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">tutobjects</span><span class="o">.</span><span class="n">CmdShiftRoot</span><span class="p">(),</span>
             <span class="s2">&quot;green root up&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;You shift the weedy green root upwards.|Holding aside the root you &quot;</span>
-            <span class="s2">&quot;think you notice something behind it ...&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;You shift the weedy green root upwards.|Holding aside the root you &quot;</span>
+                <span class="s2">&quot;think you notice something behind it ...&quot;</span>
+            <span class="p">),</span>
             <span class="n">obj</span><span class="o">=</span><span class="n">wall</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">tutobjects</span><span class="o">.</span><span class="n">CmdPressButton</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;You move your fingers over the suspicious depression, then gives it a &quot;</span>
-            <span class="s2">&quot;decisive push. First&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;You move your fingers over the suspicious depression, then gives it a &quot;</span>
+                <span class="s2">&quot;decisive push. First&quot;</span>
+            <span class="p">),</span>
             <span class="n">obj</span><span class="o">=</span><span class="n">wall</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># we patch out the delay, so these are closed immediately</span>

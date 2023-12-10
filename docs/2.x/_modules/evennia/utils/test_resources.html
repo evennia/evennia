@@ -183,6 +183,7 @@
     <span class="n">BASE_GUEST_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.accounts.accounts.DefaultGuest&quot;</span><span class="p">,</span>
     <span class="c1"># a special setting boolean TEST_ENVIRONMENT is set by the test runner</span>
     <span class="c1"># while the test suite is running.</span>
+    <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span><span class="p">,</span>
     <span class="n">TEST_ENVIRONMENT</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -277,11 +278,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
     <span class="c1"># Set up fake prototype module for allowing tests to use named prototypes.</span>
-<div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span>
-        <span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">],</span> <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span>
-    <span class="p">)</span>
+<div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">create_rooms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Room&quot;</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># be sure this is default Home</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;room_desc&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">room2</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Room2&quot;</span><span class="p">)</span>
@@ -638,6 +639,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BaseEvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
         <span class="n">flush_cache</span><span class="p">()</span></div></div>
 
 
@@ -657,6 +659,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="EvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
         <span class="n">flush_cache</span><span class="p">()</span></div></div>
 
 

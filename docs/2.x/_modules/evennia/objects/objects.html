@@ -1271,7 +1271,9 @@
             <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># unlink account/home to avoid issues with saving</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_account</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_home</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">_ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
