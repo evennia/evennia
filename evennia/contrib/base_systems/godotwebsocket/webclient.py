@@ -55,7 +55,7 @@ class GodotWebSocketClient(webclient.WebSocketClient):
         prompt = options.get("send_prompt", False)
 
         cmd = "prompt" if prompt else "text"
-        args[0] = parse_to_bbcode(text, strip_ansi=nocolor)
+        args[0] = parse_to_bbcode(text, strip_markup=nocolor)
 
         # send to client on required form [cmdname, args, kwargs]
         self.sendLine(json.dumps([cmd, args, kwargs]))

@@ -53,7 +53,7 @@ ENCODINGS = settings.ENCODINGS
 _TASK_HANDLER = None
 _TICKER_HANDLER = None
 _STRIP_UNSAFE_TOKENS = None
-_ANSISTRING = None
+_EVSTRING = None
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -102,7 +102,8 @@ def make_iter(obj):
 
 def wrap(text, width=None, indent=0):
     """
-    Safely wrap text to a certain number of characters.
+    Safely wrap text to a certain number of characters. Supports wrapping formatted
+    EvString as well as regular strings.
 
     Args:
         text (str): The text to wrap.
@@ -117,6 +118,8 @@ def wrap(text, width=None, indent=0):
     if not text:
         return ""
     indent = " " * indent
+    # w = EvTextWrapper(width=width, initial_indent=indent, subsequent_indent=indent)
+    # return w.wrap(text)
     return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
 
 
@@ -168,14 +171,18 @@ def crop(text, width=None, suffix="[...]"):
         text (str): The cropped text.
 
     """
+    global _EVSTRING
+    if not _EVSTRING:
+        from evennia.utils.evstring import EvString as _EVSTRING
+
     width = width if width else settings.CLIENT_DEFAULT_WIDTH
     ltext = len(text)
     if ltext <= width:
         return text
     else:
         lsuffix = len(suffix)
-        text = text[:width] if lsuffix >= width else "%s%s" % (text[: width - lsuffix], suffix)
-        return to_str(text)
+        text = text[:width] if lsuffix >= width else text[: width - lsuffix] + suffix
+        return text
 
 
 def dedent(text, baseline_index=None, indent=None):
@@ -239,13 +246,12 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         justified (str): The justified and indented block of text.
 
     """
-    # we need to retain ansitrings
-    global _ANSISTRING
-    if not _ANSISTRING:
-        from evennia.utils.ansi import ANSIString as _ANSISTRING
+    global _EVSTRING
+    if not _EVSTRING:
+        from evennia.utils.evstring import EvString as _EVSTRING
 
-    is_ansi = isinstance(text, _ANSISTRING)
-    lb = _ANSISTRING("\n") if is_ansi else "\n"
+    is_markup = isinstance(text, _EVSTRING)
+    lb = _EVSTRING("\n") if is_markup else "\n"
 
     def _process_line(line):
         """
@@ -255,12 +261,12 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         """
         line_rest = width - (wlen + ngaps)
 
-        gap = _ANSISTRING(" ") if is_ansi else " "
+        gap = _EVSTRING(" ") if is_markup else " "
 
         if line_rest > 0:
             if align == "l":
-                if line[-1] == "\n\n":
-                    line[-1] = sp * (line_rest - 1) + "\n" + sp * width + "\n" + sp * width
+                if line[-1] == lb + lb:
+                    line[-1] = lb.join([sp * (line_rest - 1), sp * width, sp * width])
                 else:
                     line[-1] += sp * line_rest
             elif align == "r":
@@ -299,6 +305,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
         return lb.join(abs_lines)
 
     # all other aligns requires splitting into paragraphs and words
+    text = text.strip(" ")
 
     # split into paragraphs and words
     paragraphs = [text]  # re.split("\n\s*?\n", text, re.MULTILINE)
@@ -342,7 +349,6 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     if line:  # catch any line left behind
         lines.append(_process_line(line))
     indentstring = sp * indent
-    out = lb.join([indentstring + line for line in lines])
     return lb.join([indentstring + line for line in lines])
 
 
@@ -1923,7 +1929,6 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefi
             be inserted into the grid at the correct position and may be surrounded
             by padding unless filling the entire line. This is useful for embedding
             decorations in the grid, such as horizontal bars.
-        ignore_ansi (bool, optional): Ignore ansi markups when calculating white spacing.
         line_prefix (str, optional): A prefix to add at the beginning of each line.
             This can e.g. be used to preserve line color across line breaks.
 
@@ -2179,7 +2184,7 @@ class lazy_property:
         )
 
 
-_STRIP_ANSI = None
+_strip_markup = None
 _RE_CONTROL_CHAR = re.compile(
     "[%s]" % re.escape("".join([chr(c) for c in range(0, 32)]))
 )  # + range(127,160)])))
@@ -2196,10 +2201,10 @@ def strip_control_sequences(string):
         text (str): Stripped text.
 
     """
-    global _STRIP_ANSI
-    if not _STRIP_ANSI:
-        from evennia.utils.ansi import strip_raw_ansi as _STRIP_ANSI
-    return _RE_CONTROL_CHAR.sub("", _STRIP_ANSI(string))
+    global _strip_markup
+    if not _strip_markup:
+        from evennia.utils.ansi import strip_raw_ansi as _strip_markup
+    return _RE_CONTROL_CHAR.sub("", _strip_markup(string))
 
 
 def calledby(callerdepth=1):
@@ -2251,11 +2256,10 @@ def m_len(target):
         length (int): The length of `target`, ignoring MXP components.
 
     """
-    # Would create circular import if in module root.
-    from evennia.utils.ansi import ANSI_PARSER
-
-    if inherits_from(target, str) and "|lt" in target:
-        return len(ANSI_PARSER.strip_mxp(target))
+    from evennia.utils.evstring import strip_mxp
+    
+    if inherits_from(target, str):
+        target = strip_mxp(target)
     return len(target)
 
 
@@ -2273,13 +2277,13 @@ def display_len(target):
         int: The visible width of the target.
 
     """
-    # Would create circular import if in module root.
-    from evennia.utils.ansi import ANSI_PARSER
+    global _EVSTRING
+    if not _EVSTRING:
+        from evennia.utils.evstring import EvString as _EVSTRING
 
     if inherits_from(target, str):
-        # str or ANSIString
-        target = ANSI_PARSER.strip_mxp(target)
-        target = ANSI_PARSER.parse_ansi(target, strip_ansi=True)
+        # str or EvString
+        target = _EVSTRING(target).clean()
         extra_wide = ("F", "W")
         return sum(2 if east_asian_width(char) in extra_wide else 1 for char in target)
     else:

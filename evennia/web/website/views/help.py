@@ -11,7 +11,7 @@ from django.views.generic import DetailView, ListView
 
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.help.models import HelpEntry
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import EvString
 from evennia.utils.utils import inherits_from
 
 DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
@@ -280,8 +280,8 @@ class HelpDetailView(HelpMixin, DetailView):
             text = obj.db_entrytext
         elif inherits_from(obj, "evennia.help.filehelp.FileHelpEntry"):
             text = obj.entrytext
-        text = strip_ansi(text)  # remove ansii markups
-        context["entry_text"] = text.strip()
+        text = EvString(text)
+        context["entry_text"] = text.strip().html()
 
         return context
 

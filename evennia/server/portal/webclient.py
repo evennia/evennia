@@ -22,8 +22,7 @@ from autobahn.exception import Disconnected
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from django.conf import settings
 
-from evennia.utils.ansi import parse_ansi
-from evennia.utils.text2html import parse_html
+from evennia.utils.evstring import EvString
 from evennia.utils.utils import class_from_module, mod_import
 
 _RE_SCREENREADER_REGEX = re.compile(
@@ -274,6 +273,9 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         else:
             return
 
+        if not hasattr(text, 'html'):
+            text = EvString(text)
+
         flags = self.protocol_flags
 
         options = kwargs.pop("options", {})
@@ -285,17 +287,19 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
 
         if screenreader:
             # screenreader mode cleans up output
-            text = parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
+            text = text.clean()
             text = _RE_SCREENREADER_REGEX.sub("", text)
-        cmd = "prompt" if prompt else "text"
-        if raw:
-            if client_raw:
-                args[0] = text
-            else:
-                args[0] = html.escape(text)  # escape html!
-        else:
-            args[0] = parse_html(text, strip_ansi=nocolor)
 
+        elif nocolor:
+            text = text.clean()
+        elif raw or client_raw:
+            text = text.raw()
+        else:
+            text = text.html()
+
+        # put processed message back in the args
+        args[0] = text
+        cmd = "prompt" if prompt else "text"
         # send to client on required form [cmdname, args, kwargs]
         self.sendLine(json.dumps([cmd, args, kwargs]))
 

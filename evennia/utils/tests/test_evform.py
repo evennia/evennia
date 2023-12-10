@@ -6,7 +6,7 @@ from unittest import skip
 
 from django.test import TestCase
 
-from evennia.utils import ansi, evform, evtable
+from evennia.utils import ansi, evform, evtable, evstring
 
 
 class TestEvForm(TestCase):
@@ -48,18 +48,20 @@ class TestEvForm(TestCase):
         )
         # add the tables to the proper ids in the form
         form.map(tables={"A": tableA, "B": tableB})
-        return str(form)
+        # normally you could just call form.clean(), but this is necessary
+        # since auto formatters/black tend to strip lines spaces
+        # from the end of lines for the comparison strings.
+        return "\n".join([line.clean().rstrip() for line in form.collect_evstring()])
 
     def _simple_form(self, form, literals=None):
         cellsdict = {1: "Apple", 2: "Banana", 3: "Citrus", 4: "Durian"}
         formdict = {"FORMCHAR": "x", "TABLECHAR": "c", "FORM": form}
         form = evform.EvForm(formdict, literals=literals)
         form.map(cells=cellsdict)
-        form = ansi.strip_ansi(str(form))
-        # this is necessary since editors/black tend to strip lines spaces
+        # normally you could just call form.clean(), but this is necessary
+        # since auto formatters/black tend to strip lines spaces
         # from the end of lines for the comparison strings.
-        form = "\n".join(line.rstrip() for line in form.split("\n"))
-        return form
+        return "\n".join([line.clean().rstrip() for line in form.collect_evstring()])
 
     def test_form_consistency(self):
         """
@@ -73,18 +75,11 @@ class TestEvForm(TestCase):
 
     def test_form_output(self):
         """
-        Check the result of the form. We strip ansi for readability.
+        Check the result of the form.
 
         """
 
         form = self._parse_form()
-        form_noansi = ansi.strip_ansi(form)
-        # we must strip extra space at the end of output simply
-        # because editors tend to strip it when creating
-        # the comparison string ...
-        form_noansi = "\n".join(line.rstrip() for line in form_noansi.split("\n"))
-
-        self.assertNotEqual(form, form_noansi)
         expected = """
 .------------------------------------------------.
 |                                                |
@@ -109,12 +104,10 @@ class TestEvForm(TestCase):
  Footer: rev 1
  info
 """.lstrip()
-        self.assertEqual(expected, form_noansi)
+        self.assertEqual(expected, form)
 
     def test_ansi_escape(self):
-        # note that in a msg() call, the result would be the  correct |-----,
-        # in a print, ansi only gets called once, so ||----- is the result
-        self.assertEqual(str(evform.EvForm({"FORM": "\n||-----"})), "||-----")
+        self.assertEqual(str(evform.EvForm({"FORM": "\n||-----"})), "|-----")
 
     def test_stacked_form(self):
         """
@@ -262,7 +255,7 @@ class TestEvFormParallelTables(TestCase):
             },
             tables={"2": self.table2, "3": self.table3},
         )
-        self.assertEqual(ansi.strip_ansi(str(form).strip()), _EXPECTED.strip())
+        self.assertEqual(form.clean().strip(), _EXPECTED.strip())
 
 
 class TestEvFormErrors(TestCase):
@@ -280,28 +273,25 @@ class TestEvFormErrors(TestCase):
             "tablechar": "c",
         }
         form = evform.EvForm(formdict, **kwargs)
-        # this is necessary since editors/black tend to strip lines spaces
+        # normally you could just call form.clean(), but this is necessary
+        # since auto formatters/black tend to strip lines spaces
         # from the end of lines for the comparison strings.
-        form = ansi.strip_ansi(str(form))
-        form = "\n".join(line.rstrip() for line in form.split("\n"))
-
-        return form
+        return "\n".join([line.clean().rstrip() for line in form.collect_evstring()])
 
     def _validate(self, expected, result):
         """easier debug"""
         err = f"\n{'expected':-^60}\n{expected}\n{'result':-^60}\n{result}\n{'':-^60}"
         self.assertEqual(expected.lstrip(), result.lstrip(), err)
 
-    @skip("Pending rebuild of markup")
     def test_2757(self):
         """
         Testing https://github.com/evennia/evennia/issues/2757
 
         Using || ansi escaping messes with rectangle width
 
-        This should be delayed until refactor of markup.
-
         """
+
+        # NOTE: currently this correctly identifies the whole box when placing the 1 in the top line, but not the second
         form = """
        xxxxxx
 ||---|  xx1xxx
@@ -314,6 +304,7 @@ class TestEvFormErrors(TestCase):
 |---|  Monty
 
         """
+
         self._validate(expected, self._form(form, cells=cell_mapping))
 
     def test_2759(self):
@@ -326,13 +317,13 @@ class TestEvFormErrors(TestCase):
         # testing the underlying problem
 
         cell = evtable.EvCell(" Hi", align="l")
-        self.assertEqual(cell._align(cell.data), [ansi.ANSIString("Hi ")])
+        self.assertEqual(cell._align(cell.data), [evstring.EvString("Hi ")])
 
         cell = evtable.EvCell("  Hi", align="l")
-        self.assertEqual(cell._align(cell.data), [ansi.ANSIString("Hi  ")])
+        self.assertEqual(cell._align(cell.data), [evstring.EvString("Hi  ")])
 
         cell = evtable.EvCell("  Hi", align="a")
-        self.assertEqual(cell._align(cell.data), [ansi.ANSIString("  Hi")])
+        self.assertEqual(cell._align(cell.data), [evstring.EvString("  Hi")])
 
         form = """
 .-----------------------.
@@ -363,6 +354,7 @@ class TestEvFormErrors(TestCase):
 |                       |
  -----------------------
 """
+
         self._validate(expected, self._form(form, cells=cell_mapping))
 
         # test with absolute alignment (pass cells directly)
@@ -384,7 +376,6 @@ class TestEvFormErrors(TestCase):
 """
         self._validate(expected, self._form(form, cells=cell_mapping))
 
-    @skip("Awaiting rework of markup")
     def test_2763(self):
         """
         Testing https://github.com/evennia/evennia/issues/2763
@@ -397,6 +388,6 @@ class TestEvFormErrors(TestCase):
 
         formdict = {"form": "|R A |n _ x1xx"}
         cell_mapping = {1: "test"}
-        expected = "|R A |n _ |ntest|n"
+        expected = "|R A |n _ test"
         form = evform.EvForm(formdict, cells=cell_mapping)
-        self._validate(expected, str(form))
+        self.assertEqual(expected, form.raw())

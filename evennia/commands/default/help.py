@@ -18,7 +18,7 @@ from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.help.models import HelpEntry
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
 from evennia.utils import create, evmore
-from evennia.utils.ansi import ANSIString
+from evennia.utils.evstring import EvString
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.utils import (
     class_from_module,
@@ -264,7 +264,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 for category in sorted(set(list(help_dict.keys()))):
                     category_str = f"-- {category.title()} "
                     grid.append(
-                        ANSIString(
+                        EvString(
                             self.index_category_clr
                             + category_str
                             + "-" * (width - len(category_str))
@@ -306,7 +306,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 verbatim_elements=verbatim_elements,
                 line_prefix=self.index_topic_clr,
             )
-            cmd_grid = ANSIString("\n").join(gridrows) if gridrows else ""
+            cmd_grid = EvString("\n").join(gridrows) if gridrows else ""
 
         if any(db_help_dict.values()):
             # get db-based help entries by-category
@@ -323,7 +323,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 verbatim_elements=verbatim_elements,
                 line_prefix=self.index_topic_clr,
             )
-            db_grid = ANSIString("\n").join(gridrows) if gridrows else ""
+            db_grid = EvString("\n").join(gridrows) if gridrows else ""
 
         # only show the main separators if there are actually both cmd and db-based help
         if cmd_grid and db_grid:

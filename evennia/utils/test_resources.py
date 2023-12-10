@@ -36,7 +36,7 @@ from evennia.commands.default.muxcommand import MuxCommand
 from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.scripts.scripts import DefaultScript
 from evennia.server.serversession import ServerSession
-from evennia.utils import ansi, create
+from evennia.utils import evstring, create
 from evennia.utils.idmapper.models import flush_cache
 from evennia.utils.utils import all_from_module, to_str
 from mock import MagicMock, Mock, patch
@@ -323,7 +323,7 @@ class EvenniaCommandTestMixin:
         input_args,
         msg=None,
         cmdset=None,
-        noansi=True,
+        nocolor=True,
         caller=None,
         receiver=None,
         cmdstring=None,
@@ -351,17 +351,17 @@ class EvenniaCommandTestMixin:
                 so you can choose to only include the first part of the
                 returned message if that's enough to verify a correct result. EvMenu
                 decorations (like borders) are stripped and should not be included. This
-                should also not include color tags unless `noansi=False`.
+                should also not include color tags unless `nocolor=False`.
                 If the command returns texts in multiple separate `.msg`-
-                calls to a receiver, separate these with `|` if `noansi=True`
-                (default) and `||` if `noansi=False`. If no `msg` is given (`None`),
+                calls to a receiver, separate these with `|` if `nocolor=True`
+                (default) and `||` if `nocolor=False`. If no `msg` is given (`None`),
                 then no automatic comparison will be done.
             cmdset (str, optional): If given, make `.cmdset` available on the Command
                 instance as it runs. While `.cmdset` is normally available on the
                 Command instance by default, this is usually only used by
                 commands that explicitly operates/displays cmdsets, like
                 `examine`.
-            noansi (str, optional): By default the color tags of the `msg` is
+            nocolor (str, optional): By default the color tags of the `msg` is
                 ignored, this makes them significant. If unset, `msg` must contain
                 the same color tags as the actual return message.
             caller (Object or Account, optional): By default `self.char1` is used as the
@@ -501,24 +501,31 @@ class EvenniaCommandTestMixin:
 
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [
-                str(smsg[0]) if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg
+                smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg
             ]
             if expected_msg is None:
                 # no expected_msg; just build the returned_msgs dict
 
-                returned_msg = "\n".join(str(msg) for msg in stored_msg)
-                returned_msgs[receiver] = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
+                if nocolor:
+                    stored_msg = [evstring.strip_markup(msg) for msg in stored_msg]
+                    sep = "\n"
+                else:
+                    sep = evstring.EvString("\n")
+
+                returned_msg = sep.join(msg for msg in stored_msg)
+                returned_msgs[receiver] = returned_msg.strip()
             else:
                 # compare messages to expected
 
-                # set our separator for returned messages based on parsing ansi or not
-                msg_sep = "|" if noansi else "||"
+                # set our separator for returned messages based on parsing markup or not
+                msg_sep = "|" if nocolor else evstring.EvString("||")
 
                 # We remove Evmenu decorations since that just makes it harder
-                # to write the comparison string. We also strip ansi before this
+                # to write the comparison string. We also strip markup before this
                 # comparison since otherwise it would mess with the regex.
+                # FIXME: stripping markup here makes the "nocolor" flag pointless
                 returned_msg = msg_sep.join(
-                    _RE_STRIP_EVMENU.sub("", ansi.parse_ansi(mess, strip_ansi=noansi))
+                    _RE_STRIP_EVMENU.sub("", evstring.strip_markup(mess))
                     for mess in stored_msg
                 ).strip()
 

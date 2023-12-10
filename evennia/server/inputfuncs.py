@@ -52,7 +52,7 @@ def _maybe_strip_incoming_mxp(txt):
     global _STRIP_MXP
     if _STRIP_INCOMING_MXP:
         if not _STRIP_MXP:
-            from evennia.utils.ansi import strip_mxp as _STRIP_MXP
+            from evennia.utils.evstring import strip_mxp as _STRIP_MXP
         return _STRIP_MXP(txt)
     return txt
 

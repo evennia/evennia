@@ -474,14 +474,14 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         if show_session_data:
             # privileged info
             table = self.styled_table(
-                "|wAccount Name",
-                "|wOn for",
-                "|wIdle",
-                "|wPuppeting",
-                "|wRoom",
-                "|wCmds",
-                "|wProtocol",
-                "|wHost",
+                "Account Name",
+                "On for",
+                "Idle",
+                "Puppeting",
+                "Room",
+                "Cmds",
+                "Protocol",
+                "Host",
             )
             for session in session_list:
                 if not session.logged_in:
@@ -503,7 +503,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                 )
         else:
             # unprivileged
-            table = self.styled_table("|wAccount name", "|wOn for", "|wIdle")
+            table = self.styled_table("Account name", "On for", "Idle")
             for session in session_list:
                 if not session.logged_in:
                     continue
@@ -516,10 +516,10 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                     utils.time_format(delta_cmd, 1),
                 )
         is_one = naccounts == 1
-        self.msg(
-            "|wAccounts:|n\n%s\n%s unique account%s logged in."
-            % (table, "One" if is_one else naccounts, "" if is_one else "s")
-        )
+        # TODO: once packaging multiple objects into one msg is viable, combine these into one send
+        self.msg("|wAccounts:|n")
+        self.msg(table)
+        self.msg("{num} unique account{plural} logged in.".format(num="One" if is_one else naccounts, plural="" if is_one else "s"))
 
 
 class CmdOption(COMMAND_DEFAULT_CLASS):

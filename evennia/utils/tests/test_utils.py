@@ -15,7 +15,7 @@ from parameterized import parameterized
 from twisted.internet import task
 
 from evennia.utils import utils
-from evennia.utils.ansi import ANSIString
+from evennia.utils.evstring import EvString
 from evennia.utils.test_resources import BaseEvenniaTest
 
 
@@ -108,11 +108,11 @@ class TestMLen(TestCase):
     def test_mxp_string(self):
         self.assertEqual(utils.m_len("|lclook|ltat|le"), 2)
 
-    def test_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString("|lcl|gook|ltat|le|n")), 2)
+    def test_mxp_evstring(self):
+        self.assertEqual(utils.m_len(EvString("|lclook|ltat|le|n")), 2)
 
-    def test_non_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString("|gHello|n")), 5)
+    def test_non_mxp_evstring(self):
+        self.assertEqual(utils.m_len(EvString("|gHello|n")), 5)
 
     def test_list(self):
         self.assertEqual(utils.m_len([None, None]), 2)
@@ -133,11 +133,11 @@ class TestDisplayLen(TestCase):
     def test_mxp_string(self):
         self.assertEqual(utils.display_len("|lclook|ltat|le"), 2)
 
-    def test_mxp_ansi_string(self):
-        self.assertEqual(utils.display_len(ANSIString("|lcl|gook|ltat|le|n")), 2)
+    def test_mxp_evstring(self):
+        self.assertEqual(utils.display_len(EvString("|lclook|ltat|le|n")), 2)
 
-    def test_non_mxp_ansi_string(self):
-        self.assertEqual(utils.display_len(ANSIString("|gHello|n")), 5)
+    def test_non_mxp_evstring(self):
+        self.assertEqual(utils.display_len(EvString("|gHello|n")), 5)
 
     def test_list(self):
         self.assertEqual(utils.display_len([None, None]), 2)
@@ -147,30 +147,6 @@ class TestDisplayLen(TestCase):
 
     def test_east_asian(self):
         self.assertEqual(utils.display_len("서서서"), 6)
-
-
-class TestANSIString(TestCase):
-    """
-    Verifies that ANSIString's string-API works as intended.
-    """
-
-    def setUp(self):
-        self.example_raw = "|relectric |cboogaloo|n"
-        self.example_ansi = ANSIString(self.example_raw)
-        self.example_str = "electric boogaloo"
-        self.example_output = "\x1b[1m\x1b[31melectric \x1b[1m\x1b[36mboogaloo\x1b[0m"
-
-    def test_length(self):
-        self.assertEqual(len(self.example_ansi), 17)
-
-    def test_clean(self):
-        self.assertEqual(self.example_ansi.clean(), self.example_str)
-
-    def test_raw(self):
-        self.assertEqual(self.example_ansi.raw(), self.example_output)
-
-    def test_format(self):
-        self.assertEqual(f"{self.example_ansi:0<20}", self.example_output + "000")
 
 
 class TestTimeformat(TestCase):
@@ -760,19 +736,22 @@ class TestJustify(TestCase):
         result = utils.justify("Task ID", width, align="c", indent=0, fillchar=" ")
         self.assertEqual(expected, result)
 
-    def test_justify_ansi(self):
+    def test_justify_evstring(self):
         """
-        Justify ansistring
+        Ensure markup data is not being lost and text is being justified.
 
         """
-
-        from evennia.utils.ansi import ANSI_RED
-
-        line = ANSIString("This is a |rred|n word")
-
+        line = EvString("This is a |rred|n word")
         result = utils.justify(line, align="c", width=30)
+        self.assertIn("|r", str(result))
+        # verify text is centered
+        self.assertEqual(len(result), 30)
+        self.assertTrue(str(result).startswith(" "*6))
+        self.assertTrue(str(result).endswith(" "*6))
+        # verify right-align indents at the beginning
+        result = utils.justify(line, align="r", width=20)
+        self.assertTrue(str(result).startswith("  "))
 
-        self.assertIn(ANSI_RED, str(result))
 
 
 class TestMatchIP(TestCase):

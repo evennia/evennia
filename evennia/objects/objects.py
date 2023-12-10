@@ -23,7 +23,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.server.signals import SIGNAL_EXIT_TRAVERSED
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
-from evennia.utils import ansi, create, funcparser, logger, search
+from evennia.utils import evstring, create, funcparser, logger, search
 from evennia.utils.utils import (
     class_from_module,
     is_iter,
@@ -631,12 +631,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             logger.log_trace()
 
         if text is not None:
-            if not (isinstance(text, str) or isinstance(text, tuple)):
-                # sanitize text before sending across the wire
-                try:
-                    text = to_str(text)
-                except Exception:
-                    text = repr(text)
+            # if not (isinstance(text, str) or isinstance(text, tuple)):
+            #     # sanitize text before sending across the wire
+            #     try:
+            #         text = to_str(text)
+            #     except Exception:
+            #         text = repr(text)
             kwargs["text"] = text
 
         # relay to session(s)
@@ -1231,8 +1231,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
-            return "{}(#{})".format(self.name, self.id)
-        return self.name
+            return evstring.EvString("{}(#{})".format(self.name, self.id))
+        return evstring.EvString(self.name)
 
     def get_numbered_name(self, count, looker, **kwargs):
         """
@@ -1261,7 +1261,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         plural_category = "plural_key"
         key = kwargs.get("key", self.name)
-        key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
+        key = evstring.EvString(key)  # this is needed to allow inflection of colored names
         try:
             plural = _INFLECT.plural(key, count)
             plural = "{} {}".format(_INFLECT.number_to_words(count, threshold=12), plural)

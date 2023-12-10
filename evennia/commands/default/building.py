@@ -18,7 +18,7 @@ from evennia.prototypes import prototypes as protlib
 from evennia.prototypes import spawner
 from evennia.scripts.models import ScriptDB
 from evennia.utils import create, funcparser, logger, search, utils
-from evennia.utils.ansi import raw as ansi_raw
+from evennia.utils.evstring import escape_markup
 from evennia.utils.dbserialize import deserialize
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
@@ -2804,7 +2804,7 @@ class CmdExamine(ObjManipCommand):
         typ = self._get_attribute_value_type(value)
         typ = f" |B[type: {typ}]|n" if typ else ""
         value = utils.to_str(value)
-        value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
+        value = _FUNCPARSER.parse(escape_markup(value), escape=True)
         return (
             f"Attribute {obj.name}/{self.header_color}{key}|n "
             f"[category={category}]{typ}:\n\n{value}"
@@ -2819,7 +2819,7 @@ class CmdExamine(ObjManipCommand):
         typ = self._get_attribute_value_type(value)
         typ = f" |B[type: {typ}]|n" if typ else ""
         value = utils.to_str(value)
-        value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
+        value = _FUNCPARSER.parse(escape_markup(value), escape=True)
         value = utils.crop(value)
         if category:
             return f"{self.header_color}{key}|n[{category}]={value}{typ}"
@@ -3392,7 +3392,7 @@ class ScriptEvMore(EvMore):
                 crop(script.desc, width=20),
             )
 
-        return str(table)
+        return table
 
 
 class CmdScripts(COMMAND_DEFAULT_CLASS):

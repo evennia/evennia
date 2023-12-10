@@ -118,157 +118,14 @@ from copy import copy, deepcopy
 from textwrap import TextWrapper
 
 from django.conf import settings
-
-from evennia.utils.ansi import ANSIString
+from evennia.utils.evstring import EvString, EvStringContainer, EvTextWrapper, escape_markup
 from evennia.utils.utils import display_len as d_len
 from evennia.utils.utils import is_iter, justify
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
-
-
-def _to_ansi(obj):
-    """
-    convert to ANSIString.
-
-    Args:
-        obj (str): Convert incoming text to
-            be ANSI aware ANSIStrings.
-    """
-    if is_iter(obj):
-        return [_to_ansi(o) for o in obj]
-    else:
-        return ANSIString(obj)
-
+_HTML_ELEMENTS = settings.MARKUP_HTML_STRUCTURES
 
 _whitespace = "\t\n\x0b\x0c\r "
-
-
-class ANSITextWrapper(TextWrapper):
-    """
-    This is a wrapper work class for handling strings with ANSI tags
-    in it.  It overloads the standard library `TextWrapper` class and
-    is used internally in `EvTable` and has no public methods.
-
-    """
-
-    def _munge_whitespace(self, text):
-        """_munge_whitespace(text : string) -> string
-
-        Munge whitespace in text: expand tabs and convert all other
-        whitespace characters to spaces.  Eg. " foo\tbar\n\nbaz"
-        becomes " foo    bar  baz".
-        """
-        return text
-
-    # TODO: Ignore expand_tabs/replace_whitespace until ANSIString handles them.
-    # - don't remove this code. /Griatch
-    #        if self.expand_tabs:
-    #            text = text.expandtabs()
-    #        if self.replace_whitespace:
-    #            if isinstance(text, str):
-    #                text = text.translate(self.whitespace_trans)
-    #        return text
-
-    def _split(self, text):
-        """_split(text : string) -> [string]
-
-        Split the text to wrap into indivisible chunks.  Chunks are
-        not quite the same as words; see _wrap_chunks() for full
-        details.  As an example, the text
-          Look, goof-ball -- use the -b option!
-        breaks into the following chunks:
-          'Look,', ' ', 'goof-', 'ball', ' ', '--', ' ',
-          'use', ' ', 'the', ' ', '-b', ' ', 'option!'
-        if break_on_hyphens is True, or in:
-          'Look,', ' ', 'goof-ball', ' ', '--', ' ',
-          'use', ' ', 'the', ' ', '-b', ' ', option!'
-        otherwise.
-        """
-        # NOTE-PYTHON3: The following code only roughly approximates what this
-        #               function used to do. Regex splitting on ANSIStrings is
-        #               dropping ANSI codes, so we're using ANSIString.split
-        #               for the time being.
-        #
-        #               A less hackier solution would be appreciated.
-        chunks = _to_ansi(text).split()
-
-        chunks = [chunk + " " for chunk in chunks if chunk]  # remove empty chunks
-
-        if len(chunks) > 1:
-            chunks[-1] = chunks[-1][0:-1]
-
-        return chunks
-
-    def _wrap_chunks(self, chunks):
-        """_wrap_chunks(chunks : [string]) -> [string]
-
-        Wrap a sequence of text chunks and return a list of lines of
-        length 'self.width' or less.  (If 'break_long_words' is false,
-        some lines may be longer than this.)  Chunks correspond roughly
-        to words and the whitespace between them: each chunk is
-        indivisible (modulo 'break_long_words'), but a line break can
-        come between any two chunks.  Chunks should not have internal
-        whitespace; ie. a chunk is either all whitespace or a "word".
-        Whitespace chunks will be removed from the beginning and end of
-        lines, but apart from that whitespace is preserved.
-        """
-        lines = []
-        if self.width <= 0:
-            raise ValueError("invalid width %r (must be > 0)" % self.width)
-
-        # Arrange in reverse order so items can be efficiently popped
-        # from a stack of chucks.
-        chunks.reverse()
-
-        while chunks:
-            # Start the list of chunks that will make up the current line.
-            # cur_len is just the length of all the chunks in cur_line.
-            cur_line = []
-            cur_len = 0
-
-            # Figure out which static string will prefix this line.
-            if lines:
-                indent = self.subsequent_indent
-            else:
-                indent = self.initial_indent
-
-            # Maximum width for this line.
-            width = self.width - d_len(indent)
-
-            # First chunk on line is whitespace -- drop it, unless this
-            # is the very beginning of the text (ie. no lines started yet).
-            if self.drop_whitespace and chunks[-1].strip() == "" and lines:
-                del chunks[-1]
-
-            while chunks:
-                ln = d_len(chunks[-1])
-
-                # Can at least squeeze this chunk onto the current line.
-                if cur_len + ln <= width:
-                    cur_line.append(chunks.pop())
-                    cur_len += ln
-
-                # Nope, this line is full.
-                else:
-                    break
-
-            # The current line is full, and the next chunk is too big to
-            # fit on *any* line (not just this one).
-            if chunks and d_len(chunks[-1]) > width:
-                self._handle_long_word(chunks, cur_line, cur_len, width)
-
-            # If the last chunk on this line is all whitespace, drop it.
-            if self.drop_whitespace and cur_line and cur_line[-1].strip() == "":
-                del cur_line[-1]
-
-            # Convert current line back to a string and store it in list
-            # of all lines (return value).
-            if cur_line:
-                ln = ""
-                for w in cur_line:  # ANSI fix
-                    ln += w  #
-                lines.append(indent + ln)
-        return lines
 
 
 # -- Convenience interface ---------------------------------------------
@@ -292,7 +149,7 @@ def wrap(text, width=_DEFAULT_WIDTH, **kwargs):
         wrapping behaviour.
 
     """
-    w = ANSITextWrapper(width=width, **kwargs)
+    w = EvTextWrapper(width=width, **kwargs)
     return w.wrap(text)
 
 
@@ -313,14 +170,14 @@ def fill(text, width=_DEFAULT_WIDTH, **kwargs):
         filling behaviour.
 
     """
-    w = ANSITextWrapper(width=width, **kwargs)
+    w = EvTextWrapper(width=width, **kwargs)
     return w.fill(text)
 
 
 # EvCell class (see further down for the EvTable itself)
 
 
-class EvCell:
+class EvCell(EvStringContainer):
     """
     Holds a single data cell for the table. A cell has a certain width
     and height and contains one or more lines of data. It can shrink
@@ -401,18 +258,18 @@ class EvCell:
 
         # avoid multi-char pad_chars messing up counting
         pad_char = kwargs.get("pad_char", " ")
-        pad_char = pad_char[0] if pad_char else " "
+        pad_char = EvString(pad_char[0]) if pad_char else " "
         hpad_char = kwargs.get("hpad_char", pad_char)
-        self.hpad_char = hpad_char[0] if hpad_char else pad_char
+        self.hpad_char = EvString(hpad_char[0]) if hpad_char else pad_char
         vpad_char = kwargs.get("vpad_char", pad_char)
-        self.vpad_char = vpad_char[0] if vpad_char else pad_char
+        self.vpad_char = EvString(vpad_char[0]) if vpad_char else pad_char
 
         fill_char = kwargs.get("fill_char", " ")
-        fill_char = fill_char[0] if fill_char else " "
+        fill_char = EvString(fill_char[0]) if fill_char else " "
         hfill_char = kwargs.get("hfill_char", fill_char)
-        self.hfill_char = hfill_char[0] if hfill_char else " "
+        self.hfill_char = EvString(hfill_char[0]) if hfill_char else " "
         vfill_char = kwargs.get("vfill_char", fill_char)
-        self.vfill_char = vfill_char[0] if vfill_char else " "
+        self.vfill_char = EvString(vfill_char[0]) if vfill_char else " "
 
         self.crop_string = kwargs.get("crop_string", "[...]")
 
@@ -424,27 +281,30 @@ class EvCell:
         self.border_bottom = kwargs.get("border_bottom", borderwidth)
 
         borderchar = kwargs.get("border_char", None)
-        self.border_left_char = kwargs.get("border_left_char", borderchar if borderchar else "|")
-        self.border_right_char = kwargs.get(
+        self.border_left_char = EvString(kwargs.get("border_left_char", borderchar if borderchar else "|"))
+        self.border_right_char = EvString(kwargs.get(
             "border_right_char", borderchar if borderchar else self.border_left_char
-        )
-        self.border_top_char = kwargs.get("border_top_char", borderchar if borderchar else "-")
-        self.border_bottom_char = kwargs.get(
+        ))
+        self.border_top_char = EvString(kwargs.get("border_top_char", borderchar if borderchar else "-"))
+        self.border_bottom_char = EvString(kwargs.get(
             "border_bottom_char", borderchar if borderchar else self.border_top_char
-        )
+        ))
 
         corner_char = kwargs.get("corner_char", "+")
-        self.corner_top_left_char = kwargs.get("corner_top_left_char", corner_char)
-        self.corner_top_right_char = kwargs.get("corner_top_right_char", corner_char)
-        self.corner_bottom_left_char = kwargs.get("corner_bottom_left_char", corner_char)
-        self.corner_bottom_right_char = kwargs.get("corner_bottom_right_char", corner_char)
+        self.corner_top_left_char = EvString(kwargs.get("corner_top_left_char", corner_char))
+        self.corner_top_right_char = EvString(kwargs.get("corner_top_right_char", corner_char))
+        self.corner_bottom_left_char = EvString(kwargs.get("corner_bottom_left_char", corner_char))
+        self.corner_bottom_right_char = EvString(kwargs.get("corner_bottom_right_char", corner_char))
 
         # alignments
         self.align = kwargs.get("align", "l")
         self.valign = kwargs.get("valign", "c")
 
-        self.data = self._split_lines(_to_ansi(data))
-        self.raw_width = max(d_len(line) for line in self.data)
+        self.data = self._split_lines(EvCell._to_evstring(data))
+        if not self.data:
+            self.raw_width = 0
+        else:
+            self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
 
         # this is extra trimming required for cels in the middle of a table only
@@ -476,8 +336,12 @@ class EvCell:
         Apply all EvCells' formatting operations.
 
         """
-        data = self._border(self._pad(self._valign(self._align(self._fit_width(self.data)))))
-        return data
+        data = self._fit_width(self.data)
+        data = self._align(data)
+        data = self._valign(data)
+        data = self._pad(data)
+        data = self._border(data)
+        return EvCell._to_evstring(data)
 
     def _split_lines(self, text):
         """
@@ -489,7 +353,7 @@ class EvCell:
         Returns:
             split (list): split text.
         """
-        return text.split("\n")
+        return text.split(EvString("\n"))
 
     def _fit_width(self, data):
         """
@@ -508,14 +372,13 @@ class EvCell:
         """
         width = self.width
         adjusted_data = []
+
         for line in data:
             if 0 < width < d_len(line):
-                # replace_whitespace=False, expand_tabs=False is a
-                # fix for ANSIString not supporting expand_tabs/translate
                 adjusted_data.extend(
                     [
-                        ANSIString(part + ANSIString("|n"))
-                        for part in wrap(line, width=width, drop_whitespace=False)
+                        EvString(part)
+                        for part in wrap(line, width=width)
                     ]
                 )
             else:
@@ -544,8 +407,7 @@ class EvCell:
     def _align(self, data):
         """
         Align list of rows of cell. Whitespace characters will be stripped
-        if there is only one whitespace character - otherwise, it's assumed
-        the caller may be trying some manual formatting in the text.
+        unless the alignment type is absolute.
 
         Args:
             data (str): Text to align.
@@ -625,9 +487,21 @@ class EvCell:
             text (str): Text with borders.
 
         """
+        def _extend_border(border_char, length):
+            # make sure any color codes around the border characters aren't duplicated by inserting
+            # the multiplied visible character back into it
+            if length == 0:
+                return ''
+            if not (clean_char := escape_markup(border_char.clean())):
+                return ''
+            return EvString(border_char.replace(clean_char, clean_char * length))
 
-        left = self.border_left_char * self.border_left + ANSIString("|n")
-        right = ANSIString("|n") + self.border_right_char * self.border_right
+        left = _extend_border(self.border_left_char, self.border_left)
+        if left:
+            left = left + EvString("|n")
+        right = _extend_border(self.border_left_char, self.border_right)
+        if right:
+            right = EvString("|n") + right
 
         cwidth = (
             self.width
@@ -637,17 +511,18 @@ class EvCell:
             + max(0, self.border_right - 1)
         )
 
-        vfill = self.corner_top_left_char if left else ""
-        vfill += cwidth * self.border_top_char
-        vfill += self.corner_top_right_char if right else ""
+        vfill = self.corner_top_left_char if self.border_left else ''
+        vfill += _extend_border(self.border_top_char, cwidth)
+        vfill += self.corner_top_right_char if self.border_right else ''
         top = [vfill for _ in range(self.border_top)]
 
-        vfill = self.corner_bottom_left_char if left else ""
-        vfill += cwidth * self.border_bottom_char
-        vfill += self.corner_bottom_right_char if right else ""
+        vfill = self.corner_bottom_left_char if self.border_left else ''
+        vfill += _extend_border(self.border_bottom_char, cwidth)
+        vfill += self.corner_bottom_right_char if self.border_right else ''
         bottom = [vfill for _ in range(self.border_bottom)]
-
         return top + [left + line + right for line in data] + bottom
+
+
 
     def get_min_height(self):
         """
@@ -679,7 +554,7 @@ class EvCell:
             natural_height (int): Height of cell.
 
         """
-        return len(self.formatted)  # if self.formatted else 0
+        return len(self.formatted) # if self.formatted else 0
 
     def get_width(self):
         """
@@ -689,7 +564,7 @@ class EvCell:
             natural_width (int): Width of cell.
 
         """
-        return d_len(self.formatted[0])  # if self.formatted else 0
+        return self.width + self.pad_left + self.pad_right + self.border_left + self.border_right
 
     def replace_data(self, data, **kwargs):
         """
@@ -703,7 +578,11 @@ class EvCell:
             `EvCell.__init__`.
 
         """
-        self.data = self._split_lines(_to_ansi(data))
+        self.data = self._split_lines(EvCell._to_evstring(data))
+        if not self.data:
+            self.raw_width = 0
+        else:
+            self.raw_width = max(d_len(line) for line in self.data)
         self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
         self.reformat(**kwargs)
@@ -738,17 +617,17 @@ class EvCell:
 
         self.enforce_size = kwargs.get("enforce_size", False)
 
-        pad_char = kwargs.pop("pad_char", None)
+        pad_char = kwargs.pop("pad_char", '')
         hpad_char = kwargs.pop("hpad_char", pad_char)
-        self.hpad_char = hpad_char[0] if hpad_char else self.hpad_char
+        self.hpad_char = EvString(hpad_char[0]) if hpad_char else self.hpad_char
         vpad_char = kwargs.pop("vpad_char", pad_char)
-        self.vpad_char = vpad_char[0] if vpad_char else self.vpad_char
+        self.vpad_char = EvString(vpad_char[0]) if vpad_char else self.vpad_char
 
         fillchar = kwargs.pop("fill_char", None)
         hfill_char = kwargs.pop("hfill_char", fillchar)
-        self.hfill_char = hfill_char[0] if hfill_char else self.hfill_char
+        self.hfill_char = EvString(hfill_char[0]) if hfill_char else self.hfill_char
         vfill_char = kwargs.pop("vfill_char", fillchar)
-        self.vfill_char = vfill_char[0] if vfill_char else self.vfill_char
+        self.vfill_char = EvString(vfill_char[0]) if vfill_char else self.vfill_char
 
         borderwidth = kwargs.get("border_width", None)
         self.border_left = kwargs.pop(
@@ -765,35 +644,35 @@ class EvCell:
         )
 
         borderchar = kwargs.get("border_char", None)
-        self.border_left_char = kwargs.pop(
+        self.border_left_char = EvString(kwargs.pop(
             "border_left_char", borderchar if borderchar else self.border_left_char
-        )
-        self.border_right_char = kwargs.pop(
+        ))
+        self.border_right_char = EvString(kwargs.pop(
             "border_right_char", borderchar if borderchar else self.border_right_char
-        )
-        self.border_top_char = kwargs.pop(
+        ))
+        self.border_top_char = EvString(kwargs.pop(
             "border_topchar", borderchar if borderchar else self.border_top_char
-        )
-        self.border_bottom_char = kwargs.pop(
+        ))
+        self.border_bottom_char = EvString(kwargs.pop(
             "border_bottom_char", borderchar if borderchar else self.border_bottom_char
-        )
+        ))
 
         corner_char = kwargs.get("corner_char", None)
-        self.corner_top_left_char = kwargs.pop(
+        self.corner_top_left_char = EvString(kwargs.pop(
             "corner_top_left", corner_char if corner_char is not None else self.corner_top_left_char
-        )
-        self.corner_top_right_char = kwargs.pop(
+        ))
+        self.corner_top_right_char = EvString(kwargs.pop(
             "corner_top_right",
             corner_char if corner_char is not None else self.corner_top_right_char,
-        )
-        self.corner_bottom_left_char = kwargs.pop(
+        ))
+        self.corner_bottom_left_char = EvString(kwargs.pop(
             "corner_bottom_left",
             corner_char if corner_char is not None else self.corner_bottom_left_char,
-        )
-        self.corner_bottom_right_char = kwargs.pop(
+        ))
+        self.corner_bottom_right_char = EvString(kwargs.pop(
             "corner_bottom_right",
             corner_char if corner_char is not None else self.corner_bottom_right_char,
-        )
+        ))
 
         # this is used by the table to adjust size of cells with borders in the middle
         # of the table
@@ -805,8 +684,7 @@ class EvCell:
             setattr(self, key, value)
 
         # Handle sizes
-        if "width" in kwargs:
-            width = kwargs.pop("width")
+        if width := kwargs.pop("width", None):
             self.width = (
                 width
                 - self.pad_left
@@ -818,8 +696,7 @@ class EvCell:
             # if self.width <= 0 and self.raw_width > 0:
             if self.width <= 0 < self.raw_width:
                 raise Exception("Cell width too small, no room for data.")
-        if "height" in kwargs:
-            height = kwargs.pop("height")
+        if height := kwargs.pop("height", None):
             self.height = (
                 height
                 - self.pad_top
@@ -843,22 +720,34 @@ class EvCell:
             self.formatted = self._reformat()
         return self.formatted
 
+    def collect_evstring(self):
+        return [d for d in self.data]
+
+    def ansi(self, **kwargs):
+        return "\n".join([EvString(line).ansi() for line in self.get()])
+    
+    def html(self, **kwargs):
+        if _HTML_ELEMENTS:
+            return "<td>"+"<br>".join([EvString(line).html() for line in self.collect_evstring()]) + "</td>"
+        else:
+            return "\n".join([EvString(line).html(**kwargs) for line in self.get()])
+
     def __repr__(self):
         if not self.formatted:
             self.formatted = self._reformat()
-        return str(ANSIString("<EvCel %s>" % self.formatted))
+        return str(EvString("<EvCell %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
         if not self.formatted:
             self.formatted = self._reformat()
-        return str(ANSIString("\n").join(self.formatted))
+        return str(EvString("\n").join(self.formatted))
 
 
 # EvColumn class
 
 
-class EvColumn:
+class EvColumn(EvStringContainer):
     """
     This class holds a list of Cells to represent a column of a table.
     It holds operations and settings that affect *all* cells in the
@@ -881,7 +770,7 @@ class EvColumn:
 
         """
         self.options = kwargs  # column-specific options
-        self.column = [EvCell(data, **kwargs) for data in args]
+        self.column = [EvCell(data, **kwargs) if not isinstance(data, EvCell) else data for data in args]
 
     def _balance(self, **kwargs):
         """
@@ -963,8 +852,12 @@ class EvColumn:
 
         """
         # column-level options take precedence here
+        # NOTE: but should they?
         kwargs.update(self.options)
         self.column[index].reformat(**kwargs)
+
+    def collect_evstring(self):
+        return list(self.column)
 
     def __repr__(self):
         return "<EvColumn\n  %s>" % "\n  ".join([repr(cell) for cell in self.column])
@@ -988,7 +881,7 @@ class EvColumn:
 # Main Evtable class
 
 
-class EvTable:
+class EvTable(EvStringContainer):
     """
     The table class holds a list of EvColumns, each consisting of EvCells so
     that the result is a 2D matrix.
@@ -1064,7 +957,7 @@ class EvTable:
         table = kwargs.pop("table", [])
 
         # header is a list of texts. We merge it to the table's top
-        header = [_to_ansi(head) for head in args]
+        header = [EvTable._to_evstring(head) for head in args]
         self.header = header != []
         if self.header:
             if table:
@@ -1074,7 +967,7 @@ class EvTable:
                     table.extend([] for _ in range(excess))
                 elif excess < 0:
                     # too short header
-                    header.extend(_to_ansi(["" for _ in range(abs(excess))]))
+                    header.extend(EvTable._to_evstring(["" for _ in range(abs(excess))]))
                 for ix, heading in enumerate(header):
                     table[ix].insert(0, heading)
             else:
@@ -1106,16 +999,16 @@ class EvTable:
         self.border_width = kwargs.get("border_width", 1)
         self.corner_char = kwargs.get("corner_char", "+")
         pcorners = kwargs.pop("pretty_corners", False)
-        self.corner_top_left_char = _to_ansi(
+        self.corner_top_left_char = EvTable._to_evstring(
             kwargs.pop("corner_top_left_char", "." if pcorners else self.corner_char)
         )
-        self.corner_top_right_char = _to_ansi(
+        self.corner_top_right_char = EvTable._to_evstring(
             kwargs.pop("corner_top_right_char", "." if pcorners else self.corner_char)
         )
-        self.corner_bottom_left_char = _to_ansi(
+        self.corner_bottom_left_char = EvTable._to_evstring(
             kwargs.pop("corner_bottom_left_char", " " if pcorners else self.corner_char)
         )
-        self.corner_bottom_right_char = _to_ansi(
+        self.corner_bottom_right_char = EvTable._to_evstring(
             kwargs.pop("corner_bottom_right_char", " " if pcorners else self.corner_char)
         )
 
@@ -1146,6 +1039,7 @@ class EvTable:
                     "EvTable 'table' kwarg must be a list of EvColumns or a list-of-lists of"
                     f" strings. Found {type(col)}."
                 )
+
 
         # self.table = [EvColumn(*col, **kwargs) for col in table]
 
@@ -1285,6 +1179,7 @@ class EvTable:
         # actual table. This allows us to add columns/rows
         # and re-balance over and over without issue.
         self.worktable = deepcopy(self.table)
+        # print(self.table)
         #        self._borders()
         #        return
         options = copy(self.options)
@@ -1306,6 +1201,7 @@ class EvTable:
         # add borders - these add to the width/height, so we must do this before calculating
         # width/height
         self._borders()
+
 
         # equalize widths within each column
         cwidths = [max(cell.get_width() for cell in col) for col in self.worktable]
@@ -1401,6 +1297,7 @@ class EvTable:
         if self.height:
             # if we are fixing the table height, it means cells must crop text instead of resizing.
             if nrowmax:
+
                 # get minimum possible cell heights for each column
                 cheights_min = [
                     max(cell.get_min_height() for cell in (col[iy] for col in self.worktable))
@@ -1466,7 +1363,7 @@ class EvTable:
             cell_data = [cell.get() for cell in cell_row]
             cell_height = min(len(lines) for lines in cell_data)
             for iline in range(cell_height):
-                yield ANSIString("").join(_to_ansi(celldata[iline] for celldata in cell_data))
+                yield EvString("").join(EvTable._to_evstring(celldata[iline] for celldata in cell_data))
 
     def add_header(self, *args, **kwargs):
         """
@@ -1622,12 +1519,12 @@ class EvTable:
         self.corner_char = kwargs.get("corner_char", self.corner_char)
         self.header_line_char = kwargs.get("header_line_char", self.header_line_char)
 
-        self.corner_top_left_char = _to_ansi(kwargs.pop("corner_top_left_char", self.corner_char))
-        self.corner_top_right_char = _to_ansi(kwargs.pop("corner_top_right_char", self.corner_char))
-        self.corner_bottom_left_char = _to_ansi(
+        self.corner_top_left_char = EvTable._to_evstring(kwargs.pop("corner_top_left_char", self.corner_char))
+        self.corner_top_right_char = EvTable._to_evstring(kwargs.pop("corner_top_right_char", self.corner_char))
+        self.corner_bottom_left_char = EvTable._to_evstring(
             kwargs.pop("corner_bottom_left_char", self.corner_char)
         )
-        self.corner_bottom_right_char = _to_ansi(
+        self.corner_bottom_right_char = EvTable._to_evstring(
             kwargs.pop("corner_bottom_right_char", self.corner_char)
         )
 
@@ -1663,9 +1560,36 @@ class EvTable:
             table_lines (list): The lines of the table, in order.
 
         """
-        return [line for line in self._generate_lines()]
+        outp = [line for line in self._generate_lines()]
+        return outp
+    
+    def collect_evstring(self):
+        return self.get()
+    
+    # TODO: this SHOULD mean we can support custom table rendering for HTML now, if I code it up
+
+    def html(self, **kwargs):
+        if _HTML_ELEMENTS:
+            widths = [col.width for col in self.table]
+            output = f"<table style=\"width:{self.width + 'em' if self.width else '100%'}\">\n"
+            output += "<colgroup>"
+            for width in widths:
+                width_style = f'style="width: {width}em"' if width else ''
+                output += f"<col span=1 {width_style}>"
+            output += "</colgroup>"
+
+            # header
+            output += "<tbody>\n"
+            for iy in range(self.nrows):
+                cell_row = [col[iy] for col in self.table]
+                row_els = [cell.html() for cell in cell_row]
+                output += "<tr>" + "".join(row_els) + "</tr>"
+
+        else:
+            return super().html()
+        
 
     def __str__(self):
         """print table (this also balances it)"""
         # h = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
-        return str(str(ANSIString("\n").join([line for line in self._generate_lines()])))
+        return str(EvString("\n").join([line for line in self._generate_lines()]))

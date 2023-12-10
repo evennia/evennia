@@ -148,8 +148,7 @@ the form will raise an error.
 import re
 from copy import copy
 
-from evennia.utils.ansi import ANSIString
-from evennia.utils.ansi import raw as ansi_raw
+from evennia.utils.evstring import EvString, EvStringContainer
 from evennia.utils.evtable import EvCell, EvTable
 from evennia.utils.utils import all_from_module, is_iter, to_str
 
@@ -157,12 +156,9 @@ from evennia.utils.utils import all_from_module, is_iter, to_str
 # used as separators between forms without being detected
 # as an identifier). These should be listed in regex form.
 INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
-# if there is an ansi-escape (||) we have to replace this with ||| to make sure
-# to properly escape down the line
-_ANSI_ESCAPE = re.compile(r"\|\|")
 
 
-class EvForm:
+class EvForm(EvStringContainer):
     """
     This object is instantiated with a text file and parses
     it for rectangular form fields. It can then be fed a
@@ -226,7 +222,7 @@ class EvForm:
             dict((to_str(key), value) for key, value in tables.items()) if tables else {}
         )
         self.literals_mapping = (
-            dict((to_str(key), to_str(value)) for key, value in literals.items())
+            dict((to_str(key), EvForm._to_evstring(value)) for key, value in literals.items())
             if literals
             else {}
         )
@@ -326,14 +322,14 @@ class EvForm:
         Forces all lines to be as long as the longest line, filling with whitespace.
 
         Args:
-            lines (list): list of `ANSIString`s
+            lines (list): list of `EvString`s
 
         Returns:
-            (list): list of `ANSIString`s of
+            (list): list of `EvString`s of
             same length as the longest input line
 
         """
-        matrix = EvForm._to_ansi(self.literal_form.split("\n"))
+        matrix = EvForm._to_evstring(self.literal_form.split("\n"))
 
         maxl = max(len(line) for line in matrix)
         matrix = [line + " " * (maxl - len(line)) for line in matrix]
@@ -341,27 +337,6 @@ class EvForm:
             # the first line is normally empty, we strip it.
             matrix = matrix[1:]
         return matrix
-
-    @staticmethod
-    def _to_ansi(obj, regexable=False):
-        "convert anything to ANSIString"
-
-        if isinstance(obj, ANSIString):
-            return obj
-        elif isinstance(obj, str):
-            # since ansi will be parsed twice (here and in the normal ansi send), we have to
-            # escape ansi twice.
-            obj = ansi_raw(obj)
-
-        if isinstance(obj, dict):
-            return dict(
-                (key, EvForm._to_ansi(value, regexable=regexable)) for key, value in obj.items()
-            )
-        # regular _to_ansi (from EvTable)
-        elif is_iter(obj):
-            return [EvForm._to_ansi(o) for o in obj]
-        else:
-            return ANSIString(obj, regexable=regexable)
 
     def _rectangles_to_mapping(self):
         """
@@ -390,10 +365,10 @@ class EvForm:
             regex = re.compile(rf"{char}+([^{INVALID_FORMCHARS}{char}]+){char}+")
 
             # find the start/width of rectangles for each line
-            for iy, line in enumerate(EvForm._to_ansi(matrix, regexable=True)):
+            for iy, line in enumerate(EvForm._to_evstring(matrix)):
                 ix0 = 0
                 while True:
-                    match = regex.search(line, ix0)
+                    match = regex.search(line.clean(), ix0)
                     if match:
                         # get the width of the rectangle directly from the match
                         coords[match.group(1)] = [iy, match.start(), match.end()]
@@ -425,9 +400,8 @@ class EvForm:
                 width = rightix - leftix
                 height = abs(iyup - iydown) + 1
 
-                # store (key, y, x, width, height) of triangle
+                # store (key, y, x, width, height) of rectangle
                 rects.append((key, iyup, leftix, width, height))
-
             return rects
 
         # Map EvCells into form rectangles
@@ -445,7 +419,7 @@ class EvForm:
                 cell.reformat(
                     width=width,
                     height=height,
-                    **{**cell_options, **{"align": custom_align, "valign": custom_valign}},
+                    **(cell_options | {"align": custom_align, "valign": custom_valign}),
                 )
             else:
                 # generating cell on the fly
@@ -473,7 +447,7 @@ class EvForm:
         the final result.
 
         """
-        form = copy(self.matrix)
+        form = EvForm._to_evstring(copy(self.matrix))
         mapping = self.mapping
 
         for key, (y, x, width, height, cell_or_table) in mapping.items():
@@ -483,7 +457,7 @@ class EvForm:
                 formline = form[y + il]
                 # insert new content, replacing old
                 form[y + il] = formline[:x] + rectline + formline[x + width :]
-
+        
         return form
 
     def reload(self):
@@ -508,7 +482,7 @@ class EvForm:
         self.mapping = self._rectangles_to_mapping()
         # combine mapping with form template into a final result
         self.form = self._build_form()
-
+    
     def map(self, cells=None, tables=None, data=None, literals=None, **kwargs):
         """
         Add mapping for form. This allows for updating an existing
@@ -541,7 +515,7 @@ class EvForm:
         new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
         self.tables_mapping.update(new_tables)
         new_literals = (
-            dict((to_str(key), to_str(value)) for key, value in literals.items())
+            dict((to_str(key), EvForm._to_evstring(value)) for key, value in literals.items())
             if literals
             else {}
         )
@@ -552,6 +526,10 @@ class EvForm:
         # parse and build the form
         self.reload()
 
+    def collect_evstring(self):
+        return list([line for line in self.form])
+
     def __str__(self):
         "Prints the form"
-        return str(ANSIString("\n").join([line for line in self.form]))
+        return self.clean()
+        # return str(EvString("\n").join([line for line in self.form]))

@@ -94,7 +94,7 @@ EvTable = None
 EvForm = None
 EvEditor = None
 EvMore = None
-ANSIString = None
+EvString = None
 signals = None
 FuncParser = None
 
@@ -176,7 +176,7 @@ def _init(portal_mode=False):
     global TASK_HANDLER, PORTAL_SESSION_HANDLER, SERVER_SESSION_HANDLER
     global GLOBAL_SCRIPTS, OPTION_CLASSES, EVENNIA_PORTAL_SERVICE, EVENNIA_SERVER_SERVICE, TWISTED_APPLICATION
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
-    global ANSIString, FuncParser
+    global EvString, FuncParser
     global AttributeProperty, TagProperty, TagCategoryProperty, ServerConfig
     global PORTAL_MODE
     PORTAL_MODE = portal_mode
@@ -213,7 +213,7 @@ def _init(portal_mode=False):
     from .typeclasses.attributes import AttributeProperty
     from .typeclasses.tags import TagCategoryProperty, TagProperty
     from .utils import ansi, class_from_module, gametime, logger
-    from .utils.ansi import ANSIString
+    from .utils.evstring import EvString
 
     if not PORTAL_MODE:
         # containers

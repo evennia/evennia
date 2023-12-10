@@ -16,7 +16,7 @@ from evennia.objects.models import ObjectDB
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes import spawner
 from evennia.utils import evmore, utils
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 from evennia.utils.evmenu import EvMenu, list_node
 
 # ------------------------------------------------------------
@@ -2674,7 +2674,7 @@ class OLCMenu(EvMenu):
         olc_options = []
         other_options = []
         for key, desc in optionlist:
-            raw_key = strip_ansi(key).lower()
+            raw_key = strip_markup(key).lower()
             if raw_key in olc_keys:
                 desc = " {}".format(desc) if desc else ""
                 olc_options.append("|lc{}|lt{}|le{}".format(raw_key, key, desc))

@@ -2,7 +2,7 @@ import datetime
 
 from evennia import logger
 from evennia.utils import validatorfuncs
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 from evennia.utils.utils import crop
 from evennia.utils.validatorfuncs import _TZ_DICT
 
@@ -234,7 +234,7 @@ class Color(BaseOption):
         return f"{self.value} - |{self.value}this|n"
 
     def deserialize(self, save_data):
-        if not save_data or len(strip_ansi(f"|{save_data}|n")) > 0:
+        if not save_data or len(strip_markup(f"|{save_data}|n")) > 0:
             raise ValueError(f"{self.key} expected Color Code, got '{save_data}'")
         return save_data
 

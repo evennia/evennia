@@ -10,7 +10,7 @@ from mock import Mock
 from evennia import ScriptDB
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.objects.objects import ExitCommand
-from evennia.utils import ansi, utils
+from evennia.utils import evstring, utils
 from evennia.utils.create import create_object, create_script
 from evennia.utils.test_resources import BaseEvenniaTest
 
@@ -543,7 +543,7 @@ class TestDefaultCallbacks(BaseEvenniaCommandTest):
             ]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
-            returned_msg = ansi.parse_ansi("\n".join(stored_msg), strip_ansi=True)
+            returned_msg = evstring.strip_markup("\n".join(stored_msg))
             self.assertEqual(returned_msg, "char1 goes out.")
         finally:
             self.char2.msg = old_msg
@@ -569,7 +569,7 @@ class TestDefaultCallbacks(BaseEvenniaCommandTest):
             ]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
-            returned_msg = ansi.parse_ansi("\n".join(stored_msg), strip_ansi=True)
+            returned_msg = evstring.strip_markup("\n".join(stored_msg))
             self.assertEqual(returned_msg, "char1 goes in.")
         finally:
             self.char2.msg = old_msg

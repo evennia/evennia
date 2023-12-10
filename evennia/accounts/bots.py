@@ -13,7 +13,7 @@ import evennia
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import logger, search, utils
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
@@ -637,7 +637,7 @@ class DiscordBot(Bot):
             channel_name = channel.name
             for dc_chan in [dcid for evchan, dcid in channel_list if evchan == channel_name]:
                 # send outputfunc channel(msg, discord channel)
-                super().msg(channel=(strip_ansi(message.strip()), dc_chan))
+                super().msg(channel=(strip_markup(message.strip()), dc_chan))
 
     def change_nickname(self, new_nickname, guild_id, user_id, **kwargs):
         """

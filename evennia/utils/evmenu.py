@@ -281,7 +281,7 @@ import evennia
 from evennia import CmdSet, Command
 from evennia.commands import cmdhandler
 from evennia.utils import logger
-from evennia.utils.ansi import strip_ansi
+from evennia.utils.evstring import strip_markup
 from evennia.utils.evtable import EvColumn, EvTable
 from evennia.utils.utils import (
     crop,
@@ -981,7 +981,7 @@ class EvMenu:
                 if keys:
                     display_options.append((keys[0], desc))
                     for key in keys:
-                        self.options[strip_ansi(key).strip().lower()] = (goto, goto_kwargs)
+                        self.options[strip_markup(key).strip().lower()] = (goto, goto_kwargs)
 
         # format the text
         self.nodetext = self._format_node(nodetext, display_options)
@@ -1102,7 +1102,7 @@ class EvMenu:
 
         """
         # this is the input cmd given to the menu
-        cmd = strip_ansi(raw_string.strip().lower())
+        cmd = strip_markup(raw_string.strip().lower())
 
         try:
             if self.options and cmd in self.options:
@@ -1199,7 +1199,7 @@ class EvMenu:
                     + max(m_len(p) for p in desc_string.split("\n"))
                     + colsep,
                 )
-                raw_key = strip_ansi(key)
+                raw_key = strip_markup(key)
                 if raw_key != key:
                     # already decorations in key definition
                     table.append(f" |lc{raw_key}|lt{key}|le{desc_string}")

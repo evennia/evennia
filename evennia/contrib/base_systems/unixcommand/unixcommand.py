@@ -68,7 +68,7 @@ import shlex
 from textwrap import dedent
 
 from evennia import Command, InterruptCommand
-from evennia.utils.ansi import raw
+from evennia.utils.evstring import escape_markup
 
 
 class ParseError(Exception):
@@ -137,7 +137,7 @@ class UnixCommandParser(argparse.ArgumentParser):
             in order to avoid unintentional color codes.
 
         """
-        return raw(super().format_usage())
+        return escape_markup(super().format_usage())
 
     def format_help(self):
         """Return the parser help, including its epilog.
@@ -148,7 +148,7 @@ class UnixCommandParser(argparse.ArgumentParser):
             in the epilog (the command docstring) are supported.
 
         """
-        autohelp = raw(super().format_help())
+        autohelp = escape_markup(super().format_help())
         return "\n" + autohelp + "\n" + self.post_help
 
     def print_usage(self, file=None):
