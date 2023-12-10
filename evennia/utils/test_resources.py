@@ -97,6 +97,7 @@ DEFAULT_SETTING_RESETS = dict(
     BASE_GUEST_TYPECLASS="evennia.accounts.accounts.DefaultGuest",
     # a special setting boolean TEST_ENVIRONMENT is set by the test runner
     # while the test suite is running.
+    DEFAULT_HOME="#1",
     TEST_ENVIRONMENT=True,
 )
 
@@ -191,11 +192,11 @@ class EvenniaTestMixin:
             self.account2.delete()
 
     # Set up fake prototype module for allowing tests to use named prototypes.
-    @override_settings(
-        PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"], DEFAULT_HOME="#1"
-    )
+    @override_settings(PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"])
     def create_rooms(self):
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
+        self.room1.id = 1  # be sure this is default Home
+        self.room1.save()
         self.room1.db.desc = "room_desc"
 
         self.room2 = create.create_object(self.room_typeclass, key="Room2")
@@ -552,6 +553,7 @@ class BaseEvenniaTestCase(TestCase):
     """
 
     def tearDown(self) -> None:
+        super().tearDown()
         flush_cache()
 
 
@@ -571,6 +573,7 @@ class EvenniaTestCase(TestCase):
     """
 
     def tearDown(self) -> None:
+        super().tearDown()
         flush_cache()
 
 

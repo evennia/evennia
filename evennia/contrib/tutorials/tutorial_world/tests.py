@@ -3,13 +3,12 @@ Test tutorial_world/mob
 
 """
 
-from mock import patch
-from twisted.internet.base import DelayedCall
-from twisted.trial.unittest import TestCase as TwistedTestCase
-
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
 from evennia.utils.test_resources import BaseEvenniaTest, mockdeferLater, mockdelay
+from mock import patch
+from twisted.internet.base import DelayedCall
+from twisted.trial.unittest import TestCase as TwistedTestCase
 
 from . import mob
 from . import objects as tutobjects
@@ -35,6 +34,10 @@ DelayedCall.debug = True
 
 
 class TestTutorialWorldObjects(TwistedTestCase, BaseEvenniaCommandTest):
+    def tearDown(self):
+        self.char1.delete()
+        super(BaseEvenniaCommandTest, self).tearDown()
+
     def test_tutorialobj(self):
         obj1 = create_object(tutobjects.TutorialObject, key="tutobj")
         obj1.reset()
@@ -103,15 +106,19 @@ class TestTutorialWorldObjects(TwistedTestCase, BaseEvenniaCommandTest):
         self.call(
             tutobjects.CmdShiftRoot(),
             "green root up",
-            "You shift the weedy green root upwards.|Holding aside the root you "
-            "think you notice something behind it ...",
+            (
+                "You shift the weedy green root upwards.|Holding aside the root you "
+                "think you notice something behind it ..."
+            ),
             obj=wall,
         )
         self.call(
             tutobjects.CmdPressButton(),
             "",
-            "You move your fingers over the suspicious depression, then gives it a "
-            "decisive push. First",
+            (
+                "You move your fingers over the suspicious depression, then gives it a "
+                "decisive push. First"
+            ),
             obj=wall,
         )
         # we patch out the delay, so these are closed immediately

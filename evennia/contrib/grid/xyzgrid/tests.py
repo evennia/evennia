@@ -1339,14 +1339,6 @@ class TestXYZGrid(BaseEvenniaTest):
     zcoord = "map1"
 
     def setUp(self):
-        from django.conf import settings
-        from evennia import create_object
-
-        # we need to create a home room for the grid to be able to be properly deleted
-        home = create_object(typeclass="typeclasses.rooms.Room", key="Home", nohome=True)
-        home.id = settings.DEFAULT_HOME.strip("#")
-        home.save()
-
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
 
         self.map_data1 = {"map": MAP1, "zcoord": self.zcoord}

@@ -1185,7 +1185,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             for session in self.sessions.all():
                 self.account.unpuppet_object(session)
 
-        self.account = None
+        # unlink account/home to avoid issues with saving
+        self.db_account = None
+        self.db_home = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
             script.delete()
