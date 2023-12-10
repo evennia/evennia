@@ -263,6 +263,9 @@ class EvenniaTestMixin:
         self.create_script()
         self.setup_session()
 
+    @override_settings(
+        PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"], DEFAULT_HOME="#1"
+    )
     def tearDown(self):
         flush_cache()
         try:
