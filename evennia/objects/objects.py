@@ -204,6 +204,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     """
 
+    # Determines which order command sets begin to be assembled from.
+    # Objects are usually third.
+    cmdset_provider_order = 100
+    cmdset_provider_error_order = 100
+    cmdset_provider_type = "object"
+
     # Used for sorting / filtering in inventories / room contents.
     _content_types = ("object",)
 
@@ -255,6 +261,22 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         return self.sessions.count()
+
+    def get_cmdset_providers(self) -> dict[str, "CmdSetProvider"]:
+        """
+        Overrideable method which returns a dictionary of every kind of object which
+        has a cmdsethandler linked to this Object, and should participate in cmdset
+        merging.
+
+        Objects might be aware of an Account. Otherwise, just themselves, by default.
+
+        Returns:
+            dict[str, CmdSetProvider]: The CmdSetProviders linked to this Object.
+        """
+        out = {"object": self}
+        if self.account:
+            out["account"] = self.account
+        return out
 
     @property
     def is_superuser(self):
@@ -1601,11 +1623,27 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         have no cmdsets.
 
         Keyword Args:
-            caller (Session, Object or Account): The caller requesting
-                this cmdset.
+            caller (obj): The object requesting the cmdsets.
+            current (cmdset): The current merged cmdset.
+            force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)
+            **kwargs: Arbitrary input for overloads.
 
         """
         pass
+
+    def get_cmdsets(self, caller, current, **kwargs):
+        """
+        Called by the CommandHandler to get a list of cmdsets to merge.
+
+        Args:
+            caller (obj): The object requesting the cmdsets.
+            current (cmdset): The current merged cmdset.
+            **kwargs: Arbitrary input for overloads.
+
+        Returns:
+            tuple: A tuple of (current, cmdsets), which is probably self.cmdset.current and self.cmdset.cmdset_stack
+        """
+        return self.cmdset.current, list(self.cmdset.cmdset_stack)
 
     def at_pre_puppet(self, account, session=None, **kwargs):
         """

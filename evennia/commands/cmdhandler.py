@@ -41,6 +41,7 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.task import deferLater
 
 from evennia.commands.command import InterruptCommand
+from evennia.commands.cmdset import CmdSet
 from evennia.utils import logger, utils
 from evennia.utils.utils import string_suggestions
 
@@ -150,9 +151,13 @@ _GET_INPUT = None
 
 
 # helper functions
+def err_helper(raw_string, cmdid=None):
+    if cmdid is not None:
+        return raw_string, {"cmdid": cmdid}
+    return raw_string
 
 
-def _msg_err(receiver, stringtuple):
+def _msg_err(receiver, stringtuple, cmdid=None):
     """
     Helper function for returning an error to the caller.
 
@@ -168,19 +173,16 @@ def _msg_err(receiver, stringtuple):
     tracestring = format_exc()
     logger.log_trace()
     if _IN_GAME_ERRORS:
-        receiver.msg(
-            string.format(
-                traceback=tracestring, errmsg=stringtuple[0].strip(), timestamp=timestamp
-            ).strip()
-        )
+        out = string.format(
+            traceback=tracestring, errmsg=stringtuple[0].strip(), timestamp=timestamp
+        ).strip()
     else:
-        receiver.msg(
-            string.format(
-                traceback=tracestring.splitlines()[-1],
-                errmsg=stringtuple[1].strip(),
-                timestamp=timestamp,
-            ).strip()
-        )
+        out = string.format(
+            traceback=tracestring.splitlines()[-1],
+            errmsg=stringtuple[1].strip(),
+            timestamp=timestamp,
+        ).strip()
+    receiver.msg(err_helper(out, cmdid=cmdid))
 
 
 def _process_input(caller, prompt, result, cmd, generator):
@@ -280,10 +282,39 @@ class ErrorReported(Exception):
 
 
 # Helper function
+def generate_cmdset_providers(called_by, session=None):
+    cmdset_providers = dict()
+    cmdset_providers.update(called_by.get_cmdset_providers())
+    if session and session is not called_by:
+        cmdset_providers.update(session.get_cmdset_providers())
+
+    cmdset_providers_list = list(cmdset_providers.values())
+    cmdset_providers_list.sort(key=lambda x: getattr(x, "cmdset_provider_order", 0))
+    # sort the dictionary by priority. This can be done because Python now cares about dictionary insert order.
+    cmdset_providers = {c.cmdset_provider_type: c for c in cmdset_providers_list}
+
+    if not cmdset_providers:
+        raise RuntimeError("cmdhandler: no command objects found.")
+
+    # the caller will be the one to receive messages and excert its permissions.
+    # we assign the caller with preference 'bottom up'
+    caller = cmdset_providers_list[-1]
+
+    cmdset_providers_errors_list = sorted(
+        cmdset_providers_list, key=lambda x: getattr(x, "cmdset_provider_error_order", 0)
+    )
+
+    # The error_to is the default recipient for errors. Tries to make sure an account
+    # does not get spammed for errors while preserving character mirroring.
+    error_to = cmdset_providers_errors_list[-1]
+
+    return cmdset_providers, cmdset_providers_list, cmdset_providers_errors_list, caller, error_to
 
 
 @inlineCallbacks
-def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string):
+def get_and_merge_cmdsets(
+    caller, cmdset_providers, callertype, raw_string, report_to=None, cmdid=None
+):
     """
     Gather all relevant cmdsets and merge them.
 
@@ -293,12 +324,11 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
             when the user is not logged in, this will be a Session, when being OOC
             it will be an Account and when puppeting an object this will (often) be
             a Character Object. In the end it depends on where the cmdset is stored.
-        session (Session or None): The Session associated with caller, if any.
-        account (Account or None): The calling Account associated with caller, if any.
-        obj (Object or None): The Object associated with caller, if any.
+        cmdset_providers (list): A list of sorted objects which provide cmdsets.
         callertype (str): This identifies caller as either "account", "object" or "session"
             to avoid having to do this check internally.
         raw_string (str): The input string. This is only used for error reporting.
+        report_to (Object, optional): If given, this object will receive error messages
 
     Returns:
         cmdset (Deferred): This deferred fires with the merged cmdset
@@ -366,81 +396,52 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                 raise ErrorReported(raw_string)
 
         @inlineCallbacks
-        def _get_cmdsets(obj):
+        def _get_cmdsets(obj, current):
             """
             Helper method; Get cmdset while making sure to trigger all
             hooks safely. Returns the stack and the valid options.
 
             """
             try:
-                yield obj.at_cmdset_get()
+                yield obj.at_cmdset_get(caller=caller, current=current)
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported(raw_string)
             try:
-                returnValue((obj.cmdset.current, list(obj.cmdset.cmdset_stack)))
+                returnValue(obj.get_cmdsets(caller=caller, current=current))
             except AttributeError:
                 returnValue(((None, None, None), []))
 
         local_obj_cmdsets = []
-        if callertype == "session":
-            # we are calling the command from the session level
-            report_to = session
-            current, cmdsets = yield _get_cmdsets(session)
-            if account:  # this automatically implies logged-in
-                pcurrent, account_cmdsets = yield _get_cmdsets(account)
-                cmdsets += account_cmdsets
-                current = current + pcurrent
-                if obj:
-                    ocurrent, obj_cmdsets = yield _get_cmdsets(obj)
-                    current = current + ocurrent
-                    cmdsets += obj_cmdsets
+
+        current_cmdset = CmdSet()
+        object_cmdsets = list()
+        for cmdobj in cmdset_providers:
+            current, cur_cmdsets = yield _get_cmdsets(cmdobj, current_cmdset)
+            if current:
+                current_cmdset = current_cmdset + current
+            if cur_cmdsets:
+                object_cmdsets += cur_cmdsets
+            match cmdobj.cmdset_provider_type:
+                case "object":
                     if not current.no_objs:
-                        local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
+                        local_obj_cmdsets = yield _get_local_obj_cmdsets(cmdobj)
                         if current.no_exits:
                             # filter out all exits
                             local_obj_cmdsets = [
                                 cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                             ]
-                        cmdsets += local_obj_cmdsets
-
-        elif callertype == "account":
-            # we are calling the command from the account level
-            report_to = account
-            current, cmdsets = yield _get_cmdsets(account)
-            if obj:
-                ocurrent, obj_cmdsets = yield _get_cmdsets(obj)
-                current = current + ocurrent
-                cmdsets += obj_cmdsets
-                if not current.no_objs:
-                    local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
-                    if current.no_exits:
-                        # filter out all exits
-                        local_obj_cmdsets = [
-                            cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
-                        ]
-                    cmdsets += local_obj_cmdsets
-
-        elif callertype == "object":
-            # we are calling the command from the object level
-            report_to = obj
-            current, cmdsets = yield _get_cmdsets(obj)
-            if not current.no_objs:
-                local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
-                if current.no_exits:
-                    # filter out all exits
-                    local_obj_cmdsets = [
-                        cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
-                    ]
-                cmdsets += yield local_obj_cmdsets
-        else:
-            raise Exception("get_and_merge_cmdsets: callertype %s is not valid." % callertype)
+                        object_cmdsets += local_obj_cmdsets
 
         # weed out all non-found sets
-        cmdsets = yield [cmdset for cmdset in cmdsets if cmdset and cmdset.key != "_EMPTY_CMDSET"]
+        cmdsets = yield [
+            cmdset for cmdset in object_cmdsets if cmdset and cmdset.key != "_EMPTY_CMDSET"
+        ]
         # report cmdset errors to user (these should already have been logged)
         yield [
-            report_to.msg(cmdset.errmessage) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"
+            report_to.msg(err_helper(cmdset.errmessage, cmdid=cmdid))
+            for cmdset in cmdsets
+            if cmdset.key == "_CMDSET_ERROR"
         ]
 
         if cmdsets:
@@ -550,9 +551,10 @@ def cmdhandler(
         default Evennia.
 
     """
+    cmdid = kwargs.get("cmdid", None)
 
     @inlineCallbacks
-    def _run_command(cmd, cmdname, args, raw_cmdname, cmdset, session, account):
+    def _run_command(cmd, cmdname, args, raw_cmdname, cmdset, session, account, cmdset_providers):
         """
         Helper function: This initializes and runs the Command
         instance once the parser has identified it as either a normal
@@ -568,6 +570,7 @@ def cmdhandler(
             cmdset (CmdSet): Command sert the command belongs to (if any)..
             session (Session): Session of caller (if any).
             account (Account): Account of caller (if any).
+            cmdset_providers (dict): Dictionary of all cmdset-providing objects.
 
         Returns:
             deferred (Deferred): this will fire with the return of the
@@ -586,6 +589,7 @@ def cmdhandler(
             cmd.cmdstring = cmdname  # deprecated
             cmd.args = args
             cmd.cmdset = cmdset
+            cmd.cmdset_providers = cmdset_providers.copy()
             cmd.session = session
             cmd.account = account
             cmd.raw_string = unformatted_raw_string
@@ -655,25 +659,15 @@ def cmdhandler(
         finally:
             _COMMAND_NESTING[called_by] -= 1
 
-    session, account, obj = session, None, None
-    if callertype == "session":
-        session = called_by
-        account = session.account
-        obj = session.puppet
-    elif callertype == "account":
-        account = called_by
-        if session:
-            obj = yield session.puppet
-    elif callertype == "object":
-        obj = called_by
-    else:
-        raise RuntimeError("cmdhandler: callertype %s is not valid." % callertype)
-    # the caller will be the one to receive messages and excert its permissions.
-    # we assign the caller with preference 'bottom up'
-    caller = obj or account or session
-    # The error_to is the default recipient for errors. Tries to make sure an account
-    # does not get spammed for errors while preserving character mirroring.
-    error_to = obj or session or account
+    (
+        cmdset_providers,
+        cmdset_providers_list,
+        cmdset_providers_list_error,
+        caller,
+        error_to,
+    ) = generate_cmdset_providers(called_by, session=session)
+
+    account = cmdset_providers.get("account", None)
 
     try:  # catch bugs in cmdhandler itself
         try:  # catch special-type commands
@@ -691,7 +685,7 @@ def cmdhandler(
             else:
                 # no explicit cmdobject given, figure it out
                 cmdset = yield get_and_merge_cmdsets(
-                    caller, session, account, obj, callertype, raw_string
+                    caller, cmdset_providers_list, callertype, raw_string, cmdid=cmdid
                 )
                 if not cmdset:
                     # this is bad and shouldn't happen.
@@ -764,7 +758,9 @@ def cmdhandler(
                 cmd = copy(cmd)
 
             # A normal command.
-            ret = yield _run_command(cmd, cmdname, args, raw_cmdname, cmdset, session, account)
+            ret = yield _run_command(
+                cmd, cmdname, args, raw_cmdname, cmdset, session, account, cmdset_providers
+            )
             returnValue(ret)
 
         except ErrorReported as exc:
@@ -780,17 +776,24 @@ def cmdhandler(
 
             if syscmd:
                 ret = yield _run_command(
-                    syscmd, syscmd.key, sysarg, unformatted_raw_string, cmdset, session, account
+                    syscmd,
+                    syscmd.key,
+                    sysarg,
+                    unformatted_raw_string,
+                    cmdset,
+                    session,
+                    account,
+                    cmdset_providers,
                 )
                 returnValue(ret)
             elif sysarg:
                 # return system arg
-                error_to.msg(exc.sysarg)
+                error_to.msg(err_helper(exc.sysarg, cmdid=cmdid))
 
         except NoCmdSets:
             # Critical error.
             logger.log_err("No cmdsets found: %s" % caller)
-            error_to.msg(_ERROR_NOCMDSETS)
+            error_to.msg(err_helper(_ERROR_NOCMDSETS, cmdid=cmdid))
 
         except Exception:
             # We should not end up here. If we do, it's a programming bug.

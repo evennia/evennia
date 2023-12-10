@@ -46,6 +46,12 @@ class ServerSession(_BASE_SESSION_CLASS):
 
     """
 
+    # Determines which order command sets begin to be assembled from.
+    # Sessions are usually first.
+    cmdset_provider_order = 0
+    cmdset_provider_error_order = 50
+    cmdset_provider_type = "session"
+
     def __init__(self):
         """
         Initiate to avoid AttributeErrors down the line
@@ -63,6 +69,25 @@ class ServerSession(_BASE_SESSION_CLASS):
         self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
 
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
+
+    def get_cmdset_providers(self) -> dict[str, "CmdSetProvider"]:
+        """
+        Overrideable method which returns a dictionary of every kind of object which
+        has a cmdsethandler linked to this ServerSession, and should participate in cmdset
+        merging.
+
+        In all normal cases, that's the Session itself, and possibly an account and puppeted
+         object.
+
+        Returns:
+            dict[str, CmdSetProvider]: The CmdSetProviders linked to this Object.
+        """
+        out = {"session": self}
+        if self.account:
+            out["account"] = self.account
+        if self.puppet:
+            out["object"] = self.puppet
+        return out
 
     @property
     def id(self):
@@ -376,11 +401,34 @@ class ServerSession(_BASE_SESSION_CLASS):
 
     def at_cmdset_get(self, **kwargs):
         """
-        A dummy hook all objects with cmdsets need to have
+        Called just before cmdsets on this object are requested by the
+        command handler. If changes need to be done on the fly to the
+        cmdset before passing them on to the cmdhandler, this is the
+        place to do it. This is called also if the object currently
+        have no cmdsets.
+
+        Keyword Args:
+            caller (obj): The object requesting the cmdsets.
+            current (cmdset): The current merged cmdset.
+            force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)
+            **kwargs: Arbitrary input for overloads.
 
         """
-
         pass
+
+    def get_cmdsets(self, caller, current, **kwargs):
+        """
+        Called by the CommandHandler to get a list of cmdsets to merge.
+
+        Args:
+            caller (obj): The object requesting the cmdsets.
+            current (cmdset): The current merged cmdset.
+            **kwargs: Arbitrary input for overloads.
+
+        Returns:
+            tuple: A tuple of (current, cmdsets), which is probably self.cmdset.current and self.cmdset.cmdset_stack
+        """
+        return self.cmdset.current, list(self.cmdset.cmdset_stack)
 
     # Mock db/ndb properties for allowing easy storage on the session
     # (note that no databse is involved at all here. session.db.attr =
