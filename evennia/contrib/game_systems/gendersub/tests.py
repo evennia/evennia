@@ -28,5 +28,38 @@ class TestGenderSub(BaseEvenniaCommandTest):
             "evennia.contrib.game_systems.gendersub.gendersub.DefaultCharacter.msg"
         ) as mock_msg:
             char.db.gender = "female"
-            char.msg("Test |p gender")
+            char.msg(txt)
             mock_msg.assert_called_with("Test her gender", from_obj=None, session=None)
+
+    def test_gendering_others(self):
+        """ensure characters see the gender of the sender, not themselves"""
+        fem = create_object(
+            gendersub.GenderCharacter,
+            key="Gendered",
+            location=self.room2,
+            attributes=[("gender", "female")],
+        )
+        masc = create_object(
+            gendersub.GenderCharacter,
+            key="Gendered",
+            location=self.room2,
+            attributes=[("gender", "male")],
+        )
+        txt = "Test |p gender"
+
+        with patch(
+            "evennia.contrib.game_systems.gendersub.gendersub.DefaultCharacter.msg"
+        ) as mock_msg:
+            fem.msg(txt, from_obj=masc)
+            self.assertIn("Test his gender", mock_msg.call_args.args)
+            masc.msg(txt, from_obj=fem)
+            self.assertIn("Test her gender", mock_msg.call_args.args)
+
+    def test_ungendered_source(self):
+        char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
+        txt = "Test |p gender"
+        with patch(
+            "evennia.contrib.game_systems.gendersub.gendersub.DefaultCharacter.msg"
+        ) as mock_msg:
+            char.msg(txt, from_obj=self.char1)
+            self.assertIn("Test their gender", mock_msg.call_args.args)
