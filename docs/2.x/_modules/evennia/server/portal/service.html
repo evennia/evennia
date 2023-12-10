@@ -277,9 +277,8 @@
                 <span class="n">webclientstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEBCLIENT_ENABLED</span><span class="p">:</span>
                     <span class="c1"># create ajax client processes at /webclientdata</span>
-                    <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">webclient_ajax</span>
-
-                    <span class="n">ajax_webclient</span> <span class="o">=</span> <span class="n">webclient_ajax</span><span class="o">.</span><span class="n">AjaxWebClient</span><span class="p">()</span>
+                    <span class="n">ajax_class</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">AJAX_CLIENT_CLASS</span><span class="p">)</span>
+                    <span class="n">ajax_webclient</span> <span class="o">=</span> <span class="n">ajax_class</span><span class="p">()</span>
                     <span class="n">ajax_webclient</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span>
                     <span class="n">web_root</span><span class="o">.</span><span class="n">putChild</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;webclientdata&quot;</span><span class="p">,</span> <span class="n">ajax_webclient</span><span class="p">)</span>
                     <span class="n">webclientstr</span> <span class="o">=</span> <span class="s2">&quot;webclient (ajax only)&quot;</span>

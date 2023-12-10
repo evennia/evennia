@@ -127,6 +127,7 @@
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
 
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">string_suggestions</span>
 
@@ -236,9 +237,13 @@
 
 
 <span class="c1"># helper functions</span>
+<span class="k">def</span> <span class="nf">err_helper</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cmdid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">raw_string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;cmdid&quot;</span><span class="p">:</span> <span class="n">cmdid</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">raw_string</span>
 
 
-<span class="k">def</span> <span class="nf">_msg_err</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">stringtuple</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_msg_err</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">stringtuple</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function for returning an error to the caller.</span>
 
@@ -254,19 +259,16 @@
     <span class="n">tracestring</span> <span class="o">=</span> <span class="n">format_exc</span><span class="p">()</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">_IN_GAME_ERRORS</span><span class="p">:</span>
-        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-            <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">traceback</span><span class="o">=</span><span class="n">tracestring</span><span class="p">,</span> <span class="n">errmsg</span><span class="o">=</span><span class="n">stringtuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">timestamp</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">traceback</span><span class="o">=</span><span class="n">tracestring</span><span class="p">,</span> <span class="n">errmsg</span><span class="o">=</span><span class="n">stringtuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">timestamp</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-            <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">traceback</span><span class="o">=</span><span class="n">tracestring</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">errmsg</span><span class="o">=</span><span class="n">stringtuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
-                <span class="n">timestamp</span><span class="o">=</span><span class="n">timestamp</span><span class="p">,</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">traceback</span><span class="o">=</span><span class="n">tracestring</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">errmsg</span><span class="o">=</span><span class="n">stringtuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">timestamp</span><span class="o">=</span><span class="n">timestamp</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_helper</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="n">cmdid</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">_process_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
@@ -366,10 +368,39 @@
 
 
 <span class="c1"># Helper function</span>
+<span class="k">def</span> <span class="nf">generate_cmdset_providers</span><span class="p">(</span><span class="n">called_by</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">cmdset_providers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">cmdset_providers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">called_by</span><span class="o">.</span><span class="n">get_cmdset_providers</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">session</span> <span class="ow">and</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">called_by</span><span class="p">:</span>
+        <span class="n">cmdset_providers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">get_cmdset_providers</span><span class="p">())</span>
+
+    <span class="n">cmdset_providers_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cmdset_providers</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">cmdset_providers_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;cmdset_provider_order&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="c1"># sort the dictionary by priority. This can be done because Python now cares about dictionary insert order.</span>
+    <span class="n">cmdset_providers</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">cmdset_provider_type</span><span class="p">:</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmdset_providers_list</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdset_providers</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;cmdhandler: no command objects found.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># the caller will be the one to receive messages and excert its permissions.</span>
+    <span class="c1"># we assign the caller with preference &#39;bottom up&#39;</span>
+    <span class="n">caller</span> <span class="o">=</span> <span class="n">cmdset_providers_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">cmdset_providers_errors_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="n">cmdset_providers_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;cmdset_provider_error_order&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># The error_to is the default recipient for errors. Tries to make sure an account</span>
+    <span class="c1"># does not get spammed for errors while preserving character mirroring.</span>
+    <span class="n">error_to</span> <span class="o">=</span> <span class="n">cmdset_providers_errors_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">cmdset_providers</span><span class="p">,</span> <span class="n">cmdset_providers_list</span><span class="p">,</span> <span class="n">cmdset_providers_errors_list</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">error_to</span>
 
 
 <span class="nd">@inlineCallbacks</span>
-<span class="k">def</span> <span class="nf">get_and_merge_cmdsets</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callertype</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_and_merge_cmdsets</span><span class="p">(</span>
+    <span class="n">caller</span><span class="p">,</span> <span class="n">cmdset_providers</span><span class="p">,</span> <span class="n">callertype</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">report_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gather all relevant cmdsets and merge them.</span>
 
@@ -379,12 +410,11 @@
 <span class="sd">            when the user is not logged in, this will be a Session, when being OOC</span>
 <span class="sd">            it will be an Account and when puppeting an object this will (often) be</span>
 <span class="sd">            a Character Object. In the end it depends on where the cmdset is stored.</span>
-<span class="sd">        session (Session or None): The Session associated with caller, if any.</span>
-<span class="sd">        account (Account or None): The calling Account associated with caller, if any.</span>
-<span class="sd">        obj (Object or None): The Object associated with caller, if any.</span>
+<span class="sd">        cmdset_providers (list): A list of sorted objects which provide cmdsets.</span>
 <span class="sd">        callertype (str): This identifies caller as either &quot;account&quot;, &quot;object&quot; or &quot;session&quot;</span>
 <span class="sd">            to avoid having to do this check internally.</span>
 <span class="sd">        raw_string (str): The input string. This is only used for error reporting.</span>
+<span class="sd">        report_to (Object, optional): If given, this object will receive error messages</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        cmdset (Deferred): This deferred fires with the merged cmdset</span>
@@ -452,81 +482,52 @@
                 <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
 
         <span class="nd">@inlineCallbacks</span>
-        <span class="k">def</span> <span class="nf">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper method; Get cmdset while making sure to trigger all</span>
 <span class="sd">            hooks safely. Returns the stack and the valid options.</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_cmdset_get</span><span class="p">()</span>
+                <span class="k">yield</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_cmdset_get</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">current</span><span class="o">=</span><span class="n">current</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">_msg_err</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">_ERROR_CMDSETS</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">returnValue</span><span class="p">((</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">)))</span>
+                <span class="n">returnValue</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_cmdsets</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">current</span><span class="o">=</span><span class="n">current</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="n">returnValue</span><span class="p">(((</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">[]))</span>
 
         <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;session&quot;</span><span class="p">:</span>
-            <span class="c1"># we are calling the command from the session level</span>
-            <span class="n">report_to</span> <span class="o">=</span> <span class="n">session</span>
-            <span class="n">current</span><span class="p">,</span> <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">account</span><span class="p">:</span>  <span class="c1"># this automatically implies logged-in</span>
-                <span class="n">pcurrent</span><span class="p">,</span> <span class="n">account_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
-                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">account_cmdsets</span>
-                <span class="n">current</span> <span class="o">=</span> <span class="n">current</span> <span class="o">+</span> <span class="n">pcurrent</span>
-                <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
-                    <span class="n">ocurrent</span><span class="p">,</span> <span class="n">obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                    <span class="n">current</span> <span class="o">=</span> <span class="n">current</span> <span class="o">+</span> <span class="n">ocurrent</span>
-                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">obj_cmdsets</span>
+
+        <span class="n">current_cmdset</span> <span class="o">=</span> <span class="n">CmdSet</span><span class="p">()</span>
+        <span class="n">object_cmdsets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cmdobj</span> <span class="ow">in</span> <span class="n">cmdset_providers</span><span class="p">:</span>
+            <span class="n">current</span><span class="p">,</span> <span class="n">cur_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current</span><span class="p">:</span>
+                <span class="n">current_cmdset</span> <span class="o">=</span> <span class="n">current_cmdset</span> <span class="o">+</span> <span class="n">current</span>
+            <span class="k">if</span> <span class="n">cur_cmdsets</span><span class="p">:</span>
+                <span class="n">object_cmdsets</span> <span class="o">+=</span> <span class="n">cur_cmdsets</span>
+            <span class="k">match</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdset_provider_type</span><span class="p">:</span>
+                <span class="k">case</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_objs</span><span class="p">:</span>
-                        <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                        <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">no_exits</span><span class="p">:</span>
                             <span class="c1"># filter out all exits</span>
                             <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[</span>
                                 <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                             <span class="p">]</span>
-                        <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
-
-        <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
-            <span class="c1"># we are calling the command from the account level</span>
-            <span class="n">report_to</span> <span class="o">=</span> <span class="n">account</span>
-            <span class="n">current</span><span class="p">,</span> <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
-                <span class="n">ocurrent</span><span class="p">,</span> <span class="n">obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                <span class="n">current</span> <span class="o">=</span> <span class="n">current</span> <span class="o">+</span> <span class="n">ocurrent</span>
-                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">obj_cmdsets</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_objs</span><span class="p">:</span>
-                    <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">no_exits</span><span class="p">:</span>
-                        <span class="c1"># filter out all exits</span>
-                        <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[</span>
-                            <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
-                        <span class="p">]</span>
-                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
-
-        <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
-            <span class="c1"># we are calling the command from the object level</span>
-            <span class="n">report_to</span> <span class="o">=</span> <span class="n">obj</span>
-            <span class="n">current</span><span class="p">,</span> <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_objs</span><span class="p">:</span>
-                <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">no_exits</span><span class="p">:</span>
-                    <span class="c1"># filter out all exits</span>
-                    <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
-                    <span class="p">]</span>
-                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">local_obj_cmdsets</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;get_and_merge_cmdsets: callertype </span><span class="si">%s</span><span class="s2"> is not valid.&quot;</span> <span class="o">%</span> <span class="n">callertype</span><span class="p">)</span>
+                        <span class="n">object_cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
 
         <span class="c1"># weed out all non-found sets</span>
-        <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">[</span><span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">]</span>
+        <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">[</span>
+            <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">object_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span>
+        <span class="p">]</span>
         <span class="c1"># report cmdset errors to user (these should already have been logged)</span>
         <span class="k">yield</span> <span class="p">[</span>
-            <span class="n">report_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">errmessage</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
+            <span class="n">report_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_helper</span><span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">errmessage</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="n">cmdid</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span>
+            <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
         <span class="p">]</span>
 
         <span class="k">if</span> <span class="n">cmdsets</span><span class="p">:</span>
@@ -636,9 +637,10 @@
 <span class="sd">        default Evennia.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cmdid</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cmdid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@inlineCallbacks</span>
-    <span class="k">def</span> <span class="nf">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">cmdset_providers</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function: This initializes and runs the Command</span>
 <span class="sd">        instance once the parser has identified it as either a normal</span>
@@ -654,6 +656,7 @@
 <span class="sd">            cmdset (CmdSet): Command sert the command belongs to (if any)..</span>
 <span class="sd">            session (Session): Session of caller (if any).</span>
 <span class="sd">            account (Account): Account of caller (if any).</span>
+<span class="sd">            cmdset_providers (dict): Dictionary of all cmdset-providing objects.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            deferred (Deferred): this will fire with the return of the</span>
@@ -672,6 +675,7 @@
             <span class="n">cmd</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">=</span> <span class="n">cmdname</span>  <span class="c1"># deprecated</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmdset</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">cmdset_providers</span> <span class="o">=</span> <span class="n">cmdset_providers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">account</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">raw_string</span> <span class="o">=</span> <span class="n">unformatted_raw_string</span>
@@ -741,25 +745,15 @@
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">_COMMAND_NESTING</span><span class="p">[</span><span class="n">called_by</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
 
-    <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">session</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;session&quot;</span><span class="p">:</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">called_by</span>
-        <span class="n">account</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">account</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span>
-    <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
-        <span class="n">account</span> <span class="o">=</span> <span class="n">called_by</span>
-        <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span>
-    <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">called_by</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;cmdhandler: callertype </span><span class="si">%s</span><span class="s2"> is not valid.&quot;</span> <span class="o">%</span> <span class="n">callertype</span><span class="p">)</span>
-    <span class="c1"># the caller will be the one to receive messages and excert its permissions.</span>
-    <span class="c1"># we assign the caller with preference &#39;bottom up&#39;</span>
-    <span class="n">caller</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="n">account</span> <span class="ow">or</span> <span class="n">session</span>
-    <span class="c1"># The error_to is the default recipient for errors. Tries to make sure an account</span>
-    <span class="c1"># does not get spammed for errors while preserving character mirroring.</span>
-    <span class="n">error_to</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">account</span>
+    <span class="p">(</span>
+        <span class="n">cmdset_providers</span><span class="p">,</span>
+        <span class="n">cmdset_providers_list</span><span class="p">,</span>
+        <span class="n">cmdset_providers_list_error</span><span class="p">,</span>
+        <span class="n">caller</span><span class="p">,</span>
+        <span class="n">error_to</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">generate_cmdset_providers</span><span class="p">(</span><span class="n">called_by</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+
+    <span class="n">account</span> <span class="o">=</span> <span class="n">cmdset_providers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>  <span class="c1"># catch bugs in cmdhandler itself</span>
         <span class="k">try</span><span class="p">:</span>  <span class="c1"># catch special-type commands</span>
@@ -777,7 +771,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># no explicit cmdobject given, figure it out</span>
                 <span class="n">cmdset</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">get_and_merge_cmdsets</span><span class="p">(</span>
-                    <span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callertype</span><span class="p">,</span> <span class="n">raw_string</span>
+                    <span class="n">caller</span><span class="p">,</span> <span class="n">cmdset_providers_list</span><span class="p">,</span> <span class="n">callertype</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="n">cmdid</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdset</span><span class="p">:</span>
                     <span class="c1"># this is bad and shouldn&#39;t happen.</span>
@@ -850,7 +844,9 @@
                 <span class="n">cmd</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
 
             <span class="c1"># A normal command.</span>
-            <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_run_command</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">cmdset_providers</span>
+            <span class="p">)</span>
             <span class="n">returnValue</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="n">ErrorReported</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
@@ -866,17 +862,24 @@
 
             <span class="k">if</span> <span class="n">syscmd</span><span class="p">:</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_run_command</span><span class="p">(</span>
-                    <span class="n">syscmd</span><span class="p">,</span> <span class="n">syscmd</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">,</span> <span class="n">unformatted_raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span>
+                    <span class="n">syscmd</span><span class="p">,</span>
+                    <span class="n">syscmd</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">sysarg</span><span class="p">,</span>
+                    <span class="n">unformatted_raw_string</span><span class="p">,</span>
+                    <span class="n">cmdset</span><span class="p">,</span>
+                    <span class="n">session</span><span class="p">,</span>
+                    <span class="n">account</span><span class="p">,</span>
+                    <span class="n">cmdset_providers</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">returnValue</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">sysarg</span><span class="p">:</span>
                 <span class="c1"># return system arg</span>
-                <span class="n">error_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">sysarg</span><span class="p">)</span>
+                <span class="n">error_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_helper</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">sysarg</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="n">cmdid</span><span class="p">))</span>
 
         <span class="k">except</span> <span class="n">NoCmdSets</span><span class="p">:</span>
             <span class="c1"># Critical error.</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;No cmdsets found: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="p">)</span>
-            <span class="n">error_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERROR_NOCMDSETS</span><span class="p">)</span>
+            <span class="n">error_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_helper</span><span class="p">(</span><span class="n">_ERROR_NOCMDSETS</span><span class="p">,</span> <span class="n">cmdid</span><span class="o">=</span><span class="n">cmdid</span><span class="p">))</span>
 
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="c1"># We should not end up here. If we do, it&#39;s a programming bug.</span>

@@ -1296,6 +1296,16 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># for all webclient connections.</span>
 <span class="n">WEBSOCKET_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.webclient.WebSocketClient&quot;</span>
 
+<span class="c1"># Ajax Web Client classes. Evennia uses AJAX as a fallback for the webclient by</span>
+<span class="c1"># default. AJAX may in general be more useful for mobile clients as it&#39;s</span>
+<span class="c1"># resilient to IP address changes.</span>
+
+<span class="c1"># The Ajax Client Class is used to manage all AJAX sessions.</span>
+<span class="n">AJAX_CLIENT_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.webclient.ajax.AjaxWebClient&quot;</span>
+
+<span class="c1"># Ajax Protocol Class is used for all AJAX client connections.</span>
+<span class="n">AJAX_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.webclient_ajax.AjaxWebClientSession&quot;</span>
+
 <span class="c1"># Protocol for the SSH interface. This inherits from BASE_SESSION_CLASS.</span>
 <span class="n">SSH_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.ssh.SshProtocol&quot;</span>
 

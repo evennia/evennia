@@ -123,6 +123,21 @@ individual protocols to communicate with Evennia.</p>
 <p>Each account gets a session assigned to them whenever they connect
 to the game server. All communication between game and account goes
 through their session.</p>
+<dl class="py attribute">
+<dt id="evennia.server.serversession.ServerSession.cmdset_provider_order">
+<code class="sig-name descname">cmdset_provider_order</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.server.serversession.ServerSession.cmdset_provider_order" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.server.serversession.ServerSession.cmdset_provider_error_order">
+<code class="sig-name descname">cmdset_provider_error_order</code><em class="property"> = 50</em><a class="headerlink" href="#evennia.server.serversession.ServerSession.cmdset_provider_error_order" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.server.serversession.ServerSession.cmdset_provider_type">
+<code class="sig-name descname">cmdset_provider_type</code><em class="property"> = 'session'</em><a class="headerlink" href="#evennia.server.serversession.ServerSession.cmdset_provider_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.server.serversession.ServerSession.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#ServerSession.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.ServerSession.__init__" title="Permalink to this definition">¶</a></dt>
@@ -133,6 +148,23 @@ through their session.</p>
 <dt id="evennia.server.serversession.ServerSession.cmdset_storage">
 <em class="property">property </em><code class="sig-name descname">cmdset_storage</code><a class="headerlink" href="#evennia.server.serversession.ServerSession.cmdset_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.serversession.ServerSession.get_cmdset_providers">
+<code class="sig-name descname">get_cmdset_providers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/evennia/server/serversession.html#ServerSession.get_cmdset_providers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.ServerSession.get_cmdset_providers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrideable method which returns a dictionary of every kind of object which
+has a cmdsethandler linked to this ServerSession, and should participate in cmdset
+merging.</p>
+<dl class="simple">
+<dt>In all normal cases, that’s the Session itself, and possibly an account and puppeted</dt><dd><p>object.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>dict[str, CmdSetProvider]</em> – The CmdSetProviders linked to this Object.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.server.serversession.ServerSession.id">
@@ -342,7 +374,39 @@ that Session, otherwise use self.</p></li>
 <dl class="py method">
 <dt id="evennia.server.serversession.ServerSession.at_cmdset_get">
 <code class="sig-name descname">at_cmdset_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#ServerSession.at_cmdset_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.ServerSession.at_cmdset_get" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dummy hook all objects with cmdsets need to have</p>
+<dd><p>Called just before cmdsets on this object are requested by the
+command handler. If changes need to be done on the fly to the
+cmdset before passing them on to the cmdhandler, this is the
+place to do it. This is called also if the object currently
+have no cmdsets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<a class="reference internal" href="evennia.contrib.base_systems.ingame_python.callbackhandler.html#evennia.contrib.base_systems.ingame_python.callbackhandler.Callback.obj" title="evennia.contrib.base_systems.ingame_python.callbackhandler.Callback.obj"><em>obj</em></a>) – The object requesting the cmdsets.</p></li>
+<li><p><strong>current</strong> (<a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.cmdset" title="evennia.accounts.accounts.DefaultAccount.cmdset"><em>cmdset</em></a>) – The current merged cmdset.</p></li>
+<li><p><strong>force_init</strong> (<em>bool</em>) – If <strong>True</strong>, force a re-build of the cmdset. (seems unused)</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary input for overloads.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.serversession.ServerSession.get_cmdsets">
+<code class="sig-name descname">get_cmdsets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">current</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/serversession.html#ServerSession.get_cmdsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.serversession.ServerSession.get_cmdsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the CommandHandler to get a list of cmdsets to merge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>obj</em>) – The object requesting the cmdsets.</p></li>
+<li><p><strong>current</strong> (<em>cmdset</em>) – The current merged cmdset.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary input for overloads.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – A tuple of (current, cmdsets), which is probably self.cmdset.current and self.cmdset.cmdset_stack</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
