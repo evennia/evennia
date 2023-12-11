@@ -64,6 +64,7 @@
   successfully reconnected to the Server after a restart. (InspectorCaracal)
 - [Fix][pull3359]: Fix gendersub contrib to use proper pronoun when referencing
   other objects than oneself (InspectorCaracal)
+- [Fix][pull3361]: Fix of monitoring Attributes with categories (scyfris)
 - Docs & docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
   HouseOfPoe etc)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
@@ -94,10 +95,12 @@
 [pull3348]: https://github.com/evennia/evennia/pull/3348
 [pull3358]: https://github.com/evennia/evennia/pull/3358
 [pull3359]: https://github.com/evennia/evennia/pull/3359
+[pull3361]: https://github.com/evennia/evennia/pull/3361
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307
 [issue3331]: https://github.com/evennia/evennia/issues/3331
+
 [django-release-notes]: https://docs.djangoproject.com/en/4.2/releases/4.2/#backwards-incompatible-changes-in-4-2
 
 ## Evennia 2.3.0
