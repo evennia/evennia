@@ -417,12 +417,27 @@ def _on_monitor_change(**kwargs):
     name = kwargs["name"]
     session = kwargs["session"]
     outputfunc_name = kwargs["outputfunc_name"]
+    category = None
+
+    # Attributes stored in the MonitorHandler with categories are
+    # stored as fieldname "db_value[category_name]", but we need to
+    # separate [category_name] because the actual attribute is stored on
+    # the object as "db_value" with a separate "category" field.
+    if hasattr(obj, "db_category") and obj.db_category != None:
+        category = obj.db_category
+        fieldname = fieldname.replace("[{}]".format(obj.db_category), '')
 
     # the session may be None if the char quits and someone
     # else then edits the object
 
     if session:
-        callsign = {outputfunc_name: {"name": name, "value": _GA(obj, fieldname)}}
+        callsign = {
+            outputfunc_name: {
+                "name": name,
+                **({"category": category} if category is not None else {}),
+                "value": _GA(obj, fieldname)
+                }
+            }
         session.msg(**callsign)
 
 
