@@ -728,7 +728,7 @@ class EvCell(EvStringContainer):
     
     def html(self, **kwargs):
         if _HTML_ELEMENTS:
-            return "<td>"+"<br>".join([EvString(line).html() for line in self.collect_evstring()]) + "</td>"
+            return "<br>".join([EvString(line).html() for line in self.collect_evstring()])
         else:
             return "\n".join([EvString(line).html(**kwargs) for line in self.get()])
 
@@ -1339,6 +1339,7 @@ class EvTable(EvStringContainer):
 
         # reformat table (for vertical align)
         for ix, col in enumerate(self.worktable):
+            col.width = cwidths[ix]
             for iy, cell in enumerate(col):
                 try:
                     col.reformat_cell(iy, height=cheights[iy], **options)
@@ -1347,8 +1348,8 @@ class EvTable(EvStringContainer):
                     raise Exception("Error in vertical align:\n %s" % msg)
 
         # calculate actual table width/height in characters
-        self.cwidth = sum(cwidths)
-        self.cheight = sum(cheights)
+        self.cwidths = cwidths
+        self.cheights = cheights
 
     def _generate_lines(self):
         """
@@ -1569,22 +1570,42 @@ class EvTable(EvStringContainer):
     # TODO: this SHOULD mean we can support custom table rendering for HTML now, if I code it up
 
     def html(self, **kwargs):
+        self._balance()
         if _HTML_ELEMENTS:
-            widths = [col.width for col in self.table]
-            output = f"<table style=\"width:{self.width + 'em' if self.width else '100%'}\">\n"
+            # NOTE: add the border styles as classes instead of inline?
+            # define table width
+            style_str = f"width:{self.width + 'em' if self.width else '100%'};"
+            # add table border styling
+            style_str += "border-collapse: collapse;"
+            if "table" in self.border:
+                style_str += f"border: 0.1em solid;"
+            output = f"<table style=\"{style_str}\">\n"
             output += "<colgroup>"
+            widths = self.cwidths
             for width in widths:
-                width_style = f'style="width: {width}em"' if width else ''
-                output += f"<col span=1 {width_style}>"
+                width_style = f"width: {width}em;" if width else ''
+                border_style = f'border-left:0.1em solid;border-right:0.1em solid;'
+                style_str = width_style + border_style
+                style_str = f'style="{style_str}"' if style_str else ''
+                output += f"<col span=1 {style_str}>"
             output += "</colgroup>"
 
-            # header
+            # TODO: make header th elements
             output += "<tbody>\n"
             for iy in range(self.nrows):
+                cell_template = "<td{style}>{cell}</td>"
+                style_str = ''
+                if "rows" in self.border:
+                    style_str = f'border-top:0.1em solid;border-bottom:0.1em solid;'
+                if self.header and iy == 0:
+                    cell_template = "<th scope=\"col\"{style}>{cell}</th>"
+                    if "header" in self.border:
+                        style_str = f'border-bottom:0.1em solid;'
                 cell_row = [col[iy] for col in self.table]
-                row_els = [cell.html() for cell in cell_row]
+                style_str = f"style=\"{style_str}\"" if style_str else ''
+                row_els = [cell_template.format(cell=cell.html(), style=style_str) for cell in cell_row]
                 output += "<tr>" + "".join(row_els) + "</tr>"
-
+            return output
         else:
             return super().html()
         
