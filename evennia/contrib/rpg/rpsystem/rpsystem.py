@@ -179,7 +179,7 @@ _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 
 # The prefix is the (single-character) symbol used to find the start
 # of a object reference, such as /tall (note that
 # the system will understand multi-word references like '/a tall man' too).
-_PREFIX = "/"
+_PREFIX = getattr(settings, 'RPSYSTEM_EMOTE_PREFIX', "/")
 
 # The num_sep is the (single-character) symbol used to separate the
 # sdesc from the number when  trying to separate identical sdescs from
