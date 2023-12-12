@@ -897,7 +897,7 @@ class RPCommand(Command):
 
 
 class CmdEmote(RPCommand):  # replaces the main emote
-    """
+    f"""
     Emote an action, allowing dynamic replacement of
     text in the emote.
 
@@ -905,11 +905,11 @@ class CmdEmote(RPCommand):  # replaces the main emote
       emote text
 
     Example:
-      emote /me looks around.
-      emote With a flurry /me attacks /tall man with his sword.
-      emote "Hello", /me says.
+      emote {_PREFIX}me looks around.
+      emote With a flurry {_PREFIX}me attacks {_PREFIX}tall man with his sword.
+      emote "Hello", {_PREFIX}me says.
 
-    Describes an event in the world. This allows the use of /ref
+    Describes an event in the world. This allows the use of {_PREFIX}ref
     markers to replace with the short descriptions or recognized
     strings of objects in the same room. These will be translated to
     emotes to match each person seeing it. Use "..." for saying
