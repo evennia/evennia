@@ -1,3 +1,4 @@
+from evennia.contrib.base_systems import components
 from evennia.contrib.base_systems.components import (
     Component,
     DBField,
@@ -19,6 +20,10 @@ class ComponentTestA(Component):
     my_int = DBField(default=1)
     my_list = DBField(default=[])
 
+class ComponentTestA(Component):
+    name = "test_a"
+    my_int = DBField(default=1)
+    my_list = DBField(default=[])
 
 class ComponentTestB(Component):
     name = "test_b"
@@ -36,6 +41,11 @@ class RuntimeComponentTestC(Component):
     my_dict = DBField(default={})
     added_tag = TagField(default="added_value")
 
+class RuntimeComponentTestC_Inherit(RuntimeComponentTestC):
+    name = "test_c_inherit"
+    added_tag = TagField(default="added_value_inherit")
+    added_tag_inherit = TagField(default="added_value")
+    different_tag = TagField(default="different_value_inherit")
 
 class CharacterWithComponents(ComponentHolderMixin, DefaultCharacter):
     test_a = ComponentProperty("test_a")
@@ -128,6 +138,49 @@ class TestComponents(EvenniaTest):
         handler.add(rct)
 
         assert handler.get("test_c") is rct
+
+    def test_can_get_component_class(self):
+        rtc_class = components.get_component_class("test_c")
+        rtc_class_inh = components.get_component_class("test_c_inherit")
+
+        # Test get_component_class gets the correct Class
+        assert rtc_class is RuntimeComponentTestC
+        assert rtc_class_inh is RuntimeComponentTestC_Inherit
+
+        # We test two different types of objects. char1 will have both the base class
+        # and the inheritted class components added to it (this would likely be uncommon
+        # to see in practice).  char2 will only have the inheritted class attached
+        # (likely the common case).
+        rct_char1 = rtc_class.create(self.char1)
+        rct_inherit_char1 = rtc_class_inh.create(self.char1)
+        rct_inherit_char2 = rtc_class_inh.create(self.char2)
+
+        handler_char1 = self.char1.components
+        handler_char2 = self.char2.components
+        # Add both base and inheritted instances to char1 
+        handler_char1.add(rct_char1)
+        handler_char1.add(rct_inherit_char1)
+        # Add only inheritted instance to char2
+        handler_char2.add(rct_inherit_char2)
+
+        # Test that char1 has both base and inheritted components.
+        assert handler_char1.get("test_c") is rct_char1
+        assert handler_char1.get("test_c_inherit") is rct_inherit_char1
+        # Test that char2 has inheritted component.
+        assert handler_char2.get("test_c") is None
+        assert handler_char2.get("test_c_inherit") is rct_inherit_char2
+
+        # Char1 assertions on both base and inheritted component tags added.
+        assert self.char1.tags.has(key="added_value",             category="test_c::added_tag")
+        assert self.char1.tags.has(key="added_value",             category="test_c_inherit::added_tag_inherit")
+        assert self.char1.tags.has(key="added_value_inherit",     category="test_c_inherit::added_tag")
+        assert self.char1.tags.has(key="different_value_inherit", category="test_c_inherit::different_tag")
+
+        # Char2 assertions on only inheritted component tags added.
+        assert self.char2.tags.has(key="added_value",    category="test_c::added_tag") == False
+        assert self.char2.tags.has(key="added_value",             category="test_c_inherit::added_tag_inherit")
+        assert self.char2.tags.has(key="added_value_inherit",     category="test_c_inherit::added_tag")
+        assert self.char2.tags.has(key="different_value_inherit", category="test_c_inherit::different_tag")
 
     def test_can_access_component_regular_get(self):
         assert self.char1.cmp.test_a is self.char1.components.get("test_a")
