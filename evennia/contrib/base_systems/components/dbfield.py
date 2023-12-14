@@ -3,7 +3,12 @@ Components - ChrisLR 2022
 
 This file contains the Descriptors used to set Fields in Components
 """
+import typing
+
 from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
+
+if typing.TYPE_CHECKING:
+    from evennia.contrib.base_systems.components import Component
 
 
 class DBField(AttributeProperty):
@@ -13,7 +18,10 @@ class DBField(AttributeProperty):
     It uses AttributeProperty under the hood but prefixes the key with the component name.
     """
 
-    def __set_name__(self, owner, name):
+    def __init__(self, default=None, autocreate=False, **kwargs):
+        super().__init__(default=default, autocreate=autocreate, **kwargs)
+
+    def __set_name__(self, owner: 'Component', name):
         """
         Called when descriptor is first assigned to the class.
 
@@ -21,13 +29,15 @@ class DBField(AttributeProperty):
             owner (object): The component classF on which this is set
             name (str): The name that was used to set the DBField.
         """
-        key = f"{owner.name}::{name}"
-        self._key = key
-        db_fields = getattr(owner, "_db_fields", None)
-        if db_fields is None:
-            db_fields = {}
-            setattr(owner, "_db_fields", db_fields)
-        db_fields[name] = self
+        self._key = f"{owner.slot or owner.name}::{name}"
+        owner.add_field(name, self)
+
+    def at_added(self, instance):
+        if self._autocreate:
+            self.__set__(instance, self._default)
+
+    def at_removed(self, instance):
+        self.__delete__(instance)
 
 
 class NDBField(NAttributeProperty):
@@ -37,7 +47,7 @@ class NDBField(NAttributeProperty):
     It uses NAttributeProperty under the hood but prefixes the key with the component name.
     """
 
-    def __set_name__(self, owner, name):
+    def __set_name__(self, owner: 'Component', name):
         """
         Called when descriptor is first assigned to the class.
 
@@ -45,13 +55,15 @@ class NDBField(NAttributeProperty):
             owner (object): The component class on which this is set
             name (str): The name that was used to set the DBField.
         """
-        key = f"{owner.name}::{name}"
-        self._key = key
-        ndb_fields = getattr(owner, "_ndb_fields", None)
-        if ndb_fields is None:
-            ndb_fields = {}
-            setattr(owner, "_ndb_fields", ndb_fields)
-        ndb_fields[name] = self
+        self._key = f"{owner.slot or owner.name}::{name}"
+        owner.add_field(name, self)
+
+    def at_added(self, instance):
+        if self._autocreate:
+            self.__set__(instance, self._default)
+
+    def at_removed(self, instance):
+        self.__delete__(instance)
 
 
 class TagField:
@@ -70,17 +82,13 @@ class TagField:
         self._default = default
         self._enforce_single = enforce_single
 
-    def __set_name__(self, owner, name):
+    def __set_name__(self, owner: 'Component', name):
         """
         Called when TagField is first assigned to the class.
         It is called with the component class and the name of the field.
         """
-        self._category_key = f"{owner.name}::{name}"
-        tag_fields = getattr(owner, "_tag_fields", None)
-        if tag_fields is None:
-            tag_fields = {}
-            setattr(owner, "_tag_fields", tag_fields)
-        tag_fields[name] = self
+        self._category_key = f"{owner.slot or owner.name}::{name}"
+        owner.add_field(name, self)
 
     def __get__(self, instance, owner):
         """
@@ -114,3 +122,10 @@ class TagField:
         It is called with the component instance.
         """
         instance.host.tags.clear(category=self._category_key)
+
+    def at_added(self, instance):
+        if self._default:
+            self.__set__(instance, self._default)
+
+    def at_removed(self, instance):
+        self.__delete__(instance)
