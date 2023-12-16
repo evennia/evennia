@@ -114,6 +114,31 @@ class DefaultObjectTest(BaseEvenniaTest):
         # partial match to 'colon' - multimatch error since stack is not homogenous
         self.assertEqual(self.char1.search("co", stacked=2), None)
 
+    def test_get_default_lockstring_base(self):
+        pattern = f"control:pid({self.account.id}) or id({self.char1.id}) or perm(Admin);delete:pid({self.account.id}) or id({self.char1.id}) or perm(Admin);edit:pid({self.account.id}) or id({self.char1.id}) or perm(Admin)"
+        self.assertEqual(
+            DefaultObject.get_default_lockstring(account=self.account, caller=self.char1), pattern
+        )
+
+    def test_get_default_lockstring_room(self):
+        pattern = f"control:pid({self.account.id}) or id({self.char1.id}) or perm(Admin);delete:pid({self.account.id}) or id({self.char1.id}) or perm(Admin);edit:pid({self.account.id}) or id({self.char1.id}) or perm(Admin)"
+        self.assertEqual(
+            DefaultRoom.get_default_lockstring(account=self.account, caller=self.char1), pattern
+        )
+
+    def test_get_default_lockstring_exit(self):
+        pattern = f"control:pid({self.account.id}) or id({self.char1.id}) or perm(Admin);delete:pid({self.account.id}) or id({self.char1.id}) or perm(Admin);edit:pid({self.account.id}) or id({self.char1.id}) or perm(Admin)"
+        self.assertEqual(
+            DefaultExit.get_default_lockstring(account=self.account, caller=self.char1), pattern
+        )
+
+    def test_get_default_lockstring_character(self):
+        pattern = f"puppet:pid({self.account.id}) or perm(Developer) or pperm(Developer);delete:pid({self.account.id}) or perm(Admin);edit:pid({self.account.id}) or perm(Admin)"
+        self.assertEqual(
+            DefaultCharacter.get_default_lockstring(account=self.account, caller=self.char1),
+            pattern,
+        )
+
 
 class TestObjectManager(BaseEvenniaTest):
     "Test object manager methods"
