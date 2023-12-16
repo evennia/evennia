@@ -1165,6 +1165,14 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         self.send(sendables, metadata=metadata, sessions=sessions)
 
     def send(self, sendables: list["Any"], metadata: dict = None, **kwargs):
+        """
+        Sends a sequence of Sendable objects to all Sessions connected to this Account.
+
+        Args:
+            sendables (list): A list of Sendable objects to send.
+            metadata (dict, optional): A dictionary of metadata to send with the sendables.
+            **kwargs (any): Provided for overloading logic. Not used by default Evennia.
+        """
         metadata = metadata or {}
 
         # No reason to send if there's nothing to send.

@@ -1,7 +1,6 @@
-from evennia.utils.ansi import ANSIString, parse_ansi
-from evennia.utils.ravensgleaning import RavensGleaning
+from evennia.utils.ansi import ANSIString, parse_ansi, AnsiToHtmlConverter
 
-RG = RavensGleaning()
+RG = AnsiToHtmlConverter()
 
 
 class Sendable:

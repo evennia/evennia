@@ -143,11 +143,33 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         )
 
     def data_multi_to_portal(self, command, sessions, data):
+        """
+        Send data across the wire to the Portal. This is capable of sending the same
+        data to multiple sessions as a multi-cast.
+
+        Args:
+            command (AMP Command): A protocol send command.
+            sessions (list[sessid]): List of unique Session ids.
+            data: (list[any]): List of data to pickle into the command.
+
+        Returns:
+            deferred (deferred or None): A deferred with an errback.
+        """
         return self.callRemote(command, packed_data=amp.dumps((sessions, data))).addErrback(
             self.errback, command.key
         )
 
     def send_MsgSendablesToPortal(self, sessions, data):
+        """
+        Access method - executed on the Server for sending data.
+
+        Args:
+            sessions (list[sessid]): List of unique Session ids.
+            data (list[Sendable]): List of Sendable objects to send.
+
+        Returns:
+            deferred (deferred or None): A deferred with an errback.
+        """
         return self.data_multi_to_portal(amp.MsgSendables2Portal, sessions, data)
 
     def send_MsgServer2Portal(self, session, **kwargs):

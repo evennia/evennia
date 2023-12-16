@@ -11,9 +11,12 @@ class PortalSession(_BASE_SESSION_CLASS):
     render_types = ("oob", "ansi", "html", "json")
 
     @lazy_property
-    def ev_options(self):
+    def session_options(self):
         """
-        This ought to be .options, but it can't be due to how twisted's Telnet protocol works.
+        Just as with the Server-side Account typeclass, PortalSessions have an OptionHandler. It replicates
+        options available on the Account and receives changes from the Account when they occur.
+
+        NOTE: Because Twisted's Telnet Protocol also has an .options, this is .session_options.
         """
         return OptionHandler(
             self,
@@ -22,7 +25,15 @@ class PortalSession(_BASE_SESSION_CLASS):
             load_kwargs={"category": "option"},
         )
 
-    def sendables_out(self, sendables: list["Any"], metadata: dict):
+    def sendables_out(self, sendables: list["Any"], metadata: dict, **kwargs):
+        """
+        Called by the PortalSessionHandler when it's time to send sendables to the client.
+
+        Args:
+            sendables (list[Sendable]): The sendables to send.
+            metadata (dict): Metadata about the whole message. Might be empty.
+            **kwargs: Any additional keyword arguments. Not used by default.
+        """
         if not sendables:
             return
 
@@ -32,6 +43,7 @@ class PortalSession(_BASE_SESSION_CLASS):
             if callable(hook := getattr(sendable, "at_portal_session_receive", None)):
                 hook(self, metadata)
 
+        # filter sendables by render type.
         filtered_sendables = self.filter_sendables(sendables)
         if not filtered_sendables:
             return
@@ -45,15 +57,30 @@ class PortalSession(_BASE_SESSION_CLASS):
             ):
                 method(data, metadata)
 
+        # Finally, call the at_after_sendables hook.
         self.at_after_sendables(sendables, metadata)
 
-    def at_after_sendables(self, sendables: list["Any"], metadata: dict):
+    def at_after_sendables(self, sendables: list["Any"], metadata: dict, **kwargs):
         """
         This is called after sendables are processed. use it for any cleanups or other processing.
+
+        Args:
+            sendables (list[Sendable]): The sendables that were sent.
+            metadata (dict): Metadata about the whole message. Might be empty.
+            **kwargs: Any additional keyword arguments. Not used by default.
         """
         pass
 
     def filter_sendables(self, sendables: list["Any"]) -> dict[str, list["Any"]]:
+        """
+        Helper method for filtering sendables by render type.
+
+        Args:
+            sendables (list[Sendable]): The sendables to filter.
+
+        Returns:
+            dict[str, list[Sendable]]: A dictionary of sendables, keyed by render type.
+        """
         out = defaultdict(list)
         for sendable in sendables:
             for render_type in getattr(sendable, "render_types", ()):
@@ -62,6 +89,13 @@ class PortalSession(_BASE_SESSION_CLASS):
         return out
 
     def handle_sendables_oob(self, sendables: list, metadata: dict):
+        """
+        Called by sendables_out to handle OOB sendables.
+
+        Args:
+            sendables (list[Sendable]): The sendables to send.
+            metadata (dict): Metadata about the whole message. Might be empty.
+        """
         options = metadata.get("options", dict())
         for sendable in sendables:
             if callable(method := getattr(sendable, "render_as_oob", None)):

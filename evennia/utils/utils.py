@@ -3021,12 +3021,34 @@ def ip_from_request(request, exclude=None) -> str:
 
 
 def split_oob(data) -> ["any", dict]:
+    """
+    Helper method which takes a data object and splits for use in the
+    legacy/OOB outgoing messagepath.
+
+    Args:
+        data (any or a tuple/list of len2): The data to possibly split.
+
+    Returns:
+        any or a tuple of (any, dict): The split data.
+    """
     if isinstance(data, (tuple, list)) and len(data) == 2:
         return data
     return data, dict()
 
 
 def msg_to_sendables(**kwargs) -> (list["Any"], dict):
+    """
+    Converts a traditional outgoing messagepath **kwargs set to
+    a list of sendables and a metadata dict. This is used by the
+    .msg() method on many Evennia classes.
+
+    Args:
+        **kwargs: The oob funcs and their arguments being called.
+
+    Returns:
+        sendables (list): A list of sendables.
+        metadata (dict): A dict of metadata.
+    """
     options = kwargs.pop("options", None)
     metadata = kwargs.pop("metadata", dict())
     text = kwargs.pop("text", None)

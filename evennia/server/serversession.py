@@ -17,7 +17,13 @@ from evennia.comms.models import ChannelDB
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
 from evennia.typeclasses.attributes import AttributeHandler, DbHolder, InMemoryAttributeBackend
 from evennia.utils import logger
-from evennia.utils.utils import class_from_module, make_iter, msg_to_sendables, to_str
+from evennia.utils.utils import (
+    class_from_module,
+    make_iter,
+    msg_to_sendables,
+    to_str,
+    lazy_property,
+)
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
