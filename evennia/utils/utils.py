@@ -3051,21 +3051,35 @@ def msg_to_sendables(**kwargs) -> (list["Any"], dict):
     """
     options = kwargs.pop("options", None)
     metadata = kwargs.pop("metadata", dict())
-    text = kwargs.pop("text", None)
     text_class = evennia.SENDABLES.get("text")
     oob_class = evennia.SENDABLES.get("oob")
+    repr_class = evennia.SENDABLES.get("repr")
 
     out = list()
 
-    if text is not None:
-        data, kw = split_oob(text)
-        out.append(text_class(data, **kw))
-
     for k, v in kwargs.items():
-        data, kw = split_oob(v)
-        out.append(oob_class(k, make_iter(data), **kw))
+        match k:
+            case "text":
+                data, kw = split_oob(v)
+                out.append(text_class(data, **kw))
+            case "repr":
+                out.append(repr_class(v))
+            case _:
+                data, kw = split_oob(v)
+                out.append(oob_class(k, make_iter(data), **kw))
 
     if options:
         metadata["options"] = options
 
     return out, metadata
+
+
+class classproperty(property):
+    """
+    Decorator class which combines @property and @classmethod.
+
+    It does exactly what you'd expect those two decorators combined would do.
+    """
+
+    def __get__(self, owner_self, owner_cls):
+        return self.fget(owner_cls)

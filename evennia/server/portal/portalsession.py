@@ -8,7 +8,17 @@ _BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
 class PortalSession(_BASE_SESSION_CLASS):
-    render_types = ("oob", "ansi", "html", "json")
+    def supports_render_type(self, render_type: str) -> bool:
+        """
+        Returns whether or not this session supports a given render type.
+
+        Args:
+            render_type (str): The render type to check.
+
+        Returns:
+            bool: Whether or not the session supports the render type.
+        """
+        return False
 
     @lazy_property
     def session_options(self):
@@ -44,23 +54,18 @@ class PortalSession(_BASE_SESSION_CLASS):
                 hook(self, metadata)
 
         # filter sendables by render type.
-        filtered_sendables = self.filter_sendables(sendables)
+        filtered_sendables = self.filter_sendables(sendables, metadata)
         if not filtered_sendables:
             return
 
-        # The for loop works by iterating render types in self.render_types in order to ensure
-        # execution order. This could be used for prioritizing certain render types over others,
-        # depending on the protocol.
-        for rt in self.render_types:
-            if (data := filtered_sendables.get(rt, ())) and callable(
-                method := getattr(self, f"handle_sendables_{rt}", None)
-            ):
-                method(data, metadata)
+        for rt, filtered in filtered_sendables.items():
+            if callable(method := getattr(self, f"handle_sendables_{rt}", None)):
+                method(filtered, metadata)
 
         # Finally, call the at_after_sendables hook.
-        self.at_after_sendables(sendables, metadata)
+        self.at_post_sendables_out(sendables, metadata)
 
-    def at_after_sendables(self, sendables: list["Any"], metadata: dict, **kwargs):
+    def at_post_sendables_out(self, sendables: list["Any"], metadata: dict, **kwargs):
         """
         This is called after sendables are processed. use it for any cleanups or other processing.
 
@@ -71,9 +76,14 @@ class PortalSession(_BASE_SESSION_CLASS):
         """
         pass
 
-    def filter_sendables(self, sendables: list["Any"]) -> dict[str, list["Any"]]:
+    def filter_sendables(self, sendables: list["Any"], metadata: dict) -> dict[str, list["Any"]]:
         """
         Helper method for filtering sendables by render type.
+
+        Sendables are filtered by whether they produce a render_type that the session supports.
+        Via the get_render_types method, sendables are allowed to be choosy about what render types
+        they want to use. This means one could decide it wants to prioritize a render_type over another,
+        if the session supports both.
 
         Args:
             sendables (list[Sendable]): The sendables to filter.
@@ -83,8 +93,8 @@ class PortalSession(_BASE_SESSION_CLASS):
         """
         out = defaultdict(list)
         for sendable in sendables:
-            for render_type in getattr(sendable, "render_types", ()):
-                if render_type in self.render_types:
+            for render_type in sendable.get_render_types(self, metadata):
+                if self.supports_render_type(render_type):
                     out[render_type].append(sendable)
         return out
 
@@ -106,5 +116,22 @@ class PortalSession(_BASE_SESSION_CLASS):
                         send_func(*args, **kw)
                     else:
                         self.send_default(cmd, *args, **kw)
+                except Exception:
+                    log_trace()
+
+    def handle_sendables_ansi(self, sendables: list, metadata: dict):
+        """
+        Called by sendables_out to handle text sendables.
+
+        Args:
+            sendables (list[Sendable]): The sendables to send.
+            metadata (dict): Metadata about the whole message. Might be empty.
+        """
+        options = metadata.get("options", dict())
+        for sendable in sendables:
+            if callable(method := getattr(sendable, "render_as_ansi", None)):
+                try:
+                    text = method(self, metadata)
+                    self.send_text(*[text], **options)
                 except Exception:
                     log_trace()

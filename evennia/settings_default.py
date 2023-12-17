@@ -1174,7 +1174,7 @@ BASE_SESSION_CLASS = "evennia.server.session.Session"
 # The base Portal Session class, which by default inherits from BASE_SESSION_CLASS.
 BASE_PORTAL_SESSION_CLASS = "evennia.server.portal.portalsession.PortalSession"
 
-# Telnet Protocol inherits from whatever above BASE_SERVER_SESSION_CLASS is specified.
+# Telnet Protocol inherits from whatever above BASE_PORTAL_SESSION_CLASS is specified.
 # It is used for all telnet connections, and is also inherited by the SSL Protocol
 # (which is just TLS + Telnet).
 TELNET_PROTOCOL_CLASS = "evennia.server.portal.telnet.TelnetProtocol"

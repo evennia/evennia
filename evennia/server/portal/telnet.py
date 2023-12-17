@@ -83,7 +83,20 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_PORTAL_SESSION_CLASS)
 
     def __init__(self, *args, **kwargs):
         self.protocol_key = "telnet"
+        self.render_types = {"ansi"}
         super().__init__(*args, **kwargs)
+
+    def supports_render_type(self, render_type: str) -> bool:
+        """
+        Returns whether or not this session supports a given render type.
+
+        Args:
+            render_type (str): The render type to check.
+
+        Returns:
+            bool: Whether or not the session supports the render type.
+        """
+        return render_type.lower() in self.render_types
 
     def dataReceived(self, data):
         """
@@ -516,3 +529,24 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_PORTAL_SESSION_CLASS)
         """
         if not cmdname == "options":
             self.oob.data_out(cmdname, *args, **kwargs)
+
+    def handle_sendables_gmcp(self, sendables: list, metadata: dict):
+        """
+        Handle GMCP sendables.
+
+        GMCP is sent as a series of IAC SB GMCP <command>[ <data>] IAC SE where
+        command is a package name (alphanumeric no spaces but dot-members are allowed),
+        and data is optional JSON.
+
+        Args:
+            sendables (list):  A list of sendables to send.
+            metadata (dict): Metadata about the whole message. Might be empty.
+        """
+        for sendable in sendables:
+            try:
+                command, data = sendable.render_as_gmcp(self, metadata)
+                self.oob.send_gmcp(command, data)
+            except Exception:
+                from evennia.utils import logger
+
+                logger.log_trace()

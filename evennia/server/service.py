@@ -150,8 +150,8 @@ class EvenniaServerService(MultiService):
     def register_sendables(self):
         # Register SENDABLE classes.
         for module_path in settings.SENDABLE_CLASS_MODULES:
-            for k, v in callables_from_module(module_path).items():
-                evennia.SENDABLES[getattr(v, "sendable_name", v.__name__)] = v
+            for v in callables_from_module(module_path).values():
+                evennia.SENDABLES[v.sendable_name] = v
 
     # Server startup methods
     def privilegedStartService(self):

@@ -183,18 +183,15 @@ def _run_code_snippet(
         sessions = caller.sessions.all()
 
     available_vars = evennia_local_vars(caller)
+    repr_sendable = evennia.SENDABLES["repr"]
 
     if show_input:
+        sendables = [repr_sendable(pycode, prefix=">>>")]
         for session in sessions:
-            data = {
-                # TODO: 'highlight' is not used yet
-                "text": (f">>> {pycode}", {"type": "py_input"}),
-                "options": {"raw": True, "highlight": True},
-            }
             try:
-                caller.msg(session=session, **data)
+                caller.send(sendables, session=session)
             except TypeError:
-                caller.msg(**data)
+                caller.send(sendables)
 
     try:
         # reroute standard output to game client console
@@ -206,7 +203,7 @@ def _run_code_snippet(
                 self.caller = caller
 
             def write(self, string):
-                self.caller.msg(text=(string.rstrip("\n"), {"type": "py_output"}))
+                self.caller.msg(repr=string.rstrip("\n"))
 
         fake_std = FakeStd(caller)
         sys.stdout = fake_std
@@ -251,16 +248,9 @@ def _run_code_snippet(
 
     for session in sessions:
         try:
-            caller.msg(
-                (ret, {"type": "py_output"}),
-                session=session,
-                options={"raw": True, "client_raw": client_raw, "highlight": True},
-            )
+            caller.send([repr_sendable(ret)], session=session)
         except TypeError:
-            caller.msg(
-                (ret, {"type": "py_output"}),
-                options={"raw": True, "client_raw": client_raw, "highlight": True},
-            )
+            caller.send([repr_sendable(ret)])
 
 
 def evennia_local_vars(caller):
@@ -375,6 +365,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         pycode = self.args
 
         noecho = "noecho" in self.switches
+        repr_sendable = evennia.SENDABLES["repr"]
 
         if "edit" in self.switches:
             caller.db._py_measure_time = "time" in self.switches
@@ -412,7 +403,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
                         prompt = "..." if console.push(line) else main_prompt
                     else:
                         if line:
-                            self.caller.msg(f">>> {line}")
+                            self.caller.send([repr_sendable(line, prefix=">>>")])
                         prompt = line if console.push(line) else main_prompt
                 except SystemExit:
                     break
