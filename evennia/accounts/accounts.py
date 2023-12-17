@@ -1183,8 +1183,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if not (sessions := self.sessions.all()):
             return
 
-        if not settings.TEST_ENVIRONMENT:
-            evennia.SERVER_SESSION_HANDLER.sendables_out(sessions, sendables, metadata)
+        evennia.SERVER_SESSION_HANDLER.sendables_out(sessions, sendables, metadata)
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """

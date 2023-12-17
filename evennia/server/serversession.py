@@ -345,8 +345,7 @@ class ServerSession(_BASE_SESSION_CLASS):
         if not sendables:
             return
 
-        if not settings.TEST_ENVIRONMENT:
-            evennia.SERVER_SESSION_HANDLER.sendables_out([self], sendables, metadata)
+        evennia.SERVER_SESSION_HANDLER.sendables_out([self], sendables, metadata)
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """

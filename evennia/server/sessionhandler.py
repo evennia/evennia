@@ -833,6 +833,8 @@ class ServerSessionHandler(SessionHandler):
             sendables (list): List of sendables to send.
             metadata (dict, optional): Metadata to send.
         """
+        if settings.TEST_ENVIRONMENT:
+            return
         metadata = metadata or {}
 
         # Convert sessions to list of ints.

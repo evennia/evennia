@@ -195,7 +195,7 @@ class EvString(Sendable):
         return ["text", [parse_ansi(self.string)], self.kwargs]
 
     def serialize_sendable_data(self):
-        return (self.original, self.kwargs)
+        return self.original, self.kwargs
 
     @classmethod
     def deserialize_sendable(cls, data):
@@ -240,7 +240,7 @@ class OOBFunc(Sendable):
         return ["oob", self.cmd, self.args, self.kwargs]
 
     def serialize_sendable_data(self):
-        return (self.cmd, self.args, self.kwargs)
+        return self.cmd, self.args, self.kwargs
 
     @classmethod
     def deserialize_sendable(cls, data):
@@ -277,7 +277,7 @@ class GMCP(Sendable):
             tuple[str, Any]: The GMCP command and data. The Any data should be JSONable primitives like dictionaries,
                 strings, numbers, etc. If the data is None, it will be omitted and sent as a naked command.
         """
-        return (self.cmd, self.data)
+        return self.cmd, self.data
 
     def render_as_json(self, session, metadata) -> tuple[str, str, "Any"]:
         """
@@ -292,10 +292,10 @@ class GMCP(Sendable):
                 dictionaries, strings, numbers, etc. If the data is None, it will be omitted and sent as a naked
                 command.
         """
-        return ("gmcp", self.cmd, self.data)
+        return "gmcp", self.cmd, self.data
 
     def serialize_sendable_data(self):
-        return (self.cmd, self.data)
+        return self.cmd, self.data
 
     @classmethod
     def deserialize_sendable(cls, data):
@@ -342,7 +342,7 @@ class ReprHandler(Sendable):
         return self.data
 
     def serialize_sendable_data(self):
-        return (self.data, self.kwargs)
+        return self.data, self.kwargs
 
     @classmethod
     def deserialize_sendable(cls, data):

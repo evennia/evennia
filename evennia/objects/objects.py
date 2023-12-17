@@ -675,8 +675,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not (to_sessions := sessions or self.sessions.all()):
             return
 
-        if not settings.TEST_ENVIRONMENT:
-            evennia.SERVER_SESSION_HANDLER.sendables_out(to_sessions, sendables, metadata)
+        evennia.SERVER_SESSION_HANDLER.sendables_out(to_sessions, sendables, metadata)
 
     def for_contents(self, func, exclude=None, **kwargs):
         """
