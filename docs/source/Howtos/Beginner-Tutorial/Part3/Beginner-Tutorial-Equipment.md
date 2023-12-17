@@ -523,7 +523,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         self.equipment.add(moved_object)
 ```
 
-At this means that the equipmenthandler will check the NPC, and since it's not a equippable thing, an `EquipmentError` will be raised, failing the creation. Since we want to be able to create npcs etc easily, we will handle this error with a `try...except` statement like so:
+This means that the equipmenthandler will check the NPC, and since it's not a equippable thing, an `EquipmentError` will be raised, failing the creation. Since we want to be able to create npcs etc easily, we will handle this error with a `try...except` statement like so:
 
 ```python
 # mygame/evadventure/characters.py

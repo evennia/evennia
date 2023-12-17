@@ -628,7 +628,7 @@ node_apply_character(caller, raw_string, **kwargs):
     
     return text, None 
 ```
-When entering the node, we will take the Temporary character sheet and use its `.appy` method to create a new Character with all equipment. 
+When entering the node, we will take the Temporary character sheet and use its `.apply` method to create a new Character with all equipment. 
 
 This is what is called an _end node_, because it returns `None` instead of options. After this,  the menu will exit. We will be back to the default character selection screen. The characters  found on that screen are the ones listed in the `_playable_characters` Attribute, so we need to also the new character to it.
 
