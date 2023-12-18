@@ -41,7 +41,7 @@ SERVERNAME = "testing_mygame"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "evennia",
+        "NAME": "evennia1",
         "USER": "evennia",
         "PASSWORD": "password",
         "HOST": "127.0.0.1",
@@ -51,7 +51,7 @@ DATABASES = {
             "init_command": "set collation_connection=utf8mb4_unicode_ci",
         },
         "TEST": {
-            "NAME": "testdb",
+            "NAME": "evennia1",
             "OPTIONS": {
                 "charset": "utf8mb4",
                 "init_command": "set collation_connection=utf8mb4_unicode_ci",
