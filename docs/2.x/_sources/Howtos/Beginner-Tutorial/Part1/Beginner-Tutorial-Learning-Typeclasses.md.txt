@@ -513,7 +513,7 @@ Hm, this is the same values we set before. They are not random. The reason for t
     
 It's simple enough to run it manually though: 
 
-    > self.at_object_creation()
+    > py self.at_object_creation()
     > py self.get_stats()
     (5, 4, 8)
     

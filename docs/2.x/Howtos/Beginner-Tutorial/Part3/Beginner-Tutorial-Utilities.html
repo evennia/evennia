@@ -334,11 +334,11 @@ testing <code class="docutils literal notranslate"><span class="pre">get_obj_sta
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/tests/test_utils.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span> 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span> 
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span> 
 
 <span class="kn">from</span> <span class="nn">..import</span> <span class="n">utils</span>
 
-<span class="k">class</span> <span class="nc">TestUtils</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TestUtils</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_get_obj_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># make a simple object to test with </span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
@@ -365,7 +365,7 @@ testing <code class="docutils literal notranslate"><span class="pre">get_obj_sta
 
 </pre></div>
 </div>
-<p>What happens here is that we create a new test-class <code class="docutils literal notranslate"><span class="pre">TestUtils</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BaseEvenniaTest</span></code>.  This inheritance is what makes this a testing class.</p>
+<p>What happens here is that we create a new test-class <code class="docutils literal notranslate"><span class="pre">TestUtils</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code>.  This inheritance is what makes this a testing class.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>It’s useful for any game dev to know how to effectively test their code. So we’ll try to include a <em>Testing</em> section at the end of each of the implementation lessons to follow. Writing tests for your code is optional but highly recommended. It can feel a little cumbersome or time-consuming at first … but you’ll thank yourself later.</p>
