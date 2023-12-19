@@ -276,6 +276,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     # Used by account.create_character() to choose default typeclass for characters.
     default_character_typeclass = settings.BASE_CHARACTER_TYPECLASS
 
+    lockstring = (
+        "examine:perm(Admin);edit:perm(Admin);"
+        "delete:perm(Admin);boot:perm(Admin);msg:all();"
+        "noidletimeout:perm(Builder) or perm(noidletimeout)"
+    )
+
     # properties
     @lazy_property
     def cmdset(self):
@@ -1411,12 +1417,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         # A basic security setup
-        lockstring = (
-            "examine:perm(Admin);edit:perm(Admin);"
-            "delete:perm(Admin);boot:perm(Admin);msg:all();"
-            "noidletimeout:perm(Builder) or perm(noidletimeout)"
-        )
-        self.locks.add(lockstring)
+        self.locks.add(self.lockstring)
 
         # The ooc account cmdset
         self.cmdset.add_default(_CMDSET_ACCOUNT, persistent=True)

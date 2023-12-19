@@ -213,10 +213,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     # Used for sorting / filtering in inventories / room contents.
     _content_types = ("object",)
 
-    # lockstring of newly created objects, for easy overloading.
-    # Will be formatted with the appropriate attributes.
-    lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
-
     objects = ObjectManager()
 
     # populated by `return_appearance`
@@ -1033,6 +1029,27 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             obj.move_to(home, move_type="teleport")
 
     @classmethod
+    def get_default_lockstring(
+        cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
+    ):
+        """
+        Classmethod called during .create() to determine default locks for the object.
+
+        Args:
+            account (Account): Account to attribute this object to.
+            caller (DefaultObject): The object which is creating this one.
+            **kwargs: Arbitrary input.
+
+        Returns:
+            lockstring (str): A lockstring to use for this object.
+        """
+        pid = f"pid({account.id})" if account else None
+        cid = f"id({caller.id})" if caller else None
+        admin = "perm(Admin)"
+        trio = " or ".join([x for x in [pid, cid, admin] if x])
+        return ";".join([f"{x}:{trio}" for x in ["control", "delete", "edit"]])
+
+    @classmethod
     def create(
         cls,
         key: str,
@@ -1080,8 +1097,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # Create a sane lockstring if one wasn't supplied
         lockstring = kwargs.get("locks")
-        if account and not lockstring:
-            lockstring = cls.lockstring.format(account_id=account.id)
+        if (account or caller) and not lockstring:
+            lockstring = cls.get_default_lockstring(account=account, caller=caller, **kwargs)
             kwargs["locks"] = lockstring
 
         # Create object
@@ -1100,7 +1117,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 obj.db.desc = desc
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object." % key)
+            errors.append(f"An error occurred while creating this '{key}' object: {e}")
             logger.log_err(e)
 
         return obj, errors
@@ -2544,6 +2561,33 @@ class DefaultCharacter(DefaultObject):
     )
 
     @classmethod
+    def get_default_lockstring(
+        cls, account: "DefaultAccount" = None, caller: "DefaultObject" = None, **kwargs
+    ):
+        """
+        Classmethod called during .create() to determine default locks for the object.
+
+        Args:
+            account (Account): Account to attribute this object to.
+            caller (DefaultObject): The object which is creating this one.
+            **kwargs: Arbitrary input.
+
+        Returns:
+            lockstring (str): A lockstring to use for this object.
+        """
+        pid = f"pid({account.id})" if account else None
+        character = kwargs.get("character", None)
+        cid = f"id({character})" if character else None
+
+        puppet = "puppet:" + " or ".join(
+            [x for x in [pid, cid, "perm(Developer)", "pperm(Developer)"] if x]
+        )
+        delete = "delete:" + " or ".join([x for x in [pid, "perm(Admin)"] if x])
+        edit = "edit:" + " or ".join([x for x in [pid, "perm(Admin)"] if x])
+
+        return ";".join([puppet, delete, edit])
+
+    @classmethod
     def create(cls, key, account=None, **kwargs):
         """
         Creates a basic Character with default parameters, unless otherwise
@@ -2613,21 +2657,20 @@ class DefaultCharacter(DefaultObject):
                 account.characters.add(obj)
 
             # Add locks
-            if not locks and account:
+            if not locks:
                 # Allow only the character itself and the creator account to puppet this character
                 # (and Developers).
-                locks = cls.lockstring.format(character_id=obj.id, account_id=account.id)
-            elif not locks and not account:
-                locks = cls.lockstring.format(character_id=obj.id, account_id=-1)
+                locks = cls.get_default_lockstring(account=account, character=obj)
 
-            obj.locks.add(locks)
+            if locks:
+                obj.locks.add(locks)
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
                 obj.db.desc = description if description else _("This is a character.")
 
         except Exception as e:
-            errors.append(f"An error occurred while creating object '{key} object.")
+            errors.append(f"An error occurred while creating object '{key} object: {e}")
             logger.log_err(e)
 
         return obj, errors
@@ -2825,14 +2868,6 @@ class DefaultRoom(DefaultObject):
     # Generally, a room isn't expected to HAVE a location, but maybe in some games?
     _content_types = ("room",)
 
-    # lockstring of newly created rooms, for easy overloading.
-    # Will be formatted with the {id} of the creating object.
-    lockstring = (
-        "control:id({id}) or perm(Admin); "
-        "delete:id({id}) or perm(Admin); "
-        "edit:id({id}) or perm(Admin)"
-    )
-
     @classmethod
     def create(
         cls,
@@ -2891,12 +2926,10 @@ class DefaultRoom(DefaultObject):
             obj = create.create_object(**kwargs)
 
             # Add locks
-            if not locks and account:
-                locks = cls.lockstring.format(id=account.id)
-            elif not locks and not account:
-                locks = cls.lockstring.format(id=obj.id)
-
-            obj.locks.add(locks)
+            if not locks:
+                locks = cls.get_default_lockstring(account=account, caller=caller, room=obj)
+            if locks:
+                obj.locks.add(locks)
 
             # Record creator id and creation IP
             if ip:
@@ -2909,7 +2942,7 @@ class DefaultRoom(DefaultObject):
                 obj.db.desc = description if description else _("This is a room.")
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object." % key)
+            errors.append(f"An error occurred while creating this '{key}' object: {e}")
             logger.log_err(e)
 
         return obj, errors
@@ -2999,14 +3032,6 @@ class DefaultExit(DefaultObject):
     _content_types = ("exit",)
     exit_command = ExitCommand
     priority = 101
-
-    # lockstring of newly created exits, for easy overloading.
-    # Will be formatted with the {id} of the creating object.
-    lockstring = (
-        "control:id({id}) or perm(Admin); "
-        "delete:id({id}) or perm(Admin); "
-        "edit:id({id}) or perm(Admin)"
-    )
 
     # Helper classes and methods to implement the Exit. These need not
     # be overloaded unless one want to change the foundation for how
@@ -3110,11 +3135,10 @@ class DefaultExit(DefaultObject):
             obj = create.create_object(**kwargs)
 
             # Set appropriate locks
-            if not locks and account:
-                locks = cls.lockstring.format(id=account.id)
-            elif not locks and not account:
-                locks = cls.lockstring.format(id=obj.id)
-            obj.locks.add(locks)
+            if not locks:
+                locks = cls.get_default_lockstring(account=account, caller=caller, exit=obj)
+            if locks:
+                obj.locks.add(locks)
 
             # Record creator id and creation IP
             if ip:
@@ -3127,7 +3151,7 @@ class DefaultExit(DefaultObject):
                 obj.db.desc = description if description else _("This is an exit.")
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object." % key)
+            errors.append(f"An error occurred while creating this '{key}' object: {e}")
             logger.log_err(e)
 
         return obj, errors
