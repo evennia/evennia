@@ -195,8 +195,6 @@ class EvenniaTestMixin:
     @override_settings(PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"])
     def create_rooms(self):
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
-        self.room1.id = 1  # be sure this is default Home
-        self.room1.save()
         self.room1.db.desc = "room_desc"
 
         self.room2 = create.create_object(self.room_typeclass, key="Room2")
@@ -264,9 +262,7 @@ class EvenniaTestMixin:
         self.create_script()
         self.setup_session()
 
-    @override_settings(
-        PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"], DEFAULT_HOME="#1"
-    )
+    @override_settings(PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"])
     def tearDown(self):
         flush_cache()
         try:
