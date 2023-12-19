@@ -228,6 +228,9 @@ a bit more deterministic (Volund)</p></li>
 the websocket client) (Volund)</p></li>
 <li><p>Fix (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
 <code class="docutils literal notranslate"><span class="pre">settings.TEST_ENVIRONMENT</span></code> to address issues during refactored startup sequence.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3347">Fix</a>: New <code class="docutils literal notranslate"><span class="pre">generate_default_locks()</span></code> method on typeclasses;
+<code class="docutils literal notranslate"><span class="pre">.create</span></code> and <code class="docutils literal notranslate"><span class="pre">lockhandler.add()</span></code> will now properly handle emptry strings
+(Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3197">Fix</a>: Make sure Global scripts only start in one place,</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3324">Fix</a>: Make account-post-login-fail signal fire properly. Add
 <code class="docutils literal notranslate"><span class="pre">CUSTOM_SIGNAL</span></code> for adding one’s own signals (Volund)</p></li>
@@ -248,6 +251,7 @@ routing to the ajax web client.</p></li>
 successfully reconnected to the Server after a restart. (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3359">Fix</a>: Fix gendersub contrib to use proper pronoun when referencing
 other objects than oneself (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3361">Fix</a>: Fix of monitoring Attributes with categories (scyfris)</p></li>
 <li><p>Docs &amp; docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
 HouseOfPoe etc)</p></li>
 <li><p>Beginner tutorial: Cleanup and starting earlier with explaining how to add to

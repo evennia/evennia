@@ -362,6 +362,12 @@
     <span class="c1"># Used by account.create_character() to choose default typeclass for characters.</span>
     <span class="n">default_character_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
 
+    <span class="n">lockstring</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;examine:perm(Admin);edit:perm(Admin);&quot;</span>
+        <span class="s2">&quot;delete:perm(Admin);boot:perm(Admin);msg:all();&quot;</span>
+        <span class="s2">&quot;noidletimeout:perm(Builder) or perm(noidletimeout)&quot;</span>
+    <span class="p">)</span>
+
     <span class="c1"># properties</span>
 <div class="viewcode-block" id="DefaultAccount.cmdset"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.cmdset">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1497,12 +1503,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># A basic security setup</span>
-        <span class="n">lockstring</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;examine:perm(Admin);edit:perm(Admin);&quot;</span>
-            <span class="s2">&quot;delete:perm(Admin);boot:perm(Admin);msg:all();&quot;</span>
-            <span class="s2">&quot;noidletimeout:perm(Builder) or perm(noidletimeout)&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockstring</span><span class="p">)</span>
 
         <span class="c1"># The ooc account cmdset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">_CMDSET_ACCOUNT</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>

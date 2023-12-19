@@ -503,12 +503,27 @@
     <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span>
     <span class="n">outputfunc_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;outputfunc_name&quot;</span><span class="p">]</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Attributes stored in the MonitorHandler with categories are</span>
+    <span class="c1"># stored as fieldname &quot;db_value[category_name]&quot;, but we need to</span>
+    <span class="c1"># separate [category_name] because the actual attribute is stored on</span>
+    <span class="c1"># the object as &quot;db_value&quot; with a separate &quot;category&quot; field.</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_category</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_category</span>
+        <span class="n">fieldname</span> <span class="o">=</span> <span class="n">fieldname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db_category</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
     <span class="c1"># the session may be None if the char quits and someone</span>
     <span class="c1"># else then edits the object</span>
 
     <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
-        <span class="n">callsign</span> <span class="o">=</span> <span class="p">{</span><span class="n">outputfunc_name</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)}}</span>
+        <span class="n">callsign</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">outputfunc_name</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="o">**</span><span class="p">({</span><span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">}</span> <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
         <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="o">**</span><span class="n">callsign</span><span class="p">)</span>
 
 

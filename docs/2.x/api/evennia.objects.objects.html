@@ -234,11 +234,6 @@ without <strong>obj.save()</strong> having to be called explicitly.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.objects.objects.DefaultObject.lockstring">
-<code class="sig-name descname">lockstring</code><em class="property"> = 'control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)'</em><a class="headerlink" href="#evennia.objects.objects.DefaultObject.lockstring" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.objects">
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.objects.manager.ObjectManager object&gt;</em><a class="headerlink" href="#evennia.objects.objects.DefaultObject.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -737,6 +732,24 @@ object as a destination.</p>
 <code class="sig-name descname">clear_contents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.clear_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.clear_contents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Moves all objects (accounts/things) to their home location or
 to default home.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.get_default_lockstring">
+<em class="property">classmethod </em><code class="sig-name descname">get_default_lockstring</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span><span class="p">:</span> <span class="n">DefaultAccount</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject">DefaultObject</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_default_lockstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_default_lockstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Classmethod called during .create() to determine default locks for the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>account</strong> (<em>Account</em>) – Account to attribute this object to.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which is creating this one.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary input.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>lockstring (str)</em> – A lockstring to use for this object.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2083,6 +2096,24 @@ a character avatar controlled by an account.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultCharacter.get_default_lockstring">
+<em class="property">classmethod </em><code class="sig-name descname">get_default_lockstring</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span><span class="p">:</span> <span class="n">DefaultAccount</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject">DefaultObject</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.get_default_lockstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.get_default_lockstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Classmethod called during .create() to determine default locks for the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>account</strong> (<em>Account</em>) – Account to attribute this object to.</p></li>
+<li><p><strong>caller</strong> (<a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><em>DefaultObject</em></a>) – The object which is creating this one.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary input.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>lockstring (str)</em> – A lockstring to use for this object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultCharacter.create">
 <em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a basic Character with default parameters, unless otherwise
@@ -2270,11 +2301,6 @@ in seconds. Returns nothing if there are no sessions.</p>
 <dd><p>Bases: <a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
 <p>This is the base room object. It’s just like any Object except its
 location is always <strong>None</strong>.</p>
-<dl class="py attribute">
-<dt id="evennia.objects.objects.DefaultRoom.lockstring">
-<code class="sig-name descname">lockstring</code><em class="property"> = 'control:id({id}) or perm(Admin); delete:id({id}) or perm(Admin); edit:id({id}) or perm(Admin)'</em><a class="headerlink" href="#evennia.objects.objects.DefaultRoom.lockstring" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultRoom.create">
 <em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">account</span><span class="p">:</span> <span class="n">DefaultAccount</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject">evennia.objects.objects.DefaultObject</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'create'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultRoom.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultRoom.create" title="Permalink to this definition">¶</a></dt>
@@ -2417,11 +2443,6 @@ exits simply by giving the exit-object’s name on its own.</p>
 <dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultExit.priority">
 <code class="sig-name descname">priority</code><em class="property"> = 101</em><a class="headerlink" href="#evennia.objects.objects.DefaultExit.priority" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.objects.objects.DefaultExit.lockstring">
-<code class="sig-name descname">lockstring</code><em class="property"> = 'control:id({id}) or perm(Admin); delete:id({id}) or perm(Admin); edit:id({id}) or perm(Admin)'</em><a class="headerlink" href="#evennia.objects.objects.DefaultExit.lockstring" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

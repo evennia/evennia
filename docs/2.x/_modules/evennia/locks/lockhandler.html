@@ -424,9 +424,16 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lockstring</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">lockdefs</span> <span class="o">=</span> <span class="n">lockstring</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+            <span class="n">lockdefs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">stripped</span> <span class="k">for</span> <span class="n">lockdef</span> <span class="ow">in</span> <span class="n">lockstring</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">stripped</span> <span class="o">:=</span> <span class="n">lockdef</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">lockdefs</span> <span class="o">=</span> <span class="p">[</span><span class="n">lockdef</span> <span class="k">for</span> <span class="n">locks</span> <span class="ow">in</span> <span class="n">lockstring</span> <span class="k">for</span> <span class="n">lockdef</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)]</span>
+            <span class="n">lockdefs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">stripped</span>
+                <span class="k">for</span> <span class="n">locks</span> <span class="ow">in</span> <span class="n">lockstring</span>
+                <span class="k">for</span> <span class="n">lockdef</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">stripped</span> <span class="o">:=</span> <span class="n">lockdef</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="p">]</span>
             <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lockdefs</span><span class="p">)</span>
 
         <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
