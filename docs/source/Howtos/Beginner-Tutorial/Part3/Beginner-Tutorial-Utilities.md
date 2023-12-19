@@ -244,11 +244,11 @@ testing `get_obj_stats`.
 # mygame/evadventure/tests/test_utils.py
 
 from evennia.utils import create 
-from evennia.utils.test_resources import BaseEvenniaTest 
+from evennia.utils.test_resources import EvenniaTest 
 
 from ..import utils
 
-class TestUtils(BaseEvenniaTest):
+class TestUtils(EvenniaTest):
     def test_get_obj_stats(self):
         # make a simple object to test with 
         obj = create.create_object(
@@ -275,7 +275,7 @@ Damage roll: |w1d6|n
 
 ```
 
-What happens here is that we create a new test-class `TestUtils` that inherits from `BaseEvenniaTest`.  This inheritance is what makes this a testing class.
+What happens here is that we create a new test-class `TestUtils` that inherits from `EvenniaTest`.  This inheritance is what makes this a testing class.
 
 
 ```{important}
