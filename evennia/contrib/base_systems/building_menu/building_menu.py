@@ -126,7 +126,6 @@ from inspect import getfullargspec
 from textwrap import dedent
 
 from django.conf import settings
-
 from evennia import CmdSet, Command
 from evennia.commands import cmdhandler
 from evennia.utils.ansi import strip_ansi
@@ -1259,6 +1258,7 @@ class GenericBuildingCmd(Command):
     """
 
     key = "@edit"
+    help_category = "Building"
 
     def func(self):
         if not self.args.strip():
