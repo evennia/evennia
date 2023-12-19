@@ -19,10 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11"]
-        # python-version: ["3.10", "3.11"]
-        TESTING_DB: ["mysql"]
-        # TESTING_DB: ["sqlite3", "postgresql", "mysql"]
+        python-version: ["3.10", "3.11"]
+        TESTING_DB: ["sqlite3", "postgresql", "mysql"]
         include:
           - python-version: "3.10"
             TESTING_DB: "sqlite3"
@@ -31,7 +29,7 @@ jobs:
     timeout-minutes: 35
 
     env:
-      UNIT_TEST_SETTINGS: "--settings=settings --keepdb --parallel 4 --timing"
+      UNIT_TEST_SETTINGS: "--settings=settings --keepdb --timing"
       COVERAGE_TEST_SETTINGS: "--settings=settings --timing"
 
     steps:
