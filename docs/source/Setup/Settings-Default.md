@@ -1201,7 +1201,7 @@ WEBSOCKET_PROTOCOL_CLASS = "evennia.server.portal.webclient.WebSocketClient"
 # resilient to IP address changes.
 
 # The Ajax Client Class is used to manage all AJAX sessions.
-AJAX_CLIENT_CLASS = "evennia.server.portal.webclient.ajax.AjaxWebClient"
+AJAX_CLIENT_CLASS = "evennia.server.portal.webclient_ajax.AjaxWebClient"
 
 # Ajax Protocol Class is used for all AJAX client connections.
 AJAX_PROTOCOL_CLASS = "evennia.server.portal.webclient_ajax.AjaxWebClientSession"

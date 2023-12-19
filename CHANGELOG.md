@@ -44,6 +44,9 @@
   the websocket client) (Volund)
 - Fix (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
   `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
+- [Fix][pull3347]: New `generate_default_locks()` method on typeclasses;
+  `.create` and `lockhandler.add()` will now properly handle emptry strings
+(Volund)
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
 - [Fix][pull3324]: Make account-post-login-fail signal fire properly. Add
   `CUSTOM_SIGNAL` for adding one's own signals (Volund)
@@ -96,6 +99,7 @@
 [pull3358]: https://github.com/evennia/evennia/pull/3358
 [pull3359]: https://github.com/evennia/evennia/pull/3359
 [pull3361]: https://github.com/evennia/evennia/pull/3361
+[pull3347]: https://github.com/evennia/evennia/pull/3347
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307

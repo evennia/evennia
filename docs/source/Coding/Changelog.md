@@ -44,6 +44,9 @@
   the websocket client) (Volund)
 - Fix (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
   `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
+- [Fix][pull3347]: New `generate_default_locks()` method on typeclasses;
+  `.create` and `lockhandler.add()` will now properly handle emptry strings
+(Volund)
 - [Fix][pull3197]: Make sure Global scripts only start in one place,
 - [Fix][pull3324]: Make account-post-login-fail signal fire properly. Add
   `CUSTOM_SIGNAL` for adding one's own signals (Volund)
@@ -64,6 +67,7 @@
   successfully reconnected to the Server after a restart. (InspectorCaracal)
 - [Fix][pull3359]: Fix gendersub contrib to use proper pronoun when referencing
   other objects than oneself (InspectorCaracal)
+- [Fix][pull3361]: Fix of monitoring Attributes with categories (scyfris)
 - Docs & docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
   HouseOfPoe etc)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
@@ -94,10 +98,13 @@
 [pull3348]: https://github.com/evennia/evennia/pull/3348
 [pull3358]: https://github.com/evennia/evennia/pull/3358
 [pull3359]: https://github.com/evennia/evennia/pull/3359
+[pull3361]: https://github.com/evennia/evennia/pull/3361
+[pull3347]: https://github.com/evennia/evennia/pull/3347
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307
 [issue3331]: https://github.com/evennia/evennia/issues/3331
+
 [django-release-notes]: https://docs.djangoproject.com/en/4.2/releases/4.2/#backwards-incompatible-changes-in-4-2
 
 ## Evennia 2.3.0
