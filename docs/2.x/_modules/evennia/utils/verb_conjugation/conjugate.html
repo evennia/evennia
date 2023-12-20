@@ -216,7 +216,7 @@
         <span class="n">ind</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">verb_tenses_keys</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">verb_tenses</span><span class="p">[</span><span class="n">verb</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span>
-    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
         <span class="c1"># TODO implement simple algorithm here with +s for certain tenses?</span>
         <span class="k">return</span> <span class="n">verb</span></div>
 
@@ -343,7 +343,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">infinitive</span> <span class="o">=</span> <span class="n">verb_infinitive</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">verb_tenses</span><span class="p">[</span><span class="n">infinitive</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">verb_tenses</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">infinitive</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">infinitive</span>
     <span class="k">for</span> <span class="n">tense</span> <span class="ow">in</span> <span class="n">verb_tenses_keys</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">verb_tenses_keys</span><span class="p">[</span><span class="n">tense</span><span class="p">]]</span> <span class="o">==</span> <span class="n">verb</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tense</span>

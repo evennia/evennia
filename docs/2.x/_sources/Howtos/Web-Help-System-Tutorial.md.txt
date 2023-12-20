@@ -18,12 +18,18 @@ The first step is to create our new Django *app*.  An app in Django can contain 
 
 From your game directory, use the following commands:
 
-    cd web 
+    cd web
     evennia startapp help_system
+
+This creates a new folder `help_system` in your `mygame/` folder. To keep things
+tidy, let's move it to the `web/` folder:
+
+    mv help_system web  (linux)
+    move help_system web  (windows)
 
 > Note: calling the app "help" would have been more explicit, but this name is already used by Django.
 
-This will create a directory named `help_system` under `mygame/web/`. We put it there to keep all web-related things together, but you can organize however you like. Here's how the structure looks: 
+We put the new app under `web/`t o keep all web-related things together, but you can organize however you like. Here's how the structure looks:
 
     mygame/
         ...
@@ -198,8 +204,8 @@ def index(request):
 def index(request):
     """The 'index' view."""
     user = request.user
-    if not user.is_anonymous() and user.db._playable_characters:
-        character = user.db._playable_characters[0]
+    if not user.is_anonymous() and user.characters:
+        character = user.characters[0]
 ```
 
 In this second case, it will select the first character of the account.
@@ -211,7 +217,7 @@ But what if the user's not logged in?  Again, we have different solutions.  One 
 The system should answer:
 
         Created new character anonymous. Use @ic anonymous to enter the game as this character.
-    
+
 So in our view, we could have something like this:
 
 ```python

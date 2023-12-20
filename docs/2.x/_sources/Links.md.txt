@@ -17,8 +17,9 @@
 - [Evennia official forums](https://github.com/evennia/evennia/discussions) on Github Discussions.
 - [Evennia subreddit](https://www.reddit.com/r/Evennia/) - A little slower moving, but still active
 
-## Third-party
+## Third-party Evennia stuff
 
+- [Search Evennia docs with chatGPT](https://chat.openai.com/g/g-Qu7AJQEbZ-evennia-guide) - custom chatGPT loaded with the Evennia docs (as of Dec 2023)
 - [Evennia-related repos on github](https://github.com/search?p=1&q=evennia)
 - [Evennia minimud](https://github.com/InspectorCaracal/evennia-minimud) - minimal Evennia game using only contribs, based on Evennia 2.0.0 code. Useful to build from!
 - [EvscapeRoom](https://github.com/Griatch/evscaperoom) Full code of Evennia-based multiplayer escaperoom (engine is an [Evennia contrib](Contribs/Contrib-Evscaperoom.md))

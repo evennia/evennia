@@ -155,15 +155,16 @@ actions to choose between.</p>
 including transitions and actions.</p>
 <p>Add to typeclass with &#64;lazyproperty:</p>
 <blockquote>
-<div><dl>
-<dt>class NPC(DefaultCharacter):</dt><dd><p># …</p>
+<div><p>class NPC(DefaultCharacter):</p>
+<blockquote>
+<div><p>ai_states = {…}</p>
+<p># …</p>
 <p>&#64;lazyproperty
 def ai(self):</p>
 <blockquote>
 <div><p>return AIHandler(self)</p>
 </div></blockquote>
-</dd>
-</dl>
+</div></blockquote>
 </div></blockquote>
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.__init__">
@@ -206,11 +207,15 @@ def ai(self):</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.evadventure.ai.AIHandler.add_aidict">
-<code class="sig-name descname">add_aidict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aidict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.add_aidict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.add_aidict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add an AI dictionary to the AI handler.</p>
+<code class="sig-name descname">add_aidict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aidict</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/ai.html#AIHandler.add_aidict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.ai.AIHandler.add_aidict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an AI dictionary to the AI handler, if one doesn’t already exist.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>aidict</strong> (<em>dict</em>) – AI dictionary to add.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>aidict</strong> (<em>dict</em>) – AI dictionary to add.</p></li>
+<li><p><strong>force</strong> (<em>bool</em><em>, </em><em>optional</em>) – Force adding the AI dictionary, even if one already exists on</p></li>
+<li><p><strong>handler.</strong> (<em>this</em>) – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

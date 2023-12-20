@@ -145,7 +145,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['previous', 'abort', 'end', 'quit', 'n', 'top', 't', 'next', 'p', 'a', 'e', 'q']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['top', 'p', 'abort', 'q', 'a', 'quit', 'n', 'end', 't', 'previous', 'next', 'e']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -171,7 +171,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'previous abort end quit n top t next p a e q', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' previous abort end quit n top t next p a e q', 'tags': '', 'text': '\n    Manipulate the text paging. Catch no-input with aliases.\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'top p abort q a quit n end t previous next e', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' top p abort q a quit n end t previous next e', 'tags': '', 'text': '\n    Manipulate the text paging. Catch no-input with aliases.\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -298,14 +298,11 @@ exit message will not be shown.</p></li>
 the caller when the more page exits. Note that this will be using whatever
 cmdset the user had <em>before</em> the evmore pager was activated (so none of
 the evmore commands will be available when this is run).</p></li>
-<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – <p>These will be passed on to the <strong>caller.msg</strong> method. Notably,
+<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – These will be passed on to the <strong>caller.msg</strong> method. Notably,
 one can pass additional outputfuncs this way. There is one special kwarg:
-- text_kwargs - extra kwargs to pass with the text outputfunc, e.g.</p>
-<blockquote>
-<div><p><strong>text_kwargs={“type”: “help”} would result to each page being sent
-to **msg</strong> as <strong>text=(pagetxt, {“type”: “help”})</strong>.</p>
-</div></blockquote>
-</p></li>
+- <strong>text_kwargs</strong> - extra kwargs to pass with the text outputfunc, e.g.
+<strong>text_kwargs={“type”: “help”}</strong> would result to each page being sent
+to <strong>msg</strong> as <strong>text=(pagetxt, {“type”: “help”})</strong>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -549,14 +546,11 @@ exit message will not be shown.</p></li>
 the caller when the more page exits. Note that this will be using whatever
 cmdset the user had <em>before</em> the evmore pager was activated (so none of
 the evmore commands will be available when this is run).</p></li>
-<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – <p>These will be passed on to the <strong>caller.msg</strong> method. Notably,
+<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – These will be passed on to the <strong>caller.msg</strong> method. Notably,
 one can pass additional outputfuncs this way. There is one special kwarg:
-- text_kwargs - extra kwargs to pass with the text outputfunc, e.g.</p>
-<blockquote>
-<div><p><strong>text_kwargs={“type”: “help”} would result to each page being sent
-to **msg</strong> as <strong>text=(pagetxt, {“type”: “help”})</strong>.</p>
-</div></blockquote>
-</p></li>
+- <strong>text_kwargs</strong> - extra kwargs to pass with the text outputfunc, e.g.
+<strong>text_kwargs={“type”: “help”}</strong> would result to each page being sent
+to <strong>msg</strong> as <strong>text=(pagetxt, {“type”: “help”})</strong>.</p></li>
 </ul>
 </dd>
 </dl>

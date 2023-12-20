@@ -193,7 +193,7 @@ object instead of its value.</p></li>
 
 <dl class="py method">
 <dt id="evennia.utils.optionhandler.OptionHandler.set">
-<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionhandler.html#OptionHandler.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionhandler.OptionHandler.set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; BaseOption<a class="reference internal" href="../_modules/evennia/utils/optionhandler.html#OptionHandler.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionhandler.OptionHandler.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change an individual option.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -205,7 +205,12 @@ save function and display function and allows to customize either.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>value (any)</em> – Value stored in option, after validation.</p>
+<dd class="field-even"><p><p><em>BaseOption</em> –</p>
+<dl class="simple">
+<dt>The matched object. Its new value can be accessed with</dt><dd><p>op.value or op.display().</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>

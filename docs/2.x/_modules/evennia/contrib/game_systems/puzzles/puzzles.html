@@ -732,7 +732,6 @@
                 <span class="k">return</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">part</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_PUZZLES_TAG_MEMBER</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">_PUZZLES_TAG_CATEGORY</span><span class="p">):</span>
-
                 <span class="c1"># not a puzzle part ... abort</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have no idea how </span><span class="si">%s</span><span class="s2"> can be used&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">many</span><span class="p">))</span>
                 <span class="k">return</span>

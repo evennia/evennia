@@ -404,26 +404,28 @@ how pathfinding should work etc.</p></li>
 <span class="c1"># the &#39;*&#39; are wildcards and allows for giving defaults on this map.</span>
 <span class="n">PROTOTYPES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="p">{</span>
-	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
-	<span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A nice glade&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sun shines through the branches above.}</span>
+        <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A nice glade&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sun shines through the branches above.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">):</span> <span class="p">{</span>
-	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
-	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A quiet path through the foilage&quot;</span>
-    <span class="p">}</span>
+        <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A quiet path through the foilage&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
     <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
-	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
-	<span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;In a bright forest&quot;</span><span class="p">,</span>
-	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;There is green all around.&quot;</span>
+        <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;In a bright forest&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;There is green all around.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
-	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
-	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The path leads further into the forest.&quot;</span>
+        <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The path leads further into the forest.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
 <span class="p">}</span>
 
 <span class="c1"># collect all info for this one map</span>
 <span class="n">XYMAP_DATA</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="s2">&quot;mymap&quot;</span>  <span class="c1"># important!</span>
+    <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="s2">&quot;mymap&quot;</span><span class="p">,</span>  <span class="c1"># important!</span>
     <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAPSTR</span><span class="p">,</span>
     <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="n">LEGEND</span><span class="p">,</span>
     <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="n">PROTOTYPES</span><span class="p">,</span>
@@ -434,7 +436,6 @@ how pathfinding should work etc.</p></li>
 <span class="n">XYMAP_DATA_LIST</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">XYMAP_DATA</span>
 <span class="p">]</span>
-
 </pre></div>
 </div>
 <p>The above map would be added to the grid with</p>
@@ -449,6 +450,9 @@ the name of the map. The Z-coordinate can be either a string or an integer, and 
 be unique across the entire grid. It is added as the key ‘zcoord’ to <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code>.</p>
 <p>Most users will want to just treat each map as a location, and name the
 “Z-coordinate” things like <code class="docutils literal notranslate"><span class="pre">Dungeon</span> <span class="pre">of</span> <span class="pre">Doom</span></code>, <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">ice</span> <span class="pre">queen's</span> <span class="pre">palace</span></code> or <code class="docutils literal notranslate"><span class="pre">City</span> <span class="pre">of</span> <span class="pre">Blackhaven</span></code>. But you could also name it -1, 0, 1, 2, 3 if you wanted.</p>
+<blockquote>
+<div><p>Note that the Zcoord is searched <em>non-case senstively</em> in the</p>
+</div></blockquote>
 <p>Pathfinding happens only within each XYMap (up/down is normally ‘faked’ by moving
 sideways to a new area of the XY plane).</p>
 <section id="a-true-3d-map">

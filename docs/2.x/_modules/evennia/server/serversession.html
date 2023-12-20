@@ -127,6 +127,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># Determines which order command sets begin to be assembled from.</span>
+    <span class="c1"># Sessions are usually first.</span>
+    <span class="n">cmdset_provider_order</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">cmdset_provider_error_order</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">cmdset_provider_type</span> <span class="o">=</span> <span class="s2">&quot;session&quot;</span>
+
 <div class="viewcode-block" id="ServerSession.__init__"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initiate to avoid AttributeErrors down the line</span>
@@ -144,6 +150,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_storage_string</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
     <span class="n">cmdset_storage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__cmdset_storage_get</span><span class="p">,</span> <span class="n">__cmdset_storage_set</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ServerSession.get_cmdset_providers"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.get_cmdset_providers">[docs]</a>    <span class="k">def</span> <span class="nf">get_cmdset_providers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;CmdSetProvider&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overrideable method which returns a dictionary of every kind of object which</span>
+<span class="sd">        has a cmdsethandler linked to this ServerSession, and should participate in cmdset</span>
+<span class="sd">        merging.</span>
+
+<span class="sd">        In all normal cases, that&#39;s the Session itself, and possibly an account and puppeted</span>
+<span class="sd">         object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, CmdSetProvider]: The CmdSetProviders linked to this Object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;session&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;account&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">puppet</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;object&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">puppet</span>
+        <span class="k">return</span> <span class="n">out</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -457,11 +482,34 @@
 
 <div class="viewcode-block" id="ServerSession.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A dummy hook all objects with cmdsets need to have</span>
+<span class="sd">        Called just before cmdsets on this object are requested by the</span>
+<span class="sd">        command handler. If changes need to be done on the fly to the</span>
+<span class="sd">        cmdset before passing them on to the cmdhandler, this is the</span>
+<span class="sd">        place to do it. This is called also if the object currently</span>
+<span class="sd">        have no cmdsets.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            caller (Object, Account or Session): The object requesting the cmdsets.</span>
+<span class="sd">            current (CmdSet): The current merged cmdset.</span>
+<span class="sd">            force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)</span>
+<span class="sd">            **kwargs: Arbitrary input for overloads.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ServerSession.get_cmdsets"><a class="viewcode-back" href="../../../api/evennia.server.serversession.html#evennia.server.serversession.ServerSession.get_cmdsets">[docs]</a>    <span class="k">def</span> <span class="nf">get_cmdsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the CommandHandler to get a list of cmdsets to merge.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            caller (obj): The object requesting the cmdsets.</span>
+<span class="sd">            current (cmdset): The current merged cmdset.</span>
+<span class="sd">            **kwargs: Arbitrary input for overloads.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple of (current, cmdsets), which is probably self.cmdset.current and self.cmdset.cmdset_stack</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">)</span></div>
 
     <span class="c1"># Mock db/ndb properties for allowing easy storage on the session</span>
     <span class="c1"># (note that no databse is involved at all here. session.db.attr =</span>

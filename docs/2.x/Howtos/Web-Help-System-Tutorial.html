@@ -143,14 +143,20 @@
 <h2>Creating our app<a class="headerlink" href="#creating-our-app" title="Permalink to this headline">¶</a></h2>
 <p>The first step is to create our new Django <em>app</em>.  An app in Django can contain pages and mechanisms: your website may contain different apps.  Actually, the website provided out-of-the-box by Evennia has already three apps: a “webclient” app, to handle the entire webclient, a “website” app to contain your basic pages, and a third app provided by Django to create a simple admin interface.  So we’ll create another app in parallel, giving it a clear name to represent our help system.</p>
 <p>From your game directory, use the following commands:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd web 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd web
 evennia startapp help_system
+</pre></div>
+</div>
+<p>This creates a new folder <code class="docutils literal notranslate"><span class="pre">help_system</span></code> in your <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> folder. To keep things
+tidy, let’s move it to the <code class="docutils literal notranslate"><span class="pre">web/</span></code> folder:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mv help_system web  (linux)
+move help_system web  (windows)
 </pre></div>
 </div>
 <blockquote>
 <div><p>Note: calling the app “help” would have been more explicit, but this name is already used by Django.</p>
 </div></blockquote>
-<p>This will create a directory named <code class="docutils literal notranslate"><span class="pre">help_system</span></code> under <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code>. We put it there to keep all web-related things together, but you can organize however you like. Here’s how the structure looks:</p>
+<p>We put the new app under <code class="docutils literal notranslate"><span class="pre">web/</span></code>t o keep all web-related things together, but you can organize however you like. Here’s how the structure looks:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mygame/
     ...
     web/
@@ -309,8 +315,8 @@ handle the behavior that is triggered when a user asks for this information by e
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The &#39;index&#39; view.&quot;&quot;&quot;</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
-        <span class="n">character</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
+        <span class="n">character</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">characters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>In this second case, it will select the first character of the account.</p>

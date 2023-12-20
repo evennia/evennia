@@ -1060,7 +1060,7 @@
         <span class="n">season</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">get_season</span><span class="p">()</span>
         <span class="n">timeslot</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">get_time_of_day</span><span class="p">()</span>
 
-        <span class="n">prep</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span> <span class="k">if</span> <span class="n">season</span> <span class="o">==</span> <span class="s2">&quot;autumn&quot;</span> <span class="k">else</span> <span class="s2">&quot;an&quot;</span>
+        <span class="n">prep</span> <span class="o">=</span> <span class="s2">&quot;an&quot;</span> <span class="k">if</span> <span class="n">season</span> <span class="o">==</span> <span class="s2">&quot;autumn&quot;</span> <span class="k">else</span> <span class="s2">&quot;a&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;It&#39;s </span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">season</span><span class="si">}</span><span class="s2"> day, in the </span><span class="si">{</span><span class="n">timeslot</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
 
 

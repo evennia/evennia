@@ -92,7 +92,6 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">django.db.models.fields</span> <span class="kn">import</span> <span class="n">exceptions</span>
-
 <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypeclassManager</span><span class="p">,</span> <span class="n">TypedObjectManager</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -537,7 +536,6 @@
             <span class="k">return</span> <span class="n">query</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">searchdata</span> <span class="ow">and</span> <span class="n">searchdata</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-
             <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">_search_by_tag</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
 
@@ -808,7 +806,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">home</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">home_obj_or_dbref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
         <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_TEST_ENVIRONMENT</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEST_ENVIRONMENT</span><span class="p">:</span>
                 <span class="c1"># this happens for databases where the #1 location is flushed during tests</span>
                 <span class="n">home</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>

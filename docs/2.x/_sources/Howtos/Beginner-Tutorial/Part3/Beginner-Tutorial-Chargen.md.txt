@@ -622,7 +622,7 @@ node_apply_character(caller, raw_string, **kwargs):
     tmp_character = kwargs["tmp_character"]
     new_character = tmp_character.apply(caller)      
     
-    caller.account.db._playable_characters = [new_character] 
+    caller.account.add_character(new_character) 
     
     text = "Character created!"
     
@@ -650,7 +650,6 @@ This is a start point for spinning up the chargen from a command later.
         
     # this generates all random components of the character
     tmp_character = TemporaryCharacterSheet()
-    tmp_character.generate()
 
     EvMenu(caller, menutree, session=session, 
            startnode="node_chargen",   # <----- 

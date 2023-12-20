@@ -24,6 +24,7 @@ evennia.server.portal
    evennia.server.portal.portal
    evennia.server.portal.portalsessionhandler
    evennia.server.portal.rss
+   evennia.server.portal.service
    evennia.server.portal.ssh
    evennia.server.portal.ssl
    evennia.server.portal.suppress_ga

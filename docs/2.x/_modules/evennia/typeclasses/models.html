@@ -120,6 +120,8 @@
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="kn">import</span> <span class="n">smart_str</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
+
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_TYPED_OBJECT_POST_RENAME</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses</span> <span class="kn">import</span> <span class="n">managers</span>
@@ -712,8 +714,7 @@
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                     <span class="s2">&quot;Cannot use swap_typeclass on time-dependent &quot;</span>
                     <span class="s2">&quot;Script &#39;</span><span class="si">%s</span><span class="s2">&#39;.</span><span class="se">\n</span><span class="s2">Stop and start a new Script of the &quot;</span>
-                    <span class="s2">&quot;right type instead.&quot;</span>
-                    <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+                    <span class="s2">&quot;right type instead.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
                 <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_path</span> <span class="o">=</span> <span class="n">new_typeclass</span><span class="o">.</span><span class="n">path</span>
@@ -786,7 +787,7 @@
 <span class="sd">            result (bool): If the permstring is passed or not.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span><span class="p">):</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>

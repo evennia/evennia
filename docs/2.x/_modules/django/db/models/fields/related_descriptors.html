@@ -151,11 +151,19 @@
 <span class="kn">from</span> <span class="nn">asgiref.sync</span> <span class="kn">import</span> <span class="n">sync_to_async</span>
 
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">FieldError</span>
-<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connections</span><span class="p">,</span> <span class="n">router</span><span class="p">,</span> <span class="n">transaction</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">signals</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DEFAULT_DB_ALIAS</span><span class="p">,</span>
+    <span class="n">NotSupportedError</span><span class="p">,</span>
+    <span class="n">connections</span><span class="p">,</span>
+    <span class="n">router</span><span class="p">,</span>
+    <span class="n">transaction</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Window</span><span class="p">,</span> <span class="n">signals</span>
+<span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">RowNumber</span>
+<span class="kn">from</span> <span class="nn">django.db.models.lookups</span> <span class="kn">import</span> <span class="n">GreaterThan</span><span class="p">,</span> <span class="n">LessThanOrEqual</span>
 <span class="kn">from</span> <span class="nn">django.db.models.query</span> <span class="kn">import</span> <span class="n">QuerySet</span>
 <span class="kn">from</span> <span class="nn">django.db.models.query_utils</span> <span class="kn">import</span> <span class="n">DeferredAttribute</span>
-<span class="kn">from</span> <span class="nn">django.db.models.utils</span> <span class="kn">import</span> <span class="n">resolve_callables</span>
+<span class="kn">from</span> <span class="nn">django.db.models.utils</span> <span class="kn">import</span> <span class="n">AltersData</span><span class="p">,</span> <span class="n">resolve_callables</span>
 <span class="kn">from</span> <span class="nn">django.utils.functional</span> <span class="kn">import</span> <span class="n">cached_property</span>
 
 
@@ -166,6 +174,27 @@
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">delete_cached_value</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">attname</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">_filter_prefetch_queryset</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">instances</span><span class="p">):</span>
+    <span class="n">predicate</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">__in&quot;</span><span class="p">:</span> <span class="n">instances</span><span class="p">})</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">_db</span> <span class="ow">or</span> <span class="n">DEFAULT_DB_ALIAS</span>
+    <span class="k">if</span> <span class="n">queryset</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">is_sliced</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">connections</span><span class="p">[</span><span class="n">db</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">supports_over_clause</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotSupportedError</span><span class="p">(</span>
+                <span class="s2">&quot;Prefetching from a limited queryset is only supported on backends &quot;</span>
+                <span class="s2">&quot;that support window functions.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">low_mark</span><span class="p">,</span> <span class="n">high_mark</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">low_mark</span><span class="p">,</span> <span class="n">queryset</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">high_mark</span>
+        <span class="n">order_by</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">expr</span> <span class="k">for</span> <span class="n">expr</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">queryset</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="n">db</span><span class="p">)</span><span class="o">.</span><span class="n">get_order_by</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">Window</span><span class="p">(</span><span class="n">RowNumber</span><span class="p">(),</span> <span class="n">partition_by</span><span class="o">=</span><span class="n">field_name</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="n">order_by</span><span class="p">)</span>
+        <span class="n">predicate</span> <span class="o">&amp;=</span> <span class="n">GreaterThan</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">low_mark</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">high_mark</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">predicate</span> <span class="o">&amp;=</span> <span class="n">LessThanOrEqual</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">high_mark</span><span class="p">)</span>
+        <span class="n">queryset</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">clear_limits</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">ForwardManyToOneDescriptor</span><span class="p">:</span>
@@ -693,7 +722,7 @@
 <span class="sd">    the related model, and adds behaviors specific to many-to-one relations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">class</span> <span class="nc">RelatedManager</span><span class="p">(</span><span class="n">superclass</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">RelatedManager</span><span class="p">(</span><span class="n">superclass</span><span class="p">,</span> <span class="n">AltersData</span><span class="p">):</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -793,8 +822,7 @@
             <span class="n">rel_obj_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">get_local_related_value</span>
             <span class="n">instance_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">get_foreign_related_value</span>
             <span class="n">instances_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">instance_attr</span><span class="p">(</span><span class="n">inst</span><span class="p">):</span> <span class="n">inst</span> <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">}</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__in&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">instances</span><span class="p">}</span>
-            <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">queryset</span> <span class="o">=</span> <span class="n">_filter_prefetch_queryset</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">instances</span><span class="p">)</span>
 
             <span class="c1"># Since we just bypassed this class&#39; get_queryset(), we must manage</span>
             <span class="c1"># the reverse relation manually.</span>
@@ -843,6 +871,11 @@
                         <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
         <span class="n">add</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">aadd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">)(</span><span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">)</span>
+
+        <span class="n">aadd</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_fk_val</span><span class="p">()</span>
@@ -913,11 +946,21 @@
 
             <span class="n">remove</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">aremove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">)(</span><span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">)</span>
+
+            <span class="n">aremove</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
             <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_check_fk_val</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bulk</span><span class="p">)</span>
 
             <span class="n">clear</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">aclear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">)(</span><span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">)</span>
+
+            <span class="n">aclear</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">def</span> <span class="nf">_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="p">,</span> <span class="n">bulk</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_remove_prefetched_objects</span><span class="p">()</span>
@@ -961,6 +1004,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">)</span>
 
         <span class="nb">set</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">aset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">)(</span><span class="n">objs</span><span class="o">=</span><span class="n">objs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="n">clear</span><span class="p">)</span>
+
+        <span class="n">aset</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">return</span> <span class="n">RelatedManager</span>
 
@@ -1020,7 +1068,7 @@
 <span class="sd">    the related model, and adds behaviors specific to many-to-many relations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">class</span> <span class="nc">ManyRelatedManager</span><span class="p">(</span><span class="n">superclass</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">ManyRelatedManager</span><span class="p">(</span><span class="n">superclass</span><span class="p">,</span> <span class="n">AltersData</span><span class="p">):</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -1081,19 +1129,21 @@
         <span class="n">do_not_call_in_templates</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span> <span class="nf">_build_remove_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">removed_vals</span><span class="p">):</span>
-            <span class="n">filters</span> <span class="o">=</span> <span class="n">Q</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_val</span><span class="p">))</span>
+            <span class="n">filters</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">create</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_val</span><span class="p">)])</span>
             <span class="c1"># No need to add a subquery condition if removed_vals is a QuerySet without</span>
             <span class="c1"># filters.</span>
             <span class="n">removed_vals_filters</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">removed_vals</span><span class="p">,</span> <span class="n">QuerySet</span><span class="p">)</span> <span class="ow">or</span> <span class="n">removed_vals</span><span class="o">.</span><span class="n">_has_filters</span><span class="p">()</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">removed_vals_filters</span><span class="p">:</span>
-                <span class="n">filters</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="si">}</span><span class="s2">__in&quot;</span><span class="p">,</span> <span class="n">removed_vals</span><span class="p">))</span>
+                <span class="n">filters</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="o">.</span><span class="n">create</span><span class="p">([(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="si">}</span><span class="s2">__in&quot;</span><span class="p">,</span> <span class="n">removed_vals</span><span class="p">)])</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symmetrical</span><span class="p">:</span>
-                <span class="n">symmetrical_filters</span> <span class="o">=</span> <span class="n">Q</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_val</span><span class="p">))</span>
+                <span class="n">symmetrical_filters</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_val</span><span class="p">)]</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="n">removed_vals_filters</span><span class="p">:</span>
-                    <span class="n">symmetrical_filters</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="p">(</span>
-                        <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="si">}</span><span class="s2">__in&quot;</span><span class="p">,</span> <span class="n">removed_vals</span><span class="p">)</span>
+                    <span class="n">symmetrical_filters</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                        <span class="p">[(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="si">}</span><span class="s2">__in&quot;</span><span class="p">,</span> <span class="n">removed_vals</span><span class="p">)]</span>
                     <span class="p">)</span>
                 <span class="n">filters</span> <span class="o">|=</span> <span class="n">symmetrical_filters</span>
             <span class="k">return</span> <span class="n">filters</span>
@@ -1127,9 +1177,9 @@
 
             <span class="n">queryset</span><span class="o">.</span><span class="n">_add_hints</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="n">queryset</span><span class="o">.</span><span class="n">_db</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
-
-            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__in&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_field_name</span><span class="p">:</span> <span class="n">instances</span><span class="p">}</span>
-            <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">_next_is_sticky</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">queryset</span> <span class="o">=</span> <span class="n">_filter_prefetch_queryset</span><span class="p">(</span>
+                <span class="n">queryset</span><span class="o">.</span><span class="n">_next_is_sticky</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_field_name</span><span class="p">,</span> <span class="n">instances</span>
+            <span class="p">)</span>
 
             <span class="c1"># M2M: need to annotate the query in order to get the primary model</span>
             <span class="c1"># that the secondary model was actually related to. We know that</span>
@@ -1187,11 +1237,23 @@
 
         <span class="n">add</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">aadd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="n">through_defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">)(</span>
+                <span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="n">through_defaults</span><span class="o">=</span><span class="n">through_defaults</span>
+            <span class="p">)</span>
+
+        <span class="n">aadd</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_remove_prefetched_objects</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_remove_items</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">)</span>
 
         <span class="n">remove</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">aremove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">)(</span><span class="o">*</span><span class="n">objs</span><span class="p">)</span>
+
+        <span class="n">aremove</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">db</span> <span class="o">=</span> <span class="n">router</span><span class="o">.</span><span class="n">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">through</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
@@ -1220,6 +1282,11 @@
                 <span class="p">)</span>
 
         <span class="n">clear</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">aclear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">)()</span>
+
+        <span class="n">aclear</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">through_defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
             <span class="c1"># Force evaluation of `objs` in case it&#39;s a queryset whose value</span>
@@ -1254,6 +1321,13 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">new_objs</span><span class="p">,</span> <span class="n">through_defaults</span><span class="o">=</span><span class="n">through_defaults</span><span class="p">)</span>
 
         <span class="nb">set</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">aset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">through_defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">)(</span>
+                <span class="n">objs</span><span class="o">=</span><span class="n">objs</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="n">clear</span><span class="p">,</span> <span class="n">through_defaults</span><span class="o">=</span><span class="n">through_defaults</span>
+            <span class="p">)</span>
+
+        <span class="n">aset</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">through_defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">db</span> <span class="o">=</span> <span class="n">router</span><span class="o">.</span><span class="n">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>

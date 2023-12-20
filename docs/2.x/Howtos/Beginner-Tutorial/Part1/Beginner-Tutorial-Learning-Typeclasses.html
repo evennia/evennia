@@ -639,7 +639,7 @@ set a random value from 3 to 18 to each stat. Simple, but for some classical RPG
 </aside>
 <p>Hm, this is the same values we set before. They are not random. The reason for this is of course that, as said, <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> only runs <em>once</em>, the very first time a character is created. Our character object was already  created long before, so it will not be called again.</p>
 <p>It’s simple enough to run it manually though:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.at_object_creation()
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.at_object_creation()
 &gt; py self.get_stats()
 (5, 4, 8)
 </pre></div>

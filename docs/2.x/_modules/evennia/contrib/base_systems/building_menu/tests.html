@@ -184,6 +184,7 @@
 
 <div class="viewcode-block" id="TestBuildingMenu.test_multi_level"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_multi_level">[docs]</a>    <span class="k">def</span> <span class="nf">test_multi_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test multi-level choices.&quot;&quot;&quot;</span>
+
         <span class="c1"># Creaste three succeeding menu (t2 is contained in t1, t3 is contained in t2)</span>
         <span class="k">def</span> <span class="nf">on_nomatch_t1</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
             <span class="n">menu</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;whatever&quot;</span><span class="p">)</span>  <span class="c1"># this will be valid since after t1 is a joker</span>

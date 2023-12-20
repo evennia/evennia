@@ -118,9 +118,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
         <span class="p">(</span>
-            <span class="s2">&quot;This is a message tagged with &#39;testing&#39; and &quot;</span>
-            <span class="s2">&quot;should appear in the pane you selected!</span><span class="se">\n</span><span class="s2"> &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;You wrote: &#39;</span><span class="si">{</span><span class="n">raw_string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;This is a message tagged with &#39;testing&#39; and &quot;</span>
+                <span class="s2">&quot;should appear in the pane you selected!</span><span class="se">\n</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;You wrote: &#39;</span><span class="si">{</span><span class="n">raw_string</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">),</span>
             <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;testing&quot;</span><span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -777,12 +779,12 @@
 
 <span class="s2">- You can start by trying to build some stuff by following the |wBuilder quick-start|n:</span>
 
-<span class="s2">    |yhttps://www.evennia.com/docs/latest/Building-Quickstart|n</span>
+<span class="s2">    |yhttps://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Building-Quickstart|n</span>
 
 <span class="s2">- The tutorial-world may or may not be your cup of tea, but it does show off</span>
 <span class="s2">  several |wuseful tools|n of Evennia. You may want to check out how it works:</span>
 
-<span class="s2">    |yhttps://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part1/Tutorial-World|n</span>
+<span class="s2">    |yhttps://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Tutorial-World|n</span>
 
 <span class="s2">- You can then continue looking through the |wTutorials|n and pick one that</span>
 <span class="s2">  fits your level of understanding.</span>
@@ -834,7 +836,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;unquell&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TutorialEvMenu.options_formatter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.TutorialEvMenu.options_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionslist</span><span class="p">):</span>
-
         <span class="n">navigation_keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">,</span> <span class="s2">&quot;back to start&quot;</span><span class="p">)</span>
 
         <span class="n">other</span> <span class="o">=</span> <span class="p">[]</span>

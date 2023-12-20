@@ -44,10 +44,11 @@ Here is how you add your own database table/models:
 
 1. In Django lingo, we will create a new "application" - a subsystem under the main Evennia program. For this example we'll call it "myapp". Run the following (you need to have a working Evennia running before you do this, so make sure you have run the steps in [Setup Quickstart](Getting- Started) first):
 
-        cd mygame/world
         evennia startapp myapp
+        mv myapp world  (linux)
+        move myapp world   (windows)
 
-1. A new folder `myapp` is created. "myapp" will also be the name (the "app label") from now on. We chose to put it in the `world/` subfolder here, but you could put it in the root of your `mygame` if that makes more sense. 1. The `myapp` folder contains a few empty default files. What we are interested in for now is `models.py`. In `models.py` you define your model(s). Each model will be a table in the database. See the next section and don't continue until you have added the models you want.
+1. A new folder `myapp` is created. "myapp" will also be the name (the "app label") from now on. We move it into the `world/` subfolder here, but you could keep it in the root of your `mygame` if that makes more sense. 1. The `myapp` folder contains a few empty default files. What we are interested in for now is `models.py`. In `models.py` you define your model(s). Each model will be a table in the database. See the next section and don't continue until you have added the models you want.
 1. You now need to tell Evennia that the models of your app should be a part of your database scheme. Add this line to your `mygame/server/conf/settings.py`file (make sure to use the path where you put `myapp` and don't forget the comma at the end of the tuple):
 
     ```
@@ -97,15 +98,15 @@ point for your models.
 
 ## Referencing existing models and typeclasses
 
-You may want to use `ForeignKey` or `ManyToManyField` to relate your new model to existing ones. 
+You may want to use `ForeignKey` or `ManyToManyField` to relate your new model to existing ones.
 
 To do this we need to specify the app-path for the root object type we want to store as a string (we must use a string rather than the class directly or you'll run into problems with models not having been initialized yet).
 
 - `"objects.ObjectDB"` for all [Objects](../Components/Objects.md) (like exits, rooms, characters etc)
-- `"accounts.AccountDB"` for [Accounts](../Components/Accounts.md). 
+- `"accounts.AccountDB"` for [Accounts](../Components/Accounts.md).
 - `"scripts.ScriptDB"` for [Scripts](../Components/Scripts.md).
 - `"comms.ChannelDB"` for [Channels](../Components/Channels.md).
-- `"comms.Msg"` for [Msg](../Components/Msg.md) objects. 
+- `"comms.Msg"` for [Msg](../Components/Msg.md) objects.
 - `"help.HelpEntry"` for [Help Entries](../Components/Help-System.md).
 
 Here's an example:
@@ -113,20 +114,20 @@ Here's an example:
 ```python
 from django.db import models
 
-class MySpecial(models.Model): 
+class MySpecial(models.Model):
     db_character = models.ForeignKey("objects.ObjectDB")
     db_items = models.ManyToManyField("objects.ObjectDB")
     db_account = modeles.ForeignKey("accounts.AccountDB")
 ```
 
-It may seem counter-intuitive, but this will work correctly: 
+It may seem counter-intuitive, but this will work correctly:
 
     myspecial.db_character = my_character  # a Character instance
     my_character = myspecial.db_character  # still a Character
 
-This works because when the `.db_character` field is loaded into Python, the entity itself knows that it's supposed to be a `Character` and loads itself to that form. 
+This works because when the `.db_character` field is loaded into Python, the entity itself knows that it's supposed to be a `Character` and loads itself to that form.
 
-The drawback of this is that the database won't _enforce_ the type of object you store in the relation. This is the price we pay for many of the other advantages of the Typeclass system. 
+The drawback of this is that the database won't _enforce_ the type of object you store in the relation. This is the price we pay for many of the other advantages of the Typeclass system.
 
 While the  `db_character` field fail if you try to store an `Account`, it will gladly accept any instance of a typeclass that inherits from `ObjectDB`, such as rooms, exits or other non-character Objects. It's up to you to validate that what you store is what you expect it to be.
 

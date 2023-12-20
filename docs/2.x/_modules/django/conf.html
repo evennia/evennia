@@ -101,10 +101,12 @@
 <span class="kn">import</span> <span class="nn">django</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">global_settings</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span>
-<span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="n">RemovedInDjango50Warning</span>
+<span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="n">RemovedInDjango50Warning</span><span class="p">,</span> <span class="n">RemovedInDjango51Warning</span>
 <span class="kn">from</span> <span class="nn">django.utils.functional</span> <span class="kn">import</span> <span class="n">LazyObject</span><span class="p">,</span> <span class="n">empty</span>
 
 <span class="n">ENVIRONMENT_VARIABLE</span> <span class="o">=</span> <span class="s2">&quot;DJANGO_SETTINGS_MODULE&quot;</span>
+<span class="n">DEFAULT_STORAGE_ALIAS</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+<span class="n">STATICFILES_STORAGE_ALIAS</span> <span class="o">=</span> <span class="s2">&quot;staticfiles&quot;</span>
 
 <span class="c1"># RemovedInDjango50Warning</span>
 <span class="n">USE_DEPRECATED_PYTZ_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
@@ -122,6 +124,14 @@
 <span class="n">CSRF_COOKIE_MASKED_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;The CSRF_COOKIE_MASKED transitional setting is deprecated. Support for &quot;</span>
     <span class="s2">&quot;it will be removed in Django 5.0.&quot;</span>
+<span class="p">)</span>
+
+<span class="n">DEFAULT_FILE_STORAGE_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;The DEFAULT_FILE_STORAGE setting is deprecated. Use STORAGES instead.&quot;</span>
+<span class="p">)</span>
+
+<span class="n">STATICFILES_STORAGE_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;The STATICFILES_STORAGE setting is deprecated. Use STORAGES instead.&quot;</span>
 <span class="p">)</span>
 
 
@@ -239,19 +249,20 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if the settings have already been configured.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">empty</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">USE_L10N</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_show_deprecation_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
         <span class="n">stack</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_stack</span><span class="p">()</span>
         <span class="c1"># Show a warning if the setting is used outside of Django.</span>
-        <span class="c1"># Stack index: -1 this line, -2 the LazyObject __getattribute__(),</span>
-        <span class="c1"># -3 the caller.</span>
-        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="c1"># Stack index: -1 this line, -2 the property, -3 the</span>
+        <span class="c1"># LazyObject __getattribute__(), -4 the caller.</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">django</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span>
-                <span class="n">RemovedInDjango50Warning</span><span class="p">,</span>
-                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">USE_L10N</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_deprecation_warning</span><span class="p">(</span>
+            <span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s2">&quot;USE_L10N&quot;</span><span class="p">)</span>
 
     <span class="c1"># RemovedInDjango50Warning.</span>
@@ -260,6 +271,22 @@
         <span class="c1"># Special hook to avoid checking a traceback in internal use on hot</span>
         <span class="c1"># paths.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s2">&quot;USE_L10N&quot;</span><span class="p">)</span>
+
+    <span class="c1"># RemovedInDjango51Warning.</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">DEFAULT_FILE_STORAGE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_deprecation_warning</span><span class="p">(</span>
+            <span class="n">DEFAULT_FILE_STORAGE_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango51Warning</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s2">&quot;DEFAULT_FILE_STORAGE&quot;</span><span class="p">)</span>
+
+    <span class="c1"># RemovedInDjango51Warning.</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">STATICFILES_STORAGE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_deprecation_warning</span><span class="p">(</span>
+            <span class="n">STATICFILES_STORAGE_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango51Warning</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s2">&quot;STATICFILES_STORAGE&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>
@@ -324,6 +351,40 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;USE_L10N&quot;</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;DEFAULT_FILE_STORAGE&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;STORAGES&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                    <span class="s2">&quot;DEFAULT_FILE_STORAGE/STORAGES are mutually exclusive.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="p">,</span>
+                <span class="n">DEFAULT_STORAGE_ALIAS</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_FILE_STORAGE</span><span class="p">},</span>
+            <span class="p">}</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_FILE_STORAGE_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango51Warning</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;STATICFILES_STORAGE&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;STORAGES&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                    <span class="s2">&quot;STATICFILES_STORAGE/STORAGES are mutually exclusive.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="p">,</span>
+                <span class="n">STATICFILES_STORAGE_ALIAS</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">STATICFILES_STORAGE</span><span class="p">},</span>
+            <span class="p">}</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">STATICFILES_STORAGE_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango51Warning</span><span class="p">)</span>
+        <span class="c1"># RemovedInDjango51Warning.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;STORAGES&quot;</span><span class="p">):</span>
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">&quot;DEFAULT_FILE_STORAGE&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">DEFAULT_STORAGE_ALIAS</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;BACKEND&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">&quot;STATICFILES_STORAGE&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">STATICFILES_STORAGE_ALIAS</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;BACKEND&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">is_overridden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explicit_settings</span>
 
@@ -360,9 +421,43 @@
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;CSRF_COOKIE_MASKED&quot;</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">CSRF_COOKIE_MASKED_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;DEFAULT_FILE_STORAGE&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="p">[</span><span class="n">DEFAULT_STORAGE_ALIAS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_FILE_STORAGE</span>
+            <span class="p">}</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_FILE_STORAGE_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango51Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;STATICFILES_STORAGE&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="p">[</span><span class="n">STATICFILES_STORAGE_ALIAS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">STATICFILES_STORAGE</span>
+            <span class="p">}</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">STATICFILES_STORAGE_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango51Warning</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;USE_DEPRECATED_PYTZ&quot;</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_DEPRECATED_PYTZ_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
+        <span class="c1"># RemovedInDjango51Warning.</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;STORAGES&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">default_file_storage</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">DEFAULT_STORAGE_ALIAS</span><span class="p">):</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span>
+                    <span class="s2">&quot;DEFAULT_FILE_STORAGE&quot;</span><span class="p">,</span> <span class="n">default_file_storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;BACKEND&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
+                    <span class="n">DEFAULT_STORAGE_ALIAS</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;django.core.files.storage.FileSystemStorage&quot;</span><span class="p">},</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">staticfiles_storage</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">STATICFILES_STORAGE_ALIAS</span><span class="p">):</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span>
+                    <span class="s2">&quot;STATICFILES_STORAGE&quot;</span><span class="p">,</span> <span class="n">staticfiles_storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;BACKEND&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">STORAGES</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
+                    <span class="n">STATICFILES_STORAGE_ALIAS</span><span class="p">,</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="s2">&quot;django.contrib.staticfiles.storage.StaticFilesStorage&quot;</span>
+                        <span class="p">),</span>
+                    <span class="p">},</span>
+                <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>

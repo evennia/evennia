@@ -108,6 +108,7 @@
 <span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">lookup</span> <span class="k">as</span> <span class="n">codecs_lookup</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
 <span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
 
@@ -146,12 +147,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
 
-        <span class="n">playable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span>
-        <span class="k">if</span> <span class="n">playable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># clean up list if character object was deleted in between</span>
-            <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">playable</span><span class="p">:</span>
-                <span class="n">playable</span> <span class="o">=</span> <span class="p">[</span><span class="n">character</span> <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">playable</span> <span class="k">if</span> <span class="n">character</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="n">playable</span>
+        <span class="n">playable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span>
         <span class="c1"># store playable property</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">playable</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span> <span class="n">char</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">playable</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -164,6 +160,7 @@
 <span class="c1"># Obs - these are all intended to be stored on the Account, and as such,</span>
 <span class="c1"># use self.account instead of self.caller, just to be sure. Also self.msg()</span>
 <span class="c1"># is used to make sure returns go to the right session</span>
+
 
 <span class="c1"># note that this is inheriting from MuxAccountLookCommand,</span>
 <span class="c1"># and has the .playable property.</span>
@@ -235,52 +232,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: charcreate &lt;charname&gt; [= description]&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
-        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">or</span> <span class="s2">&quot;This is a character.&quot;</span>
 
-        <span class="k">if</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>
-                <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">check_permstring</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span>
-                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_MAX_NR_CHARACTERS</span>
-            <span class="p">):</span>
-                <span class="n">plural</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;s&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You may only have a maximum of </span><span class="si">{</span><span class="n">_MAX_NR_CHARACTERS</span><span class="si">}</span><span class="s2"> character</span><span class="si">{</span><span class="n">plural</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-                <span class="k">return</span>
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+        <span class="n">new_character</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">create_character</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span>
+        <span class="p">)</span>
 
-        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
-
-        <span class="k">if</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">db_key__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">):</span>
-            <span class="c1"># check if this Character already exists. Note that we are only</span>
-            <span class="c1"># searching the base character typeclass here, not any child</span>
-            <span class="c1"># classes.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rA character named &#39;|w</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">|r&#39; already exists.|n&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_character</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="c1"># create the character</span>
-        <span class="n">start_location</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">START_LOCATION</span><span class="p">)</span>
-        <span class="n">default_home</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">)</span>
-        <span class="n">permissions</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_ACCOUNT_DEFAULT</span>
-        <span class="n">new_character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-            <span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">start_location</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="n">default_home</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span>
-        <span class="p">)</span>
-        <span class="c1"># only allow creator (and developers) to puppet this char</span>
-        <span class="n">new_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developer) or pperm(Developer);delete:id(</span><span class="si">%i</span><span class="s2">) or&quot;</span>
-            <span class="s2">&quot; perm(Admin)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">new_character</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
-            <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a character.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Created new character </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. Use |wic </span><span class="si">{</span><span class="n">new_character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n to enter&quot;</span>
             <span class="s2">&quot; the game as this character.&quot;</span>
-        <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Character Created: </span><span class="si">{</span><span class="n">new_character</span><span class="si">}</span><span class="s2"> (Caller: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2">, IP: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">).&quot;</span>
         <span class="p">)</span></div></div>
 
 
@@ -309,7 +274,7 @@
         <span class="c1"># use the playable_characters list to search</span>
         <span class="n">match</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">char</span>
-            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
@@ -329,9 +294,7 @@
                     <span class="c1"># only take action</span>
                     <span class="n">delobj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_char_to_delete</span>
                     <span class="n">key</span> <span class="o">=</span> <span class="n">delobj</span><span class="o">.</span><span class="n">key</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">pc</span> <span class="k">for</span> <span class="n">pc</span> <span class="ow">in</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="k">if</span> <span class="n">pc</span> <span class="o">!=</span> <span class="n">delobj</span>
-                    <span class="p">]</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">delobj</span><span class="p">)</span>
                     <span class="n">delobj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Character &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; was permanently deleted.&quot;</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
@@ -400,13 +363,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># argument given</span>
 
-            <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">playables</span> <span class="o">:=</span> <span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
                 <span class="c1"># look at the playable_characters list first</span>
                 <span class="n">character_candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                     <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span>
                         <span class="n">account</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
-                            <span class="n">candidates</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+                            <span class="n">candidates</span><span class="o">=</span><span class="n">playables</span><span class="p">,</span>
                             <span class="n">search_object</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                             <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -1142,7 +1105,7 @@
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Style </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="si">}</span><span class="s2"> set to </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Style </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> set to </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

@@ -66,7 +66,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Upgrading an existing installation</a><ul>
-<li><a class="reference internal" href="#evennia-v0-9-5-to-1-0">Evennia v0.9.5 to 1.0</a><ul>
+<li><a class="reference internal" href="#evennia-v0-9-5-to-1-0">Evennia v0.9.5 to 1.0+</a><ul>
 <li><a class="reference internal" href="#upgrading-the-evennia-library">Upgrading the Evennia library</a></li>
 <li><a class="reference internal" href="#upgrading-your-game-dir">Upgrading your game dir</a></li>
 </ul>
@@ -118,26 +118,21 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="upgrading-an-existing-installation">
 <h1>Upgrading an existing installation<a class="headerlink" href="#upgrading-an-existing-installation" title="Permalink to this headline">¶</a></h1>
-<p>This is relevant to you already having code in an older Evennia version. If you are new, or don’t have much code yet, it may be easier to just start fresh with the <a class="reference internal" href="Installation.html"><span class="doc std std-doc">Installation</span></a> instructions and copy
-over things manually.</p>
+<p>This is relevant to you already having code in an older Evennia version. If you are new, or don’t have much code yet, it may be easier to just start fresh with the <a class="reference internal" href="Installation.html"><span class="doc std std-doc">Installation</span></a> instructions and copy over things manually.</p>
 <section id="evennia-v0-9-5-to-1-0">
-<h2>Evennia v0.9.5 to 1.0<a class="headerlink" href="#evennia-v0-9-5-to-1-0" title="Permalink to this headline">¶</a></h2>
+<h2>Evennia v0.9.5 to 1.0+<a class="headerlink" href="#evennia-v0-9-5-to-1-0" title="Permalink to this headline">¶</a></h2>
 <section id="upgrading-the-evennia-library">
 <h3>Upgrading the Evennia library<a class="headerlink" href="#upgrading-the-evennia-library" title="Permalink to this headline">¶</a></h3>
-<p>Prior to 1.0, all Evennia installs were <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Git-installs</span></a>. These instructions assume that you already have a cloned <code class="docutils literal notranslate"><span class="pre">evennia</span></code> repo and use a virtualenv (best practices).</p>
+<p>Prior to 1.0, all Evennia installs were <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Git-installs</span></a>. These instructions assume that you already have a cloned <code class="docutils literal notranslate"><span class="pre">evennia</span></code> repo, and use a virtualenv (best practices).</p>
 <ul class="simple">
 <li><p>Make sure to stop Evennia 0.9.5 entirely with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code> from your game dir.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">deactivate</span></code> to leave your active virtualenv.</p></li>
-<li><p>Install Python 3.11 (recommended). Follow the <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Git-installation</span></a> for your OS if needed.</p></li>
 <li><p>Delete the old virtualenv <code class="docutils literal notranslate"><span class="pre">evenv</span></code> folder, or rename it (in case you want to keep using 0.9.5 for a while).</p></li>
-<li><p>Make a <em>new</em> <code class="docutils literal notranslate"><span class="pre">evenv</span></code> virtualenv (see the <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">virtualenv instructions</span></a> for help) and make sure it’s active</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> into your <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> root folder (you want to be where you see the <code class="docutils literal notranslate"><span class="pre">docs/</span></code> and  <code class="docutils literal notranslate"><span class="pre">bin/</span></code> directories as well as a nested <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> folder)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">main</span></code> (instead of <code class="docutils literal notranslate"><span class="pre">master</span></code> which was used for <code class="docutils literal notranslate"><span class="pre">0.9.5</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">-e</span> <span class="pre">.</span></code></p></li>
-<li><p>If you want the optional extra libs (needed by some contribs), do <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">-e</span> <span class="pre">.[extra]</span></code></p></li>
-<li><p>Test that you can run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p></li>
 </ul>
+<p>From here on, proceed with the <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Git Installation</span></a>, except skip cloning Evennia (since you already have the repo). Note that you can also follow the normal <a class="reference internal" href="Installation.html"><span class="doc std std-doc">pip install</span></a> if you don’t need or want to use git to track bleeding edge changes nor want to be able to help contribute to Evennia itself.</p>
 </section>
 <section id="upgrading-your-game-dir">
 <h3>Upgrading your game dir<a class="headerlink" href="#upgrading-your-game-dir" title="Permalink to this headline">¶</a></h3>

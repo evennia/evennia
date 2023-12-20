@@ -235,7 +235,7 @@ with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; room.add_room_state(&quot;summer&quot;, &quot;empty&quot;)
 &gt; room.get_stateful_desc()
 
-This is a nice beach. It is completely empty
+This is a nice beach. It is completely empty.
 
 &gt; room.remove_room_state(&quot;empty&quot;)
 &gt; room.add_room_state(&quot;full&quot;)
@@ -244,13 +244,13 @@ This is a nice beach. It is completely empty
 This is a nice beach. It is full of people.
 </pre></div>
 </div>
-<p>There are four time-of-day states that are meant to be used with these tags. The
+<p>There are four default time-of-day states that are meant to be used with these tags. The
 room tracks and changes these automatically. By default they are ‘morning’,
 ‘afternoon’, ‘evening’ and ‘night’. You can get the current time-slot with
 <code class="docutils literal notranslate"><span class="pre">room.get_time_of_day</span></code>. You can control them with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExtendedRoom</span><span class="o">.</span><span class="n">hours_per_day</span>    <span class="c1"># default 24</span>
 <span class="n">ExtendedRoom</span><span class="o">.</span><span class="n">times_of_day</span>     <span class="c1"># dict of {season: (start, end), ...} where</span>
-                              <span class="c1"># the start/end are given as fractions of the day</span>
+                              <span class="c1"># the start/end are given as fractions of the day.</span>
 </pre></div>
 </div>
 <p>You use these inside descriptions as normal:</p>

@@ -110,7 +110,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span></div>
 
 <div class="viewcode-block" id="TestEvscaperoomCommands.test_base_search"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.tests.html#evennia.contrib.full_systems.evscaperoom.tests.TestEvscaperoomCommands.test_base_search">[docs]</a>    <span class="k">def</span> <span class="nf">test_base_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">commands</span><span class="o">.</span><span class="n">CmdEvscapeRoom</span><span class="p">()</span>
         <span class="n">cmd</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
 
@@ -121,7 +120,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">InterruptCommand</span><span class="p">,</span> <span class="n">cmd</span><span class="o">.</span><span class="n">_search</span><span class="p">,</span> <span class="s2">&quot;Foo&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestEvscaperoomCommands.test_base_parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.tests.html#evennia.contrib.full_systems.evscaperoom.tests.TestEvscaperoomCommands.test_base_parse">[docs]</a>    <span class="k">def</span> <span class="nf">test_base_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">commands</span><span class="o">.</span><span class="n">CmdEvscapeRoom</span><span class="p">()</span>
         <span class="n">cmd</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
 
@@ -297,7 +295,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">obj2</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TestUtils.test_parse_for_perspectives"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.tests.html#evennia.contrib.full_systems.evscaperoom.tests.TestUtils.test_parse_for_perspectives">[docs]</a>    <span class="k">def</span> <span class="nf">test_parse_for_perspectives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">second</span><span class="p">,</span> <span class="n">third</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">parse_for_perspectives</span><span class="p">(</span><span class="s2">&quot;~You ~look at the nice book&quot;</span><span class="p">,</span> <span class="s2">&quot;TestGuy&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="s2">&quot;You look at the nice book&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">third</span><span class="p">,</span> <span class="s2">&quot;TestGuy looks at the nice book&quot;</span><span class="p">)</span>
@@ -307,7 +304,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">third</span><span class="p">,</span> <span class="s2">&quot;With a smile, TestGuy was gone&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestUtils.test_parse_for_things"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.tests.html#evennia.contrib.full_systems.evscaperoom.tests.TestUtils.test_parse_for_things">[docs]</a>    <span class="k">def</span> <span class="nf">test_parse_for_things</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Looking at *book and *key.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_for_things</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;Looking at book and key.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_for_things</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;Looking at |ybook|n and |ykey|n.&quot;</span><span class="p">)</span>
@@ -326,7 +322,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestEvScapeRoom.test_room_methods"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.tests.html#evennia.contrib.full_systems.evscaperoom.tests.TestEvScapeRoom.test_room_methods">[docs]</a>    <span class="k">def</span> <span class="nf">test_room_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">room</span>
 
@@ -365,7 +360,6 @@
         <span class="k">return</span> <span class="n">states</span>
 
 <div class="viewcode-block" id="TestStates.test_base_state"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.tests.html#evennia.contrib.full_systems.evscaperoom.tests.TestStates.test_base_state">[docs]</a>    <span class="k">def</span> <span class="nf">test_base_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">st</span> <span class="o">=</span> <span class="n">basestate</span><span class="o">.</span><span class="n">BaseState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">statehandler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">objects</span><span class="o">.</span><span class="n">Edible</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;apple&quot;</span><span class="p">)</span>
@@ -377,7 +371,6 @@
         <span class="s2">&quot;Tick through all defined states&quot;</span>
 
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_state_modules</span><span class="p">():</span>
-
             <span class="n">state</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">statehandler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="p">)</span>
             <span class="n">state</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 

@@ -98,7 +98,6 @@
 
 
 <div class="viewcode-block" id="EvenniaWebTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaWebTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
-
     <span class="c1"># Use the same classes the views are expecting</span>
     <span class="n">account_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span>
     <span class="n">object_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span>
@@ -121,8 +120,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
 
         <span class="c1"># Add chars to account rosters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="p">):</span>
             <span class="c1"># Demote accounts to Player permissions</span>
@@ -130,15 +129,15 @@
             <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)</span>
 
             <span class="c1"># Grant permissions to chars</span>
-            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
                 <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;edit:id(</span><span class="si">%s</span><span class="s2">) or perm(Admin)&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
                 <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;delete:id(</span><span class="si">%s</span><span class="s2">) or perm(Admin)&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
                 <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;view:all()&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvenniaWebTest.test_valid_chars"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.test_valid_chars">[docs]</a>    <span class="k">def</span> <span class="nf">test_valid_chars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Make sure account has playable characters&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvenniaWebTest.get_kwargs"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.get_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{}</span></div>
@@ -306,7 +305,7 @@
 <div class="viewcode-block" id="CharacterCreateView.test_valid_access_multisession_0"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_0">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MAX_NR_CHARACTERS</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_valid_access_multisession_0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Account1 with no characters should be able to create a new one&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
 
         <span class="c1"># Login account</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
@@ -319,9 +318,9 @@
 
         <span class="c1"># Make sure the character was actually created</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
             <span class="s2">&quot;Account only has the following characters attributed to it: </span><span class="si">%s</span><span class="s2">&quot;</span>
-            <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+            <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="CharacterCreateView.test_valid_access_multisession_2"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_2">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MAX_NR_CHARACTERS</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -338,9 +337,9 @@
 
         <span class="c1"># Make sure the character was actually created</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span>
             <span class="s2">&quot;Account only has the following characters attributed to it: </span><span class="si">%s</span><span class="s2">&quot;</span>
-            <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+            <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
 
@@ -438,7 +437,7 @@
 
         <span class="c1"># Make sure it deleted</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="p">,</span>
             <span class="s2">&quot;Char1 is still in Account playable characters list.&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 

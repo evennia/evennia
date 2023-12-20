@@ -108,11 +108,17 @@
 <h1>Web Character View Tutorial<a class="headerlink" href="#web-character-view-tutorial" title="Permalink to this headline">¶</a></h1>
 <p><strong>Before doing this tutorial you will probably want to read the intro in <a class="reference internal" href="Web-Changing-Webpage.html"><span class="doc std std-doc">Changing The Web Page tutorial</span></a>.</strong></p>
 <p>In this tutorial we will create a web page that displays the stats of a game character. For this, and all other pages we want to make specific to our game, we’ll need to create our own Django “app”. We’ll call our app <code class="docutils literal notranslate"><span class="pre">character</span></code>, since it will be dealing with character information. From your game dir, run</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd web 
-evennia startapp character
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia startapp character
 </pre></div>
 </div>
-<p>This will create a new directory named <code class="docutils literal notranslate"><span class="pre">character</span></code> inside <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code>. We put it in <code class="docutils literal notranslate"><span class="pre">web/</span></code> to keep things tidy, but you could place it wherever you like. It contains all basic files that a Django app needs.</p>
+<p>This will create a new directory named <code class="docutils literal notranslate"><span class="pre">character</span></code> inside <code class="docutils literal notranslate"><span class="pre">mygame</span></code>. To keep
+things tidy, let’s move it into the <code class="docutils literal notranslate"><span class="pre">web/</span></code> subdirectory.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mv character web  (linux/mac)
+move character web  (windows)
+</pre></div>
+</div>
+<p>We put it in <code class="docutils literal notranslate"><span class="pre">web/</span></code> to keep things tidy, but you could place it wherever you
+like. It contains all basic files that a Django app needs.</p>
 <p>Note that we will not edit all files in this new directory, many of the generated files are outside the scope of this tutorial.</p>
 <p>In order for Django to find our new web app, we’ll need to add it to the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> setting. Evennia’s default installed apps are already set, so in <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code>, we’ll just extend them:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;web.character&#39;</span><span class="p">,)</span>

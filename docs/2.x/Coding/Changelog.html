@@ -186,21 +186,76 @@
 <section id="main-branch">
 <h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p>Dependency: Twisted 23.10 (&lt;24) to address upstream CVE alert.</p></li>
+<li><p>Dependency (potentially Backwards incompatible): Django 4.2 (&lt;4.3). Increases
+minimum supported versions of MariaDB, MySQL and PostgreSQL,
+see <a class="reference external" href="https://docs.djangoproject.com/en/4.2/releases/4.2/#backwards-incompatible-changes-in-4-2">django release nodes</a></p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3313">Feature</a> (Backwards incompatible): <code class="docutils literal notranslate"><span class="pre">OptionHandler.set</span></code> now returns
+<code class="docutils literal notranslate"><span class="pre">BaseOption</span></code> rather than its <code class="docutils literal notranslate"><span class="pre">.value</span></code>. Instead access <code class="docutils literal notranslate"><span class="pre">.value</span></code> or <code class="docutils literal notranslate"><span class="pre">.display()</span></code>
+on this return for more control. (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3278">Feature</a>: (Backwards incompatible): Refactor home page into multiple sub-parts for easier
+overriding and composition (johnnyvoruz)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3180">Feature</a>: (Potentially Backwards incompatible): Make build commands
+easier to override, with new utility hooks (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3273">Feature</a>: Allow passing <code class="docutils literal notranslate"><span class="pre">text_kwargs</span></code> kwarg to <code class="docutils literal notranslate"><span class="pre">EvMore.msg</span></code> in order to expand
 the outputfunc used for every evmore page.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3278">Feature</a>: Refactor home page into multiple sub-parts for easier
-overriding and composition (johnnyvoruz)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3286">Feature</a>: Allow Discord bot to change user’s nickname and assign
 roles for a user on a given server (holl0wstar).</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3301">Feature</a>: Make EvenniaAdminSite include custom models better; adds
+<code class="docutils literal notranslate"><span class="pre">DJANGO_ADMIN_APP_ORDER</span></code> and <code class="docutils literal notranslate"><span class="pre">DJANGO_ADMIN_APP_EXCLUDE</span></code> as modifable
+settings.(Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3179">Feature</a>: Handling of the <code class="docutils literal notranslate"><span class="pre">.db._playable_characters</span></code> helper
+methods. Also adds events hooks to modify effects when this list changes (Volund)
+avoiding race conditions until server starts (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3281">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">$your()</span></code> and <code class="docutils literal notranslate"><span class="pre">$Your()</span></code> for actor stance emoting (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3177">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">Account.get_character_slots()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.get_available_character_slots()</span></code>, <code class="docutils literal notranslate"><span class="pre">.check_available_slots</span></code> and
+<code class="docutils literal notranslate"><span class="pre">at_post_create_character</span></code> methods to allow better customization of character creation (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3319">Feature</a>: Refactor/cleanup of Evennia server/portal startup files
+into services for easier overriding (Volund)</p></li>
+<li><p>[Feature][issue3307]: Add support for Attribute-categories when using the monitorhandler
+with input funcs to monitor Attribute changes.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3342">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">Command.cmdset_source</span></code>, referring to the cmdset each
+command was originally pulled from (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3343">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">access_type</span></code> as optional kwarg to lockfuncs (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3344">Feature</a>: New middleware for checking IP/subnets from requests. New
+tools <code class="docutils literal notranslate"><span class="pre">evennia.utils.match_ip</span></code> and <code class="docutils literal notranslate"><span class="pre">utils.ip_from_request</span></code> to help. (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3349">Feature</a>: Refactored almost all default commands to use
+<code class="docutils literal notranslate"><span class="pre">Command.msg</span></code> over the <code class="docutils literal notranslate"><span class="pre">command.caller.msg</span></code> direct call (more flexible) (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3346">Feature</a>: Refactor cmdhandler to be more extensible; make cmd merge
+a bit more deterministic (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3348">Feature</a>: Make Fallback AJAX web client more customizable (same as
+the websocket client) (Volund)</p></li>
+<li><p>Fix (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
+<code class="docutils literal notranslate"><span class="pre">settings.TEST_ENVIRONMENT</span></code> to address issues during refactored startup sequence.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3347">Fix</a>: New <code class="docutils literal notranslate"><span class="pre">generate_default_locks()</span></code> method on typeclasses;
+<code class="docutils literal notranslate"><span class="pre">.create</span></code> and <code class="docutils literal notranslate"><span class="pre">lockhandler.add()</span></code> will now properly handle emptry strings
+(Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3197">Fix</a>: Make sure Global scripts only start in one place,</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3324">Fix</a>: Make account-post-login-fail signal fire properly. Add
+<code class="docutils literal notranslate"><span class="pre">CUSTOM_SIGNAL</span></code> for adding one’s own signals (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3267">Fix</a>: Missing recache step in ObjectSessionHandler (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3270">Fix</a>: Evennia is its own MSSP family now, so we should return that
 instead of ‘Custom’ (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3274">Fix</a>: Traceback when creating objects with initial nattributes
 (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3272">Fix</a>: Make sure <code class="docutils literal notranslate"><span class="pre">ScriptHandler.add</span></code> does not fail if passed an
-instantiated script.</p></li>
-<li><p>Docs: Typo fixes and starting earlier with explaining how to add to the
-default cmdsets.</p></li>
+instantiated script. (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3350">Fix</a>: <code class="docutils literal notranslate"><span class="pre">CmdHelp</span></code> was using the wrong protocol-key identifier when
+routing to the ajax web client.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3338">Fix</a>: Resolve if/elif bug in XYZGrid contrib launch command
+(jaborsh)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3331">fix</a>: Made XYZGrid query zcoords in a case-insensitive manner.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3322">Fix</a>: Fix <code class="docutils literal notranslate"><span class="pre">BaseOption.display</span></code> to always return a string.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3358">Fix</a>: Fix so Portal resets <code class="docutils literal notranslate"><span class="pre">server_restart_mode</span></code> flag when having
+successfully reconnected to the Server after a restart. (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3359">Fix</a>: Fix gendersub contrib to use proper pronoun when referencing
+other objects than oneself (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3361">Fix</a>: Fix of monitoring Attributes with categories (scyfris)</p></li>
+<li><p>Docs &amp; docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
+HouseOfPoe etc)</p></li>
+<li><p>Beginner tutorial: Cleanup and starting earlier with explaining how to add to
+the default cmdsets.</p></li>
 </ul>
 </section>
 <section id="evennia-2-3-0">

@@ -129,7 +129,6 @@
 
 <div class="viewcode-block" id="EvAdventureCharacterGenerationTest.test_apply"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_chargen.html#evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.test_apply">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.chargen.spawn&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_spawn</span><span class="p">):</span>
-
         <span class="n">gambeson</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">objects</span><span class="o">.</span><span class="n">EvAdventureArmor</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;gambeson&quot;</span><span class="p">)</span>
         <span class="n">mock_spawn</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">gambeson</span><span class="p">]</span>
         <span class="n">account</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>

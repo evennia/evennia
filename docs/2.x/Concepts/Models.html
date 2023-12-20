@@ -158,12 +158,13 @@ retrieving text stored in tables. A table may look like this</p>
 <p>Here is how you add your own database table/models:</p>
 <ol>
 <li><p>In Django lingo, we will create a new “application” - a subsystem under the main Evennia program. For this example we’ll call it “myapp”. Run the following (you need to have a working Evennia running before you do this, so make sure you have run the steps in [Setup Quickstart](Getting- Started) first):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> cd mygame/world
- evennia startapp myapp
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia startapp myapp
+ mv myapp world  (linux)
+ move myapp world   (windows)
 </pre></div>
 </div>
 </li>
-<li><p>A new folder <code class="docutils literal notranslate"><span class="pre">myapp</span></code> is created. “myapp” will also be the name (the “app label”) from now on. We chose to put it in the <code class="docutils literal notranslate"><span class="pre">world/</span></code> subfolder here, but you could put it in the root of your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> if that makes more sense. 1. The <code class="docutils literal notranslate"><span class="pre">myapp</span></code> folder contains a few empty default files. What we are interested in for now is <code class="docutils literal notranslate"><span class="pre">models.py</span></code>. In <code class="docutils literal notranslate"><span class="pre">models.py</span></code> you define your model(s). Each model will be a table in the database. See the next section and don’t continue until you have added the models you want.</p></li>
+<li><p>A new folder <code class="docutils literal notranslate"><span class="pre">myapp</span></code> is created. “myapp” will also be the name (the “app label”) from now on. We move it into the <code class="docutils literal notranslate"><span class="pre">world/</span></code> subfolder here, but you could keep it in the root of your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> if that makes more sense. 1. The <code class="docutils literal notranslate"><span class="pre">myapp</span></code> folder contains a few empty default files. What we are interested in for now is <code class="docutils literal notranslate"><span class="pre">models.py</span></code>. In <code class="docutils literal notranslate"><span class="pre">models.py</span></code> you define your model(s). Each model will be a table in the database. See the next section and don’t continue until you have added the models you want.</p></li>
 <li><p>You now need to tell Evennia that the models of your app should be a part of your database scheme. Add this line to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>file (make sure to use the path where you put <code class="docutils literal notranslate"><span class="pre">myapp</span></code> and don’t forget the comma at the end of the tuple):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="n">INSTALLED_APPS</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;world.myapp&quot;</span><span class="p">,</span> <span class="p">)</span>
 </pre></div>
@@ -222,7 +223,7 @@ point for your models.</p>
 <p>Here’s an example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 
-<span class="k">class</span> <span class="nc">MySpecial</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span> 
+<span class="k">class</span> <span class="nc">MySpecial</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">db_character</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">)</span>
     <span class="n">db_items</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">)</span>
     <span class="n">db_account</span> <span class="o">=</span> <span class="n">modeles</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;accounts.AccountDB&quot;</span><span class="p">)</span>

@@ -103,6 +103,8 @@
 <span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
 <span class="n">_PERMISSION_HIERARCHY</span> <span class="o">=</span> <span class="p">[</span><span class="n">pe</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">pe</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_HIERARCHY</span><span class="p">]</span>
@@ -600,7 +602,7 @@
 <span class="sd">    function will still return True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">obj</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">accessed_obj</span>
-    <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span>
+    <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span> <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">try</span><span class="p">:</span>
@@ -742,7 +744,7 @@
 <span class="sd">    This is a useful lock for traverse-locking Exits to restrain NPC</span>
 <span class="sd">    mobiles from moving outside their areas.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;has_account&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">has_account</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span><span class="p">)</span> <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">has_account</span></div>
 
 
 <div class="viewcode-block" id="serversetting"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.serversetting">[docs]</a><span class="k">def</span> <span class="nf">serversetting</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

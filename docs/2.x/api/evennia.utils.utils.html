@@ -1811,6 +1811,44 @@ up to twelve.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="evennia.utils.utils.match_ip">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">match_ip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">pattern</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/evennia/utils/utils.html#match_ip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.match_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an IP address matches a given pattern. The pattern can be a single IP address
+such as 8.8.8.8 or a CIDR-formatted subnet like 10.0.0.0/8</p>
+<p>IPv6 is supported to, with CIDR-subnets looking like 2001:db8::/48</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<em>str</em>) – The source address being checked.</p></li>
+<li><p><strong>pattern</strong> (<em>str</em>) – The single IP address or subnet to check against.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>result (bool)</em> – Whether it was a match or not.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.utils.ip_from_request">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">ip_from_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/evennia/utils/utils.html#ip_from_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.ip_from_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the IP address from a web Request, while respecting X-Forwarded-For and
+settings.UPSTREAM_IPS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>django Request</em><em> or </em><em>twisted.web.http.Request</em>) – The web request.</p></li>
+<li><p><strong>exclude</strong> – (list, optional): A list of IP addresses to exclude from the check. If left none,
+then settings.UPSTREAM_IPS will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>ip (str)</em> – The IP address the request originated from.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

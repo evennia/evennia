@@ -338,7 +338,7 @@ enough to make <code class="docutils literal notranslate"><span class="pre">echo
 
 <span class="c1"># ,.. </span>
 
-<span class="kn">from</span> <span class="nn">.mycommands</span> <span class="kn">import</span> <span class="n">CmdEcho</span>    <span class="c1"># &lt;-------  </span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mycommands</span>    <span class="c1"># &lt;-------  </span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -357,7 +357,7 @@ enough to make <code class="docutils literal notranslate"><span class="pre">echo
         <span class="c1">#</span>
         <span class="c1"># any commands you add below will overload the default ones.</span>
         <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">CmdEcho</span><span class="p">)</span>    <span class="c1"># &lt;-----------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">CmdEcho</span><span class="p">)</span>    <span class="c1"># &lt;-----------</span>
 
 <span class="c1"># ... </span>
 </pre></div>
@@ -367,7 +367,7 @@ enough to make <code class="docutils literal notranslate"><span class="pre">echo
 <p>The <code class="docutils literal notranslate"><span class="pre">super()</span></code> Python keyword means that the <em>parent</em> is called. In this case, the parent adds all default commands to this cmdset.</p>
 <p>Coincidentally, this is also how you replace default commands in Evennia!jj To replace e.g. the command <code class="docutils literal notranslate"><span class="pre">get</span></code>, you just give your replacement command the <code class="docutils literal notranslate"><span class="pre">key</span></code> ‘get’ and add it here - since it’s added after <code class="docutils literal notranslate"><span class="pre">super()</span></code>, it will replace the default version of <code class="docutils literal notranslate"><span class="pre">get</span></code>.</p>
 </aside>
-<p>This works the same way as when you added <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> to your <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>. The only difference cmdsets are automatically added to all Characters/Accounts etc so you don’t have to do so manually. We must also make sure to import the <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> from your <code class="docutils literal notranslate"><span class="pre">mycommands</span></code> module in order for this module to know about it. The period <code class="docutils literal notranslate"><span class="pre">.</span></code> in  <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.mycommands</span> <span class="pre">import</span> <span class="pre">...</span></code> means that we are telling Python that <code class="docutils literal notranslate"><span class="pre">mycommands.py</span></code> sits in the same directory as this current module.</p>
+<p>This works the same way as when you added <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> to your <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>. The only difference cmdsets are automatically added to all Characters/Accounts etc so you don’t have to do so manually. We must also make sure to import the <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> from your <code class="docutils literal notranslate"><span class="pre">mycommands</span></code> module in order for this module to know about it. The period ‘’<code class="docutils literal notranslate"><span class="pre">.</span></code>‘’ in  <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.</span> <span class="pre">import</span> <span class="pre">mycommands</span></code> means that we are telling Python that <code class="docutils literal notranslate"><span class="pre">mycommands.py</span></code> sits in the same directory as this current module. We want to import the entire module. Further down we access <code class="docutils literal notranslate"><span class="pre">mycommands.CmdEcho</span></code> to add it to the character cmdset.</p>
 <p>Just <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server and your <code class="docutils literal notranslate"><span class="pre">echo</span></code> command will be available again. There is no limit to how many cmdsets a given Command can be a part of.</p>
 <p>To remove, you just comment out or delete the <code class="docutils literal notranslate"><span class="pre">self.add()</span></code> line. Keep it like this for now though - we’ll expand on it below.</p>
 </section>
@@ -392,52 +392,35 @@ You hit Bob with full force!
 </pre></div>
 </div>
 <p>Still in <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code>, add a new class, between <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> and <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
 
-<span class="hll"><span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-</span><span class="hll"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span class="sd">    Hit a target.</span>
+<span class="p">:</span><span class="n">linenos</span><span class="p">:</span>
+<span class="p">:</span><span class="n">emphasize</span><span class="o">-</span><span class="n">lines</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">21</span>
+
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hit a target.</span>
 
 <span class="sd">    Usage:</span>
 <span class="sd">      hit &lt;target&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-<span class="hll">    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
-</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
+
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="hll">        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-</span><span class="hll">        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
-</span>            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to hit?&quot;</span><span class="p">)</span>
-<span class="hll">            <span class="k">return</span>
-</span><span class="hll">        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-</span><span class="hll">        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
-</span>            <span class="k">return</span>
-<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
-</span>        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to hit?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
 <span class="c1"># ...</span>
-</pre></div></td></tr></table></div>
+</pre></div>
 </div>
 <p>A lot of things to dissect here:</p>
 <ul class="simple">
@@ -480,9 +463,10 @@ else:
 <li><p><strong>Lines 19-20</strong>: A feature of <code class="docutils literal notranslate"><span class="pre">.search</span></code> is that it will already inform <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> if it couldn’t find the target. In that case, <code class="docutils literal notranslate"><span class="pre">target</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> and we should just directly <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p></li>
 <li><p><strong>Lines 21-22</strong>: At this point we have a suitable target and can send our punching strings to each.</p></li>
 </ul>
-<p>Finally we must also add this to a CmdSet. Let’s add it to <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> which we made persistent earlier.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<p>Finally we must also add this to a CmdSet. Let’s add it to <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
 
+<span class="c1"># ...</span>
 <span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -498,6 +482,35 @@ make an error and get a <code class="docutils literal notranslate"><span class="
 directly in-game or in your log (view it with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-l</span></code> in a terminal).
 Don’t panic; tracebacks are your friends - they are to be read bottom-up and usually describe exactly where your problem is. Refer to <a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html"><span class="doc std std-doc">The Python introduction lesson</span></a> for more hints. If you get stuck, reach out to the Evennia community for help.</p>
 </aside>
+<p>Note that since we did <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)</span></code> earlier, this cmdset is no longer available on our Character. Instead we will add these commands directly to our default cmdset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py </span>
+
+<span class="c1"># ,.. </span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mycommands</span>    
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
+<span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
+<span class="sd">    the `AccountCmdSet` when an Account puppets a Character.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+ 
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
+ 
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populates the cmdset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="c1"># any commands you add below will overload the default ones.</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCmdSet</span><span class="p">)</span>    <span class="c1"># &lt;-----------</span>
+<span class="c1"># ... </span>
+</pre></div>
+</div>
+<p>We changed from adding the individual <code class="docutils literal notranslate"><span class="pre">echo</span></code> command to adding the entire <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> in one go! This will add all commands in that cmdset to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> and is a practical way to add a lot of command in one go. Once you explore Evennia further, you’ll find that <a class="reference internal" href="../../../Contribs/Contribs-Overview.html"><span class="doc std std-doc">Evennia contribs</span></a> all distribute their new commands in cmdsets, so you can easily add them to your game like this.</p>
 <p>Next we reload to let Evennia know of these code changes and try it out:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 hit

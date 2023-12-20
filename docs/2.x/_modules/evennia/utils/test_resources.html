@@ -112,27 +112,21 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">types</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">settings_default</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DefaultCharacter</span><span class="p">,</span>
-    <span class="n">DefaultExit</span><span class="p">,</span>
-    <span class="n">DefaultObject</span><span class="p">,</span>
-    <span class="n">DefaultRoom</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.server.serversession</span> <span class="kn">import</span> <span class="n">ServerSession</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">flush_cache</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
 
 <span class="n">_RE_STRIP_EVMENU</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+|-+\+|\+-+|--+|\|(?:\s|$)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
 
@@ -187,8 +181,10 @@
         <span class="s2">&quot;evennia.game_template.server.conf.prototypefuncs&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">BASE_GUEST_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.accounts.accounts.DefaultGuest&quot;</span><span class="p">,</span>
-    <span class="c1"># a special setting boolean _TEST_ENVIRONMENT is set by the test runner</span>
+    <span class="c1"># a special setting boolean TEST_ENVIRONMENT is set by the test runner</span>
     <span class="c1"># while the test suite is running.</span>
+    <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span><span class="p">,</span>
+    <span class="n">TEST_ENVIRONMENT</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">all_from_module</span><span class="p">(</span><span class="n">settings_default</span><span class="p">),</span> <span class="o">**</span><span class="n">DEFAULT_SETTING_RESETS</span><span class="p">}</span>
@@ -282,9 +278,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
     <span class="c1"># Set up fake prototype module for allowing tests to use named prototypes.</span>
-<div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span>
-        <span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">],</span> <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span>
-    <span class="p">)</span>
+<div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">create_rooms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Room&quot;</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;room_desc&quot;</span>
@@ -354,7 +348,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_session</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvenniaTestMixin.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaTestMixin.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.tearDown">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">flush_cache</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">data_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -637,7 +632,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base test (with no default objects) but with enforced default settings.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseEvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+        <span class="n">flush_cache</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="EvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
@@ -656,6 +655,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="EvenniaTestCase.tearDown"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
         <span class="n">flush_cache</span><span class="p">()</span></div></div>
 
 
@@ -693,6 +693,7 @@
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.syscommands.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.system.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseEvenniaCommandTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Commands only using the default settings.</span>

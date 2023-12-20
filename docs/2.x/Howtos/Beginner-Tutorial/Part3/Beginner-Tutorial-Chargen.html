@@ -696,7 +696,7 @@ we use <code class="docutils literal notranslate"><span class="pre">caller.msg()
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
     <span class="n">new_character</span> <span class="o">=</span> <span class="n">tmp_character</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>      
     
-    <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_character</span><span class="p">]</span> 
+    <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span> 
     
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Character created!&quot;</span>
     
@@ -722,7 +722,6 @@ we use <code class="docutils literal notranslate"><span class="pre">caller.msg()
         
     <span class="c1"># this generates all random components of the character</span>
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">TemporaryCharacterSheet</span><span class="p">()</span>
-    <span class="n">tmp_character</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 
     <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menutree</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> 
            <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span>   <span class="c1"># &lt;----- </span>

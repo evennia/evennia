@@ -410,7 +410,7 @@ Exits:<span class="w"> </span>north,<span class="w"> </span>northeast,<span clas
 <p>The <a class="reference internal" href="../../../Components/TickerHandler.html"><span class="doc std std-doc">TickerHandler</span></a>. This is acts as a ‘please tick me - subscription service’. In <strong>Line 22</strong> we tell add our <code class="docutils literal notranslate"><span class="pre">.send_echo</span></code> method to the handler and tell the TickerHandler to call that method every <code class="docutils literal notranslate"><span class="pre">.echo_rate</span></code> seconds.</p>
 <p>When the <code class="docutils literal notranslate"><span class="pre">.send_echo</span></code> method is called, it will use <code class="docutils literal notranslate"><span class="pre">random.random()</span></code> to check if we should <em>actually</em> do anything. In our example we only show a message 10% of the time. In that case we use  Python’s <code class="docutils literal notranslate"><span class="pre">random.choice()</span></code> to grab a random text string from the <code class="docutils literal notranslate"><span class="pre">.echoes</span></code> list to send to everyone inside this room.</p>
 <p>Here’s how you’d use this room in-game:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; dig market:evadventure.EchoingRoom = market,back 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; dig market:evadventure.rooms.EchoingRoom = market,back 
 &gt; market 
 &gt; set here/echoes = [&quot;You hear a merchant shouting&quot;, &quot;You hear the clatter of coins&quot;]
 &gt; py here.start_echo() 

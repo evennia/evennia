@@ -22,6 +22,7 @@ evennia.server
    evennia.server.models
    evennia.server.server
    evennia.server.serversession
+   evennia.server.service
    evennia.server.session
    evennia.server.sessionhandler
    evennia.server.signals

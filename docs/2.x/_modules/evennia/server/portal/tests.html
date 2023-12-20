@@ -107,7 +107,10 @@
 <span class="kn">from</span> <span class="nn">twisted.test</span> <span class="kn">import</span> <span class="n">proto_helpers</span>
 <span class="kn">from</span> <span class="nn">twisted.trial.unittest</span> <span class="kn">import</span> <span class="n">TestCase</span> <span class="k">as</span> <span class="n">TwistedTestCase</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">irc</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal.portalsessionhandler</span> <span class="kn">import</span> <span class="n">PortalSessionHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal.service</span> <span class="kn">import</span> <span class="n">EvenniaPortalService</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
 <span class="kn">from</span> <span class="nn">.amp</span> <span class="kn">import</span> <span class="p">(</span>
@@ -121,7 +124,6 @@
 <span class="kn">from</span> <span class="nn">.mssp</span> <span class="kn">import</span> <span class="n">MSSP</span>
 <span class="kn">from</span> <span class="nn">.mxp</span> <span class="kn">import</span> <span class="n">MXP</span>
 <span class="kn">from</span> <span class="nn">.naws</span> <span class="kn">import</span> <span class="n">DEFAULT_HEIGHT</span><span class="p">,</span> <span class="n">DEFAULT_WIDTH</span>
-<span class="kn">from</span> <span class="nn">.portal</span> <span class="kn">import</span> <span class="n">PORTAL_SESSIONS</span>
 <span class="kn">from</span> <span class="nn">.suppress_ga</span> <span class="kn">import</span> <span class="n">SUPPRESS_GA</span>
 <span class="kn">from</span> <span class="nn">.telnet</span> <span class="kn">import</span> <span class="n">TelnetProtocol</span><span class="p">,</span> <span class="n">TelnetServerFactory</span>
 <span class="kn">from</span> <span class="nn">.telnet_oob</span> <span class="kn">import</span> <span class="n">MSDP</span><span class="p">,</span> <span class="n">MSDP_VAL</span><span class="p">,</span> <span class="n">MSDP_VAR</span>
@@ -307,9 +309,14 @@
 <div class="viewcode-block" id="TestTelnet"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestTelnet">[docs]</a><span class="k">class</span> <span class="nc">TestTelnet</span><span class="p">(</span><span class="n">TwistedTestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="TestTelnet.setUp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestTelnet.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="n">EvenniaPortalService</span><span class="p">()</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_server_factory</span> <span class="o">=</span> <span class="n">AMPServerFactory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_server_factory</span><span class="o">.</span><span class="n">buildProtocol</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="n">TelnetServerFactory</span><span class="p">()</span>
         <span class="n">factory</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">TelnetProtocol</span>
-        <span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">PORTAL_SESSIONS</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span> <span class="o">=</span> <span class="n">PortalSessionHandler</span><span class="p">()</span>
+        <span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span>
         <span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">buildProtocol</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">proto_helpers</span><span class="o">.</span><span class="n">StringTransport</span><span class="p">()</span>
@@ -373,10 +380,15 @@
 <div class="viewcode-block" id="TestWebSocket"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestWebSocket">[docs]</a><span class="k">class</span> <span class="nc">TestWebSocket</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestWebSocket.setUp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestWebSocket.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="n">EvenniaPortalService</span><span class="p">()</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_server_factory</span> <span class="o">=</span> <span class="n">AMPServerFactory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_server_factory</span><span class="o">.</span><span class="n">buildProtocol</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span> <span class="o">=</span> <span class="n">WebSocketClient</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">WebSocketServerFactory</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">PORTAL_SESSIONS</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">PORTAL_SESSIONS</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span> <span class="o">=</span> <span class="n">PortalSessionHandler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">proto_helpers</span><span class="o">.</span><span class="n">StringTransport</span><span class="p">()</span>
         <span class="c1"># self.proto.transport = proto_helpers.FakeDatagramTransport()</span>

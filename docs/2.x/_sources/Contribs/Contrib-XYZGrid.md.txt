@@ -269,26 +269,28 @@ LEGEND = {}
 # the '*' are wildcards and allows for giving defaults on this map.
 PROTOTYPES = {
     (0, 0): {
-	"prototype_parent": "xyz_room",
-	"key": "A nice glade",
-        "desc": "Sun shines through the branches above.}
+        "prototype_parent": "xyz_room",
+        "key": "A nice glade",
+        "desc": "Sun shines through the branches above.",
+    },
     (0, 0, 'e'): {
-	"prototype_parent": "xyz_exit",
-	"desc": "A quiet path through the foilage"
-    }
+        "prototype_parent": "xyz_exit",
+        "desc": "A quiet path through the foilage",
+    },
     ('*', '*'): {
-	"prototype_parent": "xyz_room",
-	"key": "In a bright forest",
-	"desc": "There is green all around."
+        "prototype_parent": "xyz_room",
+        "key": "In a bright forest",
+        "desc": "There is green all around.",
     },
     ('*', '*', '*'): {
-	"prototype_parent": "xyz_exit",
-	"desc": "The path leads further into the forest."
+        "prototype_parent": "xyz_exit",
+        "desc": "The path leads further into the forest.",
+    },
 }
 
 # collect all info for this one map
 XYMAP_DATA = {
-    "zcoord": "mymap"  # important!
+    "zcoord": "mymap",  # important!
     "map": MAPSTR,
     "legend": LEGEND,
     "prototypes": PROTOTYPES,
@@ -299,7 +301,6 @@ XYMAP_DATA = {
 XYMAP_DATA_LIST = [
     XYMAP_DATA
 ]
-
 ```
 
 The above map would be added to the grid with
@@ -317,6 +318,8 @@ be unique across the entire grid. It is added as the key 'zcoord' to `XYMAP_DATA
 Most users will want to just treat each map as a location, and name the
 "Z-coordinate" things like `Dungeon of Doom`, `The ice queen's palace` or `City
 of Blackhaven`. But you could also name it -1, 0, 1, 2, 3 if you wanted.
+
+> Note that the Zcoord is searched *non-case senstively* in the
 
 Pathfinding happens only within each XYMap (up/down is normally 'faked' by moving
 sideways to a new area of the XY plane).

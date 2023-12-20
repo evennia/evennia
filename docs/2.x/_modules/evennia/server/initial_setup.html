@@ -95,10 +95,9 @@
 
 <span class="kn">import</span> <span class="nn">time</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
@@ -184,16 +183,15 @@
 
     <span class="c1"># Create the in-game god-character for account #1 and set</span>
     <span class="c1"># it to exist in Limbo.</span>
-    <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">superuser_character</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-        <span class="n">superuser_character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-            <span class="n">character_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">superuser</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">superuser_character</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">superuser</span><span class="o">.</span><span class="n">create_character</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">superuser</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is User #1.&quot;</span><span class="p">)</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
 
-    <span class="n">superuser_character</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">character_typeclass</span>
-    <span class="n">superuser_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is User #1.&quot;</span><span class="p">)</span>
     <span class="n">superuser_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="s2">&quot;examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()&quot;</span>
     <span class="p">)</span>
@@ -203,11 +201,6 @@
 
     <span class="n">superuser</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_first_login&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">superuser</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_last_puppet&quot;</span><span class="p">,</span> <span class="n">superuser_character</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">superuser</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">superuser_character</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">superuser</span><span class="o">.</span><span class="n">db_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">superuser_character</span><span class="p">]</span>
 
     <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span>
     <span class="k">try</span><span class="p">:</span>
@@ -266,6 +259,8 @@
 <span class="sd">    also checks so the warm-reset mechanism works as it should.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEST_ENVIRONMENT</span><span class="p">:</span>
+        <span class="k">return</span>
     <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_epoch&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Initial setup complete. Restarting Server once.&quot;</span><span class="p">)</span>
@@ -283,12 +278,6 @@
 <span class="sd">            the function will exit immediately.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">last_step</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="c1"># this means we don&#39;t need to handle setup since</span>
-        <span class="c1"># it already ran sucessfully once. -1 is the legacy</span>
-        <span class="c1"># value for existing databases.</span>
-        <span class="k">return</span>
-
     <span class="c1"># setup sequence</span>
     <span class="n">setup_sequence</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;create_objects&quot;</span><span class="p">:</span> <span class="n">create_objects</span><span class="p">,</span>
@@ -296,6 +285,12 @@
         <span class="s2">&quot;collectstatic&quot;</span><span class="p">:</span> <span class="n">collectstatic</span><span class="p">,</span>
         <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="n">reset_server</span><span class="p">,</span>
     <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">last_step</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># this means we don&#39;t need to handle setup since</span>
+        <span class="c1"># it already ran sucessfully once. -1 is the legacy</span>
+        <span class="c1"># value for existing databases.</span>
+        <span class="k">return</span>
 
     <span class="c1"># determine the sequence so we can skip ahead</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">setup_sequence</span><span class="p">)</span>

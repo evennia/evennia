@@ -2,29 +2,110 @@
 
 ## Main branch
 
+- Dependency: Twisted 23.10 (<24) to address upstream CVE alert.
+- Dependency (potentially Backwards incompatible): Django 4.2 (<4.3). Increases
+  minimum supported versions of MariaDB, MySQL and PostgreSQL,
+  see [django release nodes][django-release-notes]
+- [Feature][pull3313] (Backwards incompatible): `OptionHandler.set` now returns
+  `BaseOption` rather than its `.value`. Instead access `.value` or `.display()`
+  on this return for more control. (Volund)
+- [Feature][pull3278]: (Backwards incompatible): Refactor home page into multiple sub-parts for easier
+  overriding and composition (johnnyvoruz)
+- [Feature][pull3180]: (Potentially Backwards incompatible): Make build commands
+  easier to override, with new utility hooks (Volund)
 - [Feature][issue3273]: Allow passing `text_kwargs` kwarg to `EvMore.msg` in order to expand
   the outputfunc used for every evmore page.
-- [Feature][pull3278]: Refactor home page into multiple sub-parts for easier
-  overriding and composition (johnnyvoruz)
 - [Feature][pull3286]: Allow Discord bot to change user's nickname and assign
   roles for a user on a given server (holl0wstar).
+- [Feature][pull3301]: Make EvenniaAdminSite include custom models better; adds
+  `DJANGO_ADMIN_APP_ORDER` and `DJANGO_ADMIN_APP_EXCLUDE` as modifable
+  settings.(Volund)
+- [Feature][pull3179]: Handling of the `.db._playable_characters` helper
+  methods. Also adds events hooks to modify effects when this list changes (Volund)
+  avoiding race conditions until server starts (Volund)
+- [Feature][pull3281]: Add `$your()` and `$Your()` for actor stance emoting (Volund)
+- [Feature][pull3177]: Add `Account.get_character_slots()`,
+  `.get_available_character_slots()`, `.check_available_slots` and
+  `at_post_create_character` methods to allow better customization of character creation (Volund)
+- [Feature][pull3319]: Refactor/cleanup of Evennia server/portal startup files
+  into services for easier overriding (Volund)
+- [Feature][issue3307]: Add support for Attribute-categories when using the monitorhandler
+  with input funcs to monitor Attribute changes.
+- [Feature][pull3342]: Add `Command.cmdset_source`, referring to the cmdset each
+  command was originally pulled from (Volund)
+- [Feature][pull3343]: Add `access_type` as optional kwarg to lockfuncs (Volund)
+- [Feature][pull3344]: New middleware for checking IP/subnets from requests. New
+  tools `evennia.utils.match_ip` and `utils.ip_from_request` to help. (Volund)
+- [Feature][pull3349]: Refactored almost all default commands to use
+  `Command.msg` over the `command.caller.msg` direct call (more flexible) (Volund)
+- [Feature][pull3346]: Refactor cmdhandler to be more extensible; make cmd merge
+  a bit more deterministic (Volund)
+- [Feature][pull3348]: Make Fallback AJAX web client more customizable (same as
+  the websocket client) (Volund)
+- Fix (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
+  `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
+- [Fix][pull3347]: New `generate_default_locks()` method on typeclasses;
+  `.create` and `lockhandler.add()` will now properly handle emptry strings
+(Volund)
+- [Fix][pull3197]: Make sure Global scripts only start in one place,
+- [Fix][pull3324]: Make account-post-login-fail signal fire properly. Add
+  `CUSTOM_SIGNAL` for adding one's own signals (Volund)
 - [Fix][pull3267]: Missing recache step in ObjectSessionHandler (InspectorCaracal)
 - [Fix][pull3270]: Evennia is its own MSSP family now, so we should return that
   instead of 'Custom' (InspectorCaracal)
 - [Fix][pull3274]: Traceback when creating objects with initial nattributes
   (InspectorCaracal)
 - [Fix][issue3272]: Make sure `ScriptHandler.add` does not fail if passed an
-  instantiated script.
-- Docs: Typo fixes and starting earlier with explaining how to add to the
-  default cmdsets.
+  instantiated script. (Volund)
+- [Fix][pull3350]: `CmdHelp` was using the wrong protocol-key identifier when
+  routing to the ajax web client.
+- [Fix][pull3338]: Resolve if/elif bug in XYZGrid contrib launch command
+  (jaborsh)
+- [fix][issue3331]: Made XYZGrid query zcoords in a case-insensitive manner.
+- [Fix][pull3322]: Fix `BaseOption.display` to always return a string.
+- [Fix][pull3358]: Fix so Portal resets `server_restart_mode` flag when having
+  successfully reconnected to the Server after a restart. (InspectorCaracal)
+- [Fix][pull3359]: Fix gendersub contrib to use proper pronoun when referencing
+  other objects than oneself (InspectorCaracal)
+- [Fix][pull3361]: Fix of monitoring Attributes with categories (scyfris)
+- Docs & docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
+  HouseOfPoe etc)
+- Beginner tutorial: Cleanup and starting earlier with explaining how to add to
+  the default cmdsets.
 
 [pull3267]: https://github.com/evennia/evennia/pull/3267
 [pull3270]: https://github.com/evennia/evennia/pull/3270
 [pull3274]: https://github.com/evennia/evennia/pull/3274
 [pull3278]: https://github.com/evennia/evennia/pull/3278
 [pull3286]: https://github.com/evennia/evennia/pull/3286
+[pull3301]: https://github.com/evennia/evennia/pull/3301
+[pull3179]: https://github.com/evennia/evennia/pull/3179
+[pull3197]: https://github.com/evennia/evennia/pull/3197
+[pull3313]: https://github.com/evennia/evennia/pull/3313
+[pull3281]: https://github.com/evennia/evennia/pull/3281
+[pull3322]: https://github.com/evennia/evennia/pull/3322
+[pull3177]: https://github.com/evennia/evennia/pull/3177
+[pull3180]: https://github.com/evennia/evennia/pull/3180
+[pull3319]: https://github.com/evennia/evennia/pull/3319
+[pull3324]: https://github.com/evennia/evennia/pull/3324
+[pull3338]: https://github.com/evennia/evennia/pull/3338
+[pull3342]: https://github.com/evennia/evennia/pull/3342
+[pull3343]: https://github.com/evennia/evennia/pull/3343
+[pull3344]: https://github.com/evennia/evennia/pull/3344
+[pull3349]: https://github.com/evennia/evennia/pull/3349
+[pull3350]: https://github.com/evennia/evennia/pull/3350
+[pull3346]: https://github.com/evennia/evennia/pull/3346
+[pull3348]: https://github.com/evennia/evennia/pull/3348
+[pull3358]: https://github.com/evennia/evennia/pull/3358
+[pull3359]: https://github.com/evennia/evennia/pull/3359
+[pull3361]: https://github.com/evennia/evennia/pull/3361
+[pull3347]: https://github.com/evennia/evennia/pull/3347
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
+[issue3308]: https://github.com/evennia/evennia/issues/3307
+[issue3331]: https://github.com/evennia/evennia/issues/3331
+
+[django-release-notes]: https://docs.djangoproject.com/en/4.2/releases/4.2/#backwards-incompatible-changes-in-4-2
 
 ## Evennia 2.3.0
 

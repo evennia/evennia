@@ -738,6 +738,50 @@ Others will see “With a grin, CharName jumps at Tommy.”</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="evennia.utils.funcparser.funcparser_callable_your">
+<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_your</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_your"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_your" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $your() or $your(key)</p>
+<p>Replaces with your for the caller of the string, with the display_name +’s
+of the caller for others.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em>) – The ‘your’ in the string. This is used unless another
+your-key is passed to the callable in combination with <strong>mapping</strong>.</p></li>
+<li><p><strong>receiver</strong> (<em>Object</em>) – The recipient of the string.</p></li>
+<li><p><strong>mapping</strong> (<em>dict</em><em>, </em><em>optional</em>) – This is a mapping <strong>{key:Object, …}</strong> and is
+used to find which object <strong>$you(key)</strong> refers to. If not given, the
+<strong>caller</strong> kwarg is used.</p></li>
+<li><p><strong>capitalize</strong> (<em>bool</em>) – Passed by the You helper, to capitalize you.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The parsed string.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#evennia.utils.funcparser.ParsingError" title="evennia.utils.funcparser.ParsingError"><strong>ParsingError</strong></a> – If <strong>caller</strong> and <strong>receiver</strong> were not supplied.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The kwargs should be passed the to parser directly.</p>
+<p class="rubric">Examples</p>
+<p>This can be used by the say or emote hooks to pass actor stance
+strings.</p>
+<ul class="simple">
+<li><p><strong>$your() pet jumps at $you(tommy).</strong></p></li>
+</ul>
+<p>The caller-object will see “Your pet jumps Tommy.”
+Tommy will see “CharName’s pet jumps at you.”
+Others will see “CharName’s pet jumps at Tommy.”</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.funcparser.funcparser_callable_your_capitalize">
+<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_your_capitalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">you</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_your_capitalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_your_capitalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $Your() - capitalizes the ‘your’ output.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="evennia.utils.funcparser.funcparser_callable_conjugate">
 <code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_conjugate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_conjugate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_conjugate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Usage: $conj(word, [options])</p>

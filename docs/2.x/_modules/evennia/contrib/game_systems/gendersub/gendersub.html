@@ -187,7 +187,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="s2">&quot;ambiguous&quot;</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_pronoun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_match</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_pronoun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_match</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get pronoun from the pronoun marker in the text. This is used as</span>
 <span class="sd">        the callable for the re.sub function.</span>
@@ -202,8 +202,10 @@
 <span class="sd">            - `|a`, `|A`: Absolute Possessive form: his, hers, its, His, Hers, Its, Theirs</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">source</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">typ</span> <span class="o">=</span> <span class="n">regex_match</span><span class="o">.</span><span class="n">group</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># &quot;s&quot;, &quot;O&quot; etc</span>
-        <span class="n">gender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;ambiguous&quot;</span><span class="p">)</span>
+        <span class="n">gender</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;ambiguous&quot;</span><span class="p">)</span>
         <span class="n">gender</span> <span class="o">=</span> <span class="n">gender</span> <span class="k">if</span> <span class="n">gender</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;male&quot;</span><span class="p">,</span> <span class="s2">&quot;female&quot;</span><span class="p">,</span> <span class="s2">&quot;neutral&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;ambiguous&quot;</span>
         <span class="n">pronoun</span> <span class="o">=</span> <span class="n">_GENDER_PRONOUN_MAP</span><span class="p">[</span><span class="n">gender</span><span class="p">][</span><span class="n">typ</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
         <span class="k">return</span> <span class="n">pronoun</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">typ</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">else</span> <span class="n">pronoun</span>
@@ -235,13 +237,19 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">text</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="n">_RE_GENDER_PRONOUN</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_pronoun</span><span class="p">,</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="o">*</span><span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">_RE_GENDER_PRONOUN</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pronoun</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">from_obj</span><span class="p">),</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">),</span>
+                    <span class="o">*</span><span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="n">_RE_GENDER_PRONOUN</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_pronoun</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">_RE_GENDER_PRONOUN</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pronoun</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">from_obj</span><span class="p">),</span> <span class="n">text</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
 

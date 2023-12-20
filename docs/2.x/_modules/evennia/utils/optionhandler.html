@@ -228,7 +228,7 @@
         <span class="n">op_found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_option</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">op_found</span> <span class="k">if</span> <span class="n">return_obj</span> <span class="k">else</span> <span class="n">op_found</span><span class="o">.</span><span class="n">value</span></div>
 
-<div class="viewcode-block" id="OptionHandler.set"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionHandler.set"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseOption&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change an individual option.</span>
 
@@ -239,7 +239,8 @@
 <span class="sd">                save function and display function and allows to customize either.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            value (any): Value stored in option, after validation.</span>
+<span class="sd">            BaseOption: The matched object. Its new value can be accessed with</span>
+<span class="sd">                op.value or op.display().</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
@@ -254,7 +255,7 @@
         <span class="n">match</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">op</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">op</span><span class="o">.</span><span class="n">value</span></div>
+        <span class="k">return</span> <span class="n">op</span></div>
 
 <div class="viewcode-block" id="OptionHandler.all"><a class="viewcode-back" href="../../../api/evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_objs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

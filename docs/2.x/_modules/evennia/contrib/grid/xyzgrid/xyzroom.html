@@ -156,7 +156,7 @@
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">Q</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
 
@@ -250,7 +250,7 @@
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">Q</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">Q</span><span class="p">()</span>
@@ -265,7 +265,9 @@
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">Q</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">zdest</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">zdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_ZDEST_TAG_CATEGORY</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span>
+                    <span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">zdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_ZDEST_TAG_CATEGORY</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
 
@@ -305,12 +307,14 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_X_TAG_CATEGORY</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Y_TAG_CATEGORY</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">xdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_XDEST_TAG_CATEGORY</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ydest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_YDEST_TAG_CATEGORY</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">zdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_ZDEST_TAG_CATEGORY</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">zdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_ZDEST_TAG_CATEGORY</span>
+                <span class="p">)</span>
                 <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
@@ -526,7 +530,6 @@
         <span class="n">xymap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyzgrid</span><span class="o">.</span><span class="n">get_map</span><span class="p">(</span><span class="n">xyz</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">xymap</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_display&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_display&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_display</span><span class="p">)):</span>
-
             <span class="c1"># show the near-area map.</span>
             <span class="n">map_character_symbol</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="s2">&quot;map_character_symbol&quot;</span><span class="p">,</span>

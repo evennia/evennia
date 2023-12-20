@@ -159,10 +159,126 @@ implement default like this:</p>
 <dd></dd></dl>
 
 <dl class="py class">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">AjaxWebClientSession</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code></a></p>
+<p>This represents a session running in an AjaxWebclient.</p>
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.get_client_session">
+<code class="sig-name descname">get_client_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.get_client_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.get_client_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Client browser session (used for auto-login based on browser session)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>csession (ClientSession)</em> –</p>
+<dl class="simple">
+<dt>This is a django-specific internal representation</dt><dd><p>of the browser session.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.disconnect">
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">'Server disconnected.'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnect from server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reason</strong> (<em>str</em>) – Motivation for the disconnect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.at_login">
+<code class="sig-name descname">at_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.at_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.at_login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_in">
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data User -&gt; Evennia</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Incoming data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_out">
+<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data Evennia -&gt; User</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Options to the protocol</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_text">
+<code class="sig-name descname">send_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send text data. This will pre-process the text for
+color-replacement, conversion to html etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Text to send.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>options</strong> (<em>dict</em>) – Options-dict with the following keys understood:
+- raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
+- nocolor (bool): Remove all color.
+- screenreader (bool): Use Screenreader mode.
+- send_prompt (bool): Send a prompt with parsed html</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_prompt">
+<code class="sig-name descname">send_prompt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_prompt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_default">
+<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data Evennia -&gt; User.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdname</strong> (<em>str</em>) – The first argument will always be the oob cmd name.</p></li>
+<li><p><strong>*args</strong> (<em>any</em>) – Remaining args will be arguments for <strong>cmd</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>options</strong> (<em>dict</em>) – These are ignored for oob commands. Use command
+arguments (which can hold dicts) to send instructions to the
+client instead.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">AjaxWebClient</code><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.resource.Resource</span></code></p>
 <p>An ajax/comet long-polling transport</p>
+<dl class="py attribute">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.client_protocol">
+<code class="sig-name descname">client_protocol</code><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.client_protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession" title="evennia.server.portal.webclient_ajax.AjaxWebClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">AjaxWebClientSession</span></code></a></p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.isLeaf">
 <code class="sig-name descname">isLeaf</code><em class="property"> = True</em><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.isLeaf" title="Permalink to this definition">¶</a></dt>
@@ -313,116 +429,6 @@ there is actual data available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>request</strong> (<em>Request</em>) – Incoming request.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">AjaxWebClientSession</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code></a></p>
-<p>This represents a session running in an AjaxWebclient.</p>
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.get_client_session">
-<code class="sig-name descname">get_client_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.get_client_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.get_client_session" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the Client browser session (used for auto-login based on browser session)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>csession (ClientSession)</em> –</p>
-<dl class="simple">
-<dt>This is a django-specific internal representation</dt><dd><p>of the browser session.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.disconnect">
-<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">'Server disconnected.'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Disconnect from server.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>reason</strong> (<em>str</em>) – Motivation for the disconnect.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.at_login">
-<code class="sig-name descname">at_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.at_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.at_login" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_in" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data User -&gt; Evennia</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Incoming data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_out">
-<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_out" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data Evennia -&gt; User</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Options to the protocol</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_text">
-<code class="sig-name descname">send_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send text data. This will pre-process the text for
-color-replacement, conversion to html etc.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Text to send.</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>options</strong> (<em>dict</em>) – Options-dict with the following keys understood:
-- raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
-- nocolor (bool): Remove all color.
-- screenreader (bool): Use Screenreader mode.
-- send_prompt (bool): Send a prompt with parsed html</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_prompt">
-<code class="sig-name descname">send_prompt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_prompt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_default">
-<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_default" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data Evennia -&gt; User.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cmdname</strong> (<em>str</em>) – The first argument will always be the oob cmd name.</p></li>
-<li><p><strong>*args</strong> (<em>any</em>) – Remaining args will be arguments for <strong>cmd</strong>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>options</strong> (<em>dict</em>) – These are ignored for oob commands. Use command
-arguments (which can hold dicts) to send instructions to the
-client instead.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -94,6 +94,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
 <span class="kn">from</span> <span class="nn">evennia.accounts</span> <span class="kn">import</span> <span class="n">bots</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>
@@ -397,7 +398,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not allowed to send messages to channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not allowed to send messages to channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># avoid unsafe tokens in message</span>
@@ -1361,7 +1362,7 @@
 
             <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">target_str</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">banlists</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Could not find a banned user &#39;</span><span class="si">{target_str}</span><span class="s2">&#39; in given channel(s).&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find a banned user &#39;</span><span class="si">{</span><span class="n">target_str</span><span class="si">}</span><span class="s2">&#39; in given channel(s).&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
 
             <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
@@ -1713,7 +1714,7 @@
             <span class="n">irc_port</span><span class="o">=</span><span class="n">irc_port</span><span class="p">,</span>
             <span class="n">irc_ssl</span><span class="o">=</span><span class="n">irc_ssl</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Connection created. Beginner-Tutorial IRC bot.&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Connection created. Starting IRC bot.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdIRCStatus"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRCStatus">[docs]</a><span class="k">class</span> <span class="nc">CmdIRCStatus</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -1769,21 +1770,21 @@
         <span class="n">chtext</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;IRC bot &#39;</span><span class="si">{</span><span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_botname</span><span class="si">}</span><span class="s2">&#39; on channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">network</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;ping&quot;</span><span class="p">:</span>
             <span class="c1"># check connection by sending outself a ping through the server.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pinging through </span><span class="si">{</span><span class="n">chtext</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pinging through </span><span class="si">{</span><span class="n">chtext</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="n">ircbot</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="s2">&quot;nicklist&quot;</span><span class="p">,</span> <span class="s2">&quot;who&quot;</span><span class="p">):</span>
             <span class="c1"># retrieve user list. The bot must handles the echo since it&#39;s</span>
             <span class="c1"># an asynchronous call.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requesting nicklist from </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">network</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requesting nicklist from </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">network</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
             <span class="n">ircbot</span><span class="o">.</span><span class="n">get_nicklist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;dummy:perm(ircstatus) or perm(Developer)&quot;</span>
         <span class="p">):</span>
             <span class="c1"># reboot the client</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forcing a disconnect + reconnect of </span><span class="si">{</span><span class="n">chtext</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forcing a disconnect + reconnect of </span><span class="si">{</span><span class="n">chtext</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="n">ircbot</span><span class="o">.</span><span class="n">reconnect</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to force-reload the IRC bot.&quot;</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to force-reload the IRC bot.&quot;</span><span class="p">)</span></div></div>
 
 
 <span class="c1"># RSS connection</span>
@@ -1887,7 +1888,7 @@
             <span class="c1"># re-use existing bot</span>
             <span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">bot</span><span class="o">.</span><span class="n">is_bot</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account &#39;</span><span class="si">{botname}</span><span class="s2">&#39; already exists and is not a bot.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account &#39;</span><span class="si">{</span><span class="n">botname</span><span class="si">}</span><span class="s2">&#39; already exists and is not a bot.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># create a new bot</span>

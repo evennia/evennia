@@ -420,6 +420,7 @@ subsequent attack and so on …</em></p>
 
 <span class="kn">import</span> <span class="nn">random</span>
 
+
 <span class="c1"># messages </span>
 
 <span class="k">def</span> <span class="nf">resolve_combat</span><span class="p">(</span><span class="n">combat_handler</span><span class="p">,</span> <span class="n">actiondict</span><span class="p">):</span>
@@ -429,7 +430,7 @@ subsequent attack and so on …</em></p>
 <span class="sd">    for each character:</span>
 <span class="sd">    {char.id:[(action1, char, target), (action2, char, target)], ...}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">flee</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># track number of flee commands per character</span>
+    <span class="n">flee</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># track number of flee commands per character</span>
     <span class="k">for</span> <span class="n">isub</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
         <span class="c1"># loop over sub-turns</span>
         <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
@@ -504,6 +505,7 @@ subsequent attack and so on …</em></p>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
 
+
 <span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    initiates combat</span>
@@ -520,7 +522,7 @@ subsequent attack and so on …</em></p>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Handle command&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: attack &lt;target&gt;&quot;</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: attack &lt;target&gt;&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>

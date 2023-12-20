@@ -303,7 +303,6 @@
 
 
 <div class="viewcode-block" id="node_game_index_fields"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_game_index_fields">[docs]</a><span class="k">def</span> <span class="nf">node_game_index_fields</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
     <span class="c1"># reset the listing if needed</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="s2">&quot;game_index_listing&quot;</span><span class="p">):</span>
         <span class="n">wizard</span><span class="o">.</span><span class="n">game_index_listing</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_INDEX_LISTING</span>
@@ -506,7 +505,6 @@
 
 
 <div class="viewcode-block" id="node_mssp_start"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_mssp_start">[docs]</a><span class="k">def</span> <span class="nf">node_mssp_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
-
     <span class="n">mssp_module</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">MSSP_META_MODULE</span> <span class="ow">or</span> <span class="s2">&quot;server.conf.mssp&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">mssp_module</span><span class="o">.</span><span class="vm">__file__</span>
