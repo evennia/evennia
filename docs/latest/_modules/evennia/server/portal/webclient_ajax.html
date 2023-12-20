@@ -66,6 +66,20 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="webclient_ajax.html">latest (main branch)</a></li>
+
+    <li><a href="../../2.x/index.html">2.x (v2.0.0 branch)</a></li>
+  
+    <li><a href="../../1.x/index.html">1.x (v1.0.0 branch)</a></li>
+  
+    <li><a href="../../0.x/index.html">0.x (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
         </div>
       </div>
         <div class="bodywrapper">
@@ -344,6 +358,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;csessid&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="AjaxWebClient.get_client_page_id"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient_ajax.html#evennia.server.portal.webclient_ajax.AjaxWebClient.get_client_page_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_page_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper to get the client page id out of the request.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (Request): Incoming request object.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            csessid (int): The client-page id.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;cuid&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="AjaxWebClient.get_browserstr"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient_ajax.html#evennia.server.portal.webclient_ajax.AjaxWebClient.get_browserstr">[docs]</a>    <span class="k">def</span> <span class="nf">get_browserstr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get browser-string out of the request.</span>
@@ -387,10 +413,10 @@
 
 <div class="viewcode-block" id="AjaxWebClient.client_disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient_ajax.html#evennia.server.portal.webclient_ajax.AjaxWebClient.client_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">client_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csessid</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Disconnect session with given csessid.</span>
+<span class="sd">        Disconnect session with given id.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            csessid (int): Session id.</span>
+<span class="sd">            csessid (int): Client page+session id.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">csessid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
@@ -408,7 +434,8 @@
 <span class="sd">            request (Request): Incoming request.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">session_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">page_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_page_id</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="n">browserstr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_browserstr</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 
         <span class="n">remote_addr</span> <span class="o">=</span> <span class="n">ip_from_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
@@ -423,9 +450,9 @@
         <span class="n">sess</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">sess</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;ajax/comet&quot;</span><span class="p">,</span> <span class="n">remote_addr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="p">)</span>
 
-        <span class="n">sess</span><span class="o">.</span><span class="n">csessid</span> <span class="o">=</span> <span class="n">csessid</span>
+        <span class="n">sess</span><span class="o">.</span><span class="n">csessid</span> <span class="o">=</span> <span class="n">session_id</span><span class="o">+</span><span class="n">page_id</span>
         <span class="n">sess</span><span class="o">.</span><span class="n">browserstr</span> <span class="o">=</span> <span class="n">browserstr</span>
-        <span class="n">csession</span> <span class="o">=</span> <span class="n">_CLIENT_SESSIONS</span><span class="p">(</span><span class="n">session_key</span><span class="o">=</span><span class="n">sess</span><span class="o">.</span><span class="n">csessid</span><span class="p">)</span>
+        <span class="n">csession</span> <span class="o">=</span> <span class="n">_CLIENT_SESSIONS</span><span class="p">(</span><span class="n">session_key</span><span class="o">=</span><span class="n">session_id</span><span class="p">)</span>
         <span class="n">uid</span> <span class="o">=</span> <span class="n">csession</span> <span class="ow">and</span> <span class="n">csession</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webclient_authenticated_uid&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">uid</span><span class="p">:</span>
             <span class="c1"># the client session is already logged in</span>
@@ -433,7 +460,7 @@
             <span class="n">sess</span><span class="o">.</span><span class="n">logged_in</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># watch for dead links</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_alive</span><span class="p">[</span><span class="n">csessid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_alive</span><span class="p">[</span><span class="n">sess</span><span class="o">.</span><span class="n">csessid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_alive</span><span class="p">:</span>
             <span class="c1"># the keepalive is not running; start it.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">keep_alive</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keepalive</span><span class="p">)</span>
@@ -447,7 +474,7 @@
         <span class="c1"># actually do the connection</span>
         <span class="n">sess</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">host_string</span><span class="p">,</span> <span class="s2">&quot;csessid&quot;</span><span class="p">:</span> <span class="n">csessid</span><span class="p">})</span></div>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">host_string</span><span class="p">,</span> <span class="s2">&quot;csessid&quot;</span><span class="p">:</span> <span class="n">session_id</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="AjaxWebClient.mode_keepalive"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient_ajax.html#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_keepalive">[docs]</a>    <span class="k">def</span> <span class="nf">mode_keepalive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -458,7 +485,7 @@
 <span class="sd">            request (Request): Incoming request.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_page_id</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_alive</span><span class="p">[</span><span class="n">csessid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;&quot;&quot;&#39;</span></div>
 
@@ -471,7 +498,7 @@
 <span class="sd">            request (Request): Incoming request.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_page_id</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_alive</span><span class="p">[</span><span class="n">csessid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">cmdarray</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">sessions_from_csessid</span><span class="p">(</span><span class="n">csessid</span><span class="p">):</span>
@@ -489,7 +516,7 @@
 <span class="sd">            request (Request): Incoming request.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">csessid</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;csessid&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_page_id</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_alive</span><span class="p">[</span><span class="n">csessid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="n">dataentries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">databuffer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">csessid</span><span class="p">)</span>
@@ -515,7 +542,7 @@
 <span class="sd">            request (Request): Incoming request.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_sessid</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_page_id</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">sess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">sessions_from_csessid</span><span class="p">(</span><span class="n">csessid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">sess</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span>

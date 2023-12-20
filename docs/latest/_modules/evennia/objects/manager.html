@@ -66,6 +66,20 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="manager.html">latest (main branch)</a></li>
+
+    <li><a href="../../2.x/index.html">2.x (v2.0.0 branch)</a></li>
+  
+    <li><a href="../../1.x/index.html">1.x (v1.0.0 branch)</a></li>
+  
+    <li><a href="../../0.x/index.html">0.x (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
         </div>
       </div>
         <div class="bodywrapper">
@@ -533,7 +547,7 @@
             <span class="c1"># typeclass may also be a list</span>
             <span class="n">typeclasses</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">typeclass</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">typeclass</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">):</span>
                     <span class="n">typeclasses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typeclass</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">typeclasses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">typeclass</span>

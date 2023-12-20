@@ -91,6 +91,20 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="evennia.server.portal.webclient_ajax.html">latest (main branch)</a></li>
+
+    <li><a href="../../2.x/index.html">2.x (v2.0.0 branch)</a></li>
+  
+    <li><a href="../../1.x/index.html">1.x (v1.0.0 branch)</a></li>
+  
+    <li><a href="../../0.x/index.html">0.x (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
         </div>
       </div>
         <div class="bodywrapper">
@@ -298,6 +312,20 @@ client instead.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.get_client_page_id">
+<code class="sig-name descname">get_client_page_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.get_client_page_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.get_client_page_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to get the client page id out of the request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>Request</em>) – Incoming request object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>csessid (int)</em> – The client-page id.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.get_browserstr">
 <code class="sig-name descname">get_browserstr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.get_browserstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.get_browserstr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get browser-string out of the request.</p>
@@ -335,10 +363,10 @@ as soon as possible.</p>
 <dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.client_disconnect">
 <code class="sig-name descname">client_disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">csessid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.client_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.client_disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Disconnect session with given csessid.</p>
+<dd><p>Disconnect session with given id.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>csessid</strong> (<em>int</em>) – Session id.</p>
+<dd class="field-odd"><p><strong>csessid</strong> (<em>int</em>) – Client page+session id.</p>
 </dd>
 </dl>
 </dd></dl>

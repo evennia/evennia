@@ -66,6 +66,20 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="cmdsethandler.html">latest (main branch)</a></li>
+
+    <li><a href="../../2.x/index.html">2.x (v2.0.0 branch)</a></li>
+  
+    <li><a href="../../1.x/index.html">1.x (v1.0.0 branch)</a></li>
+  
+    <li><a href="../../0.x/index.html">0.x (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
         </div>
       </div>
         <div class="bodywrapper">
@@ -278,7 +292,7 @@
                 <span class="n">_CACHED_CMDSETS</span><span class="p">[</span><span class="n">python_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmdsetclass</span>
 
             <span class="c1"># instantiate the cmdset (and catch its errors)</span>
-            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdsetclass</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cmdsetclass</span><span class="p">):</span>
                 <span class="n">cmdsetclass</span> <span class="o">=</span> <span class="n">cmdsetclass</span><span class="p">(</span><span class="n">cmdsetobj</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">cmdsetclass</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -531,7 +545,7 @@
             <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Only CmdSets can be added to the cmdsethandler!&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">):</span>
             <span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmdset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># this is (maybe) a python path. Try to import from cache.</span>
@@ -610,7 +624,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># try it as a callable</span>
-            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
                 <span class="n">delcmdsets</span> <span class="o">=</span> <span class="p">[</span><span class="n">cset</span> <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># try it as a path or key</span>
@@ -698,7 +712,7 @@
 <span class="sd">            has_cmdset (bool): Whether or not the cmdset is in the handler.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
             <span class="c1"># try it as a callable</span>
             <span class="k">if</span> <span class="n">must_be_default</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>

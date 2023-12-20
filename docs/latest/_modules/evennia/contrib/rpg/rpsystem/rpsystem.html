@@ -66,6 +66,20 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="rpsystem.html">latest (main branch)</a></li>
+
+    <li><a href="../../2.x/index.html">2.x (v2.0.0 branch)</a></li>
+  
+    <li><a href="../../1.x/index.html">1.x (v1.0.0 branch)</a></li>
+  
+    <li><a href="../../0.x/index.html">0.x (v0.9.5 branch)</a></li>
+  
+
+</ul>
+
         </div>
       </div>
         <div class="bodywrapper">
@@ -253,7 +267,7 @@
 <span class="c1"># The prefix is the (single-character) symbol used to find the start</span>
 <span class="c1"># of a object reference, such as /tall (note that</span>
 <span class="c1"># the system will understand multi-word references like &#39;/a tall man&#39; too).</span>
-<span class="n">_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
+<span class="n">_PREFIX</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s1">&#39;RPSYSTEM_EMOTE_PREFIX&#39;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
 <span class="c1"># The num_sep is the (single-character) symbol used to separate the</span>
 <span class="c1"># sdesc from the number when  trying to separate identical sdescs from</span>
@@ -692,7 +706,7 @@
     <span class="c1"># broadcast emote to everyone</span>
     <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">receivers</span><span class="p">:</span>
         <span class="c1"># first handle the language mapping, which always produce different keys ##nn</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="s2">&quot;process_language&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span><span class="n">receiver</span><span class="o">.</span><span class="n">process_language</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="s2">&quot;process_language&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">receiver</span><span class="o">.</span><span class="n">process_language</span><span class="p">):</span>
             <span class="n">receiver_lang_mapping</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">key</span><span class="p">:</span> <span class="n">receiver</span><span class="o">.</span><span class="n">process_language</span><span class="p">(</span><span class="n">saytext</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">langname</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">langname</span><span class="p">,</span> <span class="n">saytext</span><span class="p">)</span> <span class="ow">in</span> <span class="n">language_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -979,11 +993,11 @@
 <span class="sd">      emote text</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">      emote /me looks around.</span>
-<span class="sd">      emote With a flurry /me attacks /tall man with his sword.</span>
-<span class="sd">      emote &quot;Hello&quot;, /me says.</span>
+<span class="sd">      emote {prefix}me looks around.</span>
+<span class="sd">      emote With a flurry {prefix}me attacks {prefix}tall man with his sword.</span>
+<span class="sd">      emote &quot;Hello&quot;, {prefix}me says.</span>
 
-<span class="sd">    Describes an event in the world. This allows the use of /ref</span>
+<span class="sd">    Describes an event in the world. This allows the use of {prefix}ref</span>
 <span class="sd">    markers to replace with the short descriptions or recognized</span>
 <span class="sd">    strings of objects in the same room. These will be translated to</span>
 <span class="sd">    emotes to match each person seeing it. Use &quot;...&quot; for saying</span>
@@ -996,6 +1010,9 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<div class="viewcode-block" id="CmdEmote.get_help"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">_PREFIX</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdEmote.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Perform the emote.&quot;</span>
