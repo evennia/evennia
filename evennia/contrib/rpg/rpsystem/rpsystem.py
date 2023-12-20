@@ -179,7 +179,7 @@ _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 
 # The prefix is the (single-character) symbol used to find the start
 # of a object reference, such as /tall (note that
 # the system will understand multi-word references like '/a tall man' too).
-_PREFIX = "/"
+_PREFIX = getattr(settings, 'RPSYSTEM_EMOTE_PREFIX', "/")
 
 # The num_sep is the (single-character) symbol used to separate the
 # sdesc from the number when  trying to separate identical sdescs from
@@ -905,11 +905,11 @@ class CmdEmote(RPCommand):  # replaces the main emote
       emote text
 
     Example:
-      emote /me looks around.
-      emote With a flurry /me attacks /tall man with his sword.
-      emote "Hello", /me says.
+      emote {prefix}me looks around.
+      emote With a flurry {prefix}me attacks {prefix}tall man with his sword.
+      emote "Hello", {prefix}me says.
 
-    Describes an event in the world. This allows the use of /ref
+    Describes an event in the world. This allows the use of {prefix}ref
     markers to replace with the short descriptions or recognized
     strings of objects in the same room. These will be translated to
     emotes to match each person seeing it. Use "..." for saying
@@ -922,6 +922,9 @@ class CmdEmote(RPCommand):  # replaces the main emote
     aliases = [":"]
     locks = "cmd:all()"
     arg_regex = ""
+
+    def get_help(self, caller, cmdset):
+        return self.__doc__.format(prefix=_PREFIX)
 
     def func(self):
         "Perform the emote."
