@@ -68,7 +68,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
 
         """
         try:
-            # client will connect with wsurl?csessid&browserid
+            # client will connect with wsurl?csessid&page_id&browserid
             webarg = self.http_request_uri.split("?", 1)[1]
         except IndexError:
             # this may happen for custom webclients not caring for the
@@ -86,7 +86,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         if len(cargs) == 1:
             self.browserstr = str(cargs[0])
         elif len(cargs) == 2:
-            self.cuid = str(cargs[0])
+            self.page_id = str(cargs[0])
             self.browserstr = str(cargs[1])
 
         if self.csessid:

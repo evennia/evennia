@@ -270,6 +270,18 @@ class AjaxWebClient(resource.Resource):
         """
         return html.escape(request.args[b"csessid"][0].decode("utf-8"))
 
+    def get_client_page_id(self, request):
+        """
+        Helper to get the client page id out of the request.
+
+        Args:
+            request (Request): Incoming request object.
+        Returns:
+            csessid (int): The client-page id.
+
+        """
+        return html.escape(request.args[b"cuid"][0].decode("utf-8"))
+
     def get_browserstr(self, request):
         """
         Get browser-string out of the request.
@@ -313,12 +325,17 @@ class AjaxWebClient(resource.Resource):
 
     def client_disconnect(self, csessid):
         """
-        Disconnect session with given csessid.
+        Disconnect session with given id.
 
         Args:
-            csessid (int): Session id.
+            csessid (int): Client page+session id.
 
         """
+        if csessid in self.requests:
+            self.requests[csessid].finish()
+            del self.requests[csessid]
+        if csessid in self.databuffer:
+            del self.databuffer[csessid]
         if csessid in self.requests:
             self.requests[csessid].finish()
             del self.requests[csessid]
@@ -334,7 +351,8 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = self.get_client_sessid(request)
+        session_id = self.get_client_sessid(request)
+        page_id = self.get_client_page_id(request)
         browserstr = self.get_browserstr(request)
 
         remote_addr = ip_from_request(request)
@@ -349,9 +367,9 @@ class AjaxWebClient(resource.Resource):
         sess.client = self
         sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
 
-        sess.csessid = csessid
+        sess.csessid = session_id+page_id
         sess.browserstr = browserstr
-        csession = _CLIENT_SESSIONS(session_key=sess.csessid)
+        csession = _CLIENT_SESSIONS(session_key=session_id)
         uid = csession and csession.get("webclient_authenticated_uid", False)
         if uid:
             # the client session is already logged in
@@ -359,7 +377,7 @@ class AjaxWebClient(resource.Resource):
             sess.logged_in = True
 
         # watch for dead links
-        self.last_alive[csessid] = (time.time(), False)
+        self.last_alive[sess.csessid] = (time.time(), False)
         if not self.keep_alive:
             # the keepalive is not running; start it.
             self.keep_alive = LoopingCall(self._keepalive)
@@ -373,7 +391,7 @@ class AjaxWebClient(resource.Resource):
         # actually do the connection
         sess.sessionhandler.connect(sess)
 
-        return jsonify({"msg": host_string, "csessid": csessid})
+        return jsonify({"msg": host_string, "csessid": session_id})
 
     def mode_keepalive(self, request):
         """
@@ -384,7 +402,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = self.get_client_sessid(request)
+        csessid = self.get_client_sessid(request) + self.get_client_page_id(request)
         self.last_alive[csessid] = (time.time(), False)
         return b'""'
 
@@ -397,7 +415,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = self.get_client_sessid(request)
+        csessid = self.get_client_sessid(request) + self.get_client_page_id(request)
         self.last_alive[csessid] = (time.time(), False)
         cmdarray = json.loads(request.args.get(b"data")[0])
         for sess in self.sessionhandler.sessions_from_csessid(csessid):
@@ -415,9 +433,10 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = html.escape(request.args[b"csessid"][0].decode("utf-8"))
+        csessid = self.get_client_sessid(request) + self.get_client_page_id(request)
         self.last_alive[csessid] = (time.time(), False)
 
+        dataentries = self.databuffer.get(csessid)
         dataentries = self.databuffer.get(csessid)
         if dataentries:
             # we have data that could not be sent earlier (because client was not
@@ -426,6 +445,10 @@ class AjaxWebClient(resource.Resource):
         else:
             # we have no data to send. End the old request and start
             # a new long-polling one
+            request.notifyFinish().addErrback(self._responseFailed, csessid, request)
+            if csessid in self.requests:
+                self.requests[csessid].finish()  # Clear any stale request.
+            self.requests[csessid] = request
             request.notifyFinish().addErrback(self._responseFailed, csessid, request)
             if csessid in self.requests:
                 self.requests[csessid].finish()  # Clear any stale request.
@@ -441,11 +464,13 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = self.get_client_sessid(request)
+        csessid = self.get_client_sessid(request) + self.get_client_page_id(request)
         try:
+            sess = self.sessionhandler.sessions_from_csessid(csessid)[0]
             sess = self.sessionhandler.sessions_from_csessid(csessid)[0]
             sess.sessionhandler.disconnect(sess)
         except IndexError:
+            self.client_disconnect(csessid)
             self.client_disconnect(csessid)
         return b'""'
 
