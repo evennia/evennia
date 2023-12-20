@@ -66,6 +66,20 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="prototypes.html">latest (main branch)</a></li>
+ <ul>
+    <li><a href="../2.x/index.html">2.x (v2.x branch)</a></li>
+  
+    <li><a href="../1.x/index.html">1.x (v1.x branch)</a></li>
+  
+    <li><a href="../0.x/index.html">0.x (v0.x branch)</a></li>
+  
+
+</ul>
+
         </div>
       </div>
         <div class="bodywrapper">
@@ -1271,9 +1285,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">validator</span> <span class="o">=</span> <span class="n">validator</span> <span class="k">if</span> <span class="n">validator</span> <span class="k">else</span> <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span>
-    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">validator</span><span class="p">(</span><span class="n">value</span><span class="p">())</span>
-    <span class="k">elif</span> <span class="n">value</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">elif</span> <span class="n">value</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="c1"># a structure (callable, (args, ))</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">validator</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="o">*</span><span class="n">make_iter</span><span class="p">(</span><span class="n">args</span><span class="p">)))</span>

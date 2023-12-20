@@ -66,6 +66,20 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="cmdhandler.html">latest (main branch)</a></li>
+ <ul>
+    <li><a href="../2.x/index.html">2.x (v2.x branch)</a></li>
+  
+    <li><a href="../1.x/index.html">1.x (v1.x branch)</a></li>
+  
+    <li><a href="../0.x/index.html">0.x (v0.x branch)</a></li>
+  
+
+</ul>
+
         </div>
       </div>
         <div class="bodywrapper">
@@ -747,7 +761,7 @@
         <span class="k">try</span><span class="p">:</span>  <span class="c1"># catch special-type commands</span>
             <span class="k">if</span> <span class="n">cmdobj</span><span class="p">:</span>
                 <span class="c1"># the command object is already given</span>
-                <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="p">()</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmdobj</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="p">()</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmdobj</span>
                 <span class="n">cmdname</span> <span class="o">=</span> <span class="n">cmdobj_key</span> <span class="k">if</span> <span class="n">cmdobj_key</span> <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="n">raw_string</span>
                 <span class="n">unformatted_raw_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>

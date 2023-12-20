@@ -66,6 +66,20 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="scripthandler.html">latest (main branch)</a></li>
+ <ul>
+    <li><a href="../2.x/index.html">2.x (v2.x branch)</a></li>
+  
+    <li><a href="../1.x/index.html">1.x (v1.x branch)</a></li>
+  
+    <li><a href="../0.x/index.html">0.x (v0.x branch)</a></li>
+  
+
+</ul>
+
         </div>
       </div>
         <div class="bodywrapper">
@@ -151,7 +165,7 @@
             <span class="n">script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
                 <span class="n">scriptclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="n">autostart</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">callable</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">):</span>
             <span class="c1"># a str or class to use create before adding to an Object. We wait to autostart</span>
             <span class="c1"># so we can differentiate a failing creation from a script that immediately starts/stops.</span>
             <span class="n">script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
