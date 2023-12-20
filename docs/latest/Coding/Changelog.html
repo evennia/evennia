@@ -66,7 +66,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#main-branch">Main branch</a></li>
+<li><a class="reference internal" href="#evennia-3-0-0">Evennia 3.0.0</a></li>
 <li><a class="reference internal" href="#evennia-2-3-0">Evennia 2.3.0</a></li>
 <li><a class="reference internal" href="#evennia-2-2-0">Evennia 2.2.0</a></li>
 <li><a class="reference internal" href="#evennia-2-1-0">Evennia 2.1.0</a></li>
@@ -169,6 +169,8 @@
   
     <li><a href="Changelog.html">latest (main branch)</a></li>
 
+    <li><a href="../../3.x/index.html">3.x (v3.0.0 branch)</a></li>
+  
     <li><a href="../../2.x/index.html">2.x (v2.0.0 branch)</a></li>
   
     <li><a href="../../1.x/index.html">1.x (v1.0.0 branch)</a></li>
@@ -185,8 +187,8 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<section id="main-branch">
-<h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
+<section id="evennia-3-0-0">
+<h2>Evennia 3.0.0<a class="headerlink" href="#evennia-3-0-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Dependency: Twisted 23.10 (&lt;24) to address upstream CVE alert.</p></li>
 <li><p>Dependency (potentially Backwards incompatible): Django 4.2 (&lt;4.3). Increases
@@ -228,6 +230,10 @@ tools <code class="docutils literal notranslate"><span class="pre">evennia.utils
 a bit more deterministic (Volund)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3348">Feature</a>: Make Fallback AJAX web client more customizable (same as
 the websocket client) (Volund)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3353">Feature</a>: Add unique id to each webclient instance, separates play
+sessions run from the same browser. (InpsectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3365">Feature</a>: Make the rpsystem contrib’s prefix (<code class="docutils literal notranslate"><span class="pre">/</span></code> by default)
+configurable with a setting (used to be hard-coded) (InspectorCaracal)</p></li>
 <li><p>Fix (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
 <code class="docutils literal notranslate"><span class="pre">settings.TEST_ENVIRONMENT</span></code> to address issues during refactored startup sequence.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3347">Fix</a>: New <code class="docutils literal notranslate"><span class="pre">generate_default_locks()</span></code> method on typeclasses;
