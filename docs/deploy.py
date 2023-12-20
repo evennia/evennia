@@ -68,8 +68,7 @@ def deploy():
 
     os.system("ls")
 
-    # symlink to latest and link its index to the root
-    os.system(f"ln -s {latest_version} latest")
+    # link latest index to the root
     os.system(f"ln -s {latest_version}/index.html .")
 
     os.system("ls")
