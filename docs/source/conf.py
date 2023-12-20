@@ -74,8 +74,8 @@ def add_legacy_versions_to_html_page_context(app, pagename, templatename, contex
 
     LVersion = namedtuple("legacy_version", ["release", "name", "url", "branch"])
     context["legacy_versions"] = [
-        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../../{vers}/index.html")
-        for vers, branch in zip(legacy_versions, legacy_branches)
+        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../../{vers}/index.html", branch=branch)
+        for (vers, branch) in zip(legacy_versions, legacy_branches)
     ]
     context["current_is_legacy"] = current_is_legacy
 
