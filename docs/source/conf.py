@@ -20,7 +20,7 @@ author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
 # This will be used for multi-version selection options.
-release = "2.x"
+release = "latest"
 
 # -- General configuration ---------------------------------------------------
 
@@ -61,8 +61,8 @@ smv_tag_whitelist = r"^$"
 # used to fill in versioning.html links for versions that are not actually built.
 # These are also read from the deploy.py script. These are also the names of
 # the folders built in the gh-pages evennia branch, under docs/.
-latest_version = "2.x"
-legacy_versions = ["1.3.0", "0.9.5"]
+latest_version = "latest"
+legacy_versions = ["2.x", "1.3.0", "0.9.5"]
 
 
 def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
