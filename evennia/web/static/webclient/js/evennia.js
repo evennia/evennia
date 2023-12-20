@@ -220,6 +220,7 @@ An "emitter" object must have a function
         var websocket = null;
         var wsurl = window.wsurl;
         var csessid = window.csessid;
+        var cuid = window.cuid;
 
         var connect = function() {
             if (websocket && websocket.readyState != websocket.CLOSED) {
@@ -227,7 +228,7 @@ An "emitter" object must have a function
                 return;
             }
             // Important - we pass csessid tacked on the url
-            websocket = new WebSocket(wsurl + '?' + csessid + '&' + browser);
+            websocket = new WebSocket(wsurl + '?' + csessid + '&' + cuid + '&' + browser);
 
             // Handle Websocket open event
             websocket.onopen = function (event) {
@@ -304,13 +305,14 @@ An "emitter" object must have a function
         var stop_polling = false;
         var is_closing = false;
         var csessid = window.csessid;
+        var cuid = window.cuid;
 
         // initialize connection, send csessid
         var init = function() {
             $.ajax({type: "POST", url: "/webclientdata",
                     async: true, cache: false, timeout: 50000,
                     datatype: "json",
-                    data: {mode: "init", csessid: csessid, browserstr: browser},
+                    data: {mode: "init", csessid: csessid, cuid: cuid, browserstr: browser},
 
                     success: function(data) {
                         open = true;
@@ -336,7 +338,7 @@ An "emitter" object must have a function
                    async: true, cache: false, timeout: 30000,
                    dataType: "json",
                    data: {mode: inmode == null ? 'input' : inmode,
-                          data: JSON.stringify(data), 'csessid': csessid},
+                          data: JSON.stringify(data), 'csessid': csessid, 'cuid': cuid},
                    success: function(req, stat, err) {
                        stop_polling = false;
                    },
@@ -356,7 +358,7 @@ An "emitter" object must have a function
             $.ajax({type: "POST", url: "/webclientdata",
                     async: true, cache: false, timeout: 60000,
                     dataType: "json",
-                    data: {mode: 'receive', 'csessid': csessid},
+                    data: {mode: 'receive', 'csessid': csessid, 'cuid': cuid},
                     success: function(data) {
                         // log("ajax data received:", data);
                         if (data[0] === "ajax_keepalive") {
@@ -411,7 +413,7 @@ An "emitter" object must have a function
                 cache: false,
                 timeout: 50000,
                 dataType: "json",
-                data: {mode: 'close', 'csessid': csessid},
+                data: {mode: 'close', 'csessid': csessid, 'cuid': cuid},
 
                 success: function(data){
                     is_closing = false;
