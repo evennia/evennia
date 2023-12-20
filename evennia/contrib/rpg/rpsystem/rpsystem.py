@@ -897,7 +897,7 @@ class RPCommand(Command):
 
 
 class CmdEmote(RPCommand):  # replaces the main emote
-    f"""
+    """
     Emote an action, allowing dynamic replacement of
     text in the emote.
 
@@ -905,11 +905,11 @@ class CmdEmote(RPCommand):  # replaces the main emote
       emote text
 
     Example:
-      emote {_PREFIX}me looks around.
-      emote With a flurry {_PREFIX}me attacks {_PREFIX}tall man with his sword.
-      emote "Hello", {_PREFIX}me says.
+      emote {prefix}me looks around.
+      emote With a flurry {prefix}me attacks {prefix}tall man with his sword.
+      emote "Hello", {prefix}me says.
 
-    Describes an event in the world. This allows the use of {_PREFIX}ref
+    Describes an event in the world. This allows the use of {prefix}ref
     markers to replace with the short descriptions or recognized
     strings of objects in the same room. These will be translated to
     emotes to match each person seeing it. Use "..." for saying
@@ -922,6 +922,9 @@ class CmdEmote(RPCommand):  # replaces the main emote
     aliases = [":"]
     locks = "cmd:all()"
     arg_regex = ""
+
+    def get_help(self, caller, cmdset):
+        return self.__doc__.format(prefix=_PREFIX)
 
     def func(self):
         "Perform the emote."
