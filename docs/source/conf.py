@@ -63,6 +63,7 @@ smv_tag_whitelist = r"^$"
 # the folders built in the gh-pages evennia branch, under docs/.
 latest_version = "latest"
 legacy_versions = ["2.x", "1.x", "0.x"]
+legacy_branches = ["v2.0.0", "v1.0.0", "v0.9.5"]
 
 
 def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
@@ -71,10 +72,10 @@ def add_legacy_versions_to_html_page_context(app, pagename, templatename, contex
     # set this when building legacy docs, to show the 'you are reading an old version' headers
     current_is_legacy = False
 
-    LVersion = namedtuple("legacy_version", ["release", "name", "url"])
+    LVersion = namedtuple("legacy_version", ["release", "name", "url", "branch"])
     context["legacy_versions"] = [
-        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../{vers}/index.html")
-        for vers in legacy_versions
+        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../../{vers}/index.html")
+        for vers, branch in zip(legacy_versions, legacy_branches)
     ]
     context["current_is_legacy"] = current_is_legacy
 
