@@ -21,8 +21,6 @@
     <link rel="prev" title="Implementing a game rule system" href="Implementing-a-game-rule-system.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -40,10 +38,14 @@
           <a href="Implementing-a-game-rule-system.html" title="Implementing a game rule system"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Turn based Combat System</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -101,18 +103,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Turn-based-Combat-System.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -420,7 +410,6 @@ subsequent attack and so on …</em></p>
 
 <span class="kn">import</span> <span class="nn">random</span>
 
-
 <span class="c1"># messages </span>
 
 <span class="k">def</span> <span class="nf">resolve_combat</span><span class="p">(</span><span class="n">combat_handler</span><span class="p">,</span> <span class="n">actiondict</span><span class="p">):</span>
@@ -430,7 +419,7 @@ subsequent attack and so on …</em></p>
 <span class="sd">    for each character:</span>
 <span class="sd">    {char.id:[(action1, char, target), (action2, char, target)], ...}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">flee</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># track number of flee commands per character</span>
+    <span class="n">flee</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># track number of flee commands per character</span>
     <span class="k">for</span> <span class="n">isub</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
         <span class="c1"># loop over sub-turns</span>
         <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
@@ -505,7 +494,6 @@ subsequent attack and so on …</em></p>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
 
-
 <span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    initiates combat</span>
@@ -522,7 +510,7 @@ subsequent attack and so on …</em></p>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Handle command&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: attack &lt;target&gt;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: attack &lt;target&gt;&quot;</span><span class="p">)</span>            
             <span class="k">return</span>
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
@@ -572,13 +560,10 @@ show others what’s going on.</p>
           <a href="Implementing-a-game-rule-system.html" title="Implementing a game rule system"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Turn based Combat System</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

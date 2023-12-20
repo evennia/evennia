@@ -152,11 +152,11 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
             npcs = [comb for comb in combatants if comb not in pcs]
             if combatant in pcs:
                 # combatant is a PC, so NPCs are all enemies
-                allies = pcs
+                allies = [comb for comb in pcs if comb != combatant]
                 enemies = npcs
             else:
                 # combatant is an NPC, so PCs are all enemies
-                allies = npcs
+                allies = [comb for comb in npcs if comb != combatant]
                 enemies = pcs
         return allies, enemies
 
@@ -357,6 +357,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
         """
 
         allies, enemies = self.get_sides(self.obj)
+        allies.append(self.obj)
 
         location = self.obj.location
 
@@ -381,7 +382,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
 
 We must make sure to check if combat is over. 
 
-- **Line 12**: With our `.get_sides()` method we can easily get the two sides of the conflict.
+- **Line 12**: With our `.get_sides()` method we can easily get the two sides of the conflict. Note that `combatant` is not included among the allies, so we need to add it back in on the following line.
 - **Lines 18, 19**: We get everyone still alive _and still in the same room_. The latter condition is important in case we move away from the battle - you can't hit your enemy from another room. 
 
 In the `stop_method` we'll need to do a bunch of cleanup. We'll hold off on implementing this until we have the Commands written out. Read on.
@@ -920,7 +921,7 @@ Inside the test, we use the `self.call()` method to explicitly fire the Command 
 ## A small combat test
 
 ```{sidebar}
-You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev](github:evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev)
+You can find an example batch-command script in [evennia/contrib/tutorials/evadventure/batchscripts/twitch_combat_demo.ev](github:evennia/contrib/tutorials/evadventure/batchscripts/turnbased_combat_demo.ev)
 ```
 Showing that the individual pieces of code works (unit testing) is not enough to be sure that your combat system is actually working. We need to test all the pieces _together_. This is often called _functional testing_. While functional testing can also be automated, wouldn't it be fun to be able to actually see our code in action? 
 

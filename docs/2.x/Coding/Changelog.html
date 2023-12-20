@@ -21,8 +21,6 @@
     <link rel="prev" title="Setting up PyCharm with Evennia" href="Setting-up-PyCharm.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -43,7 +41,11 @@
           <li class="nav-item nav-item-1"><a href="Coding-Overview.html" accesskey="U">Coding and development help</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Changelog</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,12 +68,7 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#main-branch">Main branch</a></li>
-<li><a class="reference internal" href="#evennia-2-3-0">Evennia 2.3.0</a></li>
-<li><a class="reference internal" href="#evennia-2-2-0">Evennia 2.2.0</a></li>
-<li><a class="reference internal" href="#evennia-2-1-0">Evennia 2.1.0</a></li>
-<li><a class="reference internal" href="#evennia-2-0-1">Evennia 2.0.1</a></li>
-<li><a class="reference internal" href="#evennia-2-0-0">Evennia 2.0.0</a></li>
+<li><a class="reference internal" href="#evennia-2-0">Evennia 2.0</a></li>
 <li><a class="reference internal" href="#evennia-1-3-0">Evennia 1.3.0</a></li>
 <li><a class="reference internal" href="#evennia-1-2-1">Evennia 1.2.1</a></li>
 <li><a class="reference internal" href="#evennia-1-2-0">Evennia 1.2.0</a></li>
@@ -164,18 +161,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Changelog.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -183,134 +168,8 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<section id="main-branch">
-<h2>Main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Dependency: Twisted 23.10 (&lt;24) to address upstream CVE alert.</p></li>
-<li><p>Dependency (potentially Backwards incompatible): Django 4.2 (&lt;4.3). Increases
-minimum supported versions of MariaDB, MySQL and PostgreSQL,
-see <a class="reference external" href="https://docs.djangoproject.com/en/4.2/releases/4.2/#backwards-incompatible-changes-in-4-2">django release nodes</a></p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3313">Feature</a> (Backwards incompatible): <code class="docutils literal notranslate"><span class="pre">OptionHandler.set</span></code> now returns
-<code class="docutils literal notranslate"><span class="pre">BaseOption</span></code> rather than its <code class="docutils literal notranslate"><span class="pre">.value</span></code>. Instead access <code class="docutils literal notranslate"><span class="pre">.value</span></code> or <code class="docutils literal notranslate"><span class="pre">.display()</span></code>
-on this return for more control. (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3278">Feature</a>: (Backwards incompatible): Refactor home page into multiple sub-parts for easier
-overriding and composition (johnnyvoruz)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3180">Feature</a>: (Potentially Backwards incompatible): Make build commands
-easier to override, with new utility hooks (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3273">Feature</a>: Allow passing <code class="docutils literal notranslate"><span class="pre">text_kwargs</span></code> kwarg to <code class="docutils literal notranslate"><span class="pre">EvMore.msg</span></code> in order to expand
-the outputfunc used for every evmore page.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3286">Feature</a>: Allow Discord bot to change user’s nickname and assign
-roles for a user on a given server (holl0wstar).</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3301">Feature</a>: Make EvenniaAdminSite include custom models better; adds
-<code class="docutils literal notranslate"><span class="pre">DJANGO_ADMIN_APP_ORDER</span></code> and <code class="docutils literal notranslate"><span class="pre">DJANGO_ADMIN_APP_EXCLUDE</span></code> as modifable
-settings.(Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3179">Feature</a>: Handling of the <code class="docutils literal notranslate"><span class="pre">.db._playable_characters</span></code> helper
-methods. Also adds events hooks to modify effects when this list changes (Volund)
-avoiding race conditions until server starts (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3281">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">$your()</span></code> and <code class="docutils literal notranslate"><span class="pre">$Your()</span></code> for actor stance emoting (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3177">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">Account.get_character_slots()</span></code>,
-<code class="docutils literal notranslate"><span class="pre">.get_available_character_slots()</span></code>, <code class="docutils literal notranslate"><span class="pre">.check_available_slots</span></code> and
-<code class="docutils literal notranslate"><span class="pre">at_post_create_character</span></code> methods to allow better customization of character creation (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3319">Feature</a>: Refactor/cleanup of Evennia server/portal startup files
-into services for easier overriding (Volund)</p></li>
-<li><p>[Feature][issue3307]: Add support for Attribute-categories when using the monitorhandler
-with input funcs to monitor Attribute changes.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3342">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">Command.cmdset_source</span></code>, referring to the cmdset each
-command was originally pulled from (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3343">Feature</a>: Add <code class="docutils literal notranslate"><span class="pre">access_type</span></code> as optional kwarg to lockfuncs (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3344">Feature</a>: New middleware for checking IP/subnets from requests. New
-tools <code class="docutils literal notranslate"><span class="pre">evennia.utils.match_ip</span></code> and <code class="docutils literal notranslate"><span class="pre">utils.ip_from_request</span></code> to help. (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3349">Feature</a>: Refactored almost all default commands to use
-<code class="docutils literal notranslate"><span class="pre">Command.msg</span></code> over the <code class="docutils literal notranslate"><span class="pre">command.caller.msg</span></code> direct call (more flexible) (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3346">Feature</a>: Refactor cmdhandler to be more extensible; make cmd merge
-a bit more deterministic (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3348">Feature</a>: Make Fallback AJAX web client more customizable (same as
-the websocket client) (Volund)</p></li>
-<li><p>Fix (Backwards incompatible): Change <code class="docutils literal notranslate"><span class="pre">settings._TEST_ENVIRONMENT</span></code> to
-<code class="docutils literal notranslate"><span class="pre">settings.TEST_ENVIRONMENT</span></code> to address issues during refactored startup sequence.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3347">Fix</a>: New <code class="docutils literal notranslate"><span class="pre">generate_default_locks()</span></code> method on typeclasses;
-<code class="docutils literal notranslate"><span class="pre">.create</span></code> and <code class="docutils literal notranslate"><span class="pre">lockhandler.add()</span></code> will now properly handle emptry strings
-(Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3197">Fix</a>: Make sure Global scripts only start in one place,</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3324">Fix</a>: Make account-post-login-fail signal fire properly. Add
-<code class="docutils literal notranslate"><span class="pre">CUSTOM_SIGNAL</span></code> for adding one’s own signals (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3267">Fix</a>: Missing recache step in ObjectSessionHandler (InspectorCaracal)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3270">Fix</a>: Evennia is its own MSSP family now, so we should return that
-instead of ‘Custom’ (InspectorCaracal)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3274">Fix</a>: Traceback when creating objects with initial nattributes
-(InspectorCaracal)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3272">Fix</a>: Make sure <code class="docutils literal notranslate"><span class="pre">ScriptHandler.add</span></code> does not fail if passed an
-instantiated script. (Volund)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3350">Fix</a>: <code class="docutils literal notranslate"><span class="pre">CmdHelp</span></code> was using the wrong protocol-key identifier when
-routing to the ajax web client.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3338">Fix</a>: Resolve if/elif bug in XYZGrid contrib launch command
-(jaborsh)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/issues/3331">fix</a>: Made XYZGrid query zcoords in a case-insensitive manner.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3322">Fix</a>: Fix <code class="docutils literal notranslate"><span class="pre">BaseOption.display</span></code> to always return a string.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3358">Fix</a>: Fix so Portal resets <code class="docutils literal notranslate"><span class="pre">server_restart_mode</span></code> flag when having
-successfully reconnected to the Server after a restart. (InspectorCaracal)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3359">Fix</a>: Fix gendersub contrib to use proper pronoun when referencing
-other objects than oneself (InspectorCaracal)</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3361">Fix</a>: Fix of monitoring Attributes with categories (scyfris)</p></li>
-<li><p>Docs &amp; docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
-HouseOfPoe etc)</p></li>
-<li><p>Beginner tutorial: Cleanup and starting earlier with explaining how to add to
-the default cmdsets.</p></li>
-</ul>
-</section>
-<section id="evennia-2-3-0">
-<h2>Evennia 2.3.0<a class="headerlink" href="#evennia-2-3-0" title="Permalink to this headline">¶</a></h2>
-<p>Sept 3, 2023</p>
-<ul class="simple">
-<li><p>Feat: EvMenu tooltips for multiple help categories in a node (Seannio).</p></li>
-<li><p>Feat: Default <code class="docutils literal notranslate"><span class="pre">examine</span></code> command now also shows an account’s <code class="docutils literal notranslate"><span class="pre">last_login</span></code>
-(michaelfaith84)</p></li>
-<li><p>Fix: Portal would accidentally start global scripts. (blongden)</p></li>
-<li><p>Fix: Traceback when printing CounterTrait contrib objects. (InspectorCaracal)</p></li>
-<li><p>Fix: Typo in evadventure twitch combat’s call of <code class="docutils literal notranslate"><span class="pre">create_combathandler</span></code>.</p></li>
-<li><p>Docs: Fix bug in evadventure equipmenthandler blocking creation of npcs.
-in-game.</p></li>
-<li><p>Docs: Plenty of typo fixes (iLPDev, moldikins, others)</p></li>
-</ul>
-</section>
-<section id="evennia-2-2-0">
-<h2>Evennia 2.2.0<a class="headerlink" href="#evennia-2-2-0" title="Permalink to this headline">¶</a></h2>
-<p>Aug 6, 2023</p>
-<ul class="simple">
-<li><p>Contrib: Large-language-model (LLM) AI integration; allows NPCs to talk using
-responses from an LLM server.</p></li>
-<li><p>Fix: Make sure <code class="docutils literal notranslate"><span class="pre">at_server_reload</span></code> is called also on non-repeating Scripts.</p></li>
-<li><p>Fix: Webclient was not giving a proper error when sending an unknown outputfunc to it.</p></li>
-<li><p>Fix: Make <code class="docutils literal notranslate"><span class="pre">py</span></code> command always send strings unless <code class="docutils literal notranslate"><span class="pre">client_raw</span></code> flag is set.</p></li>
-<li><p>Fix: <code class="docutils literal notranslate"><span class="pre">Script.start</span></code> with an integer <code class="docutils literal notranslate"><span class="pre">start_delay</span></code> caused a traceback.</p></li>
-<li><p>Fix: Removing “Guest” from the permission-hierarchy setting messed up access.</p></li>
-<li><p>Docs: Remove doc pages for Travis/TeamCity CI tools, they were both very much
-out of date, and Travis is not free for OSS anymore.</p></li>
-<li><p>Docs: A lot fixes of typos and bugs in tutorials.</p></li>
-</ul>
-</section>
-<section id="evennia-2-1-0">
-<h2>Evennia 2.1.0<a class="headerlink" href="#evennia-2-1-0" title="Permalink to this headline">¶</a></h2>
-<p>July 14, 2023</p>
-<ul class="simple">
-<li><p>Fix: The new <code class="docutils literal notranslate"><span class="pre">ExtendedRoom</span></code> contrib has a bug when dug with no descriptions.</p></li>
-<li><p>Fix: Clean up <code class="docutils literal notranslate"><span class="pre">get_sides</span></code> function in evadventure tutorial to return also
-the calling combatant with its <code class="docutils literal notranslate"><span class="pre">allies</span></code> return, to make it easier to reason around.</p></li>
-<li><p>Feature: Add <code class="docutils literal notranslate"><span class="pre">SSL_CERTIFICATE_ISSUERS</span></code> setting for customizing Telnet+SSL.</p></li>
-<li><p>Contrib: Refactored <code class="docutils literal notranslate"><span class="pre">dice.roll</span></code> contrib function to use <code class="docutils literal notranslate"><span class="pre">safe_eval</span></code>. Can now
-optionally be used as <code class="docutils literal notranslate"><span class="pre">dice.roll(&quot;2d10</span> <span class="pre">+</span> <span class="pre">4</span> <span class="pre">&gt;</span> <span class="pre">10&quot;)</span></code>. Old way works too.</p></li>
-<li><p>Lots of doc updates.</p></li>
-</ul>
-</section>
-<section id="evennia-2-0-1">
-<h2>Evennia 2.0.1<a class="headerlink" href="#evennia-2-0-1" title="Permalink to this headline">¶</a></h2>
-<p>June 17, 2023</p>
-<ul class="simple">
-<li><p>Fix: A look-bug in the <code class="docutils literal notranslate"><span class="pre">ExtendedRoom</span></code> contrib (InspectorCaracal)</p></li>
-</ul>
-</section>
-<section id="evennia-2-0-0">
-<h2>Evennia 2.0.0<a class="headerlink" href="#evennia-2-0-0" title="Permalink to this headline">¶</a></h2>
+<section id="evennia-2-0">
+<h2>Evennia 2.0<a class="headerlink" href="#evennia-2-0" title="Permalink to this headline">¶</a></h2>
 <p>June 10, 2023</p>
 <ul class="simple">
 <li><p><strong>Possible backwards incompatibility</strong>: Updated contrib <code class="docutils literal notranslate"><span class="pre">ExtendedRoom</span></code> now
@@ -1371,9 +1230,6 @@ and have no changelogs.</p>
         <li class="nav-item nav-item-this"><a href="">Changelog</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

@@ -186,7 +186,7 @@ crazy big so the loop takes forever!
 
 Now that we have the generic roller, we can start using it to do a more complex roll. 
 
-```python
+```
 # in mygame/evadventure/rules.py 
 
 # ... 
@@ -247,46 +247,46 @@ from .enums import Ability
 
 class EvAdventureRollEngine: 
 
-    def roll(...)
-        # ...
+   def roll(...)
+       # ...
    
-    def roll_with_advantage_or_disadvantage(...)
-        # ...
+   def roll_with_advantage_or_disadvantage(...)
+       # ...
        
-    def saving_throw(self, character, bonus_type=Ability.STR, target=15, 
-                     advantage=False, disadvantage=False):
-        """ 
-        Do a saving throw, trying to beat a target.
+   def saving_throw(self, character, bonus_type=Ability.STR, target=15, 
+                    advantage=False, disadvantage=False):
+       """ 
+       Do a saving throw, trying to beat a target.
        
-        Args:
-           character (Character): A character (assumed to have Ability bonuses
-               stored on itself as Attributes).
-           bonus_type (Ability): A valid Ability bonus enum.
-           target (int): The target number to beat. Always 15 in Knave.
-           advantage (bool): If character has advantage on this roll.
-           disadvantage (bool): If character has disadvantage on this roll.
+       Args:
+          character (Character): A character (assumed to have Ability bonuses
+              stored on itself as Attributes).
+          bonus_type (Ability): A valid Ability bonus enum.
+          target (int): The target number to beat. Always 15 in Knave.
+          advantage (bool): If character has advantage on this roll.
+          disadvantage (bool): If character has disadvantage on this roll.
           
-        Returns:
-            tuple: A tuple (bool, Ability), showing if the throw succeeded and 
-                the quality is one of None or Ability.CRITICAL_FAILURE/SUCCESS
+       Returns:
+           tuple: A tuple (bool, Ability), showing if the throw succeeded and 
+               the quality is one of None or Ability.CRITICAL_FAILURE/SUCCESS
                
-        """
+       """
                     
-        # make a roll 
-        dice_roll = self.roll_with_advantage_or_disadvantage(advantage, disadvantage)
+       # make a roll 
+       dice_roll = self.roll_with_advantage_or_disadvantage(advantage, disadvantage)
        
-        # figure out if we had critical failure/success
-        quality = None
-        if dice_roll == 1:
-            quality = Ability.CRITICAL_FAILURE
-        elif dice_roll == 20:
-            quality = Ability.CRITICAL_SUCCESS 
+       # figure out if we had critical failure/success
+       quality = None
+       if dice_roll == 1:
+           quality = Ability.CRITICAL_FAILURE
+       elif dice_roll == 20:
+           quality = Ability.CRITICAL_SUCCESS 
 
-        # figure out bonus
-        bonus = getattr(character, bonus_type.value, 1) 
+       # figure out bonus
+       bonus = getattr(character, bonus_type.value, 1) 
 
-        # return a tuple (bool, quality)
-        return (dice_roll + bonus) > target, quality
+       # return a tuple (bool, quality)
+       return (dice_roll + bonus) > target, quality
 ```
 
 The `getattr(obj, attrname, default)` function is a very useful Python tool for getting an attribute 
@@ -487,7 +487,9 @@ we check if `maxval` actually has a value `("5",)` or if its empty `()`. The res
 
 ### Roll for death 
 
-While original Knave suggests hitting 0 HP means insta-death, we will grab the optional "death table" from the "prettified" Knave's optional rules to make it a little less punishing. We also changed the result of `2` to 'dead' since we don't simulate 'dismemberment' in this tutorial:
+While original Knave suggests hitting 0 HP means insta-death, we will grab the optional "death table"
+from the "prettified" Knave's optional rules to make it a little less punishing. We also changed the 
+result of `2` to 'dead' since we don't simulate 'dismemberment' in this tutorial:
 
 | Roll |  Result  | -1d4 Loss of Ability | 
 |:---: |:--------:|:--------------------:|
@@ -499,19 +501,21 @@ While original Knave suggests hitting 0 HP means insta-death, we will grab the o
 | 7 | rattled |         WIS          | 
 | 8 | disfigured |         CHA          |
 
-All the non-dead values map to a loss of 1d4 in one of the six Abilities (but you get HP back). We need to map back to this from the above table. One also cannot have less than -10 Ability bonus,  if you do, you die too.
+All the non-dead values map to a loss of 1d4 in one of the six Abilities (but you get HP back).
+We need to map back to this from the above table. One also cannot have less than -10 Ability bonus, 
+if you do, you die too.
 
 ```python 
 # in mygame/evadventure/rules.py 
 
 death_table = (
     ("1-2", "dead"),
-    ("3", "strength"),
-    ("4", "dexterity"),
-    ("5", "constitution"),
-    ("6", "intelligence"),
-    ("7", "wisdom"),
-    ("8", "charisma"),
+    ("3": "strength",
+    ("4": "dexterity"),
+    ("5": "constitution"),
+    ("6": "intelligence"),
+    ("7": "wisdom"),
+    ("8": "charisma"),
 )
     
     
@@ -539,7 +543,7 @@ class EvAdventureRollEngine:
                 pass 
             else:
                 # refresh 1d4 health, but suffer 1d4 ability loss
-                self.heal(character, self.roll("1d4"))
+                self.heal(character, self.roll("1d4") 
                 setattr(character, ability_name, current_ability)
                 
                 character.msg(
@@ -553,7 +557,9 @@ dice = EvAdventureRollEngine()
 Here we roll on the 'death table' from the rules to see what happens. We give the character 
 a message if they survive, to let them know what happened.
 
-We don't yet know what 'killing the character' technically means, so we mark this as `TODO` and  return to it in a later lesson. We just know that we need to do _something_ here to kill off the character!
+We don't yet know what 'killing the character' technically means, so we mark this as `TODO` and 
+return to it in a later lesson. We just know that we need to do _something_ here to kill off the 
+character!
 
 ## Testing 
 
@@ -578,7 +584,7 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
     @patch("evadventure.rules.randint")
     def test_roll(self, mock_randint):
         mock_randint.return_value = 4 
-        self.assertEqual(self.roll_engine.roll("1d6"), 4)     
+        self.assertEqual(self.roll_engine.roll("1d6", 4))     
         self.assertEqual(self.roll_engine.roll("2d6"), 2 * 4)     
         
     # test of the other rule methods below ...
@@ -599,11 +605,16 @@ test method. We use `super().setUp()` to make sure the parent class' version of 
 always fire. Then we create a fresh `EvAdventureRollEngine` we can test with. 
 
 In our test, we import `patch` from the `unittest.mock` library. This is a very useful tool for testing. 
-Normally the `randint` function we imported in `rules` will return a random value. That's very hard to test for, since the value will be different every test.
+Normally the `randint` function we imported in `rules` will return a random value. That's very hard to 
+test for, since the value will be different every test.
 
-With `@patch` (this is called a _decorator_), we temporarily replace `rules.randint` with a 'mock' - a  dummy entity. This mock is passed into the testing method. We then take this `mock_randint` and set  `.return_value = 4` on it. 
+With `@patch` (this is called a _decorator_), we temporarily replace `rules.randint` with a 'mock' - a 
+dummy entity. This mock is passed into the testing method. We then take this `mock_randint` and set 
+`.return_value = 4` on it. 
 
-Adding `return_value` to the mock means that every time this mock is called, it will return 4. For the  duration of the test we can now check with `self.assertEqual` that our `roll` method always returns a  result as-if the random result was 4.
+Adding `return_value` to the mock means that every time this mock is called, it will return 4. For the 
+duration of the test we can now check with `self.assertEqual` that our `roll` method always returns a 
+result as-if the random result was 4.
 
 There are [many resources for understanding mock](https://realpython.com/python-mock-library/), refer to 
 them for further help.
@@ -612,7 +623,9 @@ them for further help.
 
 ## Summary 
 
-This concludes all the core rule mechanics of _Knave_ - the rules used during play. We noticed here  that we are going to soon need to establish how our _Character_ actually stores data. So we will address that next.
+This concludes all the core rule mechanics of _Knave_ - the rules used during play. We noticed here 
+that we are going to soon need to establish how our _Character_ actually stores data. So we will 
+address that next.
 
 
 

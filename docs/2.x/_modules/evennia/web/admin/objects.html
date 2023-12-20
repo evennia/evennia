@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.objects</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="objects.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -396,7 +386,7 @@
 <span class="sd">        This will:</span>
 
 <span class="sd">        - Set account.db._last_puppet to this object</span>
-<span class="sd">        - Add object to account.characters</span>
+<span class="sd">        - Add object to account.db._playable_characters</span>
 <span class="sd">        - Change object locks to allow puppeting by account</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -405,7 +395,10 @@
 
         <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
             <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="n">obj</span>
-            <span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">):</span>
                 <span class="n">lock</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;puppet&quot;</span><span class="p">)</span>
                 <span class="n">lock</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; or pid(</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -414,7 +407,7 @@
                 <span class="n">request</span><span class="p">,</span>
                 <span class="s2">&quot;Did the following (where possible): &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Set Account.db._last_puppet = </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> to Account.characters list, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> to Account.db._playable_characters list, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Added &#39;puppet:pid(</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&#39; lock to </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -478,9 +471,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.web.admin.objects</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

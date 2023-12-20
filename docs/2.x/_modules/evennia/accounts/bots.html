@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.bots</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="bots.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -496,9 +486,7 @@
         <span class="c1"># instruct the server and portal to create a new session with</span>
         <span class="c1"># the stored configuration</span>
         <span class="n">configdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rss_url</span><span class="p">,</span> <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rss_rate</span><span class="p">}</span>
-        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span>
-            <span class="s2">&quot;evennia.server.portal.rss.RSSBotFactory&quot;</span><span class="p">,</span> <span class="n">configdict</span>
-        <span class="p">)</span></div>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.rss.RSSBotFactory&quot;</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RSSBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.RSSBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -725,30 +713,6 @@
                 <span class="c1"># send outputfunc channel(msg, discord channel)</span>
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="p">(</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="n">dc_chan</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="DiscordBot.change_nickname"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.change_nickname">[docs]</a>    <span class="k">def</span> <span class="nf">change_nickname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_nickname</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Changes a given user&#39;s nickname on the given guild the bot is in.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            new_nickname (str) - The user&#39;s new nickname.</span>
-<span class="sd">            guild_id (int) - The guild the nickname will be changed in.</span>
-<span class="sd">            user_id (int) - The Discord ID of the user who&#39;s nickname will be changed.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">nickname</span><span class="o">=</span><span class="p">(</span><span class="n">new_nickname</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="DiscordBot.assign_role"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.assign_role">[docs]</a>    <span class="k">def</span> <span class="nf">assign_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Assigns a user the role on the given guild the bot is in.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            role_id (int) - The Discord role&#39;s ID.</span>
-<span class="sd">            guild_id (int) - The guild the role will be assigned in.</span>
-<span class="sd">            user_id (int) - The user the given role will be assigned to.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="p">(</span><span class="n">role_id</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span></div>
-
 <div class="viewcode-block" id="DiscordBot.direct_msg"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.DiscordBot.direct_msg">[docs]</a>    <span class="k">def</span> <span class="nf">direct_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the Discord bot receives a direct message on Discord.</span>
@@ -878,9 +842,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.bots</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

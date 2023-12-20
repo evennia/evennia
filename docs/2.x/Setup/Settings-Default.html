@@ -21,8 +21,6 @@
     <link rel="prev" title="Changing Game Settings" href="Settings.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -43,7 +41,11 @@
           <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Evennia Default settings file</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -87,18 +89,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Settings-Default.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -168,16 +158,6 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="n">SSL_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4003</span><span class="p">]</span>
 <span class="c1"># Telnet+SSL Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
 <span class="n">SSL_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
-<span class="c1"># Telnet+SSL certificate issuers. Don&#39;t change unless you have issues, e.g. CN may need to be</span>
-<span class="c1"># changed to your server&#39;s hostname.</span>
-<span class="n">SSL_CERTIFICATE_ISSUER</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;EV&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ST&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;O&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia Security&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;OU&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia Department&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CN&quot;</span><span class="p">:</span> <span class="s2">&quot;evennia&quot;</span><span class="p">,</span>
-<span class="p">}</span>
 <span class="c1"># OOB (out-of-band) telnet communication allows Evennia to communicate</span>
 <span class="c1"># special commands and data with enabled Telnet clients. This is used</span>
 <span class="c1"># to create custom client interfaces over a telnet connection. To make</span>
@@ -209,8 +189,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
 <span class="n">WEBSERVER_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
 <span class="c1"># IP addresses that may talk to the server in a reverse proxy configuration,</span>
-<span class="c1"># like NginX or Varnish. These can be either specific IPv4 or IPv6 addresses,</span>
-<span class="c1"># or subnets in CIDR format - like 192.168.0.0/24 or 2001:db8::/32.</span>
+<span class="c1"># like NginX.</span>
 <span class="n">UPSTREAM_IPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">]</span>
 <span class="c1"># The webserver uses threadpool for handling requests. This will scale</span>
 <span class="c1"># with server load. Set the minimum and maximum number of threads it</span>
@@ -247,7 +226,6 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># operating between two processes on the same machine. You usually don&#39;t need to</span>
 <span class="c1"># change this unless you cannot use the default AMP port/host for</span>
 <span class="c1"># whatever reason.</span>
-<span class="n">AMP_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">AMP_HOST</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
 <span class="n">AMP_PORT</span> <span class="o">=</span> <span class="mi">4006</span>
 <span class="n">AMP_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
@@ -1151,27 +1129,8 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
     <span class="s2">&quot;django.middleware.csrf.CsrfViewMiddleware&quot;</span><span class="p">,</span>
     <span class="s2">&quot;django.contrib.admindocs.middleware.XViewMiddleware&quot;</span><span class="p">,</span>
     <span class="s2">&quot;django.contrib.flatpages.middleware.FlatpageFallbackMiddleware&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;evennia.web.utils.middleware.OriginIpMiddleware&quot;</span><span class="p">,</span>
     <span class="s2">&quot;evennia.web.utils.middleware.SharedLoginMiddleware&quot;</span><span class="p">,</span>
 <span class="p">]</span>
-
-<span class="c1"># A list of Django apps (see INSTALLED_APPS) that will be listed first (if present)</span>
-<span class="c1"># in the Django web Admin page.</span>
-<span class="n">DJANGO_ADMIN_APP_ORDER</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;accounts&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;objects&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;scripts&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;comms&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;help&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;server&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sites&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;flatpages&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;auth&quot;</span><span class="p">,</span>
-<span class="p">]</span>
-
-<span class="c1"># The following apps will be excluded from the Django web Admin page.</span>
-<span class="n">DJANGO_ADMIN_APP_EXCLUDE</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># Evennia components</span>
@@ -1277,10 +1236,6 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># together with your own variations. You should usually never have to touch</span>
 <span class="c1"># this, and if so, you really need to know what you are doing.</span>
 
-<span class="c1"># The primary Twisted Services used to start up Evennia.</span>
-<span class="n">EVENNIA_SERVER_SERVICE_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.service.EvenniaServerService&quot;</span>
-<span class="n">EVENNIA_PORTAL_SERVICE_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.service.EvenniaPortalService&quot;</span>
-
 <span class="c1"># The Base Session Class is used as a parent class for all Protocols such as</span>
 <span class="c1"># Telnet and SSH.) Changing this could be really dangerous. It will cascade</span>
 <span class="c1"># to tons of classes. You generally shouldn&#39;t need to touch protocols.</span>
@@ -1295,16 +1250,6 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># Websocket Client Protocol. This inherits from BASE_SESSION_CLASS. It is used</span>
 <span class="c1"># for all webclient connections.</span>
 <span class="n">WEBSOCKET_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.webclient.WebSocketClient&quot;</span>
-
-<span class="c1"># Ajax Web Client classes. Evennia uses AJAX as a fallback for the webclient by</span>
-<span class="c1"># default. AJAX may in general be more useful for mobile clients as it&#39;s</span>
-<span class="c1"># resilient to IP address changes.</span>
-
-<span class="c1"># The Ajax Client Class is used to manage all AJAX sessions.</span>
-<span class="n">AJAX_CLIENT_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.webclient_ajax.AjaxWebClient&quot;</span>
-
-<span class="c1"># Ajax Protocol Class is used for all AJAX client connections.</span>
-<span class="n">AJAX_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.webclient_ajax.AjaxWebClientSession&quot;</span>
 
 <span class="c1"># Protocol for the SSH interface. This inherits from BASE_SESSION_CLASS.</span>
 <span class="n">SSH_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.ssh.SshProtocol&quot;</span>
@@ -1358,7 +1303,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># don&#39;t change this manually, it can be checked from code to know if</span>
 <span class="c1"># being run from a unit test (set by the evennia.utils.test_resources.BaseEvenniaTest</span>
 <span class="c1"># and BaseEvenniaTestCase unit testing parents)</span>
-<span class="n">TEST_ENVIRONMENT</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">_TEST_ENVIRONMENT</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># Django extensions</span>
@@ -1415,9 +1360,6 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
         <li class="nav-item nav-item-this"><a href="">Evennia Default settings file</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

@@ -168,8 +168,6 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 
 Above we have assumed the `EquipmentHandler` (`.equipment`) has methods `.validate_slot_usage`,  `.add` and `.remove`. But we haven't actually added them yet - we just put some reasonable names! Before we can use this, we need to go actually adding those methods. 
 
-When you do things like `create/drop monster:NPC`, the npc will briefly be in your inventory before being dropped on the ground. Since an NPC is not a valid thing to equip, the EquipmentHandler will complain with an `EquipmentError` (we define this see below). So we need to 
-
 ## Expanding the Equipmenthandler
 
 ## `.validate_slot_usage`
@@ -218,7 +216,7 @@ class EquipmentHandler:
          size = obj.size
          max_slots = self.max_slots
          current_slot_usage = self.count_slots()
-         return current_slot_usage + size <= max_slots
+         return current_slot_usage + size <= max_slots:
 
 ```
 
@@ -313,50 +311,35 @@ class EquipmentHandler:
         """
         Put something in the backpack.
         """
-        if self.validate_slot_usage(obj):
-	        self.slots[WieldLocation.BACKPACK].append(obj)
-	        self._save()
+        self.validate_slot_usage(obj)
+        self.slots[WieldLocation.BACKPACK].append(obj)
+        self._save()
 
- def remove(self, obj_or_slot):
+    def remove(self, slot):
         """
-        Remove specific object or objects from a slot.
-
-        Returns a list of 0, 1 or more objects removed from inventory.
+        Remove contents of a particular slot, for
+        example `equipment.remove(WieldLocation.SHIELD_HAND)`
         """
         slots = self.slots
         ret = []
-        if isinstance(obj_or_slot, WieldLocation):
-            # a slot; if this fails, obj_or_slot must be obj
-            if obj_or_slot is WieldLocation.BACKPACK:
-                # empty entire backpack
-                ret.extend(slots[obj_or_slot])
-                slots[obj_or_slot] = []
-            else:
-                ret.append(slots[obj_or_slot])
-                slots[obj_or_slot] = None
-        elif obj_or_slot in self.slots.values():
-            # obj in use/wear slot
-            for slot, objslot in slots.items():
-                if objslot is obj_or_slot:
-                    slots[slot] = None
-                    ret.append(objslot)
-        elif obj_or_slot in slots[WieldLocation.BACKPACK]:             # obj in backpack slot
-            try:
-                slots[WieldLocation.BACKPACK].remove(obj_or_slot)
-                ret.append(obj_or_slot)
-            except ValueError:
-                pass
+        if slot is WieldLocation.BACKPACK:
+            # empty entire backpack! 
+            ret.extend(slots[slot])
+            slots[slot] = []
+        else:
+            ret.append(slots[slot])
+            slots[slot] = None
         if ret:
             self._save()
         return ret
 ```
 
-In `.add`, we make use of `validate_slot_usage` to 
+Both of these should be straight forward to follow. In `.add`, we make use of `validate_slot_usage` to 
 double-check we can actually fit the thing, then we add the item to the backpack. 
 
-In `.remove`, we allow emptying both by `WieldLocation` or by explicitly saying which object to remove. Note that the first `if` statement checks if `obj_or_slot` is a slot. So if that fails then code in the other `elif` can safely assume that it must instead be an object!
-
-Any removed objects are returned. If we gave `BACKPACK` as the slot, we empty the backpack and return all items inside it. 
+In `.delete`, we allow emptying by `WieldLocation` - we figure out what slot it is and return 
+the item within (if any). If we gave `BACKPACK` as the slot, we empty the backpack and 
+return all items. 
 
 Whenever we change the equipment loadout we must make sure to `._save()` the result, or it will be lost after a server reload.
 
@@ -380,9 +363,7 @@ class EquipmentHandler:
          
         # make sure to remove from equipment/backpack first, to avoid double-adding
         self.remove(obj) 
-        if not self.validate_slot_usage(obj):
-            return
-
+        
         slots = self.slots
         use_slot = getattr(obj, "inventory_use_slot", WieldLocation.BACKPACK)
 
@@ -458,7 +439,7 @@ It's convenient to have the `EquipmentHandler` easily tell you what weapon is cu
 # mygame/evadventure/equipment.py 
 
 from .enums import WieldLocation, Ability
-from .objects import get_bare_hand
+from .objects import get_empty_hand
 
 # ... 
 
@@ -499,55 +480,6 @@ In the `.armor()` method we get the item (if any) out of each relevant wield-slo
 
 In `.weapon()`, we simply check which of the possible weapon slots (weapon-hand or two-hands) have  something in them. If not we fall back to the 'Bare Hands' object we created in the [Object tutorial lesson](./Beginner-Tutorial-Objects.md#your-bare-hands) earlier.
 
-### Fixing the Character class
-
-So we have added our equipment handler which validate what we put in it. This will however lead to a problem when we create things like NPCs in game, e.g. with 
-
-    create/drop monster:evadventure.npcs.EvAdventureNPC
-
-The problem is that when the/ monster is created it will briefly appear in your inventory before being dropped, so this code will fire on you when you do that (assuming you are an `EvAdventureCharacter`):
-
-```python
-# mygame/evadventure/characters.py
-# ... 
-
-class EvAdventureCharacter(LivingMixin, DefaultCharacter): 
-
-    # ... 
-
-    def at_object_receive(self, moved_object, source_location, **kwargs): 
-        """ 
-        Called by Evennia when an object arrives 'in' the character.
-        
-        """
-        self.equipment.add(moved_object)
-```
-
-At this means that the equipmenthandler will check the NPC, and since it's not a equippable thing, an `EquipmentError` will be raised, failing the creation. Since we want to be able to create npcs etc easily, we will handle this error with a `try...except` statement like so:
-
-```python
-# mygame/evadventure/characters.py
-# ... 
-from evennia import logger 
-from .equipment import EquipmentError
-
-class EvAdventureCharacter(LivingMixin, DefaultCharacter): 
-
-    # ... 
-
-    def at_object_receive(self, moved_object, source_location, **kwargs): 
-        """ 
-        Called by Evennia when an object arrives 'in' the character.
-        
-        """
-        try:
-            self.equipment.add(moved_object)
-        except EquipmentError:
-            logger.log_trace()
-            
-```
-
-Using Evennia's `logger.log_trace()` we catch the error and direct it to the server log. This allows you to see if there are real errors here as well, but once things work and these errors are spammy, you can also just replace the `logger.log_trace()` line with a `pass` to hide these errors. 
 
 ## Extra credits 
 
@@ -583,9 +515,8 @@ passing these into the handler's methods.
 from evennia.utils import create 
 from evennia.utils.test_resources import BaseEvenniaTest 
 
-from ..objects import EvAdventureObject, EvAdventureHelmet, EvAdventureWeapon
+from ..objects import EvAdventureRoom
 from ..enums import WieldLocation
-from ..characters import EvAdventureCharacter
 
 class TestEquipment(BaseEvenniaTest): 
     

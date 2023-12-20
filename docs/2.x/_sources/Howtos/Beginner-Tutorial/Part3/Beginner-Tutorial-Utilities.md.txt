@@ -171,7 +171,7 @@ Damage roll: 1d6
 Here's the start of how the function could look:
 
 ```python
-# in mygame/evadventure/utils.py
+# in mygame/evadventure/time.py
 
 _OBJ_STATS = """
 |c{key}|n
@@ -180,7 +180,7 @@ Value: ~|y{value}|n coins{carried}
 {desc}
 
 Slots: |w{size}|n, Used from: |w{use_slot_name}|n
-Quality: |w{quality}|n, Uses: |w{uses}|n
+Quality: |w{quality}|n, Uses: |wuses|n
 Attacks using |w{attack_type_name}|n against |w{defense_type_name}|n
 Damage roll: |w{damage_roll}|n
 """.strip()
@@ -205,10 +205,10 @@ def get_obj_stats(obj, owner=None):
         desc=obj.db.desc, 
         size=1,
         quality=3,
-        uses="infinite",
+        uses="infinite"
         use_slot_name="backpack",
-        attack_type_name="strength",
-        defense_type_name="armor",
+        attack_type_name="strength"
+        defense_type_name="armor"
         damage_roll="1d6"
     )
 ```
@@ -244,11 +244,11 @@ testing `get_obj_stats`.
 # mygame/evadventure/tests/test_utils.py
 
 from evennia.utils import create 
-from evennia.utils.test_resources import EvenniaTest 
+from evennia.utils.test_resources import BaseEvenniaTest 
 
 from ..import utils
 
-class TestUtils(EvenniaTest):
+class TestUtils(BaseEvenniaTest):
     def test_get_obj_stats(self):
         # make a simple object to test with 
         obj = create.create_object(
@@ -262,7 +262,7 @@ class TestUtils(EvenniaTest):
             result, 
             """ 
 |ctestobj|n
-Value: ~|y10|n coins[not carried]
+Value: ~|y10|n coins
 
 A test object
 
@@ -275,12 +275,7 @@ Damage roll: |w1d6|n
 
 ```
 
-What happens here is that we create a new test-class `TestUtils` that inherits from `EvenniaTest`.  This inheritance is what makes this a testing class.
-
-
-```{important}
-It's useful for any game dev to know how to effectively test their code. So we'll try to include a *Testing* section at the end of each of the implementation lessons to follow. Writing tests for your code is optional but highly recommended. It can feel a little cumbersome or time-consuming at first ... but you'll thank yourself later.
-```
+What happens here is that we create a new test-class `TestUtils` that inherits from `BaseEvenniaTest`.  This inheritance is what makes this a testing class.
 
 We can have any number of methods on this class. To have a method recognized as one containing  code to test, its name _must_ start with `test_`. We have one - `test_get_obj_stats`. 
 
@@ -294,15 +289,17 @@ The `assertEqual` method is available on all testing classes and checks that the
 
 To run your test you need to stand inside your `mygame` folder and execute the following command:
 
-    evennia test --settings settings.py evadventure.tests
+    evennia test --settings settings.py .evadventure.tests
 
 This will run all your `evadventure` tests (if you had more of them). To only run your utility tests  you could do 
 
-    evennia test --settings settings.py evadventure.tests.test_utils
+    evennia test --settings settings.py .evadventure.tests.test_utils
 
-If all goes well, you should get an `OK` back. Otherwise you need to check the failure, maybe  your return string doesn't quite match what you expected. 
+If all goes well, you should get an `OK` back. Otherwise you need to check the failure, maybe  your return string doesn't quite match what you expected.
 
-> Hint: The example unit test code above contains a deliberate error in capitalization. See if you can interpret the error and fix it!
+```{important}
+It's useful for any game dev to know how to effectively test their code. So we'll try to include a *Testing* section at the end of each of the implementation lessons to follow. Writing tests for your code is optional but highly recommended. It can feel a little cumbersome or time-consuming at first ... but you'll thank yourself later.
+```
 
 ## Summary 
 

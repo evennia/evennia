@@ -18,10 +18,8 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="3. Intro to using Python with Evennia" href="Beginner-Tutorial-Python-basic-introduction.html" />
-    <link rel="prev" title="1. Using Commands and Building Stuff" href="Beginner-Tutorial-Building-Quickstart.html" /> 
+    <link rel="prev" title="1. Using commands and building stuff" href="Beginner-Tutorial-Building-Quickstart.html" /> 
   </head><body>
-
-     
 
 
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,15 +35,19 @@
           <a href="Beginner-Tutorial-Python-basic-introduction.html" title="3. Intro to using Python with Evennia"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Building-Quickstart.html" title="1. Using Commands and Building Stuff"
+          <a href="Beginner-Tutorial-Building-Quickstart.html" title="1. Using commands and building stuff"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" accesskey="U">Part 1: What We Have</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" accesskey="U">Part 1: What we have</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>The Tutorial World</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -80,7 +82,7 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Building-Quickstart.html"
-                        title="previous chapter"><span class="section-number">1. </span>Using Commands and Building Stuff</a></p>
+                        title="previous chapter"><span class="section-number">1. </span>Using commands and building stuff</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Python-basic-introduction.html"
                         title="next chapter"><span class="section-number">3. </span>Intro to using Python with Evennia</a></p>
@@ -102,18 +104,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Beginner-Tutorial-Tutorial-World.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -121,22 +111,27 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="the-tutorial-world">
 <h1><span class="section-number">2. </span>The Tutorial World<a class="headerlink" href="#the-tutorial-world" title="Permalink to this headline">¶</a></h1>
-<p>The <em>Tutorial World</em> is a small, functioning MUD-style game world shipped with Evennia.
-It’s a small showcase of what is possible. It may also be useful for those who have an easier
+<p>The <em>Tutorial World</em> is a small and functioning MUD-style game world shipped with Evennia.
+It’s a small showcase of what is possible. It can also be useful for those who have an easier
 time learning by deconstructing existing code.</p>
-<p>To install the tutorial world, stand in the Limbo room and input:</p>
+<p>Stand in the Limbo room and install it with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>batchcommand tutorial_world.build
 </pre></div>
 </div>
-<p>This command runs the build script in  <a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/contrib/tutorials/tutorial_world/build.ev">evennia/contrib/tutorials/tutorial_world/build.ev</a>.
-Basically, this script is a list of build-commands executed in sequence by the <code class="docutils literal notranslate"><span class="pre">batchcommand</span></code> command. Wait for the building to complete and don’t run it twice.</p>
+<p>What this does is to run the build script
+<a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/contrib/tutorials/tutorial_world/build.ev">evennia/contrib/tutorials/tutorial_world/build.ev</a>.
+This is pretty much just a list of build-commands executed in sequence by the <code class="docutils literal notranslate"><span class="pre">batchcommand</span></code> command.
+Wait for the building to complete and don’t run it twice.</p>
 <blockquote>
-<div><p>After having run the batchcommand, the <code class="docutils literal notranslate"><span class="pre">intro</span></code> command becomes available in Limbo. Try it out for in-game help using an example of <a class="reference internal" href="../../../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a>, Evennia’s in-built
+<div><p>After having run the batchcommand, the <code class="docutils literal notranslate"><span class="pre">intro</span></code> command also becomes available in Limbo. Try it out to
+for in-game help and to get an example of <a class="reference internal" href="../../../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a>, Evennia’s in-built
 menu generation system!</p>
 </div></blockquote>
-<p>The tutorial world consists of a single-player quest and has some 20 rooms to explore as you seek to discover the whereabouts of a mythical weapon.</p>
-<p>A new exit should have appeared named <em>Tutorial</em>. Enter the tutorial world by typing <code class="docutils literal notranslate"><span class="pre">tutorial</span></code>.</p>
-<p>You will automatically <code class="docutils literal notranslate"><span class="pre">quell</span></code> when you enter (and <code class="docutils literal notranslate"><span class="pre">unquell</span></code> when you leave), so you can play the way it was intended. Whether you are triumphant or use the <code class="docutils literal notranslate"><span class="pre">give</span> <span class="pre">up</span></code> command, you will eventually end up back in Limbo.</p>
+<p>The game consists of a single-player quest and has some 20 rooms that you can explore as you seek
+to discover the whereabouts of a mythical weapon.</p>
+<p>A new exit should have appeared named <em>Tutorial</em>. Enter by writing <code class="docutils literal notranslate"><span class="pre">tutorial</span></code>.</p>
+<p>You will automatically <code class="docutils literal notranslate"><span class="pre">quell</span></code> when you enter (and <code class="docutils literal notranslate"><span class="pre">unquell</span></code> when you leave), so you can play the way it was intended.
+Both if you are triumphant or if you use the <code class="docutils literal notranslate"><span class="pre">give</span> <span class="pre">up</span></code> command you will eventually end up back in Limbo.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Only LOSERS and QUITTERS use the <code class="docutils literal notranslate"><span class="pre">give</span> <span class="pre">up</span></code> command.</p>
@@ -145,8 +140,12 @@ menu generation system!</p>
 <h2><span class="section-number">2.1. </span>Gameplay<a class="headerlink" href="#gameplay" title="Permalink to this headline">¶</a></h2>
 <p><img alt="the castle off the moor" src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/22916c25-6299-453d-a221-446ec839f567/da2pmzu-46d63c6d-9cdc-41dd-87d6-1106db5a5e1a.jpg/v1/fill/w_600,h_849,q_75,strp/the_castle_off_the_moor_by_griatch_art_da2pmzu-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3siaGVpZ2h0IjoiPD04NDkiLCJwYXRoIjoiXC9mXC8yMjkxNmMyNS02Mjk5LTQ1M2QtYTIyMS00NDZlYzgzOWY1NjdcL2RhMnBtenUtNDZkNjNjNmQtOWNkYy00MWRkLTg3ZDYtMTEwNmRiNWE1ZTFhLmpwZyIsIndpZHRoIjoiPD02MDAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.omuS3D1RmFiZCy9OSXiIita-HxVGrBok3_7asq0rflw" />
 (image by Griatch)</p>
-<p><em>To get into the mood of our miniature quest, imagine you are an adventurer out to find fame and fortune. You have heard rumours of an old castle ruin by the coast. In its depths, a warrior princess was buried together with her powerful magical weapon — a valuable prize, if true. Of course, this is a chance for adventure that you simply cannot turn down!</em></p>
-<p><em>You reach the ocean in the midst of a raging thunderstorm. With wind and rain screaming in your face, you stand where the moor meets the sea along a high, rocky coast…</em></p>
+<p><em>To get into the mood of this miniature quest, imagine you are an adventurer out to find fame and
+fortune. You have heard rumours of an old castle ruin by the coast. In its depth a warrior  princess
+was buried together with her powerful magical weapon - a valuable prize, if it’s true. Of course
+this is a chance to adventure that you cannot turn down!</em></p>
+<p><em>You reach the ocean in the midst of a raging thunderstorm. With wind and rain screaming in your
+face you stand where the moor meets the sea along a high, rocky coast …</em></p>
 <hr class="docutils" />
 <section id="gameplay-hints">
 <h3><span class="section-number">2.1.1. </span>Gameplay hints<a class="headerlink" href="#gameplay-hints" title="Permalink to this headline">¶</a></h3>
@@ -231,18 +230,15 @@ The build-script is <a class="reference external" href="https://github.com/evenn
           <a href="Beginner-Tutorial-Python-basic-introduction.html" title="3. Intro to using Python with Evennia"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Building-Quickstart.html" title="1. Using Commands and Building Stuff"
+          <a href="Beginner-Tutorial-Building-Quickstart.html" title="1. Using commands and building stuff"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" >Part 1: What We Have</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" >Part 1: What we have</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>The Tutorial World</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="accounts.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -98,16 +88,15 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">authenticate</span><span class="p">,</span> <span class="n">password_validation</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span><span class="p">,</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.module_loading</span> <span class="kn">import</span> <span class="n">import_string</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.manager</span> <span class="kn">import</span> <span class="n">AccountManager</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
@@ -117,7 +106,6 @@
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
 <span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SIGNAL_ACCOUNT_POST_CREATE</span><span class="p">,</span>
-    <span class="n">SIGNAL_ACCOUNT_POST_LOGIN_FAIL</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_PUPPET</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_UNPUPPET</span><span class="p">,</span>
 <span class="p">)</span>
@@ -208,80 +196,6 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
 
 
-<span class="k">class</span> <span class="nc">CharactersHandler</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A simple Handler that lives on DefaultAccount as .characters via @lazy_property used to</span>
-<span class="sd">    wrap access to .db._playable_characters.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="s2">&quot;DefaultAccount&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create the CharactersHandler.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            owner: The Account that owns this handler.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">owner</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_playable_characters</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_ensure_playable_characters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">def</span> <span class="nf">_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Remove all instances of None from the list.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="s2">&quot;DefaultCharacter&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a character to this account&#39;s list of playable characters.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            character (DefaultCharacter): The character to add.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">character</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">at_post_add_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="s2">&quot;DefaultCharacter&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove a character from this account&#39;s list of playable characters.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            character (DefaultCharacter): The character to remove.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">at_post_remove_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;DefaultCharacter&quot;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get all playable characters.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            list[DefaultCharacter]: All playable characters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the number of playable characters.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int: The number of playable characters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-
-    <span class="fm">__len__</span> <span class="o">=</span> <span class="n">count</span>
-
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-
-
 <div class="viewcode-block" id="DefaultAccount"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount">[docs]</a><span class="k">class</span> <span class="nc">DefaultAccount</span><span class="p">(</span><span class="n">AccountDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base Typeclass for all Accounts. Accounts represent</span>
@@ -351,22 +265,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Determines which order command sets begin to be assembled from.</span>
-    <span class="c1"># Accounts are usually second.</span>
-    <span class="n">cmdset_provider_order</span> <span class="o">=</span> <span class="mi">50</span>
-    <span class="n">cmdset_provider_error_order</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">cmdset_provider_type</span> <span class="o">=</span> <span class="s2">&quot;account&quot;</span>
-
     <span class="n">objects</span> <span class="o">=</span> <span class="n">AccountManager</span><span class="p">()</span>
-
-    <span class="c1"># Used by account.create_character() to choose default typeclass for characters.</span>
-    <span class="n">default_character_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
-
-    <span class="n">lockstring</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;examine:perm(Admin);edit:perm(Admin);&quot;</span>
-        <span class="s2">&quot;delete:perm(Admin);boot:perm(Admin);msg:all();&quot;</span>
-        <span class="s2">&quot;noidletimeout:perm(Builder) or perm(noidletimeout)&quot;</span>
-    <span class="p">)</span>
 
     <span class="c1"># properties</span>
 <div class="viewcode-block" id="DefaultAccount.cmdset"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.cmdset">[docs]</a>    <span class="nd">@lazy_property</span>
@@ -396,44 +295,22 @@
             <span class="n">load_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;option&quot;</span><span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultAccount.characters"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.characters">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="c1"># Do not make this a lazy property; the web UI will not refresh it!</span>
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">characters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">CharactersHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="c1"># Get playable characters list</span>
+        <span class="n">objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="ow">or</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="DefaultAccount.get_cmdset_providers"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.get_cmdset_providers">[docs]</a>    <span class="k">def</span> <span class="nf">get_cmdset_providers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;CmdSetProvider&quot;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Overrideable method which returns a dictionary of every kind of object which</span>
-<span class="sd">        has a cmdsethandler linked to this Account, and should participate in cmdset</span>
-<span class="sd">        merging.</span>
+        <span class="c1"># Rebuild the list if legacy code left null values after deletion</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+                <span class="n">objs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="n">objs</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-<span class="sd">        Accounts have no way of being aware of anything besides themselves, unfortunately.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict[str, CmdSetProvider]: The CmdSetProviders linked to this Object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;account&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span></div>
-
-<div class="viewcode-block" id="DefaultAccount.at_post_add_character"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_post_add_character">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_add_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="s2">&quot;DefaultCharacter&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called after a character is added to this account&#39;s list of playable characters.</span>
-
-<span class="sd">        Use it to easily implement custom logic when a character is added to an account.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            character (DefaultCharacter): The character that was added.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="DefaultAccount.at_post_remove_character"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_post_remove_character">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_remove_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="s2">&quot;DefaultCharacter&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called after a character is removed from this account&#39;s list of playable characters.</span>
-
-<span class="sd">        Use it to easily implement custom logic when a character is removed from an account.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            character (DefaultCharacter): The character that was removed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="n">objs</span>
 
 <div class="viewcode-block" id="DefaultAccount.uses_screenreader"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.uses_screenreader">[docs]</a>    <span class="k">def</span> <span class="nf">uses_screenreader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -782,7 +659,6 @@
             <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
                 <span class="n">account</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_account_from_name</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
-                    <span class="n">SIGNAL_ACCOUNT_POST_LOGIN_FAIL</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
                     <span class="n">account</span><span class="o">.</span><span class="n">at_failed_login</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">errors</span>
@@ -900,48 +776,6 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Password successfully changed for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_password_change</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DefaultAccount.get_character_slots"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.get_character_slots">[docs]</a>    <span class="k">def</span> <span class="nf">get_character_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the number of character slots this account has, or</span>
-<span class="sd">        None if there are no limits.</span>
-
-<span class="sd">        By default, that&#39;s settings.MAX_NR_CHARACTERS but this makes it easy to override.</span>
-<span class="sd">        Maybe for your game, players can be rewarded with more slots, somehow.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int (optional): The number of character slots this account has, or None</span>
-<span class="sd">                if there are no limits.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_CHARACTERS</span></div>
-
-<div class="viewcode-block" id="DefaultAccount.get_available_character_slots"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.get_available_character_slots">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_character_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the number of character slots this account has available, or None if</span>
-<span class="sd">        there are no limits.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int (optional): The number of open character slots this account has, or None</span>
-<span class="sd">                if there are no limits.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">slots</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_character_slots</span><span class="p">())</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">slots</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="DefaultAccount.check_available_slots"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.check_available_slots">[docs]</a>    <span class="k">def</span> <span class="nf">check_available_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper method used to determine if an account can create additional characters using</span>
-<span class="sd">        the character slot system.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str (optional): An error message regarding the status of slots. If present, this</span>
-<span class="sd">               will halt character creation. If not, character creation can proceed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">slots</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_character_slots</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">slots</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_permstring</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)):</span>
-                    <span class="n">plural</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">max_slots</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_character_slots</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;s&quot;</span>
-                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;You may only have a maximum of </span><span class="si">{</span><span class="n">max_slots</span><span class="si">}</span><span class="s2"> character</span><span class="si">{</span><span class="n">plural</span><span class="si">}</span><span class="s2">.&quot;</span></div>
-
 <div class="viewcode-block" id="DefaultAccount.create_character"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.create_character">[docs]</a>    <span class="k">def</span> <span class="nf">create_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a character linked to this account.</span>
@@ -949,7 +783,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            key (str, optional): If not given, use the same name as the account.</span>
 <span class="sd">            typeclass (str, optional): Typeclass to use for this character. If</span>
-<span class="sd">                not given, use self.default_character_class.</span>
+<span class="sd">                not given, use settings.BASE_CHARACTER_TYPECLASS.</span>
 <span class="sd">            permissions (list, optional): If not given, use the account&#39;s permissions.</span>
 <span class="sd">            ip (str, optional): The client IP creating this character. Will fall back to the</span>
 <span class="sd">                one stored for the account if not given.</span>
@@ -959,17 +793,16 @@
 <span class="sd">            list or None: A list of errors, or None.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># check character slot usage.</span>
-        <span class="k">if</span> <span class="n">slot_check</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_available_slots</span><span class="p">():</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">slot_check</span><span class="p">]</span>
-
         <span class="c1"># parse inputs</span>
         <span class="n">character_key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="n">character_ip</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_ip</span><span class="p">)</span>
         <span class="n">character_permissions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span><span class="p">)</span>
 
         <span class="c1"># Load the appropriate Character class</span>
-        <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_character_typeclass</span><span class="p">)</span>
+        <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">character_typeclass</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">character_typeclass</span> <span class="k">if</span> <span class="n">character_typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
+        <span class="p">)</span>
         <span class="n">Character</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">character_typeclass</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;location&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
@@ -985,29 +818,13 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">at_post_create_character</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">character_ip</span><span class="p">)</span>
+            <span class="c1"># Update playable character list</span>
+            <span class="k">if</span> <span class="n">character</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">character</span><span class="p">,</span> <span class="n">errs</span></div>
-
-<div class="viewcode-block" id="DefaultAccount.at_post_create_character"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_post_create_character">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_create_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        An overloadable hook method that allows for further customization of newly created characters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">character</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
-
-        <span class="c1"># We need to set this to have @ic auto-connect to this character</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># We need to set this to have @ic auto-connect to this character</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="n">character</span>
-
-        <span class="n">character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;puppet:id(</span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or pid(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or perm(Developer) or&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot; pperm(Developer);delete:id(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) or perm(Admin)&quot;</span>
-        <span class="p">)</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Character Created: </span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="s2"> (Caller: </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">, IP: </span><span class="si">{</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ip&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">None</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">character</span><span class="p">,</span> <span class="n">errs</span></div>
 
 <div class="viewcode-block" id="DefaultAccount.create"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1113,26 +930,18 @@
             <span class="k">if</span> <span class="n">ip</span><span class="p">:</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_ip</span> <span class="o">=</span> <span class="n">ip</span>
 
-            <span class="c1"># join the new account to the public channels</span>
-            <span class="k">for</span> <span class="n">chan_info</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">chankey</span> <span class="o">:=</span> <span class="n">chan_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">):</span>
-                    <span class="n">channel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">chankey</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span>
-                        <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
-                    <span class="p">):</span>
-                        <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;New account &#39;</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; could not connect to default channel&quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot; &#39;</span><span class="si">{</span><span class="n">chankey</span><span class="si">}</span><span class="s2">&#39;!&quot;</span>
-                        <span class="p">)</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Default channel &#39;</span><span class="si">{</span><span class="n">chan_info</span><span class="si">}</span><span class="s2">&#39; is missing a &#39;key&#39; field!&quot;</span><span class="p">)</span>
+            <span class="c1"># join the new account to the public channel</span>
+            <span class="n">pchannel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pchannel</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pchannel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;New account &#39;</span><span class="si">{account.key}</span><span class="s2">&#39; could not connect to public channel!&quot;</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">_AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span><span class="p">:</span>
                 <span class="c1"># Auto-create a character to go with this account</span>
 
                 <span class="n">character</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">create_character</span><span class="p">(</span>
-                    <span class="n">typeclass</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;character_typeclass&quot;</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">default_character_typeclass</span><span class="p">)</span>
+                    <span class="n">typeclass</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;character_typeclass&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">errs</span><span class="p">:</span>
                     <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">errs</span><span class="p">)</span>
@@ -1503,7 +1312,12 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># A basic security setup</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lockstring</span><span class="p">)</span>
+        <span class="n">lockstring</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;examine:perm(Admin);edit:perm(Admin);&quot;</span>
+            <span class="s2">&quot;delete:perm(Admin);boot:perm(Admin);msg:all();&quot;</span>
+            <span class="s2">&quot;noidletimeout:perm(Builder) or perm(noidletimeout)&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
 
         <span class="c1"># The ooc account cmdset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">_CMDSET_ACCOUNT</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
@@ -1613,34 +1427,16 @@
 
 <div class="viewcode-block" id="DefaultAccount.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called just before cmdsets on this object are requested by the</span>
-<span class="sd">        command handler. If changes need to be done on the fly to the</span>
+<span class="sd">        Called just *before* cmdsets on this account are requested by</span>
+<span class="sd">        the command handler. The cmdsets are available as</span>
+<span class="sd">        `self.cmdset`. If changes need to be done on the fly to the</span>
 <span class="sd">        cmdset before passing them on to the cmdhandler, this is the</span>
-<span class="sd">        place to do it. This is called also if the object currently</span>
-<span class="sd">        have no cmdsets.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            caller (Object, Account or Session): The object requesting the cmdsets.</span>
-<span class="sd">            current (CmdSet): The current merged cmdset.</span>
-<span class="sd">            force_init (bool): If `True`, force a re-build of the cmdset. (seems unused)</span>
-<span class="sd">            **kwargs: Arbitrary input for overloads.</span>
+<span class="sd">        place to do it.  This is called also if the account currently</span>
+<span class="sd">        have no cmdsets. kwargs are usually not used unless the</span>
+<span class="sd">        cmdset is generated dynamically.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="DefaultAccount.get_cmdsets"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.get_cmdsets">[docs]</a>    <span class="k">def</span> <span class="nf">get_cmdsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called by the CommandHandler to get a list of cmdsets to merge.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            caller (obj): The object requesting the cmdsets.</span>
-<span class="sd">            current (cmdset): The current merged cmdset.</span>
-<span class="sd">            **kwargs: Arbitrary input for overloads.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            tuple: A tuple of (current, cmdsets), which is probably self.cmdset.current and self.cmdset.cmdset_stack</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultAccount.at_first_login"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_first_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_first_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1755,7 +1551,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># In this mode we don&#39;t auto-connect but by default end up at a character selection</span>
             <span class="c1"># screen. We execute look on the account.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span></div>
+            <span class="c1"># we make sure to clean up the _playable_characters list in case</span>
+            <span class="c1"># any was deleted in the interim.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">char</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="k">if</span> <span class="n">char</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultAccount.at_failed_login"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_failed_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2092,8 +1893,11 @@
 <span class="sd">        be on the safe side.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_server_shutdown</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
-            <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+        <span class="n">characters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span>
+        <span class="k">if</span> <span class="n">characters</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
+                    <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DefaultGuest.at_post_disconnect"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest.at_post_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2105,8 +1909,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_post_disconnect</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
-            <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">characters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span>
+        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div></div>
 </pre></div>
 
@@ -2130,9 +1936,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

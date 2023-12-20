@@ -17,11 +17,9 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Part 2: What We Want" href="../Part2/Beginner-Tutorial-Part2-Overview.html" />
+    <link rel="next" title="Part 2: What we want" href="../Part2/Beginner-Tutorial-Part2-Overview.html" />
     <link rel="prev" title="12. Advanced searching - Django Database queries" href="Beginner-Tutorial-Django-queries.html" /> 
   </head><body>
-
-     
 
 
     <div class="related" role="navigation" aria-label="related navigation">
@@ -34,18 +32,22 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Part2/Beginner-Tutorial-Part2-Overview.html" title="Part 2: What We Want"
+          <a href="../Part2/Beginner-Tutorial-Part2-Overview.html" title="Part 2: What we want"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Beginner-Tutorial-Django-queries.html" title="12. Advanced searching - Django Database queries"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" accesskey="U">Part 1: What We Have</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" accesskey="U">Part 1: What we have</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">13. </span>Building a chair you can sit on</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -89,7 +91,7 @@
                         title="previous chapter"><span class="section-number">12. </span>Advanced searching - Django Database queries</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="../Part2/Beginner-Tutorial-Part2-Overview.html"
-                        title="next chapter">Part 2: What We Want</a></p>
+                        title="next chapter">Part 2: What we want</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -108,18 +110,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Beginner-Tutorial-Making-A-Sittable-Object.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -162,7 +152,7 @@ This requires a change to our Character typeclass. Open <code class="docutils li
 </div>
 <p>When moving somewhere, <a class="reference internal" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to" title="evennia.objects.objects.DefaultObject.move_to"><span class="xref myst py py-meth">character.move_to</span></a> is called. This in turn
 will call <code class="docutils literal notranslate"><span class="pre">character.at_pre_move</span></code>.  If this returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, the move is aborted.</p>
-<p>Here we look for an Attribute <code class="docutils literal notranslate"><span class="pre">is_sitting</span></code> (which we will assign below) to determine if we are stuck on the chair or not.</p>
+<p>Here we look for an Attribute <code class="docutils literal notranslate"><span class="pre">is_resting</span></code> (which we will assign below) to determine if we are stuck on the chair or not.</p>
 </section>
 <section id="making-the-chair-itself">
 <h2><span class="section-number">13.2. </span>Making the Chair itself<a class="headerlink" href="#making-the-chair-itself" title="Permalink to this headline">¶</a></h2>
@@ -261,7 +251,7 @@ will call <code class="docutils literal notranslate"><span class="pre">character
         <span class="k">else</span><span class="p">:</span>
 <span class="hll">            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span class="hll">            <span class="k">del</span> <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_sitting</span>
-</span><span class="hll">            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll">            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></pre></div></td></tr></table></div>
 </div>
 <p>This is the inverse of sitting down; we need to do some cleanup.</p>
@@ -276,9 +266,9 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 <section id="sitting-on-or-in">
 <h3><span class="section-number">13.2.1. </span>Sitting on or in?<a class="headerlink" href="#sitting-on-or-in" title="Permalink to this headline">¶</a></h3>
 <p>It’s fine to sit ‘on’ a chair. But what if our Sittable is an armchair?</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">armchair</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.sittables.Sittable&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;armchair&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="n">armchair</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
-<span class="n">You</span> <span class="n">sit</span> <span class="n">on</span> <span class="n">armchair</span><span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">armchair</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.sittables.Sittable&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;armchair&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">armchair</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">You</span> <span class="n">sit</span> <span class="n">on</span> <span class="n">armchair</span><span class="o">.</span>
 </pre></div>
 </div>
 <p>This is not grammatically correct, you actually sit “in” an armchair rather than “on” it. It’s also possible to both sit ‘in’ or ‘on’ a chair depending on the type of chair (English is weird). We want to be able to control this.</p>
@@ -327,9 +317,9 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 <span class="normal">42</span>
 <span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in mygame/typeclasses/sittables.py</span>
 
-<span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 
-<span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">do_sit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitter</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -343,16 +333,16 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 </span>        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
         <span class="k">if</span> <span class="n">current</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="n">sitter</span><span class="p">:</span>
-<span class="hll">                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are already sitting </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span>            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are already sitting </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
 <span class="hll">                    <span class="sa">f</span><span class="s2">&quot;You can&#39;t sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &quot;</span>
 </span>                    <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is already sitting there!&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="n">sitter</span>
         <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_sitting</span> <span class="o">=</span> <span class="bp">self</span>
-<span class="hll">        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stander</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when trying to stand from this object.</span>
@@ -363,16 +353,16 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">stander</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
-<span class="hll">            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span>        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">del</span> <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_sitting</span>
-<span class="hll">            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="hll">            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></pre></div></td></tr></table></div>
 </div>
 <ul class="simple">
 <li><p><strong>Line 15</strong>: We grab the <code class="docutils literal notranslate"><span class="pre">adjective</span></code> Attribute. Using <code class="docutils literal notranslate"><span class="pre">self.db.adjective</span> <span class="pre">or</span> <span class="pre">&quot;on&quot;</span></code> here means that if the Attribute is not set (is <code class="docutils literal notranslate"><span class="pre">None</span></code>/falsy) the default “on” string will be assumed.</p></li>
-<li><p><strong>Lines 19,22,27,39, and 43</strong>: We use this adjective to modify the return text we see.</p></li>
+<li><p><strong>Lines 22 and 43</strong>: We use this adjective to modify the return text we see.</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">reload</span></code>  the server. An advantage of using Attributes like this is that they can be modified on the fly, in-game. Let’s look at a builder could use this by normal building commands (no need for <code class="docutils literal notranslate"><span class="pre">py</span></code>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nb">set</span> <span class="n">armchair</span><span class="o">/</span><span class="n">adjective</span> <span class="o">=</span> <span class="ow">in</span> 
@@ -418,13 +408,13 @@ You sit down and a whoopie cushion makes a loud fart noise!
 <p>This way to implement <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> puts new cmdsets on the Sittable itself.
 As we’ve learned before, commands on objects are made available to others in the room.
 This makes the command easy but instead adds some complexity in the management of the CmdSet.</p>
-<p>This is how it could look if <code class="docutils literal notranslate"><span class="pre">armchair</span></code> is in the room (Extra credits: Change the sit message on the armchair to match this output instead of getting the default <code class="docutils literal notranslate"><span class="pre">You</span> <span class="pre">sit</span> <span class="pre">in</span> <span class="pre">armchair</span></code>!):</p>
+<p>This is how it could look if <code class="docutils literal notranslate"><span class="pre">armchair</span></code> is in the room (if you overrode the sit message):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit
 As you sit down in armchair, life feels easier.
 </pre></div>
 </div>
-<p>What happens if there are sittables <code class="docutils literal notranslate"><span class="pre">sofa</span></code> and <code class="docutils literal notranslate"><span class="pre">barstool</span></code> also in the room? Evennia will
-automatically handle this for us and allow us to specify which one we want:</p>
+<p>What happens if there are sittables <code class="docutils literal notranslate"><span class="pre">sofa</span></code> and <code class="docutils literal notranslate"><span class="pre">barstool</span></code> also in the room? Evennia will automatically
+handle this for us and allow us to specify which one we want:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit
 More than one match for &#39;sit&#39; (please narrow target):
  sit-1 (armchair)
@@ -511,10 +501,10 @@ As you sit down in armchair, life feels easier.
 <span class="normal">11</span>
 <span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in mygame/typeclasses/sittables.py</span>
 
-<span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 <span class="hll"><span class="kn">from</span> <span class="nn">commands.sittables</span> <span class="kn">import</span> <span class="n">CmdSetSit</span> 
 </span>
-<span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (docstring)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -931,21 +921,18 @@ You stand up from sofa.
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Part2/Beginner-Tutorial-Part2-Overview.html" title="Part 2: What We Want"
+          <a href="../Part2/Beginner-Tutorial-Part2-Overview.html" title="Part 2: What we want"
              >next</a> |</li>
         <li class="right" >
           <a href="Beginner-Tutorial-Django-queries.html" title="12. Advanced searching - Django Database queries"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" >Part 1: What We Have</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" >Part 1: What we have</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">13. </span>Building a chair you can sit on</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

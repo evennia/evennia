@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.locks.lockhandler</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="lockhandler.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -195,7 +185,6 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;LockHandler&quot;</span><span class="p">,</span> <span class="s2">&quot;LockException&quot;</span><span class="p">)</span>
@@ -323,7 +312,7 @@
             <span class="k">for</span> <span class="n">funcstring</span> <span class="ow">in</span> <span class="n">funclist</span><span class="p">:</span>
                 <span class="n">funcname</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">funcstring</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
                 <span class="n">func</span> <span class="o">=</span> <span class="n">_LOCKFUNCS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">funcname</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
                     <span class="n">elist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lock: lock-function &#39;</span><span class="si">{lockfunc}</span><span class="s2">&#39; is not available.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="n">lockfunc</span><span class="o">=</span><span class="n">funcstring</span>
@@ -424,16 +413,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lockstring</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">lockdefs</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">stripped</span> <span class="k">for</span> <span class="n">lockdef</span> <span class="ow">in</span> <span class="n">lockstring</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">stripped</span> <span class="o">:=</span> <span class="n">lockdef</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-            <span class="p">]</span>
+            <span class="n">lockdefs</span> <span class="o">=</span> <span class="n">lockstring</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">lockdefs</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">stripped</span>
-                <span class="k">for</span> <span class="n">locks</span> <span class="ow">in</span> <span class="n">lockstring</span>
-                <span class="k">for</span> <span class="n">lockdef</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">stripped</span> <span class="o">:=</span> <span class="n">lockdef</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-            <span class="p">]</span>
+            <span class="n">lockdefs</span> <span class="o">=</span> <span class="p">[</span><span class="n">lockdef</span> <span class="k">for</span> <span class="n">locks</span> <span class="ow">in</span> <span class="n">lockstring</span> <span class="k">for</span> <span class="n">lockdef</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)]</span>
             <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lockdefs</span><span class="p">)</span>
 
         <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -647,7 +629,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">no_superuser_bypass</span> <span class="ow">and</span> <span class="p">(</span>
                 <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;is_superuser&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">)</span>
                 <span class="ow">or</span> <span class="p">(</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span><span class="p">)</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">)</span>
                     <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;is_superuser&quot;</span><span class="p">)</span>
                     <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>
                 <span class="p">)</span>
@@ -666,8 +648,7 @@
             <span class="n">evalstring</span><span class="p">,</span> <span class="n">func_tup</span><span class="p">,</span> <span class="n">raw_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">access_type</span><span class="p">]</span>
             <span class="c1"># execute all lock funcs in the correct order, producing a tuple of True/False results.</span>
             <span class="n">true_false</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-                <span class="nb">bool</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">access_type</span><span class="o">=</span><span class="n">access_type</span><span class="p">,</span> <span class="o">**</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
-                <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">func_tup</span>
+                <span class="nb">bool</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">func_tup</span>
             <span class="p">)</span>
             <span class="c1"># the True/False tuple goes into evalstring, which combines them</span>
             <span class="c1"># with AND/OR/NOT in order to get the final result.</span>
@@ -722,7 +703,7 @@
             <span class="k">if</span> <span class="n">no_superuser_bypass</span> <span class="ow">and</span> <span class="p">(</span>
                 <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;is_superuser&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">)</span>
                 <span class="ow">or</span> <span class="p">(</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span><span class="p">)</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">)</span>
                     <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;is_superuser&quot;</span><span class="p">)</span>
                     <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>
                 <span class="p">)</span>
@@ -906,9 +887,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.locks.lockhandler</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

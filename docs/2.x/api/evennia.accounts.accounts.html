@@ -21,8 +21,6 @@
     <link rel="prev" title="evennia.accounts" href="evennia.accounts.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -46,7 +44,11 @@
           <li class="nav-item nav-item-4"><a href="evennia.accounts.html" accesskey="U">evennia.accounts</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -90,18 +92,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="evennia.accounts.accounts.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -216,33 +206,8 @@ at_account_creation()</p>
 </ul>
 </div></blockquote>
 <dl class="py attribute">
-<dt id="evennia.accounts.accounts.DefaultAccount.cmdset_provider_order">
-<code class="sig-name descname">cmdset_provider_order</code><em class="property"> = 50</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.cmdset_provider_order" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.accounts.accounts.DefaultAccount.cmdset_provider_error_order">
-<code class="sig-name descname">cmdset_provider_error_order</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.cmdset_provider_error_order" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.accounts.accounts.DefaultAccount.cmdset_provider_type">
-<code class="sig-name descname">cmdset_provider_type</code><em class="property"> = 'account'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.cmdset_provider_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt id="evennia.accounts.accounts.DefaultAccount.objects">
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.accounts.manager.AccountManager object&gt;</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.objects" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.accounts.accounts.DefaultAccount.default_character_typeclass">
-<code class="sig-name descname">default_character_typeclass</code><em class="property"> = 'typeclasses.characters.Character'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.default_character_typeclass" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.accounts.accounts.DefaultAccount.lockstring">
-<code class="sig-name descname">lockstring</code><em class="property"> = 'examine:perm(Admin);edit:perm(Admin);delete:perm(Admin);boot:perm(Admin);msg:all();noidletimeout:perm(Builder) or perm(noidletimeout)'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.lockstring" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -270,48 +235,10 @@ at_account_creation()</p>
 <code class="sig-name descname">options</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.characters">
-<code class="sig-name descname">characters</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.characters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.characters" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">characters</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.characters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultAccount.get_cmdset_providers">
-<code class="sig-name descname">get_cmdset_providers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_cmdset_providers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_cmdset_providers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overrideable method which returns a dictionary of every kind of object which
-has a cmdsethandler linked to this Account, and should participate in cmdset
-merging.</p>
-<p>Accounts have no way of being aware of anything besides themselves, unfortunately.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>dict[str, CmdSetProvider]</em> – The CmdSetProviders linked to this Object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultAccount.at_post_add_character">
-<code class="sig-name descname">at_post_add_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span><span class="p">:</span> <span class="n">DefaultCharacter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_add_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_add_character" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called after a character is added to this account’s list of playable characters.</p>
-<p>Use it to easily implement custom logic when a character is added to an account.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>character</strong> (<a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><em>DefaultCharacter</em></a>) – The character that was added.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultAccount.at_post_remove_character">
-<code class="sig-name descname">at_post_remove_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span><span class="p">:</span> <span class="n">DefaultCharacter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_remove_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_remove_character" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called after a character is removed from this account’s list of playable characters.</p>
-<p>Use it to easily implement custom logic when a character is removed from an account.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>character</strong> (<a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><em>DefaultCharacter</em></a>) – The character that was removed.</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.uses_screenreader">
@@ -605,59 +532,6 @@ could get invalidated.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultAccount.get_character_slots">
-<code class="sig-name descname">get_character_slots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>int<span class="p">, </span>None<span class="p">]</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_character_slots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_character_slots" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of character slots this account has, or
-None if there are no limits.</p>
-<p>By default, that’s settings.MAX_NR_CHARACTERS but this makes it easy to override.
-Maybe for your game, players can be rewarded with more slots, somehow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>int (optional)</em> –</p>
-<dl class="simple">
-<dt>The number of character slots this account has, or None</dt><dd><p>if there are no limits.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultAccount.get_available_character_slots">
-<code class="sig-name descname">get_available_character_slots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>int<span class="p">, </span>None<span class="p">]</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_available_character_slots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_available_character_slots" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of character slots this account has available, or None if
-there are no limits.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>int (optional)</em> –</p>
-<dl class="simple">
-<dt>The number of open character slots this account has, or None</dt><dd><p>if there are no limits.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultAccount.check_available_slots">
-<code class="sig-name descname">check_available_slots</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>str<span class="p">, </span>None<span class="p">]</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.check_available_slots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.check_available_slots" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper method used to determine if an account can create additional characters using
-the character slot system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>str (optional)</em> –</p>
-<dl class="simple">
-<dt>An error message regarding the status of slots. If present, this</dt><dd><p>will halt character creation. If not, character creation can proceed.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.create_character">
 <code class="sig-name descname">create_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.create_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.create_character" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a character linked to this account.</p>
@@ -666,7 +540,7 @@ the character slot system.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – If not given, use the same name as the account.</p></li>
 <li><p><strong>typeclass</strong> (<em>str</em><em>, </em><em>optional</em>) – Typeclass to use for this character. If
-not given, use self.default_character_class.</p></li>
+not given, use settings.BASE_CHARACTER_TYPECLASS.</p></li>
 <li><p><strong>permissions</strong> (<em>list</em><em>, </em><em>optional</em>) – If not given, use the account’s permissions.</p></li>
 <li><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – The client IP creating this character. Will fall back to the
 one stored for the account if not given.</p></li>
@@ -678,12 +552,6 @@ one stored for the account if not given.</p></li>
 list or None: A list of errors, or None.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultAccount.at_post_create_character">
-<code class="sig-name descname">at_post_create_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_create_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_create_character" title="Permalink to this definition">¶</a></dt>
-<dd><p>An overloadable hook method that allows for further customization of newly created characters.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1013,39 +881,13 @@ create other effects based on the access result.</p>
 <dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.at_cmdset_get">
 <code class="sig-name descname">at_cmdset_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_cmdset_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_cmdset_get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called just before cmdsets on this object are requested by the
-command handler. If changes need to be done on the fly to the
+<dd><p>Called just <em>before</em> cmdsets on this account are requested by
+the command handler. The cmdsets are available as
+<strong>self.cmdset</strong>. If changes need to be done on the fly to the
 cmdset before passing them on to the cmdhandler, this is the
-place to do it. This is called also if the object currently
-have no cmdsets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>caller</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The object requesting the cmdsets.</p></li>
-<li><p><strong>current</strong> (<a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><em>CmdSet</em></a>) – The current merged cmdset.</p></li>
-<li><p><strong>force_init</strong> (<em>bool</em>) – If <strong>True</strong>, force a re-build of the cmdset. (seems unused)</p></li>
-<li><p><strong>**kwargs</strong> – Arbitrary input for overloads.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.accounts.accounts.DefaultAccount.get_cmdsets">
-<code class="sig-name descname">get_cmdsets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">current</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_cmdsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_cmdsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called by the CommandHandler to get a list of cmdsets to merge.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>caller</strong> (<em>obj</em>) – The object requesting the cmdsets.</p></li>
-<li><p><strong>current</strong> (<em>cmdset</em>) – The current merged cmdset.</p></li>
-<li><p><strong>**kwargs</strong> – Arbitrary input for overloads.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>tuple</em> – A tuple of (current, cmdsets), which is probably self.cmdset.current and self.cmdset.cmdset_stack</p>
-</dd>
-</dl>
+place to do it.  This is called also if the account currently
+have no cmdsets. kwargs are usually not used unless the
+cmdset is generated dynamically.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1401,9 +1243,6 @@ overriding the call (unused by default).</p>
         <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

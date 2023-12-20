@@ -21,8 +21,6 @@
     <link rel="prev" title="1. Code structure and Utilities" href="Beginner-Tutorial-Utilities.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -40,12 +38,16 @@
           <a href="Beginner-Tutorial-Utilities.html" title="1. Code structure and Utilities"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>Rules and dice rolling</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -114,18 +116,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Beginner-Tutorial-Rules.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -306,7 +296,7 @@ crazy big so the loop takes forever!</p>
 <section id="rolling-with-advantage">
 <h3><span class="section-number">2.3.2. </span>Rolling with advantage<a class="headerlink" href="#rolling-with-advantage" title="Permalink to this headline">¶</a></h3>
 <p>Now that we have the generic roller, we can start using it to do a more complex roll.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
 <span class="c1"># ... </span>
 
@@ -359,46 +349,46 @@ Attribute is available as <code class="docutils literal notranslate"><span class
 
 <span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span> 
 
-    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-        <span class="c1"># ...</span>
+   <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+       <span class="c1"># ...</span>
    
-    <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-        <span class="c1"># ...</span>
+   <span class="k">def</span> <span class="nf">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+       <span class="c1"># ...</span>
        
-    <span class="k">def</span> <span class="nf">saving_throw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> 
-                     <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">        Do a saving throw, trying to beat a target.</span>
+   <span class="k">def</span> <span class="nf">saving_throw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> 
+                    <span class="n">advantage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disadvantage</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">       </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">       Do a saving throw, trying to beat a target.</span>
 <span class="sd">       </span>
-<span class="sd">        Args:</span>
-<span class="sd">           character (Character): A character (assumed to have Ability bonuses</span>
-<span class="sd">               stored on itself as Attributes).</span>
-<span class="sd">           bonus_type (Ability): A valid Ability bonus enum.</span>
-<span class="sd">           target (int): The target number to beat. Always 15 in Knave.</span>
-<span class="sd">           advantage (bool): If character has advantage on this roll.</span>
-<span class="sd">           disadvantage (bool): If character has disadvantage on this roll.</span>
+<span class="sd">       Args:</span>
+<span class="sd">          character (Character): A character (assumed to have Ability bonuses</span>
+<span class="sd">              stored on itself as Attributes).</span>
+<span class="sd">          bonus_type (Ability): A valid Ability bonus enum.</span>
+<span class="sd">          target (int): The target number to beat. Always 15 in Knave.</span>
+<span class="sd">          advantage (bool): If character has advantage on this roll.</span>
+<span class="sd">          disadvantage (bool): If character has disadvantage on this roll.</span>
 <span class="sd">          </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            tuple: A tuple (bool, Ability), showing if the throw succeeded and </span>
-<span class="sd">                the quality is one of None or Ability.CRITICAL_FAILURE/SUCCESS</span>
+<span class="sd">       Returns:</span>
+<span class="sd">           tuple: A tuple (bool, Ability), showing if the throw succeeded and </span>
+<span class="sd">               the quality is one of None or Ability.CRITICAL_FAILURE/SUCCESS</span>
 <span class="sd">               </span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">       &quot;&quot;&quot;</span>
                     
-        <span class="c1"># make a roll </span>
-        <span class="n">dice_roll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="n">advantage</span><span class="p">,</span> <span class="n">disadvantage</span><span class="p">)</span>
+       <span class="c1"># make a roll </span>
+       <span class="n">dice_roll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll_with_advantage_or_disadvantage</span><span class="p">(</span><span class="n">advantage</span><span class="p">,</span> <span class="n">disadvantage</span><span class="p">)</span>
        
-        <span class="c1"># figure out if we had critical failure/success</span>
-        <span class="n">quality</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">dice_roll</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">quality</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_FAILURE</span>
-        <span class="k">elif</span> <span class="n">dice_roll</span> <span class="o">==</span> <span class="mi">20</span><span class="p">:</span>
-            <span class="n">quality</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_SUCCESS</span> 
+       <span class="c1"># figure out if we had critical failure/success</span>
+       <span class="n">quality</span> <span class="o">=</span> <span class="kc">None</span>
+       <span class="k">if</span> <span class="n">dice_roll</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+           <span class="n">quality</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_FAILURE</span>
+       <span class="k">elif</span> <span class="n">dice_roll</span> <span class="o">==</span> <span class="mi">20</span><span class="p">:</span>
+           <span class="n">quality</span> <span class="o">=</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CRITICAL_SUCCESS</span> 
 
-        <span class="c1"># figure out bonus</span>
-        <span class="n">bonus</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+       <span class="c1"># figure out bonus</span>
+       <span class="n">bonus</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">bonus_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
 
-        <span class="c1"># return a tuple (bool, quality)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">dice_roll</span> <span class="o">+</span> <span class="n">bonus</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">,</span> <span class="n">quality</span>
+       <span class="c1"># return a tuple (bool, quality)</span>
+       <span class="k">return</span> <span class="p">(</span><span class="n">dice_roll</span> <span class="o">+</span> <span class="n">bonus</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">,</span> <span class="n">quality</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">getattr(obj,</span> <span class="pre">attrname,</span> <span class="pre">default)</span></code> function is a very useful Python tool for getting an attribute
@@ -602,7 +592,9 @@ So the result for <code class="docutils literal notranslate"><span class="pre">1
 </section>
 <section id="roll-for-death">
 <h3><span class="section-number">2.3.8. </span>Roll for death<a class="headerlink" href="#roll-for-death" title="Permalink to this headline">¶</a></h3>
-<p>While original Knave suggests hitting 0 HP means insta-death, we will grab the optional “death table” from the “prettified” Knave’s optional rules to make it a little less punishing. We also changed the result of <code class="docutils literal notranslate"><span class="pre">2</span></code> to ‘dead’ since we don’t simulate ‘dismemberment’ in this tutorial:</p>
+<p>While original Knave suggests hitting 0 HP means insta-death, we will grab the optional “death table”
+from the “prettified” Knave’s optional rules to make it a little less punishing. We also changed the
+result of <code class="docutils literal notranslate"><span class="pre">2</span></code> to ‘dead’ since we don’t simulate ‘dismemberment’ in this tutorial:</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="text-align:center head"><p>Roll</p></th>
@@ -641,17 +633,19 @@ So the result for <code class="docutils literal notranslate"><span class="pre">1
 </tr>
 </tbody>
 </table>
-<p>All the non-dead values map to a loss of 1d4 in one of the six Abilities (but you get HP back). We need to map back to this from the above table. One also cannot have less than -10 Ability bonus,  if you do, you die too.</p>
+<p>All the non-dead values map to a loss of 1d4 in one of the six Abilities (but you get HP back).
+We need to map back to this from the above table. One also cannot have less than -10 Ability bonus,
+if you do, you die too.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
 <span class="n">death_table</span> <span class="o">=</span> <span class="p">(</span>
     <span class="p">(</span><span class="s2">&quot;1-2&quot;</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;strength&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;dexterity&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;constitution&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;intelligence&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="s2">&quot;wisdom&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;8&quot;</span><span class="p">,</span> <span class="s2">&quot;charisma&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="s2">&quot;strength&quot;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="s2">&quot;dexterity&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">:</span> <span class="s2">&quot;constitution&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">:</span> <span class="s2">&quot;intelligence&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;7&quot;</span><span class="p">:</span> <span class="s2">&quot;wisdom&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;8&quot;</span><span class="p">:</span> <span class="s2">&quot;charisma&quot;</span><span class="p">),</span>
 <span class="p">)</span>
     
     
@@ -679,7 +673,7 @@ So the result for <code class="docutils literal notranslate"><span class="pre">1
                 <span class="k">pass</span> 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># refresh 1d4 health, but suffer 1d4 ability loss</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">heal</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d4&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">heal</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d4&quot;</span><span class="p">)</span> 
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">ability_name</span><span class="p">,</span> <span class="n">current_ability</span><span class="p">)</span>
                 
                 <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -692,7 +686,9 @@ So the result for <code class="docutils literal notranslate"><span class="pre">1
 </div>
 <p>Here we roll on the ‘death table’ from the rules to see what happens. We give the character
 a message if they survive, to let them know what happened.</p>
-<p>We don’t yet know what ‘killing the character’ technically means, so we mark this as <code class="docutils literal notranslate"><span class="pre">TODO</span></code> and  return to it in a later lesson. We just know that we need to do <em>something</em> here to kill off the character!</p>
+<p>We don’t yet know what ‘killing the character’ technically means, so we mark this as <code class="docutils literal notranslate"><span class="pre">TODO</span></code> and
+return to it in a later lesson. We just know that we need to do <em>something</em> here to kill off the
+character!</p>
 </section>
 </section>
 <section id="testing">
@@ -717,7 +713,7 @@ a message if they survive, to let them know what happened.</p>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evadventure.rules.randint&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
         <span class="n">mock_randint</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">4</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roll_engine</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>     
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roll_engine</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>     
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roll_engine</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;2d6&quot;</span><span class="p">),</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>     
         
     <span class="c1"># test of the other rule methods below ...</span>
@@ -737,9 +733,14 @@ has a complete example of rule testing.</p>
 test method. We use <code class="docutils literal notranslate"><span class="pre">super().setUp()</span></code> to make sure the parent class’ version of this method
 always fire. Then we create a fresh <code class="docutils literal notranslate"><span class="pre">EvAdventureRollEngine</span></code> we can test with.</p>
 <p>In our test, we import <code class="docutils literal notranslate"><span class="pre">patch</span></code> from the <code class="docutils literal notranslate"><span class="pre">unittest.mock</span></code> library. This is a very useful tool for testing.
-Normally the <code class="docutils literal notranslate"><span class="pre">randint</span></code> function we imported in <code class="docutils literal notranslate"><span class="pre">rules</span></code> will return a random value. That’s very hard to test for, since the value will be different every test.</p>
-<p>With <code class="docutils literal notranslate"><span class="pre">&#64;patch</span></code> (this is called a <em>decorator</em>), we temporarily replace <code class="docutils literal notranslate"><span class="pre">rules.randint</span></code> with a ‘mock’ - a  dummy entity. This mock is passed into the testing method. We then take this <code class="docutils literal notranslate"><span class="pre">mock_randint</span></code> and set  <code class="docutils literal notranslate"><span class="pre">.return_value</span> <span class="pre">=</span> <span class="pre">4</span></code> on it.</p>
-<p>Adding <code class="docutils literal notranslate"><span class="pre">return_value</span></code> to the mock means that every time this mock is called, it will return 4. For the  duration of the test we can now check with <code class="docutils literal notranslate"><span class="pre">self.assertEqual</span></code> that our <code class="docutils literal notranslate"><span class="pre">roll</span></code> method always returns a  result as-if the random result was 4.</p>
+Normally the <code class="docutils literal notranslate"><span class="pre">randint</span></code> function we imported in <code class="docutils literal notranslate"><span class="pre">rules</span></code> will return a random value. That’s very hard to
+test for, since the value will be different every test.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">&#64;patch</span></code> (this is called a <em>decorator</em>), we temporarily replace <code class="docutils literal notranslate"><span class="pre">rules.randint</span></code> with a ‘mock’ - a
+dummy entity. This mock is passed into the testing method. We then take this <code class="docutils literal notranslate"><span class="pre">mock_randint</span></code> and set
+<code class="docutils literal notranslate"><span class="pre">.return_value</span> <span class="pre">=</span> <span class="pre">4</span></code> on it.</p>
+<p>Adding <code class="docutils literal notranslate"><span class="pre">return_value</span></code> to the mock means that every time this mock is called, it will return 4. For the
+duration of the test we can now check with <code class="docutils literal notranslate"><span class="pre">self.assertEqual</span></code> that our <code class="docutils literal notranslate"><span class="pre">roll</span></code> method always returns a
+result as-if the random result was 4.</p>
 <p>There are <a class="reference external" href="https://realpython.com/python-mock-library/">many resources for understanding mock</a>, refer to
 them for further help.</p>
 <blockquote>
@@ -749,7 +750,9 @@ them for further help.</p>
 </section>
 <section id="summary">
 <h2><span class="section-number">2.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>This concludes all the core rule mechanics of <em>Knave</em> - the rules used during play. We noticed here  that we are going to soon need to establish how our <em>Character</em> actually stores data. So we will address that next.</p>
+<p>This concludes all the core rule mechanics of <em>Knave</em> - the rules used during play. We noticed here
+that we are going to soon need to establish how our <em>Character</em> actually stores data. So we will
+address that next.</p>
 </section>
 </section>
 
@@ -775,15 +778,12 @@ them for further help.</p>
           <a href="Beginner-Tutorial-Utilities.html" title="1. Code structure and Utilities"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How we get there (example game)</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>Rules and dice rolling</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

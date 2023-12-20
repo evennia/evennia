@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid.launchcmd</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="launchcmd.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -104,8 +94,9 @@
 
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pathjoin</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzgrid</span> <span class="kn">import</span> <span class="n">get_xyzgrid</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
 
@@ -418,7 +409,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting spawn ...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Beginner-Tutorial spawn ...&quot;</span><span class="p">)</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span>
         <span class="s2">&quot;... spawn complete!</span><span class="se">\n</span><span class="s2">It&#39;s recommended to reload the server to refresh caches if this &quot;</span>
@@ -475,7 +466,8 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Deleting grid ...&quot;</span><span class="p">)</span>
         <span class="n">grid</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;... done.</span><span class="se">\n</span><span class="s2">Please reload the server now; otherwise removed rooms may linger in cache.&quot;</span>
+            <span class="s2">&quot;... done.</span><span class="se">\n</span><span class="s2">Please reload the server now; otherwise &quot;</span>
+            <span class="s2">&quot;removed rooms may linger in cache.&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span>
 
@@ -486,7 +478,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mapname/zcoord </span><span class="si">{</span><span class="n">zcoord</span><span class="si">}</span><span class="s2"> is not a part of the grid.&quot;</span><span class="p">)</span>
             <span class="n">err</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid mapnames/zcoords are</span><span class="se">\n</span><span class="s2">:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">Z</span> <span class="k">for</span> <span class="n">xymap</span> <span class="ow">in</span> <span class="n">grid</span><span class="o">.</span><span class="n">all_maps</span><span class="p">()))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid mapnames/zcoords are</span><span class="se">\n</span><span class="s2">:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">Z</span> <span class="k">for</span> <span class="n">xymap</span> <span class="ow">in</span> <span class="n">grid</span><span class="o">.</span><span class="n">all_rooms</span><span class="p">()))</span>
         <span class="k">return</span>
     <span class="n">repl</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
         <span class="s2">&quot;This will delete map(s) {&#39;, &#39;.join(zcoords)} and wipe all corresponding</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -520,7 +512,7 @@
 
     <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span>
         <span class="n">_option_help</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">):</span>
         <span class="n">_option_list</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;init&quot;</span><span class="p">:</span>
         <span class="n">_option_init</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
@@ -556,9 +548,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid.launchcmd</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

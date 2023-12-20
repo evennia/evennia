@@ -7,7 +7,7 @@ in the [Community Contribs & Snippets][forum] forum.
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all **49** contribs currently included
+This page is auto-generated and summarizes all **48** contribs currently included
 with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
@@ -34,11 +34,11 @@ If you want to add a contrib, see [the contrib guidelines](./Contribs-Guidelines
 | [components](#components) | [containers](#containers) | [cooldowns](#cooldowns) | [crafting](#crafting) | [custom_gametime](#custom_gametime) |
 | [dice](#dice) | [email_login](#email_login) | [evadventure](#evadventure) | [evscaperoom](#evscaperoom) | [extended_room](#extended_room) |
 | [fieldfill](#fieldfill) | [gendersub](#gendersub) | [git_integration](#git_integration) | [godotwebsocket](#godotwebsocket) | [health_bar](#health_bar) |
-| [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [llm](#llm) | [mail](#mail) | [mapbuilder](#mapbuilder) |
-| [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) |
-| [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) | [rpsystem](#rpsystem) | [simpledoor](#simpledoor) |
-| [slow_exit](#slow_exit) | [talking_npc](#talking_npc) | [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) |
-| [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) | [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
+| [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) |
+| [mirror](#mirror) | [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) |
+| [random_string_generator](#random_string_generator) | [red_button](#red_button) | [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) |
+| [talking_npc](#talking_npc) | [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) |
+| [unixcommand](#unixcommand) | [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
 
 
 
@@ -374,9 +374,9 @@ on their own.
 _Contribution by Griatch 2016_
 
 A "multidescer" is a concept from the MUSH world. It allows for
-splitting your descriptions into arbitrary named 'sections' which you can
-then swap out at will. It is a way for quickly managing your look (such as when
-changing clothes) in more free-form roleplaying systems. This will also
+creating, managing and switching between multiple character
+descriptions and is a way for quickly managing your look (such as when 
+changing clothes) in more free-form roleplaying systems. This will also 
 work well together with the `rpsystem` contrib.
 
 [Read the documentation](./Contrib-Multidescer.md) - [Browse the Code](evennia.contrib.game_systems.multidescer)
@@ -552,7 +552,6 @@ Contrib-Buffs.md
 Contrib-Character-Creator.md
 Contrib-Dice.md
 Contrib-Health-Bar.md
-Contrib-Llm.md
 Contrib-RPSystem.md
 Contrib-Traits.md
 ```
@@ -581,10 +580,10 @@ Commands for managing and initiating an in-game character-creation menu.
 
 ### `dice`
 
-_Contribution by Griatch, 2012, 2023_
+_Contribution by Griatch, 2012_
 
 A dice roller for any number and side of dice. Adds in-game dice rolling
-(like `roll 2d10 + 1`) as well as conditionals (roll under/over/equal to a target)
+(`roll 2d10 + 1`) as well as conditionals (roll under/over/equal to a target)
 and functions for rolling dice in code. Command also supports hidden or secret
 rolls for use by a human game master.
 
@@ -605,21 +604,17 @@ and can be used for any sort of appropriate data besides player health.
 
 
 
-### `llm`
-
-_Contribution by Griatch 2023_
-
-This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Large Language Model, along the lines of ChatGPT). Example uses a local OSS LLM install. Included is an NPC you can chat with using a new `talk` command. The NPC will respond using the AI responses from the LLM server. All calls are asynchronous, so if the LLM is slow, Evennia is not affected.
-
-[Read the documentation](./Contrib-Llm.md) - [Browse the Code](evennia.contrib.rpg.llm)
-
-
-
 ### `rpsystem`
 
 _Contribution by Griatch, 2015_
 
-A full roleplaying emote system. Short-descriptions and recognition (only know people by their looks until you assign a name to them). Room poses. Masks/disguises (hide your description). Speak directly in emote, with optional language obscuration (words get garbled if you don't know the language, you can also have different languages with different 'sounding' garbling). Whispers can be partly overheard from a distance. A very powerful in-emote reference system, for referencing and differentiate targets (including objects).
+A full roleplaying emote system. Short-descriptions and recognition (only
+know people by their looks until you assign a name to them). Room poses. Masks/disguises
+(hide your description). Speak directly in emote, with optional language obscuration
+(words get garbled if you don't know the language, you can also have different languages
+with different 'sounding' garbling). Whispers can be partly overheard from a distance. A 
+very powerful in-emote reference system, for referencing and differentiate targets 
+(including objects).
 
 [Read the documentation](./Contrib-RPSystem.md) - [Browse the Code](evennia.contrib.rpg.rpsystem)
 

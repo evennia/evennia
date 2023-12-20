@@ -21,8 +21,6 @@
     <link rel="prev" title="5. Handling Equipment" href="Beginner-Tutorial-Equipment.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -40,12 +38,16 @@
           <a href="Beginner-Tutorial-Equipment.html" title="5. Handling Equipment"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>Character Generation</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -110,18 +112,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Beginner-Tutorial-Chargen.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -696,7 +686,7 @@ we use <code class="docutils literal notranslate"><span class="pre">caller.msg()
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
     <span class="n">new_character</span> <span class="o">=</span> <span class="n">tmp_character</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>      
     
-    <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span> 
+    <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_character</span><span class="p">]</span> 
     
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Character created!&quot;</span>
     
@@ -722,6 +712,7 @@ we use <code class="docutils literal notranslate"><span class="pre">caller.msg()
         
     <span class="c1"># this generates all random components of the character</span>
     <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">TemporaryCharacterSheet</span><span class="p">()</span>
+    <span class="n">tmp_character</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 
     <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menutree</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> 
            <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span>   <span class="c1"># &lt;----- </span>
@@ -763,15 +754,12 @@ characters - how they store their stats, handle their equipment and how to creat
           <a href="Beginner-Tutorial-Equipment.html" title="5. Handling Equipment"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How we get there (example game)</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>Character Generation</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

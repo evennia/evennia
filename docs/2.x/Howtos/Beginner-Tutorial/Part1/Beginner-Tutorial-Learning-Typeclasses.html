@@ -21,8 +21,6 @@
     <link rel="prev" title="6. Overview of the Evennia library" href="Beginner-Tutorial-Evennia-Library-Overview.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -40,12 +38,16 @@
           <a href="Beginner-Tutorial-Evennia-Library-Overview.html" title="6. Overview of the Evennia library"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" accesskey="U">Part 1: What We Have</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" accesskey="U">Part 1: What we have</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">7. </span>Making objects persistent</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -116,18 +118,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Beginner-Tutorial-Learning-Typeclasses.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -277,8 +267,8 @@ called <code class="docutils literal notranslate"><span class="pre">create_objec
 </div>
 <p>Boom, Cuddly should now be in the room with you, a little less scary than Smaug. You specify the
 python-path to the code you want and then set the key and location (if you had the <code class="docutils literal notranslate"><span class="pre">Monster</span></code> class already imported, you could have passed that too). Evennia sets things up and saves for you.</p>
-<p>If you want to find Cuddly from anywhere (not just in the same room), you can use Evennia’s <code class="docutils literal notranslate"><span class="pre">search_object</span></code> function:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py cuddly = evennia.search_object(&quot;Cuddly&quot;)[0] ; cuddly.move_around()
+<p>If you want to find Smaug from anywhere (not just in the same room), you can use Evennia’s <code class="docutils literal notranslate"><span class="pre">search_object</span></code> function:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; cuddly = evennia.search_object(&quot;Cuddly&quot;)[0] ; cuddly.move_around()
 Cuddly is moving!
 </pre></div>
 </div>
@@ -529,7 +519,7 @@ Strength is 10.
 <section id="attributes">
 <h3><span class="section-number">7.3.2. </span>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
 <p>So what happens when we increase our strength? This would be one way:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.strength = self.strength + 1
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.strength = self.str + 1
 &gt; py self.strength
 11
 </pre></div>
@@ -550,7 +540,8 @@ Strength is 10.
 </div>
 <p>After a reload all our changes were forgotten. When we change properties like this, it only changes in memory, not in the database (nor do we modify the python module’s code). So when we reloaded, the ‘fresh’ <code class="docutils literal notranslate"><span class="pre">Character</span></code>  class was loaded, and it still has the original stats we wrote in it.</p>
 <p>In principle we could change the python code. But we don’t want to do that manually every time. And more importantly since we have the stats hardcoded in the class, <em>every</em> character instance in the game will have exactly the  same <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">dex</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code> now! This is clearly not what we want.</p>
-<p>Evennia offers a special, persistent type of property for this, called an <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>. Rework your  <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> like this:</p>
+<p>Evennia offers a special, persistent type of property for this, called an <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>. Rework your
+<code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -639,7 +630,7 @@ set a random value from 3 to 18 to each stat. Simple, but for some classical RPG
 </aside>
 <p>Hm, this is the same values we set before. They are not random. The reason for this is of course that, as said, <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> only runs <em>once</em>, the very first time a character is created. Our character object was already  created long before, so it will not be called again.</p>
 <p>It’s simple enough to run it manually though:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.at_object_creation()
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.at_object_creation()
 &gt; py self.get_stats()
 (5, 4, 8)
 </pre></div>
@@ -671,7 +662,7 @@ foo
 <p>A python <em>for-loop</em> allows us to loop over something. Above, we made a <em>list</em> of two numbers and a string. In every iteration of the loop, the variable <code class="docutils literal notranslate"><span class="pre">a</span></code> becomes one element in turn, and we print that.</p>
 <p>For our list, we want to loop over all Characters, and want to call <code class="docutils literal notranslate"><span class="pre">.at_object_creation</span></code> on each. This is how  this is done (still in python multi-line mode):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from typeclasses.characters import Character
-&gt; for char in Character.objects.all():
+&gt; for char in Character.objects.all()
 &gt;     char.at_object_creation()
 </pre></div>
 </div>
@@ -684,7 +675,7 @@ foo
 of all of them that we then immediately loop over. Boom, we just updated all Characters, including ourselves:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quit()
 Closing the Python console.
-&gt; py self.get_stats()
+&gt; self.get_stats()
 (3, 18, 10)
 </pre></div>
 </div>
@@ -724,15 +715,12 @@ Oh, and if you created any other rooms before, make sure they get the new flag t
           <a href="Beginner-Tutorial-Evennia-Library-Overview.html" title="6. Overview of the Evennia library"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" >Part 1: What We Have</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Overview.html" >Part 1: What we have</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">7. </span>Making objects persistent</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

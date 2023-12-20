@@ -21,8 +21,6 @@
     <link rel="prev" title="evennia.web.utils.general_context" href="evennia.web.utils.general_context.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -47,7 +45,11 @@
           <li class="nav-item nav-item-5"><a href="evennia.web.utils.html" accesskey="U">evennia.web.utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.web.utils.middleware</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -91,18 +93,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="evennia.web.utils.middleware.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -110,20 +100,6 @@
             
   <section id="module-evennia.web.utils.middleware">
 <span id="evennia-web-utils-middleware"></span><h1>evennia.web.utils.middleware<a class="headerlink" href="#module-evennia.web.utils.middleware" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="evennia.web.utils.middleware.OriginIpMiddleware">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.middleware.</code><code class="sig-name descname">OriginIpMiddleware</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">get_response</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/middleware.html#OriginIpMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.middleware.OriginIpMiddleware" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This Django Middleware simply sets the request.origin_ip attribute to what is
-respected by the Evennia Server, taking into account settings.UPSTREAM_IPS.</p>
-<dl class="py method">
-<dt id="evennia.web.utils.middleware.OriginIpMiddleware.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">get_response</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/middleware.html#OriginIpMiddleware.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.middleware.OriginIpMiddleware.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt id="evennia.web.utils.middleware.SharedLoginMiddleware">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.middleware.</code><code class="sig-name descname">SharedLoginMiddleware</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">get_response</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/middleware.html#SharedLoginMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.middleware.SharedLoginMiddleware" title="Permalink to this definition">¶</a></dt>
@@ -174,9 +150,6 @@ respected by the Evennia Server, taking into account settings.UPSTREAM_IPS.</p>
         <li class="nav-item nav-item-this"><a href="">evennia.web.utils.middleware</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.tests.test_combat</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="test_combat.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -93,11 +83,7 @@
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">BaseEvenniaTest</span><span class="p">,</span>
-    <span class="n">EvenniaCommandTestMixin</span><span class="p">,</span>
-    <span class="n">EvenniaTestCase</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">,</span> <span class="n">EvenniaTestCase</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">combat_base</span><span class="p">,</span> <span class="n">combat_turnbased</span><span class="p">,</span> <span class="n">combat_twitch</span>
 <span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
@@ -171,7 +157,7 @@
 <div class="viewcode-block" id="TestEvAdventureCombatBaseHandler.test_get_combat_summary"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureCombatBaseHandler.test_get_combat_summary">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test combat summary&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">([],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]))</span>
 
         <span class="c1"># as seen from one side</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">))</span>
@@ -182,7 +168,7 @@
         <span class="p">)</span>
 
         <span class="c1"># as seen from other side</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">([],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">]))</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
@@ -473,11 +459,11 @@
 
         <span class="c1"># allies to combatant</span>
         <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span><span class="p">),</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="n">combatant2</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">target2</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span><span class="p">),</span> <span class="p">([</span><span class="n">combatant2</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">target2</span><span class="p">]))</span>
 
         <span class="c1"># allies to monster</span>
         <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span><span class="p">),</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">target2</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="n">combatant2</span><span class="p">]))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">((</span><span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span><span class="p">),</span> <span class="p">([</span><span class="n">target2</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="n">combatant2</span><span class="p">]))</span></div>
 
 <div class="viewcode-block" id="EvAdventureTurnbasedCombatHandlerTest.test_queue_and_execute_action"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_queue_and_execute_action">[docs]</a>    <span class="k">def</span> <span class="nf">test_queue_and_execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Queue actions and execute&quot;&quot;&quot;</span>
@@ -641,7 +627,7 @@
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_get_sides"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_get_sides">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">sides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">sides</span><span class="p">,</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">sides</span><span class="p">,</span> <span class="p">([],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]))</span></div>
 
 <div class="viewcode-block" id="TestEvAdventureTwitchCombatHandler.test_give_advantage"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_combat.html#evennia.contrib.tutorials.evadventure.tests.test_combat.TestEvAdventureTwitchCombatHandler.test_give_advantage">[docs]</a>    <span class="k">def</span> <span class="nf">test_give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">give_advantage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
@@ -702,7 +688,7 @@
         <span class="c1"># only one side wiped out</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="mi">10</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">get_sides</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="p">],</span> <span class="p">[]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">get_sides</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">([],</span> <span class="p">[]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant_combathandler</span><span class="o">.</span><span class="n">check_stop_combat</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combatant</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
             <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;The combat is over.&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combatant</span>
@@ -840,9 +826,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.tests.test_combat</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.system</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="system.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -99,10 +89,9 @@
 <span class="kn">import</span> <span class="nn">traceback</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">import</span> <span class="nn">twisted</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TaskHandlerTask</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
@@ -326,11 +315,7 @@
 
     <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">client_raw</span><span class="p">:</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="c1"># we must convert here to allow msg to pass it (a tuple is confused</span>
         <span class="c1"># with a outputfunc structure)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
@@ -728,7 +713,7 @@
             <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That service is already running.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting service &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39; ...&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beginner-Tutorial service &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39; ...&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">service</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -784,7 +769,7 @@
             <span class="n">twisted</span><span class="o">=</span><span class="n">twisted</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">short</span><span class="p">(),</span>
             <span class="n">django</span><span class="o">=</span><span class="n">django</span><span class="o">.</span><span class="n">get_version</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdTime"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTime">[docs]</a><span class="k">class</span> <span class="nc">CmdTime</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -826,7 +811,7 @@
             <span class="s2">&quot;Current time &quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">gametime</span><span class="o">.</span><span class="n">gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="p">)</span>
         <span class="n">table2</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">table1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table2</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">table1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table2</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="CmdServerLoad"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdServerLoad">[docs]</a><span class="k">class</span> <span class="nc">CmdServerLoad</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -888,7 +873,7 @@
                 <span class="s2">&quot;The Idmapper cache freed |w</span><span class="si">{idmapper}</span><span class="s2">|n database objects.</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;The Python garbage collector freed |w</span><span class="si">{gc}</span><span class="s2">|n Python instances total.&quot;</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idmapper</span><span class="o">=</span><span class="p">(</span><span class="n">prev</span> <span class="o">-</span> <span class="n">now</span><span class="p">),</span> <span class="n">gc</span><span class="o">=</span><span class="n">nflushed</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idmapper</span><span class="o">=</span><span class="p">(</span><span class="n">prev</span> <span class="o">-</span> <span class="n">now</span><span class="p">),</span> <span class="n">gc</span><span class="o">=</span><span class="n">nflushed</span><span class="p">))</span>
             <span class="k">return</span>
 
         <span class="c1"># display active processes</span>
@@ -915,7 +900,7 @@
 
                 <span class="k">if</span> <span class="s2">&quot;mem&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Total computer memory usage: |w</span><span class="si">%g</span><span class="s2">|n MB (</span><span class="si">%g%%</span><span class="s2">)&quot;</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">rmem</span><span class="p">,</span> <span class="n">pmem</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">rmem</span><span class="p">,</span> <span class="n">pmem</span><span class="p">))</span>
                     <span class="k">return</span>
                 <span class="c1"># Display table</span>
                 <span class="n">loadtable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="s2">&quot;property&quot;</span><span class="p">,</span> <span class="s2">&quot;statistic&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">)</span>
@@ -949,7 +934,7 @@
 
             <span class="k">if</span> <span class="s2">&quot;mem&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Memory usage: RMEM: |w</span><span class="si">%g</span><span class="s2">|n MB (</span><span class="si">%g%%</span><span class="s2">), VMEM (res+swap+cache): |w</span><span class="si">%g</span><span class="s2">|n MB.&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">rmem</span><span class="p">,</span> <span class="n">pmem</span><span class="p">,</span> <span class="n">vmem</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">rmem</span><span class="p">,</span> <span class="n">pmem</span><span class="p">,</span> <span class="n">vmem</span><span class="p">))</span>
                 <span class="k">return</span>
 
             <span class="n">loadtable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="s2">&quot;property&quot;</span><span class="p">,</span> <span class="s2">&quot;statistic&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">)</span>
@@ -999,7 +984,7 @@
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|w Entity idmapper cache:|n </span><span class="si">%i</span><span class="s2"> items</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">total_num</span><span class="p">,</span> <span class="n">memtable</span><span class="p">)</span>
 
         <span class="c1"># return to caller</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdTickers"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTickers">[docs]</a><span class="k">class</span> <span class="nc">CmdTickers</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -1024,7 +1009,7 @@
 
         <span class="n">all_subs</span> <span class="o">=</span> <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">all_display</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">all_subs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No tickers are currently active.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No tickers are currently active.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="s2">&quot;interval (s)&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;path/methodname&quot;</span><span class="p">,</span> <span class="s2">&quot;idstring&quot;</span><span class="p">,</span> <span class="s2">&quot;db&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">all_subs</span><span class="p">:</span>
@@ -1039,7 +1024,7 @@
                 <span class="n">sub</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;[Unset]&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">sub</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wActive tickers|n:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wActive tickers|n:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="CmdTasks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTasks">[docs]</a><span class="k">class</span> <span class="nc">CmdTasks</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -1293,9 +1278,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.system</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

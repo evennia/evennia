@@ -21,8 +21,6 @@
     <link rel="prev" title="8. Non-Player-Characters" href="Beginner-Tutorial-NPCs.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -40,12 +38,16 @@
           <a href="Beginner-Tutorial-NPCs.html" title="8. Non-Player-Characters"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">9. </span>Combat base framework</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -114,18 +116,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Beginner-Tutorial-Combat-Base.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -473,7 +463,9 @@
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_base.py</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># in evadventure/combat_base.py</span>
 
 <span class="c1"># ...</span>
 
@@ -488,20 +480,22 @@
 	<span class="k">def</span> <span class="nf">get_combat_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combatant</span><span class="p">):</span>
 
 <span class="hll">        <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="n">combatant</span><span class="p">)</span>
+</span>        <span class="c1"># we must include outselves at the top of the list (we are not returned from get_sides)</span>
+<span class="hll">        <span class="n">allies</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">combatant</span><span class="p">)</span>
 </span>        <span class="n">nallies</span><span class="p">,</span> <span class="n">nenemies</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">allies</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">enemies</span><span class="p">)</span>
-<span class="hll">
-</span>        <span class="c1"># prepare colors and hurt-levels</span>
-        <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ally</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ally</span><span class="o">.</span><span class="n">hurt_level</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">ally</span> <span class="ow">in</span> <span class="n">allies</span><span class="p">]</span>
-        <span class="n">enemies</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">enemy</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">enemy</span><span class="o">.</span><span class="n">hurt_level</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">enemy</span> <span class="ow">in</span> <span class="n">enemies</span><span class="p">]</span>
-<span class="hll">
-</span><span class="hll">        <span class="c1"># the center column with the &#39;vs&#39;</span>
-</span>        <span class="n">vs_column</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">nallies</span><span class="p">,</span> <span class="n">nenemies</span><span class="p">))]</span>
+
+        <span class="c1"># prepare colors and hurt-levels</span>
+<span class="hll">        <span class="n">allies</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ally</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ally</span><span class="o">.</span><span class="n">hurt_level</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">ally</span> <span class="ow">in</span> <span class="n">allies</span><span class="p">]</span>
+</span><span class="hll">        <span class="n">enemies</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">enemy</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">enemy</span><span class="o">.</span><span class="n">hurt_level</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">enemy</span> <span class="ow">in</span> <span class="n">enemies</span><span class="p">]</span>
+</span>
+        <span class="c1"># the center column with the &#39;vs&#39;</span>
+        <span class="n">vs_column</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">nallies</span><span class="p">,</span> <span class="n">nenemies</span><span class="p">))]</span>
         <span class="n">vs_column</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">vs_column</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;|wvs|n&quot;</span>
 
-        <span class="c1"># the two allies / enemies columns should be centered vertically</span>
-        <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">nallies</span> <span class="o">-</span> <span class="n">nenemies</span><span class="p">)</span>
-<span class="hll">        <span class="n">top_empty</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">//</span> <span class="mi">2</span>
-</span>        <span class="n">bot_empty</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">-</span> <span class="n">top_empty</span>
+<span class="hll">        <span class="c1"># the two allies / enemies columns should be centered vertically</span>
+</span>        <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">nallies</span> <span class="o">-</span> <span class="n">nenemies</span><span class="p">)</span>
+        <span class="n">top_empty</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">bot_empty</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">-</span> <span class="n">top_empty</span>
         <span class="n">topfill</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">top_empty</span><span class="p">)]</span>
         <span class="n">botfill</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bot_empty</span><span class="p">)]</span>
 
@@ -511,10 +505,10 @@
             <span class="n">allies</span> <span class="o">=</span> <span class="n">topfill</span> <span class="o">+</span> <span class="n">allies</span> <span class="o">+</span> <span class="n">botfill</span>
 
         <span class="c1"># make a table with three columns</span>
-        <span class="k">return</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span>
-            <span class="n">table</span><span class="o">=</span><span class="p">[</span>
-<span class="hll">                <span class="n">evtable</span><span class="o">.</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">allies</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">),</span>
-</span>                <span class="n">evtable</span><span class="o">.</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">vs_column</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">),</span>
+<span class="hll">        <span class="k">return</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span>
+</span>            <span class="n">table</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">evtable</span><span class="o">.</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">allies</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">),</span>
+                <span class="n">evtable</span><span class="o">.</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">vs_column</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">),</span>
                 <span class="n">evtable</span><span class="o">.</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">enemies</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">),</span>
             <span class="p">],</span>
             <span class="n">border</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -968,15 +962,12 @@
           <a href="Beginner-Tutorial-NPCs.html" title="8. Non-Player-Characters"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 2.x</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How we get there (example game)</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">9. </span>Combat base framework</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

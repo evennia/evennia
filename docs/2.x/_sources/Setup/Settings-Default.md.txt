@@ -68,16 +68,6 @@ SSL_ENABLED = False
 SSL_PORTS = [4003]
 # Telnet+SSL Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSL_INTERFACES = ["0.0.0.0"]
-# Telnet+SSL certificate issuers. Don't change unless you have issues, e.g. CN may need to be
-# changed to your server's hostname.
-SSL_CERTIFICATE_ISSUER = {
-    "C": "EV",
-    "ST": "Evennia",
-    "L": "Evennia",
-    "O": "Evennia Security",
-    "OU": "Evennia Department",
-    "CN": "evennia",
-}
 # OOB (out-of-band) telnet communication allows Evennia to communicate
 # special commands and data with enabled Telnet clients. This is used
 # to create custom client interfaces over a telnet connection. To make
@@ -109,8 +99,7 @@ WEBSERVER_PORTS = [(4001, 4005)]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSERVER_INTERFACES = ["0.0.0.0"]
 # IP addresses that may talk to the server in a reverse proxy configuration,
-# like NginX or Varnish. These can be either specific IPv4 or IPv6 addresses,
-# or subnets in CIDR format - like 192.168.0.0/24 or 2001:db8::/32.
+# like NginX.
 UPSTREAM_IPS = ["127.0.0.1"]
 # The webserver uses threadpool for handling requests. This will scale
 # with server load. Set the minimum and maximum number of threads it
@@ -147,7 +136,6 @@ EVENNIA_ADMIN = True
 # operating between two processes on the same machine. You usually don't need to
 # change this unless you cannot use the default AMP port/host for
 # whatever reason.
-AMP_ENABLED = True
 AMP_HOST = "localhost"
 AMP_PORT = 4006
 AMP_INTERFACE = "127.0.0.1"
@@ -1051,27 +1039,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
     "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
-    "evennia.web.utils.middleware.OriginIpMiddleware",
     "evennia.web.utils.middleware.SharedLoginMiddleware",
 ]
-
-# A list of Django apps (see INSTALLED_APPS) that will be listed first (if present)
-# in the Django web Admin page.
-DJANGO_ADMIN_APP_ORDER = [
-    "accounts",
-    "objects",
-    "scripts",
-    "comms",
-    "help",
-    "typeclasses",
-    "server",
-    "sites",
-    "flatpages",
-    "auth",
-]
-
-# The following apps will be excluded from the Django web Admin page.
-DJANGO_ADMIN_APP_EXCLUDE = list()
 
 ######################################################################
 # Evennia components
@@ -1177,10 +1146,6 @@ REST_API_ENABLED = False
 # together with your own variations. You should usually never have to touch
 # this, and if so, you really need to know what you are doing.
 
-# The primary Twisted Services used to start up Evennia.
-EVENNIA_SERVER_SERVICE_CLASS = "evennia.server.service.EvenniaServerService"
-EVENNIA_PORTAL_SERVICE_CLASS = "evennia.server.portal.service.EvenniaPortalService"
-
 # The Base Session Class is used as a parent class for all Protocols such as
 # Telnet and SSH.) Changing this could be really dangerous. It will cascade
 # to tons of classes. You generally shouldn't need to touch protocols.
@@ -1195,16 +1160,6 @@ SSL_PROTOCOL_CLASS = "evennia.server.portal.ssl.SSLProtocol"
 # Websocket Client Protocol. This inherits from BASE_SESSION_CLASS. It is used
 # for all webclient connections.
 WEBSOCKET_PROTOCOL_CLASS = "evennia.server.portal.webclient.WebSocketClient"
-
-# Ajax Web Client classes. Evennia uses AJAX as a fallback for the webclient by
-# default. AJAX may in general be more useful for mobile clients as it's
-# resilient to IP address changes.
-
-# The Ajax Client Class is used to manage all AJAX sessions.
-AJAX_CLIENT_CLASS = "evennia.server.portal.webclient_ajax.AjaxWebClient"
-
-# Ajax Protocol Class is used for all AJAX client connections.
-AJAX_PROTOCOL_CLASS = "evennia.server.portal.webclient_ajax.AjaxWebClientSession"
 
 # Protocol for the SSH interface. This inherits from BASE_SESSION_CLASS.
 SSH_PROTOCOL_CLASS = "evennia.server.portal.ssh.SshProtocol"
@@ -1258,7 +1213,7 @@ AMP_CLIENT_PROTOCOL_CLASS = "evennia.server.amp_client.AMPServerClientProtocol"
 # don't change this manually, it can be checked from code to know if
 # being run from a unit test (set by the evennia.utils.test_resources.BaseEvenniaTest
 # and BaseEvenniaTestCase unit testing parents)
-TEST_ENVIRONMENT = False
+_TEST_ENVIRONMENT = False
 
 ######################################################################
 # Django extensions

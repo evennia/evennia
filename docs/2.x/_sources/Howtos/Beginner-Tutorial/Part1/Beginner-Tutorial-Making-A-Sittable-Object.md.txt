@@ -39,7 +39,7 @@ class Character(DefaultCharacter):
 When moving somewhere, [character.move_to](evennia.objects.objects.DefaultObject.move_to) is called. This in turn
 will call `character.at_pre_move`.  If this returns `False`, the move is aborted. 
 
-Here we look for an Attribute `is_sitting` (which we will assign below) to determine if we are stuck on the chair or not.
+Here we look for an Attribute `is_resting` (which we will assign below) to determine if we are stuck on the chair or not.
 
 ## Making the Chair itself
 
@@ -108,7 +108,7 @@ Let's continue:
         else:
             self.db.sitter = None
             del stander.db.is_sitting
-            stander.msg(f"You stand up from {self.key}.")
+            stander.msg(f"You stand up from {self.key}")
 ```
 
 This is the inverse of sitting down; we need to do some cleanup. 
@@ -127,9 +127,9 @@ We let the typeclass handle the logic, and also let it do all the return messagi
 It's fine to sit 'on' a chair. But what if our Sittable is an armchair? 
 
 ```
-> py armchair = evennia.create_object("typeclasses.sittables.Sittable", key="armchair", location=here)
-> py armchair.do_sit(me)
-You sit on armchair.
+> armchair = evennia.create_object("typeclasses.sittables.Sittable", key="armchair", location=here)
+> armchair.do_sit(me)
+> You sit on armchair.
 ```
 
 This is not grammatically correct, you actually sit "in" an armchair rather than "on" it. It's also possible to both sit 'in' or 'on' a chair depending on the type of chair (English is weird). We want to be able to control this.
@@ -138,13 +138,13 @@ We _could_ make a child class of `Sittable` named `SittableIn` that makes this c
 
 ```{code-block} python 
 :linenos:
-:emphasize-lines: 15,19,22,27,39,43
+:emphasize-lines: 15,22,43
 
 # in mygame/typeclasses/sittables.py
 
-from typeclasses.objects import Object
+from evennia import DefaultObject
 
-class Sittable(Object):
+class Sittable(DefaultObject):
 
     def do_sit(self, sitter):
         """
@@ -182,11 +182,11 @@ class Sittable(Object):
         else:
             self.db.sitter = None
             del stander.db.is_sitting
-            stander.msg(f"You stand up from {self.key}.")
+            stander.msg(f"You stand up from {self.key}")
 ```
 
 - **Line 15**: We grab the `adjective` Attribute. Using `self.db.adjective or "on"` here means that if the Attribute is not set (is `None`/falsy) the default "on" string will be assumed.
-- **Lines 19,22,27,39, and 43**: We use this adjective to modify the return text we see.  
+- **Lines 22 and 43**: We use this adjective to modify the return text we see.  
 
 `reload`  the server. An advantage of using Attributes like this is that they can be modified on the fly, in-game. Let's look at a builder could use this by normal building commands (no need for `py`): 
 
@@ -237,13 +237,13 @@ This way to implement `sit` and `stand` puts new cmdsets on the Sittable itself.
 As we've learned before, commands on objects are made available to others in the room.
 This makes the command easy but instead adds some complexity in the management of the CmdSet.
 
-This is how it could look if `armchair` is in the room (Extra credits: Change the sit message on the armchair to match this output instead of getting the default `You sit in armchair`!):
+This is how it could look if `armchair` is in the room (if you overrode the sit message):
 
     > sit
     As you sit down in armchair, life feels easier.
 
-What happens if there are sittables `sofa` and `barstool` also in the room? Evennia will
-automatically handle this for us and allow us to specify which one we want:
+What happens if there are sittables `sofa` and `barstool` also in the room? Evennia will automatically
+handle this for us and allow us to specify which one we want:
 
     > sit
     More than one match for 'sit' (please narrow target):
@@ -306,10 +306,10 @@ We also need to make a change to our `Sittable` typeclass. Open `mygame/typeclas
 
 # in mygame/typeclasses/sittables.py
 
-from typeclasses.objects import Object
+from evennia import DefaultObject
 from commands.sittables import CmdSetSit 
 
-class Sittable(Object):
+class Sittable(DefaultObject):
     """
     (docstring)
     """

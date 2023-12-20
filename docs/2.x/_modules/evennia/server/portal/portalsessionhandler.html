@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.portal.portalsessionhandler</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="portalsessionhandler.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -93,14 +83,14 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">namedtuple</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
+
 <span class="kn">from</span> <span class="nn">evennia.server.portal.amp</span> <span class="kn">import</span> <span class="n">PCONN</span><span class="p">,</span> <span class="n">PCONNSYNC</span><span class="p">,</span> <span class="n">PDISCONN</span><span class="p">,</span> <span class="n">PDISCONNALL</span>
 <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SessionHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
 
 <span class="c1"># module import</span>
 <span class="n">_MOD_IMPORT</span> <span class="o">=</span> <span class="kc">None</span>
@@ -126,7 +116,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 <span class="n">DOS_PROTECTION_MSG</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="s2">&quot;</span><span class="si">{servername}</span><span class="s2"> DoS protection is active.You are queued to connect in </span><span class="si">{num}</span><span class="s2"> seconds ...&quot;</span>
+    <span class="s2">&quot;</span><span class="si">{servername}</span><span class="s2"> DoS protection is active.&quot;</span> <span class="s2">&quot;You are queued to connect in </span><span class="si">{num}</span><span class="s2"> seconds ...&quot;</span>
 <span class="p">)</span>
 
 
@@ -148,6 +138,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latest_sessid</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uptime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_time</span> <span class="o">=</span> <span class="mi">0</span>
@@ -217,7 +208,7 @@
         <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_last</span> <span class="o">&lt;</span> <span class="n">_MIN_TIME_BETWEEN_CONNECTS</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">amp_protocol</span><span class="p">:</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_task</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">connection_task</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span>
                     <span class="n">_MIN_TIME_BETWEEN_CONNECTS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">,</span> <span class="kc">None</span>
@@ -241,7 +232,7 @@
 
             <span class="bp">self</span><span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
             <span class="n">session</span><span class="o">.</span><span class="n">server_connected</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
                 <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PCONN</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">sessdata</span>
             <span class="p">)</span></div>
 
@@ -260,7 +251,7 @@
             <span class="c1"># once to the server - if so we must re-sync woth the server, otherwise</span>
             <span class="c1"># we skip this step.</span>
             <span class="n">sessdata</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_sync_data</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">amp_protocol</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="p">:</span>
                 <span class="c1"># we only send sessdata that should not have changed</span>
                 <span class="c1"># at the server level at this point</span>
                 <span class="n">sessdata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -277,7 +268,7 @@
                         <span class="s2">&quot;server_data&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
-                <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
                     <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PCONNSYNC</span><span class="p">,</span> <span class="n">sessiondata</span><span class="o">=</span><span class="n">sessdata</span>
                 <span class="p">)</span></div>
 
@@ -307,17 +298,13 @@
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span>
 
         <span class="c1"># Tell the Server to disconnect its version of the Session as well.</span>
-        <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
-            <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PDISCONN</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PDISCONN</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PortalSessionHandler.disconnect_all"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.disconnect_all">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disconnect all sessions, informing the Server.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEST_ENVIRONMENT</span><span class="p">:</span>
-            <span class="k">return</span>
 
         <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">):</span>
             <span class="c1"># we set a watchdog to stop self.disconnect from deleting</span>
@@ -329,8 +316,7 @@
 
         <span class="c1"># inform Server; wait until finished sending before we continue</span>
         <span class="c1"># removing all the sessions.</span>
-
-        <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_AdminPortal2Server</span><span class="p">(</span>
             <span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">PDISCONNALL</span>
         <span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">_callback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
@@ -524,7 +510,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">[[</span><span class="n">_ERROR_COMMAND_OVERFLOW</span><span class="p">],</span> <span class="p">{}])</span>
                 <span class="k">return</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">amp_protocol</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="p">:</span>
                 <span class="c1"># this can happen if someone connects before AMP connection</span>
                 <span class="c1"># was established (usually on first start)</span>
                 <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -535,7 +521,7 @@
 
             <span class="c1"># relay data to Server</span>
             <span class="n">session</span><span class="o">.</span><span class="n">cmd_last</span> <span class="o">=</span> <span class="n">now</span>
-            <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_MsgPortal2Server</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_MsgPortal2Server</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
             <span class="c1"># eventual local echo (text input only)</span>
             <span class="k">if</span> <span class="s2">&quot;text&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCALECHO&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
@@ -603,9 +589,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.server.portal.portalsessionhandler</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

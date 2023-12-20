@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -34,7 +32,11 @@
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -65,18 +67,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="evennia.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -101,7 +91,6 @@
 <span class="sd">See www.evennia.com for full documentation.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">evennia</span>
 
 <span class="c1"># docstring header</span>
 
@@ -133,7 +122,6 @@
 <span class="n">ScriptDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">ChannelDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">Msg</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">ServerConfig</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># Properties</span>
 <span class="n">AttributeProperty</span> <span class="o">=</span> <span class="kc">None</span>
@@ -185,8 +173,6 @@
 
 <span class="c1"># Handlers</span>
 <span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">PORTAL_SESSION_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">SERVER_SESSION_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">TICKER_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">MONITOR_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
@@ -194,12 +180,6 @@
 <span class="c1"># Containers</span>
 <span class="n">GLOBAL_SCRIPTS</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">OPTION_CLASSES</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="n">PROCESS_ID</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="n">TWISTED_APPLICATION</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">EVENNIA_PORTAL_SERVICE</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">EVENNIA_SERVER_SERVICE</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <span class="k">def</span> <span class="nf">_create_version</span><span class="p">():</span>
@@ -232,10 +212,6 @@
 <span class="n">__version__</span> <span class="o">=</span> <span class="n">_create_version</span><span class="p">()</span>
 <span class="k">del</span> <span class="n">_create_version</span>
 
-<span class="n">_LOADED</span> <span class="o">=</span> <span class="kc">False</span>
-
-<span class="n">PORTAL_MODE</span> <span class="o">=</span> <span class="kc">False</span>
-
 
 <span class="k">def</span> <span class="nf">_init</span><span class="p">(</span><span class="n">portal_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -243,10 +219,6 @@
 <span class="sd">    Evennia has fully initialized all its models. It sets up the API</span>
 <span class="sd">    in a safe environment where all models are available already.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">_LOADED</span>
-    <span class="k">if</span> <span class="n">_LOADED</span><span class="p">:</span>
-        <span class="k">return</span>
-    <span class="n">_LOADED</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">global</span> <span class="n">DefaultAccount</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultGuest</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
     <span class="k">global</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultChannel</span><span class="p">,</span> <span class="n">DefaultScript</span>
     <span class="k">global</span> <span class="n">ObjectDB</span><span class="p">,</span> <span class="n">AccountDB</span><span class="p">,</span> <span class="n">ScriptDB</span><span class="p">,</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
@@ -257,19 +229,15 @@
     <span class="k">global</span> <span class="n">create_message</span><span class="p">,</span> <span class="n">create_help_entry</span>
     <span class="k">global</span> <span class="n">signals</span>
     <span class="k">global</span> <span class="n">settings</span><span class="p">,</span> <span class="n">lockfuncs</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">spawn</span><span class="p">,</span> <span class="n">managers</span>
-    <span class="k">global</span> <span class="n">contrib</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span><span class="p">,</span> <span class="n">MONITOR_HANDLER</span><span class="p">,</span> <span class="n">SESSION_HANDLER</span><span class="p">,</span> <span class="n">PROCESS_ID</span>
-    <span class="k">global</span> <span class="n">TASK_HANDLER</span><span class="p">,</span> <span class="n">PORTAL_SESSION_HANDLER</span><span class="p">,</span> <span class="n">SERVER_SESSION_HANDLER</span>
-    <span class="k">global</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span><span class="p">,</span> <span class="n">EVENNIA_PORTAL_SERVICE</span><span class="p">,</span> <span class="n">EVENNIA_SERVER_SERVICE</span><span class="p">,</span> <span class="n">TWISTED_APPLICATION</span>
+    <span class="k">global</span> <span class="n">contrib</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span><span class="p">,</span> <span class="n">MONITOR_HANDLER</span><span class="p">,</span> <span class="n">SESSION_HANDLER</span>
+    <span class="k">global</span> <span class="n">TASK_HANDLER</span>
+    <span class="k">global</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
     <span class="k">global</span> <span class="n">EvMenu</span><span class="p">,</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvMore</span><span class="p">,</span> <span class="n">EvEditor</span>
     <span class="k">global</span> <span class="n">ANSIString</span><span class="p">,</span> <span class="n">FuncParser</span>
-    <span class="k">global</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">TagProperty</span><span class="p">,</span> <span class="n">TagCategoryProperty</span><span class="p">,</span> <span class="n">ServerConfig</span>
-    <span class="k">global</span> <span class="n">PORTAL_MODE</span>
-    <span class="n">PORTAL_MODE</span> <span class="o">=</span> <span class="n">portal_mode</span>
+    <span class="k">global</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">TagProperty</span><span class="p">,</span> <span class="n">TagCategoryProperty</span>
 
     <span class="c1"># Parent typeclasses</span>
     <span class="c1"># utilities</span>
-    <span class="kn">import</span> <span class="nn">os</span>
-
     <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">contrib</span>
@@ -281,12 +249,7 @@
     <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
     <span class="kn">from</span> <span class="nn">.locks</span> <span class="kn">import</span> <span class="n">lockfuncs</span>
     <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">DefaultCharacter</span><span class="p">,</span>
-        <span class="n">DefaultExit</span><span class="p">,</span>
-        <span class="n">DefaultObject</span><span class="p">,</span>
-        <span class="n">DefaultRoom</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span>
     <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
     <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
     <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
@@ -294,15 +257,13 @@
     <span class="kn">from</span> <span class="nn">.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
     <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
     <span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">signals</span>
-    <span class="kn">from</span> <span class="nn">.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
     <span class="kn">from</span> <span class="nn">.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
     <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="kn">import</span> <span class="n">TagCategoryProperty</span><span class="p">,</span> <span class="n">TagProperty</span>
-    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span>
     <span class="kn">from</span> <span class="nn">.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">PORTAL_MODE</span><span class="p">:</span>
-        <span class="c1"># containers</span>
-        <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
+    <span class="c1"># containers</span>
+    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
 
     <span class="c1"># create functions</span>
     <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="p">(</span>
@@ -332,34 +293,12 @@
     <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
-    <span class="n">PROCESS_ID</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
-
-    <span class="kn">from</span> <span class="nn">twisted.application.service</span> <span class="kn">import</span> <span class="n">Application</span>
-
-    <span class="n">TWISTED_APPLICATION</span> <span class="o">=</span> <span class="n">Application</span><span class="p">(</span><span class="s2">&quot;Evennia&quot;</span><span class="p">)</span>
-
-    <span class="n">_evennia_service_class</span> <span class="o">=</span> <span class="kc">None</span>
-
     <span class="k">if</span> <span class="n">portal_mode</span><span class="p">:</span>
         <span class="c1"># Set up the PortalSessionHandler</span>
         <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">portalsessionhandler</span>
 
         <span class="n">portal_sess_handler_class</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER_CLASS</span><span class="p">)</span>
         <span class="n">portalsessionhandler</span><span class="o">.</span><span class="n">PORTAL_SESSIONS</span> <span class="o">=</span> <span class="n">portal_sess_handler_class</span><span class="p">()</span>
-        <span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="n">portalsessionhandler</span><span class="o">.</span><span class="n">PORTAL_SESSIONS</span>
-        <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">SESSION_HANDLER</span>
-        <span class="n">_evennia_service_class</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE_CLASS</span><span class="p">)</span>
-        <span class="n">EVENNIA_PORTAL_SERVICE</span> <span class="o">=</span> <span class="n">_evennia_service_class</span><span class="p">()</span>
-        <span class="n">EVENNIA_PORTAL_SERVICE</span><span class="o">.</span><span class="n">setServiceParent</span><span class="p">(</span><span class="n">TWISTED_APPLICATION</span><span class="p">)</span>
-
-        <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
-
-        <span class="c1"># we don&#39;t need a connection to the database so close it right away</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">pass</span>
-
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Create the ServerSesssionHandler</span>
         <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">sessionhandler</span>
@@ -368,10 +307,6 @@
         <span class="n">sessionhandler</span><span class="o">.</span><span class="n">SESSIONS</span> <span class="o">=</span> <span class="n">sess_handler_class</span><span class="p">()</span>
         <span class="n">sessionhandler</span><span class="o">.</span><span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="n">sessionhandler</span><span class="o">.</span><span class="n">SESSIONS</span>
         <span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="n">sessionhandler</span><span class="o">.</span><span class="n">SESSIONS</span>
-        <span class="n">SERVER_SESSION_HANDLER</span> <span class="o">=</span> <span class="n">SESSION_HANDLER</span>
-        <span class="n">_evennia_service_class</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">EVENNIA_SERVER_SERVICE_CLASS</span><span class="p">)</span>
-        <span class="n">EVENNIA_SERVER_SERVICE</span> <span class="o">=</span> <span class="n">_evennia_service_class</span><span class="p">()</span>
-        <span class="n">EVENNIA_SERVER_SERVICE</span><span class="o">.</span><span class="n">setServiceParent</span><span class="p">(</span><span class="n">TWISTED_APPLICATION</span><span class="p">)</span>
 
     <span class="c1"># API containers</span>
 
@@ -516,6 +451,10 @@
     <span class="k">del</span> <span class="n">SystemCmds</span>
     <span class="k">del</span> <span class="n">_EvContainer</span>
 
+    <span class="c1"># delayed starts - important so as to not back-access evennia before it has</span>
+    <span class="c1"># finished initializing</span>
+    <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
 
 <div class="viewcode-block" id="set_trace"><a class="viewcode-back" href="../api/evennia.html#evennia.set_trace">[docs]</a><span class="k">def</span> <span class="nf">set_trace</span><span class="p">(</span><span class="n">term_size</span><span class="o">=</span><span class="p">(</span><span class="mi">140</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="n">debugger</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -603,9 +542,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

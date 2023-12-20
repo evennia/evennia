@@ -157,9 +157,9 @@ called `create_object`. Let's recreate Cuddly this time:
 Boom, Cuddly should now be in the room with you, a little less scary than Smaug. You specify the 
 python-path to the code you want and then set the key and location (if you had the `Monster` class already imported, you could have passed that too). Evennia sets things up and saves for you. 
 
-If you want to find Cuddly from anywhere (not just in the same room), you can use Evennia's `search_object` function: 
+If you want to find Smaug from anywhere (not just in the same room), you can use Evennia's `search_object` function: 
 
-    > py cuddly = evennia.search_object("Cuddly")[0] ; cuddly.move_around()
+    > cuddly = evennia.search_object("Cuddly")[0] ; cuddly.move_around()
     Cuddly is moving!
 
 > The `[0]` is because `search_object` always returns a _list_ of zero, one or more found objects. The `[0]` means that we want the first element of this list (counting in Python always starts from 0). If there were  multiple Cuddlies we could get the second one with `[1]`.
@@ -390,7 +390,7 @@ We made a new method, gave it a docstring and had it `return` the RP-esque value
 
 So what happens when we increase our strength? This would be one way: 
 
-    > py self.strength = self.strength + 1
+    > py self.strength = self.str + 1
     > py self.strength
     11
     
@@ -412,7 +412,8 @@ After a reload all our changes were forgotten. When we change properties like th
  
 In principle we could change the python code. But we don't want to do that manually every time. And more importantly since we have the stats hardcoded in the class, _every_ character instance in the game will have exactly the  same `str`, `dex` and `int` now! This is clearly not what we want. 
 
-Evennia offers a special, persistent type of property for this, called an `Attribute`. Rework your  `mygame/typeclasses/characters.py` like this: 
+Evennia offers a special, persistent type of property for this, called an `Attribute`. Rework your 
+`mygame/typeclasses/characters.py` like this: 
     
 ```python
 
@@ -513,7 +514,7 @@ Hm, this is the same values we set before. They are not random. The reason for t
     
 It's simple enough to run it manually though: 
 
-    > py self.at_object_creation()
+    > self.at_object_creation()
     > py self.get_stats()
     (5, 4, 8)
     
@@ -547,7 +548,7 @@ A python _for-loop_ allows us to loop over something. Above, we made a _list_ of
 For our list, we want to loop over all Characters, and want to call `.at_object_creation` on each. This is how  this is done (still in python multi-line mode): 
 
     > from typeclasses.characters import Character
-    > for char in Character.objects.all():
+    > for char in Character.objects.all()
     >     char.at_object_creation()
     
 ```{sidebar} Database queries
@@ -560,7 +561,7 @@ of all of them that we then immediately loop over. Boom, we just updated all Cha
 
     > quit()
     Closing the Python console.
-    > py self.get_stats()
+    > self.get_stats()
     (3, 18, 10)
 
 ## Extra Credits

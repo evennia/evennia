@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.server.portal.telnet_ssl</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="telnet_ssl.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -122,7 +112,14 @@
 <span class="n">_PUBLIC_KEY_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;ssl-public.key&quot;</span><span class="p">)</span>
 <span class="n">_CERTIFICATE_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;ssl.cert&quot;</span><span class="p">)</span>
 <span class="n">_CERTIFICATE_EXPIRE</span> <span class="o">=</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">20</span>  <span class="c1"># 20 years</span>
-<span class="n">_CERTIFICATE_ISSUER</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SSL_CERTIFICATE_ISSUER</span>
+<span class="n">_CERTIFICATE_ISSUER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;EV&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;O&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia Security&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OU&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia Department&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CN&quot;</span><span class="p">:</span> <span class="s2">&quot;evennia&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 
 <span class="c1"># messages</span>
 
@@ -189,6 +186,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">else</span><span class="p">:</span>
+
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># create certificate</span>
                 <span class="n">cert</span> <span class="o">=</span> <span class="n">crypto</span><span class="o">.</span><span class="n">X509</span><span class="p">()</span>
@@ -251,9 +249,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.server.portal.telnet_ssl</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

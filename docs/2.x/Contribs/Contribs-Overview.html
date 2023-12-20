@@ -21,8 +21,6 @@
     <link rel="prev" title="Evennia 1.0 Release Notes" href="../Coding/Release-Notes-1.0.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -42,7 +40,11 @@
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 2.x</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Contribs</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -115,7 +117,6 @@
 <li><a class="reference internal" href="#character-creator"><code class="docutils literal notranslate"><span class="pre">character_creator</span></code></a></li>
 <li><a class="reference internal" href="#dice"><code class="docutils literal notranslate"><span class="pre">dice</span></code></a></li>
 <li><a class="reference internal" href="#health-bar"><code class="docutils literal notranslate"><span class="pre">health_bar</span></code></a></li>
-<li><a class="reference internal" href="#llm"><code class="docutils literal notranslate"><span class="pre">llm</span></code></a></li>
 <li><a class="reference internal" href="#rpsystem"><code class="docutils literal notranslate"><span class="pre">rpsystem</span></code></a></li>
 <li><a class="reference internal" href="#traits"><code class="docutils literal notranslate"><span class="pre">traits</span></code></a></li>
 </ul>
@@ -167,18 +168,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="Contribs-Overview.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -194,7 +183,7 @@ in the <a class="reference external" href="https://github.com/evennia/evennia/di
 <p><em>Contribs</em> are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than ‘core’ Evennia.
-This page is auto-generated and summarizes all <strong>49</strong> contribs currently included
+This page is auto-generated and summarizes all <strong>48</strong> contribs currently included
 with the Evennia distribution.</p>
 <p>All contrib categories are imported from <code class="docutils literal notranslate"><span class="pre">evennia.contrib</span></code>, such as</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from evennia.contrib.base_systems import building_menu
@@ -270,32 +259,32 @@ copy its entire folder to your game directory and modify/use it from there.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ingame-map-display"><span class="std std-doc">ingame_map_display</span></a></p></td>
 <td><p><a class="reference internal" href="#ingame-python"><span class="std std-doc">ingame_python</span></a></p></td>
-<td><p><a class="reference internal" href="#llm"><span class="std std-doc">llm</span></a></p></td>
 <td><p><a class="reference internal" href="#mail"><span class="std std-doc">mail</span></a></p></td>
 <td><p><a class="reference internal" href="#mapbuilder"><span class="std std-doc">mapbuilder</span></a></p></td>
+<td><p><a class="reference internal" href="#menu-login"><span class="std std-doc">menu_login</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#menu-login"><span class="std std-doc">menu_login</span></a></p></td>
-<td><p><a class="reference internal" href="#mirror"><span class="std std-doc">mirror</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mirror"><span class="std std-doc">mirror</span></a></p></td>
 <td><p><a class="reference internal" href="#multidescer"><span class="std std-doc">multidescer</span></a></p></td>
 <td><p><a class="reference internal" href="#mux-comms-cmds"><span class="std std-doc">mux_comms_cmds</span></a></p></td>
 <td><p><a class="reference internal" href="#name-generator"><span class="std std-doc">name_generator</span></a></p></td>
+<td><p><a class="reference internal" href="#puzzles"><span class="std std-doc">puzzles</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#puzzles"><span class="std std-doc">puzzles</span></a></p></td>
-<td><p><a class="reference internal" href="#random-string-generator"><span class="std std-doc">random_string_generator</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#random-string-generator"><span class="std std-doc">random_string_generator</span></a></p></td>
 <td><p><a class="reference internal" href="#red-button"><span class="std std-doc">red_button</span></a></p></td>
 <td><p><a class="reference internal" href="#rpsystem"><span class="std std-doc">rpsystem</span></a></p></td>
 <td><p><a class="reference internal" href="#simpledoor"><span class="std std-doc">simpledoor</span></a></p></td>
+<td><p><a class="reference internal" href="#slow-exit"><span class="std std-doc">slow_exit</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#slow-exit"><span class="std std-doc">slow_exit</span></a></p></td>
-<td><p><a class="reference internal" href="#talking-npc"><span class="std std-doc">talking_npc</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#talking-npc"><span class="std std-doc">talking_npc</span></a></p></td>
 <td><p><a class="reference internal" href="#traits"><span class="std std-doc">traits</span></a></p></td>
 <td><p><a class="reference internal" href="#tree-select"><span class="std std-doc">tree_select</span></a></p></td>
 <td><p><a class="reference internal" href="#turnbattle"><span class="std std-doc">turnbattle</span></a></p></td>
+<td><p><a class="reference internal" href="#tutorial-world"><span class="std std-doc">tutorial_world</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#tutorial-world"><span class="std std-doc">tutorial_world</span></a></p></td>
-<td><p><a class="reference internal" href="#unixcommand"><span class="std std-doc">unixcommand</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#unixcommand"><span class="std std-doc">unixcommand</span></a></p></td>
 <td><p><a class="reference internal" href="#wilderness"><span class="std std-doc">wilderness</span></a></p></td>
 <td><p><a class="reference internal" href="#xyzgrid"><span class="std std-doc">xyzgrid</span></a></p></td>
+<td><p></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -536,8 +525,8 @@ on their own.</p>
 <h3><code class="docutils literal notranslate"><span class="pre">multidescer</span></code><a class="headerlink" href="#multidescer" title="Permalink to this headline">¶</a></h3>
 <p><em>Contribution by Griatch 2016</em></p>
 <p>A “multidescer” is a concept from the MUSH world. It allows for
-splitting your descriptions into arbitrary named ‘sections’ which you can
-then swap out at will. It is a way for quickly managing your look (such as when
+creating, managing and switching between multiple character
+descriptions and is a way for quickly managing your look (such as when
 changing clothes) in more free-form roleplaying systems. This will also
 work well together with the <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code> contrib.</p>
 <p><a class="reference internal" href="Contrib-Multidescer.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.multidescer.html#evennia-contrib-game-systems-multidescer"><span class="std std-ref">Browse the Code</span></a></p>
@@ -660,7 +649,6 @@ and rule implementation like character traits, dice rolling and emoting.</em></p
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Character-Creator.html">Character Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Dice.html">Dice roller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Health-Bar.html">Health Bar</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Contrib-Llm.html">Large Language Model (“Chat-bot AI”) integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-RPSystem.html">Roleplaying base system for Evennia</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Traits.html">Traits</a></li>
 </ul>
@@ -680,9 +668,9 @@ It is a common design pattern in RPGs, particularly action games.</p>
 </section>
 <section id="dice">
 <h3><code class="docutils literal notranslate"><span class="pre">dice</span></code><a class="headerlink" href="#dice" title="Permalink to this headline">¶</a></h3>
-<p><em>Contribution by Griatch, 2012, 2023</em></p>
+<p><em>Contribution by Griatch, 2012</em></p>
 <p>A dice roller for any number and side of dice. Adds in-game dice rolling
-(like <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">2d10</span> <span class="pre">+</span> <span class="pre">1</span></code>) as well as conditionals (roll under/over/equal to a target)
+(<code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">2d10</span> <span class="pre">+</span> <span class="pre">1</span></code>) as well as conditionals (roll under/over/equal to a target)
 and functions for rolling dice in code. Command also supports hidden or secret
 rolls for use by a human game master.</p>
 <p><a class="reference internal" href="Contrib-Dice.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.dice.html#evennia-contrib-rpg-dice"><span class="std std-ref">Browse the Code</span></a></p>
@@ -696,16 +684,16 @@ is merely the most obvious use for this, but the bar is highly customizable
 and can be used for any sort of appropriate data besides player health.</p>
 <p><a class="reference internal" href="Contrib-Health-Bar.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.health_bar.html#evennia-contrib-rpg-health-bar"><span class="std std-ref">Browse the Code</span></a></p>
 </section>
-<section id="llm">
-<h3><code class="docutils literal notranslate"><span class="pre">llm</span></code><a class="headerlink" href="#llm" title="Permalink to this headline">¶</a></h3>
-<p><em>Contribution by Griatch 2023</em></p>
-<p>This adds an LLMClient that allows Evennia to send prompts to a  LLM server (Large Language Model, along the lines of ChatGPT). Example uses a local OSS LLM install. Included is an NPC you can chat with using a new <code class="docutils literal notranslate"><span class="pre">talk</span></code> command. The NPC will respond using the AI responses from the LLM server. All calls are asynchronous, so if the LLM is slow, Evennia is not affected.</p>
-<p><a class="reference internal" href="Contrib-Llm.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.llm.html#evennia-contrib-rpg-llm"><span class="std std-ref">Browse the Code</span></a></p>
-</section>
 <section id="rpsystem">
 <h3><code class="docutils literal notranslate"><span class="pre">rpsystem</span></code><a class="headerlink" href="#rpsystem" title="Permalink to this headline">¶</a></h3>
 <p><em>Contribution by Griatch, 2015</em></p>
-<p>A full roleplaying emote system. Short-descriptions and recognition (only know people by their looks until you assign a name to them). Room poses. Masks/disguises (hide your description). Speak directly in emote, with optional language obscuration (words get garbled if you don’t know the language, you can also have different languages with different ‘sounding’ garbling). Whispers can be partly overheard from a distance. A very powerful in-emote reference system, for referencing and differentiate targets (including objects).</p>
+<p>A full roleplaying emote system. Short-descriptions and recognition (only
+know people by their looks until you assign a name to them). Room poses. Masks/disguises
+(hide your description). Speak directly in emote, with optional language obscuration
+(words get garbled if you don’t know the language, you can also have different languages
+with different ‘sounding’ garbling). Whispers can be partly overheard from a distance. A
+very powerful in-emote reference system, for referencing and differentiate targets
+(including objects).</p>
 <p><a class="reference internal" href="Contrib-RPSystem.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.rpsystem.html#evennia-contrib-rpg-rpsystem"><span class="std std-ref">Browse the Code</span></a></p>
 </section>
 <section id="traits">
@@ -895,9 +883,6 @@ will be overwritten.</small></p>
         <li class="nav-item nav-item-this"><a href="">Contribs</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

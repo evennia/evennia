@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.prototypes.spawner</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="spawner.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -223,10 +213,9 @@
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="kn">import</span> <span class="p">(</span>
@@ -483,6 +472,7 @@
     <span class="n">_unset</span> <span class="o">=</span> <span class="n">Unset</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_recursive_diff</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
         <span class="n">old_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">old</span><span class="p">)</span>
         <span class="n">new_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
 
@@ -779,6 +769,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">directive</span> <span class="ow">in</span> <span class="n">diff</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_prototype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
                     <span class="c1"># we don&#39;t update the object if the prototype does not actually</span>
                     <span class="c1"># contain the key (the diff will report REMOVE but we ignore it</span>
@@ -786,6 +777,7 @@
                     <span class="k">continue</span>
 
                 <span class="k">if</span> <span class="n">directive</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;UPDATE&quot;</span><span class="p">,</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">):</span>
+
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_PROTOTYPE_META_NAMES</span><span class="p">:</span>
                         <span class="c1"># prototype meta keys are not stored on-object</span>
                         <span class="k">continue</span>
@@ -939,6 +931,7 @@
 
     <span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">objparam</span> <span class="ow">in</span> <span class="n">objparams</span><span class="p">:</span>
+
         <span class="n">obj</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="p">(</span><span class="o">**</span><span class="n">objparam</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="c1"># setup</span>
@@ -1013,6 +1006,7 @@
 
     <span class="n">objsparams</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">prototypes</span><span class="p">:</span>
+
         <span class="c1"># run validation and homogenization of provided prototypes</span>
         <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span>
             <span class="n">prototype</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="o">=</span><span class="n">custom_protparents</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="kc">True</span>
@@ -1078,7 +1072,7 @@
 
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
             <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">),</span>
@@ -1108,7 +1102,7 @@
         <span class="c1"># the rest are attribute tuples (attrname, value, category, locks)</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">[]))</span>
         <span class="n">attributes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">rest</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">rest</span><span class="p">)</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
             <span class="n">attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">attrname</span><span class="p">,</span>
@@ -1177,9 +1171,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.prototypes.spawner</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.

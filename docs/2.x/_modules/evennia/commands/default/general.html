@@ -18,8 +18,6 @@
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
 
-     
-
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +33,11 @@
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.general</a></li> 
       </ul>
-    </div>  
+    </div>
+
+  
+    
+    
 
     <div class="document">
 
@@ -66,18 +68,6 @@
       <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
 </ul>
-<h3>Doc Versions</h3>
-<ul>
-  
-    <li><a href="general.html">2.x (main branch)</a></li>
- <ul>
-    <li><a href="../1.3.0/index.html">1.3.0 (v1.3.0 branch)</a></li>
-  
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-  
-
-</ul>
-
         </div>
       </div>
         <div class="bodywrapper">
@@ -91,7 +81,6 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickTemplateInvalid</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
@@ -260,6 +249,7 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;nicks&quot;</span><span class="p">,):</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="n">nicklist</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|wNo nicks defined.|n&quot;</span>
             <span class="k">else</span><span class="p">:</span>
@@ -463,7 +453,7 @@
                     <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">raw_ansi</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;inventory&quot;</span><span class="p">}))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;inventory&quot;</span><span class="p">}))</span></div></div>
 
 
 <div class="viewcode-block" id="CmdGet"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGet">[docs]</a><span class="k">class</span> <span class="nc">CmdGet</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -641,11 +631,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;add the description&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must add a description.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must add a description.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You set your description.&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You set your description.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdSay"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdSay">[docs]</a><span class="k">class</span> <span class="nc">CmdSay</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -772,7 +762,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook function&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;What do you want to do?&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;pose&quot;</span><span class="p">}),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
@@ -810,7 +800,7 @@
 
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wYour access|n:&quot;</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Character |c</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n: </span><span class="si">{</span><span class="n">cperms</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Account |c</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n: </span><span class="si">{</span><span class="n">pperms</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 </pre></div>
@@ -835,9 +825,6 @@
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.general</a></li> 
       </ul>
     </div>
-
-     
-
     <div class="footer" role="contentinfo">
         &#169; Copyright 2023, The Evennia developer community.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
