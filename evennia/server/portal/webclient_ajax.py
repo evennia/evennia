@@ -336,11 +336,6 @@ class AjaxWebClient(resource.Resource):
             del self.requests[csessid]
         if csessid in self.databuffer:
             del self.databuffer[csessid]
-        if csessid in self.requests:
-            self.requests[csessid].finish()
-            del self.requests[csessid]
-        if csessid in self.databuffer:
-            del self.databuffer[csessid]
 
     def mode_init(self, request):
         """
@@ -437,7 +432,6 @@ class AjaxWebClient(resource.Resource):
         self.last_alive[csessid] = (time.time(), False)
 
         dataentries = self.databuffer.get(csessid)
-        dataentries = self.databuffer.get(csessid)
         if dataentries:
             # we have data that could not be sent earlier (because client was not
             # ready to receive it). Return this buffered data immediately
@@ -445,10 +439,6 @@ class AjaxWebClient(resource.Resource):
         else:
             # we have no data to send. End the old request and start
             # a new long-polling one
-            request.notifyFinish().addErrback(self._responseFailed, csessid, request)
-            if csessid in self.requests:
-                self.requests[csessid].finish()  # Clear any stale request.
-            self.requests[csessid] = request
             request.notifyFinish().addErrback(self._responseFailed, csessid, request)
             if csessid in self.requests:
                 self.requests[csessid].finish()  # Clear any stale request.
@@ -467,10 +457,8 @@ class AjaxWebClient(resource.Resource):
         csessid = self.get_client_sessid(request) + self.get_client_page_id(request)
         try:
             sess = self.sessionhandler.sessions_from_csessid(csessid)[0]
-            sess = self.sessionhandler.sessions_from_csessid(csessid)[0]
             sess.sessionhandler.disconnect(sess)
         except IndexError:
-            self.client_disconnect(csessid)
             self.client_disconnect(csessid)
         return b'""'
 
