@@ -2,6 +2,8 @@
 
 ## Evennia 3.0.0
 
+Dec 20, 2023
+
 - Dependency: Twisted 23.10 (<24) to address upstream CVE alert.
 - Dependency (potentially Backwards incompatible): Django 4.2 (<4.3). Increases
   minimum supported versions of MariaDB, MySQL and PostgreSQL,
@@ -108,7 +110,7 @@
 [pull3365]: https://github.com/evennia/evennia/pull/3365
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
-[issue3308]: https://github.com/evennia/evennia/issues/3307
+[issue3307]: https://github.com/evennia/evennia/issues/3307
 [issue3331]: https://github.com/evennia/evennia/issues/3331
 
 [django-release-notes]: https://docs.djangoproject.com/en/4.2/releases/4.2/#backwards-incompatible-changes-in-4-2
