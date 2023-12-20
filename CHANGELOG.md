@@ -1,6 +1,6 @@
 # Changelog
 
-## Main branch
+## Evennia 3.0.0
 
 - Dependency: Twisted 23.10 (<24) to address upstream CVE alert.
 - Dependency (potentially Backwards incompatible): Django 4.2 (<4.3). Increases
@@ -42,6 +42,10 @@
   a bit more deterministic (Volund)
 - [Feature][pull3348]: Make Fallback AJAX web client more customizable (same as
   the websocket client) (Volund)
+- [Feature][pull3353]: Add unique id to each webclient instance, separates play
+  sessions run from the same browser. (InpsectorCaracal)
+- [Feature][pull3365]: Make the rpsystem contrib's prefix (`/` by default)
+  configurable with a setting (used to be hard-coded) (InspectorCaracal)
 - Fix (Backwards incompatible): Change `settings._TEST_ENVIRONMENT` to
   `settings.TEST_ENVIRONMENT` to address issues during refactored startup sequence.
 - [Fix][pull3347]: New `generate_default_locks()` method on typeclasses;
@@ -100,6 +104,8 @@
 [pull3359]: https://github.com/evennia/evennia/pull/3359
 [pull3361]: https://github.com/evennia/evennia/pull/3361
 [pull3347]: https://github.com/evennia/evennia/pull/3347
+[pull3353]: https://github.com/evennia/evennia/pull/3353
+[pull3365]: https://github.com/evennia/evennia/pull/3365
 [issue3272]: https://github.com/evennia/evennia/issues/3272
 [issue3273]: https://github.com/evennia/evennia/issues/3273
 [issue3308]: https://github.com/evennia/evennia/issues/3307

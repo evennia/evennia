@@ -62,8 +62,8 @@ smv_tag_whitelist = r"^$"
 # These are also read from the deploy.py script. These are also the names of
 # the folders built in the gh-pages evennia branch, under docs/.
 latest_version = "latest"
-legacy_versions = ["2.x", "1.x", "0.x"]
-legacy_branches = ["v2.0.0", "v1.0.0", "v0.9.5"]
+legacy_versions = ["3.x", "2.x", "1.x", "0.x"]
+legacy_branches = ["v3.0.0", "v2.0.0", "v1.0.0", "v0.9.5"]
 
 
 def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
