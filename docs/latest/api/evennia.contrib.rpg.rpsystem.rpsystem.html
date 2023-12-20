@@ -642,10 +642,10 @@ text in the emote.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<p>emote /me looks around.
-emote With a flurry /me attacks /tall man with his sword.
-emote “Hello”, /me says.</p>
-<p>Describes an event in the world. This allows the use of /ref
+<p>emote {prefix}me looks around.
+emote With a flurry {prefix}me attacks {prefix}tall man with his sword.
+emote “Hello”, {prefix}me says.</p>
+<p>Describes an event in the world. This allows the use of {prefix}ref
 markers to replace with the short descriptions or recognized
 strings of objects in the same room. These will be translated to
 emotes to match each person seeing it. Use “…” for saying
@@ -672,6 +672,27 @@ a different language.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.get_help">
+<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">cmdset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#CmdEmote.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.get_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the help message for this command and this caller.</p>
+<p>By default, return self.__doc__ (the docstring just under
+the class definition).  You can override this behavior,
+though, and even customize it depending on the caller, or other
+commands the caller can use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – the caller asking for help on the command.</p></li>
+<li><p><strong>cmdset</strong> (<a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><em>CmdSet</em></a>) – the command set (if you need additional commands).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>docstring (str)</em> – the help text to provide the caller for this command.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#CmdEmote.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform the emote.</p>
@@ -689,7 +710,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':', 'category': 'general', 'key': 'emote', 'no_prefix': ' :', 'tags': '', 'text': '\n    Emote an action, allowing dynamic replacement of\n    text in the emote.\n\n    Usage:\n      emote text\n\n    Example:\n      emote /me looks around.\n      emote With a flurry /me attacks /tall man with his sword.\n      emote &quot;Hello&quot;, /me says.\n\n    Describes an event in the world. This allows the use of /ref\n    markers to replace with the short descriptions or recognized\n    strings of objects in the same room. These will be translated to\n    emotes to match each person seeing it. Use &quot;...&quot; for saying\n    things and langcode&quot;...&quot; without spaces to say something in\n    a different language.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':', 'category': 'general', 'key': 'emote', 'no_prefix': ' :', 'tags': '', 'text': '\n    Emote an action, allowing dynamic replacement of\n    text in the emote.\n\n    Usage:\n      emote text\n\n    Example:\n      emote {prefix}me looks around.\n      emote With a flurry {prefix}me attacks {prefix}tall man with his sword.\n      emote &quot;Hello&quot;, {prefix}me says.\n\n    Describes an event in the world. This allows the use of {prefix}ref\n    markers to replace with the short descriptions or recognized\n    strings of objects in the same room. These will be translated to\n    emotes to match each person seeing it. Use &quot;...&quot; for saying\n    things and langcode&quot;...&quot; without spaces to say something in\n    a different language.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -711,7 +732,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&quot;', &quot;'&quot;]</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [&quot;'&quot;, '&quot;']</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -742,7 +763,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&quot; \'', 'category': 'general', 'key': 'say', 'no_prefix': ' &quot; \'', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '\' &quot;', 'category': 'general', 'key': 'say', 'no_prefix': ' \' &quot;', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

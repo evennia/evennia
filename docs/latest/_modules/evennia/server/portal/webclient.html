@@ -156,7 +156,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># client will connect with wsurl?csessid&amp;browserid</span>
+            <span class="c1"># client will connect with wsurl?csessid&amp;page_id&amp;browserid</span>
             <span class="n">webarg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_request_uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="c1"># this may happen for custom webclients not caring for the</span>
@@ -170,9 +170,12 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">,</span> <span class="o">*</span><span class="n">browserstr</span> <span class="o">=</span> <span class="n">webarg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">browserstr</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">browserstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">browserstr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">,</span> <span class="o">*</span><span class="n">cargs</span> <span class="o">=</span> <span class="n">webarg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">browserstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">browserstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cargs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_CLIENT_SESSIONS</span><span class="p">(</span><span class="n">session_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">)</span></div>
