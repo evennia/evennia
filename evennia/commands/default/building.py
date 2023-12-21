@@ -660,7 +660,13 @@ class CmdCreate(ObjManipCommand):
                 continue
 
             obj, errors = obj_typeclass.create(
-                name, caller, home=caller, aliases=aliases, report_to=caller, caller=caller
+                name,
+                account=caller.account,
+                location=caller,
+                home=caller,
+                aliases=aliases,
+                report_to=caller,
+                caller=caller,
             )
             if errors:
                 self.msg(errors)

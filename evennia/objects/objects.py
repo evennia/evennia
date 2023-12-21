@@ -2588,7 +2588,14 @@ class DefaultCharacter(DefaultObject):
         return ";".join([puppet, delete, edit])
 
     @classmethod
-    def create(cls, key, account=None, **kwargs):
+    def create(
+        cls,
+        key,
+        account: "DefaultAccount" = None,
+        caller: "DefaultObject" = None,
+        method: str = "create",
+        **kwargs,
+    ):
         """
         Creates a basic Character with default parameters, unless otherwise
         specified or extended.
