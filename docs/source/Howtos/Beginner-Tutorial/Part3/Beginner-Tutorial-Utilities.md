@@ -10,8 +10,7 @@ We make the `evadventure` folder stand-alone for the sake of the tutorial only. 
 
 For your own game, you are instead encouraged to modify your game dir in-place (i.e, directly add to `commands/commands.py` and  modify the `typeclasses/` modules directly). Except for the `server/` folder, you are, in fact, free to structure your game dir code pretty much as you like.
 ```
-Create a new folder named `evadventure` under your `mygame` folder. Inside it the new folder, create 
-another folder named `tests/`. Make sure to put empty `__init__.py` files in both new folders. Doing so turns both new folders into packages from which Python understands to import automatically.
+Create a new folder named `evadventure` under your `mygame` folder. Inside it the new folder, create  another folder named `tests/`. Make sure to put empty `__init__.py` files in both new folders. Doing so turns both new folders into packages from which Python understands to import automatically.
 
 ```
 mygame/
@@ -86,7 +85,7 @@ Ability.STR.value  # this is the string "strength"
 
 ```
 
-Using enums is a recommended practice. With enums set up, we can make sure to refer to the same contant or variable every time. Keeping all enums in one place also means we have a good overview of the constants with which we are dealing.
+Using enums is a recommended practice. With enums set up, we can make sure to refer to the same constant or variable every time. Keeping all enums in one place also means we have a good overview of the constants with which we are dealing.
 
 The alternative to enums would be, for example, to pass around a string named `"constitution"`. If you mis-spelled this as, say, `"consitution"`, you would not necessarily know it right away because the error would happen later when the string is not recognized. By using the enum practice,should you make a typo getting `Ability.COM` instead of `Ability.CON`, Python will immediately raise an error becase this enum with the typo will not be recognized.
 
@@ -219,7 +218,7 @@ So far, here in our tutorial, we have not yet established how to get any of the 
 
 ## Testing 
 
-Evennia comes with extensive functionality to help you test your code. A _unit test_ allows you to set up automated testing of code. Once you've written your test, you can than run it over and over again to ensure later changes to your code didn't break things by introducing errors. 
+Evennia comes with extensive functionality to help you test your code. A _unit test_ allows you to set up automated testing of code. Once you've written your test, you can then run it over and over again to ensure later changes to your code didn't break things by introducing errors. 
 
 > create a new module `mygame/evadventure/tests/test_utils.py`
 
@@ -227,7 +226,7 @@ How would you know if you made a typo in the code above? You can _manually_ test
 
     py from evadventure.utils import get_obj_stats;print(get_obj_stats(self))
 
-Doing so should spit back a nice bit of string ouput about yourself! If that works, great! But, you'll need to remember re-running that test mannually when you later change the code. 
+Doing so should spit back a nice bit of string ouput about yourself! If that works, great! But, you'll need to remember re-running that test manually when you later change the code. 
 
 ```{sidebar}
 In [evennia/contrib/tutorials/evadventure/tests/test_utils.py](evennia.contrib.tutorials.evadventure.tests.test_utils)
