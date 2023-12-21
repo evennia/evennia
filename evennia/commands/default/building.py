@@ -1187,7 +1187,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
             backstring = f", {backname};{backshort}"
 
         # build the string we will use to call dig
-        digstring = f"dig{telswitch} {roomname} = {exitname};{exitshort}{backstring}"
+        digstring = f"@dig{telswitch} {roomname} = {exitname};{exitshort}{backstring}"
         self.execute_cmd(digstring)
 
 
