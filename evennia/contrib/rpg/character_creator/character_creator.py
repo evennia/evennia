@@ -179,7 +179,7 @@ class ContribChargenAccount(DefaultAccount):
                             )
                 elif char.db.chargen_step:
                     # currently in-progress character; don't display placeholder names
-                    char_strings.append("\n - |Yin progress|n (|wcharcreate|n to continue)")
+                    char_strings.append(" - |Yin progress|n (|wcharcreate|n to continue)")
                     continue
                 else:
                     # character is "free to puppet"
