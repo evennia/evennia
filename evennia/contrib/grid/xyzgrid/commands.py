@@ -11,8 +11,8 @@ from collections import namedtuple
 
 from django.conf import settings
 
-from evennia import CmdSet, InterruptCommand, default_cmds
-from evennia.commands.default import building
+from evennia import CmdSet, InterruptCommand
+from evennia.commands.default import building, muxcommand
 from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom
 from evennia.utils import ansi
@@ -87,7 +87,7 @@ class CmdXYZTeleport(building.CmdTeleport):
             raise InterruptCommand
 
     def parse(self):
-        default_cmds.MuxCommand.parse(self)
+        muxcommand.MuxCommand.parse(self)
         self.obj_to_teleport = self.caller
         self.destination = None
 
