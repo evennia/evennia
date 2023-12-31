@@ -29,13 +29,9 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.viewcode",
-<<<<<<< HEAD
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
     "myst_parser",
-=======
-    # "sphinxcontrib.lunrsearch",
->>>>>>> 4e2b2001f3 (Revert back to vanilla search for now)
 ]
 
 source_suffix = [".md", ".rst"]
