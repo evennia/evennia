@@ -17,13 +17,20 @@ from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
 class ComponentTestA(Component):
     name = "test_a"
     my_int = DBField(default=1)
-    my_list = DBField(default=[])
+    my_list = DBField(default=[], autocreate=True)
+
+
+class InheritedComponentTestA(ComponentTestA):
+    name = "inherited_test_a"
+    slot = 'ic_a'
+
+    my_other_int = DBField(default=2)
 
 
 class ComponentTestB(Component):
     name = "test_b"
     my_int = DBField(default=1)
-    my_list = DBField(default=[])
+    my_list = DBField(default=[], autocreate=True)
     default_tag = TagField(default="initial_value")
     single_tag = TagField(enforce_single=True)
     multiple_tags = TagField()
@@ -33,13 +40,24 @@ class ComponentTestB(Component):
 class RuntimeComponentTestC(Component):
     name = "test_c"
     my_int = DBField(default=6)
-    my_dict = DBField(default={})
+    my_dict = DBField(default={}, autocreate=True)
     added_tag = TagField(default="added_value")
 
 
-class CharacterWithComponents(ComponentHolderMixin, DefaultCharacter):
+class ComponentTestD(Component):
+    name = "test_d"
+
+    mixed_in = DBField(default=8)
+
+
+class CharacterMixinWithComponents:
+    test_d = ComponentProperty('test_d')
+
+
+class CharacterWithComponents(ComponentHolderMixin, CharacterMixinWithComponents, DefaultCharacter):
     test_a = ComponentProperty("test_a")
     test_b = ComponentProperty("test_b", my_int=3, my_list=[1, 2, 3])
+    ic_a = ComponentProperty("inherited_test_a", my_other_int=4)
 
 
 class InheritedTCWithComponents(CharacterWithComponents):
@@ -72,6 +90,13 @@ class TestComponents(EvenniaTest):
     def test_character_assigns_default_provided_values(self):
         assert self.char1.test_b.my_int == 3
         assert self.char1.test_b.my_list == [1, 2, 3]
+
+    def test_component_inheritance_assigns_proper_values(self):
+        self.assertEquals(self.char1.ic_a.my_int, 1)
+        self.assertEquals(self.char1.ic_a.my_other_int, 4)
+
+    def test_host_mixins_assigns_components(self):
+        self.assertEquals(self.char1.test_d.mixed_in, 8)
 
     def test_character_can_register_runtime_component(self):
         rct = RuntimeComponentTestC.create(self.char1)
@@ -210,6 +235,10 @@ class TestComponents(EvenniaTest):
         assert self.char1.tags.has(key="first value", category="test_b::multiple_tags")
         assert self.char1.tags.has(key="second value", category="test_b::multiple_tags")
         assert self.char1.tags.has(key="third value", category="test_b::multiple_tags")
+
+    def test_mutables_are_not_shared_when_autocreate(self):
+        self.char1.test_a.my_list.append(1)
+        self.assertNotEquals(self.char1.test_a.my_list, self.char2.test_a.my_list)
 
 
 class CharWithSignal(ComponentHolderMixin, DefaultCharacter):
