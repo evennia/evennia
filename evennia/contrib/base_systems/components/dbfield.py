@@ -32,12 +32,12 @@ class DBField(AttributeProperty):
         self._key = f"{owner.slot or owner.name}::{name}"
         owner.add_field(name, self)
 
-    def at_added(self, instance):
+    def at_added(self, component):
         if self._autocreate:
-            self.__set__(instance, self._default)
+            self.__get__(component, type(component))
 
-    def at_removed(self, instance):
-        self.__delete__(instance)
+    def at_removed(self, component):
+        self.__delete__(component)
 
 
 class NDBField(NAttributeProperty):
