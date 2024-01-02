@@ -106,8 +106,11 @@ class Component(metaclass=BaseComponent):
             Component: The loaded instance of the component
 
         """
+        inst = cls(host)
+        if inst.cmd_set:
+            host.cmdset.add(inst.cmd_set)
 
-        return cls(host)
+        return inst
 
     def at_added(self, host):
         """
