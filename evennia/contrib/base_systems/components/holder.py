@@ -5,7 +5,7 @@ This file contains the classes that allow a typeclass to use components.
 """
 
 from evennia.contrib.base_systems import components
-from evennia.contrib.base_systems.components import signals, exceptions
+from evennia.contrib.base_systems.components import signals, exceptions, get_component_class
 
 
 class ComponentProperty:
@@ -27,9 +27,16 @@ class ComponentProperty:
         """
         self.name = name
         self.values = kwargs
+        self.component_class = None
+        self.slot_name = None
 
     def __get__(self, instance, owner):
-        component = instance.components.get(self.name)
+        if not self.component_class:
+            component_class = get_component_class(self.name)
+            self.component_class = component_class
+            self.slot_name = component_class.slot or component_class.name
+
+        component = instance.components.get(self.slot_name)
         return component
 
     def __set__(self, instance, value):
