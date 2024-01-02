@@ -77,7 +77,7 @@ class ComponentHandler:
         self.host.tags.add(component_name, category="components")
         self._set_component(component)
         for field in component.get_fields():
-            field.at_added(self.host)
+            field.at_added(component)
 
         component.at_added(self.host)
 
@@ -115,7 +115,7 @@ class ComponentHandler:
             raise exceptions.ComponentIsNotRegistered(message)
 
         for field in component.get_fields():
-            field.at_removed(self.host)
+            field.at_removed(component)
 
         component.at_removed(self.host)
         if component.cmd_set:
