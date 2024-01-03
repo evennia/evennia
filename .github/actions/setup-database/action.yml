@@ -36,7 +36,7 @@ runs:
           sleep 1
           echo -n .
         done
-        echo
+        echo ready
       shell: bash
 
     - name: Set up MySQL server
