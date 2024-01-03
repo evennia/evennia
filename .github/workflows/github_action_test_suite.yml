@@ -92,7 +92,6 @@ jobs:
   test-psql:
     name: TestPSQL
     runs-on: ubuntu-latest
-    container: python:3.11.7-alpine3.19
 
     services:
       # Label used to access the service container
@@ -117,6 +116,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
 
       - name: Install package dependencies
         run: |
