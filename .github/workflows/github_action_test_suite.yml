@@ -198,7 +198,7 @@ jobs:
 
   deploy:
     name: Deploy Docker Image
-    needs: test
+    needs: test-sqlite
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'evennia/evennia' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
     steps:
