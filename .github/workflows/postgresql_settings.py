@@ -44,8 +44,7 @@ DATABASES = {
         "NAME": "evennia",
         "USER": "evennia",
         "PASSWORD": "password",
-        "HOST": "localhost",
-        "PORT": "",  # use default
+        "HOST": "postgres",
         "TEST": {
             "NAME": "evennia",
         },

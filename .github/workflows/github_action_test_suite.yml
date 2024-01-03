@@ -12,18 +12,16 @@ on:
     branches: [main, develop]
 
 jobs:
-  test:
-    name: Test
+  test-sqlite:
+    name: TestSqlite
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11"]
-        TESTING_DB: ["sqlite3", "postgresql", "mysql"]
         include:
           - python-version: "3.10"
-            TESTING_DB: "sqlite3"
             coverage-test: true
 
     timeout-minutes: 35
@@ -33,16 +31,10 @@ jobs:
       COVERAGE_TEST_SETTINGS: "--settings=settings --timing"
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up database (${{ matrix.TESTING_DB }})
-        uses: ./.github/actions/setup-database
-        with:
-          database: ${{ matrix.TESTING_DB }}
-        timeout-minutes: 5
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
@@ -53,8 +45,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install wheel
-          pip install "psycopg[binary]"   # req by postgresql
-          pip install mysqlclient
           pip install coveralls
           pip install tblib
           pip install .
@@ -63,7 +53,7 @@ jobs:
       - name: Initialize evennia
         run: |
           evennia --init testing_mygame
-          cp .github/workflows/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
+          cp .github/workflows/sqlite3_settings.py testing_mygame/server/conf/settings.py
           cd testing_mygame
           evennia migrate
           evennia collectstatic --noinput
@@ -98,6 +88,113 @@ jobs:
         run: |
           cd testing_mygame
           coveralls
+
+  test-psql:
+    name: TestPSQL
+    runs-on: ubuntu-latest
+    container: python:3.11.7-alpine3.19
+
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:alpine3.19
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: evennia
+          POSTGRES_PASSWORD: password
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    timeout-minutes: 35
+
+    env:
+      UNIT_TEST_SETTINGS: "--settings=settings --keepdb --timing"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install package dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel
+          pip install "psycopg[binary]"
+          pip install tblib
+          pip install .
+          pip install .[extra]
+
+      - name: Initialize evennia
+        run: |
+          evennia --init testing_mygame
+          cp .github/workflows/postgresql_settings.py testing_mygame/server/conf/settings.py
+          cd testing_mygame
+          evennia migrate
+          evennia collectstatic --noinput
+
+      # For non-coverage tests, run them in parallel.
+      - name: Run test suite
+        working-directory: testing_mygame
+        run: |
+          evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia
+
+  test-mysql:
+    name: TestMySQL
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.11" ]
+
+    timeout-minutes: 35
+
+    env:
+      UNIT_TEST_SETTINGS: "--settings=settings --keepdb --timing"
+      COVERAGE_TEST_SETTINGS: "--settings=settings --timing"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+
+      - name: Set up database (mysql)
+        uses: ./.github/actions/setup-database
+        with:
+          database: mysql
+        timeout-minutes: 5
+
+      - name: Install package dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel
+          pip install mysqlclient
+          pip install tblib
+          pip install .
+          pip install .[extra]
+
+      - name: Initialize evennia
+        run: |
+          evennia --init testing_mygame
+          cp .github/workflows/mysql_settings.py testing_mygame/server/conf/settings.py
+          cd testing_mygame
+          evennia migrate
+          evennia collectstatic --noinput
+
+      # For non-coverage tests, run them in parallel.
+      - name: Run test suite
+        working-directory: testing_mygame
+        run: |
+          evennia test ${{ env.UNIT_TEST_SETTINGS }} evennia
 
   deploy:
     name: Deploy Docker Image
