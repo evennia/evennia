@@ -102,6 +102,8 @@ jobs:
         env:
           POSTGRES_USER: evennia
           POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
