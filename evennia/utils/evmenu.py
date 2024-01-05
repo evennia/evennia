@@ -1209,8 +1209,8 @@ class EvMenu:
 
         # check if the caller is using a screenreader
         screenreader_mode = False
-        if session := getattr(self.caller, 'session', None):
-            screenreader_mode = session.protocol_flags.get("SCREENREADER")
+        if sessions := getattr(self.caller, 'sessions', None):
+            screenreader_mode = any(sess.protocol_flags.get("SCREENREADER") for sess in sessions.all())
         # the caller doesn't have a session; check it directly
         elif hasattr(self.caller, 'protocol_flags'):
             screenreader_mode = self.caller.protocol_flags.get("SCREENREADER")
