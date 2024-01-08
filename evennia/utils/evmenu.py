@@ -1206,7 +1206,16 @@ class EvMenu:
                 else:
                     # add a default white color to key
                     table.append(f" |lc{raw_key}|lt|w{key}|n|le{desc_string}")
-        ncols = _MAX_TEXT_WIDTH // table_width_max  # number of columns
+
+        # check if the caller is using a screenreader
+        screenreader_mode = False
+        if sessions := getattr(self.caller, 'sessions', None):
+            screenreader_mode = any(sess.protocol_flags.get("SCREENREADER") for sess in sessions.all())
+        # the caller doesn't have a session; check it directly
+        elif hasattr(self.caller, 'protocol_flags'):
+            screenreader_mode = self.caller.protocol_flags.get("SCREENREADER")
+
+        ncols = 1 if screenreader_mode else _MAX_TEXT_WIDTH // table_width_max
 
         if ncols < 0:
             # no visible options at all
