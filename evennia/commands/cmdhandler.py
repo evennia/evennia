@@ -410,7 +410,7 @@ def get_and_merge_cmdsets(
             try:
                 returnValue(obj.get_cmdsets(caller=caller, current=current))
             except AttributeError:
-                returnValue(((None, None, None), []))
+                returnValue((CmdSet(), []))
 
         local_obj_cmdsets = []
 
