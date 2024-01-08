@@ -1,5 +1,28 @@
 # Changelog
 
+## Main branch
+
+- [Fix][pull3373]: Errors when using the default `create` command (InspectorCaracal).
+- [Fix][pull3375]: `tunnel` command didn't work with custom prefix (chromancer).
+- [Fix][pull3376]: Error when falling back to default cmdset fallback
+  (InspectorCaracal)
+- [Fix][pull3377]: `character_creator` updated with new chargen system refactor
+  in Evennia 3.0.0; fix issue not repspecting `START_LOCATION`
+(InspectorCaracal)
+- [Fix][pull3378]: Default-add 'where' as a LUNR search exception, since it's a
+  common mud command that should not be ignored. (alephate)
+- [Fix][pull3382]: Make sure global scripts start properly on restart
+  (InspectorCaracal)
+- Doc fixes, including hosting updates (homeofpoe)
+
+[pull3373]: https://github.com/evennia/evennia/pull/3373
+[pull3375]: https://github.com/evennia/evennia/pull/3375
+[pull3376]: https://github.com/evennia/evennia/pull/3376
+[pull3377]: https://github.com/evennia/evennia/pull/3377
+[pull3378]: https://github.com/evennia/evennia/pull/3378
+[pull3382]: https://github.com/evennia/evennia/pull/3382
+
+
 ## Evennia 3.0.0
 
 Dec 20, 2023
