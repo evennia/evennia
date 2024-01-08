@@ -1,9 +1,12 @@
 # Changelog
 
-## Main branch
+## Evennia 3.1.0
+
+Jan 8, 2024
 
 - [Feature][pull3393]: EvMenu will only use one column of options in
   screenreader mode (InspectorCaracal)
+- [Feature][pull3386]: Add VS code files to default gitignore (InspectorCaracal)
 - [Fix][pull3373]: Errors when using the default `create` command (InspectorCaracal).
 - [Fix][pull3375]: `tunnel` command didn't work with custom prefix (chromancer).
 - [Fix][pull3376]: Error when falling back to default cmdset fallback
@@ -26,6 +29,7 @@
 [pull3382]: https://github.com/evennia/evennia/pull/3382
 [pull3393]: https://github.com/evennia/evennia/pull/3393
 [pull3394]: https://github.com/evennia/evennia/pull/3394
+[pull3386]: https://github.com/evennia/evennia/pull/3386
 
 
 ## Evennia 3.0.0
