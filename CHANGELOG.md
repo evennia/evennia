@@ -2,6 +2,8 @@
 
 ## Main branch
 
+- [Feature][pull3393]: EvMenu will only use one column of options in
+  screenreader mode (InspectorCaracal)
 - [Fix][pull3373]: Errors when using the default `create` command (InspectorCaracal).
 - [Fix][pull3375]: `tunnel` command didn't work with custom prefix (chromancer).
 - [Fix][pull3376]: Error when falling back to default cmdset fallback
@@ -13,7 +15,8 @@
   common mud command that should not be ignored. (alephate)
 - [Fix][pull3382]: Make sure global scripts start properly on restart
   (InspectorCaracal)
-- Doc fixes (homeofpoe, gas-public-wooden-clean)
+- [Fix][pull3394]: Fix time-of-day issue in ExpandedRoom contrib (jaborsh)
+- Doc fixes (homeofpoe, gas-public-wooden-clean, InspectorCaracal)
 
 [pull3373]: https://github.com/evennia/evennia/pull/3373
 [pull3375]: https://github.com/evennia/evennia/pull/3375
@@ -21,6 +24,8 @@
 [pull3377]: https://github.com/evennia/evennia/pull/3377
 [pull3378]: https://github.com/evennia/evennia/pull/3378
 [pull3382]: https://github.com/evennia/evennia/pull/3382
+[pull3393]: https://github.com/evennia/evennia/pull/3393
+[pull3394]: https://github.com/evennia/evennia/pull/3394
 
 
 ## Evennia 3.0.0
