@@ -188,7 +188,7 @@ class Sittable(Object):
 - **Line 15**: We grab the `adjective` Attribute. Using `self.db.adjective or "on"` here means that if the Attribute is not set (is `None`/falsy) the default "on" string will be assumed.
 - **Lines 19,22,27,39, and 43**: We use this adjective to modify the return text we see.  
 
-`reload`  the server. An advantage of using Attributes like this is that they can be modified on the fly, in-game. Let's look at a builder could use this by normal building commands (no need for `py`): 
+`reload`  the server. An advantage of using Attributes like this is that they can be modified on the fly, in-game. Let's look at how a builder could use this with normal building commands (no need for `py`): 
 
 ```
 > set armchair/adjective = in 

@@ -111,7 +111,7 @@ You may also begin viewing the real-time log immediately by adding `-l/--log` to
 
 ## Server Configuration 
 
-Your server's configuration file is `mygame/server/settings.py`. It's empty by default. Copy and paste **only** the settings you want/need from the [default settings file](./Settings-Default.md) to your server's `settings.py`. See the [Settings](./Settings.md) documentation for more information before configuring your server at this time.
+Your server's configuration file is `mygame/server/conf/settings.py`. It's empty by default. Copy and paste **only** the settings you want/need from the [default settings file](./Settings-Default.md) to your server's `settings.py`. See the [Settings](./Settings.md) documentation for more information before configuring your server at this time.
  
 ## Register with the Evennia Game Index (optional)
 
