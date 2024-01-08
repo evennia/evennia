@@ -354,7 +354,12 @@ def start_chargen(caller, session=None):
     # this generates all random components of the character
     tmp_character = TemporaryCharacterSheet()
 
-    EvMenu(caller, menutree, session=session, tmp_character=tmp_character)
+    EvMenu(
+        caller,
+        menutree,
+        session=session,
+        startnode_input=("sgsg", {"tmp_character": tmp_character}),
+    )
 
 ```
 
@@ -628,7 +633,7 @@ node_apply_character(caller, raw_string, **kwargs):
     
     return text, None 
 ```
-When entering the node, we will take the Temporary character sheet and use its `.appy` method to create a new Character with all equipment. 
+When entering the node, we will take the Temporary character sheet and use its `.apply` method to create a new Character with all equipment. 
 
 This is what is called an _end node_, because it returns `None` instead of options. After this,  the menu will exit. We will be back to the default character selection screen. The characters  found on that screen are the ones listed in the `_playable_characters` Attribute, so we need to also the new character to it.
 
@@ -637,24 +642,27 @@ This is what is called an _end node_, because it returns `None` instead of optio
 
 ```python
 def start_chargen(caller, session=None):
-"""
-This is a start point for spinning up the chargen from a command later.
+    """
+    This is a start point for spinning up the chargen from a command later.
 
     """
     menutree = {  # <----- can now add this!
-       "node_chargen": node_chargen, 
-       "node_change_name": node_change_name, 
-       "node_swap_abilities": node_swap_abilities,
-       "node_apply_character": node_apply_character
+        "node_chargen": node_chargen,
+        "node_change_name": node_change_name,
+        "node_swap_abilities": node_swap_abilities,
+        "node_apply_character": node_apply_character,
     }
-        
+
     # this generates all random components of the character
     tmp_character = TemporaryCharacterSheet()
 
-    EvMenu(caller, menutree, session=session, 
-           startnode="node_chargen",   # <----- 
-           tmp_character=tmp_character)
-          
+    EvMenu(
+        caller,
+        menutree,
+        startnode="node_chargen",   # <-----
+        session=session,
+        startnode_input=("sgsg", {"tmp_character": tmp_character}),
+    )
 ```
 
 Now that we have all the nodes, we add them to the `menutree` we left empty before. We only add  the nodes, _not_ the goto-helpers! The keys we set in the `menutree` dictionary are the names we  should use to point to nodes from inside the menu (and we did). 
