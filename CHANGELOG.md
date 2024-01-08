@@ -13,7 +13,7 @@
   common mud command that should not be ignored. (alephate)
 - [Fix][pull3382]: Make sure global scripts start properly on restart
   (InspectorCaracal)
-- Doc fixes, including hosting updates (homeofpoe)
+- Doc fixes (homeofpoe, gas-public-wooden-clean)
 
 [pull3373]: https://github.com/evennia/evennia/pull/3373
 [pull3375]: https://github.com/evennia/evennia/pull/3375

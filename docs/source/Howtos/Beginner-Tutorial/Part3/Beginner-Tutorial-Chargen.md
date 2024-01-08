@@ -1,16 +1,11 @@
 # Character Generation
 
-In previous lessons we have established how a character looks. Now we need to give the player a 
-chance to create one. 
-
+In previous lessons we have established how a character looks. Now we need to give the player a chance to create one. 
 ## How it will work
 
-A fresh Evennia install will automatically create a new Character with the same name as your 
-Account when you log in. This is quick and simple and mimics older MUD styles. You could picture 
-doing this, and then customizing the Character in-place. 
+A fresh Evennia install will automatically create a new Character with the same name as your  Account when you log in. This is quick and simple and mimics older MUD styles. You could picture  doing this, and then customizing the Character in-place. 
 
-We will be a little more sophisticated though. We want the user to be able to create a character 
-using a menu when they log in. 
+We will be a little more sophisticated though. We want the user to be able to create a character  using a menu when they log in. 
 
 We do this by editing `mygame/server/conf/settings.py` and adding the line
 
@@ -73,12 +68,9 @@ You can only do this once, so choose carefully!
 To swap the values of e.g. STR and INT, write 'STR INT'. Empty to abort.
 ------------------------------------------------------------------------------------------
 ```
-If you enter `WIS CHA` here,  WIS will become `+2` and `CHA` `+1`. You will then again go back 
-to the main node to see your new character, but this time the option to swap will no longer be 
-available (you can only do it once).
+If you enter `WIS CHA` here,  WIS will become `+2` and `CHA` `+1`. You will then again go back  to the main node to see your new character, but this time the option to swap will no longer be  available (you can only do it once).
 
-If you finally select the `Accept and create character` option, the character will be created 
-and you'll leave the menu; 
+If you finally select the `Accept and create character` option, the character will be created  and you'll leave the menu; 
 
     Character was created! 
 
@@ -354,21 +346,19 @@ def start_chargen(caller, session=None):
     # this generates all random components of the character
     tmp_character = TemporaryCharacterSheet()
 
-    EvMenu(caller, menutree, session=session, tmp_character=tmp_character)
+    EvMenu(caller, menutree, session=session, startnode="node_chargen", startnode_input=("", {"tmp_character": tmp_character}))
 
 ```
 
-This first function is what we will call from elsewhere (for example from a custom `charcreate` 
-command) to kick the menu into gear.
+This first function is what we will call from elsewhere (for example from a custom `charcreate`  command) to kick the menu into gear.
 
 It takes the `caller` (the one to want to start the menu) and a `session` argument. The latter will help  track just which client-connection we are using (depending on Evennia settings, you could be  connecting with multiple clients).
 
-We create a `TemporaryCharacterSheet` and call `.generate()` to make a random character. We then  feed all this into `EvMenu`. 
+We create a `TemporaryCharacterSheet` and  feed all this into `EvMenu`. The `startnode` and `startnode_input` keywords makes sure to enter the menu at the "node_chargen" node (which we will create below) and call it with with the provided arguments. 
 
 The moment this happens, the user will be in the menu, there are no further steps needed. 
 
-The `menutree` is what we'll create next. It describes which menu 'nodes' are available to jump
-between. 
+The `menutree` is what we'll create next. It describes which menu 'nodes' are available to jump between. 
 
 ## Main Node: Choosing what to do
 
@@ -418,12 +408,13 @@ not required, it helps you track what is a node and not.
 
 Every menu-node, should accept `caller, raw_string, **kwargs` as arguments. Here `caller` is the  `caller` you passed into the `EvMenu` call. `raw_string` is the input given by the user in order  to _get to this node_, so currently empty. The `**kwargs` are all extra keyword arguments passed  into `EvMenu`. They can also be passed between nodes. In this case, we passed the  keyword `tmp_character` to `EvMenu`. We now have the temporary character sheet available in the  node! 
 
+> Note that we created the menu with the `startnode="node_chargen"` and the tuple  `startnode_input=("", {"tmp_character": tmp_character})`. Assuming we register the above function as the node `"node_chargen"`, it will start out being called as `node_chargen(caller, "", tmp_character=tmp_character)` (EvMenu will add `caller` on its own). This is one way we can pass outside data into the menu as it starts.
+
 An `EvMenu` node must always return two things - `text` and `options`. The `text` is what will 
 show to the user when looking at this node. The `options` are, well, what options should be 
 presented to move on from here to some other place. 
 
-For the text, we simply get a pretty-print of the temporary character sheet. A single option is 
-defined as a `dict` like this: 
+For the text, we simply get a pretty-print of the temporary character sheet. A single option is defined as a `dict` like this: 
 
 ```python
 { 
