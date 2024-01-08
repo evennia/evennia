@@ -500,7 +500,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">returnValue</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_cmdsets</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">current</span><span class="o">=</span><span class="n">current</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="n">returnValue</span><span class="p">(((</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">[]))</span>
+                <span class="n">returnValue</span><span class="p">((</span><span class="n">CmdSet</span><span class="p">(),</span> <span class="p">[]))</span>
 
         <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[]</span>
 

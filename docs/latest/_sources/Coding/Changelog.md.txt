@@ -1,5 +1,37 @@
 # Changelog
 
+## Evennia 3.1.0
+
+Jan 8, 2024
+
+- [Feature][pull3393]: EvMenu will only use one column of options in
+  screenreader mode (InspectorCaracal)
+- [Feature][pull3386]: Add VS code files to default gitignore (InspectorCaracal)
+- [Fix][pull3373]: Errors when using the default `create` command (InspectorCaracal).
+- [Fix][pull3375]: `tunnel` command didn't work with custom prefix (chromancer).
+- [Fix][pull3376]: Error when falling back to default cmdset fallback
+  (InspectorCaracal)
+- [Fix][pull3377]: `character_creator` updated with new chargen system refactor
+  in Evennia 3.0.0; fix issue not repspecting `START_LOCATION`
+(InspectorCaracal)
+- [Fix][pull3378]: Default-add 'where' as a LUNR search exception, since it's a
+  common mud command that should not be ignored. (alephate)
+- [Fix][pull3382]: Make sure global scripts start properly on restart
+  (InspectorCaracal)
+- [Fix][pull3394]: Fix time-of-day issue in ExpandedRoom contrib (jaborsh)
+- Doc fixes (homeofpoe, gas-public-wooden-clean, InspectorCaracal)
+
+[pull3373]: https://github.com/evennia/evennia/pull/3373
+[pull3375]: https://github.com/evennia/evennia/pull/3375
+[pull3376]: https://github.com/evennia/evennia/pull/3376
+[pull3377]: https://github.com/evennia/evennia/pull/3377
+[pull3378]: https://github.com/evennia/evennia/pull/3378
+[pull3382]: https://github.com/evennia/evennia/pull/3382
+[pull3393]: https://github.com/evennia/evennia/pull/3393
+[pull3394]: https://github.com/evennia/evennia/pull/3394
+[pull3386]: https://github.com/evennia/evennia/pull/3386
+
+
 ## Evennia 3.0.0
 
 Dec 20, 2023

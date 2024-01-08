@@ -569,8 +569,11 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;Evennia Server successfully started.&quot;</span><span class="p">)</span>
 
         <span class="c1"># always call this regardless of start type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span>
 
+        <span class="c1"># initialize and start global scripts</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+    
 <div class="viewcode-block" id="EvenniaServerService.shutdown"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.shutdown">[docs]</a>    <span class="nd">@defer</span><span class="o">.</span><span class="n">inlineCallbacks</span>
     <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

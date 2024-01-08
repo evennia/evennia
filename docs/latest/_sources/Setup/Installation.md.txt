@@ -1,11 +1,13 @@
 # Installation
 
 ```{important}
-If you are converting an existing game from a previous Evennia version, [see here](./Installation-Upgrade.md).
+If you are converting an existing game from a previous Evennia version, you will need to upgrade.
 ```
 
 The fastest way to install Evennia is to use the `pip` installer that comes with Python (read on).
 You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
+
+If you are converting an existing game, please follow the [upgrade instructions](./Installation-Upgrade.md).
 
 ## Requirements
 
@@ -20,8 +22,10 @@ Installing Evennia doesn't make anything visible online. Apart from installation
 ## Install with `pip`
 
 ```{important}
-You are recommended to [setup a light-weight Python virtualenv](./Installation-Git.md#virtualenv) to install Evennia in. Using a virtualenv is standard practice in Python and allows you to install what you want in isolation from other programs. The virtualenv system is a part of Python and will make your life easier!
+You are recommended to setup a light-weight Python virtualenv to install Evennia in. Using a virtualenv is standard practice in Python and allows you to install what you want in isolation from other programs. The virtualenv system is a part of Python and will make your life easier!
 ```
+
+You re recommended to [setup a light-weight Python virtualenv](./Installation-Git.md#virtualenv) first.
 
 Evennia is managed from the terminal (console/Command Prompt on Windows). Once you have Python installed&mdash;and after activating your virtualenv if you are using one&mdash;install Evennia with:
 
@@ -107,7 +111,7 @@ You may also begin viewing the real-time log immediately by adding `-l/--log` to
 
 ## Server Configuration 
 
-Your server's configuration file is `mygame/server/settings.py`. It's empty by default. Copy and paste **only** the settings you want/need from the [default settings file](./Settings-Default.md) to your server's `settings.py`. See the [Settings](./Settings.md) documentation for more information before configuring your server at this time.
+Your server's configuration file is `mygame/server/conf/settings.py`. It's empty by default. Copy and paste **only** the settings you want/need from the [default settings file](./Settings-Default.md) to your server's `settings.py`. See the [Settings](./Settings.md) documentation for more information before configuring your server at this time.
  
 ## Register with the Evennia Game Index (optional)
 

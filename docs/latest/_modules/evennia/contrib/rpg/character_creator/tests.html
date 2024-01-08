@@ -88,13 +88,7 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.rpg.character_creator.tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span>
-
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">account</span>
+<span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 
@@ -104,35 +98,45 @@
 <div class="viewcode-block" id="TestCharacterCreator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.tests.html#evennia.contrib.rpg.character_creator.tests.TestCharacterCreator">[docs]</a><span class="k">class</span> <span class="nc">TestCharacterCreator</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestCharacterCreator.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.tests.html#evennia.contrib.rpg.character_creator.tests.TestCharacterCreator.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="n">character_creator</span><span class="o">.</span><span class="n">ContribChargenAccount</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="n">character_creator</span><span class="o">.</span><span class="n">ContribChargenAccount</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">unpuppet_all</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestCharacterCreator.test_ooc_look"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.tests.html#evennia.contrib.rpg.character_creator.tests.TestCharacterCreator.test_ooc_look">[docs]</a>    <span class="k">def</span> <span class="nf">test_ooc_look</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCharacterCreator.test_account_look"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.tests.html#evennia.contrib.rpg.character_creator.tests.TestCharacterCreator.test_account_look">[docs]</a>    <span class="k">def</span> <span class="nf">test_account_look</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">unpuppet_all</span><span class="p">()</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chargen_step</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
 
-        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.account._AUTO_PUPPET_ON_LOGIN&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="c1"># check that correct output is returning</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-                <span class="n">account</span><span class="o">.</span><span class="n">CmdOOCLook</span><span class="p">(),</span>
+        <span class="c1"># check that correct output is returning</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="c1"># check that char1 is recognized as in progress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;in progress&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCharacterCreator.test_char_create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.tests.html#evennia.contrib.rpg.character_creator.tests.TestCharacterCreator.test_char_create">[docs]</a>    <span class="k">def</span> <span class="nf">test_char_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">(</span><span class="n">START_LOCATION</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+                <span class="n">character_creator</span><span class="o">.</span><span class="n">ContribCmdCharCreate</span><span class="p">(),</span>
                 <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Account TestAccount (you are Out-of-Character)&quot;</span><span class="p">,</span>
                 <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="c1"># check that char1 is recognized as in progress</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;in progress&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span></div>
+        <span class="c1"># verify menu was initialized</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># verify character was created</span>
+        <span class="n">new_char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">new_char</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">new_char</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">))</span>
+        <span class="c1"># verify character&#39;s &quot;start location&quot; was set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">new_char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TestCharacterCreator.test_char_create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.character_creator.tests.html#evennia.contrib.rpg.character_creator.tests.TestCharacterCreator.test_char_create">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">CHARGEN_MENU</span><span class="o">=</span><span class="s2">&quot;evennia.contrib.rpg.character_creator.example_menu&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_char_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># exit the menu, verify it resumes</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">parse_input</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">new_char</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">character_creator</span><span class="o">.</span><span class="n">ContribCmdCharCreate</span><span class="p">(),</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">inherits_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">new_char</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">))</span></div></div>
+        <span class="c1"># should be the same new char</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">new_char</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">new_char</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

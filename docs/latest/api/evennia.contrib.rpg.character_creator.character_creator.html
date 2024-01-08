@@ -189,17 +189,17 @@ you left off later.</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.character_creator.character_creator.</code><code class="sig-name descname">ContribChargenAccount</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/character_creator/character_creator.html#ContribChargenAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.character_creator.character_creator.ContribChargenAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount</span></code></a></p>
 <p>A modified Account class that makes minor changes to the OOC look
-output, to incorporate in-progress characters.</p>
+output to incorporate in-progress characters.</p>
 <dl class="py method">
 <dt id="evennia.contrib.rpg.character_creator.character_creator.ContribChargenAccount.at_look">
 <code class="sig-name descname">at_look</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/character_creator/character_creator.html#ContribChargenAccount.at_look"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.character_creator.character_creator.ContribChargenAccount.at_look" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called by the OOC look command. It displays a list of playable
-characters and should be mostly identical to the core method.</p>
+<dd><p>Called when this object executes a look. It allows to customize
+just what this means.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>Object</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – An object or a list
-objects to inspect.</p></li>
+objects to inspect. This is normally a list of characters.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – The session doing this look.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>

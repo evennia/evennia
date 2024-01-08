@@ -1296,7 +1296,16 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># add a default white color to key</span>
                     <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; |lc</span><span class="si">{</span><span class="n">raw_key</span><span class="si">}</span><span class="s2">|lt|w</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">|n|le</span><span class="si">{</span><span class="n">desc_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">ncols</span> <span class="o">=</span> <span class="n">_MAX_TEXT_WIDTH</span> <span class="o">//</span> <span class="n">table_width_max</span>  <span class="c1"># number of columns</span>
+
+        <span class="c1"># check if the caller is using a screenreader</span>
+        <span class="n">screenreader_mode</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">sessions</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;sessions&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">screenreader_mode</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">sess</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+        <span class="c1"># the caller doesn&#39;t have a session; check it directly</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;protocol_flags&#39;</span><span class="p">):</span>
+            <span class="n">screenreader_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">)</span>
+
+        <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">screenreader_mode</span> <span class="k">else</span> <span class="n">_MAX_TEXT_WIDTH</span> <span class="o">//</span> <span class="n">table_width_max</span>
 
         <span class="k">if</span> <span class="n">ncols</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># no visible options at all</span>

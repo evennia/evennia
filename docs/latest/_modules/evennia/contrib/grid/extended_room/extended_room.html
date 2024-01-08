@@ -137,6 +137,7 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">CmdSet</span><span class="p">,</span>
     <span class="n">DefaultRoom</span><span class="p">,</span>
@@ -522,16 +523,16 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">time_of_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time_of_day</span><span class="p">()</span>
+        <span class="n">current_time_of_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time_of_day</span><span class="p">()</span>
 
         <span class="c1"># regexes for in-desc replacements (gets cached)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;legacy_timeofday_regex_map&quot;</span><span class="p">):</span>
             <span class="n">timeslots</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">time_of_day</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">times_of_day</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">times_of_day</span><span class="p">:</span>
                 <span class="n">timeslots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">(</span>
-                        <span class="n">time_of_day</span><span class="p">,</span>
-                        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">time_of_day</span><span class="si">}</span><span class="s2">&gt;(.*?)&lt;/</span><span class="si">{</span><span class="n">time_of_day</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
+                        <span class="n">tod</span><span class="p">,</span>
+                        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">tod</span><span class="si">}</span><span class="s2">&gt;(.*?)&lt;/</span><span class="si">{</span><span class="n">tod</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 
@@ -543,11 +544,10 @@
                 <span class="n">timeslots</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># do the replacement</span>
-        <span class="n">regextuple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">legacy_timeofday_regex_map</span><span class="p">[</span><span class="n">time_of_day</span><span class="p">]</span>
-        <span class="n">desc</span> <span class="o">=</span> <span class="n">regextuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
-        <span class="n">desc</span> <span class="o">=</span> <span class="n">regextuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
-        <span class="n">desc</span> <span class="o">=</span> <span class="n">regextuple</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">regextuple</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span></div>
+        <span class="n">regextuple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">legacy_timeofday_regex_map</span><span class="p">[</span><span class="n">current_time_of_day</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">regex</span> <span class="ow">in</span> <span class="n">regextuple</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span> <span class="k">if</span> <span class="n">regex</span> <span class="o">==</span> <span class="n">regextuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">desc</span></div>
 
 <div class="viewcode-block" id="ExtendedRoom.get_display_desc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.extended_room.html#evennia.contrib.grid.extended_room.extended_room.ExtendedRoom.get_display_desc">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

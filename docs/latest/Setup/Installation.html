@@ -128,10 +128,11 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>If you are converting an existing game from a previous Evennia version, <a class="reference internal" href="Installation-Upgrade.html"><span class="doc std std-doc">see here</span></a>.</p>
+<p>If you are converting an existing game from a previous Evennia version, you will need to upgrade.</p>
 </div>
 <p>The fastest way to install Evennia is to use the <code class="docutils literal notranslate"><span class="pre">pip</span></code> installer that comes with Python (read on).
 You can also  <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">clone Evennia from github</span></a>  or use <a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">docker</span></a>.  Some users have also experimented with <a class="reference internal" href="Installation-Android.html"><span class="doc std std-doc">installing Evennia on Android</span></a>.</p>
+<p>If you are converting an existing game, please follow the <a class="reference internal" href="Installation-Upgrade.html"><span class="doc std std-doc">upgrade instructions</span></a>.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
@@ -152,8 +153,9 @@ You can also  <a class="reference internal" href="Installation-Git.html"><span c
 <h2>Install with <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#install-with-pip" title="Permalink to this headline">¶</a></h2>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>You are recommended to <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">setup a light-weight Python virtualenv</span></a> to install Evennia in. Using a virtualenv is standard practice in Python and allows you to install what you want in isolation from other programs. The virtualenv system is a part of Python and will make your life easier!</p>
+<p>You are recommended to setup a light-weight Python virtualenv to install Evennia in. Using a virtualenv is standard practice in Python and allows you to install what you want in isolation from other programs. The virtualenv system is a part of Python and will make your life easier!</p>
 </div>
+<p>You re recommended to <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">setup a light-weight Python virtualenv</span></a> first.</p>
 <p>Evennia is managed from the terminal (console/Command Prompt on Windows). Once you have Python installed—and after activating your virtualenv if you are using one—install Evennia with:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia
 </pre></div>
@@ -237,7 +239,7 @@ evennia migrate
 </section>
 <section id="server-configuration">
 <h2>Server Configuration<a class="headerlink" href="#server-configuration" title="Permalink to this headline">¶</a></h2>
-<p>Your server’s configuration file is <code class="docutils literal notranslate"><span class="pre">mygame/server/settings.py</span></code>. It’s empty by default. Copy and paste <strong>only</strong> the settings you want/need from the <a class="reference internal" href="Settings-Default.html"><span class="doc std std-doc">default settings file</span></a> to your server’s <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>. See the <a class="reference internal" href="Settings.html"><span class="doc std std-doc">Settings</span></a> documentation for more information before configuring your server at this time.</p>
+<p>Your server’s configuration file is <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>. It’s empty by default. Copy and paste <strong>only</strong> the settings you want/need from the <a class="reference internal" href="Settings-Default.html"><span class="doc std std-doc">default settings file</span></a> to your server’s <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>. See the <a class="reference internal" href="Settings.html"><span class="doc std std-doc">Settings</span></a> documentation for more information before configuring your server at this time.</p>
 </section>
 <section id="register-with-the-evennia-game-index-optional">
 <h2>Register with the Evennia Game Index (optional)<a class="headerlink" href="#register-with-the-evennia-game-index-optional" title="Permalink to this headline">¶</a></h2>
