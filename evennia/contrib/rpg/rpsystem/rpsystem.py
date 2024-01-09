@@ -223,7 +223,7 @@ _RE_CHAREND = re.compile(r"\W+$", _RE_FLAGS)
 _RE_REF_LANG = re.compile(r"\{+\##([0-9]+)\}+")
 # language says in the emote are on the form "..." or langname"..." (no spaces).
 # this regex returns in groups (langname, say), where langname can be empty.
-_RE_LANGUAGE = re.compile(r"(?:\((\w+)\))*(\".+?\")")
+_RE_LANGUAGE = re.compile(r"(?:(\w+))*(\".+?\")")
 
 
 # the emote parser works in two steps:
