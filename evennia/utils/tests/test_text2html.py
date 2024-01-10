@@ -13,10 +13,10 @@ class TestText2Html(TestCase):
         self.parser = HTML_PARSER
 
     def test_convert_markup(self):
-        from evennia.utils.evstring import EvCode
+        test_chunks = (((('fg_color', 'R'),), 'red'), ((('reset', 'n'),), 'foo'))
         self.assertEqual(
             '<span class="color-001">red</span>foo',
-            self.parser.convert_markup( (EvCode('|R'), 'red', EvCode('|n'), 'foo',) ),
+            self.parser.convert_markup( test_chunks ),
         )
     
     def test_parse(self):

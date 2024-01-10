@@ -457,7 +457,7 @@ class RenderToANSI(object):
             
             elif isinstance(chunk, EvLink):
                 link = chunk.data()
-                text = _EVSTRING(link.text, ansi=self).ansi()
+                text = _EVSTRING(link.text, ansi=self).to_ansi()
                 if mxp:
                     output.append(self.convert_mxp(text, link_type=link.key, link_value=link.link))
                 else:

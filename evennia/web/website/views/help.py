@@ -281,7 +281,7 @@ class HelpDetailView(HelpMixin, DetailView):
         elif inherits_from(obj, "evennia.help.filehelp.FileHelpEntry"):
             text = obj.entrytext
         text = EvString(text)
-        context["entry_text"] = text.strip().html()
+        context["entry_text"] = text.strip().to_html()
 
         return context
 

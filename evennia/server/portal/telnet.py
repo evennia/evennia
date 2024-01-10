@@ -457,7 +457,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         elif raw:
             text = text.raw()
         else:
-            text = text.ansi(
+            text = text.to_ansi(
                     xterm256=xterm256,
                     mxp=mxp,
                 )

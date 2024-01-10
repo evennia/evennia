@@ -344,8 +344,8 @@ class TestEvTable(EvenniaTestCase):
 
         table = evtable.EvTable(table=[[row1, row2]])
 
-        self.assertIn(ANSI_RED, table.ansi())
-        self.assertIn(ANSI_CYAN, table.ansi())
+        self.assertIn(ANSI_RED, table.to_ansi())
+        self.assertIn(ANSI_CYAN, table.to_ansi())
 
     @skip("Pending refactor into client-side ansi parsing")
     def test_mxp_links(self):

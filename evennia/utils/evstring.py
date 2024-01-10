@@ -8,6 +8,7 @@
 
 import functools
 from collections import namedtuple
+from itertools import pairwise
 from textwrap import TextWrapper
 from django.conf import settings
 from evennia.server.portal.mxp import mxp_parse
@@ -23,6 +24,13 @@ _ANSI_RENDERER = class_from_module(settings.ANSI_RENDERER)
 _HTML_RENDERER = class_from_module(settings.HTML_RENDERER)
 
 _MARKUP_CHAR = settings.MARKUP_CHAR
+# TODO: make this settings-definable?
+_STYLE_KEYS = {
+    'u': 'underline',
+    '*': 'invert',
+    '^': 'blink',
+#    'i': 'italics,
+}
 
 _RE_HEX = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}#([0-9a-f]{6})', re.I)
 _RE_HEX_BG = re.compile(fr'(?<!\{_MARKUP_CHAR})\{_MARKUP_CHAR}\[#([0-9a-f]{6})', re.I)
@@ -179,7 +187,7 @@ def _spacing_preflight(func):
 
     return wrapped
 
-# 
+
 def _to_evstring(obj):
     """
     convert to EvString.
@@ -365,6 +373,49 @@ class EvCode(str):
 
         return code_string
     
+    def __init__(self, *_, **kwargs):
+        super().__init__()
+        self._styles = self._classify_markup()
+    
+    def _classify_markup(self):
+        def _classify_color(cstr):
+            if cstr.startswith('#'):
+                return ("hex", cstr)
+            elif cstr.startswith('='):
+                return ('xterm', cstr[1:])
+            elif cstr[0].isdecimal():
+                return ('xterm', cstr)
+            else:
+                return ('color', cstr)
+
+        if markup := str(self):
+            # categorize by styling group
+            markup = markup[1:]
+            # identify unstyled printable characters
+            if self._visible_length:
+                return ('str', markup)
+            # reset to normal
+            elif markup == 'n':
+                return ('reset', markup)
+            # check for unique-style markup, like underline
+            elif markup in _STYLE_KEYS:
+                return (_STYLE_KEYS[markup], markup)
+            # identify background colors
+            elif markup.startswith('['):
+                cat, markup = _classify_color(markup[1:])
+                return ( f'bg_{cat}', markup )
+            # anything left should be a color
+            else:
+                cat, markup = _classify_color(markup)
+                return ( f'fg_{cat}', markup )
+    
+    def styles(self):
+        """
+        Returns a dictionary with information about what kind of styling this markup should apply
+        """
+        k, v = self._styles
+        return { k:v }
+
     def clean(self):
         """Returns a "clean" version of itself for markup-stripping"""
         if not self._visible_length:
@@ -375,6 +426,7 @@ class EvCode(str):
             return _MARKUP_CHAR
         else:
             # everything else is whitespace
+            # NOTE: should cleaned tabs print differently?
             return ' '
 
     def __len__(self):
@@ -607,7 +659,7 @@ class EvString(str, metaclass=EvStringMeta):
         super().__init__()
         if self._code_chunks is None:
             self._code_chunks = self._split_codes()
-            self._clean_string = strip_markup(self)
+            self._renderable_chunks = self._collect_codes()
 
     @staticmethod
     def _shifter(iterable, offset):
@@ -670,6 +722,8 @@ class EvString(str, metaclass=EvStringMeta):
         if not self._code_chunks:
             return EvString('')
 
+        clean_str = self.clean()
+
         # we check the step first, because if it's negative, the default start/end are different
         step = slc.step or 1
         start = slc.start
@@ -678,17 +732,17 @@ class EvString(str, metaclass=EvStringMeta):
             if start is None:
                 start = 0
             if stop is None:
-                stop = len(self._clean_string)
+                stop = len(clean_str)
             chunk_iter = self._code_chunks
             slice_index = 0
             reverse = False
         else:
             if start is None:
-                start = len(self._clean_string)
+                start = len(clean_str)
             if stop is None:
                 stop = -1
             chunk_iter = reversed(self._code_chunks)
-            slice_index = len(self._clean_string)-1
+            slice_index = len(clean_str)-1
             reverse = True
 
         indices = list(range(start, stop, step))
@@ -829,7 +883,7 @@ class EvString(str, metaclass=EvStringMeta):
         
         return EvString(''.join(chunks), chunks=chunks)
 
-    def ansi(self, xterm256=True, rgb=False, mxp=MXP_ENABLED):
+    def to_ansi(self, xterm256=True, rgb=False, mxp=MXP_ENABLED):
         """
         Returns a string object with Evennia markup converted to ANSI
         """
@@ -839,12 +893,18 @@ class EvString(str, metaclass=EvStringMeta):
             # should we raise an error?
             return self._clean_string
 
-    def html(self):
+    def to_html(self, renderer=None):
         """
-        Returns a string object with Evennia markup converted to ANSI
+        Returns a string object with Evennia markup converted to HTML tags
         """
         if self._html_render:
-            return self._html_render.convert_markup(self._code_chunks)
+            return self._html_render.convert_markup(self._renderable_chunks)
+        elif renderer:
+            try:
+                return renderer.convert_markup(self._renderable_chunks)
+            except:
+                # it was an invalid renderer
+                return self._clean_string
         else:
             # should we raise an error?
             return self._clean_string
@@ -961,16 +1021,45 @@ class EvString(str, metaclass=EvStringMeta):
 
                     final_chunks.append(code)
                 else:
-                    # text items are zero and even indices
+                    # text items are zero and even indices, e.g. mod 2 is falsey
+                    # this escapes any single, unescaped markup characters left
                     split_chunk = [EvCode(i, 1) if i == _MARKUP_CHAR else i for i in re.split(f"(\{_MARKUP_CHAR})", text) if i]
                     final_chunks += split_chunk
                     # if text:
                     #     final_chunks.append(text)
 
-        # since this may have escaped markup characters, we re-generate the raw and clean strings
+        # since this may have added escaped markup characters, we re-generate the raw and clean strings
         self._raw_string = ''.join([str(c) for c in final_chunks])
-        self._clean_string = None # clear it to be regenerated when next needed
+        # clear these to be regenerated when next needed
+        self._clean_string = None
+        self._renderable_chunks = None
         return tuple(final_chunks)
+
+    def _collect_codes(self):
+        """
+        Groups the internal code/string chunks into pairs of styling instructions and output text.
+        """
+        chunks = self._code_chunks
+
+        output = []
+        styling = {}
+        str_output = ''
+        for chunk in chunks:
+            if isinstance(chunk, EvLink):
+                output.append(({}, chunk))
+            elif isinstance(chunk, EvCode):
+                chunk_style = chunk.styles()
+                if 'str' in chunk_style:
+                    str_output += chunk_style['str']
+                else:
+                    styling = chunk_style if 'reset' in chunk_style else styling | chunk_style
+            else:
+                # normal text
+                output.append( (tuple(styling.items()), str_output+chunk) )
+                str_output = ''
+                styling = {}
+
+        return tuple(output)
 
     def split(self, sep=' ', maxsplit=-1):
         """
@@ -1374,16 +1463,16 @@ class EvStringContainer:
             sep = sep.raw()
         return str(sep).join([item.raw() for item in self.collect_evstring() if item])
 
-    def ansi(self, **kwargs):
+    def to_ansi(self, **kwargs):
         """
         Return the container's data formatted with ANSI code
         """
         sep = self.sep
         if not hasattr(sep, 'ansi'):
             sep = EvString(self.sep)
-        return sep.ansi(**kwargs).join([item.ansi(**kwargs) for item in self.collect_evstring() if item])
+        return sep.to_ansi(**kwargs).join([item.to_ansi(**kwargs) for item in self.collect_evstring() if item])
     
-    def html(self, **kwargs):
+    def to_html(self, **kwargs):
         """
         Return the container's data formatted for HTML
         """

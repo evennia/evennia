@@ -197,55 +197,73 @@ class RenderToHTML(object):
             from evennia.utils.evstring import EvString as _EVSTRING
 
         # check cached parsings
-        global _PARSE_CACHE
-        cachekey = ''.join(chunks)
-        if cachekey in _PARSE_CACHE:
-            return _PARSE_CACHE[cachekey]
+        # global _PARSE_CACHE
+        # cachekey = ''.join(chunks)
+        # if cachekey in _PARSE_CACHE:
+        #     return _PARSE_CACHE[cachekey]
+        # dangit, this doesn't work any more because it can't flatten to a string
 
-        from evennia.utils.evstring import EvCode, EvLink
+        from evennia.utils.evstring import EvLink
 
         output = []
+
         # initialize all the flags and classes
         color = ""
         bgcolor = ""
         classes = set()
         clean = True
         inverse = False
+        hilight = False
+        lowlight = False
 
         for chunk in chunks:
-            code = None
-            is_bg = False
-            if not len(chunk):
-                # we're processing a color code
-                # chop off the |
-                code_str = str(chunk)[1:]
-                # check if this is a background color flag
-                if code_str.startswith('['):
-                    is_bg = True
-                    code_str = code_str[1:]
+            if isinstance(chunk, EvLink):
+                # we're processing a link
+                link = chunk.data()
+                link_text = _EVSTRING(link.text, html=self).to_html()
+                link_text = self.create_link(link_text, link_type=link.key, link_value=link.link)
+                output.append(link_text)
 
-                if match := self.re_colors.match(code_str):
-                    code = match.group(0)
-                    # falling back to xterm for now since the webclient doesn't support hex
-                    if code.startswith('#'):
-                        code = hex_to_xterm(code[1:], bg=is_bg)
+            else:
+                # we're processing some possibly-styled text
+                style_tup, text = chunk
+                style_dict = dict(style_tup)
+
+                if style_dict.get('reset'):
+                    if not clean:
+                        output.append("</span>")
+                    color = ""
+                    bgcolor = ""
+                    classes = set()
+                    clean = True
+                    inverse = False
+                    hilight = False
+                    lowlight = False
+
+                if code_str := style_dict.get('str'):
+                    # we just want to use it like a string
+                    if code_str in ">-":
+                        output.append("\t")
+                    elif code_str == "_":
+                        output.append(" ")
                     else:
-                    # get the class code
-                        code = "{:03d}".format(self.color_list.index(code))
+                        # add anything else as-is
+                        output.append(code_str)
 
-                    # stop! colortime
-                    if is_bg:
-                        bgcolor = code
-                    else:
-                        color = code
-
-                # check style codes
-                elif code_str == "u":
+                # this is a non-color, layerable style
+                if style_dict.get('underline'):
                     classes.add("underline")
-                elif code_str == "^":
+                if style_dict.get('blink'):
                     classes.add("blink")
-                elif code_str == "*":
+                if style_dict.get('invert'):
                     inverse = True
+                if style_dict.get('hilight'):
+                    hilight = True
+                    lowlight = False
+                elif style_dict.get('lowlight'):
+                    hilight = False
+                    lowlight = True
+
                 # special handling for the "highlight" codes
                 elif code_str == "h":
                     # "hilight" dark ANSI
@@ -256,43 +274,35 @@ class RenderToHTML(object):
                     if 8 >= int(color) >= 15:
                         code = "{:03d}".format(self.color_list.index(int(color)-8))
 
-                # check if it's a reset
-                elif code_str.startswith('n'):
-                    if not clean:
-                        color = ""
-                        bgcolor = ""
-                        classes = set()
-                        clean = True
-                        inverse = False
-                        output.append("</span>")
-                    continue
 
-            elif isinstance(chunk, EvCode):
-                # we're processing a visible code
-                code_str = str(chunk)[1:]
-                if not code_str:
-                    continue
-                if code_str in ">-":
-                    output.append("\t")
-                elif code_str == "_":
-                    output.append(" ")
                 else:
-                    # add anything else as-is
-                    output.append(code_str)
+                    # check for foreground colors
+                    if new_color := style_dict.get('fg_hex'):
+                        # falling back to xterm for now since the webclient doesn't yet support hex
+                        color = hex_to_xterm(new_color)
+                    elif new_color := style_dict.get('fg_xterm'):
+                        color = "{:03d}".format(self.color_list.index(new_color))
+                    elif new_color := style_dict.get('fg_color'):
+                        # handle applying the expected "hilight" flag for cross-compat
+                        modifier = 0
+                        if hilight:
+                            modifier = 8
+                        elif lowlight:
+                            modifier = -8
+                        color = "{:03d}".format(self.color_list.index(new_color) - modifier)
 
-            elif isinstance(chunk, EvLink):
-                # we're processing a link
-                link = chunk.data()
-                link_text = _EVSTRING(link.text, html=self).html()
-                link_text = self.create_link(link_text, link_type=link.key, link_value=link.link)
-                output.append(link_text)
+                    # check for background colors
+                    if new_color := style_dict.get('bg_hex'):
+                        # falling back to xterm for now since the webclient doesn't yet support hex
+                        bgcolor = hex_to_xterm(new_color)
+                    elif new_color := style_dict.get('bg_xterm'):
+                        bgcolor = "{:03d}".format(self.color_list.index(new_color))
+                    elif new_color := style_dict.get('bg_color'):
+                        bgcolor = "{:03d}".format(self.color_list.index(new_color))
 
-            else:
-                # it's plain text
-                # add the styling first
+                # time to style the text!
                 if not clean:
                     output.append("</span>")
-
                 new_span = "<span"
 
                 class_list = list(classes)
@@ -325,15 +335,15 @@ class RenderToHTML(object):
                     output.append(new_span)
 
                 # then add the displayable text
-                output.append(self._make_html(chunk))
+                output.append(self._make_html(text))
 
         parsed_string = "".join(output)
         if not clean and not parsed_string.endswith("</span>"):
             parsed_string += "</span>"
         # cache and crop old cache
-        _PARSE_CACHE[cachekey] = parsed_string
-        if len(_PARSE_CACHE) > _PARSE_CACHE_SIZE:
-            _PARSE_CACHE.popitem(last=False)
+        # _PARSE_CACHE[cachekey] = parsed_string
+        # if len(_PARSE_CACHE) > _PARSE_CACHE_SIZE:
+        #     _PARSE_CACHE.popitem(last=False)
 
         return parsed_string
 
@@ -361,7 +371,7 @@ class RenderToHTML(object):
         if strip_markup:
             return self.convert_markup( (text.clean,) )
         else:
-            return text.html()
+            return text.to_html()
 
 HTML_PARSER = RenderToHTML()
 

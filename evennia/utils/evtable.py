@@ -723,14 +723,14 @@ class EvCell(EvStringContainer):
     def collect_evstring(self):
         return [d for d in self.data]
 
-    def ansi(self, **kwargs):
-        return "\n".join([EvString(line).ansi() for line in self.get()])
+    def to_ansi(self, **kwargs):
+        return "\n".join([EvString(line).to_ansi() for line in self.get()])
     
-    def html(self, **kwargs):
+    def to_html(self, **kwargs):
         if _HTML_ELEMENTS:
-            return "<br>".join([EvString(line).html() for line in self.collect_evstring()])
+            return "<br>".join([EvString(line).to_html() for line in self.collect_evstring()])
         else:
-            return "\n".join([EvString(line).html(**kwargs) for line in self.get()])
+            return "\n".join([EvString(line).to_html(**kwargs) for line in self.get()])
 
     def __repr__(self):
         if not self.formatted:
@@ -1569,7 +1569,7 @@ class EvTable(EvStringContainer):
     
     # TODO: this SHOULD mean we can support custom table rendering for HTML now, if I code it up
 
-    def html(self, **kwargs):
+    def to_html(self, **kwargs):
         self._balance()
         if _HTML_ELEMENTS:
             # NOTE: add the border styles as classes instead of inline?
@@ -1603,14 +1603,13 @@ class EvTable(EvStringContainer):
                         style_str = f'border-bottom:0.1em solid;'
                 cell_row = [col[iy] for col in self.table]
                 style_str = f"style=\"{style_str}\"" if style_str else ''
-                row_els = [cell_template.format(cell=cell.html(), style=style_str) for cell in cell_row]
+                row_els = [cell_template.format(cell=cell.to_html(), style=style_str) for cell in cell_row]
                 output += "<tr>" + "".join(row_els) + "</tr>"
             return output
         else:
-            return super().html()
+            return super().to_html()
         
 
     def __str__(self):
         """print table (this also balances it)"""
-        # h = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
         return str(EvString("\n").join([line for line in self._generate_lines()]))

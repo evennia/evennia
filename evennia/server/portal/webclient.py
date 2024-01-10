@@ -295,7 +295,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         elif raw or client_raw:
             text = text.raw()
         else:
-            text = text.html()
+            text = text.to_html()
 
         # put processed message back in the args
         args[0] = text
