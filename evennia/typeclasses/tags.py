@@ -13,7 +13,6 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.db import models
-
 from evennia.locks.lockfuncs import perm as perm_lockfunc
 from evennia.utils.utils import make_iter, to_str
 
@@ -205,7 +204,7 @@ class TagCategoryProperty:
         ::
 
                 class RogueCharacter(DefaultCharacter):
-                    guild = TagProperty("thieves_guild", "merchant_guild")
+                    guild = TagCategoryProperty("thieves_guild", "merchant_guild")
 
         """
         self._category = ""
