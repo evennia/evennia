@@ -25,8 +25,7 @@ from evennia.utils.test_resources import BaseEvenniaTest
 from django.test import override_settings
 
 
-
-class TestWebSocket(BaseEvenniaTest):
+class TestGodotWebSocketClient(BaseEvenniaTest):
     @override_settings(GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE="127.0.0.1", GODOT_CLIENT_WEBSOCKET_PORT='8988')
     def setUp(self):
         super().setUp()
