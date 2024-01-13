@@ -147,7 +147,6 @@ extends Node
 # The URL we will connect to.
 var websocket_url = "ws://localhost:4008"
 var socket := WebSocketPeer.new()
-var connected := false
 
 @onready var output_label = $"../Panel/VBoxContainer/RichTextLabel"
 @onready var text_edit = $"../Panel/VBoxContainer/HBoxContainer/TextEdit"
