@@ -5,8 +5,7 @@ also learn how to add, modify and extend Evennia's default commands.
 
 ## More advanced parsing
 
-In the [last lesson](./Beginner-Tutorial-Adding-Commands.md) we made a `hit` Command and struck a dragon with it. You should have the code
-from that still around.
+In the [last lesson](./Beginner-Tutorial-Adding-Commands.md) we made a `hit` Command and struck a dragon with it. You should have the code from that still around.
 
 Let's expand our simple `hit` command to accept a little more complex input:
 
@@ -113,6 +112,7 @@ Here we create the messages to send to each side of the fight explicitly. Later 
 - **Lines 34-39** - Since the weapon is optional, we need to supply a default (use our fists!) if it's not set. We
     use this to create a `weaponstr` that is different depending on if we have a weapon or not.
 - **Lines 41-42** - We merge the `weaponstr` with our attack texts and send it to attacker and target respectively.
+
 Let's try it out!
 
     > reload
@@ -126,9 +126,7 @@ This won't do. Let's make ourselves a sword:
 
     > create sword
 
-Since we didn't specify `/drop`, the sword will end up in our inventory and can seen with the `i` or
-`inventory` command. The `.search` helper will still find it there. There is no need to reload to see this
-change (no code changed, only stuff in the database).
+Since we didn't specify `/drop`, the sword will end up in our inventory and can seen with the `i` or `inventory` command. The `.search` helper will still find it there. There is no need to reload to see this change (no code changed, only stuff in the database).
 
     > hit smaug with sword
     You hit smaug with sword!
@@ -170,9 +168,27 @@ Woah, that didn't go as planned. Evennia actually found _two_ `hit` commands and
     > hit-2
     Who do you want to hit?
 
-In this case we don't need both command-sets, so let's just keep the one on the sword:
+In this case we don't need both command-sets, we should drop the version of `hit` sitting on our ourselves.
 
-    > py self.cmdset.remove("commands.mycommands.MyCmdSet")
+Go to `mygame/commands/default_cmdsets.py` and find the line where you added 
+`MyCmdSet` in the previous lesson. Delete or comment it out: 
+
+```python
+# mygame/commands/default_cmdsets.py 
+
+# ...
+
+class CharacterCmdSet(default_cmds.CharacterCmdSet):
+
+    # ... 
+    def at_object_creation(self): 
+
+        # self.add(MyCmdSet)    # <---------
+
+```
+
+Next `reload` and you'll only have one `hit` command available:
+
     > hit
     Who do you want to hit?
 
@@ -219,8 +235,8 @@ If the sword lies on the ground, try
     > get sword
     > hit
     > Who do you want to hit?
-	
-Finally, we get rid of ours sword so we have a clean slate with no more `hit` commands floating around. We can do that in two ways:
+
+After we've waved the sword around (hit a dragon or two), we will get rid of ours sword so we have a clean slate with no more `hit` commands floating around. We can do that in two ways:
 
     delete sword
 
@@ -293,6 +309,7 @@ class SessionCmdSet(default_cmds.SessionCmdSet):
 The `super()` function refers to the parent of the current class and is commonly used to call same-named methods on the parent.
 ```
 `evennia.default_cmds` is a container that holds all of Evennia's default commands and cmdsets. In this module we can see that this was imported and then a new child class was made for each cmdset. Each class looks familiar (except the `key`, that's mainly used to easily identify the cmdset in listings). In each `at_cmdset_creation` all we do is call `super().at_cmdset_creation` which means that we call `at_cmdset_creation() on the _parent_ CmdSet.
+
 This is what adds all the default commands to each CmdSet.
 
 When the `DefaultCharacter` (or a child of it) is created, you'll find that the equivalence of  `self.cmdset.add("default_cmdsets.CharacterCmdSet, persistent=True")` gets called. This means that all new Characters get this cmdset. After adding more commands to it, you just need to reload to have all characters see it. 

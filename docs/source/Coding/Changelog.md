@@ -1,5 +1,9 @@
 # Changelog
 
+## main branch
+
+- Doc tutorial fixes
+
 ## Evennia 3.1.0
 
 Jan 8, 2024
