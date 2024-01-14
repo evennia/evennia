@@ -2,7 +2,18 @@
 
 ## main branch
 
+
+- [Fix][pull3398]: Fix to make e.g. `elvish"Hello"` work correctly in language rp
+  contrib (InspectorCaracal)
+- [Fix][pull3405]: Fix/update of Godot client contrib to support Godot4 and
+  latest Evennia portal changes (ChrisLR)
+- Updated doc on wiki install (InspectorCaracal)
+- Docstring fixes (bradleymarques)
 - Doc tutorial fixes
+
+[pull3398]: https://github.com/evennia/evennia/pull/3398
+[pull3405]: https://github.com/evennia/evennia/pull/3405
+
 
 ## Evennia 3.1.0
 

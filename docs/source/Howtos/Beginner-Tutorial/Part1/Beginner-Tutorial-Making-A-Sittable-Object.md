@@ -604,14 +604,13 @@ class CmdStand2(Command):
     key = "stand"
 
     def func(self):
-
-    caller = self.caller
-    # if we are sitting, this should be set on us
-    sittable = caller.db.is_sitting
-    if not sittable:
-        caller.msg("You are not sitting down.")
-    else:
-        sittable.do_stand(caller)
+        caller = self.caller
+        # if we are sitting, this should be set on us
+        sittable = caller.db.is_sitting
+        if not sittable:
+            caller.msg("You are not sitting down.")
+        else:
+            sittable.do_stand(caller)
 
 ```
 

@@ -7,6 +7,7 @@
   contrib (InspectorCaracal)
 - [Fix][pull3405]: Fix/update of Godot client contrib to support Godot4 and
   latest Evennia portal changes (ChrisLR)
+- Updated doc on wiki install (InspectorCaracal)
 - Docstring fixes (bradleymarques)
 - Doc tutorial fixes
 
