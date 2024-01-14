@@ -127,8 +127,8 @@ We let the typeclass handle the logic, and also let it do all the return messagi
 It's fine to sit 'on' a chair. But what if our Sittable is an armchair? 
 
 ```
-> py armchair = evennia.create_object("typeclasses.sittables.Sittable", key="armchair", location=here)
-> py armchair.do_sit(me)
+> py evennia.create_object("typeclasses.sittables.Sittable", key="armchair", location=here)
+> py self.search("armchair").do_sit(me)
 You sit on armchair.
 ```
 
