@@ -1,7 +1,8 @@
 # Changelog
 
-## main branch
+## Evennia 3.1.1
 
+Jan 14, 2024
 
 - [Fix][pull3398]: Fix to make e.g. `elvish"Hello"` work correctly in language rp
   contrib (InspectorCaracal)
