@@ -122,6 +122,28 @@ class TestEvTable(EvenniaTestCase):
 """
         self._validate(expected, str(table))
 
+    def test_right_align(self):
+        table = evtable.EvTable(
+            "|yHeading1|n",
+            "|gHeading2|n",
+            "|rHeading3|n",
+            table=[[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+            border="cells",
+            align="r",
+        )
+
+        expected = """
++----------+----------+----------+
+| Heading1 | Heading2 | Heading3 |
++~~~~~~~~~~+~~~~~~~~~~+~~~~~~~~~~+
+|        1 |        4 |        7 |
++----------+----------+----------+
+|        2 |        5 |        8 |
++----------+----------+----------+
+|        3 |        6 |        9 |
++----------+----------+----------+
+"""
+
     def test_add_row_and_column(self):
         table = evtable.EvTable(
             "|yHeading1|n",
