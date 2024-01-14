@@ -82,7 +82,9 @@ Example for your character:
     > type/reset/force me = typeclasses.characters.Character
 
 
-Examples:
+### Usage
+
+#### Sdescs
 
     > look
 
@@ -104,6 +106,14 @@ Tall man (assuming his name is Tom) sees:
     The godlike figure looks at Tom and says "Hello".
 
 Note that by default, the case of the tag matters, so `/tall` will lead to 'tall man' while `/Tall` will become 'Tall man' and /TALL becomes /TALL MAN. If you don't want this behavior, you can pass case_sensitive=False to the `send_emote` function.
+
+#### Language integration
+
+Speech can be identified as a particular language by prefixing it with the language key.
+
+    emote says with a growl, orcish"Hello".
+
+This will identify the speech "Hello" as being spoken in orcish, and then pass that information on to `process_language` on your Character. By default, it doesn't do much, but you can hook in a language system such as the `rplanguage` module below to do more interesting things.
 
 
 ##  Language and whisper obfuscation system
