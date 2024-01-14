@@ -197,7 +197,7 @@ class Sittable(Object):
 Since we haven't added the `sit` command yet, we must still use `py` to test: 
 
 ```
-> py armchair = evennia.search_object("armchair")[0];armchair.do_sit(me)
+> py self.search("armchair").do_sit(me)
 You sit in armchair.
 ```
 
@@ -210,8 +210,8 @@ What if we want some more dramatic flair when you sit down in certain chairs?
 You can make this happen by tweaking your `Sittable` class having the return messages be replaceable by `Attributes` that you can set on the object you create. You want something like this: 
 
 ```
-> py
-> chair = evennia.create_object("typeclasses.sittables.Sittable", key="pallet")
+> py 
+> chair = evennia.create_object("typeclasses.sittables.Sittable", key="pallet", location=here)
 > chair.do_sit(me)
 You sit down on pallet.
 > chair.do_stand(me)
@@ -221,7 +221,8 @@ You stand up from pallet.
 You sit down and a whoopie cushion makes a loud fart noise!
 ```
 
-That is, if you are not setting the Attribute, you should get a default value. We leave this implementation up to the reader.
+That is, if you are not setting the Attribute, you should get a default value. 
+We leave this implementation up to the reader.
 
 ## Adding commands
 
