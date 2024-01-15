@@ -2,11 +2,8 @@
 Tests for RP system
 
 """
-import time
-
-from anything import Anything
-
 from evennia import create_object
+from evennia.commands.default.general import CmdLook
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import BaseEvenniaTest
 
@@ -157,11 +154,10 @@ class TestRPSystem(BaseEvenniaTest):
         self.assertEqual(
             rpsystem.parse_language(self.speaker, language_emote),
             (
-                'For a change of pace, /me says, {##0}',
-                {"##0": ('elvish', '"This is in elvish!"')},
+                "For a change of pace, /me says, {##0}",
+                {"##0": ("elvish", '"This is in elvish!"')},
             ),
         )
-
 
     def test_parse_sdescs_and_recogs(self):
         speaker = self.speaker
@@ -337,6 +333,25 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         super().setUp()
         self.char1.swap_typeclass(rpsystem.ContribRPCharacter)
         self.char2.swap_typeclass(rpsystem.ContribRPCharacter)
+
+    def test_multi_match_search(self):
+        mushroom1 = create_object(rpsystem.ContribRPObject, key="mushroom", location=self.room1)
+        mushroom1.db.desc = "The first mushroom is brown."
+        mushroom2 = create_object(rpsystem.ContribRPObject, key="mushroom", location=self.room1)
+        mushroom2.db.desc = "The second mushroom is red."
+
+        expected_first_call = [
+            "More than one match for 'mushroom' (please narrow target):",
+            f" mushroom({mushroom1.dbref})-1 []",
+            f" mushroom({mushroom2.dbref})-2 []",
+        ]
+        self.call(CmdLook(), "mushroom", "\n".join(expected_first_call))
+
+        expected_second_call = "Mushroom\nThe first mushroom is brown."
+        self.call(CmdLook(), "mushroom-1", expected_second_call)
+
+        expected_third_call = "Mushroom\nThe second mushroom is red."
+        self.call(CmdLook(), "mushroom-2", expected_third_call)
 
     def test_commands(self):
         self.call(
