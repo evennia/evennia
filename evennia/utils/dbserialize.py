@@ -502,7 +502,6 @@ def deserialize(obj):
     """
 
     def _iter(obj):
-        # breakpoint()
         typ = type(obj)
         tname = typ.__name__
         if tname in ("_SaverDict", "dict"):
@@ -757,7 +756,6 @@ def from_pickle(data, db_obj=None):
 
     def process_item(item):
         """Recursive processor and identification of data"""
-        # breakpoint()
         dtype = type(item)
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
@@ -817,7 +815,6 @@ def from_pickle(data, db_obj=None):
 
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
-        # breakpoint()
         dtype = type(item)
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item

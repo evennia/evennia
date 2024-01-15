@@ -334,24 +334,45 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         self.char1.swap_typeclass(rpsystem.ContribRPCharacter)
         self.char2.swap_typeclass(rpsystem.ContribRPCharacter)
 
-    def test_multi_match_search(self):
-        mushroom1 = create_object(rpsystem.ContribRPObject, key="mushroom", location=self.room1)
+    def test_REMOVE_ME_PLEASE_DEAR_GOD_REMOVE_ME(self):
+        self.char1.swap_typeclass(self.character_typeclass)
+
+        mushroom1 = create_object(self.object_typeclass, key="Mushroom", location=self.room1)
         mushroom1.db.desc = "The first mushroom is brown."
-        mushroom2 = create_object(rpsystem.ContribRPObject, key="mushroom", location=self.room1)
+        mushroom2 = create_object(self.object_typeclass, key="Mushroom", location=self.room1)
         mushroom2.db.desc = "The second mushroom is red."
 
         expected_first_call = [
-            "More than one match for 'mushroom' (please narrow target):",
-            f" mushroom({mushroom1.dbref})-1 []",
-            f" mushroom({mushroom2.dbref})-2 []",
+            "More than one match for 'Mushroom' (please narrow target):",
+            f" Mushroom({mushroom1.dbref})-1 []",
+            f" Mushroom({mushroom2.dbref})-2 []",
         ]
-        self.call(CmdLook(), "mushroom", "\n".join(expected_first_call))
+        self.call(CmdLook(), "Mushroom", "\n".join(expected_first_call))
 
-        expected_second_call = "Mushroom\nThe first mushroom is brown."
-        self.call(CmdLook(), "mushroom-1", expected_second_call)
+        expected_second_call = f"Mushroom({mushroom1.dbref})\nThe first mushroom is brown."
+        self.call(CmdLook(), "Mushroom-1", expected_second_call)
 
-        expected_third_call = "Mushroom\nThe second mushroom is red."
-        self.call(CmdLook(), "mushroom-2", expected_third_call)
+        expected_third_call = f"Mushroom({mushroom2.dbref})\nThe second mushroom is red."
+        self.call(CmdLook(), "Mushroom-2", expected_third_call)
+
+    def test_multi_match_search(self):
+        mushroom1 = create_object(rpsystem.ContribRPObject, key="Mushroom", location=self.room1)
+        mushroom1.db.desc = "The first mushroom is brown."
+        mushroom2 = create_object(rpsystem.ContribRPObject, key="Mushroom", location=self.room1)
+        mushroom2.db.desc = "The second mushroom is red."
+
+        expected_first_call = [
+            "More than one match for 'Mushroom' (please narrow target):",
+            f" Mushroom({mushroom1.dbref})-1 []",
+            f" Mushroom({mushroom2.dbref})-2 []",
+        ]
+        self.call(CmdLook(), "Mushroom", "\n".join(expected_first_call))
+
+        expected_second_call = f"Mushroom({mushroom1.dbref})\nThe first mushroom is brown."
+        self.call(CmdLook(), "Mushroom-1", expected_second_call)
+
+        expected_third_call = f"Mushroom({mushroom2.dbref})\nThe second mushroom is red."
+        self.call(CmdLook(), "Mushroom-2", expected_third_call)
 
     def test_commands(self):
         self.call(

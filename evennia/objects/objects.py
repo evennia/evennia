@@ -11,10 +11,11 @@ import time
 import typing
 from collections import defaultdict
 
-import evennia
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -347,7 +348,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         stacked=0,
     ):
         """
-        Returns an Object matching a search string/condition
+        Returns an Object matching a search string/condition.
 
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully. By default, only
@@ -362,6 +363,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
                 - `#<num>`: search by unique dbref. This is always a global search.
                 - `me,self`: self-reference to this object
+                - `here`: reference to this object's location
                 - `<num>-<string>` - can be used to differentiate
                    between multiple same-named matches. The exact form of this input
                    is given by `settings.SEARCH_MULTIMATCH_REGEX`.
@@ -390,8 +392,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 search method that the user wants to handle all errors
                 themselves. It also changes the return value type, see
                 below.
-            exact (bool): if unset (default) - prefers to match to beginning of
-                string rather than not matching at all. If set, requires
+            exact (bool): if False (default), prefer to match to beginning of
+                string rather than not matching at all. If True, requires
                 exact matching of entire string.
             candidates (list of objects): this is an optional custom list of objects
                 to search (filter) between. It is ignored if `global_search`
@@ -400,7 +402,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 caller's contents (inventory).
             use_locks (bool): If True (default) - removes search results which
                 fail the "search" lock.
-            nofound_string (str):  optional custom string for not-found error message.
+            nofound_string (str): optional custom string for not-found error message.
             multimatch_string (str): optional custom string for multimatch error header.
             use_dbref (bool or None, optional): If `True`, allow to enter e.g. a query "#123"
                 to find an object (globally) by its database-id 123. If `False`, the string "#123"

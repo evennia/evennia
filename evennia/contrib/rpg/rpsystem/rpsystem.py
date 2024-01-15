@@ -179,7 +179,7 @@ _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 
 # The prefix is the (single-character) symbol used to find the start
 # of a object reference, such as /tall (note that
 # the system will understand multi-word references like '/a tall man' too).
-_PREFIX = getattr(settings, 'RPSYSTEM_EMOTE_PREFIX', "/")
+_PREFIX = getattr(settings, "RPSYSTEM_EMOTE_PREFIX", "/")
 
 # The num_sep is the (single-character) symbol used to separate the
 # sdesc from the number when  trying to separate identical sdescs from
@@ -1333,8 +1333,7 @@ class ContribRPObject(DefaultObject):
         use_dbref=None,
     ):
         """
-        Returns an Object matching a search string/condition, taking
-        sdescs into account.
+        Returns an Object matching a search string/condition, taking sdescs into account.
 
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully. By default, only
@@ -1344,14 +1343,17 @@ class ContribRPObject(DefaultObject):
             searchdata (str or obj): Primary search criterion. Will be matched
                 against `object.key` (with `object.aliases` second) unless
                 the keyword attribute_name specifies otherwise.
-                **Special strings:**
-                - `#<num>`: search by unique dbref. This is always
-                   a global search.
+
+                Special keywords:
+
+                - `#<num>`: search by unique dbref. This is always a global search.
                 - `me,self`: self-reference to this object
+                - `here`: reference to this object's location
                 - `<num>-<string>` - can be used to differentiate
-                   between multiple same-named matches
-            global_search (bool): Search all objects globally. This is overruled
-                by `location` keyword.
+                   between multiple same-named matches. The exact form of this input
+                   is given by `settings.SEARCH_MULTIMATCH_REGEX`.
+
+            global_search (bool): Search all objects globally. This overrules 'location' data.
             use_nicks (bool): Use nickname-replace (nicktype "object") on `searchdata`.
             typeclass (str or Typeclass, or list of either): Limit search only
                 to `Objects` with this typeclass. May be a list of typeclasses
@@ -1360,7 +1362,9 @@ class ContribRPObject(DefaultObject):
                 to search. Note that this is used to query the *contents* of a
                 location and will not match for the location itself -
                 if you want that, don't set this or use `candidates` to specify
-                exactly which objects should be searched.
+                exactly which objects should be searched. . If this nor candidates are
+                given, candidates will include caller's inventory, current location and
+                all objects in the current location.
             attribute_name (str): Define which property to search. If set, no
                 key+alias search will be performed. This can be used
                 to search database fields (db_ will be automatically
@@ -1373,22 +1377,25 @@ class ContribRPObject(DefaultObject):
                 search method that the user wants to handle all errors
                 themselves. It also changes the return value type, see
                 below.
-            exact (bool): if unset (default) - prefers to match to beginning of
-                string rather than not matching at all. If set, requires
+            exact (bool): if False (default), prefer to match to beginning of
+                string rather than not matching at all. If True, requires
                 exact matching of entire string.
             candidates (list of objects): this is an optional custom list of objects
                 to search (filter) between. It is ignored if `global_search`
                 is given. If not set, this list will automatically be defined
                 to include the location, the contents of location and the
                 caller's contents (inventory).
-            nofound_string (str):  optional custom string for not-found error message.
+            nofound_string (str): optional custom string for not-found error message.
             multimatch_string (str): optional custom string for multimatch error header.
-            use_dbref (bool or None): If None, only turn off use_dbref if we are of a lower
-                permission than Builder. Otherwise, honor the True/False value.
+            use_dbref (bool or None, optional): If `True`, allow to enter e.g. a query "#123"
+                to find an object (globally) by its database-id 123. If `False`, the string "#123"
+                will be treated like a normal string. If `None` (default), the ability to query by
+                #dbref is turned on if `self` has the permission 'Builder' and is turned off
+                otherwise.
 
         Returns:
-            match (Object, None or list): will return an Object/None if `quiet=False`,
-                otherwise it will return a list of 0, 1 or more matches.
+            Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return
+            a `list` with 0, 1 or more matches if `quiet=True`.
 
         Notes:
             To find Accounts, use eg. `evennia.account_search`. If
@@ -1448,13 +1455,14 @@ class ContribRPObject(DefaultObject):
 
         def search_obj(string):
             "helper wrapper for searching"
-            return ObjectDB.objects.object_search(
-                string,
+            return ObjectDB.objects.search_object(
+                searchdata=string,
                 attribute_name=attribute_name,
                 typeclass=typeclass,
                 candidates=candidates,
                 exact=exact,
                 use_dbref=use_dbref,
+                tags=None,
             )
 
         if candidates:
@@ -1462,6 +1470,7 @@ class ContribRPObject(DefaultObject):
                 self, candidates, _PREFIX + searchdata, search_mode=True
             )
             results = []
+            breakpoint()
             for candidate in candidates:
                 # we search by candidate keys here; this allows full error
                 # management and use of all kwargs - we will use searchdata
