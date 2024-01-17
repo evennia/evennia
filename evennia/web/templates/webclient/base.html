@@ -19,6 +19,12 @@ JQuery available.
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/webclient.css" %}>
 
+    {% comment %}
+    Allows for loading custom styles without overriding the base site stylesheet
+    {% endcomment %}
+    <!-- Custom CSS -->
+    <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/custom.css" %}>
+
     <link rel="icon" type="image/x-icon" href="/static/website/images/evennia_logo.png" />
 
     <!-- Import JQuery and warn if there is a problem -->
