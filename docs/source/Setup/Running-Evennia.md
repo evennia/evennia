@@ -21,7 +21,7 @@ to give you a menu with options.
 
 ## Starting Evennia
 
-Evennia consists of two components, the Evennia [Portal and Server](../Components/Portal-And-Server.md).  Briefly, the  *Server* is what is running the mud. It handles all game-specific things but doesn't care exactly how players connect, only that they have. The *Portal* is a gateay to which players connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the game. Both are required for a functioning game.
+Evennia consists of two components, the Evennia [Portal and Server](../Components/Portal-And-Server.md).  Briefly, the  *Server* is what is running the mud. It handles all game-specific things but doesn't care exactly how players connect, only that they have. The *Portal* is a gateway to which players connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the game. Both are required for a functioning game.
 
      evennia start
 

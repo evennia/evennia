@@ -308,7 +308,7 @@ For this tutorial, we will show how to add a simple state-machine AI for monster
 
 ### Are NPCs and mobs different entities? How do they differ?
 
-"Mobs" or "mobiles" are things that move around. This is traditionally monsters you can fight with, but could also be city guards or the baker going to chat with the neighbor. Back in the day, they were often fundamentally different these days it's often easier to just make NPCs and mobs essentially the same thing.
+"Mobs" or "mobiles" are things that move around. This is traditionally monsters you can fight with, but could also be city guards or the baker going to chat with the neighbor. Back in the day, they were often fundamentally different. These days it's often easier to just make NPCs and mobs essentially the same thing.
 
 **EvAdventure Answer**
 

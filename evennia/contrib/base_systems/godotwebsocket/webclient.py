@@ -78,4 +78,4 @@ def start_plugin_services(portal):
     port = settings.GODOT_CLIENT_WEBSOCKET_PORT
     websocket_service = internet.TCPServer(port, factory, interface=interface)
     websocket_service.setName("GodotWebSocket%s:%s" % (interface, port))
-    portal.services.addService(websocket_service)
+    portal.addService(websocket_service)

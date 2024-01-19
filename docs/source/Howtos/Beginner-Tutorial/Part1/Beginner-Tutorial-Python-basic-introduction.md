@@ -430,7 +430,7 @@ commands).
     Hello World
     [py mode - quit() to exit]
 
-Note that we didn't need to put `py` in front now. The system will also echo your input (that's the bit after the `>>>`). For brevity in this tutorual we'll turn the echo off. First exit `py` and then start again with the `/noecho` flag.
+Note that we didn't need to put `py` in front now. The system will also echo your input (that's the bit after the `>>>`). For brevity in this tutorial we'll turn the echo off. First exit `py` and then start again with the `/noecho` flag.
 
     > quit()
     Closing the Python console.
@@ -465,7 +465,7 @@ Let's try to define a function:
 
 Some important things above:
 
-- Definining a function with `def` means we are starting a new code block. Python works so that you mark the content
+- Defining a function with `def` means we are starting a new code block. Python works so that you mark the content
   of the block with indention. So the next line must be manually indented (4 spaces is a good standard) in order
   for Python to know it's part of the function body.
 - We expand the `hello_world` function with another argument `txt`. This allows us to send any text, not just

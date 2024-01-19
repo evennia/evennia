@@ -51,3 +51,6 @@ nosetests.xml
 
 # PyCharm config
 .idea
+
+# VSCode config
+.vscode

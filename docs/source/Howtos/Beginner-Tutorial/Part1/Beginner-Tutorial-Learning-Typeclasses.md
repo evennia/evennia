@@ -63,8 +63,7 @@ class Object(ObjectParent, DefaultObject):
     pass
 ```
 
-So we have a class `Object` that _inherits_ from `ObjectParent` (which is empty) and `DefaultObject`, which we have imported from Evennia. The `ObjectParent` acts as a place to put code you want all 
-of your `Objects` to have. We'll focus on `Object` and `DefaultObject` for now.
+So we have a class `Object` that _inherits_ from `ObjectParent` (which is empty) and `DefaultObject`, which we have imported from Evennia. The `ObjectParent` acts as a place to put code you want all  of your `Objects` to have. We'll focus on `Object` and `DefaultObject` for now.
 
 The class itself doesn't do anything (it just `pass`es) but that doesn't mean it's useless. As we've seen, it inherits all the functionality of its parent. It's in fact an _exact replica_ of `DefaultObject` right now.  Once we know what kind of methods and resources are available on `DefaultObject` we could add our own and  change the way it works!
 
@@ -138,24 +137,19 @@ You should now see that Smaug _is in the room with you_. Woah!
     
 _He's still there_... What we just did was to create a new entry in the database for Smaug. We gave the object  its name (key) and set its location to our current location.
 
-To make use of Smaug in code we must first find him in the database. For an object in the current 
-location we can easily do this in `py` by using `me.search()`: 
+To make use of Smaug in code we must first find him in the database. For an object in the current location we can easily do this in `py` by using `me.search()`: 
 
     > py smaug = me.search("Smaug") ; smaug.firebreath()
     Smaug breathes fire!  
 
 ### Creating using create_object
 
-Creating Smaug like we did above is nice because it's similar to how we created non-database
-bound Python instances before. But you need to use `db_key` instead of `key` and you also have to 
-remember to call `.save()` afterwards. Evennia has a helper function that is more common to use, 
-called `create_object`. Let's recreate Cuddly this time:
+Creating Smaug like we did above is nice because it's similar to how we created non-database bound Python instances before. But you need to use `db_key` instead of `key` and you also have to  remember to call `.save()` afterwards. Evennia has a helper function that is more common to use,  called `create_object`. Let's recreate Cuddly this time:
 
     > py evennia.create_object('typeclasses.monsters.Monster', key="Cuddly", location=here)
     > look 
     
-Boom, Cuddly should now be in the room with you, a little less scary than Smaug. You specify the 
-python-path to the code you want and then set the key and location (if you had the `Monster` class already imported, you could have passed that too). Evennia sets things up and saves for you. 
+Boom, Cuddly should now be in the room with you, a little less scary than Smaug. You specify the  python-path to the code you want and then set the key and location (if you had the `Monster` class already imported, you could have passed that too). Evennia sets things up and saves for you. 
 
 If you want to find Cuddly from anywhere (not just in the same room), you can use Evennia's `search_object` function: 
 
@@ -194,8 +188,7 @@ The number of typeclasses in Evennia are so few they can be learned by heart:
 | `evennia.DefaultChannel` | `typeclasses.channels.Channel` | In-game comms | 
 |  `evennia.DefaultScript` | `typeclasses.scripts.Script` | Entities with no location | 
 
-The child classes under `mygame/typeclasses/` are meant for you to conveniently modify and 
-work with.  Every class inheriting (at any distance) from a Evennia base typeclass is also considered a typeclass.
+The child classes under `mygame/typeclasses/` are meant for you to conveniently modify and  work with.  Every class inheriting (at any distance) from a Evennia base typeclass is also considered a typeclass.
 
 ```
 from somewhere import Something 
@@ -248,8 +241,7 @@ You are specifying exactly which typeclass you want to use to build the Giantess
      desc = You see nothing special. 
     ------------------------------------------------------------------------------- 
 
-We used the `examine` command briefly in the [lesson about building in-game](./Beginner-Tutorial-Building-Quickstart.md). Now these lines
-may be more useful to us:
+We used the `examine` command briefly in the [lesson about building in-game](./Beginner-Tutorial-Building-Quickstart.md). Now these lines may be more useful to us:
 - **Name/key** - The name of this thing. The value `(#14)` is probably different for you. This is the 
     unique 'primary key' or _dbref_ for this entity in the database.
 - **Typeclass**: This show the typeclass we specified, and the path to it. 
@@ -290,8 +282,7 @@ But the reason Evennia knows to fall back to this class is not hard-coded - it's
 While it's tempting to change folders around to your liking, this can make it harder to follow tutorials and may confuse if you are asking others for help. So don't overdo it unless you really know what you are doing.
 ```
 
-So if you wanted the creation commands and methods to default to some other class you could 
-add your own `BASE_OBJECT_TYPECLASS` line to `mygame/server/conf/settings.py`. The same is true for all the other typeclasseses, like characters, rooms and accounts. This way you can change the  layout of your game dir considerably if you wanted. You just need to tell Evennia where everything is.
+So if you wanted the creation commands and methods to default to some other class you could  add your own `BASE_OBJECT_TYPECLASS` line to `mygame/server/conf/settings.py`. The same is true for all the other typeclasseses, like characters, rooms and accounts. This way you can change the  layout of your game dir considerably if you wanted. You just need to tell Evennia where everything is.
     
 ## Modifying ourselves 
 
@@ -302,15 +293,16 @@ Let's try to modify ourselves a little. Open up `mygame/typeclasses/characters.p
 (module docstring)
 """
 from evennia import DefaultCharacter
+from .objects import ObjectParent
 
-class Character(DefaultCharacter):
+class Character(ObjectParent, DefaultCharacter):
     """
     (class docstring)
     """
     pass
 ```
 
-This looks quite familiar now - an empty class inheriting from the Evennia base typeclass (it's even easier than `Object` since there is no equvalent  `ParentObject` mixin class here). As you would expect, this is also the default typeclass used for creating Characters if you don't specify it. You can verify it: 
+This looks quite familiar now - an empty class inheriting from the Evennia base typeclassObjectParent. The `ObjectParent` (empty by default) is also here for adding any functionality shared by all types of Objects. As you would expect, this is also the default typeclass used for creating Characters if you don't specify it. You can verify it: 
 
 
     > examine me
@@ -343,8 +335,7 @@ Yes, the `examine` command understands `me`. You got a lot longer output this ti
 
 - **Session id(s)**: This identifies the _Session_ (that is, the individual connection to a player's game client).
 - **Account** shows, well the `Account` object associated with this Character and Session.
-- **Stored/Merged Cmdsets** and **Commands available** is related to which _Commands_ are stored on you. We will get to them in the [next lesson](./Beginner-Tutorial-Adding-Commands.md). For now it's enough to know these consitute all the 
-    commands available to you at a given moment. 
+- **Stored/Merged Cmdsets** and **Commands available** is related to which _Commands_ are stored on you. We will get to them in the [next lesson](./Beginner-Tutorial-Adding-Commands.md). For now it's enough to know these consitute all the  commands available to you at a given moment. 
 - **Non-Persistent attributes** are Attributes that are only stored temporarily and will go away on next reload.
 
 Look at the **Typeclass** field and you'll find that it points to `typeclasses.character.Character` as expected. So if we modify this class we'll also modify ourselves.
@@ -354,8 +345,11 @@ Look at the **Typeclass** field and you'll find that it points to `typeclasses.c
 Let's try something simple first. Back in `mygame/typeclasses/characters.py`:
 
 ```python
+# in mygame/typeclasses/characters.py
 
-class Character(DefaultCharacter):
+# ...
+
+class Character(ObjectParent, DefaultCharacter):
     """
     (class docstring)
     """
@@ -415,8 +409,11 @@ In principle we could change the python code. But we don't want to do that manua
 Evennia offers a special, persistent type of property for this, called an `Attribute`. Rework your  `mygame/typeclasses/characters.py` like this: 
     
 ```python
+# in mygame/typeclasses/characters.py
 
-class Character(DefaultCharacter):
+# ...
+
+class Character(ObjectParent, DefaultCharacter):
     """
     (class docstring)
     """
@@ -477,10 +474,12 @@ We want those stats to be set only once, when the object is first created. For t
 
 
 ```python
-# up by the other imports
+# in mygame/typeclasses/characters.py
+
+# ...
 import random 
 
-class Character(DefaultCharacter):
+class Character(ObjectParent, DefaultCharacter):
     """
     (class docstring)
     """
@@ -497,8 +496,7 @@ class Character(DefaultCharacter):
         return self.db.strength, self.db.dexterity, self.db.intelligence
 ```
 
-We imported a new module, `random`. This is part of Python's standard library. We used `random.randint` to 
-set a random value from 3 to 18 to each stat. Simple, but for some classical RPGs this is all you need! 
+We imported a new module, `random`. This is part of Python's standard library. We used `random.randint` to  set a random value from 3 to 18 to each stat. Simple, but for some classical RPGs this is all you need! 
 
     > reload 
     > py self.get_stats()
@@ -517,8 +515,7 @@ It's simple enough to run it manually though:
     > py self.get_stats()
     (5, 4, 8)
     
-Lady luck didn't smile on us for this example; maybe you'll fare better. Evennia has a helper command
-`update` that re-runs the creation hook and also cleans up any other Attributes not re-created by `at_object_creation`:
+Lady luck didn't smile on us for this example; maybe you'll fare better. Evennia has a helper command `update` that re-runs the creation hook and also cleans up any other Attributes not re-created by `at_object_creation`:
 
     > update self
     > py self.get_stats()
@@ -554,9 +551,7 @@ For our list, we want to loop over all Characters, and want to call `.at_object_
 
 `Character.objects.all()` is an example of a database query expressed in Python. This will be converted into a database query under the hood. This syntax is part of [Django's query language](https://docs.djangoproject.com/en/4.1/topics/db/queries/). You don't need to know Django to use Evennia, but if you ever need more specific database queries, this is always available when you need it. We'll get back to database queries in a later lesson.
 ``` 
-We import the `Character` class and then we use `.objects.all()` to get all `Character` instances. Simplified,
-`.objects` is a resource from which one can _query_ for all `Characters`. Using `.all()` gets us a listing 
-of all of them that we then immediately loop over. Boom, we just updated all Characters, including ourselves: 
+We import the `Character` class and then we use `.objects.all()` to get all `Character` instances. Simplified, `.objects` is a resource from which one can _query_ for all `Characters`. Using `.all()` gets us a listing  of all of them that we then immediately loop over. Boom, we just updated all Characters, including ourselves: 
 
     > quit()
     Closing the Python console.
@@ -565,8 +560,7 @@ of all of them that we then immediately loop over. Boom, we just updated all Cha
 
 ## Extra Credits
 
-This principle is the same for other typeclasses. So using the tools explored in this lesson, try to expand  the default room with an `is_dark` flag. It can be either `True` or `False`.  Have all new rooms start with `is_dark = False` and make it so that once you change it, it survives a reload. 
-Oh, and if you created any other rooms before, make sure they get the new flag too! 
+This principle is the same for other typeclasses. So using the tools explored in this lesson, try to expand  the default room with an `is_dark` flag. It can be either `True` or `False`.  Have all new rooms start with `is_dark = False` and make it so that once you change it, it survives a reload.  Oh, and if you created any other rooms before, make sure they get the new flag too! 
 
 ## Conclusions
 

@@ -67,9 +67,16 @@ INSTALLED_APPS += (
     'wiki.plugins.macros.apps.MacrosConfig',
 )
 
-# Disable wiki handling of login/signup
+# Disable wiki handling of login/signup, so that it uses your Evennia login system instead
 WIKI_ACCOUNT_HANDLING = False
 WIKI_ACCOUNT_SIGNUP_ALLOWED = False
+
+# Enable wikilinks, e.g. [[Getting Started]]
+WIKI_MARKDOWN_KWARGS = {
+    'extensions': [
+        'wikilinks',
+    ]
+}
 
 ######################################################################
 # Settings given in secret_settings.py override those in this file.
@@ -151,15 +158,15 @@ Here's an example of a basic set-up that would go in your `settings.py` file:
 # Custom methods to link wiki permissions to game perms
 def is_superuser(article, user):
     """Return True if user is a superuser, False otherwise."""
-    return not user.is_anonymous() and user.is_superuser
+    return not user.is_anonymous and user.is_superuser
 
 def is_builder(article, user):
     """Return True if user is a builder, False otherwise."""
-    return not user.is_anonymous() and user.locks.check_lockstring(user, "perm(Builders)")
+    return not user.is_anonymous and user.permissions.check("Builder")
 
 def is_player(article, user):
     """Return True if user is a builder, False otherwise."""
-    return not user.is_anonymous() and user.locks.check_lockstring(user, "perm(Players)")
+    return not user.is_anonymous and user.permissions.check("Player")
 
 # Create new users
 WIKI_CAN_ADMIN = is_superuser

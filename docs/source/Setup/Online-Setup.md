@@ -324,15 +324,15 @@ Evennia users:
 | Hosting name       |  Type          |  Lowest price  |  Comments |
 |---|---| ---| --- |
 | [silvren.com][1]   | Shell account | Free for MU*  | Private hobby provider so don't assume backups or expect immediate support. To ask for an account, connect with a MUD client to rostdev.mushpark.com, port 4201 and ask for "Jarin". |
-| [Digital Ocean][2] | VPS | $5/month | You can get a $50 credit if you use the referral link https://m.do.co/c/8f64fec2670c - if you do, once you've had it long enough to have paid $25 we will get that as a referral bonus to help Evennia development.|
+| [Digital Ocean][2] | VPS | $4/month | You can get a $50 credit if you use the referral link https://m.do.co/c/8f64fec2670c - if you do, once you've had it long enough to have paid $25 we will get that as a referral bonus to help Evennia development.|
 | [Amazon Web services][3] | Cloud | ~$5/month / on-demand | Free Tier first 12 months. Regions available around the globe.|
 | [Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's "fixed cost" offering.|
 | [Azure App Services][12] | Cloud | Free | Free tier with limited regions for hobbyists. |
 | [Huawei Cloud][13] | Cloud | on demand | Similar to Amazon. Free 12-month tier with limited regions. |
-| [Heficed][5] | VPS & Cloud | $6/month | $6/month for a 1GB ram server. |
+| [Heficed][5] | VPS & Cloud | $5/month | Multiple regions.  Cheapest for 1GB ram server is $5/month. |
 | [Scaleway][6] | Cloud | &euro;3/month / on-demand | EU based (Paris, Amsterdam). Smallest option provides 2GB RAM. |
 | [Prgmr][10] | VPS | $5/month | 1 month free with a year prepay. You likely want some experience with servers with this option as they don't have a lot of support.|
-| [Linode][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM|
+| [Akami (formerly Linode)][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM|
 | [Genesis MUD hosting][4] | Shell account | $8/month | Dedicated MUD host with very limited memory offerings. May run very old Python versions. Evennia needs *at least* the "Deluxe" package (50MB RAM) and probably *a lot* higher for a production game. While it's sometimes mentioned in a MUD context, this host is *not* recommended for Evennia.|
 
 *Please help us expand this list.*

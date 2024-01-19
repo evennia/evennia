@@ -19,6 +19,7 @@ _LUNR_STOP_WORD_FILTER_EXCEPTIONS = [
     "get",
     "who",
     "say",
+    "where",
 ] + settings.LUNR_STOP_WORD_FILTER_EXCEPTIONS
 
 

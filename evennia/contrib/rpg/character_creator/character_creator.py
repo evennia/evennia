@@ -23,10 +23,11 @@ from django.conf import settings
 from evennia import DefaultAccount
 from evennia.commands.default.muxcommand import MuxAccountCommand
 from evennia.objects.models import ObjectDB
-from evennia.utils import create, search
 from evennia.utils.evmenu import EvMenu
+from evennia.utils.utils import is_iter
 
-_CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
+_MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
+
 try:
     _CHARGEN_MENU = settings.CHARGEN_MENU
 except AttributeError:
@@ -60,37 +61,20 @@ class ContribCmdCharCreate(MuxAccountCommand):
             # we're continuing chargen for a WIP character
             new_character = in_progress[0]
         else:
-            # we're making a new character
-            charmax = settings.MAX_NR_CHARACTERS
-
-            if not account.is_superuser and (
-                account.characters and len(account.characters) >= charmax
-            ):
-                plural = "" if charmax == 1 else "s"
-                self.msg(f"You may only create a maximum of {charmax} character{plural}.")
-                return
-
-            # create the new character object, with default settings
-            # start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
-            default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-            permissions = settings.PERMISSION_ACCOUNT_DEFAULT
             # generate a randomized key so the player can choose a character name later
             key = "".join(choices(string.ascii_letters + string.digits, k=10))
-            new_character = create.create_object(
-                _CHARACTER_TYPECLASS,
-                key=key,
-                location=None,
-                home=default_home,
-                permissions=permissions,
+            new_character, errors = account.create_character(
+                key=key, location=None, ip=session.address
             )
-            # only allow creator (and developers) to puppet this char
-            new_character.locks.add(
-                f"puppet:pid({account.id}) or perm(Developer) or"
-                f" pperm(Developer);delete:id({account.id}) or perm(Admin)"
-            )
+
+            if errors:
+                self.msg(errors)
+            if not new_character:
+                return
             # initalize the new character to the beginning of the chargen menu
             new_character.db.chargen_step = "menunode_welcome"
-            account.characters.add(new_character)
+            # make sure the character first logs in at the settings-defined start location
+            new_character.db.prelogout_location = ObjectDB.objects.get_id(settings.START_LOCATION)
 
         # set the menu node to start at to the character's last saved step
         startnode = new_character.db.chargen_step
@@ -111,17 +95,17 @@ class ContribCmdCharCreate(MuxAccountCommand):
 class ContribChargenAccount(DefaultAccount):
     """
     A modified Account class that makes minor changes to the OOC look
-    output, to incorporate in-progress characters.
+    output to incorporate in-progress characters.
     """
 
     def at_look(self, target=None, session=None, **kwargs):
         """
-        Called by the OOC look command. It displays a list of playable
-        characters and should be mostly identical to the core method.
+        Called when this object executes a look. It allows to customize
+        just what this means.
 
         Args:
             target (Object or list, optional): An object or a list
-                objects to inspect.
+                objects to inspect. This is normally a list of characters.
             session (Session, optional): The session doing this look.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
@@ -129,73 +113,85 @@ class ContribChargenAccount(DefaultAccount):
         Returns:
             look_string (str): A prepared look string, ready to send
                 off to any recipient (usually to ourselves)
+
         """
 
-        # list of targets - make list to disconnect from db
+        if target and not is_iter(target):
+            # single target - just show it
+            if hasattr(target, "return_appearance"):
+                return target.return_appearance(self)
+            else:
+                return f"{target} has no in-game appearance."
+
+        # multiple targets - this is a list of characters
         characters = list(tar for tar in target if tar) if target else []
+        ncars = len(characters)
         sessions = self.sessions.all()
-        is_su = self.is_superuser
-
-        # text shown when looking in the ooc area
-        result = [f"Account |g{self.key}|n (you are Out-of-Character)"]
-
         nsess = len(sessions)
-        if nsess == 1:
-            result.append("\n\n|wConnected session:|n")
-        elif nsess > 1:
-            result.append(f"\n\n|wConnected sessions ({nsess}):|n")
+
+        if not nsess:
+            # no sessions, nothing to report
+            return ""
+
+        # header text
+        txt_header = f"Account |g{self.name}|n (you are Out-of-Character)"
+
+        # sessions
+        sess_strings = []
         for isess, sess in enumerate(sessions):
-            csessid = sess.sessid
-            addr = "{protocol} ({address})".format(
-                protocol=sess.protocol_key,
-                address=isinstance(sess.address, tuple)
-                and str(sess.address[0])
-                or str(sess.address),
+            ip_addr = sess.address[0] if isinstance(sess.address, tuple) else sess.address
+            addr = f"{sess.protocol_key} ({ip_addr})"
+            sess_str = (
+                f"|w* {isess + 1}|n"
+                if session and session.sessid == sess.sessid
+                else f"  {isess + 1}"
             )
-            if session.sessid == csessid:
-                result.append(f"\n |w* {isess+1}|n {addr}")
-            else:
-                result.append(f"\n   {isess+1} {addr}")
 
-        result.append("\n\n |whelp|n - more commands")
-        result.append("\n |wpublic <Text>|n - talk on public channel")
+            sess_strings.append(f"{sess_str} {addr}")
 
-        charmax = settings.MAX_NR_CHARACTERS
+        txt_sessions = "|wConnected session(s):|n\n" + "\n".join(sess_strings)
 
-        if is_su or len(characters) < charmax:
-            result.append("\n |wcharcreate|n - create a new character")
-
-        if characters:
-            result.append("\n |wchardelete <name>|n - delete a character (cannot be undone!)")
-        plural = "" if len(characters) == 1 else "s"
-        result.append("\n |wic <character>|n - enter the game (|wooc|n to return here)")
-        if is_su:
-            result.append(f"\n\nAvailable character{plural} ({len(characters)}/unlimited):")
+        if not characters:
+            txt_characters = "You don't have a character yet. Use |wcharcreate|n."
         else:
-            result.append(f"\n\nAvailable character{plural} ({len(characters)}/{charmax}):")
+            max_chars = (
+                "unlimited"
+                if self.is_superuser or _MAX_NR_CHARACTERS is None
+                else _MAX_NR_CHARACTERS
+            )
 
-        for char in characters:
-            if char.db.chargen_step:
-                # currently in-progress character; don't display placeholder names
-                result.append("\n - |Yin progress|n (|wcharcreate|n to continue)")
-                continue
-            csessions = char.sessions.all()
-            if csessions:
-                for sess in csessions:
-                    # character is already puppeted
-                    sid = sess in sessions and sessions.index(sess) + 1
-                    if sess and sid:
-                        result.append(
-                            f"\n - |G{char.key}|n [{', '.join(char.permissions.all())}] (played by"
-                            f" you in session {sid})"
-                        )
-                    else:
-                        result.append(
-                            f"\n - |R{char.key}|n [{', '.join(char.permissions.all())}] (played by"
-                            " someone else)"
-                        )
-            else:
-                # character is available
-                result.append(f"\n - {char.key} [{', '.join(char.permissions.all())}]")
-        look_string = ("-" * 68) + "\n" + "".join(result) + "\n" + ("-" * 68)
-        return look_string
+            char_strings = []
+            for char in characters:
+                csessions = char.sessions.all()
+                if csessions:
+                    for sess in csessions:
+                        # character is already puppeted
+                        sid = sess in sessions and sessions.index(sess) + 1
+                        if sess and sid:
+                            char_strings.append(
+                                f" - |G{char.name}|n [{', '.join(char.permissions.all())}] "
+                                f"(played by you in session {sid})"
+                            )
+                        else:
+                            char_strings.append(
+                                f" - |R{char.name}|n [{', '.join(char.permissions.all())}] "
+                                "(played by someone else)"
+                            )
+                elif char.db.chargen_step:
+                    # currently in-progress character; don't display placeholder names
+                    char_strings.append(" - |Yin progress|n (|wcharcreate|n to continue)")
+                    continue
+                else:
+                    # character is "free to puppet"
+                    char_strings.append(f" - {char.name} [{', '.join(char.permissions.all())}]")
+
+            txt_characters = (
+                f"Available character(s) ({ncars}/{max_chars}, |wic <name>|n to play):|n\n"
+                + "\n".join(char_strings)
+            )
+        return self.ooc_appearance_template.format(
+            header=txt_header,
+            sessions=txt_sessions,
+            characters=txt_characters,
+            footer="",
+        )

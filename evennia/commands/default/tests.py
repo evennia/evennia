@@ -726,22 +726,33 @@ class TestAccount(BaseEvenniaCommandTest):
 class TestBuilding(BaseEvenniaCommandTest):
     def test_create(self):
         typeclass = settings.BASE_OBJECT_TYPECLASS
-        name = typeclass.rsplit(".", 1)[1]
+        typename = typeclass.rsplit(".", 1)[1]
         self.call(
             building.CmdCreate(),
             f"/d TestObj1:{typeclass}",  # /d switch is abbreviated form of /drop
-            "You create a new %s: TestObj1." % name,
+            f"You create a new {typename}: TestObj1",
         )
+        # confirm object was added to the room's contents
+        self.assertEqual(self.room1.contents[-1].name, "TestObj1")
         self.call(building.CmdCreate(), "", "Usage: ")
         self.call(
             building.CmdCreate(),
-            f"TestObj1;foo;bar:{typeclass}",
-            "You create a new %s: TestObj1 (aliases: foo, bar)." % name,
+            f"TestObj2;foo;bar:{typeclass}",
+            f"You create a new {typename}: TestObj2 (aliases: foo, bar).",
+        )
+        # confirm object was added to the caller's contents
+        self.assertEqual(self.char1.contents[-1].name, "TestObj2")
+
+    def test_create_characters(self):
+        """verify creating DefaultCharacter-descendant objects works, for NPCs"""
+        self.call(
+            building.CmdCreate(),
+            "/d TestNPC:evennia.DefaultCharacter",
+            "You create a new DefaultCharacter: TestNPC",
         )
 
     def test_examine(self):
         self.call(building.CmdExamine(), "", "Name/key: Room")
-        self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
         self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
         self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
 

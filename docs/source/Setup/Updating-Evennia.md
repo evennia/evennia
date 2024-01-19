@@ -11,7 +11,7 @@ If you followed the [normal install instructions](./Installation.md), here's wha
 3. `cd` to your game dir (e.g. `mygame`)
 4. `evennia stop`
 5. `pip install --upgrade evennia`
-6. `cd` tor your game dir 
+6. `cd` to your game dir 
 7. `evennia migrate` - this is safe to do, but can be skipped unless the release announcement/changelog specifically tells you to do so. _Ignore_ any warnings about running `makemigrations`, it should _not_ be done!
 8. `evennia start`
 
@@ -34,7 +34,7 @@ At any time, development is either happening in the `main` branch (latest stable
 
 ## If you installed with `docker`
 
-If you followed the [docker installation instructions] you need to pull the latest docker image for the branch you want: 
+If you followed the [docker installation instructions](./Installation-Docker.md), you need to pull the latest docker image for the branch you want: 
 
 - `docker pull evennia/evennia`  (`main` branch)
 - `docker pull evennia/evennia:develop`  (experimental `develop` branch)

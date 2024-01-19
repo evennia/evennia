@@ -481,6 +481,9 @@ class EvenniaServerService(MultiService):
         # always call this regardless of start type
         self.at_server_start()
 
+        # initialize and start global scripts
+        evennia.GLOBAL_SCRIPTS.start()
+    
     @defer.inlineCallbacks
     def shutdown(self, mode="reload", _reactor_stopping=False):
         """

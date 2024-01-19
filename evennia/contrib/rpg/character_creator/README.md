@@ -112,7 +112,7 @@ playable character list loop.
         # contrib code starts here
         if char.db.chargen_step:
             # currently in-progress character; don't display placeholder names
-            result.append("\n - |Yin progress|n (|wcharcreate|n to continue)")
+            result.append(" - |Yin progress|n (|wcharcreate|n to continue)")
             continue
         # the rest of your code continues here
 ```

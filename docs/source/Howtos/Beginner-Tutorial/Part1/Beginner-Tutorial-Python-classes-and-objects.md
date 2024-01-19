@@ -98,11 +98,11 @@ multi-line interpreter.
 You now only need to import once to use the imported function over and over.
 
     > from world.test import hello_world
-    > hello_world()
+    > hello_world(me)
     Hello World!
-    > hello_world()
+    > hello_world(me)
     Hello World!
-    > hello_world()
+    > hello_world(me)
     Hello World!
     > quit()
     Closing the Python console.

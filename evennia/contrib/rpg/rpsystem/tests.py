@@ -153,6 +153,15 @@ class TestRPSystem(BaseEvenniaTest):
                 {"##0": (None, '"This is a test."')},
             ),
         )
+        language_emote = 'For a change of pace, /me says, elvish"This is in elvish!"'
+        self.assertEqual(
+            rpsystem.parse_language(self.speaker, language_emote),
+            (
+                'For a change of pace, /me says, {##0}',
+                {"##0": ('elvish', '"This is in elvish!"')},
+            ),
+        )
+
 
     def test_parse_sdescs_and_recogs(self):
         speaker = self.speaker

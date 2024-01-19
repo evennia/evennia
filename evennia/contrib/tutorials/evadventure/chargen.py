@@ -3,7 +3,6 @@ EvAdventure character generation.
 
 """
 from django.conf import settings
-
 from evennia.objects.models import ObjectDB
 from evennia.prototypes.spawner import spawn
 from evennia.utils.create import create_object
@@ -345,5 +344,5 @@ def start_chargen(caller, session=None):
         menutree,
         startnode="node_chargen",
         session=session,
-        startnode_input=("sgsg", {"tmp_character": tmp_character}),
+        startnode_input=("", {"tmp_character": tmp_character}),
     )
