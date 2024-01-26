@@ -7,8 +7,10 @@ to use the latest minor/patch version within each major version.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.x    | :white_check_mark: |
-| < 2.0   | :x:                |
+| 3.x    | :white_check_mark: |
+| 2.x    | :x: |
+| 1.x    | :x: |
+| < 1.0   | :x:                |
 
 ## Reporting a Vulnerability
 
