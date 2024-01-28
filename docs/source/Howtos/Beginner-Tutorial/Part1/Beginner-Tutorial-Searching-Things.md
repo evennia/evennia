@@ -274,17 +274,27 @@ Now we can find the things that have a given growth state:
 
 ### Search by Typeclass
 
-Sometimes it's useful to find all objects of a specific Typeclass. All of Evennia's search tools support this. If you were to have a custom typeclass for your `Rose`, you could search for it like this (in Python code):
+Sometimes it's useful to limit your search by which Typeclass they have. 
 
-    all_roses = evennia.search_object(typeclass="typeclasses.flowers.Rose")
+Let's say you for example have two types of flower, `CursedFlower` and `BlessedFlower` defined under `mygame/typeclasses.flowers.py`. Each class contains custom code that grants curses and blessings respectively. You may have two `rose` objects, and the player doesn't know which one is the bad or the good one. To separate them in your search, you can make sure to get the right one like this (in Python code)
 
-If you have the `Rose` class already imported you can also pass it directly:
+```python
+cursed_roses = evennia.search_object("rose", typeclass="typeclasses.flowers.CursedFlower")
+```
 
-    all_roses = evennia.search_object(typeclass=Rose)
+If you e.g. have the `BlessedRose` class already imported you can also pass it directly:
 
-You can also search using the typeclass itself:
+```python
+from typeclasses.flowers import BlessedFlower
+blessed_roses = evennia.search_object("rose", typeclass=BlessedFlower)
+```
 
-    all_roses = Rose.objects.all()
+A common use case is finding _all_ items of a given typeclass, no matter what they are named. For this you don't use `search_object`, but search with the typeclass directly: 
+
+```python
+from typeclasses.objects.flowers import Rose
+all_roses = Rose.objects.all()
+```
 
 This last way of searching is a simple form of a Django _query_. This is a way to express SQL queries using Python. See [the next lesson](./Beginner-Tutorial-Django-queries.md), where we'll explore this way to searching in more detail.
 
