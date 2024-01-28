@@ -171,7 +171,32 @@ if trait1 > trait2:
 
 ```
 
-## Static trait
+### Trait
+
+A single value of any type.
+
+This is the 'base' Trait, meant to inherit from if you want to invent
+trait-types from scratch (most of the time you'll probably inherit from some of
+the more advanced trait-type classes though).
+
+Unlike other Trait-types, the single `.value` property of the base `Trait` can
+be editied. The value can hold any data that can be stored in an Attribute. If
+it's an integer/float you can do arithmetic with it, but otherwise this acts just
+like a glorified Attribute.
+
+
+```python
+> obj.traits.add("mytrait", "My Trait", trait_type="trait", value=30)
+> obj.traits.mytrait.value
+30
+
+> obj.traits.mytrait.value = "stringvalue"
+> obj.traits.mytrait.value
+"stringvalue"
+
+```
+
+### Static trait
 
 `value = base + mod`
 
@@ -364,31 +389,6 @@ get how filled it is as a percentage etc.
 
 The `.rate` is particularly relevant for gauges - useful for everything
 from poison slowly draining your health, to resting gradually increasing it.
-
-### Trait
-
-A single value of any type.
-
-This is the 'base' Trait, meant to inherit from if you want to invent
-trait-types from scratch (most of the time you'll probably inherit from some of
-the more advanced trait-type classes though).
-
-Unlike other Trait-types, the single `.value` property of the base `Trait` can
-be editied. The value can hold any data that can be stored in an Attribute. If
-it's an integer/float you can do arithmetic with it, but otherwise this acts just
-like a glorified Attribute.
-
-
-```python
-> obj.traits.add("mytrait", "My Trait", trait_type="trait", value=30)
-> obj.traits.mytrait.value
-30
-
-> obj.traits.mytrait.value = "stringvalue"
-> obj.traits.mytrait.value
-"stringvalue"
-
-```
 
 ## Expanding with your own Traits
 
