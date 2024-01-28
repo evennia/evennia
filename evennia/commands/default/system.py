@@ -13,10 +13,9 @@ import time
 import traceback
 
 import django
+import evennia
 import twisted
 from django.conf import settings
-
-import evennia
 from evennia.accounts.models import AccountDB
 from evennia.scripts.taskhandler import TaskHandlerTask
 from evennia.utils import gametime, logger, search, utils
@@ -574,7 +573,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             return
 
         # get all services
-        service_collection = evennia.SESSION_HANDLER.server.services
+        service_collection = evennia.EVENNIA_SERVER_SERVICE
 
         if not switches or switches[0] == "list":
             # Just display the list of installed services and their

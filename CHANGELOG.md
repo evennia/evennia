@@ -2,8 +2,9 @@
 
 ## main branch
 
-- Remove `AMP_ENABLED` setting since it services no real purpose and
+- [Fix] Remove `AMP_ENABLED` setting since it services no real purpose and
   erroring out on setting it would make it even less useful (Griatch).
+- [Fix] `services` command with no args would traceback (regression) (Griatch)
 - [Feature][pull3412]: Make it possible to add custom webclient css in
   `webclient/css/custom.css`, same as for website (InspectorCaracal)
 - Doc fixes (InspectorCaracal, Griatch)
