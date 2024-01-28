@@ -112,6 +112,11 @@ def check_errors(settings):
     if hasattr(settings, "GAME_DIRECTORY_LISTING"):
         raise DeprecationWarning(game_directory_deprecation)
 
+    if hasattr(settings, "AMP_ENABLED"):
+        raise DeprecationWarning(
+            "AMP_ENABLED option is no longer supported. Remove it from your settings."
+        )
+
     chan_connectinfo = settings.CHANNEL_CONNECTINFO
     if chan_connectinfo is not None and not isinstance(chan_connectinfo, dict):
         raise DeprecationWarning(

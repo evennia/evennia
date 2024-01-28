@@ -152,8 +152,7 @@ class EvenniaServerService(MultiService):
         except OperationalError:
             print("Server server_starting_mode couldn't be set - database not set up.")
 
-        if settings.AMP_ENABLED:
-            self.register_amp()
+        self.register_amp()
 
         if settings.WEBSERVER_ENABLED:
             self.register_webserver()
@@ -483,7 +482,7 @@ class EvenniaServerService(MultiService):
 
         # initialize and start global scripts
         evennia.GLOBAL_SCRIPTS.start()
-    
+
     @defer.inlineCallbacks
     def shutdown(self, mode="reload", _reactor_stopping=False):
         """
