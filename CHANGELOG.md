@@ -2,6 +2,8 @@
 
 ## main branch
 
+- [Feature] Add `evennia.ON_DEMAND_HANDLER` for making it easier to implement
+  timed element with the on-demand approach (Griatch)
 - [Fix] Remove `AMP_ENABLED` setting since it services no real purpose and
   erroring out on setting it would make it even less useful (Griatch).
 - [Fix] `services` command with no args would traceback (regression) (Griatch)

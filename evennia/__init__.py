@@ -97,6 +97,7 @@ EvMore = None
 ANSIString = None
 signals = None
 FuncParser = None
+OnDemandTask = None
 
 # Handlers
 SESSION_HANDLER = None
@@ -105,6 +106,7 @@ SERVER_SESSION_HANDLER = None
 TASK_HANDLER = None
 TICKER_HANDLER = None
 MONITOR_HANDLER = None
+ON_DEMAND_HANDLER = None
 
 # Containers
 GLOBAL_SCRIPTS = None
@@ -169,11 +171,11 @@ def _init(portal_mode=False):
     global search_object, search_script, search_account, search_channel
     global search_help, search_tag, search_message
     global create_object, create_script, create_account, create_channel
-    global create_message, create_help_entry
+    global create_message, create_help_entry, OnDemandTask
     global signals
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, PROCESS_ID
-    global TASK_HANDLER, PORTAL_SESSION_HANDLER, SERVER_SESSION_HANDLER
+    global TASK_HANDLER, PORTAL_SESSION_HANDLER, SERVER_SESSION_HANDLER, ON_DEMAND_HANDLER
     global GLOBAL_SCRIPTS, OPTION_CLASSES, EVENNIA_PORTAL_SERVICE, EVENNIA_SERVER_SERVICE, TWISTED_APPLICATION
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString, FuncParser
@@ -196,15 +198,11 @@ def _init(portal_mode=False):
     from .comms.models import ChannelDB, Msg
     from .locks import lockfuncs
     from .objects.models import ObjectDB
-    from .objects.objects import (
-        DefaultCharacter,
-        DefaultExit,
-        DefaultObject,
-        DefaultRoom,
-    )
+    from .objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
     from .prototypes.spawner import spawn
     from .scripts.models import ScriptDB
     from .scripts.monitorhandler import MONITOR_HANDLER
+    from .scripts.ondemandhandler import ON_DEMAND_HANDLER, OnDemandTask
     from .scripts.scripts import DefaultScript
     from .scripts.taskhandler import TASK_HANDLER
     from .scripts.tickerhandler import TICKER_HANDLER

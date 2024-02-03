@@ -48,6 +48,9 @@ class ServerConfigManager(models.Manager):
         else:
             conf = self.filter(db_key=key)
             if not conf:
+                if callable(default):
+                    # allows for `dict` to be a default value
+                    return default()
                 return default
             return conf[0].value
         return None

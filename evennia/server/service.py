@@ -552,6 +552,11 @@ class EvenniaServerService(MultiService):
 
         TICKER_HANDLER.save()
 
+        # on-demand handler state should always be saved.
+        from evennia.scripts.ondemandhandler import ON_DEMAND_HANDLER
+
+        ON_DEMAND_HANDLER.save()
+
         # always called, also for a reload
         self.at_server_stop()
 
@@ -642,6 +647,11 @@ class EvenniaServerService(MultiService):
 
         TASK_HANDLER.load()
         TASK_HANDLER.create_delays()
+
+        # start the On-demand handler
+        from evennia.scripts.ondemandhandler import ON_DEMAND_HANDLER
+
+        ON_DEMAND_HANDLER.load()
 
         # create/update channels
         self.create_default_channels()
