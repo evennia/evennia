@@ -11,7 +11,7 @@ Now, you _could_ use `utils.delay` to track each phase, or use the [TickerHandle
 This will work fine, but if no one comes back to that room, that's a lot of updating that no one will see. While maybe not a big deal for a single player, what if you have flowers in thousands of rooms, all growing indepedently? Or some even more complex system requiring calculation on every state change. You should avoid spending computing on things that bring nothing extra to your player base.
 
 Using the The on-demand style would instead work like this for the flower: 
-1. When the player plants the seed, we register a new on-demand task with the `OnDemandHandler` (described below). This registes _the current timestamp_ when the plant starts to grow. 
+1. When the player plants the seed, we register a new on-demand task with the `OnDemandHandler` (described below). This registers _the current timestamp_ when the plant starts to grow. 
 2. When a player enters the room and/or looks at the plant, _then_ (and only then) we call the `OnDemandHandler` to see what state the flower it's in. It will then use the _current time_ to figure out how much time passed and which state the plant is thus in. Until someone looks, the plant is in its previous found state, because no-one needed to know until then. Same thing, if some other system needs to know this - they just figure out the state on the fly.  
 
 ## A blooming flower using the OnDemandHandler 
