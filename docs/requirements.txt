@@ -5,7 +5,7 @@ myst-parser==0.15.2
 myst-parser[linkify]==0.15.2
 Jinja2 < 3.1
 alabaster==0.7.13
-sphinxcontrib-applehelp==1.0.7
+sphinxcontrib-applehelp<1.0.7
 
 # sphinx-multiversion with evennia fixes 
 git+https://github.com/evennia/sphinx-multiversion.git@evennia-mods#egg=sphinx-multiversion
