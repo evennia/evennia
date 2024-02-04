@@ -658,12 +658,17 @@ class CmdInventory(MuxCommand):
         wear_table = evtable.EvTable(border="header")
 
         carried = [obj for obj in items if not obj.db.worn]
+        # Build and populate a dict for tallying items
+        carried_sums = {obj.get_display_name(): 0 for obj in set(carried)}
+        for obj in carried:
+            carried_sums[obj.get_display_name()] += 1
+
         worn = [obj for obj in items if obj.db.worn]
 
         message_list.append("|wYou are carrying:|n")
-        for item in carried:
+        for key, value in carried_sums.items():
             carry_table.add_row(
-                item.get_display_name(self.caller), item.get_display_desc(self.caller)
+                f"({value})" if value > 1 else "", key
             )
         if carry_table.nrows == 0:
             carry_table.add_row("Nothing.", "")
