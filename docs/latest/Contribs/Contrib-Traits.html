@@ -72,8 +72,9 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#using-traits">Using traits</a></li>
-<li><a class="reference internal" href="#trait-types">Trait types</a></li>
-<li><a class="reference internal" href="#static-trait">Static trait</a><ul>
+<li><a class="reference internal" href="#trait-types">Trait types</a><ul>
+<li><a class="reference internal" href="#trait">Trait</a></li>
+<li><a class="reference internal" href="#static-trait">Static trait</a></li>
 <li><a class="reference internal" href="#counter">Counter</a><ul>
 <li><a class="reference internal" href="#descs">.descs</a></li>
 <li><a class="reference internal" href="#rate">.rate</a></li>
@@ -81,7 +82,6 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#gauge">Gauge</a></li>
-<li><a class="reference internal" href="#trait">Trait</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#expanding-with-your-own-traits">Expanding with your own Traits</a></li>
@@ -297,9 +297,29 @@ all sorts of rule-resolution.</p>
 
 </pre></div>
 </div>
+<section id="trait">
+<h3>Trait<a class="headerlink" href="#trait" title="Permalink to this headline">¶</a></h3>
+<p>A single value of any type.</p>
+<p>This is the ‘base’ Trait, meant to inherit from if you want to invent
+trait-types from scratch (most of the time you’ll probably inherit from some of
+the more advanced trait-type classes though).</p>
+<p>Unlike other Trait-types, the single <code class="docutils literal notranslate"><span class="pre">.value</span></code> property of the base <code class="docutils literal notranslate"><span class="pre">Trait</span></code> can
+be editied. The value can hold any data that can be stored in an Attribute. If
+it’s an integer/float you can do arithmetic with it, but otherwise this acts just
+like a glorified Attribute.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mytrait&quot;</span><span class="p">,</span> <span class="s2">&quot;My Trait&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">30</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;stringvalue&quot;</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
+<span class="s2">&quot;stringvalue&quot;</span>
+
+</pre></div>
+</div>
 </section>
 <section id="static-trait">
-<h2>Static trait<a class="headerlink" href="#static-trait" title="Permalink to this headline">¶</a></h2>
+<h3>Static trait<a class="headerlink" href="#static-trait" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">=</span> <span class="pre">base</span> <span class="pre">+</span> <span class="pre">mod</span></code></p>
 <p>The static trait has a <code class="docutils literal notranslate"><span class="pre">base</span></code> value and an optional <code class="docutils literal notranslate"><span class="pre">mod</span></code>-ifier. A typical use
 of a static trait would be a Strength stat or Skill value. That is, something
@@ -319,6 +339,7 @@ that varies slowly or not at all, and which may be modified in-place.</p>
 
 </pre></div>
 </div>
+</section>
 <section id="counter">
 <h3>Counter<a class="headerlink" href="#counter" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>min/unset     base    base+mod                       max/unset
@@ -476,27 +497,6 @@ methods and properties where they make sense. So gauges can also have a
 get how filled it is as a percentage etc.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">.rate</span></code> is particularly relevant for gauges - useful for everything
 from poison slowly draining your health, to resting gradually increasing it.</p>
-</section>
-<section id="trait">
-<h3>Trait<a class="headerlink" href="#trait" title="Permalink to this headline">¶</a></h3>
-<p>A single value of any type.</p>
-<p>This is the ‘base’ Trait, meant to inherit from if you want to invent
-trait-types from scratch (most of the time you’ll probably inherit from some of
-the more advanced trait-type classes though).</p>
-<p>Unlike other Trait-types, the single <code class="docutils literal notranslate"><span class="pre">.value</span></code> property of the base <code class="docutils literal notranslate"><span class="pre">Trait</span></code> can
-be editied. The value can hold any data that can be stored in an Attribute. If
-it’s an integer/float you can do arithmetic with it, but otherwise this acts just
-like a glorified Attribute.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mytrait&quot;</span><span class="p">,</span> <span class="s2">&quot;My Trait&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">30</span>
-
-<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;stringvalue&quot;</span>
-<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-<span class="s2">&quot;stringvalue&quot;</span>
-
-</pre></div>
-</div>
 </section>
 </section>
 <section id="expanding-with-your-own-traits">

@@ -68,11 +68,16 @@
 <li><a class="reference internal" href="#">Roleplaying base system for Evennia</a><ul>
 <li><a class="reference internal" href="#roleplaying-emotes">Roleplaying emotes</a><ul>
 <li><a class="reference internal" href="#installation">Installation:</a></li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#sdescs">Sdescs</a></li>
+<li><a class="reference internal" href="#language-integration">Language integration</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#language-and-whisper-obfuscation-system">Language and whisper obfuscation system</a><ul>
 <li><a class="reference internal" href="#id1">Installation</a></li>
-<li><a class="reference internal" href="#usage">Usage:</a></li>
+<li><a class="reference internal" href="#id2">Usage:</a></li>
 </ul>
 </li>
 </ul>
@@ -197,7 +202,11 @@ your objects, if you originally created them without this.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; type/reset/force me = typeclasses.characters.Character
 </pre></div>
 </div>
-<p>Examples:</p>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<section id="sdescs">
+<h4>Sdescs<a class="headerlink" href="#sdescs" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; look
 
 Tavern
@@ -220,6 +229,15 @@ The tavern is full of nice people
 </div>
 <p>Note that by default, the case of the tag matters, so <code class="docutils literal notranslate"><span class="pre">/tall</span></code> will lead to ‘tall man’ while <code class="docutils literal notranslate"><span class="pre">/Tall</span></code> will become ‘Tall man’ and /TALL becomes /TALL MAN. If you don’t want this behavior, you can pass case_sensitive=False to the <code class="docutils literal notranslate"><span class="pre">send_emote</span></code> function.</p>
 </section>
+<section id="language-integration">
+<h4>Language integration<a class="headerlink" href="#language-integration" title="Permalink to this headline">¶</a></h4>
+<p>Speech can be identified as a particular language by prefixing it with the language key.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>emote says with a growl, orcish&quot;Hello&quot;.
+</pre></div>
+</div>
+<p>This will identify the speech “Hello” as being spoken in orcish, and then pass that information on to <code class="docutils literal notranslate"><span class="pre">process_language</span></code> on your Character. By default, it doesn’t do much, but you can hook in a language system such as the <code class="docutils literal notranslate"><span class="pre">rplanguage</span></code> module below to do more interesting things.</p>
+</section>
+</section>
 </section>
 <section id="language-and-whisper-obfuscation-system">
 <h2>Language and whisper obfuscation system<a class="headerlink" href="#language-and-whisper-obfuscation-system" title="Permalink to this headline">¶</a></h2>
@@ -232,8 +250,8 @@ The tavern is full of nice people
 <h3>Installation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>This module adds no new commands; embed it in your say/emote/whisper commands.</p>
 </section>
-<section id="usage">
-<h3>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<section id="id2">
+<h3>Usage:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">rplanguage</span>
 
 <span class="c1"># need to be done once, here we create the &quot;default&quot; lang</span>

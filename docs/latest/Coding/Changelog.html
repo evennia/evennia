@@ -66,6 +66,8 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#main-branch">main branch</a></li>
+<li><a class="reference internal" href="#evennia-3-1-1">Evennia 3.1.1</a></li>
 <li><a class="reference internal" href="#evennia-3-1-0">Evennia 3.1.0</a></li>
 <li><a class="reference internal" href="#evennia-3-0-0">Evennia 3.0.0</a></li>
 <li><a class="reference internal" href="#evennia-2-3-0">Evennia 2.3.0</a></li>
@@ -188,6 +190,32 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<section id="main-branch">
+<h2>main branch<a class="headerlink" href="#main-branch" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[Feature] Add <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code> for making it easier to implement
+timed element with the on-demand approach (Griatch)</p></li>
+<li><p>[Fix] Remove <code class="docutils literal notranslate"><span class="pre">AMP_ENABLED</span></code> setting since it services no real purpose and
+erroring out on setting it would make it even less useful (Griatch).</p></li>
+<li><p>[Fix] <code class="docutils literal notranslate"><span class="pre">services</span></code> command with no args would traceback (regression) (Griatch)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3412">Feature</a>: Make it possible to add custom webclient css in
+<code class="docutils literal notranslate"><span class="pre">webclient/css/custom.css</span></code>, same as for website (InspectorCaracal)</p></li>
+<li><p>Doc fixes (InspectorCaracal, Griatch)</p></li>
+</ul>
+</section>
+<section id="evennia-3-1-1">
+<h2>Evennia 3.1.1<a class="headerlink" href="#evennia-3-1-1" title="Permalink to this headline">¶</a></h2>
+<p>Jan 14, 2024</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3398">Fix</a>: Fix to make e.g. <code class="docutils literal notranslate"><span class="pre">elvish&quot;Hello&quot;</span></code> work correctly in language rp
+contrib (InspectorCaracal)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3405">Fix</a>: Fix/update of Godot client contrib to support Godot4 and
+latest Evennia portal changes (ChrisLR)</p></li>
+<li><p>Updated doc on wiki install (InspectorCaracal)</p></li>
+<li><p>Docstring fixes (bradleymarques, Griatch)</p></li>
+<li><p>Doc tutorial fixes (Griatch)</p></li>
+</ul>
+</section>
 <section id="evennia-3-1-0">
 <h2>Evennia 3.1.0<a class="headerlink" href="#evennia-3-1-0" title="Permalink to this headline">¶</a></h2>
 <p>Jan 8, 2024</p>
@@ -207,7 +235,7 @@ common mud command that should not be ignored. (alephate)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3382">Fix</a>: Make sure global scripts start properly on restart
 (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3394">Fix</a>: Fix time-of-day issue in ExpandedRoom contrib (jaborsh)</p></li>
-<li><p>Doc fixes (homeofpoe, gas-public-wooden-clean, InspectorCaracal)</p></li>
+<li><p>Doc fixes (homeofpoe, gas-public-wooden-clean, InspectorCaracal, Griatch)</p></li>
 </ul>
 </section>
 <section id="evennia-3-0-0">
@@ -285,9 +313,9 @@ successfully reconnected to the Server after a restart. (InspectorCaracal)</p></
 other objects than oneself (InspectorCaracal)</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/pull/3361">Fix</a>: Fix of monitoring Attributes with categories (scyfris)</p></li>
 <li><p>Docs &amp; docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
-HouseOfPoe etc)</p></li>
+HouseOfPoe, Griatch etc)</p></li>
 <li><p>Beginner tutorial: Cleanup and starting earlier with explaining how to add to
-the default cmdsets.</p></li>
+the default cmdsets (Griatch).</p></li>
 </ul>
 </section>
 <section id="evennia-2-3-0">
@@ -301,8 +329,8 @@ the default cmdsets.</p></li>
 <li><p>Fix: Traceback when printing CounterTrait contrib objects. (InspectorCaracal)</p></li>
 <li><p>Fix: Typo in evadventure twitch combat’s call of <code class="docutils literal notranslate"><span class="pre">create_combathandler</span></code>.</p></li>
 <li><p>Docs: Fix bug in evadventure equipmenthandler blocking creation of npcs.
-in-game.</p></li>
-<li><p>Docs: Plenty of typo fixes (iLPDev, moldikins, others)</p></li>
+in-game (Griatch).</p></li>
+<li><p>Docs: Plenty of typo fixes (iLPDev, moldikins, Griatch), others)</p></li>
 </ul>
 </section>
 <section id="evennia-2-2-0">

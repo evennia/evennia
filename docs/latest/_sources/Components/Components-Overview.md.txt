@@ -58,6 +58,7 @@ EvMore.md
 EvTable.md
 FuncParser.md
 MonitorHandler.md
+OnDemandHandler.md
 TickerHandler.md
 Signals.md
 ```

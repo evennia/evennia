@@ -242,8 +242,7 @@
         <span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server server_starting_mode couldn&#39;t be set - database not set up.&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">AMP_ENABLED</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">register_amp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_amp</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEBSERVER_ENABLED</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">register_webserver</span><span class="p">()</span>
@@ -573,7 +572,7 @@
 
         <span class="c1"># initialize and start global scripts</span>
         <span class="n">evennia</span><span class="o">.</span><span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
-    
+
 <div class="viewcode-block" id="EvenniaServerService.shutdown"><a class="viewcode-back" href="../../../api/evennia.server.service.html#evennia.server.service.EvenniaServerService.shutdown">[docs]</a>    <span class="nd">@defer</span><span class="o">.</span><span class="n">inlineCallbacks</span>
     <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -642,6 +641,11 @@
         <span class="kn">from</span> <span class="nn">evennia.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
 
         <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="c1"># on-demand handler state should always be saved.</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.ondemandhandler</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span>
+
+        <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
         <span class="c1"># always called, also for a reload</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_server_stop</span><span class="p">()</span>
@@ -733,6 +737,11 @@
 
         <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">TASK_HANDLER</span><span class="o">.</span><span class="n">create_delays</span><span class="p">()</span>
+
+        <span class="c1"># start the On-demand handler</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.ondemandhandler</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span>
+
+        <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
         <span class="c1"># create/update channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_default_channels</span><span class="p">()</span>

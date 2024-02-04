@@ -194,9 +194,16 @@ the <a class="reference external" href="https://django-wiki.readthedocs.io/">Dja
     <span class="s1">&#39;wiki.plugins.macros.apps.MacrosConfig&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Disable wiki handling of login/signup</span>
+<span class="c1"># Disable wiki handling of login/signup, so that it uses your Evennia login system instead</span>
 <span class="n">WIKI_ACCOUNT_HANDLING</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">WIKI_ACCOUNT_SIGNUP_ALLOWED</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Enable wikilinks, e.g. [[Getting Started]]</span>
+<span class="n">WIKI_MARKDOWN_KWARGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;extensions&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;wikilinks&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">}</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># Settings given in secret_settings.py override those in this file.</span>
@@ -268,15 +275,15 @@ system - or, since this is an Evennia site, to define your own custom permission
 <span class="c1"># Custom methods to link wiki permissions to game perms</span>
 <span class="k">def</span> <span class="nf">is_superuser</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if user is a superuser, False otherwise.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span>
 
 <span class="k">def</span> <span class="nf">is_builder</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if user is a builder, False otherwise.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="s2">&quot;perm(Builders)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Builder&quot;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">is_player</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if user is a builder, False otherwise.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="s2">&quot;perm(Players)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Player&quot;</span><span class="p">)</span>
 
 <span class="c1"># Create new users</span>
 <span class="n">WIKI_CAN_ADMIN</span> <span class="o">=</span> <span class="n">is_superuser</span>

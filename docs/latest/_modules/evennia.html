@@ -186,6 +186,7 @@
 <span class="n">ANSIString</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">signals</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">FuncParser</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">OnDemandTask</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># Handlers</span>
 <span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
@@ -194,6 +195,7 @@
 <span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">TICKER_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">MONITOR_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">ON_DEMAND_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># Containers</span>
 <span class="n">GLOBAL_SCRIPTS</span> <span class="o">=</span> <span class="kc">None</span>
@@ -258,11 +260,11 @@
     <span class="k">global</span> <span class="n">search_object</span><span class="p">,</span> <span class="n">search_script</span><span class="p">,</span> <span class="n">search_account</span><span class="p">,</span> <span class="n">search_channel</span>
     <span class="k">global</span> <span class="n">search_help</span><span class="p">,</span> <span class="n">search_tag</span><span class="p">,</span> <span class="n">search_message</span>
     <span class="k">global</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">create_script</span><span class="p">,</span> <span class="n">create_account</span><span class="p">,</span> <span class="n">create_channel</span>
-    <span class="k">global</span> <span class="n">create_message</span><span class="p">,</span> <span class="n">create_help_entry</span>
+    <span class="k">global</span> <span class="n">create_message</span><span class="p">,</span> <span class="n">create_help_entry</span><span class="p">,</span> <span class="n">OnDemandTask</span>
     <span class="k">global</span> <span class="n">signals</span>
     <span class="k">global</span> <span class="n">settings</span><span class="p">,</span> <span class="n">lockfuncs</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">spawn</span><span class="p">,</span> <span class="n">managers</span>
     <span class="k">global</span> <span class="n">contrib</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span><span class="p">,</span> <span class="n">MONITOR_HANDLER</span><span class="p">,</span> <span class="n">SESSION_HANDLER</span><span class="p">,</span> <span class="n">PROCESS_ID</span>
-    <span class="k">global</span> <span class="n">TASK_HANDLER</span><span class="p">,</span> <span class="n">PORTAL_SESSION_HANDLER</span><span class="p">,</span> <span class="n">SERVER_SESSION_HANDLER</span>
+    <span class="k">global</span> <span class="n">TASK_HANDLER</span><span class="p">,</span> <span class="n">PORTAL_SESSION_HANDLER</span><span class="p">,</span> <span class="n">SERVER_SESSION_HANDLER</span><span class="p">,</span> <span class="n">ON_DEMAND_HANDLER</span>
     <span class="k">global</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span><span class="p">,</span> <span class="n">EVENNIA_PORTAL_SERVICE</span><span class="p">,</span> <span class="n">EVENNIA_SERVER_SERVICE</span><span class="p">,</span> <span class="n">TWISTED_APPLICATION</span>
     <span class="k">global</span> <span class="n">EvMenu</span><span class="p">,</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvMore</span><span class="p">,</span> <span class="n">EvEditor</span>
     <span class="k">global</span> <span class="n">ANSIString</span><span class="p">,</span> <span class="n">FuncParser</span>
@@ -285,15 +287,11 @@
     <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
     <span class="kn">from</span> <span class="nn">.locks</span> <span class="kn">import</span> <span class="n">lockfuncs</span>
     <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">DefaultCharacter</span><span class="p">,</span>
-        <span class="n">DefaultExit</span><span class="p">,</span>
-        <span class="n">DefaultObject</span><span class="p">,</span>
-        <span class="n">DefaultRoom</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span>
     <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
     <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
     <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.scripts.ondemandhandler</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span>
     <span class="kn">from</span> <span class="nn">.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
     <span class="kn">from</span> <span class="nn">.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
     <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>

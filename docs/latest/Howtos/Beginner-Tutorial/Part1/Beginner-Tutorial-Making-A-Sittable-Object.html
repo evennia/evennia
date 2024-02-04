@@ -280,8 +280,8 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 <section id="sitting-on-or-in">
 <h3><span class="section-number">13.2.1. </span>Sitting on or in?<a class="headerlink" href="#sitting-on-or-in" title="Permalink to this headline">¶</a></h3>
 <p>It’s fine to sit ‘on’ a chair. But what if our Sittable is an armchair?</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">armchair</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.sittables.Sittable&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;armchair&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="n">armchair</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.sittables.Sittable&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;armchair&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;armchair&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
 <span class="n">You</span> <span class="n">sit</span> <span class="n">on</span> <span class="n">armchair</span><span class="o">.</span>
 </pre></div>
 </div>
@@ -383,7 +383,7 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 </pre></div>
 </div>
 <p>Since we haven’t added the <code class="docutils literal notranslate"><span class="pre">sit</span></code> command yet, we must still use <code class="docutils literal notranslate"><span class="pre">py</span></code> to test:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">armchair</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;armchair&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span><span class="n">armchair</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;armchair&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
 <span class="n">You</span> <span class="n">sit</span> <span class="ow">in</span> <span class="n">armchair</span><span class="o">.</span>
 </pre></div>
 </div>
@@ -395,8 +395,8 @@ will call <code class="docutils literal notranslate"><span class="pre">character
 </pre></div>
 </div>
 <p>You can make this happen by tweaking your <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> class having the return messages be replaceable by <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> that you can set on the object you create. You want something like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py
-&gt; chair = evennia.create_object(&quot;typeclasses.sittables.Sittable&quot;, key=&quot;pallet&quot;)
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py 
+&gt; chair = evennia.create_object(&quot;typeclasses.sittables.Sittable&quot;, key=&quot;pallet&quot;, location=here)
 &gt; chair.do_sit(me)
 You sit down on pallet.
 &gt; chair.do_stand(me)
@@ -406,7 +406,8 @@ You stand up from pallet.
 You sit down and a whoopie cushion makes a loud fart noise!
 </pre></div>
 </div>
-<p>That is, if you are not setting the Attribute, you should get a default value. We leave this implementation up to the reader.</p>
+<p>That is, if you are not setting the Attribute, you should get a default value.
+We leave this implementation up to the reader.</p>
 </section>
 </section>
 <section id="adding-commands">
@@ -846,8 +847,7 @@ You stand up from chair.
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># end of mygame/commands/sittables.py</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># end of mygame/commands/sittables.py</span>
 
 <span class="k">class</span> <span class="nc">CmdStand2</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -860,15 +860,14 @@ You stand up from chair.
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;stand&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-    <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
-    <span class="c1"># if we are sitting, this should be set on us</span>
-<span class="hll">    <span class="n">sittable</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_sitting</span>
-</span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">sittable</span><span class="p">:</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not sitting down.&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-<span class="hll">        <span class="n">sittable</span><span class="o">.</span><span class="n">do_stand</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-</span></pre></div></td></tr></table></div>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="c1"># if we are sitting, this should be set on us</span>
+        <span class="n">sittable</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_sitting</span>
+<span class="hll">        <span class="k">if</span> <span class="ow">not</span> <span class="n">sittable</span><span class="p">:</span>
+</span>            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not sitting down.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sittable</span><span class="o">.</span><span class="n">do_stand</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
 </div>
 <ul class="simple">
 <li><p><strong>Line 17</strong>: We didn’t need the <code class="docutils literal notranslate"><span class="pre">is_sitting</span></code> Attribute for the first version of these Commands, but we do need it now. Since we have this, we don’t need to search and know just which chair we sit on. If we don’t have this Attribute set, we are not sitting anywhere.</p></li>

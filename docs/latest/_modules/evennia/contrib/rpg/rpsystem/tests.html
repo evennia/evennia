@@ -242,7 +242,16 @@
                 <span class="s2">&quot;With a flair, /me looks at /first and /colliding sdesc-guy. She says {##0}&quot;</span><span class="p">,</span>
                 <span class="p">{</span><span class="s2">&quot;##0&quot;</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;&quot;This is a test.&quot;&#39;</span><span class="p">)},</span>
             <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">language_emote</span> <span class="o">=</span> <span class="s1">&#39;For a change of pace, /me says, elvish&quot;This is in elvish!&quot;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">rpsystem</span><span class="o">.</span><span class="n">parse_language</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="p">,</span> <span class="n">language_emote</span><span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s1">&#39;For a change of pace, /me says, {##0}&#39;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;##0&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;elvish&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;This is in elvish!&quot;&#39;</span><span class="p">)},</span>
+            <span class="p">),</span>
         <span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="TestRPSystem.test_parse_sdescs_and_recogs"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_parse_sdescs_and_recogs">[docs]</a>    <span class="k">def</span> <span class="nf">test_parse_sdescs_and_recogs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">speaker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span>

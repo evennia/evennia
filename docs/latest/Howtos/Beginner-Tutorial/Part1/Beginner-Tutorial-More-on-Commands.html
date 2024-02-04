@@ -134,8 +134,7 @@
 also learn how to add, modify and extend Evennia’s default commands.</p>
 <section id="more-advanced-parsing">
 <h2><span class="section-number">9.1. </span>More advanced parsing<a class="headerlink" href="#more-advanced-parsing" title="Permalink to this headline">¶</a></h2>
-<p>In the <a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">last lesson</span></a> we made a <code class="docutils literal notranslate"><span class="pre">hit</span></code> Command and struck a dragon with it. You should have the code
-from that still around.</p>
+<p>In the <a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">last lesson</span></a> we made a <code class="docutils literal notranslate"><span class="pre">hit</span></code> Command and struck a dragon with it. You should have the code from that still around.</p>
 <p>Let’s expand our simple <code class="docutils literal notranslate"><span class="pre">hit</span></code> command to accept a little more complex input:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>hit &lt;target&gt; [[with] &lt;weapon&gt;]
 </pre></div>
@@ -280,29 +279,26 @@ under two conditions (from the example above):</p>
 <aside class="sidebar">
 <p>Here we create the messages to send to each side of the fight explicitly. Later we’ll find out how to use Evennia’s <a class="reference internal" href="../../../Components/FuncParser.html"><span class="doc std std-doc">inline functions</span></a> to send a single string that looks different depending on who sees it.</p>
 </aside>
-<ul>
+<ul class="simple">
 <li><p><strong>Lines 29 and 35</strong> - We make use of the previously parsed search terms for the target and weapon to find the
 respective resource.</p></li>
 <li><p><strong>Lines 34-39</strong> - Since the weapon is optional, we need to supply a default (use our fists!) if it’s not set. We
 use this to create a <code class="docutils literal notranslate"><span class="pre">weaponstr</span></code> that is different depending on if we have a weapon or not.</p></li>
-<li><p><strong>Lines 41-42</strong> - We merge the <code class="docutils literal notranslate"><span class="pre">weaponstr</span></code> with our attack texts and send it to attacker and target respectively.
-Let’s try it out!</p>
-<blockquote>
-<div><p>reload
-hit smaug with sword
-Could not find ‘sword’.
-You hit smaug with bare fists!</p>
-</div></blockquote>
-</li>
+<li><p><strong>Lines 41-42</strong> - We merge the <code class="docutils literal notranslate"><span class="pre">weaponstr</span></code> with our attack texts and send it to attacker and target respectively.</p></li>
 </ul>
+<p>Let’s try it out!</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; hit smaug with sword
+Could not find &#39;sword&#39;.
+You hit smaug with bare fists!
+</pre></div>
+</div>
 <p>Oops, our <code class="docutils literal notranslate"><span class="pre">self.caller.search(self.weapon)</span></code> is telling us that it found no sword. This is reasonable (we don’t have a sword). Since we are not <code class="docutils literal notranslate"><span class="pre">return</span></code>ing when failing to find a weapon in the way we do if we find no <code class="docutils literal notranslate"><span class="pre">target</span></code>,  we still continue fighting with our bare hands.</p>
 <p>This won’t do. Let’s make ourselves a sword:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create sword
 </pre></div>
 </div>
-<p>Since we didn’t specify <code class="docutils literal notranslate"><span class="pre">/drop</span></code>, the sword will end up in our inventory and can seen with the <code class="docutils literal notranslate"><span class="pre">i</span></code> or
-<code class="docutils literal notranslate"><span class="pre">inventory</span></code> command. The <code class="docutils literal notranslate"><span class="pre">.search</span></code> helper will still find it there. There is no need to reload to see this
-change (no code changed, only stuff in the database).</p>
+<p>Since we didn’t specify <code class="docutils literal notranslate"><span class="pre">/drop</span></code>, the sword will end up in our inventory and can seen with the <code class="docutils literal notranslate"><span class="pre">i</span></code> or <code class="docutils literal notranslate"><span class="pre">inventory</span></code> command. The <code class="docutils literal notranslate"><span class="pre">.search</span></code> helper will still find it there. There is no need to reload to see this change (no code changed, only stuff in the database).</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit smaug with sword
 You hit smaug with sword!
 </pre></div>
@@ -341,9 +337,24 @@ Who do you want to hit?
 Who do you want to hit?
 </pre></div>
 </div>
-<p>In this case we don’t need both command-sets, so let’s just keep the one on the sword:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)
-&gt; hit
+<p>In this case we don’t need both command-sets, we should drop the version of <code class="docutils literal notranslate"><span class="pre">hit</span></code> sitting on our ourselves.</p>
+<p>Go to <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and find the line where you added
+<code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> in the previous lesson. Delete or comment it out:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmdsets.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+
+    <span class="c1"># ... </span>
+    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+
+        <span class="c1"># self.add(MyCmdSet)    # &lt;---------</span>
+
+</pre></div>
+</div>
+<p>Next <code class="docutils literal notranslate"><span class="pre">reload</span></code> and you’ll only have one <code class="docutils literal notranslate"><span class="pre">hit</span></code> command available:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit
 Who do you want to hit?
 </pre></div>
 </div>
@@ -387,7 +398,7 @@ Command &#39;hit&#39; is not available. ..
 &gt; Who do you want to hit?
 </pre></div>
 </div>
-<p>Finally, we get rid of ours sword so we have a clean slate with no more <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands floating around. We can do that in two ways:</p>
+<p>After we’ve waved the sword around (hit a dragon or two), we will get rid of ours sword so we have a clean slate with no more <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands floating around. We can do that in two ways:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>delete sword
 </pre></div>
 </div>
@@ -456,8 +467,8 @@ Command &#39;hit&#39; is not available. ..
 <p class="sidebar-title">super()</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">super()</span></code> function refers to the parent of the current class and is commonly used to call same-named methods on the parent.</p>
 </aside>
-<p><code class="docutils literal notranslate"><span class="pre">evennia.default_cmds</span></code> is a container that holds all of Evennia’s default commands and cmdsets. In this module we can see that this was imported and then a new child class was made for each cmdset. Each class looks familiar (except the <code class="docutils literal notranslate"><span class="pre">key</span></code>, that’s mainly used to easily identify the cmdset in listings). In each <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code> all we do is call <code class="docutils literal notranslate"><span class="pre">super().at_cmdset_creation</span></code> which means that we call `at_cmdset_creation() on the <em>parent</em> CmdSet.
-This is what adds all the default commands to each CmdSet.</p>
+<p><code class="docutils literal notranslate"><span class="pre">evennia.default_cmds</span></code> is a container that holds all of Evennia’s default commands and cmdsets. In this module we can see that this was imported and then a new child class was made for each cmdset. Each class looks familiar (except the <code class="docutils literal notranslate"><span class="pre">key</span></code>, that’s mainly used to easily identify the cmdset in listings). In each <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code> all we do is call <code class="docutils literal notranslate"><span class="pre">super().at_cmdset_creation</span></code> which means that we call `at_cmdset_creation() on the <em>parent</em> CmdSet.</p>
+<p>This is what adds all the default commands to each CmdSet.</p>
 <p>When the <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> (or a child of it) is created, you’ll find that the equivalence of  <code class="docutils literal notranslate"><span class="pre">self.cmdset.add(&quot;default_cmdsets.CharacterCmdSet,</span> <span class="pre">persistent=True&quot;)</span></code> gets called. This means that all new Characters get this cmdset. After adding more commands to it, you just need to reload to have all characters see it.</p>
 <ul class="simple">
 <li><p>Characters (that is ‘you’ in the gameworld) has the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>.</p></li>

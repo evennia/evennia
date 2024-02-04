@@ -103,7 +103,6 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
-
 <span class="kn">from</span> <span class="nn">evennia.locks.lockfuncs</span> <span class="kn">import</span> <span class="n">perm</span> <span class="k">as</span> <span class="n">perm_lockfunc</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span>
 
@@ -295,7 +294,7 @@
 <span class="sd">        ::</span>
 
 <span class="sd">                class RogueCharacter(DefaultCharacter):</span>
-<span class="sd">                    guild = TagProperty(&quot;thieves_guild&quot;, &quot;merchant_guild&quot;)</span>
+<span class="sd">                    guild = TagCategoryProperty(&quot;thieves_guild&quot;, &quot;merchant_guild&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_category</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>

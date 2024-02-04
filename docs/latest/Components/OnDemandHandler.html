@@ -1,0 +1,316 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>OnDemandHandler &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="TickerHandler" href="TickerHandler.html" />
+    <link rel="prev" title="MonitorHandler" href="MonitorHandler.html" /> 
+  </head><body>
+
+     
+
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="TickerHandler.html" title="TickerHandler"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MonitorHandler.html" title="MonitorHandler"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">OnDemandHandler</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">OnDemandHandler</a><ul>
+<li><a class="reference internal" href="#a-blooming-flower-using-the-ondemandhandler">A blooming flower using the OnDemandHandler</a></li>
+<li><a class="reference internal" href="#more-usage-examples">More usage examples</a><ul>
+<li><a class="reference internal" href="#looping-repeatedly">Looping repeatedly</a></li>
+<li><a class="reference internal" href="#bouncing-back-and-forth">Bouncing back and forth</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MonitorHandler.html"
+                        title="previous chapter">MonitorHandler</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="TickerHandler.html"
+                        title="next chapter">TickerHandler</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/OnDemandHandler.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li><a href="OnDemandHandler.html">latest (main branch)</a></li>
+
+    <li><a href="../../3.x/index.html">v3.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../../2.x/index.html">v2.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../../1.x/index.html">v1.0.0 branch (outdated)</a></li>
+  
+    <li><a href="../../0.x/index.html">v0.9.5 branch (outdated)</a></li>
+  
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="ondemandhandler">
+<h1>OnDemandHandler<a class="headerlink" href="#ondemandhandler" title="Permalink to this headline">¶</a></h1>
+<p>This handler offers help for implementing on-demand state changes. On-demand means that the state won’t be computed until the player <em>actually looks for it</em>. Until they do, nothing happens. This is the most compute-efficient way to handle your systems and you should consider using this style of system whenever you can.</p>
+<p>Take for example a gardening system. A player goes to a room and plants a seed. After a certain time, that plant will then move through a set of stages; it will move from “seedling” to ‘sprout’ to ‘flowering’ and then on to ‘wilting’ and eventually ‘dead’.</p>
+<p>Now, you <em>could</em> use <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> to track each phase, or use the <a class="reference internal" href="TickerHandler.html"><span class="doc std std-doc">TickerHandler</span></a> to tick the flower. You could even use a <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Script</span></a> on the flower.</p>
+<ol class="simple">
+<li><p>The ticker/task/Script would automatically fire at regular intervals to update the plant through its stages.</p></li>
+<li><p>Whenever a player comes to the room, the state is already updated on the flower, so they just read the state.</p></li>
+</ol>
+<p>This will work fine, but if no one comes back to that room, that’s a lot of updating that no one will see. While maybe not a big deal for a single player, what if you have flowers in thousands of rooms, all growing indepedently? Or some even more complex system requiring calculation on every state change. You should avoid spending computing on things that bring nothing extra to your player base.</p>
+<p>Using the The on-demand style would instead work like this for the flower:</p>
+<ol class="simple">
+<li><p>When the player plants the seed, we register a new on-demand task with the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> (described below). This registes <em>the current timestamp</em> when the plant starts to grow.</p></li>
+<li><p>When a player enters the room and/or looks at the plant, <em>then</em> (and only then) we call the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> to see what state the flower it’s in. It will then use the <em>current time</em> to figure out how much time passed and which state the plant is thus in. Until someone looks, the plant is in its previous found state, because no-one needed to know until then. Same thing, if some other system needs to know this - they just figure out the state on the fly.</p></li>
+</ol>
+<section id="a-blooming-flower-using-the-ondemandhandler">
+<h2>A blooming flower using the OnDemandHandler<a class="headerlink" href="#a-blooming-flower-using-the-ondemandhandler" title="Permalink to this headline">¶</a></h2>
+<p>This handler is found as <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code>. It is meant to be integrated into your other code. Here’s an example of a flower that</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># e.g. in mygame/typeclasses/objects.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">Flower</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span> 
+
+    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">minute</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="n">hour</span> <span class="o">=</span> <span class="n">minute</span> <span class="o">*</span> <span class="mi">60</span>
+
+        <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="s2">&quot;plantgrowth&quot;</span>
+            <span class="n">stages</span><span class="o">=</span><span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;seedling&quot;</span><span class="p">,</span>
+                <span class="mi">10</span> <span class="o">*</span> <span class="n">minute</span><span class="p">:</span> <span class="s2">&quot;sprout&quot;</span><span class="p">,</span>
+                <span class="mi">5</span> <span class="o">*</span> <span class="n">hour</span><span class="p">:</span> <span class="s2">&quot;flowering&quot;</span><span class="p">,</span>
+                <span class="mi">10</span> <span class="o">*</span> <span class="n">hour</span><span class="p">:</span> <span class="s2">&quot;wilting&quot;</span><span class="p">,</span>
+                <span class="mi">12</span> <span class="o">*</span> <span class="n">hour</span><span class="p">:</span> <span class="s2">&quot;dead&quot;</span>
+            <span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">at_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called whenever someone looks at this object</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">stage</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;plantgrowth&quot;</span><span class="p">)</span>
+
+        <span class="k">match</span> <span class="n">stage</span><span class="p">:</span> 
+            <span class="k">case</span> <span class="s2">&quot;seedling&quot;</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="s2">&quot;There&#39;s nothing to see. Nothing has grown yet.&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;sprout&quot;</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="s2">&quot;A small delicate sprout has emerged!&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;flowering&quot;</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;A beautiful </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;wilting&quot;</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has seen better days.&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;dead&quot;</span><span class="p">:</span> 
+                <span class="c1"># it&#39;s dead and gone. Stop and delete </span>
+                <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;plantgrowth&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You could now create the rose and it would figure out its state only when you are actually looking at it. It will stay a seedling for 10 minutes (of in-game real time) before it sprouts. Within 12 hours it will be dead again (a very quickly growing rose!).</p>
+<p>If you had a <code class="docutils literal notranslate"><span class="pre">harvest</span></code> command in your game, you could equally have it check the stage of bloom and give you different results depending on if you pick the rose at the right time or not.</p>
+<p>The on-demand handler’s tasks survive a reload and will properly account for downtime.</p>
+</section>
+<section id="more-usage-examples">
+<h2>More usage examples<a class="headerlink" href="#more-usage-examples" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler" title="evennia.scripts.ondemandhandler.OnDemandHandler"><span class="xref myst py py-class">OnDemandHandler API</span></a> describes how to use the handler in detail. While it’s available as <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code>, its code is located in <code class="docutils literal notranslate"><span class="pre">evennia.scripts.ondemandhandler.py</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
+
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">time_passed</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_dt</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">current_state</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_stage</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># remove things </span>
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">cateogory</span><span class="o">=</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>  <span class="c1">#clear all with category</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">key</span></code> can be a string, but also a typeclassed object (its string representation will be used, which normally includes its <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>). You can also pass a <code class="docutils literal notranslate"><span class="pre">callable</span></code> - this will be called without arguments and is expected to return a string to use for the <code class="docutils literal notranslate"><span class="pre">key</span></code>. Finally, you can also pass <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><span class="xref myst py py-class">OnDemandTask</span></a> entities - these are the objects the handler uses under the hood to represent each task.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">category</span></code> allows you to further categorize your demandhandler  tasks to make sure they are unique. Since the handler is global, you need to make sure <code class="docutils literal notranslate"><span class="pre">key</span></code> + <code class="docutils literal notranslate"><span class="pre">category</span></code> is unique. While <code class="docutils literal notranslate"><span class="pre">category</span></code> is optional, if you use it you must also use it to retrieve your state later.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stages</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">statename}</span></code> or <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">(statename,</span> <span class="pre">callable}</span></code> that represents how much time (in seconds) before next stage begins. In the flower example above, it was 10 hours until the <code class="docutils literal notranslate"><span class="pre">wilting</span></code> state began. If a <code class="docutils literal notranslate"><span class="pre">callable</span></code> is also included, this will be called <em>the first time</em> that state is checked for. The callable takes a <code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask</span></code> as an argument and allows for tweaking the task on the fly.  The <code class="docutils literal notranslate"><span class="pre">dt</span></code> can also be a <code class="docutils literal notranslate"><span class="pre">float</span></code> if you desire higher than per-second precision. Having <code class="docutils literal notranslate"><span class="pre">stages</span></code> is optional - sometimes you only want to know how much time has passed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_dt()</span></code> - get the current time (in seconds) since the task started. This is a <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_stage()</span></code> - get the current state name, such as “flowering” or “seedling”. If you didn’t specify any <code class="docutils literal notranslate"><span class="pre">stages</span></code>, this will return <code class="docutils literal notranslate"><span class="pre">None</span></code>, and you need to interpret the <code class="docutils literal notranslate"><span class="pre">dt</span></code> yourself to determine which state you are in.</p></li>
+</ul>
+<p>Under the hood, the handler uses  <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><span class="xref myst py py-class">OnDemandTask</span></a> objects. It can sometimes be practical to create tasks directly with these, and pass them to the handler in bulk:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+
+<span class="n">task1</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;state1&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span> <span class="s2">&quot;state2&quot;</span><span class="p">})</span>
+<span class="n">task2</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">task2</span><span class="p">)</span>
+
+<span class="c1"># get tasks back </span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">)</span>
+
+<span class="c1"># batch-delete (deactivate) from handler</span>
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">batch_remove</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">task2</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="looping-repeatedly">
+<h3>Looping repeatedly<a class="headerlink" href="#looping-repeatedly" title="Permalink to this headline">¶</a></h3>
+<p>Normally, when a sequence of <code class="docutils literal notranslate"><span class="pre">stages</span></code> have been cycled through, the task will just</p>
+<p><code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask.stagefunc_loop</span></code> is an included static-method callable you can use to make the task loop. Here’s an example of how to use it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="s2">&quot;trap_state&quot;</span><span class="p">,</span> 
+    <span class="n">stages</span><span class="o">=</span><span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;harmless&quot;</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">:</span> <span class="s2">&quot;solvable&quot;</span><span class="p">,</span>
+        <span class="mi">100</span><span class="p">:</span> <span class="s2">&quot;primed&quot;</span><span class="p">,</span>
+        <span class="mi">200</span><span class="p">:</span> <span class="s2">&quot;deadly&quot;</span><span class="p">,</span>
+        <span class="mi">250</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;_reset&quot;</span><span class="p">,</span> <span class="n">OnDemandTask</span><span class="o">.</span><span class="n">stagefunc_loop</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This is a trap state that loops through its states depending on timing. Note that the looping helper callable will <em>immediately</em> reset the cycle back to the first stage, so the last stage will never be visible to the player/game system. So it’s a good (if optional) idea to name it with <code class="docutils literal notranslate"><span class="pre">_*</span></code> to remember this is a ‘virtual’ stage.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> task instance has a <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> variable that will go up by one for every loop.</p>
+<p>If the state is not checked for a long time, the looping function will correctly update the <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> of the task it would have used so far and figure out where in the cycle it is right now.</p>
+</section>
+<section id="bouncing-back-and-forth">
+<h3>Bouncing back and forth<a class="headerlink" href="#bouncing-back-and-forth" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask.stagefunc_bounce</span></code> is an included static-method callable you can use to ‘bounce’ the sequence of stages. That is, it will cycle to the end of the cycle and then reverse direction and cycle through the sequence in reverse.</p>
+<p>To make this repreat indefinitely, you need to put the callables at both ends of the list:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="s2">&quot;cycling reactor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nuclear&quot;</span><span class="p">,</span>
+    <span class="n">stages</span><span class="o">=</span><span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;cold&quot;</span><span class="p">,</span> <span class="n">OnDemandTask</span><span class="o">.</span><span class="n">stagefunc_bounce</span><span class="p">),</span>
+        <span class="mi">150</span><span class="p">:</span> <span class="s2">&quot;luke warm&quot;</span><span class="p">,</span>
+        <span class="mi">300</span><span class="p">:</span> <span class="s2">&quot;warm&quot;</span><span class="p">,</span> 
+        <span class="mi">450</span><span class="p">:</span> <span class="s2">&quot;hot&quot;</span>
+        <span class="mi">600</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;HOT!&quot;</span><span class="p">,</span> <span class="n">OnDemandTask</span><span class="o">.</span><span class="n">stagefunc_bounce</span><span class="p">)</span>    
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This will cycle</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    cold -&gt; luke warm -&gt; warm -&gt; hot -&gt; HOT! 
+</pre></div>
+</div>
+<p>before reversing and go back:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    HOT! -&gt; hot -&gt; warm -&gt; luke warm -&gt; cold 
+</pre></div>
+</div>
+<p>Over and over.  The <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> instance has an <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property that will step up by one every time the sequence reverses.</p>
+<p>If the state is not checked for a long time, the bounce function will correctly update the <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property to the amount of iterations it would have done in that time, and figure out where in the cycle it must be right now.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="TickerHandler.html" title="TickerHandler"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MonitorHandler.html" title="MonitorHandler"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">OnDemandHandler</a></li> 
+      </ul>
+    </div>
+
+     
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

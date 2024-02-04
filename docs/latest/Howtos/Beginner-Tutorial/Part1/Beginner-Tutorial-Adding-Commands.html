@@ -132,9 +132,7 @@ An example is <code class="docutils literal notranslate"><span class="pre">look<
 what is in it.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Commands are not typeclassed</p>
-<p>If you just came from the previous lesson, you might want to know that Commands and
-CommandSets are not <code class="docutils literal notranslate"><span class="pre">typeclassed</span></code>. That is, instances of them are not saved to the
-database. They are “just” normal Python classes.</p>
+<p>If you just came from the previous lesson, you might want to know that Commands and CommandSets are not <code class="docutils literal notranslate"><span class="pre">typeclassed</span></code>. That is, instances of them are not saved to the database. They are “just” normal Python classes.</p>
 </aside>
 <p>In Evennia, a Command is a Python <em>class</em>. If you are unsure about what a class is, review the
 <a class="reference internal" href="Beginner-Tutorial-Python-classes-and-objects.html"><span class="doc std std-doc">previous lesson about it</span></a>! A Command inherits from <code class="docutils literal notranslate"><span class="pre">evennia.Command</span></code> or from one of the alternative command- classes, such as <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> which is what most default commands use.</p>
@@ -316,8 +314,7 @@ Echo: &#39;Woo Tang!&#39;
 <p>You will get the docstring you put in your Command-class!</p>
 <section id="making-our-cmdset-persistent">
 <h3><span class="section-number">8.1.1. </span>Making our cmdset persistent<a class="headerlink" href="#making-our-cmdset-persistent" title="Permalink to this headline">¶</a></h3>
-<p>It’s getting a little annoying to have to re-add our cmdset every time we reload, right? It’s simple
-enough to make <code class="docutils literal notranslate"><span class="pre">echo</span></code> a <em>persistent</em> change though:</p>
+<p>It’s getting a little annoying to have to re-add our cmdset every time we reload, right? It’s simple enough to make <code class="docutils literal notranslate"><span class="pre">echo</span></code> a <em>persistent</em> change though:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;, persistent=True)
 </pre></div>
 </div>
@@ -431,10 +428,7 @@ You hit Bob with full force!
 <li><p><strong>Line 3</strong>: The normal <code class="docutils literal notranslate"><span class="pre">class</span></code> header. We inherit from <code class="docutils literal notranslate"><span class="pre">Command</span></code> which we imported at the top of this file.</p></li>
 <li><p><strong>Lines 4-10</strong>: The docstring and help-entry for the command. You could expand on this as much as you wanted.</p></li>
 <li><p><strong>Line 11</strong>: We want to write <code class="docutils literal notranslate"><span class="pre">hit</span></code> to use this command.</p></li>
-<li><p><strong>Line 14</strong>: We strip the whitespace from the argument like before. Since we don’t want to have to do
-<code class="docutils literal notranslate"><span class="pre">self.args.strip()</span></code> over and over, we store the stripped version
-in a <em>local variable</em> <code class="docutils literal notranslate"><span class="pre">args</span></code>. Note that we don’t modify <code class="docutils literal notranslate"><span class="pre">self.args</span></code> by doing this, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> will still
-have the whitespace and is not the same as <code class="docutils literal notranslate"><span class="pre">args</span></code> in this example.</p></li>
+<li><p><strong>Line 14</strong>: We strip the whitespace from the argument like before. Since we don’t want to have to do <code class="docutils literal notranslate"><span class="pre">self.args.strip()</span></code> over and over, we store the stripped version in a <em>local variable</em> <code class="docutils literal notranslate"><span class="pre">args</span></code>. Note that we don’t modify <code class="docutils literal notranslate"><span class="pre">self.args</span></code> by doing this, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> will still have the whitespace and is not the same as <code class="docutils literal notranslate"><span class="pre">args</span></code> in this example.</p></li>
 </ul>
 <aside class="sidebar">
 <p class="sidebar-title">if-statements</p>

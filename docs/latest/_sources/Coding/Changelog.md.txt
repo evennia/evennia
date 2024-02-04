@@ -1,5 +1,34 @@
 # Changelog
 
+## main branch
+
+- [Feature] Add `evennia.ON_DEMAND_HANDLER` for making it easier to implement
+  timed element with the on-demand approach (Griatch)
+- [Fix] Remove `AMP_ENABLED` setting since it services no real purpose and
+  erroring out on setting it would make it even less useful (Griatch).
+- [Fix] `services` command with no args would traceback (regression) (Griatch)
+- [Feature][pull3412]: Make it possible to add custom webclient css in
+  `webclient/css/custom.css`, same as for website (InspectorCaracal)
+- Doc fixes (InspectorCaracal, Griatch)
+
+[pull3412]: https://github.com/evennia/evennia/pull/3412
+
+## Evennia 3.1.1
+
+Jan 14, 2024
+
+- [Fix][pull3398]: Fix to make e.g. `elvish"Hello"` work correctly in language rp
+  contrib (InspectorCaracal)
+- [Fix][pull3405]: Fix/update of Godot client contrib to support Godot4 and
+  latest Evennia portal changes (ChrisLR)
+- Updated doc on wiki install (InspectorCaracal)
+- Docstring fixes (bradleymarques, Griatch)
+- Doc tutorial fixes (Griatch)
+
+[pull3398]: https://github.com/evennia/evennia/pull/3398
+[pull3405]: https://github.com/evennia/evennia/pull/3405
+
+
 ## Evennia 3.1.0
 
 Jan 8, 2024
@@ -19,7 +48,7 @@ Jan 8, 2024
 - [Fix][pull3382]: Make sure global scripts start properly on restart
   (InspectorCaracal)
 - [Fix][pull3394]: Fix time-of-day issue in ExpandedRoom contrib (jaborsh)
-- Doc fixes (homeofpoe, gas-public-wooden-clean, InspectorCaracal)
+- Doc fixes (homeofpoe, gas-public-wooden-clean, InspectorCaracal, Griatch)
 
 [pull3373]: https://github.com/evennia/evennia/pull/3373
 [pull3375]: https://github.com/evennia/evennia/pull/3375
@@ -107,9 +136,9 @@ Dec 20, 2023
   other objects than oneself (InspectorCaracal)
 - [Fix][pull3361]: Fix of monitoring Attributes with categories (scyfris)
 - Docs & docstrings: Lots of Typo and other fixes (iLPdev, InspectorCaracal, jaborsh,
-  HouseOfPoe etc)
+  HouseOfPoe, Griatch etc)
 - Beginner tutorial: Cleanup and starting earlier with explaining how to add to
-  the default cmdsets.
+  the default cmdsets (Griatch).
 
 [pull3267]: https://github.com/evennia/evennia/pull/3267
 [pull3270]: https://github.com/evennia/evennia/pull/3270
@@ -158,8 +187,8 @@ Sept 3, 2023
 - Fix: Traceback when printing CounterTrait contrib objects. (InspectorCaracal)
 - Fix: Typo in evadventure twitch combat's call of `create_combathandler`.
 - Docs: Fix bug in evadventure equipmenthandler blocking creation of npcs.
-  in-game.
-- Docs: Plenty of typo fixes (iLPDev, moldikins, others)
+  in-game (Griatch).
+- Docs: Plenty of typo fixes (iLPDev, moldikins, Griatch), others)
 
 ## Evennia 2.2.0
 
