@@ -59,7 +59,7 @@ docs/build
 .vscode/
 
 # Obsidian 
-.obsidian
+.obsidian/
 
 # Virtual environments 
 .venv/
