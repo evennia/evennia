@@ -133,7 +133,7 @@
 <p>This will work fine, but if no one comes back to that room, that’s a lot of updating that no one will see. While maybe not a big deal for a single player, what if you have flowers in thousands of rooms, all growing indepedently? Or some even more complex system requiring calculation on every state change. You should avoid spending computing on things that bring nothing extra to your player base.</p>
 <p>Using the The on-demand style would instead work like this for the flower:</p>
 <ol class="simple">
-<li><p>When the player plants the seed, we register a new on-demand task with the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> (described below). This registes <em>the current timestamp</em> when the plant starts to grow.</p></li>
+<li><p>When the player plants the seed, we register a new on-demand task with the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> (described below). This registers <em>the current timestamp</em> when the plant starts to grow.</p></li>
 <li><p>When a player enters the room and/or looks at the plant, <em>then</em> (and only then) we call the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> to see what state the flower it’s in. It will then use the <em>current time</em> to figure out how much time passed and which state the plant is thus in. Until someone looks, the plant is in its previous found state, because no-one needed to know until then. Same thing, if some other system needs to know this - they just figure out the state on the fly.</p></li>
 </ol>
 <section id="a-blooming-flower-using-the-ondemandhandler">
