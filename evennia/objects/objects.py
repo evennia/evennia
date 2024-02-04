@@ -1446,7 +1446,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             str: The final formatted output.
 
         """
-        return strip_extra_whitespace(appearance)
+        return strip_extra_whitespace(appearance).strip()
 
     def return_appearance(self, looker, **kwargs):
         """
