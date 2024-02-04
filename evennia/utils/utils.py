@@ -472,6 +472,31 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
 list_to_string = iter_to_str
 iter_to_string = iter_to_str
 
+re_empty = re.compile("\n\s*\n")
+
+def strip_extra_whitespace(text, max_linebreaks=1, max_spacing=2):
+    """
+    Removes extra sequential whitespace in a block of text. This will also remove any trailing
+    whitespace at the end.
+
+    Args:
+        text (str):   A string which may contain excess internal whitespace.
+        
+    Keyword args:
+        max_linebreaks (int):  How many linebreak characters are allowed to occur in a row.
+        max_spacing (int):     How many spaces are allowed to occur in a row.
+
+    """
+    text = text.rstrip()
+    # replaces any non-visible lines that are just whitespace characters with actual empty lines
+    # this allows the blank-line compression to eliminate them if needed
+    text = re_empty.sub("\n\n", text)
+    # replace groups of extra spaces with the maximum number of spaces
+    text = re.sub(f" {{{max_spacing},}}", " "*max_spacing, text)
+    # replace groups of extra newlines with the maximum number of newlines
+    text = re.sub(f"\n{{{max_linebreaks},}}", "\n"*max_linebreaks, text)
+    return text
+    
 
 def wildcard_to_regexp(instring):
     """
