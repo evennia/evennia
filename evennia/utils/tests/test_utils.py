@@ -54,6 +54,22 @@ class TestDedent(TestCase):
         self.assertEqual(expected_string, utils.dedent(input_string))
 
 
+class TestStripWhitespace(TestCase):
+    def test_strip_extra_whitespace(self):
+        # No text, return no text
+        self.assertEqual("", utils.strip_extra_whitespace(""))
+        # If no whitespace is exceeded, should return the same
+        self.assertEqual("One line\nTwo  spaces", utils.strip_extra_whitespace("One line\nTwo  spaces"))
+        # Extra newlines are removed
+        self.assertEqual("First line\nSecond line", utils.strip_extra_whitespace("First line\n\nSecond line"))
+        # Extra spaces are removed
+        self.assertEqual("Too  many  spaces", utils.strip_extra_whitespace("Too   many      spaces"))
+        # "Invisible" extra lines with whitespace are removed
+        self.assertEqual("First line\nSecond line", utils.strip_extra_whitespace("First line\n    \n \nSecond line"))
+        # Max kwargs are respected
+        self.assertEqual("First line\n\nSecond line", utils.strip_extra_whitespace("First line\n\nSecond  line", max_spacing=1, max_linebreaks=2))
+
+
 class TestListToString(TestCase):
     """
     Default function header from time.py:
