@@ -331,57 +331,30 @@ class WildernessScript(DefaultScript):
         # appear in its old room should that room be deleted.
         obj.location = None
 
-        # By default, we'll assume we won't be making a new room and change this flag if necessary.
-        create_room = False
-
-        # See if we already have a room for that location
-        if room := self.db.rooms.get(new_coordinates):
-            # There is. Try to destroy the old_room if it is not needed anymore
-            self._destroy_room(old_room)
+        # we will need to do special handling if the old room is a different location
+        # check that here, so we only need to do it once
+        if self == getattr(old_room, 'wilderness', None):
+            # it is our own room
+            from_outside = False
         else:
-            # There is no room yet at new_location
-            # Is the old room in a wilderness?
-            if hasattr(old_room, "wilderness"):
-                # Yes. Is it in THIS wilderness?
-                if old_room.wilderness == self:
-                    # Should we preserve rooms with any objects?
-                    if self.preserve_items:
-                        # Yes - check if ANY objects besides the exits are in old_room
-                        if len(
-                            [
-                                ob
-                                for ob in old_room.contents
-                                if not inherits_from(ob, WildernessExit)
-                            ]
-                        ):
-                            # There is, so we'll create a new room
-                            room = self._create_room(new_coordinates, obj)
-                        else:
-                            # The room is empty, so we'll reuse it
-                            room = old_room
-                    else:
-                        # Only preserve rooms if there are players behind
-                        if len([ob for ob in old_room.contents if ob.has_account]):
-                            # There is still a player there; create a new room
-                            room = self._create_room(new_coordinates, obj)
-                        else:
-                            # The room is empty of players, so we'll reuse it
-                            room = old_room
+            # it's from another wilderness, or no wilderness
+            from_outside = True
+        
+        # check if we have a room at the new coordinates already
+        room = self.db.rooms.get(new_coordinates)
 
-                # It's in a different wilderness
-                else:
-                    # It does, so we make sure to leave the other wilderness properly
-                    old_room.wilderness.at_post_object_leave(obj)
-                    # We'll also need to create a new room in this wilderness
-                    room = self._create_room(new_coordinates, obj)
+        if not from_outside:
+            # the old room is in the same wilderness
+            # free up the old room if it's no longer needed
+            self._destroy_room(old_room)
 
-            else:
-                # Obj comes from outside the wilderness entirely
-                # We need to make a new room
-                room = self._create_room(new_coordinates, obj)
+        if not room:
+            # we need claim a new room
+            room = self._create_room(new_coordinates, obj)
 
-            # Set `room` to the new coordinates, however it was made
-            room.set_active_coordinates(new_coordinates, obj)
+        # Now that we have a valid room, run the leave hook on the previous location if necessary
+        if from_outside and old_room:
+            old_room.at_object_leave(obj, room)
 
         # Put obj back, now in the correct room
         obj.location = room
@@ -430,10 +403,8 @@ class WildernessScript(DefaultScript):
                     destination=room,
                     report_to=report_to,
                 )
-
-        room.ndb.active_coordinates = coordinates
         room.ndb.wildernessscript = self
-        self.db.rooms[coordinates] = room
+        room.set_active_coordinates(coordinates, report_to)
 
         return room
 
@@ -474,6 +445,8 @@ class WildernessScript(DefaultScript):
 
         # Then delete its coordinate reference
         del self.db.rooms[room.ndb.active_coordinates]
+        # ...on both sides
+        del room.ndb.active_coordinates
         # And finally put this room away in storage
         self.db.unused_rooms.append(room)
 

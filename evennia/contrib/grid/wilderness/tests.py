@@ -104,12 +104,16 @@ class TestWilderness(BaseEvenniaTest):
         self.assertEqual(len(w.db.unused_rooms), 0)
         w.move_obj(self.char1, (0, 0))
         self.assertEqual(len(w.db.unused_rooms), 0)
+        # and there should be one used room
+        self.assertEqual(len(w.db.rooms.values()), 1)
 
         # And also no unused room after moving the second one in.
         w.move_obj(self.char2, (1, 1))
         self.assertEqual(len(w.db.unused_rooms), 0)
+        # but now there should be 2 used rooms
+        self.assertEqual(len(w.db.rooms.values()), 2)
 
-        # But if char2 moves into char1's room, we should have one unused room
+        # Now, if char2 moves into char1's room, we should have one unused room
         # Which should be char2's old room that got created.
         w.move_obj(self.char2, (0, 0))
         self.assertEqual(len(w.db.unused_rooms), 1)
