@@ -148,7 +148,7 @@ def _load_recipes():
     if not _RECIPE_CLASSES:
         paths = ["evennia.contrib.game_systems.crafting.example_recipes"]
         if hasattr(settings, "CRAFT_RECIPE_MODULES"):
-            paths += make_iter(settings.CRAFT_RECIPE_MODULES)
+            paths = make_iter(settings.CRAFT_RECIPE_MODULES)
         for path in paths:
             for cls in callables_from_module(path).values():
                 if inherits_from(cls, CraftingRecipeBase):
