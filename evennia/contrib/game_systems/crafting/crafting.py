@@ -947,7 +947,7 @@ def craft(crafter, recipe_name, *inputs, raise_exception=False, **kwargs):
             # try in-match
             matches = [key for key in _RECIPE_CLASSES if recipe_name in key]
         if len(matches) == 1:
-            RecipeClass = matches[0]
+            RecipeClass = _RECIPE_CLASSES[matches[0]]
 
     if not RecipeClass:
         if raise_exception:
