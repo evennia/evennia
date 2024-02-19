@@ -387,13 +387,12 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
     Usage:
       get <obj>
 
-    Picks up an object from your location and puts it in
-    your inventory.
+    Picks up an object from your location and puts it in your inventory.
     """
 
     key = "get"
     aliases = "grab"
-    locks = "cmd:all();view:perm(Developer);read:perm(Developer)"
+    locks = "cmd:all()"
     arg_regex = r"\s|$"
 
     def func(self):
