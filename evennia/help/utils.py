@@ -88,8 +88,8 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
     if not fields:
         fields = [
             {"field_name": "key", "boost": 10},
-            {"field_name": "aliases", "boost": 9},
-            {"field_name": "category", "boost": 8},
+            {"field_name": "aliases", "boost": 7},
+            {"field_name": "category", "boost": 6},
             {"field_name": "tags", "boost": 5},
         ]
 
