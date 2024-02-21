@@ -55,13 +55,4 @@ HELP_ENTRY_DICTS = [
 
         """,
     },
-    {
-        "key": "building",
-        "category": "building",
-        "text": """
-            Evennia comes with a bunch of default building commands. You can
-            find a beginner tutorial in the Evennia documentation.
-
-        """,
-    },
 ]
