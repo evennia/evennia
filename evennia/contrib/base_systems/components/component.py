@@ -173,3 +173,7 @@ class Component(metaclass=BaseComponent):
     @classmethod
     def get_fields(cls):
         return tuple(cls._fields.values())
+
+    @classmethod
+    def get_component_slot(cls):
+        return cls.slot or cls.name
