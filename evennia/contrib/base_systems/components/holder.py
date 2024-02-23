@@ -283,9 +283,16 @@ class ComponentHolderMixin:
 
         for base_type in base_type_iterator():
             base_class_components = getattr(base_type, "_class_components", ())
-            class_components.update({cmp[0]: cmp[1] for cmp in base_class_components})
+            for cmp_name, cmp_values in base_class_components:
+                cmp_class = get_component_class(cmp_name)
+                cmp_slot = cmp_class.get_component_slot()
+                class_components[cmp_slot] = (cmp_name, cmp_values)
 
+        # TODO Is this necessary?
         instance_components = getattr(self, "_class_components", ())
-        class_components.update({cmp[0]: cmp[1] for cmp in instance_components})
+        for cmp_name, cmp_values in instance_components:
+            cmp_class = get_component_class(cmp_name)
+            cmp_slot = cmp_class.get_component_slot()
+            class_components[cmp_slot] = (cmp_name, cmp_values)
 
-        return tuple(class_components.items())
+        return tuple(class_components.values())
