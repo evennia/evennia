@@ -29,7 +29,7 @@ class DBField(AttributeProperty):
             owner (Component): The component classF on which this is set
             name (str): The name that was used to set the DBField.
         """
-        self._key = f"{owner.slot or owner.name}::{name}"
+        self._key = f"{owner.get_component_slot()}::{name}"
         owner.add_field(name, self)
 
     def at_added(self, component):
@@ -69,7 +69,7 @@ class NDBField(NAttributeProperty):
             owner (Component): The component class on which this is set
             name (str): The name that was used to set the DBField.
         """
-        self._key = f"{owner.slot or owner.name}::{name}"
+        self._key = f"{owner.get_component_slot()}::{name}"
         owner.add_field(name, self)
 
     def at_added(self, component):
@@ -113,7 +113,7 @@ class TagField:
         Called when TagField is first assigned to the class.
         It is called with the component class and the name of the field.
         """
-        self._category_key = f"{owner.slot or owner.name}::{name}"
+        self._category_key = f"{owner.get_component_slot()}::{name}"
         owner.add_field(name, self)
 
     def __get__(self, instance, owner):
