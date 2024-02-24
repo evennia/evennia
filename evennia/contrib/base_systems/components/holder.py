@@ -42,14 +42,6 @@ class ComponentProperty:
     def __set__(self, instance, value):
         raise Exception("Cannot set a class property")
 
-    def __set_name__(self, owner, name):
-        # Retrieve the class_components set on the direct class only
-        class_components = owner.__dict__.get("_class_components", [])
-        if not class_components:
-            setattr(owner, "_class_components", class_components)
-
-        class_components.append((self.name, self.values))
-
 
 class ComponentHandler:
     """
@@ -270,27 +262,29 @@ class ComponentHolderMixin:
         return getattr(self, "_signal_handler", None)
 
     def _get_class_components(self):
-        class_components = {}
+        self_class = type(self)
+        class_components = getattr(self_class, "_class_components", None)
+        if class_components is not None:
+            return class_components
 
-        def base_type_iterator():
-            base_stack = [type(self)]
-            while base_stack:
-                _base_type = base_stack.pop()
-                yield _base_type
-                base_stack.extend(_base_type.__bases__)
+        class_components_by_slot = {}
+        for att_name in dir(self_class):
+            if att_name.startswith("__"):
+                continue
 
-        for base_type in base_type_iterator():
-            base_class_components = getattr(base_type, "_class_components", ())
-            for cmp_name, cmp_values in base_class_components:
+            att_obj = getattr(self_class, att_name, None)
+            if isinstance(att_obj, ComponentProperty):
+                cmp_name = att_obj.name
                 cmp_class = get_component_class(cmp_name)
                 cmp_slot = cmp_class.get_component_slot()
-                class_components[cmp_slot] = (cmp_name, cmp_values)
+                if cmp_slot in class_components_by_slot:
+                    raise exceptions.ComponentSlotRegisteredTwice(
+                        f"Component slot={cmp_slot} is registered twice on class={self_class}"
+                    )
 
-        # TODO Is this necessary?
-        instance_components = getattr(self, "_class_components", ())
-        for cmp_name, cmp_values in instance_components:
-            cmp_class = get_component_class(cmp_name)
-            cmp_slot = cmp_class.get_component_slot()
-            class_components[cmp_slot] = (cmp_name, cmp_values)
+                class_components_by_slot[cmp_slot] = (cmp_name, att_obj.values)
 
-        return tuple(class_components.values())
+        class_components = tuple(class_components_by_slot.values())
+        setattr(self_class, "_class_components", class_components)
+
+        return class_components

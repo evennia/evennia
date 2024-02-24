@@ -8,3 +8,7 @@ class ComponentDoesNotExist(ValueError):
 
 class ComponentIsNotRegistered(ValueError):
     pass
+
+
+class ComponentSlotRegisteredTwice(ValueError):
+    pass
