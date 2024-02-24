@@ -9,8 +9,17 @@ from evennia.contrib.base_systems.components import COMPONENT_LISTING, exception
 
 
 class BaseComponent(type):
+    """
+    This is the metaclass for components,
+    responsible for registering components to the listing.
+    """
     @classmethod
     def __new__(cls, *args):
+        """
+        Every class that uses this metaclass will be registered
+        as a component in the Component Listing using its name.
+        All of them require a unique name.
+        """
         new_type = super().__new__(*args)
         if new_type.__base__ == object:
             return new_type

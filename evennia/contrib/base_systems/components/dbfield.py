@@ -26,17 +26,31 @@ class DBField(AttributeProperty):
         Called when descriptor is first assigned to the class.
 
         Args:
-            owner (object): The component classF on which this is set
+            owner (Component): The component classF on which this is set
             name (str): The name that was used to set the DBField.
         """
         self._key = f"{owner.slot or owner.name}::{name}"
         owner.add_field(name, self)
 
     def at_added(self, component):
+        """
+        Called when the parent component is added to a host.
+
+        Args:
+            component (Component): The component instance being added.
+        """
+
         if self._autocreate:
             self.__get__(component, type(component))
 
     def at_removed(self, component):
+        """
+        Called when the parent component is removed from a host.
+
+        Args:
+            component (Component): The component instance being removed.
+        """
+
         self.__delete__(component)
 
 
@@ -52,18 +66,30 @@ class NDBField(NAttributeProperty):
         Called when descriptor is first assigned to the class.
 
         Args:
-            owner (object): The component class on which this is set
+            owner (Component): The component class on which this is set
             name (str): The name that was used to set the DBField.
         """
         self._key = f"{owner.slot or owner.name}::{name}"
         owner.add_field(name, self)
 
-    def at_added(self, instance):
-        if self._autocreate:
-            self.__set__(instance, self._default)
+    def at_added(self, component):
+        """
+        Called when the parent component is added to a host.
 
-    def at_removed(self, instance):
-        self.__delete__(instance)
+        Args:
+            component (Component): The component instance being added.
+        """
+        if self._autocreate:
+            self.__set__(component, self._default)
+
+    def at_removed(self, component):
+        """
+        Called when the parent component is removed from a host.
+
+        Args:
+            component (Component): The component instance being removed.
+        """
+        self.__delete__(component)
 
 
 class TagField:
@@ -124,8 +150,20 @@ class TagField:
         instance.host.tags.clear(category=self._category_key)
 
     def at_added(self, component):
+        """
+        Called when the parent component is added to a host.
+
+        Args:
+            component (Component): The component instance being added.
+        """
         if self._default:
             self.__set__(component, self._default)
 
     def at_removed(self, component):
+        """
+        Called when the parent component is removed from a host.
+
+        Args:
+            component (Component): The component instance being removed.
+        """
         self.__delete__(component)
