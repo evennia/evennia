@@ -236,9 +236,10 @@
 
     <span class="k">global</span> <span class="n">_RECIPE_CLASSES</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_RECIPE_CLASSES</span><span class="p">:</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.contrib.game_systems.crafting.example_recipes&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CRAFT_RECIPE_MODULES&quot;</span><span class="p">):</span>
-            <span class="n">paths</span> <span class="o">+=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CRAFT_RECIPE_MODULES</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">paths</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CRAFT_RECIPE_MODULES&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CRAFT_RECIPE_MODULES</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.contrib.game_systems.crafting.example_recipes&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
             <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">callables_from_module</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">CraftingRecipeBase</span><span class="p">):</span>
@@ -1036,7 +1037,7 @@
             <span class="c1"># try in-match</span>
             <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_RECIPE_CLASSES</span> <span class="k">if</span> <span class="n">recipe_name</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">RecipeClass</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">RecipeClass</span> <span class="o">=</span> <span class="n">_RECIPE_CLASSES</span><span class="p">[</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">RecipeClass</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">raise_exception</span><span class="p">:</span>
