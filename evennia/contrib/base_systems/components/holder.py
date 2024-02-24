@@ -118,8 +118,6 @@ class ComponentHandler:
             field.at_removed(component)
 
         component.at_removed(self.host)
-        if component.cmd_set:
-            self.host.cmdset.remove(component.cmd_set)
 
         self.host.tags.remove(component.name, category="components")
         self.host.signals.remove_object_listeners_and_responders(component)

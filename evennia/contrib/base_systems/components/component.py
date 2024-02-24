@@ -50,8 +50,6 @@ class Component(metaclass=BaseComponent):
     name = ""
     slot = None
 
-    cmd_set: CmdSet = None
-
     _fields = {}
 
     def __init__(self, host=None):
@@ -115,11 +113,7 @@ class Component(metaclass=BaseComponent):
             Component: The loaded instance of the component
 
         """
-        inst = cls(host)
-        if inst.cmd_set:
-            host.cmdset.add(inst.cmd_set)
-
-        return inst
+        return cls(host)
 
     def at_added(self, host):
         """
@@ -131,9 +125,6 @@ class Component(metaclass=BaseComponent):
         """
         if self.host and self.host != host:
             raise exceptions.InvalidComponentError("Components must not register twice!")
-
-        if self.cmd_set:
-            self.host.cmdset.add(self.cmd_set)
 
         self.host = host
 
@@ -147,9 +138,6 @@ class Component(metaclass=BaseComponent):
         """
         if host != self.host:
             raise ValueError("Component attempted to remove from the wrong host.")
-
-        if self.cmd_set:
-            self.host.cmdset.remove(self.cmd_set)
 
         self.host = None
 
