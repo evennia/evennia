@@ -9,9 +9,21 @@
 - [Fix] `services` command with no args would traceback (regression) (Griatch)
 - [Feature][pull3412]: Make it possible to add custom webclient css in
   `webclient/css/custom.css`, same as for website (InspectorCaracal)
+- [Fix][pull3423]: Fix wilderness contrib error moving to an already existing
+  wilderness room (InspectorCaracal)
+- [Fix][pull3425]: Don't always include example the crafting recipe when
+  using the crafting contrib (InspectorCaracal)
+- [pull3426]: Traceback banning a channel using with only one nick
+  (InspectorCaracal)
+- [pull3434]: Adjust lunr search weights to void clashing of cmd-aliases over
+  keys which caused some help entries to shadow others (InspectorCaracal)
 - Doc fixes (InspectorCaracal, Griatch)
 
 [pull3412]: https://github.com/evennia/evennia/pull/3412
+[pull3423]: https://github.com/evennia/evennia/pull/3423
+[pull3425]: https://github.com/evennia/evennia/pull/3425
+[pull3426]: https://github.com/evennia/evennia/pull/3426
+[pull3434]: https://github.com/evennia/evennia/pull/3434
 
 ## Evennia 3.1.1
 
