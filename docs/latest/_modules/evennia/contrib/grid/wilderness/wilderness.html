@@ -421,57 +421,30 @@
         <span class="c1"># appear in its old room should that room be deleted.</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># By default, we&#39;ll assume we won&#39;t be making a new room and change this flag if necessary.</span>
-        <span class="n">create_room</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="c1"># See if we already have a room for that location</span>
-        <span class="k">if</span> <span class="n">room</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">):</span>
-            <span class="c1"># There is. Try to destroy the old_room if it is not needed anymore</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_destroy_room</span><span class="p">(</span><span class="n">old_room</span><span class="p">)</span>
+        <span class="c1"># we will need to do special handling if the old room is a different location</span>
+        <span class="c1"># check that here, so we only need to do it once</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">old_room</span><span class="p">,</span> <span class="s1">&#39;wilderness&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># it is our own room</span>
+            <span class="n">from_outside</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># There is no room yet at new_location</span>
-            <span class="c1"># Is the old room in a wilderness?</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">old_room</span><span class="p">,</span> <span class="s2">&quot;wilderness&quot;</span><span class="p">):</span>
-                <span class="c1"># Yes. Is it in THIS wilderness?</span>
-                <span class="k">if</span> <span class="n">old_room</span><span class="o">.</span><span class="n">wilderness</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
-                    <span class="c1"># Should we preserve rooms with any objects?</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_items</span><span class="p">:</span>
-                        <span class="c1"># Yes - check if ANY objects besides the exits are in old_room</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
-                            <span class="p">[</span>
-                                <span class="n">ob</span>
-                                <span class="k">for</span> <span class="n">ob</span> <span class="ow">in</span> <span class="n">old_room</span><span class="o">.</span><span class="n">contents</span>
-                                <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">ob</span><span class="p">,</span> <span class="n">WildernessExit</span><span class="p">)</span>
-                            <span class="p">]</span>
-                        <span class="p">):</span>
-                            <span class="c1"># There is, so we&#39;ll create a new room</span>
-                            <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="c1"># The room is empty, so we&#39;ll reuse it</span>
-                            <span class="n">room</span> <span class="o">=</span> <span class="n">old_room</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># Only preserve rooms if there are players behind</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">([</span><span class="n">ob</span> <span class="k">for</span> <span class="n">ob</span> <span class="ow">in</span> <span class="n">old_room</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">ob</span><span class="o">.</span><span class="n">has_account</span><span class="p">]):</span>
-                            <span class="c1"># There is still a player there; create a new room</span>
-                            <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="c1"># The room is empty of players, so we&#39;ll reuse it</span>
-                            <span class="n">room</span> <span class="o">=</span> <span class="n">old_room</span>
+            <span class="c1"># it&#39;s from another wilderness, or no wilderness</span>
+            <span class="n">from_outside</span> <span class="o">=</span> <span class="kc">True</span>
+        
+        <span class="c1"># check if we have a room at the new coordinates already</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">)</span>
 
-                <span class="c1"># It&#39;s in a different wilderness</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># It does, so we make sure to leave the other wilderness properly</span>
-                    <span class="n">old_room</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">at_post_object_leave</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                    <span class="c1"># We&#39;ll also need to create a new room in this wilderness</span>
-                    <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">from_outside</span><span class="p">:</span>
+            <span class="c1"># the old room is in the same wilderness</span>
+            <span class="c1"># free up the old room if it&#39;s no longer needed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_destroy_room</span><span class="p">(</span><span class="n">old_room</span><span class="p">)</span>
 
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Obj comes from outside the wilderness entirely</span>
-                <span class="c1"># We need to make a new room</span>
-                <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">room</span><span class="p">:</span>
+            <span class="c1"># we need claim a new room</span>
+            <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
 
-            <span class="c1"># Set `room` to the new coordinates, however it was made</span>
-            <span class="n">room</span><span class="o">.</span><span class="n">set_active_coordinates</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="c1"># Now that we have a valid room, run the leave hook on the previous location if necessary</span>
+        <span class="k">if</span> <span class="n">from_outside</span> <span class="ow">and</span> <span class="n">old_room</span><span class="p">:</span>
+            <span class="n">old_room</span><span class="o">.</span><span class="n">at_object_leave</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">room</span><span class="p">)</span>
 
         <span class="c1"># Put obj back, now in the correct room</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">room</span>
@@ -520,10 +493,8 @@
                     <span class="n">destination</span><span class="o">=</span><span class="n">room</span><span class="p">,</span>
                     <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span>
                 <span class="p">)</span>
-
-        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span> <span class="o">=</span> <span class="n">coordinates</span>
         <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wildernessscript</span> <span class="o">=</span> <span class="bp">self</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">coordinates</span><span class="p">]</span> <span class="o">=</span> <span class="n">room</span>
+        <span class="n">room</span><span class="o">.</span><span class="n">set_active_coordinates</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">report_to</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">room</span>
 
@@ -564,6 +535,8 @@
 
         <span class="c1"># Then delete its coordinate reference</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span><span class="p">]</span>
+        <span class="c1"># ...on both sides</span>
+        <span class="k">del</span> <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span>
         <span class="c1"># And finally put this room away in storage</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
 
