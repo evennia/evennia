@@ -286,7 +286,6 @@ class ComponentHolderMixin:
                 cmp_slot = cmp_class.get_component_slot()
                 class_components[cmp_slot] = (cmp_name, cmp_values)
 
-        # TODO Is this necessary?
         instance_components = getattr(self, "_class_components", ())
         for cmp_name, cmp_values in instance_components:
             cmp_class = get_component_class(cmp_name)
