@@ -30,7 +30,7 @@ Feb 25, 2024
   setting (Griatch)
 - Doc fixes (InspectorCaracal, Griatch)
 
-[new-ondemandhandler][https://www.evennia.com/docs/latest/Components/OnDemandHandler.html]
+[new-ondemandhandler]: https://www.evennia.com/docs/latest/Components/OnDemandHandler.html
 [pull3412]: https://github.com/evennia/evennia/pull/3412
 [pull3423]: https://github.com/evennia/evennia/pull/3423
 [pull3425]: https://github.com/evennia/evennia/pull/3425

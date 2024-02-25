@@ -72,6 +72,7 @@
 <li><a class="reference internal" href="#bouncing-back-and-forth">Bouncing back and forth</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#when-is-it-not-suitable-to-do-things-on-demand">When is it not suitable to do things on-demand?</a></li>
 </ul>
 </li>
 </ul>
@@ -125,20 +126,20 @@
 <h1>OnDemandHandler<a class="headerlink" href="#ondemandhandler" title="Permalink to this headline">¶</a></h1>
 <p>This handler offers help for implementing on-demand state changes. On-demand means that the state won’t be computed until the player <em>actually looks for it</em>. Until they do, nothing happens. This is the most compute-efficient way to handle your systems and you should consider using this style of system whenever you can.</p>
 <p>Take for example a gardening system. A player goes to a room and plants a seed. After a certain time, that plant will then move through a set of stages; it will move from “seedling” to ‘sprout’ to ‘flowering’ and then on to ‘wilting’ and eventually ‘dead’.</p>
-<p>Now, you <em>could</em> use <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> to track each phase, or use the <a class="reference internal" href="TickerHandler.html"><span class="doc std std-doc">TickerHandler</span></a> to tick the flower. You could even use a <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Script</span></a> on the flower.</p>
+<p>Now, you <em>could</em> use <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> to track each phase, or use the <a class="reference internal" href="TickerHandler.html"><span class="doc std std-doc">TickerHandler</span></a> to tick the flower. You could even use a <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Script</span></a> on the flower. This would work like this:</p>
 <ol class="simple">
 <li><p>The ticker/task/Script would automatically fire at regular intervals to update the plant through its stages.</p></li>
 <li><p>Whenever a player comes to the room, the state is already updated on the flower, so they just read the state.</p></li>
 </ol>
 <p>This will work fine, but if no one comes back to that room, that’s a lot of updating that no one will see. While maybe not a big deal for a single player, what if you have flowers in thousands of rooms, all growing indepedently? Or some even more complex system requiring calculation on every state change. You should avoid spending computing on things that bring nothing extra to your player base.</p>
-<p>Using the The on-demand style would instead work like this for the flower:</p>
+<p>Using the The on-demand style, the flower would instead work like this:</p>
 <ol class="simple">
-<li><p>When the player plants the seed, we register a new on-demand task with the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> (described below). This registers <em>the current timestamp</em> when the plant starts to grow.</p></li>
-<li><p>When a player enters the room and/or looks at the plant, <em>then</em> (and only then) we call the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> to see what state the flower it’s in. It will then use the <em>current time</em> to figure out how much time passed and which state the plant is thus in. Until someone looks, the plant is in its previous found state, because no-one needed to know until then. Same thing, if some other system needs to know this - they just figure out the state on the fly.</p></li>
+<li><p>When the player plants the seed, we register <em>the current timestamp</em> - the time the plant starts to grow. We store this with the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> (below).</p></li>
+<li><p>When a player enters the room and/or looks at the plant (or a code system needs to know the plant’s state), <em>then</em> (and only then) we check <em>the current time</em> to figure out the state the flower must now be in (the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> does the book-keeping for us). The key is that <em>until we check</em>, the flower object is completely inactive and uses no computing resources.</p></li>
 </ol>
 <section id="a-blooming-flower-using-the-ondemandhandler">
 <h2>A blooming flower using the OnDemandHandler<a class="headerlink" href="#a-blooming-flower-using-the-ondemandhandler" title="Permalink to this headline">¶</a></h2>
-<p>This handler is found as <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code>. It is meant to be integrated into your other code. Here’s an example of a flower that</p>
+<p>This handler is found as <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code>. It is meant to be integrated into your other code. Here’s an example of a flower that goes through its stages of life in 12 hours.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># e.g. in mygame/typeclasses/objects.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
@@ -184,7 +185,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>You could now create the rose and it would figure out its state only when you are actually looking at it. It will stay a seedling for 10 minutes (of in-game real time) before it sprouts. Within 12 hours it will be dead again (a very quickly growing rose!).</p>
+<p>You could now create the rose and it would figure out its state only when you are actually looking at it. It will stay a seedling for 10 minutes (of in-game real time) before it sprouts. Within 12 hours it will be dead again.</p>
 <p>If you had a <code class="docutils literal notranslate"><span class="pre">harvest</span></code> command in your game, you could equally have it check the stage of bloom and give you different results depending on if you pick the rose at the right time or not.</p>
 <p>The on-demand handler’s tasks survive a reload and will properly account for downtime.</p>
 </section>
@@ -202,31 +203,37 @@
 <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">cateogory</span><span class="o">=</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>  <span class="c1">#clear all with category</span>
 </pre></div>
 </div>
+<aside class="sidebar">
+<p class="sidebar-title">Not all stages may fire! </p>
+<p>This is important. If no-one checks in on the flower until a time when it’s  already wilting, it will simply <em>skip</em> all its previous stages, directly to the ‘wilting’ stage. So don’t write code for a stage that assumes previous stages to have made particular changes to the object - those changes may not have happened because those stages could have been skipped entirely!</p>
+</aside>
 <ul class="simple">
 <li><p>The <code class="docutils literal notranslate"><span class="pre">key</span></code> can be a string, but also a typeclassed object (its string representation will be used, which normally includes its <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>). You can also pass a <code class="docutils literal notranslate"><span class="pre">callable</span></code> - this will be called without arguments and is expected to return a string to use for the <code class="docutils literal notranslate"><span class="pre">key</span></code>. Finally, you can also pass <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><span class="xref myst py py-class">OnDemandTask</span></a> entities - these are the objects the handler uses under the hood to represent each task.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">category</span></code> allows you to further categorize your demandhandler  tasks to make sure they are unique. Since the handler is global, you need to make sure <code class="docutils literal notranslate"><span class="pre">key</span></code> + <code class="docutils literal notranslate"><span class="pre">category</span></code> is unique. While <code class="docutils literal notranslate"><span class="pre">category</span></code> is optional, if you use it you must also use it to retrieve your state later.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stages</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">statename}</span></code> or <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">(statename,</span> <span class="pre">callable}</span></code> that represents how much time (in seconds) before next stage begins. In the flower example above, it was 10 hours until the <code class="docutils literal notranslate"><span class="pre">wilting</span></code> state began. If a <code class="docutils literal notranslate"><span class="pre">callable</span></code> is also included, this will be called <em>the first time</em> that state is checked for. The callable takes a <code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask</span></code> as an argument and allows for tweaking the task on the fly.  The <code class="docutils literal notranslate"><span class="pre">dt</span></code> can also be a <code class="docutils literal notranslate"><span class="pre">float</span></code> if you desire higher than per-second precision. Having <code class="docutils literal notranslate"><span class="pre">stages</span></code> is optional - sometimes you only want to know how much time has passed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stages</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">statename}</span></code> or <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">(statename,</span> <span class="pre">callable}</span></code> that represents how much time (in seconds) from <em>the start of the task</em> to that stage to begin. In the flower example above, it was 10 hours until the <code class="docutils literal notranslate"><span class="pre">wilting</span></code> state began. If a <code class="docutils literal notranslate"><span class="pre">callable</span></code> is also included, this will be called <em>the first time</em> that state is checked for (only!). The callable takes a <code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask</span></code> as an argument and allows for tweaking the task on the fly.  The <code class="docutils literal notranslate"><span class="pre">dt</span></code> can also be a <code class="docutils literal notranslate"><span class="pre">float</span></code> if you desire higher than per-second precision. Having <code class="docutils literal notranslate"><span class="pre">stages</span></code> is optional - sometimes you only want to know how much time has passed.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.get_dt()</span></code> - get the current time (in seconds) since the task started. This is a <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.get_stage()</span></code> - get the current state name, such as “flowering” or “seedling”. If you didn’t specify any <code class="docutils literal notranslate"><span class="pre">stages</span></code>, this will return <code class="docutils literal notranslate"><span class="pre">None</span></code>, and you need to interpret the <code class="docutils literal notranslate"><span class="pre">dt</span></code> yourself to determine which state you are in.</p></li>
 </ul>
 <p>Under the hood, the handler uses  <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><span class="xref myst py py-class">OnDemandTask</span></a> objects. It can sometimes be practical to create tasks directly with these, and pass them to the handler in bulk:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
 
-<span class="n">task1</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;state1&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span> <span class="s2">&quot;state2&quot;</span><span class="p">})</span>
-<span class="n">task2</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+<span class="n">task1</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;state1&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;state2&quot;</span><span class="p">,</span> <span class="n">my_callable</span><span class="p">)})</span>
+<span class="n">task2</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;state-category&quot;</span><span class="p">)</span>
 
+<span class="c1"># batch-start on-demand tasks</span>
 <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">task2</span><span class="p">)</span>
 
-<span class="c1"># get tasks back </span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">)</span>
+<span class="c1"># get the tasks back later </span>
+<span class="n">task1</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">)</span>
+<span class="n">task2</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;state-category&quot;</span><span class="p">)</span>
 
-<span class="c1"># batch-delete (deactivate) from handler</span>
+<span class="c1"># batch-deactivate tasks you have available</span>
 <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">batch_remove</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">task2</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="looping-repeatedly">
 <h3>Looping repeatedly<a class="headerlink" href="#looping-repeatedly" title="Permalink to this headline">¶</a></h3>
-<p>Normally, when a sequence of <code class="docutils literal notranslate"><span class="pre">stages</span></code> have been cycled through, the task will just</p>
+<p>Normally, when a sequence of <code class="docutils literal notranslate"><span class="pre">stages</span></code> have been cycled through, the task will just stop at the last stage indefinitely.</p>
 <p><code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask.stagefunc_loop</span></code> is an included static-method callable you can use to make the task loop. Here’s an example of how to use it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
 
@@ -242,14 +249,14 @@
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>This is a trap state that loops through its states depending on timing. Note that the looping helper callable will <em>immediately</em> reset the cycle back to the first stage, so the last stage will never be visible to the player/game system. So it’s a good (if optional) idea to name it with <code class="docutils literal notranslate"><span class="pre">_*</span></code> to remember this is a ‘virtual’ stage.</p>
+<p>This is a trap state that loops through its states depending on timing. Note that the looping helper callable will <em>immediately</em> reset the cycle back to the first stage, so the last stage will never be visible to the player/game system. So it’s a good (if optional) idea to name it with <code class="docutils literal notranslate"><span class="pre">_*</span></code> to remember this is a ‘virtual’ stage. In the example above, the “deadly” state will cycle directly to “harmless”.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> task instance has a <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> variable that will go up by one for every loop.</p>
-<p>If the state is not checked for a long time, the looping function will correctly update the <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> of the task it would have used so far and figure out where in the cycle it is right now.</p>
+<p>If the state is not checked for a long time, the looping function will correctly update the <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property on the task it would have used so far and figure out where in the cycle it is right now.</p>
 </section>
 <section id="bouncing-back-and-forth">
 <h3>Bouncing back and forth<a class="headerlink" href="#bouncing-back-and-forth" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask.stagefunc_bounce</span></code> is an included static-method callable you can use to ‘bounce’ the sequence of stages. That is, it will cycle to the end of the cycle and then reverse direction and cycle through the sequence in reverse.</p>
-<p>To make this repreat indefinitely, you need to put the callables at both ends of the list:</p>
+<p>To make this repeat indefinitely, you need to put these callables at both ends of the list:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
 
 <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -269,13 +276,20 @@
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    cold -&gt; luke warm -&gt; warm -&gt; hot -&gt; HOT! 
 </pre></div>
 </div>
-<p>before reversing and go back:</p>
+<p>before reversing and go back over and over:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    HOT! -&gt; hot -&gt; warm -&gt; luke warm -&gt; cold 
 </pre></div>
 </div>
-<p>Over and over.  The <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> instance has an <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property that will step up by one every time the sequence reverses.</p>
-<p>If the state is not checked for a long time, the bounce function will correctly update the <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property to the amount of iterations it would have done in that time, and figure out where in the cycle it must be right now.</p>
+<p>Unlike the <code class="docutils literal notranslate"><span class="pre">stagefunc_loop</span></code> callable, the bouncing one <em>will</em> visibly stay at the first and last stage until it changes to the next one in the sequence.  The <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> instance has an <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property that will step up by one every time the sequence reverses.</p>
+<p>If the state is not checked for a long time, the bounce function will correctly update the <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property to the amount of iterations it would have done in that time, and figure out where in the cycle it is right now.</p>
 </section>
+</section>
+<section id="when-is-it-not-suitable-to-do-things-on-demand">
+<h2>When is it not suitable to do things on-demand?<a class="headerlink" href="#when-is-it-not-suitable-to-do-things-on-demand" title="Permalink to this headline">¶</a></h2>
+<p>If you put your mind to it, you can probably make of your game on-demand. The player will not be the wiser.</p>
+<p>There is only really one case where on-demand doesn’t work, and that is if the player should be informed of something <em>without first providing any input</em>.</p>
+<p>If a player has to run <code class="docutils literal notranslate"><span class="pre">check</span> <span class="pre">health</span></code> command to see how much health they have, that could happen on demand. Similarly, a prompt could be set to update every time you move. But if you would an idling player to get a message popping up out of nowhere saying “You are feeling hungry” or to have some HP meter visually increasing also when standing still, then some sort of timer/ticker would be necessary to crank the wheels.</p>
+<p>Remember however, that in a text-medium (especially with traditional line-by-line MUD clients), there is only so much spam you can push on the player before they get overwhelmed.</p>
 </section>
 </section>
 
