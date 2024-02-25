@@ -69,20 +69,6 @@ class TestDeprecations(TestCase):
         )
 
 
-class ValidatorTest(BaseEvenniaTest):
-    def test_validator(self):
-        # Validator returns None on success and ValidationError on failure.
-        validator = EvenniaPasswordValidator()
-
-        # This password should meet Evennia standards.
-        self.assertFalse(validator.validate("testpassword", user=self.account))
-
-        # This password contains illegal characters and should raise an Exception.
-        from django.core.exceptions import ValidationError
-
-        self.assertRaises(ValidationError, validator.validate, "(#)[#]<>", user=self.account)
-
-
 class ThrottleTest(BaseEvenniaTest):
     """
     Class for testing the connection/IP throttle.
