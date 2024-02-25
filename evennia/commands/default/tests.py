@@ -14,13 +14,10 @@ main test suite started with
 import datetime
 from unittest.mock import MagicMock, Mock, patch
 
+import evennia
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
-from parameterized import parameterized
-from twisted.internet import task
-
-import evennia
 from evennia import (
     DefaultCharacter,
     DefaultExit,
@@ -32,14 +29,7 @@ from evennia import (
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
-from evennia.commands.default import (
-    account,
-    admin,
-    batchprocess,
-    building,
-    comms,
-    general,
-)
+from evennia.commands.default import account, admin, batchprocess, building, comms, general
 from evennia.commands.default import help as help_module
 from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
@@ -48,6 +38,8 @@ from evennia.prototypes import prototypes as protlib
 from evennia.utils import create, gametime, utils
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTest
+from parameterized import parameterized
+from twisted.internet import task
 
 # ------------------------------------------------------------
 # Command testing
@@ -149,14 +141,18 @@ class TestGeneral(BaseEvenniaCommandTest):
         self.call(
             CmdTest(),
             "/t",
-            "test: Ambiguous switch supplied: "
-            "Did you mean /test or /testswitch or /testswitch2?|Switches matched: []",
+            (
+                "test: Ambiguous switch supplied: "
+                "Did you mean /test or /testswitch or /testswitch2?|Switches matched: []"
+            ),
         )
         self.call(
             CmdTest(),
             "/tests",
-            "test: Ambiguous switch supplied: "
-            "Did you mean /testswitch or /testswitch2?|Switches matched: []",
+            (
+                "test: Ambiguous switch supplied: "
+                "Did you mean /testswitch or /testswitch2?|Switches matched: []"
+            ),
         )
 
     def test_say(self):
@@ -846,8 +842,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdCpAttr(),
             "/copy Obj2/test2 = Obj2/test3",
-            '@cpattr: Extra switch "/copy" ignored.|\nCopied Obj2.test2 -> Obj2.test3. '
-            "(value: 'value2')",
+            (
+                '@cpattr: Extra switch "/copy" ignored.|\nCopied Obj2.test2 -> Obj2.test3. '
+                "(value: 'value2')"
+            ),
         )
         self.call(building.CmdMvAttr(), "", "Usage: ")
         self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
@@ -902,8 +900,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[5] =",
-            "No attribute Obj/test1[5] [category: None] was found to "
-            "delete. (Nested lookups attempted)",
+            (
+                "No attribute Obj/test1[5] [category: None] was found to "
+                "delete. (Nested lookups attempted)"
+            ),
         )
         # Append
         self.call(
@@ -956,8 +956,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three']",
-            "Attribute Obj/test2[+'three'] [category:None] does not exist. (Nested lookups"
-            " attempted)",
+            (
+                "Attribute Obj/test2[+'three'] [category:None] does not exist. (Nested lookups"
+                " attempted)"
+            ),
         )
         self.call(
             building.CmdSetAttribute(),
@@ -998,8 +1000,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['five'] =",
-            "No attribute Obj/test2['five'] [category: None] "
-            "was found to delete. (Nested lookups attempted)",
+            (
+                "No attribute Obj/test2['five'] [category: None] "
+                "was found to delete. (Nested lookups attempted)"
+            ),
         )
         self.call(
             building.CmdSetAttribute(),
@@ -1009,8 +1013,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+1]=33",
-            "Modified attribute Obj/test2 [category:None] = "
-            "{'one': 99, 'three': 3, '+': 42, '+1': 33}",
+            (
+                "Modified attribute Obj/test2 [category:None] = "
+                "{'one': 99, 'three': 3, '+': 42, '+1': 33}"
+            ),
         )
 
         # dict - case sensitive keys
@@ -1071,8 +1077,10 @@ class TestBuilding(BaseEvenniaCommandTest):
             building.CmdSetAttribute(),
             # Special case for tuple, could have a better message
             "Obj/tup[1] = ",
-            "No attribute Obj/tup[1] [category: None] "
-            "was found to delete. (Nested lookups attempted)",
+            (
+                "No attribute Obj/tup[1] [category: None] "
+                "was found to delete. (Nested lookups attempted)"
+            ),
         )
 
         # Deaper nesting
@@ -1147,8 +1155,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]['one']",
-            "Attribute Obj/test4[0]['one'] [category:None] does not exist. (Nested lookups"
-            " attempted)",
+            (
+                "Attribute Obj/test4[0]['one'] [category:None] does not exist. (Nested lookups"
+                " attempted)"
+            ),
         )
 
     def test_split_nested_attr(self):
@@ -1255,8 +1265,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdDestroy(),
             "Obj",
-            "Could not find 'Obj'.| (Objects to destroy "
-            "must either be local or specified with a unique #dbref.)",
+            (
+                "Could not find 'Obj'.| (Objects to destroy "
+                "must either be local or specified with a unique #dbref.)"
+            ),
         )
         settings.DEFAULT_HOME = f"#{self.room1.dbid}"
         self.call(
@@ -1376,14 +1388,18 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTypeclass(),
             "Obj = evennia.objects.objects.DefaultExit",
-            "Obj changed typeclass from evennia.objects.objects.DefaultObject "
-            "to evennia.objects.objects.DefaultExit.",
+            (
+                "Obj changed typeclass from evennia.objects.objects.DefaultObject "
+                "to evennia.objects.objects.DefaultExit."
+            ),
         )
         self.call(
             building.CmdTypeclass(),
             "Obj2 = evennia.objects.objects.DefaultExit",
-            "Obj2 changed typeclass from evennia.objects.objects.DefaultObject "
-            "to evennia.objects.objects.DefaultExit.",
+            (
+                "Obj2 changed typeclass from evennia.objects.objects.DefaultObject "
+                "to evennia.objects.objects.DefaultExit."
+            ),
             cmdstring="swap",
             inputs=["yes"],
         )
@@ -1396,8 +1412,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTypeclass(),
             "Obj = evennia.objects.objects.DefaultExit",
-            "Obj already has the typeclass 'evennia.objects.objects.DefaultExit'. Use /force to"
-            " override.",
+            (
+                "Obj already has the typeclass 'evennia.objects.objects.DefaultExit'. Use /force to"
+                " override."
+            ),
         )
         self.call(
             building.CmdTypeclass(),
@@ -1413,16 +1431,20 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTypeclass(),
             "Obj",
-            "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\nOnly the"
-            " at_object_creation hook was run (update mode). Attributes set before swap were not"
-            " removed\n(use `swap` or `type/reset` to clear all).",
+            (
+                "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\nOnly"
+                " the at_object_creation hook was run (update mode). Attributes set before swap"
+                " were not removed\n(use `swap` or `type/reset` to clear all)."
+            ),
             cmdstring="update",
         )
         self.call(
             building.CmdTypeclass(),
             "/reset/force Obj=evennia.objects.objects.DefaultObject",
-            "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
-            "All object creation hooks were run. All old attributes where deleted before the swap.",
+            (
+                "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\nAll"
+                " object creation hooks were run. All old attributes where deleted before the swap."
+            ),
             inputs=["yes"],
         )
 
@@ -1446,11 +1468,13 @@ class TestBuilding(BaseEvenniaCommandTest):
             self.call(
                 building.CmdTypeclass(),
                 "/prototype Obj=testkey",
-                "replaced_obj changed typeclass from evennia.objects.objects.DefaultObject to "
-                "typeclasses.objects.Object.\nOnly the at_object_creation hook was run "
-                "(update mode). Attributes set before swap were not removed\n"
-                "(use `swap` or `type/reset` to clear all). Prototype 'replaced_obj' was "
-                "successfully applied over the object type.",
+                (
+                    "replaced_obj changed typeclass from evennia.objects.objects.DefaultObject to "
+                    "typeclasses.objects.Object.\nOnly the at_object_creation hook was run "
+                    "(update mode). Attributes set before swap were not removed\n"
+                    "(use `swap` or `type/reset` to clear all). Prototype 'replaced_obj' was "
+                    "successfully applied over the object type."
+                ),
             )
             assert self.obj1.db.desc == "protdesc"
 
@@ -1467,8 +1491,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdLock(),
             "/view Obj = edit:false()",
-            "Switch(es) view can not be used with a lock assignment. "
-            "Use e.g. lock/del objname/locktype instead.",
+            (
+                "Switch(es) view can not be used with a lock assignment. "
+                "Use e.g. lock/del objname/locktype instead."
+            ),
         )
         self.call(building.CmdLock(), "Obj = control:false()")
         self.call(building.CmdLock(), "Obj = edit:false()")
@@ -1594,9 +1620,11 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdScripts(),
             "/delete #{}-#{}".format(script1.id, script3.id),
-            f"Global Script Deleted - #{script1.id} (evennia.scripts.scripts.DefaultScript)|"
-            f"Global Script Deleted - #{script2.id} (evennia.scripts.scripts.DefaultScript)|"
-            f"Global Script Deleted - #{script3.id} (evennia.scripts.scripts.DefaultScript)",
+            (
+                f"Global Script Deleted - #{script1.id} (evennia.scripts.scripts.DefaultScript)|"
+                f"Global Script Deleted - #{script2.id} (evennia.scripts.scripts.DefaultScript)|"
+                f"Global Script Deleted - #{script3.id} (evennia.scripts.scripts.DefaultScript)"
+            ),
             inputs=["y"],
         )
         self.assertFalse(script1.pk)
@@ -1617,9 +1645,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTeleport(),
             "Obj = Room2",
-            "Obj(#{}) is leaving Room(#{}), heading for Room2(#{}).|Teleported Obj -> Room2.".format(
-                oid, rid, rid2
-            ),
+            "Obj(#{}) is leaving Room(#{}), heading for Room2(#{}).|Teleported Obj -> Room2."
+            .format(oid, rid, rid2),
         )
         self.call(building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'.")
         self.call(
@@ -1692,16 +1719,20 @@ class TestBuilding(BaseEvenniaCommandTest):
 
         self.call(
             building.CmdSpawn(),
-            "/save {'prototype_key': 'testprot', 'key':'Test Char', "
-            "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+            (
+                "/save {'prototype_key': 'testprot', 'key':'Test Char', "
+                "'typeclass':'evennia.objects.objects.DefaultCharacter'}"
+            ),
             "Saved prototype: testprot",
             inputs=["y"],
         )
 
         self.call(
             building.CmdSpawn(),
-            "/save testprot2 = {'key':'Test Char', "
-            "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+            (
+                "/save testprot2 = {'key':'Test Char', "
+                "'typeclass':'evennia.objects.objects.DefaultCharacter'}"
+            ),
             "(Replacing `prototype_key` in prototype with given key.)|Saved prototype: testprot2",
             inputs=["y"],
         )
@@ -1712,8 +1743,10 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "/save {'key':'Test Char', 'typeclass':'evennia.objects.objects.DefaultCharacter'}",
-            "A prototype_key must be given, either as `prototype_key = <prototype>` or as "
-            "a key 'prototype_key' inside the prototype structure.",
+            (
+                "A prototype_key must be given, either as `prototype_key = <prototype>` or as "
+                "a key 'prototype_key' inside the prototype structure."
+            ),
         )
 
         self.call(building.CmdSpawn(), "/list", "Key ")
@@ -1735,7 +1768,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "{'prototype_key':'GOBLIN', 'typeclass':'evennia.objects.objects.DefaultCharacter', "
-            "'key':'goblin', 'location':'%s'}" % spawnLoc.dbref,
+            "'key':'goblin', 'location':'%s'}"
+            % spawnLoc.dbref,
             "Spawned goblin",
         )
         goblin = get_object(self, "goblin")
@@ -1783,7 +1817,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSpawn(),
             "/noloc {'prototype_parent':'TESTBALL', 'key': 'Ball', 'prototype_key': 'foo',"
-            " 'location':'%s'}" % spawnLoc.dbref,
+            " 'location':'%s'}"
+            % spawnLoc.dbref,
             "Spawned Ball",
         )
         ball = get_object(self, "Ball")
@@ -2021,8 +2056,10 @@ class TestComms(BaseEvenniaCommandTest):
         self.call(
             comms.CmdPage(),
             "TestAccount2 = Test",
-            "TestAccount2 is offline. They will see your message if they list their pages later."
-            "|You paged TestAccount2 with: 'Test'.",
+            (
+                "TestAccount2 is offline. They will see your message if they list their pages"
+                " later.|You paged TestAccount2 with: 'Test'."
+            ),
             receiver=self.account,
         )
 
@@ -2095,8 +2132,10 @@ class TestBatchProcess(BaseEvenniaCommandTest):
         self.call(
             batchprocess.CmdBatchCommands(),
             "batchprocessor.example_batch_cmds_test",
-            "Running Batch-command processor - Automatic mode for"
-            " batchprocessor.example_batch_cmds",
+            (
+                "Running Batch-command processor - Automatic mode for"
+                " batchprocessor.example_batch_cmds"
+            ),
         )
         # we make sure to delete the button again here to stop the running reactor
         confirm = building.CmdDestroy.confirm

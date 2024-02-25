@@ -2,17 +2,20 @@
 
 ## main branch
 
-- [Feature] Add [`evennia.ON_DEMAND_HANDLER`][new-ondemandhandler] for making it
+- Feature: Add [`evennia.ON_DEMAND_HANDLER`][new-ondemandhandler] for making it
   easier to implement changes that are calculated on-demand (Griatch)
 - [Feature][pull3412]: Make it possible to add custom webclient css in
   `webclient/css/custom.css`, same as for website (InspectorCaracal)
 - [Feature][pull3367]: [Component contrib][pull3367extra] got better
   inheritance, slot names to choose attr storage, speedups and fixes (ChrisLR)
-- [Fix] Remove `AMP_ENABLED` setting since it services no real purpose and
+- Feature: Break up `DefaultObject.search` method into several helpers to make
+  it easier to override (Griatch)
+- Fix: Resolve multimatch error with rpsystem contrib (Griatch)
+- Fix: Remove `AMP_ENABLED` setting since it services no real purpose and
   erroring out on setting it would make it even less useful (Griatch).
-- [Feature] Remove too-strict password restrictions for Evennia logins, using
+- Feature: Remove too-strict password restrictions for Evennia logins, using
   django defaults instead for passwords with more varied characters.
-- [Fix] `services` command with no args would traceback (regression) (Griatch)
+- Fix `services` command with no args would traceback (regression) (Griatch)
 - [Fix][pull3423]: Fix wilderness contrib error moving to an already existing
   wilderness room (InspectorCaracal)
 - [Fix][pull3425]: Don't always include example the crafting recipe when

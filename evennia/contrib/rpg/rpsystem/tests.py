@@ -5,8 +5,7 @@ Tests for RP system
 import time
 
 from anything import Anything
-
-from evennia import create_object
+from evennia import DefaultObject, create_object, default_cmds
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import BaseEvenniaTest
 
@@ -157,11 +156,10 @@ class TestRPSystem(BaseEvenniaTest):
         self.assertEqual(
             rpsystem.parse_language(self.speaker, language_emote),
             (
-                'For a change of pace, /me says, {##0}',
-                {"##0": ('elvish', '"This is in elvish!"')},
+                "For a change of pace, /me says, {##0}",
+                {"##0": ("elvish", '"This is in elvish!"')},
             ),
         )
-
 
     def test_parse_sdescs_and_recogs(self):
         speaker = self.speaker
@@ -251,18 +249,24 @@ class TestRPSystem(BaseEvenniaTest):
         rpsystem.send_emote(speaker, receivers, emote, case_sensitive=False)
         self.assertEqual(
             self.out0[0],
-            "With a flair, |mSender|n looks at |bThe first receiver of emotes.|n "
-            'and |bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n',
+            (
+                "With a flair, |mSender|n looks at |bThe first receiver of emotes.|n "
+                'and |bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n'
+            ),
         )
         self.assertEqual(
             self.out1[0],
-            "With a flair, |bA nice sender of emotes|n looks at |mReceiver1|n and "
-            '|bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n',
+            (
+                "With a flair, |bA nice sender of emotes|n looks at |mReceiver1|n and "
+                '|bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n'
+            ),
         )
         self.assertEqual(
             self.out2[0],
-            "With a flair, |bA nice sender of emotes|n looks at |bThe first "
-            'receiver of emotes.|n and |mReceiver2|n. She says |w"This is a test."|n',
+            (
+                "With a flair, |bA nice sender of emotes|n looks at |bThe first "
+                'receiver of emotes.|n and |mReceiver2|n. She says |w"This is a test."|n'
+            ),
         )
 
     def test_send_emote_fallback(self):
@@ -287,8 +291,10 @@ class TestRPSystem(BaseEvenniaTest):
         )
         self.assertEqual(
             self.out2[0],
-            "|bA nice sender of emotes|n is distracted from |bthe first receiver of emotes.|n by"
-            " something.",
+            (
+                "|bA nice sender of emotes|n is distracted from |bthe first receiver of emotes.|n"
+                " by something."
+            ),
         )
 
     def test_send_case_sensitive_emote(self):
@@ -306,21 +312,27 @@ class TestRPSystem(BaseEvenniaTest):
         rpsystem.send_emote(speaker, receivers, case_emote)
         self.assertEqual(
             self.out0[0],
-            "|mSender|n looks at |bthe first receiver of emotes.|n. Then, |mSender|n "
-            "looks at |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n "
-            "and |bAnother nice colliding sdesc-guy for tests|n twice.",
+            (
+                "|mSender|n looks at |bthe first receiver of emotes.|n. Then, |mSender|n "
+                "looks at |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n "
+                "and |bAnother nice colliding sdesc-guy for tests|n twice."
+            ),
         )
         self.assertEqual(
             self.out1[0],
-            "|bA nice sender of emotes|n looks at |mReceiver1|n. Then, "
-            "|ba nice sender of emotes|n looks at |mReceiver1|n, |mReceiver1|n "
-            "and |bAnother nice colliding sdesc-guy for tests|n twice.",
+            (
+                "|bA nice sender of emotes|n looks at |mReceiver1|n. Then, "
+                "|ba nice sender of emotes|n looks at |mReceiver1|n, |mReceiver1|n "
+                "and |bAnother nice colliding sdesc-guy for tests|n twice."
+            ),
         )
         self.assertEqual(
             self.out2[0],
-            "|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n. "
-            "Then, |ba nice sender of emotes|n looks at |bTHE FIRST RECEIVER OF EMOTES.|n, "
-            "|bThe first receiver of emotes.|n and |mReceiver2|n twice.",
+            (
+                "|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n. "
+                "Then, |ba nice sender of emotes|n looks at |bTHE FIRST RECEIVER OF EMOTES.|n, "
+                "|bThe first receiver of emotes.|n and |mReceiver2|n twice."
+            ),
         )
 
     def test_rpsearch(self):
@@ -371,8 +383,10 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         self.call(
             rpsystem.CmdRecog(),
             "",
-            "Currently recognized (use 'recog <sdesc> as <alias>' to add new "
-            "and 'forget <alias>' to remove):\n friend  (BarFoo Character)",
+            (
+                "Currently recognized (use 'recog <sdesc> as <alias>' to add new "
+                "and 'forget <alias>' to remove):\n friend  (BarFoo Character)"
+            ),
         )
         self.call(
             rpsystem.CmdRecog(),
@@ -382,3 +396,31 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         )
 
         self.call(rpsystem.CmdSdesc(), "clear", 'Cleared sdesc, using name "Char".', inputs=["Y"])
+
+    def test_multi_match_search(self):
+        """
+        Test that the multi-match search works as expected
+
+        """
+        mushroom1 = create_object(rpsystem.ContribRPObject, key="Mushroom", location=self.room1)
+        mushroom1.db.desc = "The first mushroom is brown."
+        mushroom2 = create_object(rpsystem.ContribRPObject, key="Mushroom", location=self.room1)
+        mushroom2.db.desc = "The second mushroom is red."
+
+        # check locations and contents
+        self.assertEqual(self.char1.location, self.room1)
+        self.assertTrue(set(self.room1.contents).intersection(set([mushroom1, mushroom2])))
+
+        expected_first_call = [
+            "More than one match for 'Mushroom' (please narrow target):",
+            f" Mushroom({mushroom1.dbref})-1 []",
+            f" Mushroom({mushroom2.dbref})-2 []",
+        ]
+
+        self.call(default_cmds.CmdLook(), "Mushroom", "\n".join(expected_first_call))  # PASSES
+
+        expected_second_call = f"Mushroom({mushroom1.dbref})\nThe first mushroom is brown."
+        self.call(default_cmds.CmdLook(), "Mushroom-1", expected_second_call)  # FAILS
+
+        expected_third_call = f"Mushroom({mushroom2.dbref})\nThe second mushroom is red."
+        self.call(default_cmds.CmdLook(), "Mushroom-2", expected_third_call)  # FAILS
