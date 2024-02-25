@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>evennia.contrib.base_systems.components &#8212; Evennia latest documentation</title>
+    <title>evennia.contrib.base_systems.components.exceptions &#8212; Evennia latest documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="evennia.contrib.base_systems.components.component" href="evennia.contrib.base_systems.components.component.html" />
-    <link rel="prev" title="evennia.contrib.base_systems.color_markups.tests" href="evennia.contrib.base_systems.color_markups.tests.html" /> 
+    <link rel="next" title="evennia.contrib.base_systems.components.holder" href="evennia.contrib.base_systems.components.holder.html" />
+    <link rel="prev" title="evennia.contrib.base_systems.components.dbfield" href="evennia.contrib.base_systems.components.dbfield.html" /> 
   </head><body>
 
      
@@ -34,18 +34,19 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.base_systems.components.component.html" title="evennia.contrib.base_systems.components.component"
+          <a href="evennia.contrib.base_systems.components.holder.html" title="evennia.contrib.base_systems.components.holder"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.base_systems.color_markups.tests.html" title="evennia.contrib.base_systems.color_markups.tests"
+          <a href="evennia.contrib.base_systems.components.dbfield.html" title="evennia.contrib.base_systems.components.dbfield"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
           <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
-          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" accesskey="U">evennia.contrib.base_systems</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components</a></li> 
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.components.html" accesskey="U">evennia.contrib.base_systems.components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.exceptions</a></li> 
       </ul>
     </div>  
 
@@ -68,15 +69,15 @@
 </div>
 <script>$('#searchbox').show(0);</script>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="evennia.contrib.base_systems.color_markups.tests.html"
-                        title="previous chapter">evennia.contrib.base_systems.color_markups.tests</a></p>
+  <p class="topless"><a href="evennia.contrib.base_systems.components.dbfield.html"
+                        title="previous chapter">evennia.contrib.base_systems.components.dbfield</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="evennia.contrib.base_systems.components.component.html"
-                        title="next chapter">evennia.contrib.base_systems.components.component</a></p>
+  <p class="topless"><a href="evennia.contrib.base_systems.components.holder.html"
+                        title="next chapter">evennia.contrib.base_systems.components.holder</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.contrib.base_systems.components.md.txt"
+      <li><a href="../_sources/api/evennia.contrib.base_systems.components.exceptions.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -94,7 +95,7 @@
 <h3>Doc Versions</h3>
 <ul>
   
-    <li><a href="evennia.contrib.base_systems.components.html">latest (main branch)</a></li>
+    <li><a href="evennia.contrib.base_systems.components.exceptions.html">latest (main branch)</a></li>
 
     <li><a href="../../3.x/index.html">v3.0.0 branch (outdated)</a></li>
   
@@ -112,24 +113,26 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.base_systems.components">
-<span id="evennia-contrib-base-systems-components"></span><h1>evennia.contrib.base_systems.components<a class="headerlink" href="#module-evennia.contrib.base_systems.components" title="Permalink to this headline">¶</a></h1>
-<p>Components - ChrisLR 2022</p>
-<p>This is a basic Component System.
-It allows you to use components on typeclasses using a simple syntax.
-This helps writing isolated code and reusing it over multiple objects.</p>
-<p>See the docs for more information.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.components.component.html">evennia.contrib.base_systems.components.component</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.components.dbfield.html">evennia.contrib.base_systems.components.dbfield</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.components.exceptions.html">evennia.contrib.base_systems.components.exceptions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.components.holder.html">evennia.contrib.base_systems.components.holder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.components.listing.html">evennia.contrib.base_systems.components.listing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.components.signals.html">evennia.contrib.base_systems.components.signals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.components.tests.html">evennia.contrib.base_systems.components.tests</a></li>
-</ul>
-</div>
+  <section id="module-evennia.contrib.base_systems.components.exceptions">
+<span id="evennia-contrib-base-systems-components-exceptions"></span><h1>evennia.contrib.base_systems.components.exceptions<a class="headerlink" href="#module-evennia.contrib.base_systems.components.exceptions" title="Permalink to this headline">¶</a></h1>
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.exceptions.InvalidComponentError">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.exceptions.</code><code class="sig-name descname">InvalidComponentError</code><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/exceptions.html#InvalidComponentError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.exceptions.InvalidComponentError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.exceptions.ComponentDoesNotExist">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.exceptions.</code><code class="sig-name descname">ComponentDoesNotExist</code><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/exceptions.html#ComponentDoesNotExist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.exceptions.ComponentDoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.exceptions.ComponentIsNotRegistered">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.exceptions.</code><code class="sig-name descname">ComponentIsNotRegistered</code><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/exceptions.html#ComponentIsNotRegistered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.exceptions.ComponentIsNotRegistered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+</dd></dl>
+
 </section>
 
 
@@ -148,10 +151,10 @@ This helps writing isolated code and reusing it over multiple objects.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.base_systems.components.component.html" title="evennia.contrib.base_systems.components.component"
+          <a href="evennia.contrib.base_systems.components.holder.html" title="evennia.contrib.base_systems.components.holder"
              >next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.base_systems.color_markups.tests.html" title="evennia.contrib.base_systems.color_markups.tests"
+          <a href="evennia.contrib.base_systems.components.dbfield.html" title="evennia.contrib.base_systems.components.dbfield"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia latest</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
@@ -159,7 +162,8 @@ This helps writing isolated code and reusing it over multiple objects.</p>
           <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
           <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
           <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components</a></li> 
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.components.html" >evennia.contrib.base_systems.components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.exceptions</a></li> 
       </ul>
     </div>
 

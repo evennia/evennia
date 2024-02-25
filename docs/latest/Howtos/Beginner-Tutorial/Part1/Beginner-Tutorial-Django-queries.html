@@ -217,8 +217,7 @@ found.</p></li>
 </div></blockquote>
 <section id="queryset-field-lookups">
 <h2><span class="section-number">12.1. </span>Queryset field lookups<a class="headerlink" href="#queryset-field-lookups" title="Permalink to this headline">¶</a></h2>
-<p>Above we found roses with exactly the <code class="docutils literal notranslate"><span class="pre">db_key</span></code> <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>. This is an <em>exact</em> match that is <em>case sensitive</em>,
-so it would not find <code class="docutils literal notranslate"><span class="pre">&quot;Rose&quot;</span></code>.</p>
+<p>Above we found roses with exactly the <code class="docutils literal notranslate"><span class="pre">db_key</span></code> <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>. This is an <em>exact</em> match that is <em>case sensitive</em>, so it would not find <code class="docutils literal notranslate"><span class="pre">&quot;Rose&quot;</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is case-sensitive and the same as =</span>
 <span class="n">roses</span> <span class="o">=</span> <span class="n">Flower</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__exact</span><span class="o">=</span><span class="s2">&quot;rose&quot;</span>
 
@@ -226,13 +225,11 @@ so it would not find <code class="docutils literal notranslate"><span class="pre
 <span class="n">roses</span> <span class="o">=</span> <span class="n">Flower</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="s2">&quot;rose&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The Django field query language uses <code class="docutils literal notranslate"><span class="pre">__</span></code> similarly to how Python uses <code class="docutils literal notranslate"><span class="pre">.</span></code> to access resources. This
-is because <code class="docutils literal notranslate"><span class="pre">.</span></code> is not allowed in a function keyword.</p>
+<p>The Django field query language uses <code class="docutils literal notranslate"><span class="pre">__</span></code> similarly to how Python uses <code class="docutils literal notranslate"><span class="pre">.</span></code> to access resources. This is because <code class="docutils literal notranslate"><span class="pre">.</span></code> is not allowed in a function keyword.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">roses</span> <span class="o">=</span> <span class="n">Flower</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="s2">&quot;rose&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will find all flowers whose name contains the string <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>, like <code class="docutils literal notranslate"><span class="pre">&quot;roses&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;wild</span> <span class="pre">rose&quot;</span></code> etc. The <code class="docutils literal notranslate"><span class="pre">i</span></code> in the beginning makes the search case-insensitive. Other useful variations to use
-are <code class="docutils literal notranslate"><span class="pre">__istartswith</span></code> and <code class="docutils literal notranslate"><span class="pre">__iendswith</span></code>. You can also use <code class="docutils literal notranslate"><span class="pre">__gt</span></code>, <code class="docutils literal notranslate"><span class="pre">__ge</span></code> for “greater-than”/“greater-or-equal-than” comparisons (same for <code class="docutils literal notranslate"><span class="pre">__lt</span></code> and <code class="docutils literal notranslate"><span class="pre">__le</span></code>). There is also <code class="docutils literal notranslate"><span class="pre">__in</span></code>:</p>
+<p>This will find all flowers whose name contains the string <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>, like <code class="docutils literal notranslate"><span class="pre">&quot;roses&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;wild</span> <span class="pre">rose&quot;</span></code> etc. The <code class="docutils literal notranslate"><span class="pre">i</span></code> in the beginning makes the search case-insensitive. Other useful variations to use are <code class="docutils literal notranslate"><span class="pre">__istartswith</span></code> and <code class="docutils literal notranslate"><span class="pre">__iendswith</span></code>. You can also use <code class="docutils literal notranslate"><span class="pre">__gt</span></code>, <code class="docutils literal notranslate"><span class="pre">__ge</span></code> for “greater-than”/“greater-or-equal-than” comparisons (same for <code class="docutils literal notranslate"><span class="pre">__lt</span></code> and <code class="docutils literal notranslate"><span class="pre">__le</span></code>). There is also <code class="docutils literal notranslate"><span class="pre">__in</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">swords</span> <span class="o">=</span> <span class="n">Weapons</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__in</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;rapier&quot;</span><span class="p">,</span> <span class="s2">&quot;two-hander&quot;</span><span class="p">,</span> <span class="s2">&quot;shortsword&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -288,7 +285,7 @@ possible.</p>
 </span>    <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
 <span class="hll">        <span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">,</span>
 </span><span class="hll">        <span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycantrophy&quot;</span><span class="p">,</span>
-</span><span class="hll">        <span class="n">db_attributes__db_value__gt</span><span class="o">=</span><span class="mi">2</span>
+</span><span class="hll">        <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span>
 </span>    <span class="p">)</span>
 <span class="p">)</span>
 </pre></div></td></tr></table></div>
@@ -309,12 +306,15 @@ that we can treat like an object for this purpose; it references all Tags on the
 </ul>
 </li>
 <li><p><strong>Line 7</strong>: … We also want only Characters with <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> whose <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is exactly <code class="docutils literal notranslate"><span class="pre">&quot;lycantrophy&quot;</span></code></p></li>
-<li><p><strong>Line 8</strong> :… at the same time as the <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>’s <code class="docutils literal notranslate"><span class="pre">db_value</span></code> is greater-than 2.</p></li>
+<li><p><strong>Line 8</strong> :… at the same time as the <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>’s <code class="docutils literal notranslate"><span class="pre">db_value</span></code> is exactly 2.</p></li>
 </ul>
 </li>
 </ul>
-<p>Running this query makes our newly lycantrophic Character appear in <code class="docutils literal notranslate"><span class="pre">will_transform</span></code> so we
-know to transform it. Success!</p>
+<p>Running this query makes our newly lycantrophic Character appear in <code class="docutils literal notranslate"><span class="pre">will_transform</span></code> so we know to transform it. Success!</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>You can’t query for an Attribute <code class="docutils literal notranslate"><span class="pre">db_value</span></code> quite as freely as other data-types. This is because Attributes can store any Python entity and is actually stored as <em>strings</em> on the database side. So while you can use <code class="docutils literal notranslate"><span class="pre">__eq=2</span></code> in the above example, you will not be able to <code class="docutils literal notranslate"><span class="pre">__gt=2</span></code> or <code class="docutils literal notranslate"><span class="pre">__lt=2</span></code> because these operations don’t make sense for strings. See <a class="reference internal" href="../../../Components/Attributes.html#querying-by-attribute"><span class="std std-doc">Attributes</span></a> for more information on dealing with Attributes.</p>
+</div>
 </section>
 <section id="queries-with-or-or-not">
 <h2><span class="section-number">12.3. </span>Queries with OR or NOT<a class="headerlink" href="#queries-with-or-or-not" title="Permalink to this headline">¶</a></h2>
@@ -355,7 +355,7 @@ of Daltons and non-prisoners.</p>
         <span class="n">Q</span><span class="p">(</span><span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">)</span>
         <span class="o">&amp;</span> <span class="p">(</span>
           <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycantrophy&quot;</span><span class="p">,</span>
-            <span class="n">db_attributes__db_value__gt</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
           <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;recently_bitten&quot;</span><span class="p">)</span>
         <span class="p">))</span>
     <span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
@@ -366,7 +366,7 @@ of Daltons and non-prisoners.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 
 <span class="n">q_moonlit</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">)</span>
-<span class="n">q_lycantropic</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycantrophy&quot;</span><span class="p">,</span> <span class="n">db_attributes__db_value__gt</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">q_lycantropic</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycantrophy&quot;</span><span class="p">,</span> <span class="n">db_attributes__db_value__eq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">q_recently_bitten</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;recently_bitten&quot;</span><span class="p">)</span>
 
 <span class="n">will_transform</span> <span class="o">=</span> <span class="p">(</span>
@@ -465,9 +465,7 @@ objects that had a bigger inventory than they had tags (silly example, but …)?
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Here we used <code class="docutils literal notranslate"><span class="pre">.annotate</span></code> to create two in-query ‘variables’ <code class="docutils literal notranslate"><span class="pre">num_objects</span></code> and <code class="docutils literal notranslate"><span class="pre">num_tags</span></code>. We then
-directly use these results in the filter. Using <code class="docutils literal notranslate"><span class="pre">F()</span></code> allows for also the right-hand-side of the filter
-condition to be calculated on the fly, completely within the database.</p>
+<p>Here we used <code class="docutils literal notranslate"><span class="pre">.annotate</span></code> to create two in-query ‘variables’ <code class="docutils literal notranslate"><span class="pre">num_objects</span></code> and <code class="docutils literal notranslate"><span class="pre">num_tags</span></code>. We then directly use these results in the filter. Using <code class="docutils literal notranslate"><span class="pre">F()</span></code> allows for also the right-hand-side of the filter condition to be calculated on the fly, completely within the database.</p>
 </section>
 <section id="grouping-and-returning-only-certain-properties">
 <h2><span class="section-number">12.6. </span>Grouping and returning only certain properties<a class="headerlink" href="#grouping-and-returning-only-certain-properties" title="Permalink to this headline">¶</a></h2>

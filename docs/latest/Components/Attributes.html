@@ -75,6 +75,7 @@
 <li><a class="reference internal" href="#locking-and-checking-attributes">Locking and checking Attributes</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#querying-by-attribute">Querying by Attribute</a></li>
 <li><a class="reference internal" href="#what-types-of-data-can-i-save-in-an-attribute">What types of data can I save in an Attribute?</a><ul>
 <li><a class="reference internal" href="#storing-single-objects">Storing single objects</a></li>
 <li><a class="reference internal" href="#storing-multiple-objects">Storing multiple objects</a></li>
@@ -403,6 +404,20 @@ set mypobj/mystring = [1, 2, foo]   # foo is invalid Python (no quotes)
 </div>
 <p>The same keywords are available to use with <code class="docutils literal notranslate"><span class="pre">obj.attributes.set()</span></code> and <code class="docutils literal notranslate"><span class="pre">obj.attributes.remove()</span></code>, those will check for the <code class="docutils literal notranslate"><span class="pre">attredit</span></code> lock type.</p>
 </section>
+</section>
+<section id="querying-by-attribute">
+<h2>Querying by Attribute<a class="headerlink" href="#querying-by-attribute" title="Permalink to this headline">¶</a></h2>
+<p>While you can get attributes using the <code class="docutils literal notranslate"><span class="pre">obj.attributes.get</span></code> handler, you can also find objects based on the Attributes they have through the <code class="docutils literal notranslate"><span class="pre">db_attributes</span></code> many-to-many field available on each typeclassed entity:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># find objects by attribue assigned (regardless of value)</span>
+<span class="n">objs</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+<span class="c1"># find objects with attribute of particular value assigned to them</span>
+<span class="n">objs</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">db_attributes__db_value</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Internally, Attribute values are stored as <em>pickled strings</em> (see next section). When querying, your search string is converted to the same format and matched in that form. While this means Attributes can store arbitrary Python structures, the drawback is that you cannot do more advanced database comparisons on them. For example doing <code class="docutils literal notranslate"><span class="pre">db_attributes__db__value__lt=4</span></code> or <code class="docutils literal notranslate"><span class="pre">__gt=0</span></code> will not work since less-than and greater-than doesn’t do what you want between strings.</p>
+</div>
 </section>
 <section id="what-types-of-data-can-i-save-in-an-attribute">
 <h2>What types of data can I save in an Attribute?<a class="headerlink" href="#what-types-of-data-can-i-save-in-an-attribute" title="Permalink to this headline">¶</a></h2>

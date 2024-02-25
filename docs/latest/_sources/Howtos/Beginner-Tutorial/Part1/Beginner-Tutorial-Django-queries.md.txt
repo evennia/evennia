@@ -98,8 +98,7 @@ found.
 
 ## Queryset field lookups
 
-Above we found roses with exactly the `db_key` `"rose"`. This is an _exact_ match that is _case sensitive_,
-so it would not find `"Rose"`.
+Above we found roses with exactly the `db_key` `"rose"`. This is an _exact_ match that is _case sensitive_, so it would not find `"Rose"`.
 
 ```python
 # this is case-sensitive and the same as =
@@ -108,15 +107,13 @@ roses = Flower.objects.filter(db_key__exact="rose"
 # the i means it's case-insensitive
 roses = Flower.objects.filter(db_key__iexact="rose")
 ```
-The Django field query language uses `__` similarly to how Python uses `.` to access resources. This
-is because `.` is not allowed in a function keyword.
+The Django field query language uses `__` similarly to how Python uses `.` to access resources. This is because `.` is not allowed in a function keyword.
 
 ```python
 roses = Flower.objects.filter(db_key__icontains="rose")
 ```
 
-This will find all flowers whose name contains the string `"rose"`, like `"roses"`, `"wild rose"` etc. The `i` in the beginning makes the search case-insensitive. Other useful variations to use
-are `__istartswith` and `__iendswith`. You can also use `__gt`, `__ge` for "greater-than"/"greater-or-equal-than" comparisons (same for `__lt` and `__le`). There is also `__in`:
+This will find all flowers whose name contains the string `"rose"`, like `"roses"`, `"wild rose"` etc. The `i` in the beginning makes the search case-insensitive. Other useful variations to use are `__istartswith` and `__iendswith`. You can also use `__gt`, `__ge` for "greater-than"/"greater-or-equal-than" comparisons (same for `__lt` and `__le`). There is also `__in`:
 
 ```python
 swords = Weapons.objects.filter(db_key__in=("rapier", "two-hander", "shortsword"))
@@ -178,7 +175,7 @@ will_transform = (
     .filter(
         db_location__db_tags__db_key__iexact="moonlit",
         db_attributes__db_key="lycantrophy",
-        db_attributes__db_value__gt=2
+        db_attributes__db_value__eq=2
     )
 )
 ```
@@ -193,10 +190,13 @@ Don't confuse database fields with [Attributes](../../../Components/Attributes.m
         that we can treat like an object for this purpose; it references all Tags on the location)
 	    - ... and from those `Tags`, we looking for `Tags` whose `db_key` is "monlit" (non-case sensitive).
      - **Line 7**: ... We also want only Characters with `Attributes` whose `db_key` is exactly `"lycantrophy"`
-    - **Line 8** :... at the same time as the `Attribute`'s `db_value` is greater-than 2.
+    - **Line 8** :... at the same time as the `Attribute`'s `db_value` is exactly 2.
 
-Running this query makes our newly lycantrophic Character appear in `will_transform` so we
-know to transform it. Success!
+Running this query makes our newly lycantrophic Character appear in `will_transform` so we know to transform it. Success!
+
+```{important}
+You can't query for an Attribute `db_value` quite as freely as other data-types. This is because Attributes can store any Python entity and is actually stored as _strings_ on the database side. So while you can use `__eq=2` in the above example, you will not be able to `__gt=2` or `__lt=2` because these operations don't make sense for strings. See [Attributes](../../../Components/Attributes.md#querying-by-attribute) for more information on dealing with Attributes.
+```
 
 ## Queries with OR or NOT 
 
@@ -243,7 +243,7 @@ will_transform = (
         Q(db_location__db_tags__db_key__iexact="moonlit")
         & (
           Q(db_attributes__db_key="lycantrophy",
-            db_attributes__db_value__gt=2)
+            db_attributes__db_value__eq=2)
           | Q(db_tags__db_key__iexact="recently_bitten")
         ))
     .distinct()
@@ -256,7 +256,7 @@ That's quite compact. It may be easier to see what's going on if written this wa
 from django.db.models import Q
 
 q_moonlit = Q(db_location__db_tags__db_key__iexact="moonlit")
-q_lycantropic = Q(db_attributes__db_key="lycantrophy", db_attributes__db_value__gt=2)
+q_lycantropic = Q(db_attributes__db_key="lycantrophy", db_attributes__db_value__eq=2)
 q_recently_bitten = Q(db_tags__db_key__iexact="recently_bitten")
 
 will_transform = (
@@ -362,9 +362,7 @@ result = (
 )
 ```
 
-Here we used `.annotate` to create two in-query 'variables' `num_objects` and `num_tags`. We then
-directly use these results in the filter. Using `F()` allows for also the right-hand-side of the filter
-condition to be calculated on the fly, completely within the database.
+Here we used `.annotate` to create two in-query 'variables' `num_objects` and `num_tags`. We then directly use these results in the filter. Using `F()` allows for also the right-hand-side of the filter condition to be calculated on the fly, completely within the database.
 
 ## Grouping and returning only certain properties
 
