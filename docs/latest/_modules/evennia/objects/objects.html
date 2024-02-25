@@ -116,6 +116,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">funcparser</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">class_from_module</span><span class="p">,</span>
+    <span class="n">dbref</span><span class="p">,</span>
     <span class="n">is_iter</span><span class="p">,</span>
     <span class="n">iter_to_str</span><span class="p">,</span>
     <span class="n">lazy_property</span><span class="p">,</span>
@@ -416,7 +417,213 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">exi</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">exi</span><span class="o">.</span><span class="n">destination</span><span class="p">]</span>
 
-    <span class="c1"># main methods</span>
+    <span class="c1"># search methods and hooks</span>
+
+<div class="viewcode-block" id="DefaultObject.get_search_query_replacement"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_search_query_replacement">[docs]</a>    <span class="k">def</span> <span class="nf">get_search_query_replacement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is called by the search method to allow for direct</span>
+<span class="sd">        replacements of the search string before it is used in the search.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            searchdata (str): The search string to replace.</span>
+<span class="sd">            **kwargs (any): These are the same as passed to the `search` method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The (potentially modified) search string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_nicks&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span>
+                <span class="n">searchdata</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">searchdata</span></div>
+
+<div class="viewcode-block" id="DefaultObject.get_search_direct_match"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_search_direct_match">[docs]</a>    <span class="k">def</span> <span class="nf">get_search_direct_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is called by the search method to allow for direct</span>
+<span class="sd">        replacements, such as &#39;me&#39; always being an alias for this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            searchdata (str): The search string to replace.</span>
+<span class="sd">            **kwargs (any): These are the same as passed to the `search` method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: `(should_return, str or Obj)`, where `should_return` is a boolean indicating</span>
+<span class="sd">            the `.search` method should return the result immediately without further</span>
+<span class="sd">            processing. If `should_return` is `True`, the second element of the tuple is the result</span>
+<span class="sd">            that is returned.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">match</span> <span class="n">searchdata</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">case</span> <span class="s2">&quot;me&quot;</span> <span class="o">|</span> <span class="s2">&quot;self&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span>
+                <span class="k">case</span> <span class="s2">&quot;here&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">searchdata</span></div>
+
+<div class="viewcode-block" id="DefaultObject.get_search_candidates"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_search_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">get_search_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the candidates for a search. Also the `candidates` provided to the</span>
+<span class="sd">        search function is included, and could be modified in-place here.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            searchdata (str): The search criterion (could be modified by `get_search_query_replacement`).</span>
+<span class="sd">            **kwargs (any): These are the same as passed to the `search` method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of objects to search between.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            If `searchdata` is a #dbref, this method should always return `None`. This is because</span>
+<span class="sd">            the search should always be global in this case. If `candidates` were already given,</span>
+<span class="sd">            they should be used as is. If `location` was given, the candidates should be based on</span>
+<span class="sd">            that.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_search&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dbref</span><span class="p">(</span><span class="n">searchdata</span><span class="p">):</span>
+            <span class="c1"># global searches (dbref-searches are always global too) should not have any candidates</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># if candidates were already given, use them</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;candidates&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">candidates</span>
+
+        <span class="c1"># find candidates based on location</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+            <span class="c1"># location(s) were given</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
+                <span class="n">candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># local search. Candidates are taken from</span>
+            <span class="c1"># self.contents, self.location and</span>
+            <span class="c1"># self.location.contents</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span>
+            <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+                <span class="n">candidates</span> <span class="o">=</span> <span class="n">candidates</span> <span class="o">+</span> <span class="p">[</span><span class="n">location</span><span class="p">]</span> <span class="o">+</span> <span class="n">location</span><span class="o">.</span><span class="n">contents</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># normally we don&#39;t need this since we are</span>
+                <span class="c1"># included in location.contents</span>
+                <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">candidates</span></div>
+
+<div class="viewcode-block" id="DefaultObject.get_search_result"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_search_result">[docs]</a>    <span class="k">def</span> <span class="nf">get_search_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">searchdata</span><span class="p">,</span>
+        <span class="n">attribute_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a wrapper for actually searching for objects, used by the `search` method.</span>
+<span class="sd">        This is broken out into a separate method to allow for easier overriding in child classes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            searchdata (str): The search criterion.</span>
+<span class="sd">            attribute_name (str): The attribute to search on (default is `.</span>
+<span class="sd">            typeclass (Typeclass or list): The typeclass to search for.</span>
+<span class="sd">            candidates (list): A list of objects to search between.</span>
+<span class="sd">            exact (bool): Require exact match.</span>
+<span class="sd">            use_dbref (bool): Allow dbref search.</span>
+<span class="sd">            tags (list): Tags to search for.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span>
+            <span class="n">searchdata</span><span class="p">,</span>
+            <span class="n">attribute_name</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">,</span>
+            <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span>
+            <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span>
+            <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span>
+            <span class="n">use_dbref</span><span class="o">=</span><span class="n">use_dbref</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObject.get_stacked_results"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_stacked_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_stacked_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is called by the search method to allow for handling of multi-match</span>
+<span class="sd">        results that should be stacked.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            results (list): The list of results from the search.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: `(stacked, results)`, where `stacked` is a boolean indicating if the</span>
+<span class="sd">                result is stacked and `results` is the list of results to return. If `stacked`</span>
+<span class="sd">                is True, the &quot;.search&quot; method will return `results` immediately without further</span>
+<span class="sd">                processing (it will not result in a multimatch-error).</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The `stacked` keyword argument is an integer that controls the max size of each stack</span>
+<span class="sd">            (if &gt;0). It&#39;s important to make sure to only stack _identical_ objects, otherwise we</span>
+<span class="sd">            risk losing track of objects.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nresults</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="n">max_stack_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stacked&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">)</span>
+        <span class="n">exact</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exact&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">max_stack_size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">nresults</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">nstack</span> <span class="o">=</span> <span class="n">nresults</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
+                <span class="c1"># we re-run exact match against one of the matches to make sure all are indeed</span>
+                <span class="c1"># equal and we were not catching partial matches not belonging to the stack</span>
+                <span class="n">nstack</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                    <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_key_or_alias</span><span class="p">(</span>
+                        <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                        <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">candidates</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+                        <span class="n">typeclasses</span><span class="o">=</span><span class="p">[</span><span class="n">typeclass</span><span class="p">]</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">nstack</span> <span class="o">==</span> <span class="n">nresults</span><span class="p">:</span>
+                <span class="c1"># a valid stack of identical items, return multiple results</span>
+                <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)[:</span><span class="n">max_stack_size</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="DefaultObject.handle_search_results"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.handle_search_results">[docs]</a>    <span class="k">def</span> <span class="nf">handle_search_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is called by the search method to allow for handling of the final search result.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            searchdata (str): The original search criterion (potentially modified by</span>
+<span class="sd">                `get_search_query_replacement`).</span>
+<span class="sd">            results (list): The list of results from the search.</span>
+<span class="sd">            **kwargs (any): These are the same as passed to the `search` method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Object, None or list: Normally this is a single object, but if `quiet=True` it should be</span>
+<span class="sd">            a list.  If quiet=False and we have to handle a no/multi-match error (directly messaging</span>
+<span class="sd">            the user), this should return `None`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">):</span>
+            <span class="c1"># don&#39;t care about no/multi-match errors, just return list of whatever we have</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+
+        <span class="c1"># handle any error messages, otherwise return a single result</span>
+
+        <span class="n">nofound_string</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nofound_string&quot;</span><span class="p">)</span>
+        <span class="n">multimatch_string</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multimatch_string&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_AT_SEARCH_RESULT</span><span class="p">(</span>
+            <span class="n">results</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">query</span><span class="o">=</span><span class="n">searchdata</span><span class="p">,</span>
+            <span class="n">nofound_string</span><span class="o">=</span><span class="n">nofound_string</span><span class="p">,</span>
+            <span class="n">multimatch_string</span><span class="o">=</span><span class="n">multimatch_string</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultObject.search"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -501,10 +708,10 @@
 <span class="sd">                more tag definitions on the form `tagname` or `(tagname, tagcategory)`.</span>
 <span class="sd">            stacked (int, optional): If &gt; 0, multimatches will be analyzed to determine if they</span>
 <span class="sd">                only contains identical objects; these are then assumed &#39;stacked&#39; and no multi-match</span>
-<span class="sd">                error will be generated, instead `stacked` number of matches will be returned. If</span>
-<span class="sd">                `stacked` is larger than number of matches, returns that number of matches. If</span>
-<span class="sd">                the found stack is a mix of objects, return None and handle the multi-match</span>
-<span class="sd">                error depending on the value of `quiet`.</span>
+<span class="sd">                error will be generated, instead `stacked` number of matches will be returned as a</span>
+<span class="sd">                list. If `stacked` is larger than number of matches, returns that number of matches.</span>
+<span class="sd">                If the found stack is a mix of objects, return None and handle the multi-match error</span>
+<span class="sd">                depending on the value of `quiet`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return</span>
@@ -519,59 +726,40 @@
 <span class="sd">            messaging is assumed to be handled by the caller.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">is_string</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="c1"># store input kwargs for sub-methods (this must be done first in this method)</span>
+        <span class="n">input_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;self&quot;</span><span class="p">,</span> <span class="s2">&quot;searchdata&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
 
-        <span class="k">if</span> <span class="n">is_string</span><span class="p">:</span>
-            <span class="c1"># searchdata is a string; wrap some common self-references</span>
-            <span class="k">if</span> <span class="n">searchdata</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;here&quot;</span><span class="p">,):</span>
-                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">]</span> <span class="k">if</span> <span class="n">quiet</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
-            <span class="k">if</span> <span class="n">searchdata</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;me&quot;</span><span class="p">,</span> <span class="s2">&quot;self&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span> <span class="k">if</span> <span class="n">quiet</span> <span class="k">else</span> <span class="bp">self</span>
+        <span class="c1"># replace incoming searchdata string with a potentially modified version</span>
+        <span class="n">searchdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_search_query_replacement</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">input_kwargs</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">use_dbref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">use_dbref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_dummy:perm(Builder)&quot;</span><span class="p">)</span>
+        <span class="c1"># handle special input strings, like &quot;me&quot; or &quot;here&quot;.</span>
+        <span class="n">should_return</span><span class="p">,</span> <span class="n">searchdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_search_direct_match</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">input_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">should_return</span><span class="p">:</span>
+            <span class="c1"># we got an actual result, return it immediately</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">searchdata</span><span class="p">]</span> <span class="k">if</span> <span class="n">quiet</span> <span class="k">else</span> <span class="n">searchdata</span>
 
-        <span class="k">if</span> <span class="n">use_nicks</span><span class="p">:</span>
-            <span class="c1"># do nick-replacement on search</span>
-            <span class="n">searchdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span>
-                <span class="n">searchdata</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
+        <span class="c1"># if use_dbref is None, we use a lock to determine if dbref search is allowed</span>
+        <span class="n">use_dbref</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_dummy:perm(Builder)&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">use_dbref</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">use_dbref</span>
+        <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">global_search</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">is_string</span>
-            <span class="ow">and</span> <span class="n">searchdata</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
-            <span class="ow">and</span> <span class="n">searchdata</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
-        <span class="p">):</span>
-            <span class="c1"># only allow exact matching if searching the entire database</span>
-            <span class="c1"># or unique #dbrefs</span>
-            <span class="n">exact</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">candidates</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># convert tags into tag tuples suitable for query</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tagcat</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">tagkey</span><span class="p">,</span> <span class="o">*</span><span class="n">tagcat</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="p">]</span>
 
-        <span class="k">elif</span> <span class="n">candidates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># no custom candidates given - get them automatically</span>
-            <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
-                <span class="c1"># location(s) were given</span>
-                <span class="n">candidates</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
-                    <span class="n">candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># local search. Candidates are taken from</span>
-                <span class="c1"># self.contents, self.location and</span>
-                <span class="c1"># self.location.contents</span>
-                <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
-                <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span>
-                <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
-                    <span class="n">candidates</span> <span class="o">=</span> <span class="n">candidates</span> <span class="o">+</span> <span class="p">[</span><span class="n">location</span><span class="p">]</span> <span class="o">+</span> <span class="n">location</span><span class="o">.</span><span class="n">contents</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># normally we don&#39;t need this since we are</span>
-                    <span class="c1"># included in location.contents</span>
-                    <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># always use exact match for dbref/global searches</span>
+        <span class="n">exact</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">global_search</span> <span class="ow">or</span> <span class="n">dbref</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span> <span class="k">else</span> <span class="n">exact</span>
 
-        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
-            <span class="n">tags</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">tagcat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tagcat</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">tagkey</span><span class="p">,</span> <span class="o">*</span><span class="n">tagcat</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)]</span>
+        <span class="c1"># get candidates</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_search_candidates</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="o">**</span><span class="n">input_kwargs</span><span class="p">)</span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span>
+        <span class="c1"># do the actual search</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_search_result</span><span class="p">(</span>
             <span class="n">searchdata</span><span class="p">,</span>
             <span class="n">attribute_name</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">,</span>
             <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span>
@@ -581,41 +769,18 @@
             <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
         <span class="p">)</span>
 
+        <span class="c1"># filter out objects we are not allowed to search</span>
         <span class="k">if</span> <span class="n">use_locks</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
 
-        <span class="n">nresults</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">stacked</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">nresults</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># handle stacks, disable multimatch errors</span>
-            <span class="n">nstack</span> <span class="o">=</span> <span class="n">nresults</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
-                <span class="c1"># we re-run exact match against one of the matches to</span>
-                <span class="c1"># make sure we were not catching partial matches not belonging</span>
-                <span class="c1"># to the stack</span>
-                <span class="n">nstack</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
-                    <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_key_or_alias</span><span class="p">(</span>
-                        <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                        <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">candidates</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
-                        <span class="n">typeclasses</span><span class="o">=</span><span class="p">[</span><span class="n">typeclass</span><span class="p">]</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-            <span class="k">if</span> <span class="n">nstack</span> <span class="o">==</span> <span class="n">nresults</span><span class="p">:</span>
-                <span class="c1"># a valid stack, return multiple results</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)[:</span><span class="n">stacked</span><span class="p">]</span>
+        <span class="c1"># handle stacked objects</span>
+        <span class="n">is_stacked</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stacked_results</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="o">**</span><span class="n">input_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_stacked</span><span class="p">:</span>
+            <span class="c1"># we have a stacked result, return it immediately (a list)</span>
+            <span class="k">return</span> <span class="n">results</span>
 
-        <span class="k">if</span> <span class="n">quiet</span><span class="p">:</span>
-            <span class="c1"># don&#39;t auto-handle error messaging</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-
-        <span class="c1"># handle error messages</span>
-        <span class="k">return</span> <span class="n">_AT_SEARCH_RESULT</span><span class="p">(</span>
-            <span class="n">results</span><span class="p">,</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">query</span><span class="o">=</span><span class="n">searchdata</span><span class="p">,</span>
-            <span class="n">nofound_string</span><span class="o">=</span><span class="n">nofound_string</span><span class="p">,</span>
-            <span class="n">multimatch_string</span><span class="o">=</span><span class="n">multimatch_string</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="c1"># handle the end (unstacked) results, returning a single object, a list or None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_search_results</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="o">**</span><span class="n">input_kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultObject.search_account"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.search_account">[docs]</a>    <span class="k">def</span> <span class="nf">search_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

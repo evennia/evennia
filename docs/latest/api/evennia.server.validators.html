@@ -120,61 +120,6 @@
 <p>Checks to make sure a given username is not taken or otherwise reserved.</p>
 </dd></dl>
 
-<dl class="py class">
-<dt id="evennia.server.validators.EvenniaPasswordValidator">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.validators.</code><code class="sig-name descname">EvenniaPasswordValidator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">regex</span><span class="o">=</span><span class="default_value">&quot;^[\\w. &#64;+\\-',]+$&quot;</span></em>, <em class="sig-param"><span class="n">policy</span><span class="o">=</span><span class="default_value">&quot;Password should contain a mix of letters, spaces, digits and &#64;/./+/-/_/'/, only.&quot;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/validators.html#EvenniaPasswordValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.validators.EvenniaPasswordValidator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="evennia.server.validators.EvenniaPasswordValidator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">regex</span><span class="o">=</span><span class="default_value">&quot;^[\\w. &#64;+\\-',]+$&quot;</span></em>, <em class="sig-param"><span class="n">policy</span><span class="o">=</span><span class="default_value">&quot;Password should contain a mix of letters, spaces, digits and &#64;/./+/-/_/'/, only.&quot;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/validators.html#EvenniaPasswordValidator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.validators.EvenniaPasswordValidator.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs a standard Django password validator.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>regex</strong> (<em>str</em>) – Regex pattern of valid characters to allow.</p></li>
-<li><p><strong>policy</strong> (<em>str</em>) – Brief explanation of what the defined regex permits.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.validators.EvenniaPasswordValidator.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/validators.html#EvenniaPasswordValidator.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.validators.EvenniaPasswordValidator.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validates a password string to make sure it meets predefined Evennia
-acceptable character policy.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>password</strong> (<em>str</em>) – Password to validate</p></li>
-<li><p><strong>user</strong> (<em>None</em>) – Unused argument but required by Django</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>None (None)</em> –</p>
-<dl class="simple">
-<dt>None if password successfully validated,</dt><dd><p>raises ValidationError otherwise.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.server.validators.EvenniaPasswordValidator.get_help_text">
-<code class="sig-name descname">get_help_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/validators.html#EvenniaPasswordValidator.get_help_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.validators.EvenniaPasswordValidator.get_help_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a user-facing explanation of the password policy defined
-by this validator.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>text (str)</em> – Explanation of password policy.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 

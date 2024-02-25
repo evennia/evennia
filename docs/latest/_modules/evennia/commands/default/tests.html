@@ -104,13 +104,10 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DefaultCharacter</span><span class="p">,</span>
     <span class="n">DefaultExit</span><span class="p">,</span>
@@ -122,14 +119,7 @@
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdparser</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">account</span><span class="p">,</span>
-    <span class="n">admin</span><span class="p">,</span>
-    <span class="n">batchprocess</span><span class="p">,</span>
-    <span class="n">building</span><span class="p">,</span>
-    <span class="n">comms</span><span class="p">,</span>
-    <span class="n">general</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">account</span><span class="p">,</span> <span class="n">admin</span><span class="p">,</span> <span class="n">batchprocess</span><span class="p">,</span> <span class="n">building</span><span class="p">,</span> <span class="n">comms</span><span class="p">,</span> <span class="n">general</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">help</span> <span class="k">as</span> <span class="n">help_module</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">syscommands</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">unloggedin</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
@@ -138,6 +128,8 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Command testing</span>
@@ -239,14 +231,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">CmdTest</span><span class="p">(),</span>
             <span class="s2">&quot;/t&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;test: Ambiguous switch supplied: &quot;</span>
-            <span class="s2">&quot;Did you mean /test or /testswitch or /testswitch2?|Switches matched: []&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test: Ambiguous switch supplied: &quot;</span>
+                <span class="s2">&quot;Did you mean /test or /testswitch or /testswitch2?|Switches matched: []&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">CmdTest</span><span class="p">(),</span>
             <span class="s2">&quot;/tests&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;test: Ambiguous switch supplied: &quot;</span>
-            <span class="s2">&quot;Did you mean /testswitch or /testswitch2?|Switches matched: []&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test: Ambiguous switch supplied: &quot;</span>
+                <span class="s2">&quot;Did you mean /testswitch or /testswitch2?|Switches matched: []&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestGeneral.test_say"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral.test_say">[docs]</a>    <span class="k">def</span> <span class="nf">test_say</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -936,8 +932,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdCpAttr</span><span class="p">(),</span>
             <span class="s2">&quot;/copy Obj2/test2 = Obj2/test3&quot;</span><span class="p">,</span>
-            <span class="s1">&#39;@cpattr: Extra switch &quot;/copy&quot; ignored.|</span><span class="se">\n</span><span class="s1">Copied Obj2.test2 -&gt; Obj2.test3. &#39;</span>
-            <span class="s2">&quot;(value: &#39;value2&#39;)&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s1">&#39;@cpattr: Extra switch &quot;/copy&quot; ignored.|</span><span class="se">\n</span><span class="s1">Copied Obj2.test2 -&gt; Obj2.test3. &#39;</span>
+                <span class="s2">&quot;(value: &#39;value2&#39;)&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdMvAttr</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdMvAttr</span><span class="p">(),</span> <span class="s2">&quot;Obj2/test2 = Obj/test3&quot;</span><span class="p">,</span> <span class="s2">&quot;Moved Obj2.test2 -&gt; Obj.test3&quot;</span><span class="p">)</span>
@@ -992,8 +990,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[5] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;No attribute Obj/test1[5] [category: None] was found to &quot;</span>
-            <span class="s2">&quot;delete. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;No attribute Obj/test1[5] [category: None] was found to &quot;</span>
+                <span class="s2">&quot;delete. (Nested lookups attempted)&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="c1"># Append</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1046,8 +1046,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+&#39;three&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2[+&#39;three&#39;] [category:None] does not exist. (Nested lookups&quot;</span>
-            <span class="s2">&quot; attempted)&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Attribute Obj/test2[+&#39;three&#39;] [category:None] does not exist. (Nested lookups&quot;</span>
+                <span class="s2">&quot; attempted)&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -1088,8 +1090,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;five&#39;] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;No attribute Obj/test2[&#39;five&#39;] [category: None] &quot;</span>
-            <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;No attribute Obj/test2[&#39;five&#39;] [category: None] &quot;</span>
+                <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -1099,8 +1103,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+1]=33&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test2 [category:None] = &quot;</span>
-            <span class="s2">&quot;{&#39;one&#39;: 99, &#39;three&#39;: 3, &#39;+&#39;: 42, &#39;+1&#39;: 33}&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Modified attribute Obj/test2 [category:None] = &quot;</span>
+                <span class="s2">&quot;{&#39;one&#39;: 99, &#39;three&#39;: 3, &#39;+&#39;: 42, &#39;+1&#39;: 33}&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="c1"># dict - case sensitive keys</span>
@@ -1161,8 +1167,10 @@
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="c1"># Special case for tuple, could have a better message</span>
             <span class="s2">&quot;Obj/tup[1] = &quot;</span><span class="p">,</span>
-            <span class="s2">&quot;No attribute Obj/tup[1] [category: None] &quot;</span>
-            <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;No attribute Obj/tup[1] [category: None] &quot;</span>
+                <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="c1"># Deaper nesting</span>
@@ -1237,8 +1245,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] does not exist. (Nested lookups&quot;</span>
-            <span class="s2">&quot; attempted)&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] does not exist. (Nested lookups&quot;</span>
+                <span class="s2">&quot; attempted)&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_split_nested_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_split_nested_attr">[docs]</a>    <span class="k">def</span> <span class="nf">test_split_nested_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1345,8 +1355,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="p">(),</span>
             <span class="s2">&quot;Obj&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Could not find &#39;Obj&#39;.| (Objects to destroy &quot;</span>
-            <span class="s2">&quot;must either be local or specified with a unique #dbref.)&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Could not find &#39;Obj&#39;.| (Objects to destroy &quot;</span>
+                <span class="s2">&quot;must either be local or specified with a unique #dbref.)&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">dbid</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1466,14 +1478,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
             <span class="s2">&quot;Obj = evennia.objects.objects.DefaultExit&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj changed typeclass from evennia.objects.objects.DefaultObject &quot;</span>
-            <span class="s2">&quot;to evennia.objects.objects.DefaultExit.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Obj changed typeclass from evennia.objects.objects.DefaultObject &quot;</span>
+                <span class="s2">&quot;to evennia.objects.objects.DefaultExit.&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
             <span class="s2">&quot;Obj2 = evennia.objects.objects.DefaultExit&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj2 changed typeclass from evennia.objects.objects.DefaultObject &quot;</span>
-            <span class="s2">&quot;to evennia.objects.objects.DefaultExit.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Obj2 changed typeclass from evennia.objects.objects.DefaultObject &quot;</span>
+                <span class="s2">&quot;to evennia.objects.objects.DefaultExit.&quot;</span>
+            <span class="p">),</span>
             <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;swap&quot;</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;yes&quot;</span><span class="p">],</span>
         <span class="p">)</span>
@@ -1486,8 +1502,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
             <span class="s2">&quot;Obj = evennia.objects.objects.DefaultExit&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj already has the typeclass &#39;evennia.objects.objects.DefaultExit&#39;. Use /force to&quot;</span>
-            <span class="s2">&quot; override.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Obj already has the typeclass &#39;evennia.objects.objects.DefaultExit&#39;. Use /force to&quot;</span>
+                <span class="s2">&quot; override.&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
@@ -1503,16 +1521,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
             <span class="s2">&quot;Obj&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).</span><span class="se">\n</span><span class="s2">Only the&quot;</span>
-            <span class="s2">&quot; at_object_creation hook was run (update mode). Attributes set before swap were not&quot;</span>
-            <span class="s2">&quot; removed</span><span class="se">\n</span><span class="s2">(use `swap` or `type/reset` to clear all).&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).</span><span class="se">\n</span><span class="s2">Only&quot;</span>
+                <span class="s2">&quot; the at_object_creation hook was run (update mode). Attributes set before swap&quot;</span>
+                <span class="s2">&quot; were not removed</span><span class="se">\n</span><span class="s2">(use `swap` or `type/reset` to clear all).&quot;</span>
+            <span class="p">),</span>
             <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
             <span class="s2">&quot;/reset/force Obj=evennia.objects.objects.DefaultObject&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;All object creation hooks were run. All old attributes where deleted before the swap.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).</span><span class="se">\n</span><span class="s2">All&quot;</span>
+                <span class="s2">&quot; object creation hooks were run. All old attributes where deleted before the swap.&quot;</span>
+            <span class="p">),</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;yes&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
@@ -1536,11 +1558,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
                 <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
                 <span class="s2">&quot;/prototype Obj=testkey&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;replaced_obj changed typeclass from evennia.objects.objects.DefaultObject to &quot;</span>
-                <span class="s2">&quot;typeclasses.objects.Object.</span><span class="se">\n</span><span class="s2">Only the at_object_creation hook was run &quot;</span>
-                <span class="s2">&quot;(update mode). Attributes set before swap were not removed</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;(use `swap` or `type/reset` to clear all). Prototype &#39;replaced_obj&#39; was &quot;</span>
-                <span class="s2">&quot;successfully applied over the object type.&quot;</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;replaced_obj changed typeclass from evennia.objects.objects.DefaultObject to &quot;</span>
+                    <span class="s2">&quot;typeclasses.objects.Object.</span><span class="se">\n</span><span class="s2">Only the at_object_creation hook was run &quot;</span>
+                    <span class="s2">&quot;(update mode). Attributes set before swap were not removed</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;(use `swap` or `type/reset` to clear all). Prototype &#39;replaced_obj&#39; was &quot;</span>
+                    <span class="s2">&quot;successfully applied over the object type.&quot;</span>
+                <span class="p">),</span>
             <span class="p">)</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">==</span> <span class="s2">&quot;protdesc&quot;</span></div>
 
@@ -1557,8 +1581,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdLock</span><span class="p">(),</span>
             <span class="s2">&quot;/view Obj = edit:false()&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Switch(es) view can not be used with a lock assignment. &quot;</span>
-            <span class="s2">&quot;Use e.g. lock/del objname/locktype instead.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Switch(es) view can not be used with a lock assignment. &quot;</span>
+                <span class="s2">&quot;Use e.g. lock/del objname/locktype instead.&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdLock</span><span class="p">(),</span> <span class="s2">&quot;Obj = control:false()&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdLock</span><span class="p">(),</span> <span class="s2">&quot;Obj = edit:false()&quot;</span><span class="p">)</span>
@@ -1684,9 +1710,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/delete #</span><span class="si">{}</span><span class="s2">-#</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">script1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">script3</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-            <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script3</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script3</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)&quot;</span>
+            <span class="p">),</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">script1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
@@ -1707,9 +1735,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span>
             <span class="s2">&quot;Obj = Room2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj(#</span><span class="si">{}</span><span class="s2">) is leaving Room(#</span><span class="si">{}</span><span class="s2">), heading for Room2(#</span><span class="si">{}</span><span class="s2">).|Teleported Obj -&gt; Room2.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">oid</span><span class="p">,</span> <span class="n">rid</span><span class="p">,</span> <span class="n">rid2</span>
-            <span class="p">),</span>
+            <span class="s2">&quot;Obj(#</span><span class="si">{}</span><span class="s2">) is leaving Room(#</span><span class="si">{}</span><span class="s2">), heading for Room2(#</span><span class="si">{}</span><span class="s2">).|Teleported Obj -&gt; Room2.&quot;</span>
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oid</span><span class="p">,</span> <span class="n">rid</span><span class="p">,</span> <span class="n">rid2</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;NotFound = Room&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1782,16 +1809,20 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
-            <span class="s2">&quot;/save {&#39;prototype_key&#39;: &#39;testprot&#39;, &#39;key&#39;:&#39;Test Char&#39;, &quot;</span>
-            <span class="s2">&quot;&#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;}&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;/save {&#39;prototype_key&#39;: &#39;testprot&#39;, &#39;key&#39;:&#39;Test Char&#39;, &quot;</span>
+                <span class="s2">&quot;&#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;}&quot;</span>
+            <span class="p">),</span>
             <span class="s2">&quot;Saved prototype: testprot&quot;</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
-            <span class="s2">&quot;/save testprot2 = {&#39;key&#39;:&#39;Test Char&#39;, &quot;</span>
-            <span class="s2">&quot;&#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;}&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;/save testprot2 = {&#39;key&#39;:&#39;Test Char&#39;, &quot;</span>
+                <span class="s2">&quot;&#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;}&quot;</span>
+            <span class="p">),</span>
             <span class="s2">&quot;(Replacing `prototype_key` in prototype with given key.)|Saved prototype: testprot2&quot;</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
@@ -1802,8 +1833,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;/save {&#39;key&#39;:&#39;Test Char&#39;, &#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;}&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;A prototype_key must be given, either as `prototype_key = &lt;prototype&gt;` or as &quot;</span>
-            <span class="s2">&quot;a key &#39;prototype_key&#39; inside the prototype structure.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;A prototype_key must be given, either as `prototype_key = &lt;prototype&gt;` or as &quot;</span>
+                <span class="s2">&quot;a key &#39;prototype_key&#39; inside the prototype structure.&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;/list&quot;</span><span class="p">,</span> <span class="s2">&quot;Key &quot;</span><span class="p">)</span>
@@ -1825,7 +1858,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;{&#39;prototype_key&#39;:&#39;GOBLIN&#39;, &#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;, &quot;</span>
-            <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+            <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span>
+            <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned goblin&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">goblin</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;goblin&quot;</span><span class="p">)</span>
@@ -1873,7 +1907,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;/noloc {&#39;prototype_parent&#39;:&#39;TESTBALL&#39;, &#39;key&#39;: &#39;Ball&#39;, &#39;prototype_key&#39;: &#39;foo&#39;,&quot;</span>
-            <span class="s2">&quot; &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+            <span class="s2">&quot; &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span>
+            <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned Ball&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ball</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>
@@ -2111,8 +2146,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdPage</span><span class="p">(),</span>
             <span class="s2">&quot;TestAccount2 = Test&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;TestAccount2 is offline. They will see your message if they list their pages later.&quot;</span>
-            <span class="s2">&quot;|You paged TestAccount2 with: &#39;Test&#39;.&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;TestAccount2 is offline. They will see your message if they list their pages&quot;</span>
+                <span class="s2">&quot; later.|You paged TestAccount2 with: &#39;Test&#39;.&quot;</span>
+            <span class="p">),</span>
             <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
@@ -2185,8 +2222,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">batchprocess</span><span class="o">.</span><span class="n">CmdBatchCommands</span><span class="p">(),</span>
             <span class="s2">&quot;batchprocessor.example_batch_cmds_test&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Running Batch-command processor - Automatic mode for&quot;</span>
-            <span class="s2">&quot; batchprocessor.example_batch_cmds&quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Running Batch-command processor - Automatic mode for&quot;</span>
+                <span class="s2">&quot; batchprocessor.example_batch_cmds&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="c1"># we make sure to delete the button again here to stop the running reactor</span>
         <span class="n">confirm</span> <span class="o">=</span> <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="o">.</span><span class="n">confirm</span>

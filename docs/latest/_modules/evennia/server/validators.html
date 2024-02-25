@@ -129,55 +129,6 @@
                 <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Sorry, that username is already taken.&quot;</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="s2">&quot;evennia_username_taken&quot;</span>
             <span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="EvenniaPasswordValidator"><a class="viewcode-back" href="../../../api/evennia.server.validators.html#evennia.server.validators.EvenniaPasswordValidator">[docs]</a><span class="k">class</span> <span class="nc">EvenniaPasswordValidator</span><span class="p">:</span>
-<div class="viewcode-block" id="EvenniaPasswordValidator.__init__"><a class="viewcode-back" href="../../../api/evennia.server.validators.html#evennia.server.validators.EvenniaPasswordValidator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[\w. @+\-&#39;,]+$&quot;</span><span class="p">,</span>
-        <span class="n">policy</span><span class="o">=</span><span class="s2">&quot;Password should contain a mix of letters, spaces, digits and @/./+/-/_/&#39;/, only.&quot;</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructs a standard Django password validator.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            regex (str): Regex pattern of valid characters to allow.</span>
-<span class="sd">            policy (str): Brief explanation of what the defined regex permits.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">regex</span> <span class="o">=</span> <span class="n">regex</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">policy</span></div>
-
-<div class="viewcode-block" id="EvenniaPasswordValidator.validate"><a class="viewcode-back" href="../../../api/evennia.server.validators.html#evennia.server.validators.EvenniaPasswordValidator.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates a password string to make sure it meets predefined Evennia</span>
-<span class="sd">        acceptable character policy.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            password (str): Password to validate</span>
-<span class="sd">            user (None): Unused argument but required by Django</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            None (None): None if password successfully validated,</span>
-<span class="sd">                raises ValidationError otherwise.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check complexity</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="s2">&quot;evennia_password_policy&quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="EvenniaPasswordValidator.get_help_text"><a class="viewcode-back" href="../../../api/evennia.server.validators.html#evennia.server.validators.EvenniaPasswordValidator.get_help_text">[docs]</a>    <span class="k">def</span> <span class="nf">get_help_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a user-facing explanation of the password policy defined</span>
-<span class="sd">        by this validator.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            text (str): Explanation of password policy.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">_</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="si">{policy}</span><span class="s2"> From a terminal client, you can also use a phrase of multiple words if &quot;</span>
-            <span class="s2">&quot;you enclose the password in double quotes.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">)</span>
-        <span class="p">)</span></div></div>
 </pre></div>
 
           </div>

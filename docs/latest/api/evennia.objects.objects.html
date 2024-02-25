@@ -361,6 +361,135 @@ location having the property destination != <strong>None</strong>.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.get_search_query_replacement">
+<code class="sig-name descname">get_search_query_replacement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_search_query_replacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_search_query_replacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is called by the search method to allow for direct
+replacements of the search string before it is used in the search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchdata</strong> (<em>str</em>) – The search string to replace.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – These are the same as passed to the <strong>search</strong> method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The (potentially modified) search string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.get_search_direct_match">
+<code class="sig-name descname">get_search_direct_match</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_search_direct_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_search_direct_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is called by the search method to allow for direct
+replacements, such as ‘me’ always being an alias for this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchdata</strong> (<em>str</em>) – The search string to replace.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – These are the same as passed to the <strong>search</strong> method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – <strong>(should_return, str or Obj)</strong>, where <strong>should_return</strong> is a boolean indicating
+the <strong>.search</strong> method should return the result immediately without further
+processing. If <strong>should_return</strong> is <strong>True</strong>, the second element of the tuple is the result
+that is returned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.get_search_candidates">
+<code class="sig-name descname">get_search_candidates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_search_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_search_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the candidates for a search. Also the <strong>candidates</strong> provided to the
+search function is included, and could be modified in-place here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchdata</strong> (<em>str</em>) – The search criterion (could be modified by <strong>get_search_query_replacement</strong>).</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – These are the same as passed to the <strong>search</strong> method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – A list of objects to search between.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <strong>searchdata</strong> is a #dbref, this method should always return <strong>None</strong>. This is because
+the search should always be global in this case. If <strong>candidates</strong> were already given,
+they should be used as is. If <strong>location</strong> was given, the candidates should be based on
+that.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.get_search_result">
+<code class="sig-name descname">get_search_result</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_search_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_search_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a wrapper for actually searching for objects, used by the <strong>search</strong> method.
+This is broken out into a separate method to allow for easier overriding in child classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchdata</strong> (<em>str</em>) – The search criterion.</p></li>
+<li><p><strong>attribute_name</strong> (<em>str</em>) – The attribute to search on (default is <a href="#id1"><span class="problematic" id="id2">**</span></a>.</p></li>
+<li><p><strong>typeclass</strong> (<em>Typeclass</em><em> or </em><em>list</em>) – The typeclass to search for.</p></li>
+<li><p><strong>candidates</strong> (<em>list</em>) – A list of objects to search between.</p></li>
+<li><p><strong>exact</strong> (<em>bool</em>) – Require exact match.</p></li>
+<li><p><strong>use_dbref</strong> (<em>bool</em>) – Allow dbref search.</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – Tags to search for.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.get_stacked_results">
+<code class="sig-name descname">get_stacked_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_stacked_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_stacked_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is called by the search method to allow for handling of multi-match
+results that should be stacked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>results</strong> (<em>list</em>) – The list of results from the search.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>tuple</em> –</p>
+<dl class="simple">
+<dt><strong>(stacked, results)</strong>, where <strong>stacked</strong> is a boolean indicating if the</dt><dd><p>result is stacked and <strong>results</strong> is the list of results to return. If <strong>stacked</strong>
+is True, the “.search” method will return <strong>results</strong> immediately without further
+processing (it will not result in a multimatch-error).</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The <strong>stacked</strong> keyword argument is an integer that controls the max size of each stack
+(if &gt;0). It’s important to make sure to only stack _identical_ objects, otherwise we
+risk losing track of objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.handle_search_results">
+<code class="sig-name descname">handle_search_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">results</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.handle_search_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.handle_search_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is called by the search method to allow for handling of the final search result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchdata</strong> (<em>str</em>) – The original search criterion (potentially modified by
+<strong>get_search_query_replacement</strong>).</p></li>
+<li><p><strong>results</strong> (<em>list</em>) – The list of results from the search.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – These are the same as passed to the <strong>search</strong> method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Object, None or list</em> – Normally this is a single object, but if <strong>quiet=True</strong> it should be
+a list.  If quiet=False and we have to handle a no/multi-match error (directly messaging
+the user), this should return <strong>None</strong>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.search">
 <code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">global_search</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_nicks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_locks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">nofound_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multimatch_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stacked</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an Object matching a search string/condition</p>
@@ -430,10 +559,10 @@ otherwise.</p></li>
 more tag definitions on the form <strong>tagname</strong> or <strong>(tagname, tagcategory)</strong>.</p></li>
 <li><p><strong>stacked</strong> (<em>int</em><em>, </em><em>optional</em>) – If &gt; 0, multimatches will be analyzed to determine if they
 only contains identical objects; these are then assumed ‘stacked’ and no multi-match
-error will be generated, instead <strong>stacked</strong> number of matches will be returned. If
-<strong>stacked</strong> is larger than number of matches, returns that number of matches. If
-the found stack is a mix of objects, return None and handle the multi-match
-error depending on the value of <strong>quiet</strong>.</p></li>
+error will be generated, instead <strong>stacked</strong> number of matches will be returned as a
+list. If <strong>stacked</strong> is larger than number of matches, returns that number of matches.
+If the found stack is a mix of objects, return None and handle the multi-match error
+depending on the value of <strong>quiet</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
