@@ -1,6 +1,8 @@
 # Changelog
 
-## main branch
+## Evennia 3.2.0
+
+Feb 25, 2024
 
 - Feature: Add [`evennia.ON_DEMAND_HANDLER`][new-ondemandhandler] for making it
   easier to implement changes that are calculated on-demand (Griatch)
