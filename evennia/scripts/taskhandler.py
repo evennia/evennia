@@ -5,12 +5,13 @@ Module containing the task handler for Evennia deferred tasks, persistent or not
 from datetime import datetime, timedelta
 from pickle import PickleError
 
-from evennia.server.models import ServerConfig
-from evennia.utils.dbserialize import dbserialize, dbunserialize
-from evennia.utils.logger import log_err
 from twisted.internet import reactor
 from twisted.internet.defer import CancelledError as DefCancelledError
 from twisted.internet.task import deferLater
+
+from evennia.server.models import ServerConfig
+from evennia.utils.dbserialize import dbserialize, dbunserialize
+from evennia.utils.logger import log_err
 
 TASK_HANDLER = None
 

@@ -14,6 +14,7 @@ except ImportError:
 import json
 
 import mock
+from django.test import override_settings
 from mock import MagicMock, Mock
 from twisted.internet.base import DelayedCall
 from twisted.test import proto_helpers
@@ -22,11 +23,12 @@ import evennia
 from evennia.server.portal.portalsessionhandler import PortalSessionHandler
 from evennia.server.portal.service import EvenniaPortalService
 from evennia.utils.test_resources import BaseEvenniaTest
-from django.test import override_settings
 
 
 class TestGodotWebSocketClient(BaseEvenniaTest):
-    @override_settings(GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE="127.0.0.1", GODOT_CLIENT_WEBSOCKET_PORT='8988')
+    @override_settings(
+        GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE="127.0.0.1", GODOT_CLIENT_WEBSOCKET_PORT="8988"
+    )
     def setUp(self):
         super().setUp()
         self.portal = EvenniaPortalService()
@@ -34,7 +36,9 @@ class TestGodotWebSocketClient(BaseEvenniaTest):
         self.amp_server_factory = AMPServerFactory(self.portal)
         self.amp_server = self.amp_server_factory.buildProtocol("127.0.0.1")
         start_plugin_services(self.portal)
-        godot_ws_service = next(srv for srv in self.portal.services if srv.name.startswith('GodotWebSocket'))
+        godot_ws_service = next(
+            srv for srv in self.portal.services if srv.name.startswith("GodotWebSocket")
+        )
 
         factory = godot_ws_service.args[1]
         self.proto = factory.protocol()
@@ -61,11 +65,15 @@ class TestGodotWebSocketClient(BaseEvenniaTest):
         self.proto.sessionhandler.data_in.assert_called_with(self.proto, logged_in=[[], {}])
         msg = json.dumps(["text", ("|rRed Text|n",), {}]).encode()
         self.proto.onMessage(msg, isBinary=False)
-        self.proto.sessionhandler.data_in.assert_called_with(self.proto, text=[["|rRed Text|n"], {}])
+        self.proto.sessionhandler.data_in.assert_called_with(
+            self.proto, text=[["|rRed Text|n"], {}]
+        )
 
     @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
     def test_data_out(self):
         self.proto.onOpen()
         self.proto.sendLine = MagicMock()
         self.proto.sessionhandler.data_out(self.proto, text=[["|rRed Text|n"], {}])
-        self.proto.sendLine.assert_called_with(json.dumps(["text", ["[color=#ff0000]Red Text[/color]"], {}]))
+        self.proto.sendLine.assert_called_with(
+            json.dumps(["text", ["[color=#ff0000]Red Text[/color]"], {}])
+        )

@@ -1,17 +1,12 @@
-from evennia.contrib.base_systems.components import (
-    Component,
-    DBField,
-    TagField,
-    signals,
-)
-from evennia.contrib.base_systems.components.holder import (
-    ComponentHolderMixin,
-    ComponentProperty,
-)
-from evennia.contrib.base_systems.components.signals import as_listener
 from evennia.objects.objects import DefaultCharacter
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
+
+from . import signals
+from .component import Component
+from .dbfield import DBField, TagField
+from .holder import ComponentHolderMixin, ComponentProperty
+from .signals import as_listener
 
 
 class ComponentTestA(Component):
@@ -22,12 +17,12 @@ class ComponentTestA(Component):
 
 class ShadowedComponentTestA(ComponentTestA):
     name = "shadowed_test_a"
-    slot = 'ic_a'
+    slot = "ic_a"
 
 
 class InheritedComponentTestA(ComponentTestA):
     name = "inherited_test_a"
-    slot = 'ic_a'
+    slot = "ic_a"
 
     my_other_int = DBField(default=2)
 
@@ -68,7 +63,7 @@ class ShadowedCharacterMixin:
 
 class CharacterMixinWithComponents:
     ic_a = ComponentProperty("inherited_test_a", my_other_int=33)
-    test_d = ComponentProperty('test_d')
+    test_d = ComponentProperty("test_d")
 
 
 class CharacterWithComponents(
@@ -247,9 +242,13 @@ class TestComponents(EvenniaTest):
         test_b = self.char1.components.get("test_b")
         test_b.default_single_tag = "second value"
 
-        self.assertTrue(self.char1.tags.has(key="second value", category="test_b::default_single_tag"))
+        self.assertTrue(
+            self.char1.tags.has(key="second value", category="test_b::default_single_tag")
+        )
         self.assertTrue(test_b.default_single_tag == "second value")
-        self.assertFalse(self.char1.tags.has(key="first_value", category="test_b::default_single_tag"))
+        self.assertFalse(
+            self.char1.tags.has(key="first_value", category="test_b::default_single_tag")
+        )
 
     def test_component_tags_support_multiple_values_by_default(self):
         test_b = self.char1.components.get("test_b")
@@ -257,9 +256,12 @@ class TestComponents(EvenniaTest):
         test_b.multiple_tags = "second value"
         test_b.multiple_tags = "third value"
 
-        self.assertTrue(all(
-            val in test_b.multiple_tags for val in ("first value", "second value", "third value")
-        ))
+        self.assertTrue(
+            all(
+                val in test_b.multiple_tags
+                for val in ("first value", "second value", "third value")
+            )
+        )
         self.assertTrue(self.char1.tags.has(key="first value", category="test_b::multiple_tags"))
         self.assertTrue(self.char1.tags.has(key="second value", category="test_b::multiple_tags"))
         self.assertTrue(self.char1.tags.has(key="third value", category="test_b::multiple_tags"))

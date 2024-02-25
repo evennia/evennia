@@ -33,6 +33,7 @@ the module given by settings.CONNECTION_SCREEN_MODULE.
 """
 
 from django.conf import settings
+
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.commands.cmdset import CmdSet

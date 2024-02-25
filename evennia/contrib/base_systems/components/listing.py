@@ -1,4 +1,4 @@
-from evennia.contrib.base_systems.components import exceptions
+from . import exceptions
 
 COMPONENT_LISTING = {}
 
@@ -13,7 +13,7 @@ def get_component_class(name):
     if component_class is None:
         message = (
             f"Component with name {name} has not been found. "
-            f"Make sure it has been imported before being used."
+            "Make sure it has been imported before being used."
         )
         raise exceptions.ComponentDoesNotExist(message)
 

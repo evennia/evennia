@@ -8,7 +8,7 @@ import typing
 from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
 
 if typing.TYPE_CHECKING:
-    from evennia.contrib.base_systems.components import Component
+    from .components import Component
 
 
 class DBField(AttributeProperty):
@@ -21,7 +21,7 @@ class DBField(AttributeProperty):
     def __init__(self, default=None, autocreate=False, **kwargs):
         super().__init__(default=default, autocreate=autocreate, **kwargs)
 
-    def __set_name__(self, owner: 'Component', name):
+    def __set_name__(self, owner: "Component", name):
         """
         Called when descriptor is first assigned to the class.
 
@@ -61,7 +61,7 @@ class NDBField(NAttributeProperty):
     It uses NAttributeProperty under the hood but prefixes the key with the component name.
     """
 
-    def __set_name__(self, owner: 'Component', name):
+    def __set_name__(self, owner: "Component", name):
         """
         Called when descriptor is first assigned to the class.
 
@@ -108,7 +108,7 @@ class TagField:
         self._default = default
         self._enforce_single = enforce_single
 
-    def __set_name__(self, owner: 'Component', name):
+    def __set_name__(self, owner: "Component", name):
         """
         Called when TagField is first assigned to the class.
         It is called with the component class and the name of the field.

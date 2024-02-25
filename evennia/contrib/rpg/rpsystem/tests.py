@@ -5,6 +5,7 @@ Tests for RP system
 import time
 
 from anything import Anything
+
 from evennia import DefaultObject, create_object, default_cmds
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import BaseEvenniaTest

@@ -38,4 +38,3 @@ class EvenniaUsernameAvailabilityValidator:
             raise ValidationError(
                 _("Sorry, that username is already taken."), code="evennia_username_taken"
             )
-

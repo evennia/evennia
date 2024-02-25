@@ -333,13 +333,13 @@ class WildernessScript(DefaultScript):
 
         # we will need to do special handling if the old room is a different location
         # check that here, so we only need to do it once
-        if self == getattr(old_room, 'wilderness', None):
+        if self == getattr(old_room, "wilderness", None):
             # it is our own room
             from_outside = False
         else:
             # it's from another wilderness, or no wilderness
             from_outside = True
-        
+
         # check if we have a room at the new coordinates already
         room = self.db.rooms.get(new_coordinates)
 

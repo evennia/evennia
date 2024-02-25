@@ -286,13 +286,13 @@ from evennia.utils.evtable import EvColumn, EvTable
 from evennia.utils.utils import (
     crop,
     dedent,
+    inherits_from,
     is_iter,
     m_len,
     make_iter,
     mod_import,
     pad,
     to_str,
-    inherits_from,
 )
 
 # read from protocol NAWS later?
@@ -1209,10 +1209,12 @@ class EvMenu:
 
         # check if the caller is using a screenreader
         screenreader_mode = False
-        if sessions := getattr(self.caller, 'sessions', None):
-            screenreader_mode = any(sess.protocol_flags.get("SCREENREADER") for sess in sessions.all())
+        if sessions := getattr(self.caller, "sessions", None):
+            screenreader_mode = any(
+                sess.protocol_flags.get("SCREENREADER") for sess in sessions.all()
+            )
         # the caller doesn't have a session; check it directly
-        elif hasattr(self.caller, 'protocol_flags'):
+        elif hasattr(self.caller, "protocol_flags"):
             screenreader_mode = self.caller.protocol_flags.get("SCREENREADER")
 
         ncols = 1 if screenreader_mode else _MAX_TEXT_WIDTH // table_width_max

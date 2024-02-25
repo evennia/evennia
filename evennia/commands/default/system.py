@@ -13,9 +13,10 @@ import time
 import traceback
 
 import django
-import evennia
 import twisted
 from django.conf import settings
+
+import evennia
 from evennia.accounts.models import AccountDB
 from evennia.scripts.taskhandler import TaskHandlerTask
 from evennia.utils import gametime, logger, search, utils

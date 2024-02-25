@@ -36,11 +36,12 @@ the `caller.msg()` construct every time the page is updated.
 ----
 
 """
-import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.commands import cmdhandler
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command

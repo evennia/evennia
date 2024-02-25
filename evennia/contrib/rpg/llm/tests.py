@@ -5,9 +5,10 @@ Unit tests for the LLM Client and npc.
 
 from anything import Something
 from django.test import override_settings
+from mock import Mock, patch
+
 from evennia.utils.create import create_object
 from evennia.utils.test_resources import BaseEvenniaTestCase
-from mock import Mock, patch
 
 from .llm_npc import LLMNPC
 

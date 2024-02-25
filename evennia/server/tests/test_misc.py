@@ -8,6 +8,7 @@ import unittest
 
 from django.test import TestCase
 from django.test.runner import DiscoverRunner
+
 from evennia.server.throttle import Throttle
 from evennia.utils.test_resources import BaseEvenniaTest
 

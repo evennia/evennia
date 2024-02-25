@@ -5,7 +5,9 @@ This file contains the base class to inherit for creating new components.
 """
 
 from evennia.commands.cmdset import CmdSet
-from evennia.contrib.base_systems.components import COMPONENT_LISTING, exceptions
+
+from . import exceptions
+from .listing import COMPONENT_LISTING
 
 
 class BaseComponent(type):
@@ -13,6 +15,7 @@ class BaseComponent(type):
     This is the metaclass for components,
     responsible for registering components to the listing.
     """
+
     @classmethod
     def __new__(cls, *args):
         """
@@ -45,7 +48,7 @@ class Component(metaclass=BaseComponent):
     Each Component must supply the name, it is used as a slot name but also part of the attribute key.
     """
 
-    __slots__ = ('host',)
+    __slots__ = ("host",)
 
     name = ""
     slot = None

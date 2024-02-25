@@ -4,8 +4,9 @@ Components - ChrisLR 2022
 This file contains the classes that allow a typeclass to use components.
 """
 
-from evennia.contrib.base_systems import components
-from evennia.contrib.base_systems.components import signals, exceptions, get_component_class
+from . import exceptions, signals
+from .component import Component
+from .listing import get_component_class
 
 
 class ComponentProperty:
@@ -62,7 +63,7 @@ class ComponentHandler:
         self.host = host
         self._loaded_components = {}
 
-    def add(self, component: components.Component):
+    def add(self, component: Component):
         """
         Method to add a Component to a host.
         It caches the loaded component and appends its name to the host's component name list.
@@ -92,11 +93,11 @@ class ComponentHandler:
             name (str): The name of the component class to add.
 
         """
-        component_class = components.get_component_class(name)
+        component_class = get_component_class(name)
         component_instance = component_class.default_create(self.host)
         self.add(component_instance)
 
-    def remove(self, component: components.Component):
+    def remove(self, component: Component):
         """
         Method to remove a component instance from a host.
         It removes the component from the cache and listing.
@@ -109,9 +110,7 @@ class ComponentHandler:
         name = component.name
         slot_name = component.get_component_slot()
         if not self.has(slot_name):
-            message = (
-                f"Cannot remove {name} from {self.host.name} as it is not registered."
-            )
+            message = f"Cannot remove {name} from {self.host.name} as it is not registered."
             raise exceptions.ComponentIsNotRegistered(message)
 
         for field in component.get_fields():
@@ -142,7 +141,7 @@ class ComponentHandler:
 
         self.remove(instance)
 
-    def get(self, name: str) -> components.Component | None:
+    def get(self, name: str) -> Component | None:
         return self._loaded_components.get(name)
 
     def has(self, name: str) -> bool:
@@ -167,7 +166,7 @@ class ComponentHandler:
             return
 
         for component_name in component_names:
-            component = components.get_component_class(component_name)
+            component = get_component_class(component_name)
             if component:
                 component_instance = component.load(self.host)
                 self._set_component(component_instance)
@@ -213,6 +212,7 @@ class ComponentHolderMixin:
     All registered components are initialized on the typeclass.
     They will be of None value if not present in the class components or runtime components.
     """
+
     def at_init(self):
         """
         Method that initializes the ComponentHandler.
@@ -241,7 +241,7 @@ class ComponentHolderMixin:
         setattr(self, "_signal_handler", signals.SignalsHandler(self))
         class_components = self._get_class_components()
         for component_name, values in class_components:
-            component_class = components.get_component_class(component_name)
+            component_class = get_component_class(component_name)
             component = component_class.create(self, **values)
             self.components.add(component)
 
