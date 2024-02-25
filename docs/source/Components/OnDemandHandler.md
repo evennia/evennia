@@ -94,7 +94,7 @@ This is important. If no-one checks in on the flower until a time when it's  alr
 ```
 - The `key` can be a string, but also a typeclassed object (its string representation will be used, which normally includes its `#dbref`). You can also pass a `callable` - this will be called without arguments and is expected to return a string to use for the `key`. Finally, you can also pass [OnDemandTask](evennia.scripts.ondemandhandler.OnDemandTask) entities - these are the objects the handler uses under the hood to represent each task. 
 - The `category` allows you to further categorize your demandhandler  tasks to make sure they are unique. Since the handler is global, you need to make sure `key` + `category` is unique. While `category` is optional, if you use it you must also use it to retrieve your state later.
-- `stages` is a `dict` `{dt: statename}` or `{dt: (statename, callable}` that represents how much time (in seconds) from _the start of the task_ to that stage to begin. In the flower example above, it was 10 hours until the `wilting` state began. If a `callable` is also included, this will be called *the first time* that state is checked for (only!). The callable takes a `evennia.OnDemandTask` as an argument and allows for tweaking the task on the fly.  The `dt` can also be a `float` if you desire higher than per-second precision. Having `stages` is optional - sometimes you only want to know how much time has passed.
+- `stages` is a `dict` `{dt: statename}` or `{dt: (statename, callable)}` that represents how much time (in seconds) from _the start of the task_ it takes for that stage to begin. In the flower example above, it was 10 hours until the `wilting` state began. If a `callable` is also included, this will be called *the first time* that state is checked for (only!). The callable takes a `evennia.OnDemandTask` as an argument and allows for tweaking the task on the fly.  The `dt` can also be a `float` if you desire higher than per-second precision. Having `stages` is optional - sometimes you only want to know how much time has passed.
 - `.get_dt()` - get the current time (in seconds) since the task started. This is a `float`.
 - `.get_stage()` - get the current state name, such as "flowering" or "seedling". If you didn't specify any `stages`, this will return `None`, and you need to interpret the `dt` yourself to determine which state you are in.
 
@@ -147,7 +147,7 @@ If the state is not checked for a long time, the looping function will correctly
 
 ### Bouncing back and forth 
 
-`evennia.OnDemandTask.stagefunc_bounce` is an included static-method callable you can use to 'bounce' the sequence of stages. That is, it will cycle to the end of the cycle and then reverse direction and cycle through the sequence in reverse. 
+`evennia.OnDemandTask.stagefunc_bounce` is an included static-method callable you can use to 'bounce' the sequence of stages. That is, it will cycle to the end of the cycle and then reverse direction and cycle through the sequence in reverse, keeping the same time intervals between each stage. 
 
 To make this repeat indefinitely, you need to put these callables at both ends of the list:
 
@@ -171,7 +171,7 @@ This will cycle
     
         cold -> luke warm -> warm -> hot -> HOT! 
 
-before reversing and go back over and over: 
+before reversing and go back (over and over): 
 
         HOT! -> hot -> warm -> luke warm -> cold 
 
