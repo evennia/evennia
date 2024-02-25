@@ -3,10 +3,41 @@ Components - ChrisLR 2022
 
 This file contains the base class to inherit for creating new components.
 """
-import itertools
+
+from evennia.commands.cmdset import CmdSet
+from evennia.contrib.base_systems.components import COMPONENT_LISTING, exceptions
 
 
-class Component:
+class BaseComponent(type):
+    """
+    This is the metaclass for components,
+    responsible for registering components to the listing.
+    """
+    @classmethod
+    def __new__(cls, *args):
+        """
+        Every class that uses this metaclass will be registered
+        as a component in the Component Listing using its name.
+        All of them require a unique name.
+        """
+        new_type = super().__new__(*args)
+        if new_type.__base__ == object:
+            return new_type
+
+        name = getattr(new_type, "name", None)
+        if not name:
+            raise ValueError(f"Component {new_type} requires a name.")
+
+        if existing_type := COMPONENT_LISTING.get(name):
+            if not str(new_type) == str(existing_type):
+                raise ValueError(f"Component name {name} is a duplicate, must be unique.")
+        else:
+            COMPONENT_LISTING[name] = new_type
+
+        return new_type
+
+
+class Component(metaclass=BaseComponent):
     """
     This is the base class for components.
     Any component must inherit from this class to be considered for usage.
@@ -14,10 +45,15 @@ class Component:
     Each Component must supply the name, it is used as a slot name but also part of the attribute key.
     """
 
+    __slots__ = ('host',)
+
     name = ""
+    slot = None
+
+    _fields = {}
 
     def __init__(self, host=None):
-        assert self.name, "All Components must have a Name"
+        assert self.name, "All Components must have a name"
         self.host = host
 
     @classmethod
@@ -61,8 +97,8 @@ class Component:
         """
         This deletes all component attributes from the host's db
         """
-        for attribute in self._all_db_field_names:
-            delattr(self, attribute)
+        for name in self._fields.keys():
+            delattr(self, name)
 
     @classmethod
     def load(cls, host):
@@ -77,7 +113,6 @@ class Component:
             Component: The loaded instance of the component
 
         """
-
         return cls(host)
 
     def at_added(self, host):
@@ -88,12 +123,8 @@ class Component:
             host (object): The host typeclass instance
 
         """
-
-        if self.host:
-            if self.host == host:
-                return
-            else:
-                raise ComponentRegisterError("Components must not register twice!")
+        if self.host and self.host != host:
+            raise exceptions.InvalidComponentError("Components must not register twice!")
 
         self.host = host
 
@@ -106,7 +137,8 @@ class Component:
 
         """
         if host != self.host:
-            raise ComponentRegisterError("Component attempted to remove from the wrong host.")
+            raise ValueError("Component attempted to remove from the wrong host.")
+
         self.host = None
 
     @property
@@ -131,25 +163,14 @@ class Component:
         """
         return self.host.nattributes
 
-    @property
-    def _all_db_field_names(self):
-        return itertools.chain(self.db_field_names, self.ndb_field_names)
+    @classmethod
+    def add_field(cls, name, field):
+        cls._fields[name] = field
 
-    @property
-    def db_field_names(self):
-        db_fields = getattr(self, "_db_fields", {})
-        return db_fields.keys()
+    @classmethod
+    def get_fields(cls):
+        return tuple(cls._fields.values())
 
-    @property
-    def ndb_field_names(self):
-        ndb_fields = getattr(self, "_ndb_fields", {})
-        return ndb_fields.keys()
-
-    @property
-    def tag_field_names(self):
-        tag_fields = getattr(self, "_tag_fields", {})
-        return tag_fields.keys()
-
-
-class ComponentRegisterError(Exception):
-    pass
+    @classmethod
+    def get_component_slot(cls):
+        return cls.slot or cls.name
