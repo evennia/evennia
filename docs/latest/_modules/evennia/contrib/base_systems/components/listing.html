@@ -88,7 +88,7 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.base_systems.components.listing</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">exceptions</span>
+<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exceptions</span>
 
 <span class="n">COMPONENT_LISTING</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -103,7 +103,7 @@
     <span class="k">if</span> <span class="n">component_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Component with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> has not been found. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Make sure it has been imported before being used.&quot;</span>
+            <span class="s2">&quot;Make sure it has been imported before being used.&quot;</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ComponentDoesNotExist</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 

@@ -118,7 +118,6 @@
 <span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
 <span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
 
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">DjangoValidationError</span>
@@ -126,11 +125,13 @@
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">strip_tags</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">simpleeval</span> <span class="kn">import</span> <span class="n">simple_eval</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">threads</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
+
+<span class="kn">import</span> <span class="nn">evennia</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">_MULTIMATCH_TEMPLATE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_TEMPLATE</span>
 <span class="n">_EVENNIA_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EVENNIA_DIR</span>

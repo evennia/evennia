@@ -95,7 +95,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">COMPONENT_LISTING</span><span class="p">,</span> <span class="n">exceptions</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">.listing</span> <span class="kn">import</span> <span class="n">COMPONENT_LISTING</span>
 
 
 <div class="viewcode-block" id="BaseComponent"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.BaseComponent">[docs]</a><span class="k">class</span> <span class="nc">BaseComponent</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
@@ -103,6 +105,7 @@
 <span class="sd">    This is the metaclass for components,</span>
 <span class="sd">    responsible for registering components to the listing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -135,7 +138,7 @@
 <span class="sd">    Each Component must supply the name, it is used as a slot name but also part of the attribute key.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">,)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;host&quot;</span><span class="p">,)</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">slot</span> <span class="o">=</span> <span class="kc">None</span>

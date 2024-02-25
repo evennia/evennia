@@ -88,20 +88,15 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.base_systems.components.tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Component</span><span class="p">,</span>
-    <span class="n">DBField</span><span class="p">,</span>
-    <span class="n">TagField</span><span class="p">,</span>
-    <span class="n">signals</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components.holder</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ComponentHolderMixin</span><span class="p">,</span>
-    <span class="n">ComponentProperty</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components.signals</span> <span class="kn">import</span> <span class="n">as_listener</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span></span><span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaTest</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">signals</span>
+<span class="kn">from</span> <span class="nn">.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">.dbfield</span> <span class="kn">import</span> <span class="n">DBField</span><span class="p">,</span> <span class="n">TagField</span>
+<span class="kn">from</span> <span class="nn">.holder</span> <span class="kn">import</span> <span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">ComponentProperty</span>
+<span class="kn">from</span> <span class="nn">.signals</span> <span class="kn">import</span> <span class="n">as_listener</span>
 
 
 <div class="viewcode-block" id="ComponentTestA"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.tests.html#evennia.contrib.base_systems.components.tests.ComponentTestA">[docs]</a><span class="k">class</span> <span class="nc">ComponentTestA</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
@@ -112,12 +107,12 @@
 
 <div class="viewcode-block" id="ShadowedComponentTestA"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.tests.html#evennia.contrib.base_systems.components.tests.ShadowedComponentTestA">[docs]</a><span class="k">class</span> <span class="nc">ShadowedComponentTestA</span><span class="p">(</span><span class="n">ComponentTestA</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;shadowed_test_a&quot;</span>
-    <span class="n">slot</span> <span class="o">=</span> <span class="s1">&#39;ic_a&#39;</span></div>
+    <span class="n">slot</span> <span class="o">=</span> <span class="s2">&quot;ic_a&quot;</span></div>
 
 
 <div class="viewcode-block" id="InheritedComponentTestA"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.tests.html#evennia.contrib.base_systems.components.tests.InheritedComponentTestA">[docs]</a><span class="k">class</span> <span class="nc">InheritedComponentTestA</span><span class="p">(</span><span class="n">ComponentTestA</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;inherited_test_a&quot;</span>
-    <span class="n">slot</span> <span class="o">=</span> <span class="s1">&#39;ic_a&#39;</span>
+    <span class="n">slot</span> <span class="o">=</span> <span class="s2">&quot;ic_a&quot;</span>
 
     <span class="n">my_other_int</span> <span class="o">=</span> <span class="n">DBField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
@@ -158,7 +153,7 @@
 
 <div class="viewcode-block" id="CharacterMixinWithComponents"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.tests.html#evennia.contrib.base_systems.components.tests.CharacterMixinWithComponents">[docs]</a><span class="k">class</span> <span class="nc">CharacterMixinWithComponents</span><span class="p">:</span>
     <span class="n">ic_a</span> <span class="o">=</span> <span class="n">ComponentProperty</span><span class="p">(</span><span class="s2">&quot;inherited_test_a&quot;</span><span class="p">,</span> <span class="n">my_other_int</span><span class="o">=</span><span class="mi">33</span><span class="p">)</span>
-    <span class="n">test_d</span> <span class="o">=</span> <span class="n">ComponentProperty</span><span class="p">(</span><span class="s1">&#39;test_d&#39;</span><span class="p">)</span></div>
+    <span class="n">test_d</span> <span class="o">=</span> <span class="n">ComponentProperty</span><span class="p">(</span><span class="s2">&quot;test_d&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CharacterWithComponents"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.tests.html#evennia.contrib.base_systems.components.tests.CharacterWithComponents">[docs]</a><span class="k">class</span> <span class="nc">CharacterWithComponents</span><span class="p">(</span>
@@ -337,9 +332,13 @@
         <span class="n">test_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test_b&quot;</span><span class="p">)</span>
         <span class="n">test_b</span><span class="o">.</span><span class="n">default_single_tag</span> <span class="o">=</span> <span class="s2">&quot;second value&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;second value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;test_b::default_single_tag&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;second value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;test_b::default_single_tag&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">test_b</span><span class="o">.</span><span class="n">default_single_tag</span> <span class="o">==</span> <span class="s2">&quot;second value&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;first_value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;test_b::default_single_tag&quot;</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;first_value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;test_b::default_single_tag&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestComponents.test_component_tags_support_multiple_values_by_default"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.tests.html#evennia.contrib.base_systems.components.tests.TestComponents.test_component_tags_support_multiple_values_by_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_component_tags_support_multiple_values_by_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test_b&quot;</span><span class="p">)</span>
@@ -347,9 +346,12 @@
         <span class="n">test_b</span><span class="o">.</span><span class="n">multiple_tags</span> <span class="o">=</span> <span class="s2">&quot;second value&quot;</span>
         <span class="n">test_b</span><span class="o">.</span><span class="n">multiple_tags</span> <span class="o">=</span> <span class="s2">&quot;third value&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span>
-            <span class="n">val</span> <span class="ow">in</span> <span class="n">test_b</span><span class="o">.</span><span class="n">multiple_tags</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;first value&quot;</span><span class="p">,</span> <span class="s2">&quot;second value&quot;</span><span class="p">,</span> <span class="s2">&quot;third value&quot;</span><span class="p">)</span>
-        <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="nb">all</span><span class="p">(</span>
+                <span class="n">val</span> <span class="ow">in</span> <span class="n">test_b</span><span class="o">.</span><span class="n">multiple_tags</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;first value&quot;</span><span class="p">,</span> <span class="s2">&quot;second value&quot;</span><span class="p">,</span> <span class="s2">&quot;third value&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;first value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;test_b::multiple_tags&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;second value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;test_b::multiple_tags&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;third value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;test_b::multiple_tags&quot;</span><span class="p">))</span></div>

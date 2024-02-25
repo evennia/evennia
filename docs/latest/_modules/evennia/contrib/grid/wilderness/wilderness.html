@@ -423,13 +423,13 @@
 
         <span class="c1"># we will need to do special handling if the old room is a different location</span>
         <span class="c1"># check that here, so we only need to do it once</span>
-        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">old_room</span><span class="p">,</span> <span class="s1">&#39;wilderness&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">old_room</span><span class="p">,</span> <span class="s2">&quot;wilderness&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="c1"># it is our own room</span>
             <span class="n">from_outside</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># it&#39;s from another wilderness, or no wilderness</span>
             <span class="n">from_outside</span> <span class="o">=</span> <span class="kc">True</span>
-        
+
         <span class="c1"># check if we have a room at the new coordinates already</span>
         <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">)</span>
 
