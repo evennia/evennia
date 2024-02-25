@@ -6,9 +6,8 @@ import datetime
 import re
 from codecs import lookup as codecs_lookup
 
-from django.conf import settings
-
 import evennia
+from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.comms.models import ChannelDB
 from evennia.utils import class_from_module, create, gametime, logger, utils

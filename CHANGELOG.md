@@ -24,6 +24,8 @@
   (InspectorCaracal)
 - [Fix][pull3434]: Adjust lunr search weights to void clashing of cmd-aliases over
   keys which caused some help entries to shadow others (InspectorCaracal)
+- Fix: Make `menu/email_login` contribs honor `NEW_ACCOUNT_REGISTRATION_ENABLED`
+  setting (Griatch)
 - Doc fixes (InspectorCaracal, Griatch)
 
 [new-ondemandhandler][https://www.evennia.com/docs/latest/Components/OnDemandHandler.html]

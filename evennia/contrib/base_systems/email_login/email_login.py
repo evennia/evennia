@@ -33,7 +33,6 @@ the module given by settings.CONNECTION_SCREEN_MODULE.
 """
 
 from django.conf import settings
-
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.commands.cmdset import CmdSet
@@ -141,6 +140,15 @@ class CmdUnconnectedCreate(MuxCommand):
     key = "create"
     aliases = ["cre", "cr"]
     locks = "cmd:all()"
+
+    def at_pre_cmd(self):
+        """Verify that account creation is enabled."""
+        if not settings.NEW_ACCOUNT_REGISTRATION_ENABLED:
+            # truthy return cancels the command
+            self.msg("Registration is currently disabled.")
+            return True
+
+        return super().at_pre_cmd()
 
     def parse(self):
         """
